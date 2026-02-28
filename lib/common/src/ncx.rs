@@ -73,21 +73,17 @@ pub fn parse_ncx(xml: &str) -> Result<(String, Vec<NcxNode>), Box<dyn std::error
         .nav_map
         .nav_points
         .into_iter()
-        .map(|np| convert_nav_point(np, 1))
+        .map(convert_nav_point)
         .collect();
     Ok((title, nodes))
 }
 
-fn convert_nav_point(raw: RawNavPoint, depth: u16) -> NcxNode {
+fn convert_nav_point(raw: RawNavPoint) -> NcxNode {
     let (file, fragment) = match raw.content.src.split_once('#') {
         Some((f, frag)) => (f.to_string(), Some(frag.to_string())),
         None => (raw.content.src, None),
     };
-    let children = raw
-        .children
-        .into_iter()
-        .map(|c| convert_nav_point(c, depth + 1))
-        .collect();
+    let children = raw.children.into_iter().map(convert_nav_point).collect();
     NcxNode {
         ncx_id: raw.id,
         play_order: raw.play_order,

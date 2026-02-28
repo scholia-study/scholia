@@ -18,10 +18,11 @@ pub fn extract_all_content(
     // ordered by play_order.
     let mut file_nodes: HashMap<String, Vec<(Option<String>, String, u32)>> = HashMap::new();
     for (ncx_id, play_order, _label, src, _depth) in &flat {
-        file_nodes
-            .entry(src.file.clone())
-            .or_default()
-            .push((src.fragment.clone(), ncx_id.clone(), *play_order));
+        file_nodes.entry(src.file.clone()).or_default().push((
+            src.fragment.clone(),
+            ncx_id.clone(),
+            *play_order,
+        ));
     }
     for v in file_nodes.values_mut() {
         v.sort_by_key(|x| x.2);
@@ -189,13 +190,12 @@ fn extract_blocks_from_children(body: ElementRef, _stop_at: Option<&str>) -> Vec
 /// Check if element is a "Fußnoten" header that starts the footnote section.
 fn is_footnote_header(el: &ElementRef) -> bool {
     let tag = el.value().name();
-    if tag == "p" {
-        if let Some(class) = el.value().attr("class") {
-            if class == "fn" {
-                let text = el.text().collect::<String>().trim().to_string();
-                return text.starts_with("Fußnote");
-            }
-        }
+    if tag == "p"
+        && let Some(class) = el.value().attr("class")
+        && class == "fn"
+    {
+        let text = el.text().collect::<String>().trim().to_string();
+        return text.starts_with("Fußnote");
     }
     false
 }

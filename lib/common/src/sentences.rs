@@ -13,8 +13,8 @@ static SPLIT_RE: LazyLock<Regex> = LazyLock::new(|| {
 /// - Multi-word abbreviations: checked by looking at a window around the split point
 static SINGLE_ABBREVS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
     vec![
-        "bzw.", "usf.", "usw.", "vgl.", "sog.", "evtl.", "bes.", "Anm.", "Bd.", "Kap.",
-        "Nr.", "St.", "Dr.", "Fr.", "Hr.", "Prof.",
+        "bzw.", "usf.", "usw.", "vgl.", "sog.", "evtl.", "bes.", "Anm.", "Bd.", "Kap.", "Nr.",
+        "St.", "Dr.", "Fr.", "Hr.", "Prof.",
     ]
 });
 
@@ -33,13 +33,15 @@ static MULTI_ABBREV_RE: LazyLock<Vec<Regex>> = LazyLock::new(|| {
         r"s\.\s*u\.",   // s. u.
         r"o\.\s*ä\.",   // o. ä.
     ];
-    patterns.into_iter().map(|p| Regex::new(p).unwrap()).collect()
+    patterns
+        .into_iter()
+        .map(|p| Regex::new(p).unwrap())
+        .collect()
 });
 
 /// Single uppercase-letter initial pattern: detects "X. " where X is a single uppercase letter.
 /// This handles initials like "G. W. F. Hegel".
-static INITIAL_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"\b[A-ZÄÖÜ]\.\s*$").unwrap());
+static INITIAL_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b[A-ZÄÖÜ]\.\s*$").unwrap());
 
 /// Split a paragraph into sentences, returning (text, html) pairs.
 ///
