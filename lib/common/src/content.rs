@@ -1,6 +1,7 @@
 use crate::epub_reader::EpubReader;
-use crate::model::{BlockType, ContentBlock, TocNode};
+use crate::model::{BlockType, ContentBlock, Sentence, TocNode};
 use crate::ncx::{NcxNode, flatten_ncx};
+use crate::sentences::split_sentences;
 use scraper::{ElementRef, Html, Selector};
 use std::collections::HashMap;
 
@@ -213,9 +214,11 @@ fn classify_element(el: &ElementRef, pos: &mut u32) -> Option<ContentBlock> {
                 let block = ContentBlock {
                     position: *pos,
                     block_type: BlockType::Separator,
+                    paragraph_number: None,
                     text: String::new(),
                     html: String::new(),
                     page_ref: None,
+                    sentences: Vec::new(),
                 };
                 *pos += 1;
                 Some(block)
@@ -233,9 +236,11 @@ fn classify_element(el: &ElementRef, pos: &mut u32) -> Option<ContentBlock> {
             let block = ContentBlock {
                 position: *pos,
                 block_type: BlockType::Heading,
+                paragraph_number: None,
                 text,
                 html: inner_html(el),
                 page_ref: None,
+                sentences: Vec::new(),
             };
             *pos += 1;
             Some(block)
@@ -260,9 +265,11 @@ fn classify_element(el: &ElementRef, pos: &mut u32) -> Option<ContentBlock> {
             let block = ContentBlock {
                 position: *pos,
                 block_type: BlockType::Paragraph,
+                paragraph_number: None,
                 text,
                 html,
                 page_ref,
+                sentences: Vec::new(),
             };
             *pos += 1;
             Some(block)
@@ -277,9 +284,11 @@ fn classify_element(el: &ElementRef, pos: &mut u32) -> Option<ContentBlock> {
             let block = ContentBlock {
                 position: *pos,
                 block_type: BlockType::Paragraph,
+                paragraph_number: None,
                 text,
                 html: el.inner_html(),
                 page_ref: None,
+                sentences: Vec::new(),
             };
             *pos += 1;
             Some(block)
@@ -305,9 +314,11 @@ fn classify_as_footnote(el: &ElementRef, pos: &mut u32) -> Option<ContentBlock> 
     let block = ContentBlock {
         position: *pos,
         block_type: BlockType::Footnote,
+        paragraph_number: None,
         text,
         html,
         page_ref,
+        sentences: Vec::new(),
     };
     *pos += 1;
     Some(block)
@@ -403,6 +414,42 @@ fn build_html_recursive(el: &ElementRef, buf: &mut String) {
             }
             _ => {}
         }
+    }
+}
+
+/// Post-processing: assign paragraph numbers and split sentences across all nodes.
+pub fn number_and_split(nodes: &mut [TocNode]) {
+    let mut para_counter = 0u32;
+    let mut sentence_counter = 0u32;
+    number_and_split_recursive(nodes, &mut para_counter, &mut sentence_counter);
+}
+
+fn number_and_split_recursive(
+    nodes: &mut [TocNode],
+    para_counter: &mut u32,
+    sentence_counter: &mut u32,
+) {
+    for node in nodes {
+        for block in &mut node.content {
+            if block.block_type == BlockType::Paragraph {
+                *para_counter += 1;
+                block.paragraph_number = Some(*para_counter);
+
+                let pairs = split_sentences(&block.text, &block.html);
+                let mut sentences = Vec::with_capacity(pairs.len());
+                for (i, (text, html)) in pairs.into_iter().enumerate() {
+                    *sentence_counter += 1;
+                    sentences.push(Sentence {
+                        position: i as u32,
+                        sentence_number: *sentence_counter,
+                        text,
+                        html,
+                    });
+                }
+                block.sentences = sentences;
+            }
+        }
+        number_and_split_recursive(&mut node.children, para_counter, sentence_counter);
     }
 }
 

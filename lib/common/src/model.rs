@@ -3,6 +3,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Book {
     pub title: String,
+    pub author: String,
+    pub language: String,
+    pub publisher: String,
+    pub date: String,
     pub nodes: Vec<TocNode>,
 }
 
@@ -21,10 +25,22 @@ pub struct ContentBlock {
     pub position: u32,
     #[serde(rename = "type")]
     pub block_type: BlockType,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub paragraph_number: Option<u32>,
     pub text: String,
     pub html: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub page_ref: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub sentences: Vec<Sentence>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Sentence {
+    pub position: u32,
+    pub sentence_number: u32,
+    pub text: String,
+    pub html: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
