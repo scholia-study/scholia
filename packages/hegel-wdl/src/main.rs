@@ -32,16 +32,39 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut toc_nodes = ncx_to_toc_nodes(&ncx_nodes, 1);
     extract_all_content(&mut reader, &mut toc_nodes, &ncx_nodes)?;
 
-    // Phase 4: Number paragraphs and split sentences
+    // Phase 4: Remove non-text nodes and publisher headings
+    let excluded_nodes = ["Biographie", "Impressum"];
+    let excluded_headings = ["Zeno.org", "Impressum"];
+    let removed: Vec<_> = toc_nodes
+        .iter()
+        .filter(|n| excluded_nodes.contains(&n.label.as_str()))
+        .map(|n| n.label.clone())
+        .collect();
+    toc_nodes.retain(|n| !excluded_nodes.contains(&n.label.as_str()));
+    for label in &removed {
+        println!("Excluded node: {}", label);
+    }
+    // Strip publisher headings from Titelseite
+    for node in &mut toc_nodes {
+        node.content.retain(|b| {
+            !(b.block_type == BlockType::Heading && excluded_headings.contains(&b.text.as_str()))
+        });
+        // Re-number positions
+        for (i, block) in node.content.iter_mut().enumerate() {
+            block.position = i as u32;
+        }
+    }
+
+    // Phase 5: Number paragraphs and split sentences
     println!("Numbering paragraphs and splitting sentences...");
     number_and_split(&mut toc_nodes);
 
-    // Phase 5: Serialize
+    // Phase 6: Serialize
     let book = Book {
         title,
         author: metadata.author,
         language: metadata.language,
-        publisher: metadata.publisher,
+        source: metadata.publisher,
         date: metadata.date,
         nodes: toc_nodes,
     };

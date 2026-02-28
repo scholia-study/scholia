@@ -5,7 +5,7 @@ pub struct Book {
     pub title: String,
     pub author: String,
     pub language: String,
-    pub publisher: String,
+    pub source: String,
     pub date: String,
     pub nodes: Vec<TocNode>,
 }

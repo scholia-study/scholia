@@ -21,7 +21,7 @@ Reads `assets/wdl.epub`, writes `assets/wdl.json`.
   "title": "Wissenschaft der Logik",
   "author": "Georg Wilhelm Friedrich Hegel",
   "language": "de",
-  "publisher": "Zeno.org",
+  "source": "Zeno.org",
   "date": "2015-06-29",
   "nodes": [ ... ]
 }
@@ -32,7 +32,7 @@ Reads `assets/wdl.epub`, writes `assets/wdl.json`.
 | `title`     | string   | Book title from the NCX navigation file         |
 | `author`    | string   | Author with `role="aut"` from the OPF metadata  |
 | `language`  | string   | ISO 639-1 language code                         |
-| `publisher` | string   | Publisher name from OPF metadata                |
+| `source`    | string   | Source/publisher of the EPUB edition             |
 | `date`      | string   | Publication date (ISO 8601)                     |
 | `nodes`     | array    | Top-level table-of-contents nodes (see below)   |
 
@@ -60,7 +60,7 @@ The `nodes` array is a recursive tree that mirrors the EPUB's table of contents.
 | `children`   | array    | Child `TocNode` objects (empty `[]` for leaf nodes)                |
 | `content`    | array    | Ordered content blocks belonging to this section (see below)       |
 
-Every node has content -- there are 229 nodes total, all with at least one content block.
+Every node has content -- there are 227 nodes total, all with at least one content block. Non-text nodes (Biographie, Impressum) from the source EPUB are excluded.
 
 ### Content blocks (`ContentBlock`)
 
@@ -68,7 +68,7 @@ The `content` array within each node is a flat, ordered sequence of blocks repre
 
 There are four block types:
 
-#### `"paragraph"` -- body text (1,913 total)
+#### `"paragraph"` -- body text (1,869 total)
 
 The primary content type. Each paragraph carries a global number and is split into sentences.
 
@@ -97,7 +97,7 @@ The primary content type. Each paragraph carries a global number and is split in
 }
 ```
 
-#### `"heading"` -- section titles (324 total)
+#### `"heading"` -- section titles (321 total)
 
 Chapter and section headings extracted from `<h1>` through `<h5>` elements.
 
@@ -123,7 +123,7 @@ Footnotes from the source text, appearing at the end of certain chapters.
 }
 ```
 
-#### `"separator"` -- visual breaks (280 total)
+#### `"separator"` -- visual breaks (278 total)
 
 Empty-line separators between text segments. Both `text` and `html` are empty strings.
 
@@ -142,7 +142,7 @@ Empty-line separators between text segments. Both `text` and `html` are empty st
 |--------------------|----------------|-------------------------|-------------------------------------------------------------------|
 | `position`         | integer        | all types               | 0-based index within the parent node's `content` array            |
 | `type`             | string         | all types               | One of `"paragraph"`, `"heading"`, `"footnote"`, `"separator"`    |
-| `paragraph_number` | integer        | `paragraph` only        | Global 1-based paragraph count across the entire book (1..1,913)  |
+| `paragraph_number` | integer        | `paragraph` only        | Global 1-based paragraph count across the entire book (1..1,869)  |
 | `text`             | string         | all types               | Plain text content (empty for separators)                         |
 | `html`             | string         | all types               | HTML content preserving inline formatting (empty for separators)  |
 | `page_ref`         | string or null | `paragraph`, `footnote` | Page number from the source edition, if present (e.g. `"44"`)    |
@@ -180,7 +180,7 @@ Each paragraph is split into individual sentences. Sentence boundaries are detec
 | Field             | Type    | Description                                                      |
 |-------------------|---------|------------------------------------------------------------------|
 | `position`        | integer | 0-based index within the parent paragraph's `sentences` array    |
-| `sentence_number` | integer | Global 1-based sentence count across the entire book (1..7,950)  |
+| `sentence_number` | integer | Global 1-based sentence count across the entire book (1..7,774)  |
 | `text`            | string  | Plain text of the sentence                                       |
 | `html`            | string  | HTML of the sentence with inline formatting preserved             |
 
@@ -196,8 +196,8 @@ Sentence 2 html: "<i>Zweiter Satz.</i>"
 
 Two global counters run across the entire book in depth-first reading order:
 
-- **`paragraph_number`** (1..1,913) -- counts only `"paragraph"` blocks, skipping headings, footnotes, and separators.
-- **`sentence_number`** (1..7,950) -- counts every sentence across all paragraphs.
+- **`paragraph_number`** (1..1,869) -- counts only `"paragraph"` blocks, skipping headings, footnotes, and separators.
+- **`sentence_number`** (1..7,774) -- counts every sentence across all paragraphs.
 
 Both are contiguous with no gaps, so they can serve as stable identifiers for citation and cross-referencing.
 
@@ -205,13 +205,13 @@ Both are contiguous with no gaps, so they can serve as stable identifiers for ci
 
 | Metric          | Count |
 |-----------------|-------|
-| TOC nodes       | 229   |
-| Paragraphs      | 1,913 |
-| Sentences        | 7,950 |
-| Headings         | 324   |
-| Separators       | 280   |
+| TOC nodes       | 227   |
+| Paragraphs      | 1,869 |
+| Sentences        | 7,774 |
+| Headings         | 321   |
+| Separators       | 278   |
 | Footnotes        | 23    |
-| Total blocks     | 2,540 |
+| Total blocks     | 2,491 |
 | Max TOC depth    | 8     |
 
 ## Project structure
