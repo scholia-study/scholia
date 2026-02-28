@@ -1,22 +1,11 @@
-import { useState } from "react";
 import { useGetNode } from "../api/nodes/nodes";
-import type { SentenceResponse } from "../api/model";
 import { Block } from "./BlockRenderer";
+import { useSentenceSelection } from "./SentenceSelectionContext";
 
 export function NodeContent({ slug, ncxId }: { slug: string; ncxId: string }) {
   const { data, isLoading, error } = useGetNode(slug, ncxId);
   const node = data?.data;
-  const [selectedSentenceId, setSelectedSentenceId] = useState<string | null>(
-    null,
-  );
-
-  const handleSelectSentence = (sentence: SentenceResponse) => {
-    const next = sentence.id === selectedSentenceId ? null : sentence.id;
-    setSelectedSentenceId(next);
-    if (next) {
-      console.log("Selected sentence:", sentence);
-    }
-  };
+  const { selectedSentenceId, onSelectSentence } = useSentenceSelection();
 
   if (isLoading) {
     return (
@@ -44,7 +33,7 @@ export function NodeContent({ slug, ncxId }: { slug: string; ncxId: string }) {
           key={block.id}
           block={block}
           selectedSentenceId={selectedSentenceId}
-          onSelectSentence={handleSelectSentence}
+          onSelectSentence={onSelectSentence}
         />
       ))}
     </article>

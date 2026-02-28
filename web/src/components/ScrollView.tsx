@@ -1,7 +1,8 @@
-import { useRef, useState, useCallback, useEffect, forwardRef, useImperativeHandle } from 'react'
+import { useRef, useState, useEffect, forwardRef, useImperativeHandle } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import type { NodeDetail, SentenceResponse } from '../api/model'
+import type { NodeDetail } from '../api/model'
 import { Block } from './BlockRenderer'
+import { useSentenceSelection } from './SentenceSelectionContext'
 
 export interface ScrollViewHandle {
   scrollToNode: (ncxId: string, playOrder?: number) => void
@@ -18,7 +19,7 @@ interface ScrollViewProps {
 export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
   function ScrollView({ nodes, hasNextPage, isFetchingNextPage, fetchNextPage, onVisibleNodeChange }, ref) {
     const parentRef = useRef<HTMLDivElement>(null)
-    const [selectedSentenceId, setSelectedSentenceId] = useState<string | null>(null)
+    const { selectedSentenceId, onSelectSentence } = useSentenceSelection()
     const [pendingScrollTarget, setPendingScrollTarget] = useState<{
       ncxId: string
       playOrder: number
@@ -98,10 +99,6 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
       }
     }, [pendingScrollTarget, isFetchingNextPage, hasNextPage, fetchNextPage])
 
-    const handleSelectSentence = useCallback((sentence: SentenceResponse) => {
-      setSelectedSentenceId((prev) => (prev === sentence.id ? null : sentence.id))
-    }, [])
-
     return (
       <div ref={parentRef} className="h-full overflow-y-auto">
         <div
@@ -129,7 +126,7 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
                         key={block.id}
                         block={block}
                         selectedSentenceId={selectedSentenceId}
-                        onSelectSentence={handleSelectSentence}
+                        onSelectSentence={onSelectSentence}
                       />
                     ))}
                   </div>

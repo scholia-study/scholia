@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useMemo } from 'react'
 import {
   createRootRouteWithContext,
   createRoute,
@@ -12,6 +12,9 @@ import type { ViewMode } from '../components/TocSidebar'
 import { NodeContent } from '../components/NodeContent'
 import { ScrollViewContainer } from '../components/ScrollViewContainer'
 import type { ScrollViewHandle } from '../components/ScrollViewContainer'
+import { SentencePanel } from '../components/SentencePanel'
+import { SentenceSelectionContext } from '../components/SentenceSelectionContext'
+import type { SentenceResponse } from '../api/model'
 
 interface RouterContext {
   queryClient: QueryClient
@@ -39,6 +42,17 @@ function BookLayout() {
   const [viewMode, setViewMode] = useState<ViewMode>('section')
   const [visibleNcxId, setVisibleNcxId] = useState<string | undefined>()
   const scrollViewRef = useRef<ScrollViewHandle>(null)
+  const [selectedSentence, setSelectedSentence] = useState<SentenceResponse | null>(null)
+
+  const handleSelectSentence = useCallback((sentence: SentenceResponse) => {
+    setSelectedSentence((prev) => prev?.id === sentence.id ? null : sentence)
+  }, [])
+
+  const sentenceCtx = useMemo(() => ({
+    selectedSentenceId: selectedSentence?.id ?? null,
+    selectedSentence,
+    onSelectSentence: handleSelectSentence,
+  }), [selectedSentence, handleSelectSentence])
 
   const handleToggleView = useCallback(() => {
     if (viewMode === 'scroll' && visibleNcxId) {
@@ -48,6 +62,7 @@ function BookLayout() {
       })
     }
     setViewMode((prev) => prev === 'section' ? 'scroll' : 'section')
+    setSelectedSentence(null)
   }, [navigate, slug, viewMode, visibleNcxId])
 
   const handleScrollToNode = useCallback((ncxId: string, playOrder: number) => {
@@ -55,28 +70,36 @@ function BookLayout() {
   }, [])
 
   return (
-    <div className="flex h-screen">
-      <TocSidebar
-        slug={slug}
-        viewMode={viewMode}
-        onToggleView={handleToggleView}
-        activeNcxIdOverride={visibleNcxId}
-        onScrollToNode={handleScrollToNode}
-      />
-      <main className="flex-1 overflow-hidden">
-        {viewMode === 'scroll' ? (
-          <ScrollViewContainer
-            ref={scrollViewRef}
-            slug={slug}
-            onVisibleNodeChange={setVisibleNcxId}
+    <SentenceSelectionContext.Provider value={sentenceCtx}>
+      <div className="flex h-screen">
+        <TocSidebar
+          slug={slug}
+          viewMode={viewMode}
+          onToggleView={handleToggleView}
+          activeNcxIdOverride={visibleNcxId}
+          onScrollToNode={handleScrollToNode}
+        />
+        <main className="flex-1 overflow-hidden">
+          {viewMode === 'scroll' ? (
+            <ScrollViewContainer
+              ref={scrollViewRef}
+              slug={slug}
+              onVisibleNodeChange={setVisibleNcxId}
+            />
+          ) : (
+            <div className="h-full overflow-y-auto">
+              <Outlet />
+            </div>
+          )}
+        </main>
+        {selectedSentence && (
+          <SentencePanel
+            sentence={selectedSentence}
+            onClose={() => setSelectedSentence(null)}
           />
-        ) : (
-          <div className="h-full overflow-y-auto">
-            <Outlet />
-          </div>
         )}
-      </main>
-    </div>
+      </div>
+    </SentenceSelectionContext.Provider>
   )
 }
 
