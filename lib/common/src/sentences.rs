@@ -43,6 +43,11 @@ static MULTI_ABBREV_RE: LazyLock<Vec<Regex>> = LazyLock::new(|| {
 /// This handles initials like "G. W. F. Hegel".
 static INITIAL_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b[A-ZÄÖÜ]\.\s*$").unwrap());
 
+/// Numbered label pattern: detects "1." "2." "12." at the start of text or after whitespace.
+/// These are paragraph numbering markers, not sentence endings.
+static NUMBERED_LABEL_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?:^|\s)\d+\.\s*$").unwrap());
+
 /// Split a paragraph into sentences, returning (text, html) pairs.
 ///
 /// The algorithm:
@@ -112,6 +117,11 @@ fn find_text_split_positions(text: &str) -> Vec<usize> {
 
         // Check for single-letter initials
         if INITIAL_RE.is_match(preceding) {
+            continue;
+        }
+
+        // Check for numbered paragraph labels (e.g. "1." "2." "12.")
+        if NUMBERED_LABEL_RE.is_match(preceding) {
             continue;
         }
 
@@ -432,6 +442,33 @@ mod tests {
         let html = "Nein! Das ist falsch.";
         let result = split_sentences(text, html);
         assert_eq!(result.len(), 2);
+    }
+
+    #[test]
+    fn test_numbered_label_not_split() {
+        let text = "1. Der mathematische Schluß heißt etwas.";
+        let html = "1. Der mathematische Schluß heißt etwas.";
+        let result = split_sentences(text, html);
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0].0, text);
+    }
+
+    #[test]
+    fn test_numbered_label_multidigit() {
+        let text = "12. Nächster Abschnitt hier.";
+        let html = "12. Nächster Abschnitt hier.";
+        let result = split_sentences(text, html);
+        assert_eq!(result.len(), 1);
+    }
+
+    #[test]
+    fn test_numbered_label_with_later_split() {
+        let text = "1. Erster Satz hier. Zweiter Satz dort.";
+        let html = "1. Erster Satz hier. Zweiter Satz dort.";
+        let result = split_sentences(text, html);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].0, "1. Erster Satz hier.");
+        assert_eq!(result[1].0, "Zweiter Satz dort.");
     }
 
     #[test]
