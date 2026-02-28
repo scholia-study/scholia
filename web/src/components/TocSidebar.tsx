@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Link, useParams } from '@tanstack/react-router'
 import { useGetToc } from '../api/toc/toc'
 import type { TocNodeResponse } from '../api/model'
@@ -139,10 +139,20 @@ export function TocSidebar({ slug, viewMode, onToggleView, activeNcxIdOverride, 
 
   const activeNcxId = viewMode === 'scroll' ? activeNcxIdOverride : params.ncxId
 
-  const expandedAncestors = useMemo(
-    () => (toc && activeNcxId ? findAncestorPath(toc, activeNcxId) : new Set<string>()),
-    [toc, activeNcxId],
-  )
+  const prevAncestorsRef = useRef(new Set<string>())
+  const expandedAncestors = useMemo(() => {
+    const next = toc && activeNcxId ? findAncestorPath(toc, activeNcxId) : new Set<string>()
+    const prev = prevAncestorsRef.current
+    if (next.size === prev.size) {
+      let same = true
+      for (const id of next) {
+        if (!prev.has(id)) { same = false; break }
+      }
+      if (same) return prev
+    }
+    prevAncestorsRef.current = next
+    return next
+  }, [toc, activeNcxId])
 
   return (
     <aside className="w-80 border-r border-stone-200 overflow-y-auto bg-white shrink-0">

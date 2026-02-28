@@ -41,17 +41,14 @@ function BookLayout() {
   const scrollViewRef = useRef<ScrollViewHandle>(null)
 
   const handleToggleView = useCallback(() => {
-    setViewMode((prev) => {
-      const next = prev === 'section' ? 'scroll' : 'section'
-      if (next === 'section' && visibleNcxId) {
-        navigate({
-          to: '/books/$slug/nodes/$ncxId',
-          params: { slug, ncxId: visibleNcxId },
-        })
-      }
-      return next
-    })
-  }, [navigate, slug, visibleNcxId])
+    if (viewMode === 'scroll' && visibleNcxId) {
+      navigate({
+        to: '/books/$slug/nodes/$ncxId',
+        params: { slug, ncxId: visibleNcxId },
+      })
+    }
+    setViewMode((prev) => prev === 'section' ? 'scroll' : 'section')
+  }, [navigate, slug, viewMode, visibleNcxId])
 
   const handleScrollToNode = useCallback((ncxId: string, playOrder: number) => {
     scrollViewRef.current?.scrollToNode(ncxId, playOrder)
