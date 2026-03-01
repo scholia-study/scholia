@@ -3,7 +3,7 @@ import { defineConfig } from 'orval'
 export default defineConfig({
   prospero: {
     input: {
-      target: 'http://localhost:4000/api/openapi.json',
+      target: '../openapi.json',
     },
     output: {
       mode: 'tags-split',

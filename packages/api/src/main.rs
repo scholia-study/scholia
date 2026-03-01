@@ -1,30 +1,11 @@
 use std::env;
 
+use api::ApiDoc;
 use sqlx::PgPool;
 use tower_http::cors::{Any, CorsLayer};
 use utoipa::OpenApi;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_swagger_ui::SwaggerUi;
-
-mod db;
-mod error;
-mod handlers;
-mod models;
-
-#[derive(OpenApi)]
-#[openapi(
-    info(title = "Prospero API", version = "0.1.0"),
-    components(schemas(
-        models::book::BookSummary,
-        models::book::BookDetail,
-        models::toc::TocNodeResponse,
-        models::node::NodeDetail,
-        models::node::ContentBlockResponse,
-        models::node::SentenceResponse,
-        models::page::NodePage,
-    ))
-)]
-struct ApiDoc;
 
 #[tokio::main]
 async fn main() {
@@ -42,11 +23,11 @@ async fn main() {
         .allow_headers(Any);
 
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .routes(utoipa_axum::routes!(handlers::books::list_books))
-        .routes(utoipa_axum::routes!(handlers::books::get_book))
-        .routes(utoipa_axum::routes!(handlers::toc::get_toc))
-        .routes(utoipa_axum::routes!(handlers::nodes::get_node))
-        .routes(utoipa_axum::routes!(handlers::page::get_node_page))
+        .routes(utoipa_axum::routes!(api::handlers::books::list_books))
+        .routes(utoipa_axum::routes!(api::handlers::books::get_book))
+        .routes(utoipa_axum::routes!(api::handlers::toc::get_toc))
+        .routes(utoipa_axum::routes!(api::handlers::nodes::get_node))
+        .routes(utoipa_axum::routes!(api::handlers::page::get_node_page))
         .split_for_parts();
 
     let app = router
