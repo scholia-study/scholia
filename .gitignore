@@ -3,3 +3,5 @@ assets/wdl.json
 .env
 web/node_modules/
 web/dist/
+.turbo
+node_modules
