@@ -1,23 +1,42 @@
-im using utoipa - Auto-generated OpenAPI documentation for my rust axum server. is there a way to generate the open api spec at compile time or must i run the server and visit the api to get the spec?
+from google.cloud import documentai_v1 as documentai
 
-Gemini said
-You're in luck. While utoipa generates the internal structure at compile time using macros, the actual JSON/YAML file isn't automatically written to your disk just by building. However, you definitely don't need to run the full server and "scrape" the endpoint to get it.
+def get_structured_reader_data(project_id, location, processor_id, file_path):
+client = documentai.DocumentProcessorServiceClient()
+name = client.processor_path(project_id, location, processor_id)
 
-Here are the two best ways to handle this:
+    # Read the file into memory
+    with open(file_path, "rb") as image:
+        image_content = image.read()
 
-1. The "Helper Binary" approach (Recommended)
-   This is the most common pattern in the Rust ecosystem. You create a tiny secondary entry point in your project that simply prints the spec to the console or a file.
+    raw_document = documentai.RawDocument(content=image_content, mime_type="image/jpeg")
+    request = documentai.ProcessRequest(name=name, raw_document=raw_document)
 
-```rs
-use utoipa::OpenApi;
-use your_crate::ApiDoc; // Import your actual ApiDoc struct
+    result = client.process_document(request=request)
+    document = result.document
 
-fn main() {
-    let doc = ApiDoc::openapi();
-    println!("{}", doc.to_pretty_json().unwrap());
-}
-```
+    # Helper to grab text via offsets
+    def get_text(el):
+        return "".join([document.text[int(segment.start_index):int(segment.end_index)]
+                        for segment in el.layout.text_anchor.text_segments])
 
-```sh
-cargo run --bin gen_openapi > openapi.json
-```
+    hierarchy = []
+    current_section = {"heading": "Front Matter", "content": []}
+
+    # Document AI Layout Parser identifies 'entities' as structural blocks
+    for entity in document.entities:
+        type_ = entity.type_
+        text_content = get_text(entity)
+
+        if "heading" in type_.lower():
+            # If we hit a new heading, save the old section and start a new one
+            hierarchy.append(current_section)
+            current_section = {"heading": text_content.strip(), "content": []}
+        else:
+            current_section["content"].append(text_content.strip())
+
+    hierarchy.append(current_section) # Add the last section
+    return hierarchy
+
+# Example usage:
+
+# data = get_structured_reader_data("my-project", "us", "my-processor-id", "kant_page_1.jpg")

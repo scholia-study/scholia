@@ -1,5 +1,12 @@
 /target
-assets/wdl.json
+assets/*.epub
+assets/*.json
+assets/*.pdf
+assets/kant_pages/
+assets/kant_output/
+assets/kant_output_tesseract/
+assets/kant_output_docai/
+assets/kant_ocr_cache/
 .env
 web/node_modules/
 web/dist/
