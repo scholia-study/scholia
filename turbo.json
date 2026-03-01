@@ -1,19 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
-    "//#openapi": {
-      "outputs": ["openapi.json"]
+    "openapi": {
+      "outputs": ["../../openapi.json"]
     },
     "codegen": {
-      "dependsOn": ["//#openapi"],
+      "dependsOn": ["api#openapi"],
       "outputs": ["src/api/**"]
     },
-    "//#dev:api": {
-      "persistent": true,
-      "cache": false
-    },
     "dev": {
-      "dependsOn": ["//#dev:api"],
       "persistent": true,
       "cache": false
     }
