@@ -5,7 +5,7 @@ import { Block } from './BlockRenderer'
 import { useSentenceSelection } from './SentenceSelectionContext'
 
 export interface ScrollViewHandle {
-  scrollToNode: (ncxId: string, playOrder?: number) => void
+  scrollToNode: (nodeSlug: string, playOrder?: number) => void
 }
 
 interface ScrollViewProps {
@@ -13,7 +13,7 @@ interface ScrollViewProps {
   hasNextPage: boolean
   isFetchingNextPage: boolean
   fetchNextPage: () => void
-  onVisibleNodeChange?: (ncxId: string) => void
+  onVisibleNodeChange?: (nodeSlug: string) => void
 }
 
 export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
@@ -21,7 +21,7 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
     const parentRef = useRef<HTMLDivElement>(null)
     const { selectedSentenceId, onSelectSentence } = useSentenceSelection()
     const [pendingScrollTarget, setPendingScrollTarget] = useState<{
-      ncxId: string
+      nodeSlug: string
       playOrder: number
     } | null>(null)
 
@@ -51,8 +51,8 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
         (entries) => {
           for (const entry of entries) {
             if (entry.isIntersecting) {
-              const ncxId = (entry.target as HTMLElement).dataset.ncxId
-              if (ncxId) onVisibleNodeChange(ncxId)
+              const nodeSlug = (entry.target as HTMLElement).dataset.nodeSlug
+              if (nodeSlug) onVisibleNodeChange(nodeSlug)
             }
           }
         },
@@ -63,7 +63,7 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
       )
 
       const container = parentRef.current
-      const nodeElements = container.querySelectorAll('[data-ncx-id]')
+      const nodeElements = container.querySelectorAll('[data-node-slug]')
       nodeElements.forEach((el) => observer.observe(el))
 
       return () => observer.disconnect()
@@ -71,12 +71,12 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
 
     // Scroll-to-node via imperative handle
     useImperativeHandle(ref, () => ({
-      scrollToNode(ncxId: string, playOrder?: number) {
-        const index = nodes.findIndex((n) => n.ncx_id === ncxId)
+      scrollToNode(nodeSlug: string, playOrder?: number) {
+        const index = nodes.findIndex((n) => n.slug === nodeSlug)
         if (index >= 0) {
           virtualizer.scrollToIndex(index, { align: 'start' })
         } else if (playOrder != null) {
-          setPendingScrollTarget({ ncxId, playOrder })
+          setPendingScrollTarget({ nodeSlug, playOrder })
         }
       },
     }), [nodes, virtualizer])
@@ -84,7 +84,7 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
     // When nodes update, check if pending target is now loaded
     useEffect(() => {
       if (!pendingScrollTarget) return
-      const index = nodes.findIndex((n) => n.ncx_id === pendingScrollTarget.ncxId)
+      const index = nodes.findIndex((n) => n.slug === pendingScrollTarget.nodeSlug)
       if (index >= 0) {
         setPendingScrollTarget(null)
         virtualizer.scrollToIndex(index, { align: 'start' })
@@ -115,12 +115,11 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
                 <div
                   key={node.id}
                   data-index={virtualRow.index}
-                  data-ncx-id={node.ncx_id}
+                  data-node-slug={node.slug}
                   ref={virtualizer.measureElement}
                   className="max-w-2xl mx-auto px-8"
                 >
                   <div className="py-8 border-b border-stone-100">
-                    <h1 className="text-2xl font-bold mb-8 text-stone-900">{node.label}</h1>
                     {node.blocks.map((block) => (
                       <Block
                         key={block.id}

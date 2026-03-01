@@ -5,6 +5,7 @@ use utoipa::ToSchema;
 pub struct NodeDetail {
     pub id: String,
     pub ncx_id: String,
+    pub slug: String,
     pub label: String,
     pub depth: i16,
     pub play_order: i32,

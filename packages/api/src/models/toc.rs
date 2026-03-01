@@ -6,6 +6,7 @@ use utoipa::openapi::{RefOr, Schema};
 pub struct TocNodeResponse {
     pub id: String,
     pub ncx_id: String,
+    pub slug: String,
     pub label: String,
     pub depth: i16,
     pub play_order: i32,
@@ -38,6 +39,11 @@ impl utoipa::ToSchema for TocNodeResponse {
                 ObjectBuilder::new().schema_type(SchemaType::new(Type::String)),
             )
             .required("ncx_id")
+            .property(
+                "slug",
+                ObjectBuilder::new().schema_type(SchemaType::new(Type::String)),
+            )
+            .required("slug")
             .property(
                 "label",
                 ObjectBuilder::new().schema_type(SchemaType::new(Type::String)),

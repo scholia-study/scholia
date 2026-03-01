@@ -7,6 +7,7 @@ use crate::models::node::{ContentBlockResponse, NodeDetail, SentenceResponse};
 struct NodeRow {
     id: Uuid,
     ncx_id: String,
+    slug: String,
     label: String,
     depth: i16,
     play_order: i32,
@@ -31,21 +32,21 @@ struct SentenceRow {
 
 pub async fn get_node_content(
     pool: &PgPool,
-    slug: &str,
-    ncx_id: &str,
+    book_slug: &str,
+    node_slug: &str,
 ) -> Result<NodeDetail, AppError> {
     let node = sqlx::query_as!(
         NodeRow,
-        r#"SELECT tn.id, tn.ncx_id, tn.label, tn.depth, tn.play_order
+        r#"SELECT tn.id, tn.ncx_id, tn.slug, tn.label, tn.depth, tn.play_order
            FROM toc_nodes tn
            JOIN books b ON b.id = tn.book_id
-           WHERE b.slug = $1 AND tn.ncx_id = $2"#,
-        slug,
-        ncx_id,
+           WHERE b.slug = $1 AND tn.slug = $2"#,
+        book_slug,
+        node_slug,
     )
     .fetch_optional(pool)
     .await?
-    .ok_or_else(|| AppError::NotFound(format!("Node not found: {ncx_id}")))?;
+    .ok_or_else(|| AppError::NotFound(format!("Node not found: {node_slug}")))?;
 
     let blocks = sqlx::query_as!(
         BlockRow,
@@ -103,6 +104,7 @@ pub async fn get_node_content(
     Ok(NodeDetail {
         id: node.id.to_string(),
         ncx_id: node.ncx_id,
+        slug: node.slug,
         label: node.label,
         depth: node.depth,
         play_order: node.play_order,

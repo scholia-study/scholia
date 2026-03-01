@@ -2,8 +2,8 @@ import { useGetNode } from "../api/nodes/nodes";
 import { Block } from "./BlockRenderer";
 import { useSentenceSelection } from "./SentenceSelectionContext";
 
-export function NodeContent({ slug, ncxId }: { slug: string; ncxId: string }) {
-  const { data, isLoading, error } = useGetNode(slug, ncxId);
+export function NodeContent({ slug, nodeSlug }: { slug: string; nodeSlug: string }) {
+  const { data, isLoading, error } = useGetNode(slug, nodeSlug);
   const node = data?.data;
   const { selectedSentenceId, onSelectSentence } = useSentenceSelection();
 
@@ -27,7 +27,6 @@ export function NodeContent({ slug, ncxId }: { slug: string; ncxId: string }) {
 
   return (
     <article className="max-w-2xl mx-auto px-8 py-12">
-      <h1 className="text-2xl font-bold mb-8 text-stone-900">{node.label}</h1>
       {node.blocks.map((block) => (
         <Block
           key={block.id}

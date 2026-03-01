@@ -5,7 +5,7 @@ import type { ScrollViewHandle } from './ScrollView'
 
 interface ScrollViewContainerProps {
   slug: string
-  onVisibleNodeChange?: (ncxId: string) => void
+  onVisibleNodeChange?: (nodeSlug: string) => void
 }
 
 export const ScrollViewContainer = forwardRef<ScrollViewHandle, ScrollViewContainerProps>(

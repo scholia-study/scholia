@@ -9,10 +9,10 @@ use crate::models::node::NodeDetail;
 /// Get node content (blocks + sentences)
 #[utoipa::path(
     get,
-    path = "/api/books/{slug}/nodes/{ncx_id}",
+    path = "/api/books/{slug}/nodes/{node_slug}",
     params(
         ("slug" = String, Path, description = "Book slug"),
-        ("ncx_id" = String, Path, description = "NCX node ID"),
+        ("node_slug" = String, Path, description = "Node slug"),
     ),
     responses(
         (status = 200, description = "Node with content blocks and sentences", body = NodeDetail),
@@ -22,8 +22,8 @@ use crate::models::node::NodeDetail;
 )]
 pub async fn get_node(
     State(pool): State<PgPool>,
-    Path((slug, ncx_id)): Path<(String, String)>,
+    Path((slug, node_slug)): Path<(String, String)>,
 ) -> Result<Json<NodeDetail>, AppError> {
-    let node = db::nodes::get_node_content(&pool, &slug, &ncx_id).await?;
+    let node = db::nodes::get_node_content(&pool, &slug, &node_slug).await?;
     Ok(Json(node))
 }

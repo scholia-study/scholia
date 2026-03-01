@@ -34,7 +34,7 @@ export function Block({
   switch (block.block_type) {
     case "heading":
       return (
-        <h2 className="text-xl font-semibold mt-8 mb-4 text-stone-800">
+        <h2 className="text-2xl font-bold mt-8 mb-6 text-stone-900">
           {parse(block.html)}
         </h2>
       );

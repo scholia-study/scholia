@@ -269,18 +269,18 @@ export type getNodeResponseError = (getNodeResponse404) & {
 export type getNodeResponse = (getNodeResponseSuccess | getNodeResponseError)
 
 export const getGetNodeUrl = (slug: string,
-    ncxId: string,) => {
+    nodeSlug: string,) => {
 
 
   
 
-  return `/api/books/${slug}/nodes/${ncxId}`
+  return `/api/books/${slug}/nodes/${nodeSlug}`
 }
 
 export const getNode = async (slug: string,
-    ncxId: string, options?: RequestInit): Promise<getNodeResponse> => {
+    nodeSlug: string, options?: RequestInit): Promise<getNodeResponse> => {
   
-  return customFetch<getNodeResponse>(getGetNodeUrl(slug,ncxId),
+  return customFetch<getNodeResponse>(getGetNodeUrl(slug,nodeSlug),
   {      
     ...options,
     method: 'GET'
@@ -294,30 +294,30 @@ export const getNode = async (slug: string,
 
 
 export const getGetNodeQueryKey = (slug: string,
-    ncxId: string,) => {
+    nodeSlug: string,) => {
     return [
-    `/api/books/${slug}/nodes/${ncxId}`
+    `/api/books/${slug}/nodes/${nodeSlug}`
     ] as const;
     }
 
     
 export const getGetNodeQueryOptions = <TData = Awaited<ReturnType<typeof getNode>>, TError = void>(slug: string,
-    ncxId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+    nodeSlug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetNodeQueryKey(slug,ncxId);
+  const queryKey =  queryOptions?.queryKey ?? getGetNodeQueryKey(slug,nodeSlug);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNode>>> = ({ signal }) => getNode(slug,ncxId, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNode>>> = ({ signal }) => getNode(slug,nodeSlug, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(slug && ncxId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(slug && nodeSlug), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type GetNodeQueryResult = NonNullable<Awaited<ReturnType<typeof getNode>>>
@@ -326,7 +326,7 @@ export type GetNodeQueryError = void
 
 export function useGetNode<TData = Awaited<ReturnType<typeof getNode>>, TError = void>(
  slug: string,
-    ncxId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>> & Pick<
+    nodeSlug: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getNode>>,
           TError,
@@ -337,7 +337,7 @@ export function useGetNode<TData = Awaited<ReturnType<typeof getNode>>, TError =
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetNode<TData = Awaited<ReturnType<typeof getNode>>, TError = void>(
  slug: string,
-    ncxId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>> & Pick<
+    nodeSlug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getNode>>,
           TError,
@@ -348,7 +348,7 @@ export function useGetNode<TData = Awaited<ReturnType<typeof getNode>>, TError =
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetNode<TData = Awaited<ReturnType<typeof getNode>>, TError = void>(
  slug: string,
-    ncxId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+    nodeSlug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -357,11 +357,11 @@ export function useGetNode<TData = Awaited<ReturnType<typeof getNode>>, TError =
 
 export function useGetNode<TData = Awaited<ReturnType<typeof getNode>>, TError = void>(
  slug: string,
-    ncxId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+    nodeSlug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetNodeQueryOptions(slug,ncxId,options)
+  const queryOptions = getGetNodeQueryOptions(slug,nodeSlug,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

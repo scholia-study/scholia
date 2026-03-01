@@ -10,6 +10,7 @@ struct TocRow {
     id: Uuid,
     parent_id: Option<Uuid>,
     ncx_id: String,
+    slug: String,
     label: String,
     depth: i16,
     play_order: i32,
@@ -23,6 +24,7 @@ pub async fn get_toc_tree(pool: &PgPool, slug: &str) -> Result<Vec<TocNodeRespon
                tn.id,
                tn.parent_id,
                tn.ncx_id,
+               tn.slug,
                tn.label,
                tn.depth,
                tn.play_order,
@@ -55,6 +57,7 @@ fn build_tree(rows: Vec<TocRow>) -> Vec<TocNodeResponse> {
             TocNodeResponse {
                 id: row.id.to_string(),
                 ncx_id: row.ncx_id,
+                slug: row.slug,
                 label: row.label,
                 depth: row.depth,
                 play_order: row.play_order,

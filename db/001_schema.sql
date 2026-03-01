@@ -39,6 +39,7 @@ CREATE TABLE toc_nodes (
     parent_id       UUID REFERENCES toc_nodes(id) ON DELETE CASCADE,
     source_node_id  UUID REFERENCES toc_nodes(id) ON DELETE SET NULL,
     ncx_id          TEXT NOT NULL,
+    slug            TEXT NOT NULL,
     path            LTREE NOT NULL,
     play_order      INT NOT NULL,
     depth           SMALLINT NOT NULL,
@@ -48,6 +49,7 @@ CREATE TABLE toc_nodes (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
 
     UNIQUE (book_id, ncx_id),
+    UNIQUE (book_id, slug),
     UNIQUE (book_id, play_order)
 );
 

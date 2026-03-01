@@ -13,4 +13,5 @@ export interface NodeDetail {
   label: string;
   ncx_id: string;
   play_order: number;
+  slug: string;
 }

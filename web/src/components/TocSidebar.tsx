@@ -7,17 +7,17 @@ export type ViewMode = 'section' | 'scroll'
 
 function findAncestorPath(
   nodes: TocNodeResponse[],
-  targetNcxId: string,
+  targetSlug: string,
 ): Set<string> {
   const result = new Set<string>()
 
   function walk(node: TocNodeResponse, path: string[]): boolean {
-    if (node.ncx_id === targetNcxId) {
+    if (node.slug === targetSlug) {
       for (const id of path) result.add(id)
       return true
     }
     for (const child of node.children) {
-      if (walk(child, [...path, node.ncx_id])) return true
+      if (walk(child, [...path, node.slug])) return true
     }
     return false
   }
@@ -31,31 +31,31 @@ function findAncestorPath(
 function TocItem({
   node,
   slug,
-  activeNcxId,
+  activeSlug,
   viewMode,
   onScrollToNode,
   expandedAncestors,
 }: {
   node: TocNodeResponse
   slug: string
-  activeNcxId?: string
+  activeSlug?: string
   viewMode: ViewMode
-  onScrollToNode?: (ncxId: string, playOrder: number) => void
+  onScrollToNode?: (nodeSlug: string, playOrder: number) => void
   expandedAncestors: Set<string>
 }) {
   const [expanded, setExpanded] = useState(node.depth < 2)
   const hasChildren = node.children.length > 0
-  const isActive = node.ncx_id === activeNcxId
+  const isActive = node.slug === activeSlug
 
   useEffect(() => {
-    if (expandedAncestors.has(node.ncx_id)) {
+    if (expandedAncestors.has(node.slug)) {
       setExpanded(true)
     }
-  }, [expandedAncestors, node.ncx_id])
+  }, [expandedAncestors, node.slug])
 
   const handleClick = () => {
     if (viewMode === 'scroll' && onScrollToNode) {
-      onScrollToNode(node.ncx_id, node.play_order)
+      onScrollToNode(node.slug, node.play_order)
     }
   }
 
@@ -89,8 +89,8 @@ function TocItem({
             </button>
           ) : (
             <Link
-              to="/books/$slug/nodes/$ncxId"
-              params={{ slug, ncxId: node.ncx_id }}
+              to="/books/$slug/$nodeSlug"
+              params={{ slug, nodeSlug: node.slug }}
               className="flex-1 truncate"
             >
               {node.label}
@@ -112,7 +112,7 @@ function TocItem({
               key={child.id}
               node={child}
               slug={slug}
-              activeNcxId={activeNcxId}
+              activeSlug={activeSlug}
               viewMode={viewMode}
               onScrollToNode={onScrollToNode}
               expandedAncestors={expandedAncestors}
@@ -128,20 +128,20 @@ interface TocSidebarProps {
   slug: string
   viewMode: ViewMode
   onToggleView: () => void
-  activeNcxIdOverride?: string
-  onScrollToNode?: (ncxId: string, playOrder: number) => void
+  activeSlugOverride?: string
+  onScrollToNode?: (nodeSlug: string, playOrder: number) => void
 }
 
-export function TocSidebar({ slug, viewMode, onToggleView, activeNcxIdOverride, onScrollToNode }: TocSidebarProps) {
-  const params = useParams({ strict: false }) as { ncxId?: string }
+export function TocSidebar({ slug, viewMode, onToggleView, activeSlugOverride, onScrollToNode }: TocSidebarProps) {
+  const params = useParams({ strict: false }) as { nodeSlug?: string }
   const { data, isLoading, error } = useGetToc(slug)
   const toc = data?.data
 
-  const activeNcxId = viewMode === 'scroll' ? activeNcxIdOverride : params.ncxId
+  const activeSlug = viewMode === 'scroll' ? activeSlugOverride : params.nodeSlug
 
   const prevAncestorsRef = useRef(new Set<string>())
   const expandedAncestors = useMemo(() => {
-    const next = toc && activeNcxId ? findAncestorPath(toc, activeNcxId) : new Set<string>()
+    const next = toc && activeSlug ? findAncestorPath(toc, activeSlug) : new Set<string>()
     const prev = prevAncestorsRef.current
     if (next.size === prev.size) {
       let same = true
@@ -152,7 +152,7 @@ export function TocSidebar({ slug, viewMode, onToggleView, activeNcxIdOverride, 
     }
     prevAncestorsRef.current = next
     return next
-  }, [toc, activeNcxId])
+  }, [toc, activeSlug])
 
   return (
     <aside className="w-80 border-r border-stone-200 overflow-y-auto bg-white shrink-0">
@@ -175,7 +175,7 @@ export function TocSidebar({ slug, viewMode, onToggleView, activeNcxIdOverride, 
                 key={node.id}
                 node={node}
                 slug={slug}
-                activeNcxId={activeNcxId}
+                activeSlug={activeSlug}
                 viewMode={viewMode}
                 onScrollToNode={onScrollToNode}
                 expandedAncestors={expandedAncestors}

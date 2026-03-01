@@ -40,7 +40,7 @@ function BookLayout() {
   const { slug } = bookRoute.useParams()
   const navigate = useNavigate()
   const [viewMode, setViewMode] = useState<ViewMode>('section')
-  const [visibleNcxId, setVisibleNcxId] = useState<string | undefined>()
+  const [visibleSlug, setVisibleSlug] = useState<string | undefined>()
   const scrollViewRef = useRef<ScrollViewHandle>(null)
   const [selectedSentence, setSelectedSentence] = useState<SentenceResponse | null>(null)
 
@@ -55,18 +55,20 @@ function BookLayout() {
   }), [selectedSentence, handleSelectSentence])
 
   const handleToggleView = useCallback(() => {
-    if (viewMode === 'scroll' && visibleNcxId) {
+    if (viewMode === 'scroll' && visibleSlug) {
       navigate({
-        to: '/books/$slug/nodes/$ncxId',
-        params: { slug, ncxId: visibleNcxId },
+        to: '/books/$slug/$nodeSlug',
+        params: { slug, nodeSlug: visibleSlug },
       })
+    } else {
+      navigate({ to: '/books/$slug', params: { slug } })
     }
     setViewMode((prev) => prev === 'section' ? 'scroll' : 'section')
     setSelectedSentence(null)
-  }, [navigate, slug, viewMode, visibleNcxId])
+  }, [navigate, slug, viewMode, visibleSlug])
 
-  const handleScrollToNode = useCallback((ncxId: string, playOrder: number) => {
-    scrollViewRef.current?.scrollToNode(ncxId, playOrder)
+  const handleScrollToNode = useCallback((nodeSlug: string, playOrder: number) => {
+    scrollViewRef.current?.scrollToNode(nodeSlug, playOrder)
   }, [])
 
   return (
@@ -76,7 +78,7 @@ function BookLayout() {
           slug={slug}
           viewMode={viewMode}
           onToggleView={handleToggleView}
-          activeNcxIdOverride={visibleNcxId}
+          activeSlugOverride={visibleSlug}
           onScrollToNode={handleScrollToNode}
         />
         <main className="flex-1 overflow-hidden">
@@ -84,7 +86,7 @@ function BookLayout() {
             <ScrollViewContainer
               ref={scrollViewRef}
               slug={slug}
-              onVisibleNodeChange={setVisibleNcxId}
+              onVisibleNodeChange={setVisibleSlug}
             />
           ) : (
             <div className="h-full overflow-y-auto">
@@ -121,10 +123,10 @@ const bookIndexRoute = createRoute({
 
 const nodeRoute = createRoute({
   getParentRoute: () => bookRoute,
-  path: '/nodes/$ncxId',
+  path: '/$nodeSlug',
   component: () => {
-    const { slug, ncxId } = nodeRoute.useParams()
-    return <NodeContent slug={slug} ncxId={ncxId} />
+    const { slug, nodeSlug } = nodeRoute.useParams()
+    return <NodeContent slug={slug} nodeSlug={nodeSlug} />
   },
 })
 

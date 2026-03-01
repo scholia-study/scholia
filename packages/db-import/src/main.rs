@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::env;
 use std::fs;
 
@@ -68,6 +69,7 @@ async fn import(pool: &PgPool, book: &Book) -> Result<Counts, Box<dyn std::error
 
     // Iterative DFS over the node tree
     let mut stack: Vec<NodeWork> = Vec::new();
+    let mut seen_slugs: HashSet<String> = HashSet::new();
     let mut counts = Counts {
         nodes: 0,
         blocks: 0,
@@ -93,14 +95,24 @@ async fn import(pool: &PgPool, book: &Book) -> Result<Counts, Box<dyn std::error
             format!("{}.{}", work.parent_path, ltree_label)
         };
 
+        let node_slug = slugify(&node.label);
+        if !seen_slugs.insert(node_slug.clone()) {
+            return Err(format!(
+                "Duplicate slug '{}' from label '{}' (ncx_id: {})",
+                node_slug, node.label, node.ncx_id
+            )
+            .into());
+        }
+
         sqlx::query(
-            "INSERT INTO toc_nodes (id, book_id, parent_id, ncx_id, path, play_order, depth, label)
-             VALUES ($1, $2, $3, $4, $5::ltree, $6, $7, $8)",
+            "INSERT INTO toc_nodes (id, book_id, parent_id, ncx_id, slug, path, play_order, depth, label)
+             VALUES ($1, $2, $3, $4, $5, $6::ltree, $7, $8, $9)",
         )
         .bind(node_id)
         .bind(book_id)
         .bind(work.parent_id)
         .bind(&node.ncx_id)
+        .bind(&node_slug)
         .bind(&path)
         .bind(node.play_order as i32)
         .bind(node.depth as i16)

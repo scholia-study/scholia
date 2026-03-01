@@ -8,6 +8,7 @@ use crate::models::page::NodePage;
 struct NodeRow {
     id: Uuid,
     ncx_id: String,
+    slug: String,
     label: String,
     depth: i16,
     play_order: i32,
@@ -43,7 +44,7 @@ pub async fn get_node_page(
     let fetch_limit = (limit + 1) as i64;
     let nodes = sqlx::query_as!(
         NodeRow,
-        r#"SELECT tn.id, tn.ncx_id, tn.label, tn.depth, tn.play_order
+        r#"SELECT tn.id, tn.ncx_id, tn.slug, tn.label, tn.depth, tn.play_order
            FROM toc_nodes tn
            JOIN books b ON b.id = tn.book_id
            WHERE b.slug = $1 AND tn.play_order > $2
@@ -134,6 +135,7 @@ pub async fn get_node_page(
         .map(|n| NodeDetail {
             id: n.id.to_string(),
             ncx_id: n.ncx_id,
+            slug: n.slug,
             label: n.label,
             depth: n.depth,
             play_order: n.play_order,
