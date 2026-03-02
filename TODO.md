@@ -1,3 +1,2 @@
-- split docapi export/import into its own program
-- refactor remaining script into rust
+- fix: left and right pages margin extraction (B ed on every other page, etc.)
 - manually make the toc as reference point

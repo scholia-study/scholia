@@ -44,14 +44,14 @@ static STANDALONE_B_REF_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d{
 // ---------------------------------------------------------------------------
 
 #[derive(Parser)]
-#[command(about = "Extract structured text from cached Document AI OCR data")]
+#[command(about = "Extract structured elements from OCR line data")]
 struct Args {
-    /// Directory containing cached OCR line JSON
-    #[arg(long, default_value = "assets/kant1_ocr_cache")]
-    ocr_cache_dir: String,
+    /// Directory containing per-page OCR line JSON
+    #[arg(long, default_value = "assets/kant1_ocr_to_lines")]
+    input_dir: String,
 
-    /// Directory for per-page JSON output
-    #[arg(long, default_value = "assets/kant1_ocr_to_elements")]
+    /// Directory for per-page element JSON output
+    #[arg(long, default_value = "assets/kant1_lines_to_elements")]
     output_dir: String,
 
     /// Final merged JSON output path
@@ -65,14 +65,10 @@ struct Args {
     /// End page index, 1-based inclusive
     #[arg(long)]
     end: Option<usize>,
-
-    /// Skip extraction, just merge existing page JSONs
-    #[arg(long)]
-    merge_only: bool,
 }
 
-fn find_ocr_cache_files(ocr_cache_dir: &str) -> Vec<String> {
-    let pattern = format!("{ocr_cache_dir}/*.json");
+fn find_input_files(input_dir: &str) -> Vec<String> {
+    let pattern = format!("{input_dir}/*.json");
     let mut files: Vec<String> = glob::glob(&pattern)
         .expect("Invalid glob pattern")
         .filter_map(|entry| entry.ok())
@@ -87,66 +83,64 @@ fn main() {
 
     fs::create_dir_all(&args.output_dir).expect("Failed to create output directory");
 
-    let cache_files = find_ocr_cache_files(&args.ocr_cache_dir);
-    if cache_files.is_empty() && !args.merge_only {
-        eprintln!("No OCR cache files found in {}/", args.ocr_cache_dir);
-        eprintln!("Run ocr_kant_docai.py first to populate the cache.");
+    let input_files = find_input_files(&args.input_dir);
+    if input_files.is_empty() {
+        eprintln!("No OCR line files found in {}/", args.input_dir);
+        eprintln!("Run kant1_ocr_to_lines first.");
         return;
     }
 
-    if !args.merge_only {
-        let total = cache_files.len();
-        let end_idx = args.end.unwrap_or(total);
+    let total = input_files.len();
+    let end_idx = args.end.unwrap_or(total);
 
-        eprintln!(
-            "Found {} cached OCR files. Processing pages {}–{}.",
-            total, args.start, end_idx
-        );
+    eprintln!(
+        "Found {} OCR line files. Processing pages {}–{}.",
+        total, args.start, end_idx
+    );
 
-        for i in (args.start - 1)..end_idx.min(total) {
-            let page_num = i + 1;
-            let out_path = format!("{}/page_{:04}.json", args.output_dir, page_num);
-            let filename = Path::new(&cache_files[i])
-                .file_name()
-                .unwrap()
-                .to_string_lossy();
+    for i in (args.start - 1)..end_idx.min(total) {
+        let page_num = i + 1;
+        let out_path = format!("{}/page_{:04}.json", args.output_dir, page_num);
+        let filename = Path::new(&input_files[i])
+            .file_name()
+            .unwrap()
+            .to_string_lossy();
 
-            eprint!("  [{page_num}/{end_idx}] {filename}... ");
+        eprint!("  [{page_num}/{end_idx}] {filename}... ");
 
-            let data = match fs::read_to_string(&cache_files[i]) {
-                Ok(d) => d,
-                Err(e) => {
-                    eprintln!("FAILED: {e}");
-                    continue;
-                }
-            };
-
-            let ocr_lines: Vec<OcrLine> = match serde_json::from_str(&data) {
-                Ok(l) => l,
-                Err(e) => {
-                    eprintln!("FAILED: {e}");
-                    continue;
-                }
-            };
-
-            let result = process_page(&ocr_lines, page_num);
-            let n_elem = result.elements.len();
-            let n_fn = result.footnotes.len();
-
-            let json = serde_json::to_string_pretty(&result).unwrap();
-            if let Err(e) = fs::write(&out_path, &json) {
+        let data = match fs::read_to_string(&input_files[i]) {
+            Ok(d) => d,
+            Err(e) => {
                 eprintln!("FAILED: {e}");
                 continue;
             }
+        };
 
-            eprintln!(
-                "done ({}, {} elements, {} footnotes)",
-                result.page_type, n_elem, n_fn
-            );
+        let ocr_lines: Vec<OcrLine> = match serde_json::from_str(&data) {
+            Ok(l) => l,
+            Err(e) => {
+                eprintln!("FAILED: {e}");
+                continue;
+            }
+        };
+
+        let result = process_page(&ocr_lines, page_num);
+        let n_elem = result.elements.len();
+        let n_fn = result.footnotes.len();
+
+        let json = serde_json::to_string_pretty(&result).unwrap();
+        if let Err(e) = fs::write(&out_path, &json) {
+            eprintln!("FAILED: {e}");
+            continue;
         }
+
+        eprintln!(
+            "done ({}, {} elements, {} footnotes)",
+            result.page_type, n_elem, n_fn
+        );
     }
 
-    // Merge step
+    // Merge step — combine all per-page JSONs into single output
     let merge_pattern = format!("{}/*.json", args.output_dir);
     let mut page_files: Vec<String> = glob::glob(&merge_pattern)
         .expect("Invalid glob pattern")

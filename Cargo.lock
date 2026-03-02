@@ -1127,12 +1127,22 @@ dependencies = [
 ]
 
 [[package]]
-name = "kant1_ocr_to_elements"
+name = "kant1_lines_to_elements"
 version = "0.1.0"
 dependencies = [
  "clap",
  "glob",
  "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "kant1_ocr_to_lines"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "glob",
  "serde",
  "serde_json",
 ]
