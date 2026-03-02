@@ -1,13 +1,5 @@
 /target
-assets/*.epub
-assets/*.json
-assets/*.pdf
-assets/kant1_pages/
-assets/kant1_output/
-assets/kant1_output_tesseract/
-assets/kant1_output_docai/
-assets/kant1_ocr_cache/
-assets/kant1_ocr_raw/
+assets/
 .env
 web/node_modules/
 web/dist/
