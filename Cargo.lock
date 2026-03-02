@@ -1127,6 +1127,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "kant1_elements_to_struct"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "glob",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "kant1_lines_to_elements"
 version = "0.1.0"
 dependencies = [
