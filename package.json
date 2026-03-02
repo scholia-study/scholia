@@ -7,6 +7,7 @@
     "db:reset": "./db_reset.sh",
     "extract": "cargo run -p hegel-wdl",
     "db:import": "cargo run -p db-import -- assets/wdl.json",
+    "dp:kant1": "cargo run -p kant1_ocr_to_lines && cargo run -p kant1_lines_to_elements",
     "dev": "turbo run dev",
     "codegen": "turbo run codegen"
   },

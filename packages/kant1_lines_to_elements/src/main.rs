@@ -31,6 +31,12 @@ static B_REF_ROMAN_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\s+([IVXLCDM]{2,})\s*$").unwrap());
 static B_REF_ARABIC_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\s+(\d{1,4})\s*$").unwrap());
+static LINE_NUM_END_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\s+(\d{1,2})\s*$").unwrap());
+static B_REF_ROMAN_START_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^([IVXLCDM]{2,})\s+").unwrap());
+static B_REF_ARABIC_START_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^(\d{1,4})\s+").unwrap());
 static BULLET_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[•]\s*").unwrap());
 static FN_DIGIT_MARKER_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"([¹²³⁴⁵⁶⁷⁸⁹⁰\d]+)\)").unwrap());
@@ -214,7 +220,7 @@ struct Element {
     typeface: String,
     line_numbers: Vec<i64>,
     footnote_markers: Vec<String>,
-    b_page_ref: Option<String>,
+    b_page_refs: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -386,7 +392,52 @@ fn parse_header(header_lines: &[OcrLine]) -> Option<String> {
 // Per-line annotation (line numbers + B-refs)
 // ---------------------------------------------------------------------------
 
-fn annotate_lines(body_lines: &[OcrLine]) -> Vec<AnnotatedLine> {
+fn is_valid_line_number(val: i64) -> bool {
+    val % 5 == 0 && (5..=40).contains(&val)
+}
+
+/// Try to interpret a token as an OCR-garbled Roman numeral.
+/// Common OCR misreadings: '1'→'I', lowercase 'x'→'X', etc.
+fn try_ocr_correct_roman(token: &str) -> Option<String> {
+    if token.is_empty() {
+        return None;
+    }
+    let normalized: String = token
+        .chars()
+        .map(|c| match c {
+            '1' => 'I',
+            'i' | 'I' => 'I',
+            'v' | 'V' => 'V',
+            'x' | 'X' => 'X',
+            'l' | 'L' => 'L',
+            'c' | 'C' => 'C',
+            'd' | 'D' => 'D',
+            'm' | 'M' => 'M',
+            _ => c,
+        })
+        .collect();
+    if normalized.chars().all(|c| "IVXLCDM".contains(c)) {
+        Some(normalized)
+    } else {
+        None
+    }
+}
+
+fn annotate_lines(body_lines: &[OcrLine], page_index: usize) -> Vec<AnnotatedLine> {
+    // In a book scan, margins alternate sides on every other page:
+    //   Even scan index: line numbers at START (left), B-refs at END (right)
+    //   Odd scan index:  line numbers at END (right), B-refs at START (left)
+    let line_nums_at_end = page_index % 2 == 1;
+
+    // Compute median x for spatial detection of OCR-garbled margin annotations.
+    // On odd pages, B-refs at the left margin cause lines to have lower x values.
+    let median_x = if body_lines.len() >= 3 {
+        let mut xs: Vec<f64> = body_lines.iter().map(|l| l.x).collect();
+        median(&mut xs)
+    } else {
+        0.0
+    };
+
     let mut result = Vec::new();
 
     for line in body_lines {
@@ -394,38 +445,93 @@ fn annotate_lines(body_lines: &[OcrLine]) -> Vec<AnnotatedLine> {
         let mut line_number: Option<i64> = None;
         let mut b_page_ref: Option<String> = None;
 
-        // Standalone line number
+        // Standalone line number (works regardless of margin side)
         let stripped = text.trim();
         if DIGIT_1_2_RE.is_match(stripped) {
             if let Ok(val) = stripped.parse::<i64>() {
-                if val % 5 == 0 && (5..=40).contains(&val) {
+                if is_valid_line_number(val) {
                     continue; // drop margin annotation
                 }
             }
         }
 
-        // Line number at start
-        if let Some(m) = LINE_NUM_START_RE.find(&text) {
-            let cap = LINE_NUM_START_RE.captures(&text).unwrap();
-            if let Ok(val) = cap[1].parse::<i64>() {
-                if val % 5 == 0 && (5..=40).contains(&val) {
-                    line_number = Some(val);
-                    text = text[m.end()..].to_string();
+        if line_nums_at_end {
+            // Odd scan pages: line numbers at END, B-refs at START
+
+            // B-edition ref at start — clean Roman numerals
+            if let Some(cap) = B_REF_ROMAN_START_RE.captures(&text) {
+                b_page_ref = Some(cap[1].to_string());
+                let m = cap.get(0).unwrap();
+                text = text[m.end()..].to_string();
+            }
+            // B-edition ref at start — Arabic (only if NOT a valid line number)
+            else if let Some(cap) = B_REF_ARABIC_START_RE.captures(&text) {
+                if let Ok(val) = cap[1].parse::<i64>() {
+                    if !is_valid_line_number(val) {
+                        b_page_ref = Some(cap[1].to_string());
+                        let m = cap.get(0).unwrap();
+                        text = text[m.end()..].to_string();
+                    }
                 }
             }
-        }
 
-        // B-edition ref at end — Roman numerals
-        if let Some(cap) = B_REF_ROMAN_RE.captures(&text) {
-            let ref_text = cap[1].to_string();
-            let m = cap.get(0).unwrap();
-            b_page_ref = Some(ref_text);
-            text = text[..m.start()].to_string();
-        } else if let Some(cap) = B_REF_ARABIC_RE.captures(&text) {
-            let ref_text = cap[1].to_string();
-            let m = cap.get(0).unwrap();
-            b_page_ref = Some(ref_text);
-            text = text[..m.start()].to_string();
+            // Spatial detection: if x is well below median, the leading token
+            // may be an OCR-garbled Roman numeral B-ref (e.g. "1x" for "IX").
+            if b_page_ref.is_none() && median_x > 0.0 && line.x < median_x - 30.0 {
+                if let Some(space_pos) = text.find(char::is_whitespace) {
+                    let token = &text[..space_pos];
+                    if let Some(roman) = try_ocr_correct_roman(token) {
+                        b_page_ref = Some(roman);
+                        text = text[space_pos..].trim_start().to_string();
+                    }
+                }
+            }
+
+            // Line number at end
+            if let Some(cap) = LINE_NUM_END_RE.captures(&text) {
+                if let Ok(val) = cap[1].parse::<i64>() {
+                    if is_valid_line_number(val) {
+                        line_number = Some(val);
+                        let m = cap.get(0).unwrap();
+                        text = text[..m.start()].to_string();
+                    }
+                }
+            }
+
+            // Fallback: Roman B-ref at end (rare on these pages but possible)
+            if line_number.is_none() && b_page_ref.is_none() {
+                if let Some(cap) = B_REF_ROMAN_RE.captures(&text) {
+                    b_page_ref = Some(cap[1].to_string());
+                    let m = cap.get(0).unwrap();
+                    text = text[..m.start()].to_string();
+                }
+            }
+        } else {
+            // Even scan pages: line numbers at START, B-refs at END
+
+            // Line number at start
+            if let Some(m) = LINE_NUM_START_RE.find(&text) {
+                let cap = LINE_NUM_START_RE.captures(&text).unwrap();
+                if let Ok(val) = cap[1].parse::<i64>() {
+                    if is_valid_line_number(val) {
+                        line_number = Some(val);
+                        text = text[m.end()..].to_string();
+                    }
+                }
+            }
+
+            // B-edition ref at end — Roman numerals
+            if let Some(cap) = B_REF_ROMAN_RE.captures(&text) {
+                let ref_text = cap[1].to_string();
+                let m = cap.get(0).unwrap();
+                b_page_ref = Some(ref_text);
+                text = text[..m.start()].to_string();
+            } else if let Some(cap) = B_REF_ARABIC_RE.captures(&text) {
+                let ref_text = cap[1].to_string();
+                let m = cap.get(0).unwrap();
+                b_page_ref = Some(ref_text);
+                text = text[..m.start()].to_string();
+            }
         }
 
         // Bullet / artifact at line start
@@ -561,7 +667,10 @@ fn build_element(line_group: &[AnnotatedLine]) -> Element {
         set.into_iter().collect()
     };
 
-    let b_page_ref: Option<String> = lines_out.iter().find_map(|l| l.b_page_ref.clone());
+    let b_page_refs: Vec<String> = lines_out
+        .iter()
+        .filter_map(|l| l.b_page_ref.clone())
+        .collect();
 
     let elem_type = if is_heading(&text, lines_out.len()) {
         "heading"
@@ -579,7 +688,7 @@ fn build_element(line_group: &[AnnotatedLine]) -> Element {
         typeface: "fraktur".to_string(),
         line_numbers,
         footnote_markers: markers,
-        b_page_ref,
+        b_page_refs,
     }
 }
 
@@ -693,7 +802,7 @@ fn process_page(ocr_lines: &[OcrLine], page_index: usize) -> PageResult {
 
     // Annotate body lines
     let annotated: Vec<AnnotatedLine> = if !is_front {
-        annotate_lines(&body)
+        annotate_lines(&body, page_index)
     } else {
         body.iter()
             .map(|l| AnnotatedLine {
@@ -720,7 +829,7 @@ fn process_page(ocr_lines: &[OcrLine], page_index: usize) -> PageResult {
             let is_b_ref = ROMAN_RE.is_match(&text)
                 || (STANDALONE_B_REF_RE.is_match(&text) && text.len() < 10);
             if is_b_ref && !cleaned.is_empty() {
-                cleaned.last_mut().unwrap().b_page_ref = Some(text);
+                cleaned.last_mut().unwrap().b_page_refs.push(text);
                 continue;
             }
             cleaned.push(elem);
