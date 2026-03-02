@@ -1,7 +1,9 @@
 use std::fs;
 use std::path::Path;
+use std::sync::LazyLock;
 
 use clap::Parser;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 // ---------------------------------------------------------------------------
@@ -92,6 +94,7 @@ fn main() {
         };
 
         let lines = extract_lines(&doc);
+        let lines = strip_line_numbers(lines, page_num);
 
         let json = serde_json::to_string_pretty(&lines).unwrap();
         if let Err(e) = fs::write(&out_path, &json) {
@@ -180,12 +183,28 @@ struct NormalizedVertex {
 }
 
 // ---------------------------------------------------------------------------
+// Compiled regexes (line-number detection)
+// ---------------------------------------------------------------------------
+
+static DIGIT_1_2_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d{1,2}$").unwrap());
+static LINE_NUM_START_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^(\d{1,2})\s+").unwrap());
+static LINE_NUM_END_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\s+(\d{1,2})\s*$").unwrap());
+
+fn is_valid_line_number(val: i64) -> bool {
+    val % 5 == 0 && (5..=40).contains(&val)
+}
+
+// ---------------------------------------------------------------------------
 // Output type
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Serialize)]
 struct OcrLine {
     text: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    line_number: Option<i64>,
     x: f64,
     y: f64,
     width: f64,
@@ -272,6 +291,7 @@ fn extract_lines(doc: &DocAiResponse) -> Vec<OcrLine> {
 
         result.push(OcrLine {
             text,
+            line_number: None,
             x: x_min,
             y: y_min,
             width: x_max - x_min,
@@ -280,4 +300,58 @@ fn extract_lines(doc: &DocAiResponse) -> Vec<OcrLine> {
     }
 
     result
+}
+
+// ---------------------------------------------------------------------------
+// Line-number stripping
+// ---------------------------------------------------------------------------
+
+/// Strip margin line numbers (5, 10, 15, ... 40) from OCR text.
+/// Determines margin side from page index:
+///   Even scan index (page_num % 2 == 0): line numbers at START (left margin)
+///   Odd scan index  (page_num % 2 == 1): line numbers at END (right margin)
+fn strip_line_numbers(lines: Vec<OcrLine>, page_num: usize) -> Vec<OcrLine> {
+    let line_nums_at_end = page_num % 2 == 1;
+
+    lines
+        .into_iter()
+        .filter_map(|mut line| {
+            let stripped = line.text.trim();
+
+            // Drop standalone lines that are just a valid line number
+            if DIGIT_1_2_RE.is_match(stripped) {
+                if let Ok(val) = stripped.parse::<i64>() {
+                    if is_valid_line_number(val) {
+                        return None;
+                    }
+                }
+            }
+
+            if line_nums_at_end {
+                // Line number at end of text
+                if let Some(cap) = LINE_NUM_END_RE.captures(&line.text) {
+                    if let Ok(val) = cap[1].parse::<i64>() {
+                        if is_valid_line_number(val) {
+                            line.line_number = Some(val);
+                            let m = cap.get(0).unwrap();
+                            line.text = line.text[..m.start()].to_string();
+                        }
+                    }
+                }
+            } else {
+                // Line number at start of text
+                if let Some(m) = LINE_NUM_START_RE.find(&line.text) {
+                    let cap = LINE_NUM_START_RE.captures(&line.text).unwrap();
+                    if let Ok(val) = cap[1].parse::<i64>() {
+                        if is_valid_line_number(val) {
+                            line.line_number = Some(val);
+                            line.text = line.text[m.end()..].to_string();
+                        }
+                    }
+                }
+            }
+
+            Some(line)
+        })
+        .collect()
 }

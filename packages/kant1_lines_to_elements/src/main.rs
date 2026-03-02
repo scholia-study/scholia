@@ -25,14 +25,10 @@ static ROMAN_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[IVXLCDM]{2,}$
 static FOOTNOTE_MARKER_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"[¹²³⁴⁵⁶⁷⁸⁹⁰\d]+\)|[*†‡][)\.]").unwrap());
 static DIGIT_ONLY_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d+$").unwrap());
-static DIGIT_1_2_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d{1,2}$").unwrap());
-static LINE_NUM_START_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^(\d{1,2})\s+").unwrap());
 static B_REF_ROMAN_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\s+([IVXLCDM]{2,})\s*$").unwrap());
 static B_REF_ARABIC_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\s+(\d{1,4})\s*$").unwrap());
-static LINE_NUM_END_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"\s+(\d{1,2})\s*$").unwrap());
 static B_REF_ROMAN_START_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^([IVXLCDM]{2,})\s+").unwrap());
 static B_REF_ARABIC_START_RE: LazyLock<Regex> =
@@ -188,6 +184,7 @@ fn main() {
 #[derive(Debug, Clone, Deserialize)]
 struct OcrLine {
     text: String,
+    line_number: Option<i64>,
     x: f64,
     y: f64,
     #[allow(dead_code)]
@@ -392,10 +389,6 @@ fn parse_header(header_lines: &[OcrLine]) -> Option<String> {
 // Per-line annotation (line numbers + B-refs)
 // ---------------------------------------------------------------------------
 
-fn is_valid_line_number(val: i64) -> bool {
-    val % 5 == 0 && (5..=40).contains(&val)
-}
-
 /// Try to interpret a token as an OCR-garbled Roman numeral.
 /// Common OCR misreadings: '1'→'I', lowercase 'x'→'X', etc.
 fn try_ocr_correct_roman(token: &str) -> Option<String> {
@@ -425,9 +418,10 @@ fn try_ocr_correct_roman(token: &str) -> Option<String> {
 
 fn annotate_lines(body_lines: &[OcrLine], page_index: usize) -> Vec<AnnotatedLine> {
     // In a book scan, margins alternate sides on every other page:
-    //   Even scan index: line numbers at START (left), B-refs at END (right)
-    //   Odd scan index:  line numbers at END (right), B-refs at START (left)
-    let line_nums_at_end = page_index % 2 == 1;
+    //   Even scan index: B-refs at END (right margin)
+    //   Odd scan index:  B-refs at START (left margin)
+    // Line numbers are already stripped by ocr_to_lines.
+    let b_refs_at_start = page_index % 2 == 1;
 
     // Compute median x for spatial detection of OCR-garbled margin annotations.
     // On odd pages, B-refs at the left margin cause lines to have lower x values.
@@ -442,21 +436,11 @@ fn annotate_lines(body_lines: &[OcrLine], page_index: usize) -> Vec<AnnotatedLin
 
     for line in body_lines {
         let mut text = line.text.clone();
-        let mut line_number: Option<i64> = None;
+        let line_number = line.line_number;
         let mut b_page_ref: Option<String> = None;
 
-        // Standalone line number (works regardless of margin side)
-        let stripped = text.trim();
-        if DIGIT_1_2_RE.is_match(stripped) {
-            if let Ok(val) = stripped.parse::<i64>() {
-                if is_valid_line_number(val) {
-                    continue; // drop margin annotation
-                }
-            }
-        }
-
-        if line_nums_at_end {
-            // Odd scan pages: line numbers at END, B-refs at START
+        if b_refs_at_start {
+            // Odd scan pages: B-refs at START
 
             // B-edition ref at start — clean Roman numerals
             if let Some(cap) = B_REF_ROMAN_START_RE.captures(&text) {
@@ -464,15 +448,11 @@ fn annotate_lines(body_lines: &[OcrLine], page_index: usize) -> Vec<AnnotatedLin
                 let m = cap.get(0).unwrap();
                 text = text[m.end()..].to_string();
             }
-            // B-edition ref at start — Arabic (only if NOT a valid line number)
+            // B-edition ref at start — Arabic
             else if let Some(cap) = B_REF_ARABIC_START_RE.captures(&text) {
-                if let Ok(val) = cap[1].parse::<i64>() {
-                    if !is_valid_line_number(val) {
-                        b_page_ref = Some(cap[1].to_string());
-                        let m = cap.get(0).unwrap();
-                        text = text[m.end()..].to_string();
-                    }
-                }
+                b_page_ref = Some(cap[1].to_string());
+                let m = cap.get(0).unwrap();
+                text = text[m.end()..].to_string();
             }
 
             // Spatial detection: if x is well below median, the leading token
@@ -487,19 +467,8 @@ fn annotate_lines(body_lines: &[OcrLine], page_index: usize) -> Vec<AnnotatedLin
                 }
             }
 
-            // Line number at end
-            if let Some(cap) = LINE_NUM_END_RE.captures(&text) {
-                if let Ok(val) = cap[1].parse::<i64>() {
-                    if is_valid_line_number(val) {
-                        line_number = Some(val);
-                        let m = cap.get(0).unwrap();
-                        text = text[..m.start()].to_string();
-                    }
-                }
-            }
-
             // Fallback: Roman B-ref at end (rare on these pages but possible)
-            if line_number.is_none() && b_page_ref.is_none() {
+            if b_page_ref.is_none() {
                 if let Some(cap) = B_REF_ROMAN_RE.captures(&text) {
                     b_page_ref = Some(cap[1].to_string());
                     let m = cap.get(0).unwrap();
@@ -507,18 +476,7 @@ fn annotate_lines(body_lines: &[OcrLine], page_index: usize) -> Vec<AnnotatedLin
                 }
             }
         } else {
-            // Even scan pages: line numbers at START, B-refs at END
-
-            // Line number at start
-            if let Some(m) = LINE_NUM_START_RE.find(&text) {
-                let cap = LINE_NUM_START_RE.captures(&text).unwrap();
-                if let Ok(val) = cap[1].parse::<i64>() {
-                    if is_valid_line_number(val) {
-                        line_number = Some(val);
-                        text = text[m.end()..].to_string();
-                    }
-                }
-            }
+            // Even scan pages: B-refs at END
 
             // B-edition ref at end — Roman numerals
             if let Some(cap) = B_REF_ROMAN_RE.captures(&text) {
@@ -837,7 +795,7 @@ fn process_page(ocr_lines: &[OcrLine], page_index: usize) -> PageResult {
         elements = cleaned;
     }
 
-    // Parse footnotes
+    // Parse footnotes (line numbers already stripped by ocr_to_lines)
     let footnotes = parse_footnotes(&footnote_lines);
 
     PageResult {
