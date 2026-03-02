@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Extract structured text from Kant's Kritik der reinen Vernunft (1911 Akademie-Ausgabe) using Claude Vision API."""
+"""Extract structured text from Kant's Kritik der reinen Vernunft using Claude Code CLI.
+
+Uses `claude -p` (non-interactive mode) so it runs on your Max plan — no API key needed.
+"""
 
 import argparse
-import base64
 import json
 import os
+import subprocess
+import sys
 import time
 from glob import glob
-from pathlib import Path
-
-import anthropic
 
 EXTRACTION_PROMPT = """\
 You are extracting text from a scanned page of Kant's *Kritik der reinen Vernunft* (2nd edition, 1787) in the 1911 Akademie-Ausgabe. The text is in Fraktur with some Antiqua passages (Latin/technical terms). Transcribe accurately.
@@ -37,7 +38,7 @@ Return a JSON object (no markdown fences, just raw JSON) with this structure:
 }
 
 Rules:
-- Transcribe Fraktur faithfully. Use modern Unicode (ä, ö, ü, ß). Keep original spelling (e.g. "Theil" not "Teil", "Wissenschaft" not "Wißenschaft" — but do use the long-s 'ſ' only if you are confident it appears).
+- Transcribe Fraktur faithfully. Use modern Unicode (ä, ö, ü, ß). Keep original spelling (e.g. "Theil" not "Teil").
 - For Sperrdruck (letterspaced text used for emphasis), transcribe the text normally (without extra spaces) and record it in the "emphasis" array with character offsets into the "text" field.
 - For text set in Antiqua (roman) typeface amidst Fraktur, note it as emphasis kind "antiqua" or set the element typeface to "antiqua"/"mixed".
 - "line_numbers": include all Akademie margin line numbers that fall within this element's span. These are the small numbers printed in the left or right margin (typically multiples of 5).
@@ -50,42 +51,44 @@ Rules:
 - Do NOT wrap the JSON in markdown code fences. Return ONLY the JSON object."""
 
 
-def encode_image(path: str) -> str:
-    with open(path, "rb") as f:
-        return base64.standard_b64encode(f.read()).decode("utf-8")
-
-
-def extract_page(client: anthropic.Anthropic, image_path: str, page_index: int) -> dict:
-    b64 = encode_image(image_path)
-    ext = Path(image_path).suffix.lower()
-    media_type = "image/png" if ext == ".png" else "image/jpeg"
-
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=8192,
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "source": {"type": "base64", "media_type": media_type, "data": b64},
-                    },
-                    {
-                        "type": "text",
-                        "text": f"This is page index {page_index} of the PDF.\n\n{EXTRACTION_PROMPT}",
-                    },
-                ],
-            }
-        ],
+def extract_page(image_path: str, page_index: int) -> dict:
+    """Call claude CLI to extract structured text from a page image."""
+    abs_path = os.path.abspath(image_path)
+    prompt = (
+        f"Read the image file at {abs_path} using the Read tool. "
+        f"This is page index {page_index} of Kant's Kritik der reinen Vernunft (1911 Akademie-Ausgabe).\n\n"
+        f"{EXTRACTION_PROMPT}"
     )
 
-    text = response.content[0].text.strip()
-    # Strip markdown fences if the model adds them despite instructions
+    env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
+    result = subprocess.run(
+        [
+            "claude", "-p", prompt,
+            "--output-format", "json",
+            "--allowed-tools", "Read",
+            "--no-session-persistence",
+            "--model", "sonnet",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=180,
+        env=env,
+    )
+
+    if result.returncode != 0:
+        raise RuntimeError(f"claude CLI failed (exit {result.returncode}): {result.stderr[:500]}")
+
+    # Parse the outer JSON envelope from claude --output-format json
+    outer = json.loads(result.stdout)
+    response_text = outer.get("result", "")
+
+    # Strip markdown fences if present
+    text = response_text.strip()
     if text.startswith("```"):
-        text = text.split("\n", 1)[1]
-        if text.endswith("```"):
-            text = text[: text.rfind("```")]
+        first_newline = text.index("\n")
+        text = text[first_newline + 1:]
+        if text.rstrip().endswith("```"):
+            text = text.rstrip()[:-3]
         text = text.strip()
 
     return json.loads(text)
@@ -100,13 +103,14 @@ def find_page_images(pages_dir: str) -> list[str]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Extract text from Kant PDF pages using Claude Vision")
-    parser.add_argument("--pages-dir", default="assets/kant_pages", help="Directory containing page images")
-    parser.add_argument("--output-dir", default="assets/kant_output", help="Directory for per-page JSON output")
-    parser.add_argument("--output", default="assets/kant_kritik.json", help="Final merged JSON output path")
+    parser = argparse.ArgumentParser(description="Extract text from Kant PDF pages using Claude Code CLI")
+    parser.add_argument("--pages-dir", default="assets/kant1_pages", help="Directory containing page images")
+    parser.add_argument("--output-dir", default="assets/kant1_output", help="Directory for per-page JSON output")
+    parser.add_argument("--output", default="assets/kant1_kritik.json", help="Final merged JSON output path")
     parser.add_argument("--start", type=int, default=1, help="Start page index (1-based)")
     parser.add_argument("--end", type=int, default=None, help="End page index (1-based, inclusive)")
     parser.add_argument("--merge-only", action="store_true", help="Only merge existing page JSONs, skip extraction")
+    parser.add_argument("--concurrency", type=int, default=1, help="Number of parallel extractions (be careful with rate limits)")
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -114,11 +118,10 @@ def main():
     images = find_page_images(args.pages_dir)
     if not images and not args.merge_only:
         print(f"No page images found in {args.pages_dir}/")
-        print("Run: pdftoppm -png -r 300 assets/kant_kritik_2ed_1911.pdf assets/kant_pages/page")
-        return
+        print("Run: pdftoppm -png -r 300 assets/kant_kritik_2ed_1911.pdf assets/kant1_pages/page")
+        sys.exit(1)
 
     if not args.merge_only:
-        client = anthropic.Anthropic()
         total = len(images)
         start_idx = args.start - 1
         end_idx = args.end if args.end else total
@@ -136,36 +139,26 @@ def main():
             print(f"  [{page_num}/{end_idx}] Extracting {os.path.basename(images[i])}...", end=" ", flush=True)
 
             retries = 0
-            while True:
+            result = None
+            while retries <= 3:
                 try:
-                    result = extract_page(client, images[i], page_num)
+                    result = extract_page(images[i], page_num)
                     break
-                except anthropic.RateLimitError:
+                except subprocess.TimeoutExpired:
                     retries += 1
-                    wait = min(30 * retries, 120)
-                    print(f"rate limited, waiting {wait}s...", end=" ", flush=True)
-                    time.sleep(wait)
-                except (anthropic.APIError, json.JSONDecodeError) as e:
+                    print(f"timeout, retry {retries}/3...", end=" ", flush=True)
+                except (RuntimeError, json.JSONDecodeError) as e:
                     retries += 1
-                    if retries > 3:
-                        print(f"FAILED after {retries} retries: {e}")
-                        break
-                    wait = 5 * retries
-                    print(f"error ({e}), retrying in {wait}s...", end=" ", flush=True)
-                    time.sleep(wait)
-            else:
-                # This else belongs to the while loop — only reached if we never broke out due to failure
-                pass
+                    print(f"error ({e}), retry {retries}/3...", end=" ", flush=True)
+                    time.sleep(2)
 
-            if retries > 3:
+            if result is None:
+                print("FAILED")
                 continue
 
             with open(out_path, "w", encoding="utf-8") as f:
                 json.dump(result, f, ensure_ascii=False, indent=2)
             print("done")
-
-            # Small delay between requests
-            time.sleep(1)
 
     # Merge step
     page_files = sorted(glob(os.path.join(args.output_dir, "page_*.json")))

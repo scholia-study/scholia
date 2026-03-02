@@ -1,0 +1,3 @@
+- split docapi export/import into its own program
+- refactor remaining script into rust
+- manually make the toc as reference point

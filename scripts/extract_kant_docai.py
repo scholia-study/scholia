@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Extract structured text from Kant's Kritik der reinen Vernunft using GCP Document AI OCR.
+"""Extract structured text from cached Document AI OCR data.
 
-Parallel to the Tesseract pipeline but with dramatically better character accuracy.
-Document AI handles Fraktur natively — no post-processing needed for ch/ck/s ligatures.
+Second stage of the pipeline: reads raw OCR line JSON from the cache
+directory (produced by ocr_kant_docai.py) and applies heuristics to produce
+structured per-page output (zones, headers, paragraphs, footnotes, etc.).
 
-Unlike the Tesseract script, elements preserve per-line OCR data: each element has
-a `lines` array where each entry carries the cleaned text plus any `line_number`
-or `b_page_ref` detected on that specific line.
+Unlike the Tesseract script, elements preserve per-line OCR data: each element
+has a `lines` array where each entry carries the cleaned text plus any
+`line_number` or `b_page_ref` detected on that specific line.
 """
 
 import argparse
@@ -16,16 +17,6 @@ import re
 import statistics
 import sys
 from glob import glob
-
-from google.api_core.client_options import ClientOptions
-from google.cloud import documentai_v1 as documentai
-
-# ---------------------------------------------------------------------------
-# GCP Document AI config
-# ---------------------------------------------------------------------------
-PROJECT_ID = "cerebro-401111"
-OCR_LOCATION = "europe-west2"
-OCR_PROCESSOR_ID = "c5387b98e91f93de"
 
 # ---------------------------------------------------------------------------
 # Image dimensions (1575 × 2434 px at 300 DPI)
@@ -51,110 +42,6 @@ SUPERSCRIPT_DIGITS = set("⁰¹²³⁴⁵⁶⁷⁸⁹")
 
 # Regex for footnote marker detection (including superscript digits)
 FOOTNOTE_MARKER_RE = re.compile(r"[¹²³⁴⁵⁶⁷⁸⁹⁰\d]+\)|[*†‡][\)\.]")
-
-
-# ---------------------------------------------------------------------------
-# Document AI OCR
-# ---------------------------------------------------------------------------
-
-def call_document_ai(image_path):
-    """Send image to Document AI OCR and return the Document proto."""
-    opts = ClientOptions(api_endpoint=f"{OCR_LOCATION}-documentai.googleapis.com")
-    client = documentai.DocumentProcessorServiceClient(client_options=opts)
-    name = client.processor_path(PROJECT_ID, OCR_LOCATION, OCR_PROCESSOR_ID)
-
-    with open(image_path, "rb") as f:
-        image_content = f.read()
-
-    mime = "image/png" if image_path.endswith(".png") else "image/jpeg"
-    raw_document = documentai.RawDocument(content=image_content, mime_type=mime)
-
-    process_options = documentai.ProcessOptions(
-        ocr_config=documentai.OcrConfig(
-            hints=documentai.OcrConfig.Hints(language_hints=["de"]),
-        )
-    )
-    request = documentai.ProcessRequest(
-        name=name,
-        raw_document=raw_document,
-        process_options=process_options,
-    )
-
-    result = client.process_document(request=request)
-    return result.document
-
-
-# ---------------------------------------------------------------------------
-# Line extraction from Document AI response
-# ---------------------------------------------------------------------------
-
-def extract_lines_from_document(document):
-    """Extract lines with text and bounding boxes from Document AI response.
-
-    Returns list of dicts: {text, x, y, width, height}
-    """
-    if not document.pages:
-        return []
-
-    page = document.pages[0]
-    lines = []
-
-    for line in page.lines:
-        # Extract text via text_anchor
-        segments = line.layout.text_anchor.text_segments
-        text = "".join(
-            document.text[int(s.start_index):int(s.end_index)]
-            for s in segments
-        ).rstrip("\n")
-
-        if not text.strip():
-            continue
-
-        # Extract bounding box from vertices
-        verts = line.layout.bounding_poly.normalized_vertices
-        if not verts:
-            continue
-
-        # Convert normalized coords to pixel coords
-        xs = [v.x * IMG_W for v in verts]
-        ys = [v.y * IMG_H for v in verts]
-
-        x_min = min(xs)
-        y_min = min(ys)
-        x_max = max(xs)
-        y_max = max(ys)
-
-        lines.append({
-            "text": text,
-            "x": x_min,
-            "y": y_min,
-            "width": x_max - x_min,
-            "height": y_max - y_min,
-        })
-
-    return lines
-
-
-def get_ocr_lines(image_path, ocr_cache_dir):
-    """Get OCR lines for an image, using cached result if available.
-
-    The raw OCR output (lines with bounding boxes) is cached as JSON so that
-    re-running the script with changed heuristics doesn't re-call the API.
-    """
-    basename = os.path.splitext(os.path.basename(image_path))[0]
-    cache_path = os.path.join(ocr_cache_dir, f"{basename}.json")
-
-    if os.path.exists(cache_path):
-        with open(cache_path, encoding="utf-8") as f:
-            return json.load(f)
-
-    document = call_document_ai(image_path)
-    lines = extract_lines_from_document(document)
-
-    with open(cache_path, "w", encoding="utf-8") as f:
-        json.dump(lines, f, ensure_ascii=False, indent=2)
-
-    return lines
 
 
 # ---------------------------------------------------------------------------
@@ -486,12 +373,10 @@ def detect_front_matter_type(page_index, body_lines):
 # Page processing
 # ---------------------------------------------------------------------------
 
-def process_page(image_path, page_index, ocr_cache_dir):
-    """Process a single page image and return structured JSON dict."""
-    lines = get_ocr_lines(image_path, ocr_cache_dir)
-
+def process_page(ocr_lines, page_index):
+    """Process cached OCR lines for a single page and return structured JSON dict."""
     # Blank page detection
-    meaningful = [l for l in lines if len(l["text"].strip()) > 1]
+    meaningful = [l for l in ocr_lines if len(l["text"].strip()) > 1]
     if len(meaningful) < 3:
         return {
             "page_index": page_index,
@@ -504,7 +389,7 @@ def process_page(image_path, page_index, ocr_cache_dir):
     is_front = page_index <= FRONT_MATTER_END
 
     # Zone partitioning
-    header, body, footnote_lines = partition_zones(lines, page_index)
+    header, body, footnote_lines = partition_zones(ocr_lines, page_index)
 
     # Header parsing
     page_number = parse_header(header)
@@ -560,26 +445,20 @@ def process_page(image_path, page_index, ocr_cache_dir):
 # CLI and main
 # ---------------------------------------------------------------------------
 
-def find_page_images(pages_dir):
-    """Find all page images sorted by filename."""
-    patterns = ["*.png", "*.jpg", "*.jpeg"]
-    files = []
-    for p in patterns:
-        files.extend(glob(os.path.join(pages_dir, p)))
-    return sorted(files)
+def find_ocr_cache_files(ocr_cache_dir):
+    """Find all OCR cache JSON files sorted by filename."""
+    return sorted(glob(os.path.join(ocr_cache_dir, "*.json")))
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Extract structured text from Kant KrV pages using GCP Document AI OCR"
+        description="Extract structured text from cached Document AI OCR data"
     )
-    parser.add_argument("--pages-dir", default="assets/kant_pages",
-                        help="Directory containing page images (default: assets/kant_pages)")
-    parser.add_argument("--output-dir", default="assets/kant_output_docai",
-                        help="Directory for per-page JSON output (default: assets/kant_output_docai)")
-    parser.add_argument("--ocr-cache-dir", default="assets/kant_ocr_cache",
-                        help="Directory for cached raw OCR responses (default: assets/kant_ocr_cache)")
-    parser.add_argument("--output", default="assets/kant_kritik_docai.json",
+    parser.add_argument("--ocr-cache-dir", default="assets/kant1_ocr_cache",
+                        help="Directory containing cached OCR line JSON (default: assets/kant1_ocr_cache)")
+    parser.add_argument("--output-dir", default="assets/kant1_output_docai",
+                        help="Directory for per-page JSON output (default: assets/kant1_output_docai)")
+    parser.add_argument("--output", default="assets/kant1_kritik_docai.json",
                         help="Final merged JSON output path")
     parser.add_argument("--start", type=int, default=1,
                         help="Start page index, 1-based (default: 1)")
@@ -590,28 +469,30 @@ def main():
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
-    os.makedirs(args.ocr_cache_dir, exist_ok=True)
 
-    images = find_page_images(args.pages_dir)
-    if not images and not args.merge_only:
-        print(f"No page images found in {args.pages_dir}/")
-        print("Run: pdftoppm -png -r 300 assets/kant_kritik_2ed_1911.pdf assets/kant_pages/page")
+    cache_files = find_ocr_cache_files(args.ocr_cache_dir)
+    if not cache_files and not args.merge_only:
+        print(f"No OCR cache files found in {args.ocr_cache_dir}/")
+        print("Run ocr_kant_docai.py first to populate the cache.")
         return
 
     if not args.merge_only:
-        total = len(images)
+        total = len(cache_files)
         end_idx = args.end if args.end else total
 
-        print(f"Found {total} page images. Processing pages {args.start}\u2013{end_idx}.")
+        print(f"Found {total} cached OCR files. Processing pages {args.start}–{end_idx}.")
 
         for i in range(args.start - 1, min(end_idx, total)):
             page_num = i + 1
             out_path = os.path.join(args.output_dir, f"page_{page_num:04d}.json")
 
-            print(f"  [{page_num}/{end_idx}] {os.path.basename(images[i])}...", end=" ", flush=True)
+            print(f"  [{page_num}/{end_idx}] {os.path.basename(cache_files[i])}...", end=" ", flush=True)
 
             try:
-                result = process_page(images[i], page_num, args.ocr_cache_dir)
+                with open(cache_files[i], encoding="utf-8") as f:
+                    ocr_lines = json.load(f)
+
+                result = process_page(ocr_lines, page_num)
                 with open(out_path, "w", encoding="utf-8") as f:
                     json.dump(result, f, ensure_ascii=False, indent=2)
                 n_elem = len(result["elements"])

@@ -569,11 +569,11 @@ def main():
     parser = argparse.ArgumentParser(
         description="Extract structured text from Kant KrV pages using Tesseract OCR"
     )
-    parser.add_argument("--pages-dir", default="assets/kant_pages",
-                        help="Directory containing page images (default: assets/kant_pages)")
-    parser.add_argument("--output-dir", default="assets/kant_output_tesseract",
-                        help="Directory for per-page JSON output (default: assets/kant_output_tesseract)")
-    parser.add_argument("--output", default="assets/kant_kritik_tesseract.json",
+    parser.add_argument("--pages-dir", default="assets/kant1_pages",
+                        help="Directory containing page images (default: assets/kant1_pages)")
+    parser.add_argument("--output-dir", default="assets/kant1_output_tesseract",
+                        help="Directory for per-page JSON output (default: assets/kant1_output_tesseract)")
+    parser.add_argument("--output", default="assets/kant1_kritik_tesseract.json",
                         help="Final merged JSON output path")
     parser.add_argument("--start", type=int, default=1,
                         help="Start page index, 1-based (default: 1)")
@@ -592,7 +592,7 @@ def main():
     images = find_page_images(args.pages_dir)
     if not images and not args.merge_only:
         print(f"No page images found in {args.pages_dir}/")
-        print("Run: pdftoppm -png -r 300 assets/kant_kritik_2ed_1911.pdf assets/kant_pages/page")
+        print("Run: pdftoppm -png -r 300 assets/kant_kritik_2ed_1911.pdf assets/kant1_pages/page")
         return
 
     if not args.merge_only:
