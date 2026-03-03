@@ -53,6 +53,7 @@ pub struct KantBook {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct KantTocNode {
+    pub position: u32,
     pub label: String,
     pub aa_page: u16,
     pub depth: u16,

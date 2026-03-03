@@ -35,6 +35,10 @@ struct Args {
 /// Derived empirically: page_0017 = AA 8, so aa_page = page_index - 9.
 const PAGE_INDEX_TO_AA_OFFSET: i32 = 9;
 
+/// Scan page indices to skip entirely (e.g. the original title page at page_index 10 = AA 1,
+/// which is a volume title page, not Kant's text).
+const SKIP_PAGE_INDICES: &[usize] = &[10];
+
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
@@ -46,16 +50,19 @@ fn main() {
     let mut pages = read_pages(&args.input_dir);
     eprintln!("Read {} page files.", pages.len());
 
-    // 2. Infer AA page numbers for pages without explicit page_number
+    // 2. Apply page-specific fixups
+    fixup_pages(&mut pages);
+
+    // 3. Infer AA page numbers for pages without explicit page_number
     infer_page_numbers(&mut pages);
 
-    // 3. Stitch hyphenated words across page boundaries
+    // 4. Stitch hyphenated words across page boundaries
     let joins = stitch::stitch_across_pages(&mut pages);
     for (idx, word) in &joins {
         eprintln!("  Cross-page stitch at page {idx}: {word}");
     }
 
-    // 4. Build flat list of (aa_page, element, footnotes) from content pages
+    // 5. Build flat list of (aa_page, element, footnotes) from content pages
     let page_elements = flatten_page_elements(&pages);
     eprintln!(
         "Flattened {} elements from {} content pages.",
@@ -63,21 +70,20 @@ fn main() {
         page_elements.len()
     );
 
-    // 5. Build the TOC tree
+    // 6. Build the TOC tree
     let mut tree = toc::build_toc_tree();
 
-    // 6. Assign content to TOC nodes
+    // 7. Assign content to TOC nodes
     let flat_entries = toc::flat_toc_entries();
     assign_content(&mut tree, &flat_entries, &page_elements);
 
-    // 7. Number paragraphs and sentences globally
+    // 8. Number paragraphs and sentences globally
     let mut para_counter = 0u32;
     let mut sentence_counter = 0u32;
-    let mut block_position = 0u32;
-    number_tree(&mut tree, &mut para_counter, &mut sentence_counter, &mut block_position);
+    number_tree(&mut tree, &mut para_counter, &mut sentence_counter);
     eprintln!("Numbered {para_counter} paragraphs, {sentence_counter} sentences.");
 
-    // 8. Output
+    // 9. Output
     let book = KantBook {
         title: "Kritik der reinen Vernunft".to_string(),
         author: "Immanuel Kant".to_string(),
@@ -90,6 +96,166 @@ fn main() {
     let json = serde_json::to_string_pretty(&book).unwrap();
     fs::write(&args.output, &json).expect("Failed to write output");
     eprintln!("Wrote {}", args.output);
+}
+
+// ---------------------------------------------------------------------------
+// Page-specific fixups
+// ---------------------------------------------------------------------------
+
+/// Apply manual corrections to pages where the upstream OCR/extraction
+/// heuristics produce incorrect structure.
+fn fixup_pages(pages: &mut [InputPage]) {
+    for page in pages.iter_mut() {
+        match page.page_index {
+            11 => fixup_motto_page(page),
+            12 => fixup_dedication_header_page(page),
+            14 => fixup_dedication_body_page(page),
+            _ => {}
+        }
+    }
+}
+
+/// Fix the Bacon motto page (page_index 11, AA page 2).
+///
+/// The upstream extraction produces:
+///   [0] heading "BACO DE VERULAMIO.\nII"       — II is actually a b_page_ref
+///   [1] heading "Instauratio magna. Praefatio." — correct
+///   [2] paragraph (first chunk of Latin)        — these three are one paragraph,
+///   [3] paragraph "et ipsi in partem"           — split by gap/indent heuristics
+///   [4] paragraph "-\nveniant..."               — with a hyphenation artifact
+///   [5] paragraph "1) Das Motto ist..."         — actually a footnote
+fn fixup_motto_page(page: &mut InputPage) {
+    if page.elements.len() < 6 {
+        return;
+    }
+
+    // 1. Fix elem[0]: split "BACO DE VERULAMIO.\nII" — keep heading, extract b_page_ref
+    if let Some(elem) = page.elements.get_mut(0) {
+        elem.lines.retain(|l| l.text.trim() != "II");
+        elem.text = "BACO DE VERULAMIO.".to_string();
+        elem.b_page_refs = vec!["II".to_string()];
+    }
+
+    // 2. Merge elems [2,3,4] into one paragraph, stitching the hyphenation.
+    //    Elem 4 starts with "-\nveniant..." — the "-" is a continuation of
+    //    elem 3's "et ipsi in partem" → "et ipsi in partem-\nveniant..." → "partemveniant..."
+    //    Wait, actually it's "in partem" + "-" + "veniant" = "in partemveniant"? No.
+    //    Looking at the actual text: elem[3] = "et ipsi in partem", elem[4] starts with "-\nveniant."
+    //    This is "partem" being continued as a word that was split: the original has
+    //    "in partem-/veniant" but the hyphen landed on a separate line. So it should just
+    //    concatenate without the hyphen: "in partem" is complete and "-" is stray.
+    //    The actual Latin: "et ipsi in partem veniant" — so drop the stray hyphen.
+    let mut merged_lines: Vec<InputLine> = Vec::new();
+    for idx in [2, 3, 4] {
+        for line in &page.elements[idx].lines {
+            let trimmed = line.text.trim();
+            // Skip the stray hyphen line
+            if trimmed == "-" {
+                continue;
+            }
+            merged_lines.push(line.clone());
+        }
+    }
+    let merged_text = merged_lines
+        .iter()
+        .map(|l| l.text.as_str())
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    let merged_elem = InputElement {
+        elem_type: "paragraph".to_string(),
+        text: merged_text,
+        lines: merged_lines,
+        b_page_refs: Vec::new(),
+    };
+
+    // 3. Convert elem[5] to a footnote
+    let footnote_text = page.elements[5]
+        .text
+        .trim_start_matches("1)")
+        .trim()
+        .to_string();
+    page.footnotes.push(InputFootnote {
+        marker: "1".to_string(),
+        text: footnote_text,
+    });
+
+    // 4. Rebuild elements: [0] heading, [1] heading, merged paragraph
+    let elem0 = page.elements[0].clone();
+    let elem1 = page.elements[1].clone();
+    page.elements = vec![elem0, elem1, merged_elem];
+}
+
+/// Fix the dedication header page (page_index 12, AA page 3).
+///
+/// Upstream produces:
+///   [0] paragraph "Sr. Excellenz,\ndem Königl. Staatsminister\nFreiherrn von Zedlip."
+///   [1] paragraph "1*"  — page marker artifact, omit
+fn fixup_dedication_header_page(page: &mut InputPage) {
+    page.elements.retain(|e| e.text.trim() != "1*");
+}
+
+/// Fix the dedication body page (page_index 14, AA page 5).
+///
+/// Upstream produces:
+///   [0] heading  "Gnädiger Herr!"                    — correct
+///   [1] heading  "V"                                  — actually b_page_ref
+///   [2] paragraph (first body paragraph)              — correct
+///   [3] paragraph (second body paragraph, has b_page_ref VI on first line)  — correct
+///   [4] heading  "Ew. Excellenz"                      — start of signature, not heading
+///
+/// The signature lines (Königsberg, date, "unterthänig gehorsamster Diener",
+/// "Immanuel Kant.") were eaten by the footnote boundary detector because of
+/// the large y-gap after "Ew. Excellenz". We reconstruct them here.
+fn fixup_dedication_body_page(page: &mut InputPage) {
+    if page.elements.len() < 5 {
+        return;
+    }
+
+    // 1. "V" (elem[1]) is a b_page_ref, not a heading — attach to elem[0]
+    if page.elements[1].text.trim() == "V" {
+        page.elements[0].b_page_refs.push("V".to_string());
+        page.elements.remove(1);
+    }
+
+    // After removal, indices shift: [0]=Gnädiger Herr!, [1]=para1, [2]=para2, [3]=Ew. Excellenz
+    // 2. Rebuild elem[3] "Ew. Excellenz" as the full signature paragraph
+    if let Some(sig_elem) = page.elements.get_mut(3) {
+        sig_elem.elem_type = "paragraph".to_string();
+        sig_elem.text = "Ew. Excellenz\n\
+                         unterthänig gehorsamster Diener\n\
+                         Immanuel Kant.\n\
+                         Königsberg,\n\
+                         den 23sten April 1787."
+            .to_string();
+        sig_elem.lines = vec![
+            InputLine {
+                text: "Ew. Excellenz".to_string(),
+                line_number: None,
+                b_page_ref: None,
+            },
+            InputLine {
+                text: "unterthänig gehorsamster Diener".to_string(),
+                line_number: None,
+                b_page_ref: None,
+            },
+            InputLine {
+                text: "Immanuel Kant.".to_string(),
+                line_number: None,
+                b_page_ref: None,
+            },
+            InputLine {
+                text: "Königsberg,".to_string(),
+                line_number: None,
+                b_page_ref: None,
+            },
+            InputLine {
+                text: "den 23sten April 1787.".to_string(),
+                line_number: None,
+                b_page_ref: None,
+            },
+        ];
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -165,6 +331,9 @@ fn flatten_page_elements(pages: &[InputPage]) -> Vec<(u16, Vec<InputElement>, Ve
             continue;
         }
         if page.elements.is_empty() {
+            continue;
+        }
+        if SKIP_PAGE_INDICES.contains(&page.page_index) {
             continue;
         }
 
@@ -314,29 +483,31 @@ fn distribute_content(
 // ---------------------------------------------------------------------------
 
 /// Assign globally incrementing paragraph_number and sentence_number.
+/// position fields are 0-based indices within their parent:
+///   - KantContentBlock.position = index within node.content
+///   - KantSentence.position = index within block.sentences (already set at construction)
 fn number_tree(
     nodes: &mut [KantTocNode],
     para_counter: &mut u32,
     sentence_counter: &mut u32,
-    block_position: &mut u32,
 ) {
     for node in nodes.iter_mut() {
-        for block in node.content.iter_mut() {
-            block.position = *block_position;
-            *block_position += 1;
+        for (block_idx, block) in node.content.iter_mut().enumerate() {
+            block.position = block_idx as u32;
 
             if block.block_type == KantBlockType::Paragraph {
                 *para_counter += 1;
                 block.paragraph_number = Some(*para_counter);
             }
 
+            // sentence.position is already 0-based from element_to_content_block;
+            // here we only assign the global sentence_number
             for sentence in block.sentences.iter_mut() {
                 *sentence_counter += 1;
                 sentence.sentence_number = *sentence_counter;
-                sentence.position = *sentence_counter;
             }
         }
 
-        number_tree(&mut node.children, para_counter, sentence_counter, block_position);
+        number_tree(&mut node.children, para_counter, sentence_counter);
     }
 }

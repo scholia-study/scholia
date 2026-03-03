@@ -15,6 +15,8 @@ static SINGLE_ABBREVS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
     vec![
         "bzw.", "usf.", "usw.", "vgl.", "sog.", "evtl.", "bes.", "Anm.", "Bd.", "Kap.", "Nr.",
         "St.", "Dr.", "Fr.", "Hr.", "Prof.",
+        // Honorific/title abbreviations common in older German texts
+        "Sr.", "Ew.", "Königl.", "Hochfürstl.", "Hochgräfl.",
     ]
 });
 
@@ -469,6 +471,17 @@ mod tests {
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].0, "1. Erster Satz hier.");
         assert_eq!(result[1].0, "Zweiter Satz dort.");
+    }
+
+    #[test]
+    fn test_honorific_abbreviations_not_split() {
+        let text = "Sr. Excellenz, dem Königl. Staatsminister Freiherrn von Zedlitz.";
+        let result = split_sentences(text, text);
+        assert_eq!(result.len(), 1);
+
+        let text2 = "heißt an Ew. Excellenz eigenem Interesse arbeiten.";
+        let result2 = split_sentences(text2, text2);
+        assert_eq!(result2.len(), 1);
     }
 
     #[test]

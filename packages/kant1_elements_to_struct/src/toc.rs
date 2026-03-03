@@ -18,8 +18,9 @@ const TOC: &[FlatEntry] = &[
     // -----------------------------------------------------------------------
     // Front matter
     // -----------------------------------------------------------------------
-    FlatEntry { aa_page: 1,   depth: 1, label: "Zueignung" },
-    FlatEntry { aa_page: 3,   depth: 1, label: "Vorrede zur zweiten Auflage" },
+    FlatEntry { aa_page: 2,   depth: 1, label: "Motto" },
+    FlatEntry { aa_page: 3,   depth: 1, label: "Zueignung" },
+    FlatEntry { aa_page: 7,   depth: 1, label: "Vorrede zur zweiten Auflage" },
 
     // -----------------------------------------------------------------------
     // Einleitung
@@ -185,6 +186,7 @@ fn build_subtree(entries: &[FlatEntry], target_depth: u16) -> Vec<KantTocNode> {
         };
 
         nodes.push(KantTocNode {
+            position: nodes.len() as u32,
             label: entry.label.to_string(),
             aa_page: entry.aa_page,
             depth: entry.depth,
@@ -231,26 +233,27 @@ mod tests {
     #[test]
     fn test_tree_structure() {
         let tree = build_toc_tree();
-        // Top-level nodes: Zueignung, Vorrede, Einleitung, I. Elementarlehre, II. Methodenlehre
-        assert_eq!(tree.len(), 5);
-        assert_eq!(tree[0].label, "Zueignung");
-        assert_eq!(tree[1].label, "Vorrede zur zweiten Auflage");
-        assert_eq!(tree[2].label, "Einleitung");
-        assert_eq!(tree[3].label, "I. Transscendentale Elementarlehre");
-        assert_eq!(tree[4].label, "II. Transscendentale Methodenlehre");
+        // Top-level nodes: Motto, Zueignung, Vorrede, Einleitung, I. Elementarlehre, II. Methodenlehre
+        assert_eq!(tree.len(), 6);
+        assert_eq!(tree[0].label, "Motto");
+        assert_eq!(tree[1].label, "Zueignung");
+        assert_eq!(tree[2].label, "Vorrede zur zweiten Auflage");
+        assert_eq!(tree[3].label, "Einleitung");
+        assert_eq!(tree[4].label, "I. Transscendentale Elementarlehre");
+        assert_eq!(tree[5].label, "II. Transscendentale Methodenlehre");
     }
 
     #[test]
     fn test_einleitung_children() {
         let tree = build_toc_tree();
-        let einleitung = &tree[2];
+        let einleitung = &tree[3];
         assert_eq!(einleitung.children.len(), 7); // I through VII
     }
 
     #[test]
     fn test_elementarlehre_structure() {
         let tree = build_toc_tree();
-        let elem = &tree[3]; // I. Transscendentale Elementarlehre
+        let elem = &tree[4]; // I. Transscendentale Elementarlehre
         assert_eq!(elem.children.len(), 2); // Erster Theil (Ästhetik), Zweiter Theil (Logik)
 
         let aesthetik = &elem.children[0];
@@ -266,7 +269,7 @@ mod tests {
     #[test]
     fn test_methodenlehre_structure() {
         let tree = build_toc_tree();
-        let meth = &tree[4]; // II. Transscendentale Methodenlehre
+        let meth = &tree[5]; // II. Transscendentale Methodenlehre
         assert_eq!(meth.children.len(), 4); // 4 Hauptstücke
     }
 
@@ -274,8 +277,8 @@ mod tests {
     fn test_flat_entry_count() {
         let flat = flat_toc_entries();
         assert_eq!(flat.len(), TOC.len());
-        // First entry is Zueignung
-        assert_eq!(flat[0].3, "Zueignung");
+        // First entry is Motto
+        assert_eq!(flat[0].3, "Motto");
         // Last entry is Geschichte der reinen Vernunft
         assert_eq!(flat.last().unwrap().3, "Viertes Hauptstück. Die Geschichte der reinen Vernunft");
     }
@@ -284,7 +287,7 @@ mod tests {
     fn test_analogien_depth() {
         let tree = build_toc_tree();
         // Navigate: Elementarlehre > Logik > Analytik > Zweites Buch > 2.Hauptstück > 3.Abschnitt > 3.Analogien
-        let logik = &tree[3].children[1];
+        let logik = &tree[4].children[1];
         let analytik = &logik.children[1]; // Erste Abtheilung
         let zweites_buch = &analytik.children[1]; // Zweites Buch
         let hauptstueck_2 = &zweites_buch.children[2]; // 2. Hauptstück
