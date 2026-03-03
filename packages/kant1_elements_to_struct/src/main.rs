@@ -110,6 +110,7 @@ fn fixup_pages(pages: &mut [InputPage]) {
             11 => fixup_motto_page(page),
             12 => fixup_dedication_header_page(page),
             14 => fixup_dedication_body_page(page),
+            16 => fixup_vorrede_page(page),
             _ => {}
         }
     }
@@ -258,6 +259,21 @@ fn fixup_dedication_body_page(page: &mut InputPage) {
     }
 }
 
+/// Fix the Vorrede heading (page_index 16, AA page 7).
+///
+/// OCR produces 'Vorrede zur zweiten Auflage."' — the trailing ." is a
+/// Fraktur misread. Strip it.
+fn fixup_vorrede_page(page: &mut InputPage) {
+    if let Some(elem) = page.elements.first_mut() {
+        if elem.text.contains("Vorrede zur zweiten Auflage") {
+            elem.text = "Vorrede zur zweiten Auflage".to_string();
+            if let Some(line) = elem.lines.first_mut() {
+                line.text = "Vorrede zur zweiten Auflage".to_string();
+            }
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Page reading
 // ---------------------------------------------------------------------------
@@ -382,6 +398,15 @@ fn assign_content(
 
         // Convert elements to content blocks
         for elem in elements {
+            // Skip printer's signature marks (e.g. "1*", "2*")
+            let trimmed = elem.text.trim();
+            if trimmed.len() <= 3
+                && trimmed.ends_with('*')
+                && trimmed[..trimmed.len() - 1].parse::<u16>().is_ok()
+            {
+                continue;
+            }
+
             let block = element_to_content_block(elem);
             content_map[section_idx].push(block);
         }
@@ -403,10 +428,59 @@ fn assign_content(
     distribute_content(tree, flat_entries, &mut content_map, &mut 0);
 }
 
+/// Clean OCR artifacts from stitched text.
+///
+/// - Remove orphan ASCII `"` not part of a German „…" quote pair.
+/// - Remove stray `\` before punctuation (e.g. `\')`).
+fn clean_ocr_text(text: &str) -> String {
+    // First strip stray backslashes before punctuation
+    let text = text.replace("\\')", ")").replace("\\\")", ")");
+
+    // Remove orphan ASCII " — keep only those preceded by a „ somewhere earlier
+    let mut result = String::with_capacity(text.len());
+    let mut in_quote = false;
+    for ch in text.chars() {
+        if ch == '\u{201E}' {
+            // „ — opening German quote
+            in_quote = true;
+            result.push(ch);
+        } else if ch == '"' {
+            if in_quote {
+                // Closing a „…" pair — keep it
+                in_quote = false;
+                result.push(ch);
+            }
+            // else: orphan " — skip
+        } else {
+            result.push(ch);
+        }
+    }
+    result
+}
+
 /// Convert an InputElement to a KantContentBlock with stitched lines and sentences.
 fn element_to_content_block(elem: &InputElement) -> KantContentBlock {
-    let (text, line_anchors) = stitch_lines(&elem.lines);
+    let (raw_text, line_anchors) = stitch_lines(&elem.lines);
+    let text = clean_ocr_text(&raw_text);
     let b_page_refs = collect_element_b_refs(&elem.b_page_refs, &line_anchors);
+
+    // Detect inline footnotes: paragraphs starting with *), **), etc.
+    // These are Kant's own footnotes that appear in the body text rather than
+    // in the footnote zone at the bottom of the page.
+    if let Some(marker) = detect_inline_footnote_marker(&text) {
+        let body = text[marker.len()..]
+            .trim_start_matches(')')
+            .trim()
+            .to_string();
+        return KantContentBlock {
+            position: 0,
+            block_type: KantBlockType::Footnote,
+            paragraph_number: None,
+            text: format!("[{}] {}", marker.trim_end_matches(')'), body),
+            b_page_refs,
+            sentences: Vec::new(),
+        };
+    }
 
     let block_type = match elem.elem_type.as_str() {
         "heading" => KantBlockType::Heading,
@@ -437,6 +511,19 @@ fn element_to_content_block(elem: &InputElement) -> KantContentBlock {
         text,
         b_page_refs,
         sentences,
+    }
+}
+
+/// Detect if text starts with an inline footnote marker like `*)`, `**)`, `***)`.
+/// Returns the matched prefix (e.g. `"*)"`) or None.
+fn detect_inline_footnote_marker(text: &str) -> Option<String> {
+    let trimmed = text.trim_start();
+    // Match one or more * followed by )
+    let star_count = trimmed.chars().take_while(|&c| c == '*').count();
+    if star_count > 0 && trimmed.as_bytes().get(star_count) == Some(&b')') {
+        Some(trimmed[..star_count + 1].to_string())
+    } else {
+        None
     }
 }
 
