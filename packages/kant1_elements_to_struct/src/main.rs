@@ -114,6 +114,8 @@ fn fixup_pages(pages: &mut [InputPage]) {
             _ => {}
         }
     }
+    // Cross-page footnote spanning pages 32-34 needs access to multiple pages
+    fixup_cross_page_footnote_32_34(pages);
 }
 
 /// Fix the Bacon motto page (page_index 11, AA page 2).
@@ -271,6 +273,191 @@ fn fixup_vorrede_page(page: &mut InputPage) {
                 line.text = "Vorrede zur zweiten Auflage".to_string();
             }
         }
+    }
+}
+
+/// Fix the cross-page `*)` footnote spanning pages 32-34 (AA 23-25).
+///
+/// Kant's long `*)` footnote on the refutation of idealism spans three scan pages:
+///   Page 32 elem[1]: footnote start (`*) Eigentliche Vermehrung...unmittelbar bes`)
+///   Page 33 elem[1]: footnote continuation (40 lines, all footnote text)
+///   Page 34 elem[1]: footnote tail (2 lines: `wenig weiter erklären...hervorbringt.`)
+///
+/// Additionally, the header parser ate one body-text line on each of pages 33 and 34:
+///   Page 33 (y=203): "sehung des übrigen auch kein Mißverstand sachkundiger und unparteiischer"
+///   Page 34 (y=214): "gebührenden Lobe nennen darf, die Rücksicht, die ich auf ihre Erinnerun-"
+///
+/// This fixup:
+/// 1. Collects all footnote lines into one complete footnote on page 32.
+/// 2. Recovers the lost body-text lines on pages 33 and 34.
+/// 3. Removes footnote elements so that cross-page body-text stitching works
+///    (page 32 body ends "An-" → page 33 body starts "sehung..." → "Ansehung").
+fn fixup_cross_page_footnote_32_34(pages: &mut [InputPage]) {
+    let idx_32 = pages.iter().position(|p| p.page_index == 32);
+    let idx_33 = pages.iter().position(|p| p.page_index == 33);
+    let idx_34 = pages.iter().position(|p| p.page_index == 34);
+
+    let (Some(i32), Some(i33), Some(i34)) = (idx_32, idx_33, idx_34) else {
+        return;
+    };
+
+    // --- 0. Fix page 32: recover body text line eaten by header parser ---
+    // Raw OCR line at y=215: "änderlichkeit wird sich dieses System, wie ich hoffe, auch fernerhin be-"
+    // Without it, cross-page stitch from page 31 produces "Unverhaupten" instead of "Unveränderlichkeit".
+    if !pages[i32].elements.is_empty() {
+        pages[i32].elements[0].lines.insert(
+            0,
+            InputLine {
+                text: "änderlichkeit wird sich dieses System, wie ich hoffe, auch fernerhin be-"
+                    .to_string(),
+                line_number: None,
+                b_page_ref: None,
+            },
+        );
+        pages[i32].elements[0].text = pages[i32].elements[0]
+            .lines
+            .iter()
+            .map(|l| l.text.as_str())
+            .collect::<Vec<_>>()
+            .join("\n");
+    }
+
+    // --- 1. Collect all footnote lines and stitch into one text ---
+
+    let mut footnote_lines: Vec<InputLine> = Vec::new();
+
+    // Page 32 elem[1]: `*)` footnote start
+    if pages[i32].elements.len() >= 2 {
+        for line in &pages[i32].elements[1].lines {
+            let mut l = line.clone();
+            // Strip `*) ` prefix from first line
+            if footnote_lines.is_empty() {
+                l.text = l
+                    .text
+                    .trim_start()
+                    .trim_start_matches("*)")
+                    .trim_start()
+                    .to_string();
+            }
+            footnote_lines.push(l);
+        }
+        // Fix OCR error on last line: "unmittelbar bes" should be "unmittelbar be-"
+        // (Fraktur 'e' + hyphen misread as 'es'; continuation on page 33 starts "wußt;")
+        if let Some(last) = footnote_lines.last_mut() {
+            if last.text.trim_end().ends_with(" bes") {
+                let t = last.text.trim_end().to_string();
+                last.text = format!("{}be-", &t[..t.len() - 3]);
+            }
+        }
+    }
+
+    // Page 33 elem[1]: footnote continuation (40 lines)
+    if pages[i33].elements.len() >= 2 {
+        for line in &pages[i33].elements[1].lines {
+            footnote_lines.push(line.clone());
+        }
+    }
+
+    // Page 34 elem[1]: footnote tail (2 lines)
+    if pages[i34].elements.len() >= 2 {
+        for line in &pages[i34].elements[1].lines {
+            footnote_lines.push(line.clone());
+        }
+    }
+
+    // Strip the editors' sub-footnote reference ¹) from the footnote lines
+    // (the AA editors inserted a "1) Dieses Beharrliche werden kann." note
+    // inside Kant's own *) footnote — we drop it entirely)
+    for line in &mut footnote_lines {
+        line.text = line.text.replace("\u{00b9})", "");
+    }
+
+    // Stitch all footnote lines into one text
+    let (footnote_text, _anchors) = stitch_lines(&footnote_lines);
+
+    // Remove the editors' sub-footnote [1] from page 32's footnotes
+    pages[i32].footnotes.retain(|f| f.marker != "1");
+
+    // Store complete footnote on page 32
+    pages[i32].footnotes.push(InputFootnote {
+        marker: "*".to_string(),
+        text: footnote_text,
+    });
+
+    // Remove footnote element (elem[1]) from page 32
+    if pages[i32].elements.len() >= 2 {
+        pages[i32].elements.remove(1);
+    }
+
+    // --- 2. Fix page 33: recover body text, remove footnote element ---
+
+    // The header parser ate the line at y=203:
+    //   "XLI sehung des übrigen auch kein Mißverstand sachkundiger und unparteiischer"
+    if !pages[i33].elements.is_empty() {
+        pages[i33].elements[0].elem_type = "paragraph".to_string();
+        pages[i33].elements[0].lines.insert(
+            0,
+            InputLine {
+                text: "sehung des übrigen auch kein Mißverstand sachkundiger und unparteiischer"
+                    .to_string(),
+                line_number: None,
+                b_page_ref: Some("XLI".to_string()),
+            },
+        );
+        pages[i33].elements[0].text = pages[i33].elements[0]
+            .lines
+            .iter()
+            .map(|l| l.text.as_str())
+            .collect::<Vec<_>>()
+            .join("\n");
+        if !pages[i33].elements[0]
+            .b_page_refs
+            .contains(&"XLI".to_string())
+        {
+            pages[i33].elements[0]
+                .b_page_refs
+                .push("XLI".to_string());
+        }
+    }
+
+    // Remove footnote continuation element from page 33
+    if pages[i33].elements.len() >= 2 {
+        pages[i33].elements.remove(1);
+    }
+
+    // --- 3. Fix page 34: recover body text, remove footnote element ---
+
+    // The header parser ate the line at y=214:
+    //   "gebührenden Lobe nennen darf, die Rücksicht, die ich auf ihre Erinnerun- XLII"
+    if !pages[i34].elements.is_empty() {
+        pages[i34].elements[0].lines.insert(
+            0,
+            InputLine {
+                text: "gebührenden Lobe nennen darf, die Rücksicht, die ich auf ihre Erinnerun-"
+                    .to_string(),
+                line_number: None,
+                b_page_ref: Some("XLII".to_string()),
+            },
+        );
+        pages[i34].elements[0].text = pages[i34].elements[0]
+            .lines
+            .iter()
+            .map(|l| l.text.as_str())
+            .collect::<Vec<_>>()
+            .join("\n");
+        if !pages[i34].elements[0]
+            .b_page_refs
+            .contains(&"XLII".to_string())
+        {
+            pages[i34].elements[0]
+                .b_page_refs
+                .push("XLII".to_string());
+        }
+    }
+
+    // Remove footnote tail element from page 34
+    if pages[i34].elements.len() >= 2 {
+        pages[i34].elements.remove(1);
     }
 }
 
