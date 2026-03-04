@@ -56,10 +56,6 @@ struct Args {
     #[arg(long, default_value = "assets/kant1_lines_to_elements")]
     output_dir: String,
 
-    /// Final merged JSON output path
-    #[arg(long, default_value = "assets/kant1_kritik_docai.json")]
-    output: String,
-
     /// Start page index, 1-based
     #[arg(long, default_value_t = 1)]
     start: usize,
@@ -141,40 +137,6 @@ fn main() {
             result.page_type, n_elem, n_fn
         );
     }
-
-    // Merge step — combine all per-page JSONs into single output
-    let merge_pattern = format!("{}/*.json", args.output_dir);
-    let mut page_files: Vec<String> = glob::glob(&merge_pattern)
-        .expect("Invalid glob pattern")
-        .filter_map(|entry| entry.ok())
-        .map(|path| path.to_string_lossy().to_string())
-        .filter(|p| {
-            Path::new(p)
-                .file_name()
-                .unwrap()
-                .to_string_lossy()
-                .starts_with("page_")
-        })
-        .collect();
-    page_files.sort();
-
-    if page_files.is_empty() {
-        eprintln!("No page JSON files to merge.");
-        return;
-    }
-
-    let mut pages: Vec<PageResult> = Vec::new();
-    for pf in &page_files {
-        let data = fs::read_to_string(pf).expect("Failed to read page file");
-        let page: PageResult = serde_json::from_str(&data).expect("Failed to parse page JSON");
-        pages.push(page);
-    }
-
-    let merged = MergedOutput { pages };
-    let json = serde_json::to_string_pretty(&merged).unwrap();
-    fs::write(&args.output, &json).expect("Failed to write merged output");
-
-    eprintln!("Merged {} pages into {}", page_files.len(), args.output);
 }
 
 // ---------------------------------------------------------------------------
@@ -233,11 +195,6 @@ struct PageResult {
     page_type: String,
     elements: Vec<Element>,
     footnotes: Vec<Footnote>,
-}
-
-#[derive(Debug, Serialize)]
-struct MergedOutput {
-    pages: Vec<PageResult>,
 }
 
 // ---------------------------------------------------------------------------
