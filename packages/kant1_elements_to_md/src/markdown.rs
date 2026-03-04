@@ -1,4 +1,5 @@
 use crate::model::{MdBlockType, MdTocNode};
+use crate::toc;
 
 /// Slugify a label: lowercase, non-alphanumeric → `_`, collapse, trim.
 pub fn slugify(label: &str) -> String {
@@ -113,6 +114,36 @@ fn maybe_prepend_aa_page(text: String, aa_page: u16, prev: &mut Option<u16>) -> 
     } else {
         text
     }
+}
+
+/// Render `000_toc.md` — a table of contents with links to section files.
+///
+/// Each entry is indented by depth and links to the corresponding markdown file.
+/// Entries that have a generated file get a clickable link; others are listed plain.
+pub fn render_toc(emitted: &[&MdTocNode]) -> String {
+    let flat = toc::flat_toc_entries();
+    // Build a set of flat_indices that have emitted files
+    let emitted_set: std::collections::HashMap<usize, &MdTocNode> = emitted
+        .iter()
+        .map(|n| (n.flat_index, *n))
+        .collect();
+
+    let mut out = String::new();
+    out.push_str("# Kritik der reinen Vernunft\n\n");
+    out.push_str("Immanuel Kant — Akademie-Ausgabe Band III (B-Auflage 1787)\n\n");
+    out.push_str("---\n\n");
+
+    for &(idx, aa_page, depth, label) in &flat {
+        let indent = "  ".repeat(depth.saturating_sub(1) as usize);
+        if let Some(node) = emitted_set.get(&idx) {
+            let fname = filename(node.flat_index, &node.label);
+            out.push_str(&format!("{}- [{}]({}) — AA {}\n", indent, label, fname, aa_page));
+        } else {
+            out.push_str(&format!("{}- {} — AA {}\n", indent, label, aa_page));
+        }
+    }
+
+    out
 }
 
 #[cfg(test)]

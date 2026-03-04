@@ -80,6 +80,14 @@ fn main() {
     fs::create_dir_all(output_dir).expect("Failed to create output directory");
 
     let mut file_count = 0;
+
+    // Write 000_toc.md
+    let node_refs: Vec<&_> = nodes.iter().collect();
+    let toc_md = markdown::render_toc(&node_refs);
+    fs::write(output_dir.join("000_toc.md"), &toc_md).expect("Failed to write TOC");
+    file_count += 1;
+
+    // Write section files
     for node in &nodes {
         let fname = markdown::filename(node.flat_index, &node.label);
         let md = markdown::render_md(node);
@@ -110,15 +118,20 @@ fn build_md_nodes(
     let mut star_counts: Vec<usize> = vec![0; num_entries];
     let mut numeric_counters: Vec<u32> = vec![1; num_entries];
 
+    // Track carry-over section across pages for cross-page paragraph
+    // continuations (e.g. a paragraph starts at the bottom of one page
+    // and continues at the top of the next).
+    let mut prev_section_idx: usize = 0;
+
     for (aa_page, elements, footnotes) in page_elements {
-        // Find all TOC entries starting on this page
+        // Find all TOC entries starting on this page (for heading matching)
         let same_page_entries: Vec<usize> = flat_entries
             .iter()
             .filter(|(_, p, _, _)| *p == *aa_page)
             .map(|(i, _, _, _)| *i)
             .collect();
 
-        // Start with the first TOC entry on this page (not last-match)
+        // Base section: the section that "owns" this page
         let base_section = if same_page_entries.is_empty() {
             find_flat_section(flat_entries, *aa_page)
         } else {
@@ -126,9 +139,6 @@ fn build_md_nodes(
         };
         let mut section_idx = base_section;
 
-        // Build a marker remap for this page's footnotes.
-        // Footnotes go to whatever section the last element was assigned to,
-        // but we process them after elements so we use base_section initially.
         let mut marker_remap: HashMap<String, String> = HashMap::new();
 
         // Process page footnotes: remap markers to avoid collisions
@@ -158,6 +168,25 @@ fn build_md_nodes(
                 marker_remap.insert(star_marker.to_string(), new_marker.clone());
                 section_footnotes[base_section].push((new_marker, body));
             }
+        }
+
+        // Check if this page has any headings — used for cross-page
+        // continuation logic below.
+        let page_has_headings = elements.iter().any(|e| e.elem_type == "heading");
+
+        // Cross-page continuation: if the previous page ended in a
+        // different section AND this page starts with paragraph(s)
+        // before any heading, those leading paragraphs belong to the
+        // previous section (carry-over), not to this page's base_section.
+        // We only apply this when the page has headings — if there are
+        // no headings at all, all content belongs to base_section.
+        let use_carry_over = page_has_headings
+            && prev_section_idx < base_section
+            && !same_page_entries.is_empty();
+
+        let mut seen_heading_on_page = false;
+        if use_carry_over {
+            section_idx = prev_section_idx;
         }
 
         // Process body text elements
@@ -192,9 +221,15 @@ fn build_md_nodes(
                 continue;
             }
 
-            // When multiple TOC entries share this aa_page, advance section_idx
-            // when a heading matches a later TOC entry's label.
-            if elem.elem_type == "heading" && same_page_entries.len() > 1 {
+            // When we encounter a heading on a page with TOC entries:
+            if elem.elem_type == "heading" && !same_page_entries.is_empty() {
+                // End carry-over: first heading means we've moved past
+                // the continuation paragraph(s) from the previous section.
+                if !seen_heading_on_page {
+                    seen_heading_on_page = true;
+                    section_idx = base_section;
+                }
+                // Try to match heading to a specific TOC entry
                 if let Some(matched) = match_heading_to_toc(&text, flat_entries, &same_page_entries)
                 {
                     section_idx = matched;
@@ -216,6 +251,8 @@ fn build_md_nodes(
                 b_page_anchors: line_anchors,
             });
         }
+
+        prev_section_idx = section_idx;
     }
 
     // Build final nodes — only emit sections that have content
@@ -685,13 +722,13 @@ fn read_pages(input_dir: &str) -> Vec<InputPage> {
 // AA page number inference
 // ---------------------------------------------------------------------------
 
-/// For pages without an explicit page_number, infer from the linear relationship:
-/// aa_page = page_index - PAGE_INDEX_TO_AA_OFFSET
+/// Compute AA page numbers from the linear relationship:
+/// aa_page = page_index - PAGE_INDEX_TO_AA_OFFSET.
+///
+/// Always overrides any OCR-detected page_number, which may be the
+/// B-edition printed page number rather than the AA page number.
 fn infer_page_numbers(pages: &mut [InputPage]) {
     for page in pages.iter_mut() {
-        if page.page_number.is_some() {
-            continue;
-        }
         let inferred = page.page_index as i32 - PAGE_INDEX_TO_AA_OFFSET;
         if inferred > 0 {
             page.page_number = Some(inferred.to_string());
