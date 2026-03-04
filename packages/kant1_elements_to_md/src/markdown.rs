@@ -1,20 +1,31 @@
 use crate::model::{MdBlockType, MdTocNode};
 use crate::toc;
 
-/// Slugify a label: lowercase, non-alphanumeric → `_`, collapse, trim.
+/// Slugify a label: lowercase, transliterate German characters,
+/// non-alphanumeric → `_`, collapse, trim.
 pub fn slugify(label: &str) -> String {
     let mut slug = String::with_capacity(label.len());
     for ch in label.chars() {
         if ch.is_ascii_alphanumeric() {
             slug.push(ch.to_ascii_lowercase());
-        } else {
-            // Non-ASCII letters (ä, ö, ü, ß, §, etc.) and non-alphanum → underscore
-            if !slug.ends_with('_') {
-                slug.push('_');
-            }
+        } else if let Some(replacement) = transliterate(ch) {
+            slug.push_str(replacement);
+        } else if !slug.ends_with('_') {
+            slug.push('_');
         }
     }
     slug.trim_matches('_').to_string()
+}
+
+/// Transliterate common German/Latin characters to ASCII equivalents.
+fn transliterate(ch: char) -> Option<&'static str> {
+    match ch {
+        'ä' | 'Ä' => Some("ae"),
+        'ö' | 'Ö' => Some("oe"),
+        'ü' | 'Ü' => Some("ue"),
+        'ß' => Some("ss"),
+        _ => None,
+    }
 }
 
 /// Generate filename: `001_motto.md`
@@ -34,9 +45,8 @@ pub fn render_md(node: &MdTocNode) -> String {
     out.push_str(&format!("aa_page: {}\n", node.aa_page));
     out.push_str("---\n\n");
 
-    // Heading: # repeated depth times
-    let hashes: String = "#".repeat(node.depth as usize);
-    out.push_str(&format!("{} {}\n", hashes, node.label));
+    // Heading: always top-level # (depth is in front matter)
+    out.push_str(&format!("# {}\n", node.label));
 
     // Blocks
     let mut prev_aa_page: Option<u16> = None;
@@ -46,11 +56,9 @@ pub fn render_md(node: &MdTocNode) -> String {
 
         match block.block_type {
             MdBlockType::Heading => {
-                // Sub-headings get depth+1
-                let sub_hashes: String = "#".repeat(node.depth as usize + 1);
                 let text = insert_b_page_markers(&block.text, &block.b_page_anchors);
                 let text = maybe_prepend_aa_page(text, block.aa_page, &mut prev_aa_page);
-                out.push_str(&format!("{} {}\n", sub_hashes, text));
+                out.push_str(&format!("## {}\n", text));
             }
             MdBlockType::Paragraph => {
                 let text = insert_b_page_markers(&block.text, &block.b_page_anchors);
@@ -158,6 +166,9 @@ mod tests {
         assert_eq!(slugify("Motto"), "motto");
         assert_eq!(slugify("§1"), "1");
         assert_eq!(slugify("I. Transscendentale Elementarlehre"), "i_transscendentale_elementarlehre");
+        assert_eq!(slugify("Die transscendentale Ästhetik"), "die_transscendentale_aesthetik");
+        assert_eq!(slugify("1. Hauptstück. Von dem Schematismus"), "1_hauptstueck_von_dem_schematismus");
+        assert_eq!(slugify("Grundsätze"), "grundsaetze");
     }
 
     #[test]

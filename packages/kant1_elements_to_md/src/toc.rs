@@ -640,7 +640,7 @@ mod tests {
 
     #[test]
     fn test_toc_len() {
-        assert_eq!(toc_len(), 92);
+        assert_eq!(toc_len(), 114);
     }
 
     #[test]
