@@ -1,37 +1,6 @@
 use crate::model::{MdBlockType, MdTocNode};
 use crate::toc;
-
-/// Slugify a label: lowercase, transliterate German characters,
-/// non-alphanumeric → `_`, collapse, trim.
-pub fn slugify(label: &str) -> String {
-    let mut slug = String::with_capacity(label.len());
-    for ch in label.chars() {
-        if ch.is_ascii_alphanumeric() {
-            slug.push(ch.to_ascii_lowercase());
-        } else if let Some(replacement) = transliterate(ch) {
-            slug.push_str(replacement);
-        } else if !slug.ends_with('_') {
-            slug.push('_');
-        }
-    }
-    slug.trim_matches('_').to_string()
-}
-
-/// Transliterate common German/Latin characters to ASCII equivalents.
-fn transliterate(ch: char) -> Option<&'static str> {
-    match ch {
-        'ä' | 'Ä' => Some("ae"),
-        'ö' | 'Ö' => Some("oe"),
-        'ü' | 'Ü' => Some("ue"),
-        'ß' => Some("ss"),
-        _ => None,
-    }
-}
-
-/// Generate filename: `001_motto.md`
-pub fn filename(flat_index: usize, label: &str) -> String {
-    format!("{:03}_{}.md", flat_index + 1, slugify(label))
-}
+pub use common::kant1::filenames::{filename, slugify};
 
 /// Render a complete markdown file for one TOC node.
 pub fn render_md(node: &MdTocNode) -> String {

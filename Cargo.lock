@@ -1131,17 +1131,6 @@ name = "kant1_elements_to_md"
 version = "0.1.0"
 dependencies = [
  "clap",
- "glob",
- "regex",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "kant1_elements_to_struct"
-version = "0.1.0"
-dependencies = [
- "clap",
  "common",
  "glob",
  "regex",
@@ -1155,6 +1144,17 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "glob",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "kant1_md_to_struct"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
  "regex",
  "serde",
  "serde_json",
