@@ -22,6 +22,7 @@ pub mod models;
         models::node::NodeDetail,
         models::node::ContentBlockResponse,
         models::node::SentenceResponse,
+        models::node::PageMarkerResponse,
         models::page::NodePage,
     ))
 )]

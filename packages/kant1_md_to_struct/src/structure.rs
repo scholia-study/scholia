@@ -2,7 +2,7 @@ use common::kant1::filenames::slugify;
 use common::kant1::toc;
 use common::sentences::split_sentences;
 
-use crate::html::md_to_html;
+use crate::html::{md_to_html, md_to_plain};
 use crate::model::*;
 use crate::parse::{MarkerKind, ParsedBlock, ParsedBlockType, RawMarker};
 use crate::roman::roman_to_int;
@@ -98,8 +98,9 @@ fn build_block(
         ParsedBlockType::Footnote { .. } => ("footnote", None),
     };
 
+    let block_plain = md_to_plain(&block.text);
     let block_html = md_to_html(&block.text);
-    let sentence_pairs = split_sentences(&block.text, &block_html);
+    let sentence_pairs = split_sentences(&block_plain, &block_html);
 
     // Build sentences with cumulative char tracking for marker resolution
     let mut sentences = Vec::new();
@@ -160,7 +161,7 @@ fn build_block(
         position: block_pos as i16,
         block_type: block_type_str.to_string(),
         paragraph_number: para_num,
-        text: block.text.clone(),
+        text: block_plain,
         html: block_html,
         sentences,
     }

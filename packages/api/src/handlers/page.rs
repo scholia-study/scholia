@@ -10,7 +10,7 @@ use crate::models::page::NodePage;
 
 #[derive(Deserialize, IntoParams)]
 pub struct PageParams {
-    /// play_order cursor — omit for first page
+    /// sort_order cursor — omit for first page
     after: Option<i32>,
     /// page size, default 20, max 50
     limit: Option<i32>,

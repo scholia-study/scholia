@@ -2,16 +2,16 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::error::AppError;
-use crate::models::node::{ContentBlockResponse, NodeDetail, SentenceResponse};
+use crate::models::node::{ContentBlockResponse, NodeDetail, PageMarkerResponse, SentenceResponse};
 use crate::models::page::NodePage;
 
 struct NodeRow {
     id: Uuid,
-    ncx_id: String,
+    source_ref: String,
     slug: String,
     label: String,
     depth: i16,
-    play_order: i32,
+    sort_order: i32,
 }
 
 struct BlockRow {
@@ -27,9 +27,17 @@ struct SentenceRow {
     id: Uuid,
     block_id: Uuid,
     position: i16,
-    sentence_number: i32,
+    sentence_number: Option<i32>,
     text: String,
     html: String,
+}
+
+struct MarkerRow {
+    sentence_id: Uuid,
+    system_slug: String,
+    ref_value: String,
+    sort_order: i32,
+    char_offset: Option<i32>,
 }
 
 pub async fn get_node_page(
@@ -40,15 +48,14 @@ pub async fn get_node_page(
 ) -> Result<NodePage, AppError> {
     let after = after.unwrap_or(-1);
 
-    // Fetch limit+1 nodes to determine has_more
     let fetch_limit = (limit + 1) as i64;
     let nodes = sqlx::query_as!(
         NodeRow,
-        r#"SELECT tn.id, tn.ncx_id, tn.slug, tn.label, tn.depth, tn.play_order
+        r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order
            FROM toc_nodes tn
            JOIN books b ON b.id = tn.book_id
-           WHERE b.slug = $1 AND tn.play_order > $2
-           ORDER BY tn.play_order
+           WHERE b.slug = $1 AND tn.sort_order > $2
+           ORDER BY tn.sort_order
            LIMIT $3"#,
         slug,
         after,
@@ -69,7 +76,6 @@ pub async fn get_node_page(
 
     let node_ids: Vec<Uuid> = nodes.iter().map(|n| n.id).collect();
 
-    // Fetch all blocks for these nodes
     let blocks = sqlx::query_as!(
         BlockRow,
         r#"SELECT id, node_id, position, block_type::TEXT AS "block_type!", paragraph_number, html
@@ -81,7 +87,6 @@ pub async fn get_node_page(
     .fetch_all(pool)
     .await?;
 
-    // Fetch all sentences for these nodes
     let sentences = sqlx::query_as!(
         SentenceRow,
         r#"SELECT id, block_id, position, sentence_number, text, html
@@ -94,6 +99,36 @@ pub async fn get_node_page(
     )
     .fetch_all(pool)
     .await?;
+
+    let markers = sqlx::query_as!(
+        MarkerRow,
+        r#"SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset
+           FROM page_markers pm
+           JOIN reference_systems rs ON rs.id = pm.system_id
+           WHERE pm.sentence_id = ANY(
+               SELECT s.id FROM sentences s
+               JOIN content_blocks cb ON cb.id = s.block_id
+               WHERE cb.node_id = ANY($1)
+           )
+           ORDER BY pm.sort_order"#,
+        &node_ids,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    // Group markers by sentence_id
+    let mut marker_map: std::collections::HashMap<Uuid, Vec<PageMarkerResponse>> =
+        std::collections::HashMap::new();
+    for m in markers {
+        marker_map.entry(m.sentence_id).or_default().push(
+            PageMarkerResponse {
+                system_slug: m.system_slug,
+                ref_value: m.ref_value,
+                sort_order: m.sort_order,
+                char_offset: m.char_offset,
+            },
+        );
+    }
 
     // Group sentences by block_id
     let mut sentence_map: std::collections::HashMap<Uuid, Vec<SentenceResponse>> =
@@ -108,6 +143,7 @@ pub async fn get_node_page(
                 sentence_number: s.sentence_number,
                 text: s.text,
                 html: s.html,
+                page_markers: marker_map.remove(&s.id).unwrap_or_default(),
             });
     }
 
@@ -129,16 +165,15 @@ pub async fn get_node_page(
             });
     }
 
-    // Assemble NodeDetail list in original order
     let result_nodes = nodes
         .into_iter()
         .map(|n| NodeDetail {
             id: n.id.to_string(),
-            ncx_id: n.ncx_id,
+            source_ref: n.source_ref,
             slug: n.slug,
             label: n.label,
             depth: n.depth,
-            play_order: n.play_order,
+            sort_order: n.sort_order,
             blocks: block_map.remove(&n.id).unwrap_or_default(),
         })
         .collect();

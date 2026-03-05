@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+.sperrdruck {
+  font-weight: bold;
+}
+
+.antiqua {
+  font-style: italic;
+}

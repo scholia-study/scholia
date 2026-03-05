@@ -13,6 +13,19 @@ static EMPHASIS_RE: LazyLock<Regex> =
 static BOLD_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\*\*([^*]+)\*\*").unwrap());
 
+/// Strip markdown formatting markers, returning plain text.
+///
+/// Same processing order as md_to_html but replaces with content only.
+pub fn md_to_plain(text: &str) -> String {
+    // Use placeholder for stars in footnote markers to prevent false bold matches
+    let result = FOOTNOTE_REF_RE.replace_all(text, |caps: &regex::Captures| {
+        caps[1].replace('*', "\u{FFFC}")
+    });
+    let result = BOLD_RE.replace_all(&result, "$1");
+    let result = EMPHASIS_RE.replace_all(&result, "$1");
+    result.replace('\u{FFFC}', "*")
+}
+
 /// Convert markdown-formatted text to HTML.
 ///
 /// Processing order matters:
@@ -20,14 +33,17 @@ static BOLD_RE: LazyLock<Regex> =
 /// 2. Bold `**text**` → `<span class="sperrdruck">text</span>`
 /// 3. Emphasis `_text_` → `<span class="antiqua">text</span>`
 pub fn md_to_html(text: &str) -> String {
-    // 1. Footnote refs
-    let result = FOOTNOTE_REF_RE.replace_all(text, "<sup>$1</sup>");
+    // 1. Footnote refs — use placeholder for stars to prevent bold regex matching across <sup> tags
+    let result = FOOTNOTE_REF_RE.replace_all(text, |caps: &regex::Captures| {
+        let marker = caps[1].replace('*', "\u{FFFC}");
+        format!("<sup>{marker}</sup>")
+    });
     // 2. Bold
     let result = BOLD_RE.replace_all(&result, "<span class=\"sperrdruck\">$1</span>");
     // 3. Emphasis
     let result = EMPHASIS_RE.replace_all(&result, "<span class=\"antiqua\">$1</span>");
-
-    result.into_owned()
+    // 4. Restore star placeholders
+    result.replace('\u{FFFC}', "*")
 }
 
 #[cfg(test)]
@@ -67,10 +83,27 @@ mod tests {
     }
 
     #[test]
+    fn test_footnote_stars_dont_interfere_with_bold() {
+        // [^***] and [^****] in same text should not create false bold matches
+        assert_eq!(
+            md_to_html("end.[^***] Middle text.[^****]"),
+            "end.<sup>***</sup> Middle text.<sup>****</sup>"
+        );
+    }
+
+    #[test]
     fn test_combined() {
         assert_eq!(
             md_to_html("_italic_ and **bold** and [^1]"),
-            "<span class=\"antiqua\">italic</span> and <span class=\"sperrdruck\">bold</span> and <sup>1</sup>"
+            "<span class=\"antiqua\">italic</span> and <span class=\"sperrdruck\">bold</span> and <sup>1</sup>",
+        );
+    }
+
+    #[test]
+    fn test_combined_with_star_footnote() {
+        assert_eq!(
+            md_to_html("**bold** and [^*]"),
+            "<span class=\"sperrdruck\">bold</span> and <sup>*</sup>"
         );
     }
 

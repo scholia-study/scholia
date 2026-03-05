@@ -1,20 +1,14 @@
-import { useState, useCallback, useRef, useMemo } from 'react'
 import {
   createRootRouteWithContext,
   createRoute,
+  Link,
   Outlet,
-  redirect,
   useNavigate,
+  useSearch,
 } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
-import { TocSidebar } from '../components/TocSidebar'
-import type { ViewMode } from '../components/TocSidebar'
-import { NodeContent } from '../components/NodeContent'
-import { ScrollViewContainer } from '../components/ScrollViewContainer'
-import type { ScrollViewHandle } from '../components/ScrollViewContainer'
-import { SentencePanel } from '../components/SentencePanel'
-import { SentenceSelectionContext } from '../components/SentenceSelectionContext'
-import type { SentenceResponse } from '../api/model'
+import { useListBooks } from '../api/books/books'
+import { ReaderLayout } from '../components/ReaderLayout'
 
 interface RouterContext {
   queryClient: QueryClient
@@ -28,111 +22,129 @@ const rootRoute = createRootRouteWithContext<RouterContext>()({
   ),
 })
 
-const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  beforeLoad: () => {
-    throw redirect({ to: '/books/$slug', params: { slug: 'wissenschaft-der-logik' } })
-  },
-})
+// --- /books route: book selection ---
 
-function BookLayout() {
-  const { slug } = bookRoute.useParams()
+function BooksPage() {
+  const { data, isLoading, error } = useListBooks()
+  const books = data?.data
   const navigate = useNavigate()
-  const [viewMode, setViewMode] = useState<ViewMode>('section')
-  const [visibleSlug, setVisibleSlug] = useState<string | undefined>()
-  const scrollViewRef = useRef<ScrollViewHandle>(null)
-  const [selectedSentence, setSelectedSentence] = useState<SentenceResponse | null>(null)
 
-  const handleSelectSentence = useCallback((sentence: SentenceResponse) => {
-    setSelectedSentence((prev) => prev?.id === sentence.id ? null : sentence)
-  }, [])
-
-  const sentenceCtx = useMemo(() => ({
-    selectedSentenceId: selectedSentence?.id ?? null,
-    selectedSentence,
-    onSelectSentence: handleSelectSentence,
-  }), [selectedSentence, handleSelectSentence])
-
-  const handleToggleView = useCallback(() => {
-    if (viewMode === 'scroll' && visibleSlug) {
-      navigate({
-        to: '/books/$slug/$nodeSlug',
-        params: { slug, nodeSlug: visibleSlug },
-      })
-    } else {
-      navigate({ to: '/books/$slug', params: { slug } })
-    }
-    setViewMode((prev) => prev === 'section' ? 'scroll' : 'section')
-    setSelectedSentence(null)
-  }, [navigate, slug, viewMode, visibleSlug])
-
-  const handleScrollToNode = useCallback((nodeSlug: string, playOrder: number) => {
-    scrollViewRef.current?.scrollToNode(nodeSlug, playOrder)
-  }, [])
+  const handleOpenBook = (slug: string) => {
+    navigate({ to: '/', search: { texts: slug } })
+  }
 
   return (
-    <SentenceSelectionContext.Provider value={sentenceCtx}>
-      <div className="flex h-screen">
-        <TocSidebar
-          slug={slug}
-          viewMode={viewMode}
-          onToggleView={handleToggleView}
-          activeSlugOverride={visibleSlug}
-          onScrollToNode={handleScrollToNode}
-        />
-        <main className="flex-1 overflow-hidden">
-          {viewMode === 'scroll' ? (
-            <ScrollViewContainer
-              ref={scrollViewRef}
-              slug={slug}
-              onVisibleNodeChange={setVisibleSlug}
-            />
-          ) : (
-            <div className="h-full overflow-y-auto">
-              <Outlet />
-            </div>
-          )}
-        </main>
-        {selectedSentence && (
-          <SentencePanel
-            sentence={selectedSentence}
-            onClose={() => setSelectedSentence(null)}
-          />
-        )}
-      </div>
-    </SentenceSelectionContext.Provider>
+    <div className="max-w-2xl mx-auto px-8 py-16">
+      <h1 className="text-3xl font-bold text-stone-900 mb-2">Prospero</h1>
+      <p className="text-stone-500 mb-8">Select a book to begin reading.</p>
+      {isLoading && <p className="text-stone-400">Loading...</p>}
+      {error ? <p className="text-red-500">Failed to load books.</p> : null}
+      {books && (
+        <ul className="space-y-3">
+          {books.map((book) => (
+            <li key={book.id}>
+              <button
+                onClick={() => handleOpenBook(book.slug)}
+                className="block w-full text-left p-4 rounded-lg border border-stone-200 bg-white hover:bg-stone-50 transition-colors"
+              >
+                <div className="font-semibold text-stone-900">{book.title}</div>
+                <div className="text-sm text-stone-500">{book.author}</div>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
 }
 
-const bookRoute = createRoute({
+const booksRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/books/$slug',
-  component: BookLayout,
+  path: '/books',
+  component: BooksPage,
 })
 
-const bookIndexRoute = createRoute({
-  getParentRoute: () => bookRoute,
+// --- / route: reader (search-param driven) ---
+
+export type ReaderSearch = {
+  texts?: string  // comma-separated "bookSlug/nodeSlug" or "bookSlug"
+  s?: string      // comma-separated "panelIndex:sentenceId" entries
+}
+
+// Parse "0:abc,1:def" into a Map<number, string>
+function parseSelections(s: string | undefined): Map<number, string> {
+  const map = new Map<number, string>()
+  if (!s) return map
+  for (const entry of s.split(',')) {
+    const colonIdx = entry.indexOf(':')
+    if (colonIdx === -1) continue
+    const idx = parseInt(entry.slice(0, colonIdx), 10)
+    const id = entry.slice(colonIdx + 1)
+    if (!isNaN(idx) && id) map.set(idx, id)
+  }
+  return map
+}
+
+function ReaderPage() {
+  const search = useSearch({ from: '/' })
+  const navigate = useNavigate({ from: '/' })
+
+  const textsParam = (search as ReaderSearch).texts ?? ''
+  const sParam = (search as ReaderSearch).s
+
+  // Parse panels from texts param
+  const panels = textsParam
+    ? textsParam.split(',').map((entry) => {
+        const slashIdx = entry.indexOf('/')
+        if (slashIdx === -1) return { bookSlug: entry, nodeSlug: undefined }
+        return { bookSlug: entry.slice(0, slashIdx), nodeSlug: entry.slice(slashIdx + 1) || undefined }
+      })
+    : []
+
+  // Parse per-panel sentence selections
+  const selections = parseSelections(sParam)
+
+  // If no panels, show welcome
+  if (panels.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-stone-900 mb-2">Prospero</h1>
+          <p className="text-stone-500 mb-6">No texts open.</p>
+          <Link to="/books" className="px-4 py-2 rounded bg-stone-800 text-white hover:bg-stone-700 transition-colors">
+            Browse Books
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const updateSearch = (newSearch: ReaderSearch) => {
+    navigate({ search: newSearch })
+  }
+
+  return (
+    <ReaderLayout
+      panels={panels}
+      selections={selections}
+      onUpdateSearch={updateSearch}
+    />
+  )
+}
+
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
   path: '/',
-  component: () => (
-    <div className="flex items-center justify-center h-full text-stone-400">
-      <p>Select a section from the table of contents.</p>
-    </div>
-  ),
-})
-
-const nodeRoute = createRoute({
-  getParentRoute: () => bookRoute,
-  path: '/$nodeSlug',
-  component: () => {
-    const { slug, nodeSlug } = nodeRoute.useParams()
-    return <NodeContent slug={slug} nodeSlug={nodeSlug} />
-  },
+  validateSearch: (search: Record<string, unknown>): ReaderSearch => ({
+    texts: search.texts as string | undefined,
+    s: search.s as string | undefined,
+  }),
+  component: ReaderPage,
 })
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  bookRoute.addChildren([bookIndexRoute, nodeRoute]),
+  booksRoute,
 ])
 
 export { routeTree }

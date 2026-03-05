@@ -4,11 +4,11 @@ use utoipa::ToSchema;
 #[derive(Debug, Serialize, ToSchema)]
 pub struct NodeDetail {
     pub id: String,
-    pub ncx_id: String,
+    pub source_ref: String,
     pub slug: String,
     pub label: String,
     pub depth: i16,
-    pub play_order: i32,
+    pub sort_order: i32,
     pub blocks: Vec<ContentBlockResponse>,
 }
 
@@ -26,7 +26,16 @@ pub struct ContentBlockResponse {
 pub struct SentenceResponse {
     pub id: String,
     pub position: i16,
-    pub sentence_number: i32,
+    pub sentence_number: Option<i32>,
     pub text: String,
     pub html: String,
+    pub page_markers: Vec<PageMarkerResponse>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PageMarkerResponse {
+    pub system_slug: String,
+    pub ref_value: String,
+    pub sort_order: i32,
+    pub char_offset: Option<i32>,
 }

@@ -1,29 +1,101 @@
-import { useRef, useState, useEffect, forwardRef, useImperativeHandle } from 'react'
+import { useRef, useState, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import type { NodeDetail } from '../api/model'
+import { useGetNodePageInfinite } from '../api/nodes/nodes'
+import type { NodeDetail, SentenceResponse } from '../api/model'
 import { Block } from './BlockRenderer'
-import { useSentenceSelection } from './SentenceSelectionContext'
 
-export interface ScrollViewHandle {
-  scrollToNode: (nodeSlug: string, playOrder?: number) => void
+export interface PanelScrollViewHandle {
+  scrollToNode: (nodeSlug: string) => void
 }
 
-interface ScrollViewProps {
+interface PanelScrollViewProps {
+  bookSlug: string
+  selectedSentenceId: string | undefined
+  onSelectSentence: (sentenceId: string) => void
+  onVisibleNodeChange?: (nodeSlug: string) => void
+}
+
+export const PanelScrollView = forwardRef<PanelScrollViewHandle, PanelScrollViewProps>(
+  function PanelScrollView({ bookSlug, selectedSentenceId, onSelectSentence, onVisibleNodeChange }, ref) {
+    const {
+      data,
+      hasNextPage,
+      isFetchingNextPage,
+      fetchNextPage,
+      isLoading,
+      error,
+    } = useGetNodePageInfinite(bookSlug, { limit: 20 }, {
+      query: {
+        initialPageParam: undefined,
+        getNextPageParam: (lastPage) => {
+          if (lastPage.status !== 200) return undefined
+          const page = lastPage.data
+          if (!page.has_more || page.nodes.length === 0) return undefined
+          return page.nodes[page.nodes.length - 1].sort_order
+        },
+      },
+    })
+
+    const nodes = useMemo(
+      () => data?.pages.flatMap((page) => page.status === 200 ? page.data.nodes : []) ?? [],
+      [data],
+    )
+
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center h-full text-stone-400">
+          <p>Loading...</p>
+        </div>
+      )
+    }
+
+    if (error) {
+      return (
+        <div className="flex items-center justify-center h-full text-red-500">
+          <p>Failed to load content.</p>
+        </div>
+      )
+    }
+
+    return (
+      <VirtualizedScroll
+        ref={ref}
+        nodes={nodes}
+        hasNextPage={hasNextPage ?? false}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+        selectedSentenceId={selectedSentenceId}
+        onSelectSentence={onSelectSentence}
+        onVisibleNodeChange={onVisibleNodeChange}
+      />
+    )
+  },
+)
+
+// --- Virtualized scroll inner component ---
+
+interface VirtualizedScrollProps {
   nodes: NodeDetail[]
   hasNextPage: boolean
   isFetchingNextPage: boolean
   fetchNextPage: () => void
+  selectedSentenceId: string | undefined
+  onSelectSentence: (sentenceId: string) => void
   onVisibleNodeChange?: (nodeSlug: string) => void
 }
 
-export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
-  function ScrollView({ nodes, hasNextPage, isFetchingNextPage, fetchNextPage, onVisibleNodeChange }, ref) {
+const VirtualizedScroll = forwardRef<PanelScrollViewHandle, VirtualizedScrollProps>(
+  function VirtualizedScroll({
+    nodes,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    selectedSentenceId,
+    onSelectSentence,
+    onVisibleNodeChange,
+  }, ref) {
     const parentRef = useRef<HTMLDivElement>(null)
-    const { selectedSentenceId, onSelectSentence } = useSentenceSelection()
-    const [pendingScrollTarget, setPendingScrollTarget] = useState<{
-      nodeSlug: string
-      playOrder: number
-    } | null>(null)
+    const [pendingScrollTarget, setPendingScrollTarget] = useState<string | null>(null)
 
     const virtualizer = useVirtualizer({
       count: nodes.length,
@@ -71,12 +143,12 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
 
     // Scroll-to-node via imperative handle
     useImperativeHandle(ref, () => ({
-      scrollToNode(nodeSlug: string, playOrder?: number) {
+      scrollToNode(nodeSlug: string) {
         const index = nodes.findIndex((n) => n.slug === nodeSlug)
         if (index >= 0) {
           virtualizer.scrollToIndex(index, { align: 'start' })
-        } else if (playOrder != null) {
-          setPendingScrollTarget({ nodeSlug, playOrder })
+        } else {
+          setPendingScrollTarget(nodeSlug)
         }
       },
     }), [nodes, virtualizer])
@@ -84,7 +156,7 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
     // When nodes update, check if pending target is now loaded
     useEffect(() => {
       if (!pendingScrollTarget) return
-      const index = nodes.findIndex((n) => n.slug === pendingScrollTarget.nodeSlug)
+      const index = nodes.findIndex((n) => n.slug === pendingScrollTarget)
       if (index >= 0) {
         setPendingScrollTarget(null)
         virtualizer.scrollToIndex(index, { align: 'start' })
@@ -124,8 +196,8 @@ export const ScrollView = forwardRef<ScrollViewHandle, ScrollViewProps>(
                       <Block
                         key={block.id}
                         block={block}
-                        selectedSentenceId={selectedSentenceId}
-                        onSelectSentence={onSelectSentence}
+                        selectedSentenceId={selectedSentenceId ?? null}
+                        onSelectSentence={(sentence: SentenceResponse) => onSelectSentence(sentence.id)}
                       />
                     ))}
                   </div>

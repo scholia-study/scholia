@@ -7,7 +7,7 @@
 
 export type GetNodePageParams = {
 /**
- * play_order cursor — omit for first page
+ * sort_order cursor — omit for first page
  * @nullable
  */
 after?: number | null;

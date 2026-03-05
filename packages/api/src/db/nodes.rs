@@ -2,15 +2,15 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::error::AppError;
-use crate::models::node::{ContentBlockResponse, NodeDetail, SentenceResponse};
+use crate::models::node::{ContentBlockResponse, NodeDetail, PageMarkerResponse, SentenceResponse};
 
 struct NodeRow {
     id: Uuid,
-    ncx_id: String,
+    source_ref: String,
     slug: String,
     label: String,
     depth: i16,
-    play_order: i32,
+    sort_order: i32,
 }
 
 struct BlockRow {
@@ -25,9 +25,17 @@ struct SentenceRow {
     id: Uuid,
     block_id: Uuid,
     position: i16,
-    sentence_number: i32,
+    sentence_number: Option<i32>,
     text: String,
     html: String,
+}
+
+struct MarkerRow {
+    sentence_id: Uuid,
+    system_slug: String,
+    ref_value: String,
+    sort_order: i32,
+    char_offset: Option<i32>,
 }
 
 pub async fn get_node_content(
@@ -37,7 +45,7 @@ pub async fn get_node_content(
 ) -> Result<NodeDetail, AppError> {
     let node = sqlx::query_as!(
         NodeRow,
-        r#"SELECT tn.id, tn.ncx_id, tn.slug, tn.label, tn.depth, tn.play_order
+        r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order
            FROM toc_nodes tn
            JOIN books b ON b.id = tn.book_id
            WHERE b.slug = $1 AND tn.slug = $2"#,
@@ -70,6 +78,33 @@ pub async fn get_node_content(
     .fetch_all(pool)
     .await?;
 
+    let markers = sqlx::query_as!(
+        MarkerRow,
+        r#"SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset
+           FROM page_markers pm
+           JOIN reference_systems rs ON rs.id = pm.system_id
+           JOIN sentences s ON s.id = pm.sentence_id
+           WHERE s.node_id = $1
+           ORDER BY pm.sort_order"#,
+        node.id,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    // Group markers by sentence_id
+    let mut marker_map: std::collections::HashMap<Uuid, Vec<PageMarkerResponse>> =
+        std::collections::HashMap::new();
+    for m in markers {
+        marker_map.entry(m.sentence_id).or_default().push(
+            PageMarkerResponse {
+                system_slug: m.system_slug,
+                ref_value: m.ref_value,
+                sort_order: m.sort_order,
+                char_offset: m.char_offset,
+            },
+        );
+    }
+
     // Group sentences by block_id
     let mut sentence_map: std::collections::HashMap<Uuid, Vec<SentenceResponse>> =
         std::collections::HashMap::new();
@@ -83,6 +118,7 @@ pub async fn get_node_content(
                 sentence_number: s.sentence_number,
                 text: s.text,
                 html: s.html,
+                page_markers: marker_map.remove(&s.id).unwrap_or_default(),
             });
     }
 
@@ -103,11 +139,11 @@ pub async fn get_node_content(
 
     Ok(NodeDetail {
         id: node.id.to_string(),
-        ncx_id: node.ncx_id,
+        source_ref: node.source_ref,
         slug: node.slug,
         label: node.label,
         depth: node.depth,
-        play_order: node.play_order,
+        sort_order: node.sort_order,
         blocks,
     })
 }

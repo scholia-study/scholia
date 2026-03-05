@@ -284,7 +284,7 @@ fn split_html_with_rebalance(html: &str, positions: &[usize]) -> Vec<String> {
         // Close any tags that are still open at the end of this sentence
         for tag in local_open.iter().rev() {
             out.push_str("</");
-            out.push_str(tag);
+            out.push_str(tag_name_of(tag));
             out.push('>');
         }
 
@@ -308,6 +308,8 @@ fn split_html_with_rebalance(html: &str, positions: &[usize]) -> Vec<String> {
 }
 
 /// Track opening and closing tags in a segment, updating the open tags stack.
+/// Each entry in open_tags is the full tag content (e.g. `span class="antiqua"`)
+/// so it can be reopened with attributes intact.
 fn track_tags_in_segment(segment: &str, open_tags: &mut Vec<String>) {
     let bytes = segment.as_bytes();
     let mut i = 0;
@@ -338,17 +340,21 @@ fn track_tags_in_segment(segment: &str, open_tags: &mut Vec<String>) {
             }
 
             // Only track inline formatting tags
-            if matches!(tag_name, "i" | "b" | "sup" | "sub") {
+            if matches!(tag_name, "i" | "b" | "sup" | "sub" | "span") {
                 if is_closing {
-                    // Remove the last matching open tag
-                    if let Some(pos) = open_tags.iter().rposition(|t| t == tag_name) {
+                    // Remove the last matching open tag (match by tag name prefix)
+                    if let Some(pos) = open_tags.iter().rposition(|t| {
+                        t == tag_name || t.starts_with(&format!("{tag_name} "))
+                    }) {
                         open_tags.remove(pos);
                     }
                 } else {
                     // Check it's not a self-closing tag
                     let tag_content = &segment[tag_start..i.min(segment.len())];
                     if !tag_content.ends_with("/>") {
-                        open_tags.push(tag_name.to_string());
+                        // Store full tag content (between < and >) for reopening
+                        let full_tag = &segment[tag_start + 1..i - 1];
+                        open_tags.push(full_tag.to_string());
                     }
                 }
             }
@@ -356,6 +362,11 @@ fn track_tags_in_segment(segment: &str, open_tags: &mut Vec<String>) {
             i += 1;
         }
     }
+}
+
+/// Extract the tag name from a full tag string (e.g. `span class="x"` → `span`).
+fn tag_name_of(full_tag: &str) -> &str {
+    full_tag.split_once(' ').map_or(full_tag, |(name, _)| name)
 }
 
 #[cfg(test)]
@@ -482,6 +493,22 @@ mod tests {
         let text2 = "heißt an Ew. Excellenz eigenem Interesse arbeiten.";
         let result2 = split_sentences(text2, text2);
         assert_eq!(result2.len(), 1);
+    }
+
+    #[test]
+    fn test_html_rebalance_span_with_class() {
+        let text = "Erster Satz. Zweiter Satz.";
+        let html = "<span class=\"antiqua\">Erster Satz. Zweiter Satz.</span>";
+        let result = split_sentences(text, html);
+        assert_eq!(result.len(), 2);
+        assert_eq!(
+            result[0].1,
+            "<span class=\"antiqua\">Erster Satz.</span>"
+        );
+        assert_eq!(
+            result[1].1,
+            "<span class=\"antiqua\">Zweiter Satz.</span>"
+        );
     }
 
     #[test]

@@ -88,7 +88,7 @@
           {
             "name": "after",
             "in": "query",
-            "description": "play_order cursor — omit for first page",
+            "description": "sort_order cursor — omit for first page",
             "required": false,
             "schema": {
               "type": [
@@ -322,11 +322,11 @@
         "type": "object",
         "required": [
           "id",
-          "ncx_id",
+          "source_ref",
           "slug",
           "label",
           "depth",
-          "play_order",
+          "sort_order",
           "blocks"
         ],
         "properties": {
@@ -346,14 +346,14 @@
           "label": {
             "type": "string"
           },
-          "ncx_id": {
+          "slug": {
             "type": "string"
           },
-          "play_order": {
+          "sort_order": {
             "type": "integer",
             "format": "int32"
           },
-          "slug": {
+          "source_ref": {
             "type": "string"
           }
         }
@@ -376,14 +376,41 @@
           }
         }
       },
+      "PageMarkerResponse": {
+        "type": "object",
+        "required": [
+          "system_slug",
+          "ref_value",
+          "sort_order"
+        ],
+        "properties": {
+          "char_offset": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "ref_value": {
+            "type": "string"
+          },
+          "sort_order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "system_slug": {
+            "type": "string"
+          }
+        }
+      },
       "SentenceResponse": {
         "type": "object",
         "required": [
           "id",
           "position",
-          "sentence_number",
           "text",
-          "html"
+          "html",
+          "page_markers"
         ],
         "properties": {
           "html": {
@@ -392,12 +419,21 @@
           "id": {
             "type": "string"
           },
+          "page_markers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PageMarkerResponse"
+            }
+          },
           "position": {
             "type": "integer",
             "format": "int32"
           },
           "sentence_number": {
-            "type": "integer",
+            "type": [
+              "integer",
+              "null"
+            ],
             "format": "int32"
           },
           "text": {
@@ -409,11 +445,11 @@
         "type": "object",
         "required": [
           "id",
-          "ncx_id",
+          "source_ref",
           "slug",
           "label",
           "depth",
-          "play_order",
+          "sort_order",
           "has_content",
           "children"
         ],
@@ -436,13 +472,13 @@
           "label": {
             "type": "string"
           },
-          "ncx_id": {
+          "slug": {
             "type": "string"
           },
-          "play_order": {
+          "sort_order": {
             "type": "integer"
           },
-          "slug": {
+          "source_ref": {
             "type": "string"
           }
         }

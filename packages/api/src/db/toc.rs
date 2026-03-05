@@ -9,11 +9,11 @@ use crate::models::toc::TocNodeResponse;
 struct TocRow {
     id: Uuid,
     parent_id: Option<Uuid>,
-    ncx_id: String,
+    source_ref: String,
     slug: String,
     label: String,
     depth: i16,
-    play_order: i32,
+    sort_order: i32,
     has_content: bool,
 }
 
@@ -23,16 +23,16 @@ pub async fn get_toc_tree(pool: &PgPool, slug: &str) -> Result<Vec<TocNodeRespon
         r#"SELECT
                tn.id,
                tn.parent_id,
-               tn.ncx_id,
+               tn.source_ref,
                tn.slug,
                tn.label,
                tn.depth,
-               tn.play_order,
+               tn.sort_order,
                EXISTS(SELECT 1 FROM content_blocks cb WHERE cb.node_id = tn.id) AS "has_content!"
            FROM toc_nodes tn
            JOIN books b ON b.id = tn.book_id
            WHERE b.slug = $1
-           ORDER BY tn.play_order"#,
+           ORDER BY tn.sort_order"#,
         slug,
     )
     .fetch_all(pool)
@@ -46,7 +46,6 @@ pub async fn get_toc_tree(pool: &PgPool, slug: &str) -> Result<Vec<TocNodeRespon
 }
 
 fn build_tree(rows: Vec<TocRow>) -> Vec<TocNodeResponse> {
-    // Two-pass approach: first create all nodes, then assemble into tree.
     let mut nodes: HashMap<Uuid, TocNodeResponse> = HashMap::new();
     let mut order: Vec<(Uuid, Option<Uuid>)> = Vec::new();
 
@@ -56,18 +55,17 @@ fn build_tree(rows: Vec<TocRow>) -> Vec<TocNodeResponse> {
             row.id,
             TocNodeResponse {
                 id: row.id.to_string(),
-                ncx_id: row.ncx_id,
+                source_ref: row.source_ref,
                 slug: row.slug,
                 label: row.label,
                 depth: row.depth,
-                play_order: row.play_order,
+                sort_order: row.sort_order,
                 has_content: row.has_content,
                 children: Vec::new(),
             },
         );
     }
 
-    // Process in reverse order so children are removed before parents.
     let mut roots = Vec::new();
     for (id, parent_id) in order.iter().rev() {
         let node = nodes.remove(id).unwrap();
@@ -83,7 +81,6 @@ fn build_tree(rows: Vec<TocRow>) -> Vec<TocNodeResponse> {
         }
     }
 
-    // We processed in reverse, so reverse to restore play_order.
     roots.reverse();
     reverse_children(&mut roots);
     roots

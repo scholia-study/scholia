@@ -11,7 +11,7 @@ export interface TocNodeResponse {
   has_content: boolean;
   id: string;
   label: string;
-  ncx_id: string;
-  play_order: number;
   slug: string;
+  sort_order: number;
+  source_ref: string;
 }

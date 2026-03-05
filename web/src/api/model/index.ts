@@ -11,5 +11,6 @@ export * from './contentBlockResponse';
 export * from './getNodePageParams';
 export * from './nodeDetail';
 export * from './nodePage';
+export * from './pageMarkerResponse';
 export * from './sentenceResponse';
 export * from './tocNodeResponse';

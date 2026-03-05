@@ -1,4 +1,5 @@
 mod html;
+mod import;
 mod model;
 mod parse;
 mod roman;
@@ -8,7 +9,7 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 
 use common::kant1::filenames;
 use common::kant1::toc;
@@ -17,7 +18,7 @@ use structure::{build_output, ParsedFile};
 
 #[derive(Parser)]
 #[command(about = "Parse reviewed Kant KrV markdown into DB-ready JSON structures")]
-struct Args {
+struct Cli {
     /// Directory containing reviewed markdown files
     #[arg(long, default_value = "assets/kant1_md_reviewed")]
     input_dir: String,
@@ -25,11 +26,42 @@ struct Args {
     /// Output file (- for stdout)
     #[arg(long, default_value = "assets/kant1_md_to_struct/output.json")]
     output_file: String,
+
+    #[command(subcommand)]
+    command: Option<Command>,
+}
+
+#[derive(Subcommand)]
+enum Command {
+    /// Also import the JSON into PostgreSQL database
+    Import {
+        /// PostgreSQL connection URL (overrides DATABASE_URL env var)
+        #[arg(long)]
+        database_url: Option<String>,
+    },
 }
 
 fn main() {
-    let args = Args::parse();
-    let input_dir = Path::new(&args.input_dir);
+    let cli = Cli::parse();
+
+    // Always extract
+    let output_file = run_extract(&cli.input_dir, &cli.output_file);
+
+    // Optionally import
+    if let Some(Command::Import { database_url }) = cli.command {
+        let rt = tokio::runtime::Runtime::new().expect("Failed to create tokio runtime");
+        rt.block_on(async {
+            if let Err(e) = import::run(&output_file, database_url).await {
+                eprintln!("Import failed: {e}");
+                std::process::exit(1);
+            }
+        });
+    }
+}
+
+/// Run extraction, return the path to the written JSON file.
+fn run_extract(input_dir_str: &str, output_file: &str) -> String {
+    let input_dir = Path::new(input_dir_str);
 
     // 1. Get TOC and expected filenames
     let flat_entries = toc::flat_toc_entries();
@@ -89,7 +121,6 @@ fn main() {
             );
         }
 
-        // Parse blocks
         let blocks = parse_blocks(body);
 
         parsed_files.push(ParsedFile {
@@ -199,14 +230,16 @@ fn main() {
     // 5. Write JSON
     let json = serde_json::to_string_pretty(&output).expect("JSON serialization failed");
 
-    if args.output_file == "-" {
+    if output_file == "-" {
         std::io::stdout()
             .write_all(json.as_bytes())
             .expect("Failed to write to stdout");
         println!();
+        "-".to_string()
     } else {
-        fs::write(&args.output_file, &json)
-            .unwrap_or_else(|e| panic!("Cannot write {}: {e}", args.output_file));
-        eprintln!("Wrote {}", args.output_file);
+        fs::write(output_file, &json)
+            .unwrap_or_else(|e| panic!("Cannot write {}: {e}", output_file));
+        eprintln!("Wrote {}", output_file);
+        output_file.to_string()
     }
 }

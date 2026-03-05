@@ -5,11 +5,11 @@ use utoipa::openapi::{RefOr, Schema};
 #[derive(Debug, Serialize)]
 pub struct TocNodeResponse {
     pub id: String,
-    pub ncx_id: String,
+    pub source_ref: String,
     pub slug: String,
     pub label: String,
     pub depth: i16,
-    pub play_order: i32,
+    pub sort_order: i32,
     pub has_content: bool,
     pub children: Vec<TocNodeResponse>,
 }
@@ -35,10 +35,10 @@ impl utoipa::ToSchema for TocNodeResponse {
             )
             .required("id")
             .property(
-                "ncx_id",
+                "source_ref",
                 ObjectBuilder::new().schema_type(SchemaType::new(Type::String)),
             )
-            .required("ncx_id")
+            .required("source_ref")
             .property(
                 "slug",
                 ObjectBuilder::new().schema_type(SchemaType::new(Type::String)),
@@ -55,10 +55,10 @@ impl utoipa::ToSchema for TocNodeResponse {
             )
             .required("depth")
             .property(
-                "play_order",
+                "sort_order",
                 ObjectBuilder::new().schema_type(SchemaType::new(Type::Integer)),
             )
-            .required("play_order")
+            .required("sort_order")
             .property(
                 "has_content",
                 ObjectBuilder::new().schema_type(SchemaType::new(Type::Boolean)),

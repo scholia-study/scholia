@@ -4,11 +4,14 @@
  * Prospero API
  * OpenAPI spec version: 0.1.0
  */
+import type { PageMarkerResponse } from './pageMarkerResponse';
 
 export interface SentenceResponse {
   html: string;
   id: string;
+  page_markers: PageMarkerResponse[];
   position: number;
-  sentence_number: number;
+  /** @nullable */
+  sentence_number?: number | null;
   text: string;
 }
