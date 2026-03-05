@@ -4,13 +4,11 @@
 CREATE EXTENSION IF NOT EXISTS ltree;
 
 -- ============================================================
--- TEXT TABLES (imported from wdl.json)
+-- TEXT TABLES
 -- ============================================================
 
--- One row per work. WdL is the first; designed for adding more
--- texts (Phenomenology, Encyclopedia, etc.) later.
--- For translations, source_book_id points to the original work.
--- Source texts have source_book_id = NULL.
+-- One row per work. For translations, source_book_id points to
+-- the original work. Source texts have source_book_id = NULL.
 CREATE TABLE books (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     source_book_id  UUID REFERENCES books(id) ON DELETE SET NULL,
@@ -26,36 +24,40 @@ CREATE TABLE books (
 );
 
 -- The table-of-contents tree. Each node is a section heading
--- (e.g. "Erstes Buch: Die Lehre vom Sein") that can contain
--- content blocks and child nodes.
+-- that can contain content blocks and child nodes.
 --
 -- Uses adjacency list (parent_id) for simple parent/child
 -- queries AND materialized path (ltree) for efficient
 -- ancestor/descendant queries. Both are maintained because
 -- the text data is static once imported.
+--
+-- source_ref: generic per-source identifier
+--   Hegel: NCX id (e.g. "np-42")
+--   Kant: position string (e.g. "001", "003")
+-- sort_order: display/reading order within the book
 CREATE TABLE toc_nodes (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     book_id         UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
     parent_id       UUID REFERENCES toc_nodes(id) ON DELETE CASCADE,
     source_node_id  UUID REFERENCES toc_nodes(id) ON DELETE SET NULL,
-    ncx_id          TEXT NOT NULL,
+    source_ref      TEXT NOT NULL,
     slug            TEXT NOT NULL,
     path            LTREE NOT NULL,
-    play_order      INT NOT NULL,
+    sort_order      INT NOT NULL,
     depth           SMALLINT NOT NULL,
     label           TEXT NOT NULL,
     admin_notes     TEXT,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-    UNIQUE (book_id, ncx_id),
+    UNIQUE (book_id, source_ref),
     UNIQUE (book_id, slug),
-    UNIQUE (book_id, play_order)
+    UNIQUE (book_id, sort_order)
 );
 
 CREATE INDEX idx_nodes_path ON toc_nodes USING gist (path);
 CREATE INDEX idx_nodes_parent ON toc_nodes (parent_id);
-CREATE INDEX idx_nodes_book_order ON toc_nodes (book_id, play_order);
+CREATE INDEX idx_nodes_book_order ON toc_nodes (book_id, sort_order);
 
 -- Content blocks: the actual text units within each section.
 -- Four types: paragraph (body text), heading (section title),
@@ -73,7 +75,6 @@ CREATE TABLE content_blocks (
     paragraph_number  INT,
     text              TEXT NOT NULL DEFAULT '',
     html              TEXT NOT NULL DEFAULT '',
-    page_ref          TEXT,
     admin_notes       TEXT,
     created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -89,11 +90,19 @@ CREATE INDEX idx_blocks_fts ON content_blocks
     USING gin (to_tsvector('german', text))
     WHERE block_type = 'paragraph';
 
--- Individual sentences within paragraphs. Each sentence has a
--- text scoped unique sentence_number (1..7774) and carries both
--- plain text and HTML with rebalanced inline tags.
--- For translation sentences, source_sentence_start/end_id point to
--- the source sentence(s) this was translated from.
+-- Individual sentences within content blocks.
+-- All non-separator block types get sentence rows:
+--   heading   → 1 sentence (the heading text)
+--   footnote  → 1+ sentences (sentence-split like paragraphs)
+--   paragraph → 1+ sentences
+--   separator → no sentences
+--
+-- sentence_number is only set for paragraph sentences (global
+-- body-text enumeration). Heading/footnote sentences exist for
+-- anchoring but are not counted.
+--
+-- For translation sentences, source_sentence_start/end_id point
+-- to the source sentence(s) this was translated from.
 --   1:1  — start set, end NULL
 --   merge (2 source → 1 translated) — start + end set
 --   split (1 source → 2 translated) — both point to same source via start
@@ -103,7 +112,7 @@ CREATE TABLE sentences (
     node_id                   UUID NOT NULL REFERENCES toc_nodes(id) ON DELETE CASCADE,
     block_id                  UUID NOT NULL REFERENCES content_blocks(id) ON DELETE CASCADE,
     position                  SMALLINT NOT NULL,
-    sentence_number           INT NOT NULL,
+    sentence_number           INT,
     source_sentence_start_id  UUID REFERENCES sentences(id) ON DELETE SET NULL,
     source_sentence_end_id    UUID REFERENCES sentences(id) ON DELETE SET NULL,
     text                      TEXT NOT NULL,
@@ -113,19 +122,63 @@ CREATE TABLE sentences (
     updated_at                TIMESTAMPTZ NOT NULL DEFAULT now(),
 
     UNIQUE (block_id, position),
-    UNIQUE (book_id, sentence_number),
 
     CONSTRAINT chk_source_sentence_range CHECK (
         source_sentence_end_id IS NULL OR source_sentence_start_id IS NOT NULL
     )
 );
 
+CREATE UNIQUE INDEX idx_sentences_num
+    ON sentences (book_id, sentence_number)
+    WHERE sentence_number IS NOT NULL;
 CREATE INDEX idx_sentences_block_pos ON sentences (block_id, position);
 CREATE INDEX idx_sentences_node ON sentences (node_id);
 CREATE INDEX idx_sentences_source ON sentences (source_sentence_start_id)
     WHERE source_sentence_start_id IS NOT NULL;
 CREATE INDEX idx_sentences_fts ON sentences
     USING gin (to_tsvector('german', text));
+
+-- ============================================================
+-- REFERENCE SYSTEMS (page numbers, edition markers, etc.)
+-- ============================================================
+
+-- Each book can have multiple reference systems (e.g. Zeno page
+-- numbers, Akademie-Ausgabe pages, B-edition markers).
+-- ref_type tells the frontend how to render:
+--   'block'  → margin annotation
+--   'inline' → inline marker within text
+CREATE TABLE reference_systems (
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    book_id       UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    slug          TEXT NOT NULL,
+    label         TEXT NOT NULL,
+    description   TEXT,
+    ref_type      TEXT NOT NULL CHECK (ref_type IN ('block', 'inline')),
+    admin_notes   TEXT,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    UNIQUE (book_id, slug)
+);
+
+-- Individual page/reference markers anchored to sentences.
+-- No block_id — derive via sentences.block_id.
+-- char_offset is relative to sentence.text; NULL = start of sentence.
+CREATE TABLE page_markers (
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    system_id     UUID NOT NULL REFERENCES reference_systems(id) ON DELETE CASCADE,
+    sentence_id   UUID NOT NULL REFERENCES sentences(id) ON DELETE CASCADE,
+    ref_value     TEXT NOT NULL,
+    sort_order    INT NOT NULL,
+    char_offset   INT,
+    admin_notes   TEXT,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_markers_sentence ON page_markers (sentence_id);
+CREATE INDEX idx_markers_system_order ON page_markers (system_id, sort_order);
+CREATE INDEX idx_markers_system_value ON page_markers (system_id, ref_value);
 
 -- ============================================================
 -- RESOURCE TABLES (curated/editorial content)
