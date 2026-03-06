@@ -71,6 +71,37 @@ export function Sentence({
   );
 }
 
+function HeadingSentence({
+  sentence,
+  marginSettings,
+}: {
+  sentence: SentenceResponse
+  marginSettings?: MarginSettings
+}) {
+  let leftMarkers: PageMarkerResponse[] | undefined
+  let rightMarkers: PageMarkerResponse[] | undefined
+
+  if (marginSettings && marginSettings.enabledSystems.size > 0 && sentence.page_markers.length > 0) {
+    for (const pm of sentence.page_markers) {
+      if (!marginSettings.enabledSystems.has(pm.system_slug)) continue
+      const side = marginSettings.systemSides[pm.system_slug] ?? 'right'
+      if (side === 'left') {
+        (leftMarkers ??= []).push(pm)
+      } else {
+        (rightMarkers ??= []).push(pm)
+      }
+    }
+  }
+
+  return (
+    <>
+      {leftMarkers && <MarginNotes markers={leftMarkers} side="left" />}
+      {rightMarkers && <MarginNotes markers={rightMarkers} side="right" />}
+      <span>{parse(sentence.html)}</span>{" "}
+    </>
+  )
+}
+
 export function Block({
   block,
   selectedSentenceId,
@@ -88,11 +119,9 @@ export function Block({
         <h2 className="relative text-2xl font-bold mt-8 mb-6 text-stone-900">
           {block.sentences.length > 0
             ? block.sentences.map((s) => (
-                <Sentence
+                <HeadingSentence
                   key={s.id}
                   sentence={s}
-                  isSelected={s.id === selectedSentenceId}
-                  onSelect={onSelectSentence}
                   marginSettings={marginSettings}
                 />
               ))
