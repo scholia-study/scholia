@@ -3,6 +3,7 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { useGetNodePageInfinite } from '../api/nodes/nodes'
 import type { NodeDetail, SentenceResponse } from '../api/model'
 import { Block } from './BlockRenderer'
+import type { MarginSettings } from './BlockRenderer'
 
 export interface PanelScrollViewHandle {
   scrollToNode: (nodeSlug: string) => void
@@ -13,10 +14,12 @@ interface PanelScrollViewProps {
   selectedSentenceId: string | undefined
   onSelectSentence: (sentence: SentenceResponse) => void
   onVisibleNodeChange?: (nodeSlug: string) => void
+  onSystemsDiscovered?: (systems: string[]) => void
+  marginSettings?: MarginSettings
 }
 
 export const PanelScrollView = forwardRef<PanelScrollViewHandle, PanelScrollViewProps>(
-  function PanelScrollView({ bookSlug, selectedSentenceId, onSelectSentence, onVisibleNodeChange }, ref) {
+  function PanelScrollView({ bookSlug, selectedSentenceId, onSelectSentence, onVisibleNodeChange, onSystemsDiscovered, marginSettings }, ref) {
     const {
       data,
       hasNextPage,
@@ -40,6 +43,22 @@ export const PanelScrollView = forwardRef<PanelScrollViewHandle, PanelScrollView
       () => data?.pages.flatMap((page) => page.status === 200 ? page.data.nodes : []) ?? [],
       [data],
     )
+
+    // Discover reference systems from loaded nodes
+    useEffect(() => {
+      if (!onSystemsDiscovered || nodes.length === 0) return
+      const systems = new Set<string>()
+      for (const node of nodes) {
+        for (const block of node.blocks) {
+          for (const sentence of block.sentences) {
+            for (const pm of sentence.page_markers) {
+              systems.add(pm.system_slug)
+            }
+          }
+        }
+      }
+      if (systems.size > 0) onSystemsDiscovered(Array.from(systems))
+    }, [nodes, onSystemsDiscovered])
 
     if (isLoading) {
       return (
@@ -67,6 +86,7 @@ export const PanelScrollView = forwardRef<PanelScrollViewHandle, PanelScrollView
         selectedSentenceId={selectedSentenceId}
         onSelectSentence={onSelectSentence}
         onVisibleNodeChange={onVisibleNodeChange}
+        marginSettings={marginSettings}
       />
     )
   },
@@ -82,6 +102,7 @@ interface VirtualizedScrollProps {
   selectedSentenceId: string | undefined
   onSelectSentence: (sentence: SentenceResponse) => void
   onVisibleNodeChange?: (nodeSlug: string) => void
+  marginSettings?: MarginSettings
 }
 
 const VirtualizedScroll = forwardRef<PanelScrollViewHandle, VirtualizedScrollProps>(
@@ -93,9 +114,12 @@ const VirtualizedScroll = forwardRef<PanelScrollViewHandle, VirtualizedScrollPro
     selectedSentenceId,
     onSelectSentence,
     onVisibleNodeChange,
+    marginSettings,
   }, ref) {
     const parentRef = useRef<HTMLDivElement>(null)
     const [pendingScrollTarget, setPendingScrollTarget] = useState<string | null>(null)
+
+    const hasActiveMargins = marginSettings && marginSettings.enabledSystems.size > 0
 
     const virtualizer = useVirtualizer({
       count: nodes.length,
@@ -189,15 +213,16 @@ const VirtualizedScroll = forwardRef<PanelScrollViewHandle, VirtualizedScrollPro
                   data-index={virtualRow.index}
                   data-node-slug={node.slug}
                   ref={virtualizer.measureElement}
-                  className="max-w-2xl mx-auto px-8"
+                  className={hasActiveMargins ? 'max-w-4xl mx-auto' : 'max-w-2xl mx-auto px-8'}
                 >
-                  <div className="py-8 border-b border-stone-100">
+                  <div className={`py-8 border-b border-stone-100 ${hasActiveMargins ? 'max-w-2xl mx-auto px-8' : ''}`}>
                     {node.blocks.map((block) => (
                       <Block
                         key={block.id}
                         block={block}
                         selectedSentenceId={selectedSentenceId ?? null}
                         onSelectSentence={onSelectSentence}
+                        marginSettings={marginSettings}
                       />
                     ))}
                   </div>

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useGetToc } from '../api/toc/toc'
 import { useGetNode } from '../api/nodes/nodes'
 import { PanelToc } from './PanelToc'
@@ -7,6 +7,7 @@ import { PanelScrollView } from './PanelScrollView'
 import type { PanelScrollViewHandle } from './PanelScrollView'
 import { SentenceDetail } from './SentenceDetail'
 import type { SentenceResponse } from '../api/model'
+import type { MarginSettings } from './BlockRenderer'
 
 type ViewMode = 'section' | 'scroll'
 
@@ -23,6 +24,18 @@ interface TextPanelProps {
   onClose: (() => void) | undefined
   onScrollNavigate: (nodeSlug: string) => void
   isOnly: boolean
+}
+
+function collectSystemsFromBlocks(blocks: { sentences: { page_markers: { system_slug: string }[] }[] }[]): string[] {
+  const systems = new Set<string>()
+  for (const block of blocks) {
+    for (const sentence of block.sentences) {
+      for (const pm of sentence.page_markers) {
+        systems.add(pm.system_slug)
+      }
+    }
+  }
+  return Array.from(systems)
 }
 
 export function TextPanel({
@@ -42,6 +55,13 @@ export function TextPanel({
   const [selectedSentence, setSelectedSentence] = useState<SentenceResponse | undefined>()
   const scrollViewRef = useRef<PanelScrollViewHandle>(null)
 
+  // Margin annotation settings
+  const [marginSettings, setMarginSettings] = useState<MarginSettings>({
+    enabledSystems: new Set<string>(),
+    systemSides: {},
+  })
+  const [refsOpen, setRefsOpen] = useState(false)
+
   const handleVisibleNodeChange = useCallback((slug: string) => {
     setVisibleSlug(slug)
     onScrollNavigate(slug)
@@ -56,10 +76,52 @@ export function TextPanel({
   })
   const node = (nodeSlug && viewMode === 'section' && nodeData?.status === 200) ? nodeData.data : undefined
 
-  const activeNodeSlug = viewMode === 'scroll' ? visibleSlug : nodeSlug
+  // Discover reference systems from section-mode node data
+  useEffect(() => {
+    if (!node) return
+    const systems = collectSystemsFromBlocks(node.blocks)
+    if (systems.length > 0) handleSystemsDiscovered(systems)
+  }, [node])
 
-  // Only show detail when stored sentence matches the URL selection
+  const handleSystemsDiscovered = useCallback((systems: string[]) => {
+    setMarginSettings(prev => {
+      let changed = false
+      const newEnabled = new Set(prev.enabledSystems)
+      const newSides = { ...prev.systemSides }
+      for (const s of systems) {
+        if (!(s in newSides)) {
+          newEnabled.add(s)
+          newSides[s] = 'right'
+          changed = true
+        }
+      }
+      if (!changed) return prev
+      return { enabledSystems: newEnabled, systemSides: newSides }
+    })
+  }, [])
+
+  const handleToggleSystem = useCallback((slug: string) => {
+    setMarginSettings(prev => {
+      const newEnabled = new Set(prev.enabledSystems)
+      if (newEnabled.has(slug)) newEnabled.delete(slug)
+      else newEnabled.add(slug)
+      return { ...prev, enabledSystems: newEnabled }
+    })
+  }, [])
+
+  const handleToggleSide = useCallback((slug: string) => {
+    setMarginSettings(prev => ({
+      ...prev,
+      systemSides: {
+        ...prev.systemSides,
+        [slug]: prev.systemSides[slug] === 'left' ? 'right' : 'left',
+      },
+    }))
+  }, [])
+
+  const activeNodeSlug = viewMode === 'scroll' ? visibleSlug : nodeSlug
   const showSentenceDetail = selectedSentence != null && selectedSentence.id === selectedSentenceId
+  const availableSystems = Object.keys(marginSettings.systemSides)
 
   const handleSelectSentence = useCallback((sentence: SentenceResponse) => {
     setSelectedSentence(sentence)
@@ -74,7 +136,6 @@ export function TextPanel({
   const handleToggleView = useCallback(() => {
     setViewMode((prev) => {
       if (prev === 'scroll' && visibleSlug) {
-        // When switching from scroll to section, navigate to visible node
         onNavigate(visibleSlug)
       }
       return prev === 'section' ? 'scroll' : 'section'
@@ -114,6 +175,48 @@ export function TextPanel({
           <span className="text-sm text-stone-500 truncate flex-1">
             {node?.label ?? bookSlug}
           </span>
+          {availableSystems.length > 0 && (
+            <div className="relative">
+              <button
+                onClick={() => setRefsOpen(!refsOpen)}
+                className={`text-xs px-2 py-1 rounded border transition-colors ${
+                  marginSettings.enabledSystems.size > 0
+                    ? 'border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100'
+                    : 'border-stone-300 text-stone-600 hover:bg-stone-100'
+                }`}
+                title="Reference annotations"
+              >
+                Refs
+              </button>
+              {refsOpen && (
+                <div className="absolute top-full mt-1 right-0 bg-white border border-stone-200 rounded-lg shadow-lg p-2 z-20 min-w-[10rem]">
+                  <div className="text-[10px] uppercase tracking-wider text-stone-400 px-1 pb-1 mb-1 border-b border-stone-100">
+                    Margin references
+                  </div>
+                  {availableSystems.map(slug => (
+                    <div key={slug} className="flex items-center gap-2 py-1 px-1">
+                      <label className="flex items-center gap-1.5 flex-1 text-xs text-stone-700 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={marginSettings.enabledSystems.has(slug)}
+                          onChange={() => handleToggleSystem(slug)}
+                          className="rounded border-stone-300"
+                        />
+                        {slug}
+                      </label>
+                      <button
+                        onClick={() => handleToggleSide(slug)}
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-50 font-mono"
+                        title={`Move to ${marginSettings.systemSides[slug] === 'left' ? 'right' : 'left'} margin`}
+                      >
+                        {marginSettings.systemSides[slug] === 'left' ? 'L' : 'R'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
           <button
             onClick={handleToggleView}
             className="text-xs px-2 py-1 rounded border border-stone-300 text-stone-600 hover:bg-stone-100 transition-colors"
@@ -140,6 +243,8 @@ export function TextPanel({
             selectedSentenceId={selectedSentenceId}
             onSelectSentence={handleSelectSentence}
             onVisibleNodeChange={handleVisibleNodeChange}
+            onSystemsDiscovered={handleSystemsDiscovered}
+            marginSettings={marginSettings}
           />
         ) : (
           <div className="flex-1 overflow-y-auto">
@@ -160,6 +265,7 @@ export function TextPanel({
                 node={node}
                 selectedSentenceId={selectedSentenceId}
                 onSelectSentence={handleSelectSentence}
+                marginSettings={marginSettings}
               />
             ) : null}
           </div>
