@@ -6,7 +6,7 @@ import { PanelContent } from './PanelContent'
 import { PanelScrollView } from './PanelScrollView'
 import type { PanelScrollViewHandle } from './PanelScrollView'
 import { SentenceDetail } from './SentenceDetail'
-import type { SentenceResponse, NodeDetail } from '../api/model'
+import type { SentenceResponse } from '../api/model'
 
 type ViewMode = 'section' | 'scroll'
 
@@ -21,17 +21,8 @@ interface TextPanelProps {
   onDeselectSentence: () => void
   onToggleToc: () => void
   onClose: (() => void) | undefined
+  onScrollNavigate: (nodeSlug: string) => void
   isOnly: boolean
-}
-
-function findSentenceInNode(node: NodeDetail | undefined, sentenceId: string | undefined): SentenceResponse | undefined {
-  if (!sentenceId || !node) return undefined
-  for (const block of node.blocks) {
-    for (const sent of block.sentences) {
-      if (sent.id === sentenceId) return sent
-    }
-  }
-  return undefined
 }
 
 export function TextPanel({
@@ -44,10 +35,17 @@ export function TextPanel({
   onDeselectSentence,
   onToggleToc,
   onClose,
+  onScrollNavigate,
 }: TextPanelProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('section')
   const [visibleSlug, setVisibleSlug] = useState<string | undefined>()
+  const [selectedSentence, setSelectedSentence] = useState<SentenceResponse | undefined>()
   const scrollViewRef = useRef<PanelScrollViewHandle>(null)
+
+  const handleVisibleNodeChange = useCallback((slug: string) => {
+    setVisibleSlug(slug)
+    onScrollNavigate(slug)
+  }, [onScrollNavigate])
 
   const { data: tocData } = useGetToc(bookSlug)
   const toc = tocData?.data
@@ -58,9 +56,20 @@ export function TextPanel({
   })
   const node = (nodeSlug && viewMode === 'section' && nodeData?.status === 200) ? nodeData.data : undefined
 
-  const selectedSentence = findSentenceInNode(node, selectedSentenceId)
-
   const activeNodeSlug = viewMode === 'scroll' ? visibleSlug : nodeSlug
+
+  // Only show detail when stored sentence matches the URL selection
+  const showSentenceDetail = selectedSentence != null && selectedSentence.id === selectedSentenceId
+
+  const handleSelectSentence = useCallback((sentence: SentenceResponse) => {
+    setSelectedSentence(sentence)
+    onSelectSentence(sentence.id)
+  }, [onSelectSentence])
+
+  const handleDeselectSentence = useCallback(() => {
+    setSelectedSentence(undefined)
+    onDeselectSentence()
+  }, [onDeselectSentence])
 
   const handleToggleView = useCallback(() => {
     setViewMode((prev) => {
@@ -129,8 +138,8 @@ export function TextPanel({
             ref={scrollViewRef}
             bookSlug={bookSlug}
             selectedSentenceId={selectedSentenceId}
-            onSelectSentence={onSelectSentence}
-            onVisibleNodeChange={setVisibleSlug}
+            onSelectSentence={handleSelectSentence}
+            onVisibleNodeChange={handleVisibleNodeChange}
           />
         ) : (
           <div className="flex-1 overflow-y-auto">
@@ -150,7 +159,7 @@ export function TextPanel({
               <PanelContent
                 node={node}
                 selectedSentenceId={selectedSentenceId}
-                onSelectSentence={onSelectSentence}
+                onSelectSentence={handleSelectSentence}
               />
             ) : null}
           </div>
@@ -158,10 +167,10 @@ export function TextPanel({
       </div>
 
       {/* Sentence detail */}
-      {selectedSentence && (
+      {showSentenceDetail && (
         <SentenceDetail
           sentence={selectedSentence}
-          onClose={onDeselectSentence}
+          onClose={handleDeselectSentence}
         />
       )}
     </div>

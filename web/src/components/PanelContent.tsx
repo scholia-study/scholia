@@ -1,10 +1,10 @@
-import type { NodeDetail } from '../api/model'
+import type { NodeDetail, SentenceResponse } from '../api/model'
 import { Block } from './BlockRenderer'
 
 interface PanelContentProps {
   node: NodeDetail
   selectedSentenceId: string | undefined
-  onSelectSentence: (sentenceId: string) => void
+  onSelectSentence: (sentence: SentenceResponse) => void
 }
 
 export function PanelContent({ node, selectedSentenceId, onSelectSentence }: PanelContentProps) {
@@ -15,7 +15,7 @@ export function PanelContent({ node, selectedSentenceId, onSelectSentence }: Pan
           key={block.id}
           block={block}
           selectedSentenceId={selectedSentenceId ?? null}
-          onSelectSentence={(sentence) => onSelectSentence(sentence.id)}
+          onSelectSentence={onSelectSentence}
         />
       ))}
     </article>

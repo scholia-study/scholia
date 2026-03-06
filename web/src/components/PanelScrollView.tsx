@@ -11,7 +11,7 @@ export interface PanelScrollViewHandle {
 interface PanelScrollViewProps {
   bookSlug: string
   selectedSentenceId: string | undefined
-  onSelectSentence: (sentenceId: string) => void
+  onSelectSentence: (sentence: SentenceResponse) => void
   onVisibleNodeChange?: (nodeSlug: string) => void
 }
 
@@ -80,7 +80,7 @@ interface VirtualizedScrollProps {
   isFetchingNextPage: boolean
   fetchNextPage: () => void
   selectedSentenceId: string | undefined
-  onSelectSentence: (sentenceId: string) => void
+  onSelectSentence: (sentence: SentenceResponse) => void
   onVisibleNodeChange?: (nodeSlug: string) => void
 }
 
@@ -197,7 +197,7 @@ const VirtualizedScroll = forwardRef<PanelScrollViewHandle, VirtualizedScrollPro
                         key={block.id}
                         block={block}
                         selectedSentenceId={selectedSentenceId ?? null}
-                        onSelectSentence={(sentence: SentenceResponse) => onSelectSentence(sentence.id)}
+                        onSelectSentence={onSelectSentence}
                       />
                     ))}
                   </div>

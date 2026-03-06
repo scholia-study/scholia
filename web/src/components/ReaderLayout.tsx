@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import type { ReaderSearch } from '../routes/__root'
 import { TextPanel } from './TextPanel'
 import { BookPickerPanel } from './BookPickerPanel'
@@ -11,41 +12,90 @@ export interface PanelState {
 interface ReaderLayoutProps {
   panels: PanelState[]
   selections: Map<number, string>  // panelIndex -> sentenceId
-  onUpdateSearch: (search: ReaderSearch) => void
 }
 
-function serializeTexts(panels: PanelState[]): string {
-  return panels
-    .map((p) => (p.nodeSlug ? `${p.bookSlug}/${p.nodeSlug}` : p.bookSlug))
-    .join(',')
+/** Build search params from secondary panels and selections */
+function buildSearch(panels: PanelState[], selections: Map<number, string>): ReaderSearch {
+  const search: ReaderSearch = {}
+
+  // Secondary panels: p2, p3, p4
+  for (let i = 1; i < panels.length; i++) {
+    const p = panels[i]
+    const key = `p${i + 1}` as keyof ReaderSearch
+    search[key] = p.nodeSlug ? `${p.bookSlug}/${p.nodeSlug}` : p.bookSlug
+  }
+
+  // Selections: s for primary, s2/s3/s4 for secondary
+  for (const [idx, id] of selections) {
+    if (idx === 0) search.s = id
+    else {
+      const key = `s${idx + 1}` as keyof ReaderSearch
+      search[key] = id
+    }
+  }
+
+  return search
 }
 
-function serializeSelections(selections: Map<number, string>): string | undefined {
-  if (selections.size === 0) return undefined
-  return Array.from(selections.entries())
-    .map(([idx, id]) => `${idx}:${id}`)
-    .join(',')
-}
+let nextPanelId = 0
 
 export function ReaderLayout({
   panels,
   selections,
-  onUpdateSearch,
 }: ReaderLayoutProps) {
+  const navigate = useNavigate()
+
+  // Assign stable keys to panels that persist across index changes
+  const panelKeysRef = useRef<string[]>([])
+  if (panelKeysRef.current.length < panels.length) {
+    // New panels added — assign fresh IDs
+    while (panelKeysRef.current.length < panels.length) {
+      panelKeysRef.current.push(`panel-${nextPanelId++}`)
+    }
+  } else if (panelKeysRef.current.length > panels.length) {
+    // Panels removed — will be trimmed by handleClosePanel
+  }
+
   // Track which panels have TOC open (local state, not URL)
   const [tocOpen, setTocOpen] = useState<Set<number>>(() => new Set([0]))
+
+  /** Navigate changing only search params (no path change) */
+  const navigateSearch = useCallback(
+    (newPanels: PanelState[], newSelections: Map<number, string>, replace?: boolean) => {
+      navigate({
+        search: buildSearch(newPanels, newSelections),
+        replace,
+      })
+    },
+    [navigate],
+  )
+
+  /** Navigate changing the path (primary panel node changed) */
+  const navigatePath = useCallback(
+    (newPanels: PanelState[], newSelections: Map<number, string>, replace?: boolean) => {
+      const primary = newPanels[0]
+      navigate({
+        to: '/books/$bookSlug/$nodeSlug',
+        params: { bookSlug: primary.bookSlug, nodeSlug: primary.nodeSlug! },
+        search: buildSearch(newPanels, newSelections),
+        replace,
+      })
+    },
+    [navigate],
+  )
 
   const handleNavigate = useCallback(
     (panelIndex: number, nodeSlug: string) => {
       const newPanels = panels.map((p, i) =>
         i === panelIndex ? { ...p, nodeSlug } : p,
       )
-      onUpdateSearch({
-        texts: serializeTexts(newPanels),
-        s: serializeSelections(selections),
-      })
+      if (panelIndex === 0) {
+        navigatePath(newPanels, selections)
+      } else {
+        navigateSearch(newPanels, selections)
+      }
     },
-    [panels, selections, onUpdateSearch],
+    [panels, selections, navigatePath, navigateSearch],
   )
 
   const handleSelectSentence = useCallback(
@@ -56,24 +106,18 @@ export function ReaderLayout({
       } else {
         newSelections.set(panelIndex, sentenceId)
       }
-      onUpdateSearch({
-        texts: serializeTexts(panels),
-        s: serializeSelections(newSelections),
-      })
+      navigateSearch(panels, newSelections)
     },
-    [panels, selections, onUpdateSearch],
+    [panels, selections, navigateSearch],
   )
 
   const handleDeselectSentence = useCallback(
     (panelIndex: number) => {
       const newSelections = new Map(selections)
       newSelections.delete(panelIndex)
-      onUpdateSearch({
-        texts: serializeTexts(panels),
-        s: serializeSelections(newSelections),
-      })
+      navigateSearch(panels, newSelections)
     },
-    [panels, selections, onUpdateSearch],
+    [panels, selections, navigateSearch],
   )
 
   const handleClosePanel = useCallback(
@@ -84,6 +128,10 @@ export function ReaderLayout({
         if (idx < panelIndex) newSelections.set(idx, id)
         else if (idx > panelIndex) newSelections.set(idx - 1, id)
       }
+
+      // Update stable keys: remove the closed panel's key
+      panelKeysRef.current = panelKeysRef.current.filter((_, i) => i !== panelIndex)
+
       setTocOpen((prev) => {
         const next = new Set<number>()
         for (const idx of prev) {
@@ -92,16 +140,25 @@ export function ReaderLayout({
         }
         return next
       })
+
       if (newPanels.length === 0) {
-        onUpdateSearch({})
-      } else {
-        onUpdateSearch({
-          texts: serializeTexts(newPanels),
-          s: serializeSelections(newSelections),
+        navigate({
+          to: '/books/$bookSlug',
+          params: { bookSlug: panels[0].bookSlug },
         })
+      } else {
+        const primary = newPanels[0]
+        if (primary.nodeSlug) {
+          navigatePath(newPanels, newSelections)
+        } else {
+          navigate({
+            to: '/books/$bookSlug',
+            params: { bookSlug: primary.bookSlug },
+          })
+        }
       }
     },
-    [panels, selections, onUpdateSearch],
+    [panels, selections, navigate, navigatePath],
   )
 
   const handleToggleToc = useCallback((panelIndex: number) => {
@@ -114,27 +171,38 @@ export function ReaderLayout({
   }, [])
 
   const handleAddPanel = useCallback(() => {
-    // Add a picker panel (bookSlug = "_")
     const newPanels = [...panels, { bookSlug: '_', nodeSlug: undefined }]
-    onUpdateSearch({
-      texts: serializeTexts(newPanels),
-      s: serializeSelections(selections),
-    })
-  }, [panels, selections, onUpdateSearch])
+    navigateSearch(newPanels, selections)
+  }, [panels, selections, navigateSearch])
 
   const handlePickBook = useCallback(
     (panelIndex: number, bookSlug: string) => {
       const newPanels = panels.map((p, i) =>
         i === panelIndex ? { bookSlug, nodeSlug: undefined } : p,
       )
-      // Open TOC for the new panel
       setTocOpen((prev) => new Set([...prev, panelIndex]))
-      onUpdateSearch({
-        texts: serializeTexts(newPanels),
-        s: serializeSelections(selections),
-      })
+      if (panelIndex === 0) {
+        navigatePath(newPanels, selections)
+      } else {
+        navigateSearch(newPanels, selections)
+      }
     },
-    [panels, selections, onUpdateSearch],
+    [panels, selections, navigatePath, navigateSearch],
+  )
+
+  /** Replace-navigate for scroll-driven URL updates (no history entry) */
+  const handleScrollNavigate = useCallback(
+    (panelIndex: number, nodeSlug: string) => {
+      const newPanels = panels.map((p, i) =>
+        i === panelIndex ? { ...p, nodeSlug } : p,
+      )
+      if (panelIndex === 0) {
+        navigatePath(newPanels, selections, true)
+      } else {
+        navigateSearch(newPanels, selections, true)
+      }
+    },
+    [panels, selections, navigatePath, navigateSearch],
   )
 
   return (
@@ -142,13 +210,13 @@ export function ReaderLayout({
       {panels.map((panel, idx) =>
         panel.bookSlug === '_' ? (
           <BookPickerPanel
-            key={`picker-${idx}`}
+            key={panelKeysRef.current[idx] ?? `picker-${idx}`}
             onPickBook={(slug) => handlePickBook(idx, slug)}
             onClose={panels.length > 1 ? () => handleClosePanel(idx) : undefined}
           />
         ) : (
           <TextPanel
-            key={`${panel.bookSlug}-${idx}`}
+            key={panelKeysRef.current[idx] ?? `text-${idx}`}
             panelIndex={idx}
             bookSlug={panel.bookSlug}
             nodeSlug={panel.nodeSlug}
@@ -159,6 +227,7 @@ export function ReaderLayout({
             onDeselectSentence={() => handleDeselectSentence(idx)}
             onToggleToc={() => handleToggleToc(idx)}
             onClose={panels.length > 1 ? () => handleClosePanel(idx) : undefined}
+            onScrollNavigate={(nodeSlug) => handleScrollNavigate(idx, nodeSlug)}
             isOnly={panels.length === 1}
           />
         ),
