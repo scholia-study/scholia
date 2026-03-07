@@ -6,14 +6,14 @@
  */
 
 export type GetNodePageParams = {
-/**
- * sort_order cursor — omit for first page
- * @nullable
- */
-after?: number | null;
-/**
- * page size, default 20, max 50
- * @nullable
- */
-limit?: number | null;
+    /**
+     * sort_order cursor — omit for first page
+     * @nullable
+     */
+    after?: number | null;
+    /**
+     * page size, default 20, max 50
+     * @nullable
+     */
+    limit?: number | null;
 };

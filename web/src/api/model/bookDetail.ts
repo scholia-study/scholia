@@ -6,13 +6,13 @@
  */
 
 export interface BookDetail {
-  author: string;
-  id: string;
-  language: string;
-  slug: string;
-  /** @nullable */
-  source?: string | null;
-  /** @nullable */
-  source_date?: string | null;
-  title: string;
+    author: string;
+    id: string;
+    language: string;
+    slug: string;
+    /** @nullable */
+    source?: string | null;
+    /** @nullable */
+    source_date?: string | null;
+    title: string;
 }

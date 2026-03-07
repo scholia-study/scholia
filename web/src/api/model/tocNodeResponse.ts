@@ -6,12 +6,12 @@
  */
 
 export interface TocNodeResponse {
-  children: TocNodeResponse[];
-  depth: number;
-  has_content: boolean;
-  id: string;
-  label: string;
-  slug: string;
-  sort_order: number;
-  source_ref: string;
+    children: TocNodeResponse[];
+    depth: number;
+    has_content: boolean;
+    id: string;
+    label: string;
+    slug: string;
+    sort_order: number;
+    source_ref: string;
 }

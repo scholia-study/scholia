@@ -4,9 +4,9 @@
  * Prospero API
  * OpenAPI spec version: 0.1.0
  */
-import type { NodeDetail } from './nodeDetail';
+import type { NodeDetail } from "./nodeDetail";
 
 export interface NodePage {
-  has_more: boolean;
-  nodes: NodeDetail[];
+    has_more: boolean;
+    nodes: NodeDetail[];
 }

@@ -6,9 +6,9 @@
  */
 
 export interface BookSummary {
-  author: string;
-  id: string;
-  language: string;
-  slug: string;
-  title: string;
+    author: string;
+    id: string;
+    language: string;
+    slug: string;
+    title: string;
 }

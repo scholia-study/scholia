@@ -26,5 +26,20 @@
         "indentWidth": 4,
         "lineEnding": "lf",
         "lineWidth": 80
-    }
+    },
+    "overrides": [
+        {
+            "includes": ["src/api/**"],
+            "linter": {
+                "rules": {
+                    "suspicious": {
+                        "noConfusingVoidType": "off"
+                    },
+                    "complexity": {
+                        "useLiteralKeys": "off"
+                    }
+                }
+            }
+        }
+    ]
 }

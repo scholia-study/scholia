@@ -4,14 +4,14 @@
  * Prospero API
  * OpenAPI spec version: 0.1.0
  */
-import type { SentenceResponse } from './sentenceResponse';
+import type { SentenceResponse } from "./sentenceResponse";
 
 export interface ContentBlockResponse {
-  block_type: string;
-  html: string;
-  id: string;
-  /** @nullable */
-  paragraph_number?: number | null;
-  position: number;
-  sentences: SentenceResponse[];
+    block_type: string;
+    html: string;
+    id: string;
+    /** @nullable */
+    paragraph_number?: number | null;
+    position: number;
+    sentences: SentenceResponse[];
 }

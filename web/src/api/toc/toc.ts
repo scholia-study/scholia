@@ -4,202 +4,313 @@
  * Prospero API
  * OpenAPI spec version: 0.1.0
  */
-import {
-  useQuery,
-  useSuspenseQuery
-} from '@tanstack/react-query';
-import type {
-  DataTag,
-  DefinedInitialDataOptions,
-  DefinedUseQueryResult,
-  QueryClient,
-  QueryFunction,
-  QueryKey,
-  UndefinedInitialDataOptions,
-  UseQueryOptions,
-  UseQueryResult,
-  UseSuspenseQueryOptions,
-  UseSuspenseQueryResult
-} from '@tanstack/react-query';
 
 import type {
-  TocNodeResponse
-} from '.././model';
-
-import { customFetch } from '../../lib/fetcher';
-
+    DataTag,
+    DefinedInitialDataOptions,
+    DefinedUseQueryResult,
+    QueryClient,
+    QueryFunction,
+    QueryKey,
+    UndefinedInitialDataOptions,
+    UseQueryOptions,
+    UseQueryResult,
+    UseSuspenseQueryOptions,
+    UseSuspenseQueryResult,
+} from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { customFetch } from "../../lib/fetcher";
+import type { TocNodeResponse } from ".././model";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * @summary Get the full TOC tree for a book
  */
 export type getTocResponse200 = {
-  data: TocNodeResponse[]
-  status: 200
-}
+    data: TocNodeResponse[];
+    status: 200;
+};
 
 export type getTocResponse404 = {
-  data: void
-  status: 404
-}
-
-export type getTocResponseSuccess = (getTocResponse200) & {
-  headers: Headers;
-};
-export type getTocResponseError = (getTocResponse404) & {
-  headers: Headers;
+    data: void;
+    status: 404;
 };
 
-export type getTocResponse = (getTocResponseSuccess | getTocResponseError)
+export type getTocResponseSuccess = getTocResponse200 & {
+    headers: Headers;
+};
+export type getTocResponseError = getTocResponse404 & {
+    headers: Headers;
+};
 
-export const getGetTocUrl = (slug: string,) => {
+export type getTocResponse = getTocResponseSuccess | getTocResponseError;
 
+export const getGetTocUrl = (slug: string) => {
+    return `/api/books/${slug}/toc`;
+};
 
-  
+export const getToc = async (
+    slug: string,
+    options?: RequestInit,
+): Promise<getTocResponse> => {
+    return customFetch<getTocResponse>(getGetTocUrl(slug), {
+        ...options,
+        method: "GET",
+    });
+};
 
-  return `/api/books/${slug}/toc`
-}
+export const getGetTocQueryKey = (slug: string) => {
+    return [`/api/books/${slug}/toc`] as const;
+};
 
-export const getToc = async (slug: string, options?: RequestInit): Promise<getTocResponse> => {
-  
-  return customFetch<getTocResponse>(getGetTocUrl(slug),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-  
-
-
-
-
-export const getGetTocQueryKey = (slug: string,) => {
-    return [
-    `/api/books/${slug}/toc`
-    ] as const;
-    }
-
-    
-export const getGetTocQueryOptions = <TData = Awaited<ReturnType<typeof getToc>>, TError = void>(slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetTocQueryOptions = <
+    TData = Awaited<ReturnType<typeof getToc>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
 ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey = queryOptions?.queryKey ?? getGetTocQueryKey(slug);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetTocQueryKey(slug);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getToc>>> = ({
+        signal,
+    }) => getToc(slug, { signal, ...requestOptions });
 
-  
+    return {
+        queryKey,
+        queryFn,
+        enabled: !!slug,
+        ...queryOptions,
+    } as UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getToc>>> = ({ signal }) => getToc(slug, { signal, ...requestOptions });
+export type GetTocQueryResult = NonNullable<Awaited<ReturnType<typeof getToc>>>;
+export type GetTocQueryError = void;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(slug), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetTocQueryResult = NonNullable<Awaited<ReturnType<typeof getToc>>>
-export type GetTocQueryError = void
-
-
-export function useGetToc<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
- slug: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getToc>>,
-          TError,
-          Awaited<ReturnType<typeof getToc>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetToc<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
- slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getToc>>,
-          TError,
-          Awaited<ReturnType<typeof getToc>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetToc<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
- slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetToc<
+    TData = Awaited<ReturnType<typeof getToc>>,
+    TError = void,
+>(
+    slug: string,
+    options: {
+        query: Partial<
+            UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getToc>>,
+                    TError,
+                    Awaited<ReturnType<typeof getToc>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetToc<
+    TData = Awaited<ReturnType<typeof getToc>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getToc>>,
+                    TError,
+                    Awaited<ReturnType<typeof getToc>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetToc<
+    TData = Awaited<ReturnType<typeof getToc>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Get the full TOC tree for a book
  */
 
-export function useGetToc<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
- slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetToc<
+    TData = Awaited<ReturnType<typeof getToc>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetTocQueryOptions(slug, options);
 
-  const queryOptions = getGetTocQueryOptions(slug,options)
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return { ...query, queryKey: queryOptions.queryKey };
+    return { ...query, queryKey: queryOptions.queryKey };
 }
 
-
-
-
-export const getGetTocSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getToc>>, TError = void>(slug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetTocSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof getToc>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getToc>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
 ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey = queryOptions?.queryKey ?? getGetTocQueryKey(slug);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetTocQueryKey(slug);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getToc>>> = ({
+        signal,
+    }) => getToc(slug, { signal, ...requestOptions });
 
-  
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getToc>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getToc>>> = ({ signal }) => getToc(slug, { signal, ...requestOptions });
+export type GetTocSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getToc>>
+>;
+export type GetTocSuspenseQueryError = void;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetTocSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getToc>>>
-export type GetTocSuspenseQueryError = void
-
-
-export function useGetTocSuspense<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
- slug: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTocSuspense<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
- slug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTocSuspense<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
- slug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTocSuspense<
+    TData = Awaited<ReturnType<typeof getToc>>,
+    TError = void,
+>(
+    slug: string,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getToc>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetTocSuspense<
+    TData = Awaited<ReturnType<typeof getToc>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getToc>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetTocSuspense<
+    TData = Awaited<ReturnType<typeof getToc>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getToc>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Get the full TOC tree for a book
  */
 
-export function useGetTocSuspense<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
- slug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetTocSuspense<
+    TData = Awaited<ReturnType<typeof getToc>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getToc>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetTocSuspenseQueryOptions(slug, options);
 
-  const queryOptions = getGetTocSuspenseQueryOptions(slug,options)
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
 
-  const query = useSuspenseQuery(queryOptions, queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return { ...query, queryKey: queryOptions.queryKey };
+    return { ...query, queryKey: queryOptions.queryKey };
 }
-
-
-
-

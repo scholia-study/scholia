@@ -4,14 +4,14 @@
  * Prospero API
  * OpenAPI spec version: 0.1.0
  */
-import type { ContentBlockResponse } from './contentBlockResponse';
+import type { ContentBlockResponse } from "./contentBlockResponse";
 
 export interface NodeDetail {
-  blocks: ContentBlockResponse[];
-  depth: number;
-  id: string;
-  label: string;
-  slug: string;
-  sort_order: number;
-  source_ref: string;
+    blocks: ContentBlockResponse[];
+    depth: number;
+    id: string;
+    label: string;
+    slug: string;
+    sort_order: number;
+    source_ref: string;
 }

@@ -6,9 +6,9 @@
  */
 
 export interface PageMarkerResponse {
-  /** @nullable */
-  char_offset?: number | null;
-  ref_value: string;
-  sort_order: number;
-  system_slug: string;
+    /** @nullable */
+    char_offset?: number | null;
+    ref_value: string;
+    sort_order: number;
+    system_slug: string;
 }

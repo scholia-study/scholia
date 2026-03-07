@@ -5,12 +5,12 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export * from './bookDetail';
-export * from './bookSummary';
-export * from './contentBlockResponse';
-export * from './getNodePageParams';
-export * from './nodeDetail';
-export * from './nodePage';
-export * from './pageMarkerResponse';
-export * from './sentenceResponse';
-export * from './tocNodeResponse';
+export * from "./bookDetail";
+export * from "./bookSummary";
+export * from "./contentBlockResponse";
+export * from "./getNodePageParams";
+export * from "./nodeDetail";
+export * from "./nodePage";
+export * from "./pageMarkerResponse";
+export * from "./sentenceResponse";
+export * from "./tocNodeResponse";
