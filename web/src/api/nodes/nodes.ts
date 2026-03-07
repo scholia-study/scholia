@@ -6,7 +6,9 @@
  */
 import {
   useInfiniteQuery,
-  useQuery
+  useQuery,
+  useSuspenseInfiniteQuery,
+  useSuspenseQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
@@ -21,7 +23,11 @@ import type {
   UseInfiniteQueryOptions,
   UseInfiniteQueryResult,
   UseQueryOptions,
-  UseQueryResult
+  UseQueryResult,
+  UseSuspenseInfiniteQueryOptions,
+  UseSuspenseInfiniteQueryResult,
+  UseSuspenseQueryOptions,
+  UseSuspenseQueryResult
 } from '@tanstack/react-query';
 
 import type {
@@ -246,6 +252,122 @@ export function useGetNodePage<TData = Awaited<ReturnType<typeof getNodePage>>, 
 
 
 
+export const getGetNodePageSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getNodePage>>, TError = void>(slug: string,
+    params?: GetNodePageParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNodePageQueryKey(slug,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNodePage>>> = ({ signal }) => getNodePage(slug,params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetNodePageSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getNodePage>>>
+export type GetNodePageSuspenseQueryError = void
+
+
+export function useGetNodePageSuspense<TData = Awaited<ReturnType<typeof getNodePage>>, TError = void>(
+ slug: string,
+    params: undefined |  GetNodePageParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNodePageSuspense<TData = Awaited<ReturnType<typeof getNodePage>>, TError = void>(
+ slug: string,
+    params?: GetNodePageParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNodePageSuspense<TData = Awaited<ReturnType<typeof getNodePage>>, TError = void>(
+ slug: string,
+    params?: GetNodePageParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get paginated nodes for infinite scroll
+ */
+
+export function useGetNodePageSuspense<TData = Awaited<ReturnType<typeof getNodePage>>, TError = void>(
+ slug: string,
+    params?: GetNodePageParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetNodePageSuspenseQueryOptions(slug,params,options)
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+export const getGetNodePageSuspenseInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getNodePage>>, GetNodePageParams['after']>, TError = void>(slug: string,
+    params?: GetNodePageParams, options?: { query?:Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData, QueryKey, GetNodePageParams['after']>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNodePageInfiniteQueryKey(slug,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNodePage>>, QueryKey, GetNodePageParams['after']> = ({ signal, pageParam }) => getNodePage(slug,{...params, 'after': pageParam || params?.['after']}, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData, QueryKey, GetNodePageParams['after']> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetNodePageSuspenseInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getNodePage>>>
+export type GetNodePageSuspenseInfiniteQueryError = void
+
+
+export function useGetNodePageSuspenseInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNodePage>>, GetNodePageParams['after']>, TError = void>(
+ slug: string,
+    params: undefined |  GetNodePageParams, options: { query:Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData, QueryKey, GetNodePageParams['after']>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNodePageSuspenseInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNodePage>>, GetNodePageParams['after']>, TError = void>(
+ slug: string,
+    params?: GetNodePageParams, options?: { query?:Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData, QueryKey, GetNodePageParams['after']>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNodePageSuspenseInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNodePage>>, GetNodePageParams['after']>, TError = void>(
+ slug: string,
+    params?: GetNodePageParams, options?: { query?:Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData, QueryKey, GetNodePageParams['after']>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get paginated nodes for infinite scroll
+ */
+
+export function useGetNodePageSuspenseInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNodePage>>, GetNodePageParams['after']>, TError = void>(
+ slug: string,
+    params?: GetNodePageParams, options?: { query?:Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof getNodePage>>, TError, TData, QueryKey, GetNodePageParams['after']>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetNodePageSuspenseInfiniteQueryOptions(slug,params,options)
+
+  const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as  UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
 /**
  * @summary Get node content (blocks + sentences)
  */
@@ -364,6 +486,64 @@ export function useGetNode<TData = Awaited<ReturnType<typeof getNode>>, TError =
   const queryOptions = getGetNodeQueryOptions(slug,nodeSlug,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+export const getGetNodeSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getNode>>, TError = void>(slug: string,
+    nodeSlug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNodeQueryKey(slug,nodeSlug);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNode>>> = ({ signal }) => getNode(slug,nodeSlug, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetNodeSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getNode>>>
+export type GetNodeSuspenseQueryError = void
+
+
+export function useGetNodeSuspense<TData = Awaited<ReturnType<typeof getNode>>, TError = void>(
+ slug: string,
+    nodeSlug: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNodeSuspense<TData = Awaited<ReturnType<typeof getNode>>, TError = void>(
+ slug: string,
+    nodeSlug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNodeSuspense<TData = Awaited<ReturnType<typeof getNode>>, TError = void>(
+ slug: string,
+    nodeSlug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get node content (blocks + sentences)
+ */
+
+export function useGetNodeSuspense<TData = Awaited<ReturnType<typeof getNode>>, TError = void>(
+ slug: string,
+    nodeSlug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetNodeSuspenseQueryOptions(slug,nodeSlug,options)
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }

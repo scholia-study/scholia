@@ -5,7 +5,8 @@
  * OpenAPI spec version: 0.1.0
  */
 import {
-  useQuery
+  useQuery,
+  useSuspenseQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
@@ -16,7 +17,9 @@ import type {
   QueryKey,
   UndefinedInitialDataOptions,
   UseQueryOptions,
-  UseQueryResult
+  UseQueryResult,
+  UseSuspenseQueryOptions,
+  UseSuspenseQueryResult
 } from '@tanstack/react-query';
 
 import type {
@@ -140,6 +143,59 @@ export function useGetToc<TData = Awaited<ReturnType<typeof getToc>>, TError = v
   const queryOptions = getGetTocQueryOptions(slug,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+export const getGetTocSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getToc>>, TError = void>(slug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetTocQueryKey(slug);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getToc>>> = ({ signal }) => getToc(slug, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetTocSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getToc>>>
+export type GetTocSuspenseQueryError = void
+
+
+export function useGetTocSuspense<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
+ slug: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTocSuspense<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
+ slug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTocSuspense<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
+ slug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get the full TOC tree for a book
+ */
+
+export function useGetTocSuspense<TData = Awaited<ReturnType<typeof getToc>>, TError = void>(
+ slug: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetTocSuspenseQueryOptions(slug,options)
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }

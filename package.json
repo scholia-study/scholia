@@ -12,6 +12,7 @@
     "codegen": "turbo run codegen"
   },
   "devDependencies": {
-    "turbo": "^2"
+    "turbo": "^2",
+    "@biomejs/biome": "2.4.5"
   }
 }
