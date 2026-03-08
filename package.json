@@ -1,7 +1,7 @@
 {
   "name": "prospero",
   "private": true,
-  "packageManager": "pnpm@10.29.2",
+  "packageManager": "pnpm@10.31.0",
   "scripts": {
     "ready": "pnpm run db:reset && pnpm run extract && pnpm run db:import",
     "db:reset": "./db_reset.sh",
@@ -12,7 +12,7 @@
     "codegen": "turbo run codegen"
   },
   "devDependencies": {
-    "turbo": "^2",
-    "@biomejs/biome": "2.4.5"
+    "@biomejs/biome": "2.4.5",
+    "turbo": "^2"
   }
 }
