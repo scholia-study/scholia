@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { useState, useEffect, useMemo, useRef } from 'react'
 import type { TocNodeResponse } from '../api/model'
 
@@ -26,11 +27,12 @@ function findAncestorPath(
 
 interface PanelTocProps {
   toc: TocNodeResponse[]
+  bookSlug: string
   activeNodeSlug: string | undefined
-  onNavigate: (nodeSlug: string) => void
+  onNavigate?: (nodeSlug: string) => void
 }
 
-export function PanelToc({ toc, activeNodeSlug, onNavigate }: PanelTocProps) {
+export function PanelToc({ toc, bookSlug, activeNodeSlug, onNavigate }: PanelTocProps) {
   const prevAncestorsRef = useRef(new Set<string>())
   const expandedAncestors = useMemo(() => {
     const next = activeNodeSlug ? findAncestorPath(toc, activeNodeSlug) : new Set<string>()
@@ -54,6 +56,7 @@ export function PanelToc({ toc, activeNodeSlug, onNavigate }: PanelTocProps) {
             <TocItem
               key={node.id}
               node={node}
+              bookSlug={bookSlug}
               activeSlug={activeNodeSlug}
               onNavigate={onNavigate}
               expandedAncestors={expandedAncestors}
@@ -67,13 +70,15 @@ export function PanelToc({ toc, activeNodeSlug, onNavigate }: PanelTocProps) {
 
 function TocItem({
   node,
+  bookSlug,
   activeSlug,
   onNavigate,
   expandedAncestors,
 }: {
   node: TocNodeResponse
+  bookSlug: string
   activeSlug: string | undefined
-  onNavigate: (nodeSlug: string) => void
+  onNavigate?: (nodeSlug: string) => void
   expandedAncestors: Set<string>
 }) {
   const [expanded, setExpanded] = useState(node.depth < 2)
@@ -107,12 +112,14 @@ function TocItem({
           <span className="w-4 shrink-0" />
         )}
         {node.has_content ? (
-          <button
-            onClick={() => onNavigate(node.slug)}
+          <Link
+            to="/books/$bookSlug/$nodeSlug"
+            params={{ bookSlug, nodeSlug: node.slug }}
+            onClick={onNavigate ? (e: React.MouseEvent) => { e.preventDefault(); onNavigate(node.slug) } : undefined}
             className="flex-1 truncate text-left"
           >
             {node.label}
-          </button>
+          </Link>
         ) : (
           <span
             className="flex-1 truncate cursor-pointer"
@@ -128,6 +135,7 @@ function TocItem({
             <TocItem
               key={child.id}
               node={child}
+              bookSlug={bookSlug}
               activeSlug={activeSlug}
               onNavigate={onNavigate}
               expandedAncestors={expandedAncestors}

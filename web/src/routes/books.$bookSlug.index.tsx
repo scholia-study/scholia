@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { getGetTocQueryOptions, useGetTocSuspense } from "../api/toc/toc";
 import { PanelToc } from "../components/PanelToc";
 
@@ -13,16 +13,8 @@ export const Route = createFileRoute("/books/$bookSlug/")({
 
 function BookPage() {
     const { bookSlug } = Route.useParams();
-    const navigate = useNavigate();
     const { data: tocData, isLoading, error } = useGetTocSuspense(bookSlug);
     const toc = tocData?.data;
-
-    const handleNavigate = (nodeSlug: string) => {
-        navigate({
-            to: "/books/$bookSlug/$nodeSlug",
-            params: { bookSlug, nodeSlug },
-        });
-    };
 
     return (
         <div className="flex h-screen">
@@ -45,8 +37,8 @@ function BookPage() {
                 {toc ? (
                     <PanelToc
                         toc={toc}
+                        bookSlug={bookSlug}
                         activeNodeSlug={undefined}
-                        onNavigate={handleNavigate}
                     />
                 ) : null}
             </div>

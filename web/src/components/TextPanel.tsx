@@ -177,6 +177,7 @@ export function TextPanel({
             {tocOpen && toc ? (
                 <PanelToc
                     toc={toc}
+                    bookSlug={bookSlug}
                     activeNodeSlug={activeNodeSlug}
                     onNavigate={handleTocNavigate}
                 />
