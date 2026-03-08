@@ -2,21 +2,11 @@ import type { SentenceResponse } from '../api/model'
 
 interface SentenceDetailProps {
   sentence: SentenceResponse
-  onClose: () => void
 }
 
-export function SentenceDetail({ sentence, onClose }: SentenceDetailProps) {
+export function SentenceDetail({ sentence }: SentenceDetailProps) {
   return (
-    <aside className="w-64 border-l border-stone-200 overflow-y-auto bg-white shrink-0">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-stone-200">
-        <h2 className="font-semibold text-sm text-stone-900">Sentence</h2>
-        <button
-          onClick={onClose}
-          className="text-stone-400 hover:text-stone-600 text-lg leading-none"
-        >
-          &times;
-        </button>
-      </div>
+    <div className="flex-1 overflow-y-auto">
       <div className="px-3 py-3 space-y-3 text-sm">
         {sentence.sentence_number != null && (
           <Field label="Sentence #" value={sentence.sentence_number} />
@@ -40,7 +30,7 @@ export function SentenceDetail({ sentence, onClose }: SentenceDetailProps) {
           <dd className="text-stone-800 leading-relaxed">{sentence.text}</dd>
         </div>
       </div>
-    </aside>
+    </div>
   )
 }
 

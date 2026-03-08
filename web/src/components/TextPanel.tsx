@@ -6,8 +6,7 @@ import type { MarginSettings } from "./BlockRenderer";
 import { PanelContent } from "./PanelContent";
 import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";
-import { PanelToc } from "./PanelToc";
-import { SentenceDetail } from "./SentenceDetail";
+import { ResourcesPanel } from "./ResourcesPanel";
 
 type ViewMode = "section" | "scroll";
 
@@ -15,15 +14,15 @@ interface TextPanelProps {
     panelIndex: number;
     bookSlug: string;
     nodeSlug: string | undefined;
-    tocOpen: boolean;
+    resourcesOpen: boolean;
     selectedSentenceId: string | undefined;
     onNavigate: (nodeSlug: string) => void;
     onSelectSentence: (sentenceId: string) => void;
-    onDeselectSentence: () => void;
-    onToggleToc: () => void;
+    onToggleResources: () => void;
     onClose: (() => void) | undefined;
     onScrollNavigate: (nodeSlug: string) => void;
-    isOnly: boolean;
+    onAddComparisonPanel: (bookSlug: string, nodeSlug: string) => void;
+    canAddPanel: boolean;
 }
 
 function collectSystemsFromBlocks(
@@ -43,14 +42,15 @@ function collectSystemsFromBlocks(
 export function TextPanel({
     bookSlug,
     nodeSlug,
-    tocOpen,
+    resourcesOpen,
     selectedSentenceId,
     onNavigate,
     onSelectSentence,
-    onDeselectSentence,
-    onToggleToc,
+    onToggleResources,
     onClose,
     onScrollNavigate,
+    onAddComparisonPanel,
+    canAddPanel,
 }: TextPanelProps) {
     const [viewMode, setViewMode] = useState<ViewMode>("section");
     const [visibleSlug, setVisibleSlug] = useState<string | undefined>();
@@ -146,11 +146,6 @@ export function TextPanel({
         [onSelectSentence],
     );
 
-    const handleDeselectSentence = useCallback(() => {
-        setSelectedSentence(undefined);
-        onDeselectSentence();
-    }, [onDeselectSentence]);
-
     const handleToggleView = useCallback(() => {
         setViewMode((prev) => {
             if (prev === "scroll" && visibleSlug) {
@@ -173,27 +168,10 @@ export function TextPanel({
 
     return (
         <div className="flex flex-1 min-w-0 border-r border-stone-200 last:border-r-0">
-            {/* TOC sidebar */}
-            {tocOpen && toc ? (
-                <PanelToc
-                    toc={toc}
-                    bookSlug={bookSlug}
-                    activeNodeSlug={activeNodeSlug}
-                    onNavigate={handleTocNavigate}
-                />
-            ) : null}
-
             {/* Main content area */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Toolbar */}
                 <div className="flex items-center gap-2 px-3 py-2 border-b border-stone-200 bg-white shrink-0">
-                    <button
-                        onClick={onToggleToc}
-                        className="text-xs px-2 py-1 rounded border border-stone-300 text-stone-600 hover:bg-stone-100 transition-colors"
-                        title={tocOpen ? "Hide TOC" : "Show TOC"}
-                    >
-                        {tocOpen ? "\u25C0" : "\u2630"}
-                    </button>
                     <span className="text-sm text-stone-500 truncate flex-1">
                         {node?.label ?? bookSlug}
                     </span>
@@ -313,11 +291,17 @@ export function TextPanel({
                 )}
             </div>
 
-            {/* Sentence detail */}
-            {showSentenceDetail && (
-                <SentenceDetail
-                    sentence={selectedSentence}
-                    onClose={handleDeselectSentence}
+            {/* Resources panel */}
+            {resourcesOpen && (
+                <ResourcesPanel
+                    toc={toc ?? undefined}
+                    bookSlug={bookSlug}
+                    activeNodeSlug={activeNodeSlug}
+                    onNavigate={handleTocNavigate}
+                    onAddComparisonPanel={onAddComparisonPanel}
+                    canAddPanel={canAddPanel}
+                    selectedSentence={showSentenceDetail ? selectedSentence : undefined}
+                    onClose={onToggleResources}
                 />
             )}
         </div>

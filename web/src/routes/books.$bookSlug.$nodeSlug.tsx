@@ -12,6 +12,10 @@ export type ReaderSearch = {
     s2?: string;
     s3?: string;
     s4?: string;
+    r?: string;
+    r2?: string;
+    r3?: string;
+    r4?: string;
 };
 
 function parsePanel(param: string): PanelState {
@@ -32,6 +36,10 @@ export const Route = createFileRoute("/books/$bookSlug/$nodeSlug")({
         s2: search.s2 as string | undefined,
         s3: search.s3 as string | undefined,
         s4: search.s4 as string | undefined,
+        r: search.r as string | undefined,
+        r2: search.r2 as string | undefined,
+        r3: search.r3 as string | undefined,
+        r4: search.r4 as string | undefined,
     }),
     loader: async ({ context, params }) => {
         await Promise.all([
@@ -63,5 +71,11 @@ function ReaderPage() {
     if (search.s3) selections.set(2, search.s3);
     if (search.s4) selections.set(3, search.s4);
 
-    return <ReaderLayout panels={panels} selections={selections} />;
+    const resourcesOpen = new Set<number>();
+    if (search.r) resourcesOpen.add(0);
+    if (search.r2) resourcesOpen.add(1);
+    if (search.r3) resourcesOpen.add(2);
+    if (search.r4) resourcesOpen.add(3);
+
+    return <ReaderLayout panels={panels} selections={selections} resourcesOpen={resourcesOpen} />;
 }

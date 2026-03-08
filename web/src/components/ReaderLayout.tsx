@@ -1,7 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import type { ReaderSearch } from "../routes/books.$bookSlug.$nodeSlug";
-import { BookPickerPanel } from "./BookPickerPanel";
 import { TextPanel } from "./TextPanel";
 
 export interface PanelState {
@@ -12,12 +11,14 @@ export interface PanelState {
 interface ReaderLayoutProps {
     panels: PanelState[];
     selections: Map<number, string>; // panelIndex -> sentenceId
+    resourcesOpen: Set<number>; // panelIndex -> resources panel open
 }
 
-/** Build search params from secondary panels and selections */
+/** Build search params from secondary panels, selections, and resources state */
 function buildSearch(
     panels: PanelState[],
     selections: Map<number, string>,
+    resourcesOpen: Set<number>,
 ): ReaderSearch {
     const search: ReaderSearch = {};
 
@@ -37,33 +38,41 @@ function buildSearch(
         }
     }
 
+    // Resources panel visibility: r, r2, r3, r4
+    for (const idx of resourcesOpen) {
+        if (idx === 0) search.r = "1";
+        else {
+            const key = `r${idx + 1}` as keyof ReaderSearch;
+            search[key] = "1";
+        }
+    }
+
     return search;
 }
 
 let nextPanelId = 0;
 
-export function ReaderLayout({ panels, selections }: ReaderLayoutProps) {
+export function ReaderLayout({
+    panels,
+    selections,
+    resourcesOpen,
+}: ReaderLayoutProps) {
     const navigate = useNavigate();
 
     // Assign stable keys to panels that persist across index changes
     const panelKeysRef = useRef<string[]>([]);
     if (panelKeysRef.current.length < panels.length) {
-        // New panels added — assign fresh IDs
         while (panelKeysRef.current.length < panels.length) {
             panelKeysRef.current.push(`panel-${nextPanelId++}`);
         }
-    } else if (panelKeysRef.current.length > panels.length) {
-        // Panels removed — will be trimmed by handleClosePanel
     }
-
-    // Track which panels have TOC open (local state, not URL)
-    const [tocOpen, setTocOpen] = useState<Set<number>>(() => new Set([0]));
 
     /** Navigate changing only search params (no path change) */
     const navigateSearch = useCallback(
         (
             newPanels: PanelState[],
             newSelections: Map<number, string>,
+            newResourcesOpen: Set<number>,
             replace?: boolean,
         ) => {
             navigate({
@@ -72,7 +81,7 @@ export function ReaderLayout({ panels, selections }: ReaderLayoutProps) {
                     bookSlug: panels[0].bookSlug,
                     nodeSlug: panels[0].nodeSlug!,
                 },
-                search: buildSearch(newPanels, newSelections),
+                search: buildSearch(newPanels, newSelections, newResourcesOpen),
                 replace,
             });
         },
@@ -84,6 +93,7 @@ export function ReaderLayout({ panels, selections }: ReaderLayoutProps) {
         (
             newPanels: PanelState[],
             newSelections: Map<number, string>,
+            newResourcesOpen: Set<number>,
             replace?: boolean,
         ) => {
             const primary = newPanels[0];
@@ -93,7 +103,7 @@ export function ReaderLayout({ panels, selections }: ReaderLayoutProps) {
                     bookSlug: primary.bookSlug,
                     nodeSlug: primary.nodeSlug!,
                 },
-                search: buildSearch(newPanels, newSelections),
+                search: buildSearch(newPanels, newSelections, newResourcesOpen),
                 replace,
             });
         },
@@ -106,12 +116,12 @@ export function ReaderLayout({ panels, selections }: ReaderLayoutProps) {
                 i === panelIndex ? { ...p, nodeSlug } : p,
             );
             if (panelIndex === 0) {
-                navigatePath(newPanels, selections);
+                navigatePath(newPanels, selections, resourcesOpen);
             } else {
-                navigateSearch(newPanels, selections);
+                navigateSearch(newPanels, selections, resourcesOpen);
             }
         },
-        [panels, selections, navigatePath, navigateSearch],
+        [panels, selections, resourcesOpen, navigatePath, navigateSearch],
     );
 
     const handleSelectSentence = useCallback(
@@ -122,19 +132,14 @@ export function ReaderLayout({ panels, selections }: ReaderLayoutProps) {
             } else {
                 newSelections.set(panelIndex, sentenceId);
             }
-            navigateSearch(panels, newSelections);
+            // Open resources panel when selecting a sentence
+            const newResourcesOpen = new Set(resourcesOpen);
+            newResourcesOpen.add(panelIndex);
+            navigateSearch(panels, newSelections, newResourcesOpen);
         },
-        [panels, selections, navigateSearch],
+        [panels, selections, resourcesOpen, navigateSearch],
     );
 
-    const handleDeselectSentence = useCallback(
-        (panelIndex: number) => {
-            const newSelections = new Map(selections);
-            newSelections.delete(panelIndex);
-            navigateSearch(panels, newSelections);
-        },
-        [panels, selections, navigateSearch],
-    );
 
     const handleClosePanel = useCallback(
         (panelIndex: number) => {
@@ -145,19 +150,17 @@ export function ReaderLayout({ panels, selections }: ReaderLayoutProps) {
                 else if (idx > panelIndex) newSelections.set(idx - 1, id);
             }
 
+            // Shift resources open indices
+            const newResourcesOpen = new Set<number>();
+            for (const idx of resourcesOpen) {
+                if (idx < panelIndex) newResourcesOpen.add(idx);
+                else if (idx > panelIndex) newResourcesOpen.add(idx - 1);
+            }
+
             // Update stable keys: remove the closed panel's key
             panelKeysRef.current = panelKeysRef.current.filter(
                 (_, i) => i !== panelIndex,
             );
-
-            setTocOpen((prev) => {
-                const next = new Set<number>();
-                for (const idx of prev) {
-                    if (idx < panelIndex) next.add(idx);
-                    else if (idx > panelIndex) next.add(idx - 1);
-                }
-                return next;
-            });
 
             if (newPanels.length === 0) {
                 navigate({
@@ -167,7 +170,11 @@ export function ReaderLayout({ panels, selections }: ReaderLayoutProps) {
             } else {
                 const primary = newPanels[0];
                 if (primary.nodeSlug) {
-                    navigatePath(newPanels, newSelections);
+                    navigatePath(
+                        newPanels,
+                        newSelections,
+                        newResourcesOpen,
+                    );
                 } else {
                     navigate({
                         to: "/books/$bookSlug",
@@ -176,36 +183,56 @@ export function ReaderLayout({ panels, selections }: ReaderLayoutProps) {
                 }
             }
         },
-        [panels, selections, navigate, navigatePath],
+        [panels, selections, resourcesOpen, navigate, navigatePath],
     );
 
-    const handleToggleToc = useCallback((panelIndex: number) => {
-        setTocOpen((prev) => {
-            const next = new Set(prev);
-            if (next.has(panelIndex)) next.delete(panelIndex);
-            else next.add(panelIndex);
-            return next;
-        });
-    }, []);
-
-    const handleAddPanel = useCallback(() => {
-        const newPanels = [...panels, { bookSlug: "_", nodeSlug: undefined }];
-        navigateSearch(newPanels, selections);
-    }, [panels, selections, navigateSearch]);
-
-    const handlePickBook = useCallback(
-        (panelIndex: number, bookSlug: string) => {
-            const newPanels = panels.map((p, i) =>
-                i === panelIndex ? { bookSlug, nodeSlug: undefined } : p,
-            );
-            setTocOpen((prev) => new Set([...prev, panelIndex]));
-            if (panelIndex === 0) {
-                navigatePath(newPanels, selections);
-            } else {
-                navigateSearch(newPanels, selections);
-            }
+    const handleCloseResources = useCallback(
+        (panelIndex: number) => {
+            const newResourcesOpen = new Set(resourcesOpen);
+            newResourcesOpen.delete(panelIndex);
+            // Also deselect sentence when closing resources
+            const newSelections = new Map(selections);
+            newSelections.delete(panelIndex);
+            navigateSearch(panels, newSelections, newResourcesOpen);
         },
-        [panels, selections, navigatePath, navigateSearch],
+        [panels, selections, resourcesOpen, navigateSearch],
+    );
+
+    const handleAddComparisonPanel = useCallback(
+        (afterIndex: number, bookSlug: string, nodeSlug: string) => {
+            const insertAt = afterIndex + 1;
+            const newPanels = [
+                ...panels.slice(0, insertAt),
+                { bookSlug, nodeSlug },
+                ...panels.slice(insertAt),
+            ];
+
+            // Shift selections for indices >= insertAt, clear source panel's selection
+            const newSelections = new Map<number, string>();
+            for (const [idx, id] of selections) {
+                if (idx === afterIndex) continue;
+                if (idx < insertAt) newSelections.set(idx, id);
+                else newSelections.set(idx + 1, id);
+            }
+
+            // Close source panel's resources
+            const newResourcesOpen = new Set<number>();
+            for (const idx of resourcesOpen) {
+                if (idx === afterIndex) continue;
+                if (idx < insertAt) newResourcesOpen.add(idx);
+                else newResourcesOpen.add(idx + 1);
+            }
+
+            // Insert stable key
+            panelKeysRef.current = [
+                ...panelKeysRef.current.slice(0, insertAt),
+                `panel-${nextPanelId++}`,
+                ...panelKeysRef.current.slice(insertAt),
+            ];
+
+            navigateSearch(newPanels, newSelections, newResourcesOpen);
+        },
+        [panels, selections, resourcesOpen, navigateSearch],
     );
 
     /** Replace-navigate for scroll-driven URL updates (no history entry) */
@@ -215,60 +242,46 @@ export function ReaderLayout({ panels, selections }: ReaderLayoutProps) {
                 i === panelIndex ? { ...p, nodeSlug } : p,
             );
             if (panelIndex === 0) {
-                navigatePath(newPanels, selections, true);
+                navigatePath(newPanels, selections, resourcesOpen, true);
             } else {
-                navigateSearch(newPanels, selections, true);
+                navigateSearch(newPanels, selections, resourcesOpen, true);
             }
         },
-        [panels, selections, navigatePath, navigateSearch],
+        [panels, selections, resourcesOpen, navigatePath, navigateSearch],
     );
+
+    const canAddPanel = panels.length < 4;
 
     return (
         <div className="flex h-screen">
-            {panels.map((panel, idx) =>
-                panel.bookSlug === "_" ? (
-                    <BookPickerPanel
-                        key={panelKeysRef.current[idx] ?? `picker-${idx}`}
-                        onPickBook={(slug) => handlePickBook(idx, slug)}
-                        onClose={
-                            panels.length > 1
-                                ? () => handleClosePanel(idx)
-                                : undefined
-                        }
-                    />
-                ) : (
-                    <TextPanel
-                        key={panelKeysRef.current[idx] ?? `text-${idx}`}
-                        panelIndex={idx}
-                        bookSlug={panel.bookSlug}
-                        nodeSlug={panel.nodeSlug}
-                        tocOpen={tocOpen.has(idx)}
-                        selectedSentenceId={selections.get(idx)}
-                        onNavigate={(nodeSlug) => handleNavigate(idx, nodeSlug)}
-                        onSelectSentence={(sentenceId) =>
-                            handleSelectSentence(idx, sentenceId)
-                        }
-                        onDeselectSentence={() => handleDeselectSentence(idx)}
-                        onToggleToc={() => handleToggleToc(idx)}
-                        onClose={
-                            panels.length > 1
-                                ? () => handleClosePanel(idx)
-                                : undefined
-                        }
-                        onScrollNavigate={(nodeSlug) =>
-                            handleScrollNavigate(idx, nodeSlug)
-                        }
-                        isOnly={panels.length === 1}
-                    />
-                ),
-            )}
-            <button
-                onClick={handleAddPanel}
-                className="flex items-center justify-center w-10 shrink-0 border-l border-stone-200 bg-white hover:bg-stone-50 text-stone-400 hover:text-stone-600 transition-colors"
-                title="Add text panel"
-            >
-                <span className="text-xl">+</span>
-            </button>
+            {panels.map((panel, idx) => (
+                <TextPanel
+                    key={panelKeysRef.current[idx] ?? `text-${idx}`}
+                    panelIndex={idx}
+                    bookSlug={panel.bookSlug}
+                    nodeSlug={panel.nodeSlug}
+                    resourcesOpen={resourcesOpen.has(idx)}
+                    selectedSentenceId={selections.get(idx)}
+                    onNavigate={(nodeSlug) => handleNavigate(idx, nodeSlug)}
+                    onSelectSentence={(sentenceId) =>
+                        handleSelectSentence(idx, sentenceId)
+                    }
+
+                    onToggleResources={() => handleCloseResources(idx)}
+                    onClose={
+                        panels.length > 1
+                            ? () => handleClosePanel(idx)
+                            : undefined
+                    }
+                    onScrollNavigate={(nodeSlug) =>
+                        handleScrollNavigate(idx, nodeSlug)
+                    }
+                    onAddComparisonPanel={(bookSlug, nodeSlug) =>
+                        handleAddComparisonPanel(idx, bookSlug, nodeSlug)
+                    }
+                    canAddPanel={canAddPanel}
+                />
+            ))}
         </div>
     );
 }

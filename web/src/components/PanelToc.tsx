@@ -49,22 +49,20 @@ export function PanelToc({ toc, bookSlug, activeNodeSlug, onNavigate }: PanelToc
   }, [toc, activeNodeSlug])
 
   return (
-    <aside className="w-64 border-r border-stone-200 overflow-y-auto bg-white shrink-0">
-      <nav className="p-2">
-        <ul>
-          {toc.map((node) => (
-            <TocItem
-              key={node.id}
-              node={node}
-              bookSlug={bookSlug}
-              activeSlug={activeNodeSlug}
-              onNavigate={onNavigate}
-              expandedAncestors={expandedAncestors}
-            />
-          ))}
-        </ul>
-      </nav>
-    </aside>
+    <nav className="p-2 overflow-y-auto flex-1">
+      <ul>
+        {toc.map((node) => (
+          <TocItem
+            key={node.id}
+            node={node}
+            bookSlug={bookSlug}
+            activeSlug={activeNodeSlug}
+            onNavigate={onNavigate}
+            expandedAncestors={expandedAncestors}
+          />
+        ))}
+      </ul>
+    </nav>
   )
 }
 
