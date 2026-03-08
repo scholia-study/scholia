@@ -5,6 +5,18 @@ import {
     Scripts,
 } from "@tanstack/react-router";
 import appCss from "../styles.css?url";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import "@fontsource/libre-baskerville/400.css";
+import "@fontsource/libre-baskerville/500.css";
+import "@fontsource/libre-baskerville/600.css";
+import "@fontsource/libre-baskerville/700.css";
+import "@fontsource/libre-baskerville/400-italic.css";
+import "@fontsource/libre-baskerville/500-italic.css";
+import "@fontsource/libre-baskerville/600-italic.css";
+import "@fontsource/libre-baskerville/700-italic.css";
 
 interface RouterContext {
     queryClient: QueryClient;

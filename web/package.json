@@ -17,6 +17,12 @@
         "codegen": "orval && pnpx @biomejs/biome check --write ./src/api"
     },
     "dependencies": {
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.1",
+        "@fontsource/libre-baskerville": "^5.2.10",
+        "@fontsource/roboto": "^5.2.10",
+        "@mui/icons-material": "^7.3.9",
+        "@mui/material": "^7.3.9",
         "@tailwindcss/vite": "^4.1.18",
         "@tanstack/react-devtools": "latest",
         "@tanstack/react-query": "^5.90.21",

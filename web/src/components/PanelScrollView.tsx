@@ -18,6 +18,7 @@ export interface PanelScrollViewHandle {
 
 interface PanelScrollViewProps {
     bookSlug: string;
+    initialNodeSlug: string | undefined;
     selectedSentenceId: string | undefined;
     onSelectSentence: (sentence: SentenceResponse) => void;
     onVisibleNodeChange?: (nodeSlug: string) => void;
@@ -31,6 +32,7 @@ export const PanelScrollView = forwardRef<
 >(function PanelScrollView(
     {
         bookSlug,
+        initialNodeSlug,
         selectedSentenceId,
         onSelectSentence,
         onVisibleNodeChange,
@@ -107,6 +109,7 @@ export const PanelScrollView = forwardRef<
         <VirtualizedScroll
             ref={ref}
             nodes={nodes}
+            initialNodeSlug={initialNodeSlug}
             hasNextPage={hasNextPage ?? false}
             isFetchingNextPage={isFetchingNextPage}
             fetchNextPage={fetchNextPage}
@@ -122,6 +125,7 @@ export const PanelScrollView = forwardRef<
 
 interface VirtualizedScrollProps {
     nodes: NodeDetail[];
+    initialNodeSlug: string | undefined;
     hasNextPage: boolean;
     isFetchingNextPage: boolean;
     fetchNextPage: () => void;
@@ -137,6 +141,7 @@ const VirtualizedScroll = forwardRef<
 >(function VirtualizedScroll(
     {
         nodes,
+        initialNodeSlug,
         hasNextPage,
         isFetchingNextPage,
         fetchNextPage,
@@ -150,7 +155,7 @@ const VirtualizedScroll = forwardRef<
     const parentRef = useRef<HTMLDivElement>(null);
     const [pendingScrollTarget, setPendingScrollTarget] = useState<
         string | null
-    >(null);
+    >(initialNodeSlug ?? null);
 
     const hasActiveMargins =
         marginSettings && marginSettings.enabledSystems.size > 0;

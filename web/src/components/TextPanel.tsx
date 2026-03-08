@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { SentenceResponse } from "../api/model";
+import TextFormatOutlined from "@mui/icons-material/TextFormatOutlined";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { SentenceResponse, TocNodeResponse } from "../api/model";
+import { useGetBook } from "../api/books/books";
 import { useGetNode } from "../api/nodes/nodes";
 import { useGetToc } from "../api/toc/toc";
 import type { MarginSettings } from "./BlockRenderer";
@@ -9,6 +11,18 @@ import { PanelScrollView } from "./PanelScrollView";
 import { ResourcesPanel } from "./ResourcesPanel";
 
 type ViewMode = "section" | "scroll";
+
+function findNodeLabel(
+    nodes: TocNodeResponse[],
+    slug: string,
+): string | undefined {
+    for (const node of nodes) {
+        if (node.slug === slug) return node.label;
+        const found = findNodeLabel(node.children, slug);
+        if (found) return found;
+    }
+    return undefined;
+}
 
 interface TextPanelProps {
     panelIndex: number;
@@ -52,7 +66,7 @@ export function TextPanel({
     onAddComparisonPanel,
     canAddPanel,
 }: TextPanelProps) {
-    const [viewMode, setViewMode] = useState<ViewMode>("section");
+    const [viewMode, setViewMode] = useState<ViewMode>("scroll");
     const [visibleSlug, setVisibleSlug] = useState<string | undefined>();
     const [selectedSentence, setSelectedSentence] = useState<
         SentenceResponse | undefined
@@ -64,7 +78,7 @@ export function TextPanel({
         enabledSystems: new Set<string>(),
         systemSides: {},
     });
-    const [refsOpen, setRefsOpen] = useState(false);
+    const [displayOptionsOpen, setDisplayOptionsOpen] = useState(false);
 
     const handleVisibleNodeChange = useCallback(
         (slug: string) => {
@@ -76,6 +90,9 @@ export function TextPanel({
 
     const { data: tocData } = useGetToc(bookSlug);
     const toc = tocData?.data;
+
+    const { data: bookData } = useGetBook(bookSlug);
+    const bookTitle = bookData?.status === 200 ? bookData.data.title : bookSlug;
 
     // In section mode, fetch the specific node
     const {
@@ -134,6 +151,10 @@ export function TextPanel({
     }, []);
 
     const activeNodeSlug = viewMode === "scroll" ? visibleSlug : nodeSlug;
+    const activeNodeLabel = useMemo(
+        () => (activeNodeSlug && toc ? findNodeLabel(toc, activeNodeSlug) : undefined),
+        [activeNodeSlug, toc],
+    );
     const showSentenceDetail =
         selectedSentence != null && selectedSentence.id === selectedSentenceId;
     const availableSystems = Object.keys(marginSettings.systemSides);
@@ -171,85 +192,129 @@ export function TextPanel({
             {/* Main content area */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Toolbar */}
-                <div className="flex items-center gap-2 px-3 py-2 border-b border-stone-200 bg-white shrink-0">
-                    <span className="text-sm text-stone-500 truncate flex-1">
-                        {node?.label ?? bookSlug}
-                    </span>
-                    {availableSystems.length > 0 && (
-                        <div className="relative">
-                            <button
-                                onClick={() => setRefsOpen(!refsOpen)}
-                                className={`text-xs px-2 py-1 rounded border transition-colors ${
-                                    marginSettings.enabledSystems.size > 0
-                                        ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
-                                        : "border-stone-300 text-stone-600 hover:bg-stone-100"
-                                }`}
-                                title="Reference annotations"
-                            >
-                                Refs
-                            </button>
-                            {refsOpen && (
-                                <div className="absolute top-full mt-1 right-0 bg-white border border-stone-200 rounded-lg shadow-lg p-2 z-20 min-w-[10rem]">
-                                    <div className="text-[10px] uppercase tracking-wider text-stone-400 px-1 pb-1 mb-1 border-b border-stone-100">
-                                        Margin references
-                                    </div>
-                                    {availableSystems.map((slug) => (
-                                        <div
-                                            key={slug}
-                                            className="flex items-center gap-2 py-1 px-1"
-                                        >
-                                            <label className="flex items-center gap-1.5 flex-1 text-xs text-stone-700 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={marginSettings.enabledSystems.has(
-                                                        slug,
-                                                    )}
-                                                    onChange={() =>
-                                                        handleToggleSystem(slug)
-                                                    }
-                                                    className="rounded border-stone-300"
-                                                />
-                                                {slug}
-                                            </label>
+                <div className="border-b border-stone-200 bg-white shrink-0 py-2 relative z-10">
+                    <div className="relative max-w-4xl mx-auto">
+                        {/* Centered title */}
+                        <div className="text-center">
+                            <div className="text-sm text-stone-800 truncate">
+                                {activeNodeLabel ?? bookTitle}
+                            </div>
+                            <div className="text-xs text-stone-400 truncate">
+                                {bookTitle}
+                            </div>
+                        </div>
+
+                        {/* Display options button — aligned above right margin notes */}
+                        <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1" style={{ left: "calc(50% + 21rem + 0.5rem)" }}>
+                            <div className="relative">
+                                <button
+                                    onClick={() =>
+                                        setDisplayOptionsOpen(
+                                            !displayOptionsOpen,
+                                        )
+                                    }
+                                    className="text-stone-500 hover:text-stone-700 transition-colors p-1 rounded hover:bg-stone-100"
+                                    title="Text display options"
+                                >
+                                    <TextFormatOutlined fontSize="small" />
+                                </button>
+                                {displayOptionsOpen && (
+                                    <div className="absolute top-full mt-1 right-0 bg-white border border-stone-200 rounded-lg shadow-lg p-2 z-50 min-w-[12rem]">
+                                        {/* View mode */}
+                                        <div className="text-[10px] uppercase tracking-wider text-stone-400 px-1 pb-1 mb-1 border-b border-stone-100">
+                                            View mode
+                                        </div>
+                                        <div className="flex items-center gap-1 mb-2 px-1">
                                             <button
-                                                onClick={() =>
-                                                    handleToggleSide(slug)
-                                                }
-                                                className="text-[10px] px-1.5 py-0.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-50 font-mono"
-                                                title={`Move to ${marginSettings.systemSides[slug] === "left" ? "right" : "left"} margin`}
+                                                onClick={() => {
+                                                    if (viewMode !== "scroll")
+                                                        handleToggleView();
+                                                }}
+                                                className={`text-xs px-2 py-1 rounded transition-colors ${
+                                                    viewMode === "scroll"
+                                                        ? "bg-stone-200 text-stone-900 font-medium"
+                                                        : "text-stone-600 hover:bg-stone-100"
+                                                }`}
                                             >
-                                                {marginSettings.systemSides[
-                                                    slug
-                                                ] === "left"
-                                                    ? "L"
-                                                    : "R"}
+                                                Scroll
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    if (viewMode !== "section")
+                                                        handleToggleView();
+                                                }}
+                                                className={`text-xs px-2 py-1 rounded transition-colors ${
+                                                    viewMode === "section"
+                                                        ? "bg-stone-200 text-stone-900 font-medium"
+                                                        : "text-stone-600 hover:bg-stone-100"
+                                                }`}
+                                            >
+                                                Section
                                             </button>
                                         </div>
-                                    ))}
-                                </div>
+
+                                        {/* Margin references */}
+                                        {availableSystems.length > 0 && (
+                                            <>
+                                                <div className="text-[10px] uppercase tracking-wider text-stone-400 px-1 pb-1 mb-1 border-b border-stone-100">
+                                                    Margin references
+                                                </div>
+                                                {availableSystems.map(
+                                                    (slug) => (
+                                                        <div
+                                                            key={slug}
+                                                            className="flex items-center gap-2 py-1 px-1"
+                                                        >
+                                                            <label className="flex items-center gap-1.5 flex-1 text-xs text-stone-700 cursor-pointer">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={marginSettings.enabledSystems.has(
+                                                                        slug,
+                                                                    )}
+                                                                    onChange={() =>
+                                                                        handleToggleSystem(
+                                                                            slug,
+                                                                        )
+                                                                    }
+                                                                    className="rounded border-stone-300"
+                                                                />
+                                                                {slug}
+                                                            </label>
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleToggleSide(
+                                                                        slug,
+                                                                    )
+                                                                }
+                                                                className="text-[10px] px-1.5 py-0.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-50 font-mono"
+                                                                title={`Move to ${marginSettings.systemSides[slug] === "left" ? "right" : "left"} margin`}
+                                                            >
+                                                                {marginSettings
+                                                                    .systemSides[
+                                                                    slug
+                                                                ] === "left"
+                                                                    ? "L"
+                                                                    : "R"}
+                                                            </button>
+                                                        </div>
+                                                    ),
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                            {onClose && (
+                                <button
+                                    onClick={onClose}
+                                    className="text-stone-400 hover:text-stone-600 text-lg leading-none"
+                                    title="Close panel"
+                                >
+                                    &times;
+                                </button>
                             )}
                         </div>
-                    )}
-                    <button
-                        onClick={handleToggleView}
-                        className="text-xs px-2 py-1 rounded border border-stone-300 text-stone-600 hover:bg-stone-100 transition-colors"
-                        title={
-                            viewMode === "section"
-                                ? "Switch to scroll view"
-                                : "Switch to section view"
-                        }
-                    >
-                        {viewMode === "section" ? "Scroll" : "Section"}
-                    </button>
-                    {onClose && (
-                        <button
-                            onClick={onClose}
-                            className="text-stone-400 hover:text-stone-600 text-lg leading-none"
-                            title="Close panel"
-                        >
-                            &times;
-                        </button>
-                    )}
+                    </div>
                 </div>
 
                 {/* Content */}
@@ -257,6 +322,7 @@ export function TextPanel({
                     <PanelScrollView
                         ref={scrollViewRef}
                         bookSlug={bookSlug}
+                        initialNodeSlug={nodeSlug}
                         selectedSentenceId={selectedSentenceId}
                         onSelectSentence={handleSelectSentence}
                         onVisibleNodeChange={handleVisibleNodeChange}

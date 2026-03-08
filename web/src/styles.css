@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: "Libre Baskerville", serif;
+}
+
 .sperrdruck {
   font-weight: bold;
 }
