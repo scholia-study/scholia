@@ -55,6 +55,21 @@ export const PanelScrollView = forwardRef<
         initialSortOrder,
     );
 
+    const [prevNodeSlug, setPrevNodeSlug] = useState(initialNodeSlug);
+
+    // If initialSortOrder arrives after mount (toc loaded late),
+    // update so the query starts at the right position.
+    useEffect(() => {
+        if (initialSortOrder != null && startSortOrder == null) {
+            setStartSortOrder(initialSortOrder);
+        }
+    }, [initialSortOrder, startSortOrder]);
+
+    // Don't fire the query until we know where to start.
+    // If there's a target node but no sort order yet, the toc is still loading.
+    const waitingForSortOrder =
+        initialNodeSlug != null && startSortOrder == null;
+
     const initialPageParam: PageCursor | undefined =
         startSortOrder != null ? { after: startSortOrder - 1 } : undefined;
 
@@ -75,6 +90,7 @@ export const PanelScrollView = forwardRef<
         string[],
         PageCursor | undefined
     >({
+        enabled: !waitingForSortOrder,
         queryKey: ["node-page-bidir", bookSlug, String(startSortOrder)],
         queryFn: async ({ pageParam, signal }) => {
             const params = pageParam
@@ -108,6 +124,18 @@ export const PanelScrollView = forwardRef<
             ) ?? [],
         [data],
     );
+
+    if (initialNodeSlug !== prevNodeSlug) {
+        setPrevNodeSlug(initialNodeSlug);
+
+        // If the user navigates to a node that isn't in our current infinite list,
+        // it's a major jump. Update startSortOrder immediately to trigger a new query
+        // and prevent the flash of old content.
+        const isLoaded = nodes.some((n) => n.slug === initialNodeSlug);
+        if (!isLoaded && initialSortOrder != null) {
+            setStartSortOrder(initialSortOrder);
+        }
+    }
 
     // Discover reference systems from loaded nodes
     useEffect(() => {
@@ -205,6 +233,23 @@ const VirtualizedScroll = forwardRef<
         string | null
     >(initialNodeSlug ?? null);
 
+    const lastEmittedSlugRef = useRef<string | null>(null);
+
+    const [prevInitialSlug, setPrevInitialSlug] = useState(initialNodeSlug);
+    if (initialNodeSlug !== prevInitialSlug) {
+        setPrevInitialSlug(initialNodeSlug);
+
+        // 2. CHANGE THIS: Differentiate between a scroll and a TOC click
+        if (initialNodeSlug === lastEmittedSlugRef.current) {
+            // The user smoothly scrolled into this section. Do NOT snap to the top.
+            lastEmittedSlugRef.current = null;
+        } else {
+            // The user clicked a TOC link or hit the Back button. Show overlay and jump.
+            setPendingScrollTarget(initialNodeSlug ?? null);
+            lastEmittedSlugRef.current = null;
+        }
+    }
+
     // Suppress IntersectionObserver during programmatic scrolls to avoid
     // spurious URL updates that re-trigger the route loader.
     const suppressObserverRef = useRef(false);
@@ -231,18 +276,65 @@ const VirtualizedScroll = forwardRef<
     const items = virtualizer.getVirtualItems();
 
     // Maintain scroll position when items are prepended
-    const prevFirstNodeIdRef = useRef<string | null>(null);
+    const anchorRef = useRef<{ id: string; start: number } | null>(null);
+    const prevTotalSizeRef = useRef<number>(0);
+
     useLayoutEffect(() => {
-        const prevFirstId = prevFirstNodeIdRef.current;
-        if (prevFirstId && nodes.length > 0 && nodes[0].id !== prevFirstId) {
-            const newIndex = nodes.findIndex((n) => n.id === prevFirstId);
-            if (newIndex > 0) {
-                suppressObserver();
-                virtualizer.scrollToIndex(newIndex, { align: "start" });
+        const parent = parentRef.current;
+        if (!parent || nodes.length === 0 || items.length === 0) return;
+
+        // 1. Do not anchor if we are in the middle of a programmatic TOC jump
+        if (pendingScrollTarget) {
+            anchorRef.current = null;
+            prevTotalSizeRef.current = virtualizer.getTotalSize();
+            return;
+        }
+
+        let scrollDiff = 0;
+        const anchor = anchorRef.current;
+
+        if (anchor) {
+            const renderedAnchor = items.find(
+                (i) => nodes[i.index]?.id === anchor.id,
+            );
+
+            if (renderedAnchor) {
+                // Case A: Dynamic Resize Handling
+                // If an item ABOVE our scroll position is measured and resizes, TanStack Virtual
+                // pushes our anchor down. We track that pixel difference and shift the scrollbar to match.
+                scrollDiff = renderedAnchor.start - anchor.start;
+            } else {
+                // Case B: Prepend Handling
+                // Right after a prepend, TanStack Virtual renders the old scroll offset,
+                // completely missing our anchor. We fall back to the total size difference.
+                const newIndex = nodes.findIndex((n) => n.id === anchor.id);
+                if (newIndex > 0) {
+                    scrollDiff =
+                        virtualizer.getTotalSize() - prevTotalSizeRef.current;
+                }
             }
         }
-        prevFirstNodeIdRef.current = nodes.length > 0 ? nodes[0].id : null;
-    }, [nodes, virtualizer, suppressObserver]);
+
+        // Apply the silent correction before the browser paints
+        if (scrollDiff !== 0) {
+            suppressObserver();
+            parent.scrollTop += scrollDiff;
+            if (anchorRef.current) {
+                anchorRef.current.start += scrollDiff; // Instantly update expected start to prevent looping
+            }
+        }
+
+        // Establish the new anchor for the next frame
+        const firstVisibleItem = items[0];
+        if (firstVisibleItem) {
+            anchorRef.current = {
+                id: nodes[firstVisibleItem.index].id,
+                start: firstVisibleItem.start,
+            };
+        }
+
+        prevTotalSizeRef.current = virtualizer.getTotalSize();
+    }, [items, nodes, virtualizer, suppressObserver, pendingScrollTarget]);
 
     // Forward infinite scroll trigger
     useEffect(() => {
@@ -287,7 +379,11 @@ const VirtualizedScroll = forwardRef<
                     if (entry.isIntersecting) {
                         const slug = (entry.target as HTMLElement).dataset
                             .nodeSlug;
-                        if (slug) onVisibleNodeChangeRef.current?.(slug);
+                        if (slug) {
+                            // 3. ADD THIS: Record that we caused this URL update
+                            lastEmittedSlugRef.current = slug;
+                            onVisibleNodeChangeRef.current?.(slug);
+                        }
                     }
                 }
             },
@@ -341,13 +437,26 @@ const VirtualizedScroll = forwardRef<
     // When nodes update, check if pending target is now loaded
     useEffect(() => {
         if (!pendingScrollTarget) return;
+
         const index = nodes.findIndex((n) => n.slug === pendingScrollTarget);
-        if (index >= 0) {
-            setPendingScrollTarget(null);
-            suppressObserver();
-            virtualizer.scrollToIndex(index, { align: "start" });
+        if (index === -1) return; // Wait for data to load
+
+        suppressObserver();
+        virtualizer.scrollToIndex(index, { align: "start" });
+
+        // Check if TanStack Virtual has actually placed the item in the DOM
+        const targetIsRendered = items.some((v) => v.index === index);
+
+        if (targetIsRendered) {
+            // It is measured and rendered!
+            // Add a tiny 20ms buffer to ensure the browser has painted the DOM updates
+            // before we drop the curtain.
+            const timer = setTimeout(() => {
+                setPendingScrollTarget(null);
+            }, 20);
+            return () => clearTimeout(timer);
         }
-    }, [nodes, pendingScrollTarget, virtualizer, suppressObserver]);
+    }, [nodes, pendingScrollTarget, virtualizer, suppressObserver, items]);
 
     return (
         <div ref={parentRef} className="h-full overflow-y-auto relative">
@@ -360,20 +469,20 @@ const VirtualizedScroll = forwardRef<
                 className="relative w-full"
                 style={{ height: virtualizer.getTotalSize() }}
             >
-                <div
-                    className="absolute top-0 left-0 w-full"
-                    style={{
-                        transform: `translateY(${items[0]?.start ?? 0}px)`,
-                    }}
-                >
-                    {items.map((virtualRow) => {
-                        const node = nodes[virtualRow.index];
-                        return (
+                {items.map((virtualRow) => {
+                    const node = nodes[virtualRow.index];
+                    return (
+                        <div
+                            key={node.id}
+                            data-index={virtualRow.index}
+                            data-node-slug={node.slug}
+                            ref={virtualizer.measureElement}
+                            className="absolute top-0 left-0 w-full"
+                            style={{
+                                transform: `translateY(${virtualRow.start}px)`,
+                            }}
+                        >
                             <div
-                                key={node.id}
-                                data-index={virtualRow.index}
-                                data-node-slug={node.slug}
-                                ref={virtualizer.measureElement}
                                 className={
                                     hasActiveMargins
                                         ? "max-w-4xl mx-auto"
@@ -396,9 +505,9 @@ const VirtualizedScroll = forwardRef<
                                     ))}
                                 </div>
                             </div>
-                        );
-                    })}
-                </div>
+                        </div>
+                    );
+                })}
             </div>
             {isFetchingNextPage && !pendingScrollTarget && (
                 <div className="flex justify-center py-8 text-stone-400">
