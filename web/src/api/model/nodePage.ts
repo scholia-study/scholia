@@ -8,5 +8,6 @@ import type { NodeDetail } from "./nodeDetail";
 
 export interface NodePage {
     has_more: boolean;
+    has_previous: boolean;
     nodes: NodeDetail[];
 }

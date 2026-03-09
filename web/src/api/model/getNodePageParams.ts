@@ -7,10 +7,15 @@
 
 export type GetNodePageParams = {
     /**
-     * sort_order cursor — omit for first page
+     * sort_order cursor — fetch nodes after this value
      * @nullable
      */
     after?: number | null;
+    /**
+     * sort_order cursor — fetch nodes before this value
+     * @nullable
+     */
+    before?: number | null;
     /**
      * page size, default 20, max 50
      * @nullable

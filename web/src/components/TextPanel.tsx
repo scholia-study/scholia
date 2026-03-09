@@ -24,13 +24,13 @@ import { ResourcesPanel } from "./ResourcesPanel";
 
 type ViewMode = "section" | "scroll";
 
-function findNodeLabel(
+function findNodeInToc(
     nodes: TocNodeResponse[],
     slug: string,
-): string | undefined {
+): TocNodeResponse | undefined {
     for (const node of nodes) {
-        if (node.slug === slug) return node.label;
-        const found = findNodeLabel(node.children, slug);
+        if (node.slug === slug) return node;
+        const found = findNodeInToc(node.children, slug);
         if (found) return found;
     }
     return undefined;
@@ -166,9 +166,16 @@ export function TextPanel({
     const activeNodeLabel = useMemo(
         () =>
             activeNodeSlug && toc
-                ? findNodeLabel(toc, activeNodeSlug)
+                ? findNodeInToc(toc, activeNodeSlug)?.label
                 : undefined,
         [activeNodeSlug, toc],
+    );
+    const initialSortOrder = useMemo(
+        () =>
+            nodeSlug && toc
+                ? findNodeInToc(toc, nodeSlug)?.sort_order
+                : undefined,
+        [nodeSlug, toc],
     );
     const showSentenceDetail =
         selectedSentence != null && selectedSentence.id === selectedSentenceId;
@@ -194,12 +201,15 @@ export function TextPanel({
     const handleTocNavigate = useCallback(
         (slug: string) => {
             if (viewMode === "scroll") {
-                scrollViewRef.current?.scrollToNode(slug);
+                const sortOrder = toc
+                    ? findNodeInToc(toc, slug)?.sort_order
+                    : undefined;
+                scrollViewRef.current?.scrollToNode(slug, sortOrder);
             } else {
                 onNavigate(slug);
             }
         },
-        [viewMode, onNavigate],
+        [viewMode, onNavigate, toc],
     );
 
     return (
@@ -354,6 +364,7 @@ export function TextPanel({
                         ref={scrollViewRef}
                         bookSlug={bookSlug}
                         initialNodeSlug={nodeSlug}
+                        initialSortOrder={initialSortOrder}
                         selectedSentenceId={selectedSentenceId}
                         onSelectSentence={handleSelectSentence}
                         onVisibleNodeChange={handleVisibleNodeChange}

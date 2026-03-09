@@ -44,33 +44,90 @@ pub async fn get_node_page(
     pool: &PgPool,
     slug: &str,
     after: Option<i32>,
+    before: Option<i32>,
     limit: i32,
 ) -> Result<NodePage, AppError> {
-    let after = after.unwrap_or(-1);
-
     let fetch_limit = (limit + 1) as i64;
-    let nodes = sqlx::query_as!(
-        NodeRow,
-        r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order
-           FROM toc_nodes tn
-           JOIN books b ON b.id = tn.book_id
-           WHERE b.slug = $1 AND tn.sort_order > $2
-           ORDER BY tn.sort_order
-           LIMIT $3"#,
-        slug,
-        after,
-        fetch_limit,
-    )
-    .fetch_all(pool)
-    .await?;
 
-    let has_more = nodes.len() as i64 > limit as i64;
-    let nodes: Vec<NodeRow> = nodes.into_iter().take(limit as usize).collect();
+    // `before` takes precedence: fetch nodes *before* the cursor (reverse order)
+    let (nodes, is_backward) = if let Some(before_cursor) = before {
+        let rows = sqlx::query_as!(
+            NodeRow,
+            r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order
+               FROM toc_nodes tn
+               JOIN books b ON b.id = tn.book_id
+               WHERE b.slug = $1 AND tn.sort_order < $2
+               ORDER BY tn.sort_order DESC
+               LIMIT $3"#,
+            slug,
+            before_cursor,
+            fetch_limit,
+        )
+        .fetch_all(pool)
+        .await?;
+        (rows, true)
+    } else {
+        let after_cursor = after.unwrap_or(-1);
+        let rows = sqlx::query_as!(
+            NodeRow,
+            r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order
+               FROM toc_nodes tn
+               JOIN books b ON b.id = tn.book_id
+               WHERE b.slug = $1 AND tn.sort_order > $2
+               ORDER BY tn.sort_order
+               LIMIT $3"#,
+            slug,
+            after_cursor,
+            fetch_limit,
+        )
+        .fetch_all(pool)
+        .await?;
+        (rows, false)
+    };
+
+    let has_extra = nodes.len() as i64 > limit as i64;
+    let mut nodes: Vec<NodeRow> = nodes.into_iter().take(limit as usize).collect();
+
+    // For backward fetch, results came in DESC order — reverse to ASC
+    if is_backward {
+        nodes.reverse();
+    }
+
+    let (has_more, has_previous) = if is_backward {
+        // backward page: has_extra means there are earlier nodes; check if there are later nodes
+        let has_later = if nodes.is_empty() {
+            false
+        } else {
+            let last_sort = nodes.last().unwrap().sort_order;
+            sqlx::query_scalar!(
+                r#"SELECT EXISTS(
+                    SELECT 1 FROM toc_nodes tn
+                    JOIN books b ON b.id = tn.book_id
+                    WHERE b.slug = $1 AND tn.sort_order > $2
+                ) AS "exists!""#,
+                slug,
+                last_sort,
+            )
+            .fetch_one(pool)
+            .await?
+        };
+        (has_later, has_extra)
+    } else {
+        // forward page: has_extra means there are later nodes; check if there are earlier nodes
+        let has_earlier = if nodes.is_empty() {
+            false
+        } else {
+            let first_sort = nodes.first().unwrap().sort_order;
+            first_sort > 0
+        };
+        (has_extra, has_earlier)
+    };
 
     if nodes.is_empty() {
         return Ok(NodePage {
             nodes: vec![],
             has_more: false,
+            has_previous: false,
         });
     }
 
@@ -181,5 +238,6 @@ pub async fn get_node_page(
     Ok(NodePage {
         nodes: result_nodes,
         has_more,
+        has_previous,
     })
 }

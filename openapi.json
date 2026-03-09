@@ -88,7 +88,20 @@
           {
             "name": "after",
             "in": "query",
-            "description": "sort_order cursor — omit for first page",
+            "description": "sort_order cursor — fetch nodes after this value",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "sort_order cursor — fetch nodes before this value",
             "required": false,
             "schema": {
               "type": [
@@ -362,10 +375,14 @@
         "type": "object",
         "required": [
           "nodes",
-          "has_more"
+          "has_more",
+          "has_previous"
         ],
         "properties": {
           "has_more": {
+            "type": "boolean"
+          },
+          "has_previous": {
             "type": "boolean"
           },
           "nodes": {

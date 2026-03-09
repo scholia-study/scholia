@@ -7,4 +7,5 @@ use super::node::NodeDetail;
 pub struct NodePage {
     pub nodes: Vec<NodeDetail>,
     pub has_more: bool,
+    pub has_previous: bool,
 }
