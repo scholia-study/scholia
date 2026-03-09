@@ -4,7 +4,7 @@ use std::fs;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::model::Output;
+use kant1_md_to_struct::model::Output;
 
 pub async fn run(
     input_file: &str,
@@ -94,8 +94,8 @@ pub async fn run(
         // 4. Insert content blocks, sentences, page markers
         for block in &node.content_blocks {
             let block_id: Uuid = sqlx::query_scalar(
-                "INSERT INTO content_blocks (book_id, node_id, position, block_type, paragraph_number, text, html)
-                 VALUES ($1, $2, $3, $4::block_type, $5, $6, $7)
+                "INSERT INTO content_blocks (book_id, node_id, position, block_type, paragraph_number, text, html, original_text, original_html)
+                 VALUES ($1, $2, $3, $4::block_type, $5, $6, $7, $8, $9)
                  RETURNING id",
             )
             .bind(book_id)
@@ -105,6 +105,8 @@ pub async fn run(
             .bind(block.paragraph_number)
             .bind(&block.text)
             .bind(&block.html)
+            .bind(&block.original_text)
+            .bind(&block.original_html)
             .fetch_one(&mut *tx)
             .await?;
 
@@ -112,8 +114,8 @@ pub async fn run(
 
             for sent in &block.sentences {
                 let sentence_id: Uuid = sqlx::query_scalar(
-                    "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, text, html)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, text, html, original_text, original_html)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                      RETURNING id",
                 )
                 .bind(book_id)
@@ -123,6 +125,8 @@ pub async fn run(
                 .bind(sent.sentence_number)
                 .bind(&sent.text)
                 .bind(&sent.html)
+                .bind(&sent.original_text)
+                .bind(&sent.original_html)
                 .fetch_one(&mut *tx)
                 .await?;
 

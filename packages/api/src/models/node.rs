@@ -19,6 +19,8 @@ pub struct ContentBlockResponse {
     pub block_type: String,
     pub paragraph_number: Option<i32>,
     pub html: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub original_html: Option<String>,
     pub sentences: Vec<SentenceResponse>,
 }
 
@@ -29,6 +31,10 @@ pub struct SentenceResponse {
     pub sentence_number: Option<i32>,
     pub text: String,
     pub html: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub original_text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub original_html: Option<String>,
     pub page_markers: Vec<PageMarkerResponse>,
 }
 

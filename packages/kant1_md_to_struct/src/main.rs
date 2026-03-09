@@ -1,6 +1,4 @@
 mod html;
-mod import;
-mod model;
 mod parse;
 mod roman;
 mod structure;
@@ -9,7 +7,7 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
-use clap::{Parser, Subcommand};
+use clap::Parser;
 
 use common::kant1::filenames;
 use common::kant1::toc;
@@ -19,121 +17,152 @@ use structure::{build_output, ParsedFile};
 #[derive(Parser)]
 #[command(about = "Parse reviewed Kant KrV markdown into DB-ready JSON structures")]
 struct Cli {
-    /// Directory containing reviewed markdown files
+    /// Directory containing modernized markdown files (primary text/html)
+    #[arg(long, default_value = "assets/kant1_md_modernized")]
+    modernized_dir: String,
+
+    /// Directory containing reviewed markdown files (original_text/original_html)
     #[arg(long, default_value = "assets/kant1_md_reviewed")]
-    input_dir: String,
+    reviewed_dir: String,
 
     /// Output file (- for stdout)
     #[arg(long, default_value = "assets/kant1_md_to_struct/output.json")]
     output_file: String,
-
-    #[command(subcommand)]
-    command: Option<Command>,
-}
-
-#[derive(Subcommand)]
-enum Command {
-    /// Also import the JSON into PostgreSQL database
-    Import {
-        /// PostgreSQL connection URL (overrides DATABASE_URL env var)
-        #[arg(long)]
-        database_url: Option<String>,
-    },
 }
 
 fn main() {
     let cli = Cli::parse();
-
-    // Always extract
-    let output_file = run_extract(&cli.input_dir, &cli.output_file);
-
-    // Optionally import
-    if let Some(Command::Import { database_url }) = cli.command {
-        let rt = tokio::runtime::Runtime::new().expect("Failed to create tokio runtime");
-        rt.block_on(async {
-            if let Err(e) = import::run(&output_file, database_url).await {
-                eprintln!("Import failed: {e}");
-                std::process::exit(1);
-            }
-        });
-    }
+    run_extract(&cli.modernized_dir, &cli.reviewed_dir, &cli.output_file);
 }
 
-/// Run extraction, return the path to the written JSON file.
-fn run_extract(input_dir_str: &str, output_file: &str) -> String {
-    let input_dir = Path::new(input_dir_str);
+/// Scan a directory for .md files (excluding 000_toc.md).
+fn scan_dir(dir: &Path) -> Vec<String> {
+    fs::read_dir(dir)
+        .unwrap_or_else(|e| panic!("Cannot read {}: {e}", dir.display()))
+        .filter_map(|e| e.ok())
+        .map(|e| e.file_name().to_string_lossy().to_string())
+        .filter(|name| name.ends_with(".md") && name != "000_toc.md")
+        .collect()
+}
+
+/// Parse and validate a single markdown file against its TOC entry.
+fn parse_file(
+    dir: &Path,
+    filename: &str,
+    flat_index: usize,
+    flat_entries: &[(usize, u16, u16, &str)],
+) -> Vec<parse::ParsedBlock> {
+    let file_path = dir.join(filename);
+    let content = fs::read_to_string(&file_path)
+        .unwrap_or_else(|e| panic!("Cannot read {}: {e}", file_path.display()));
+
+    let (fm, body) = parse_front_matter(&content)
+        .unwrap_or_else(|| panic!("No front matter in {}", file_path.display()));
+
+    let (_, aa_page, depth, label) = flat_entries[flat_index];
+
+    if fm.position != flat_index + 1 {
+        panic!(
+            "{}: position mismatch: file has {}, expected {}",
+            file_path.display(),
+            fm.position,
+            flat_index + 1
+        );
+    }
+    if fm.label != label {
+        panic!(
+            "{}: label mismatch: file has {:?}, expected {:?}",
+            file_path.display(),
+            fm.label,
+            label
+        );
+    }
+    if fm.depth != depth {
+        panic!(
+            "{}: depth mismatch: file has {}, expected {}",
+            file_path.display(),
+            fm.depth,
+            depth
+        );
+    }
+    if fm.aa_page != aa_page {
+        panic!(
+            "{}: aa_page mismatch: file has {}, expected {}",
+            file_path.display(),
+            fm.aa_page,
+            aa_page
+        );
+    }
+
+    parse_blocks(body)
+}
+
+fn run_extract(modernized_dir_str: &str, reviewed_dir_str: &str, output_file: &str) {
+    let modernized_dir = Path::new(modernized_dir_str);
+    let reviewed_dir = Path::new(reviewed_dir_str);
 
     // 1. Get TOC and expected filenames
     let flat_entries = toc::flat_toc_entries();
     let expected_files = filenames::all_filenames();
 
-    // 2. Scan input directory for existing files
-    let dir_entries: Vec<String> = fs::read_dir(input_dir)
-        .unwrap_or_else(|e| panic!("Cannot read {}: {e}", input_dir.display()))
-        .filter_map(|e| e.ok())
-        .map(|e| e.file_name().to_string_lossy().to_string())
-        .filter(|name| name.ends_with(".md") && name != "000_toc.md")
-        .collect();
+    // 2. Scan both directories
+    let modernized_entries = scan_dir(modernized_dir);
+    let reviewed_entries = scan_dir(reviewed_dir);
 
-    // 3. Match files to TOC entries
+    // 3. Match files to TOC entries — require both dirs to have the file
     let mut parsed_files: Vec<ParsedFile> = Vec::new();
 
     for &(flat_index, ref expected_name) in &expected_files {
-        if !dir_entries.contains(expected_name) {
-            eprintln!("info: skipping {} (file not found)", expected_name);
+        let in_modernized = modernized_entries.contains(expected_name);
+        let in_reviewed = reviewed_entries.contains(expected_name);
+
+        if !in_modernized && !in_reviewed {
+            eprintln!("info: skipping {} (file not found in either dir)", expected_name);
             continue;
         }
-
-        let file_path = input_dir.join(expected_name);
-        let content = fs::read_to_string(&file_path)
-            .unwrap_or_else(|e| panic!("Cannot read {}: {e}", file_path.display()));
-
-        // Parse front matter and validate
-        let (fm, body) = parse_front_matter(&content)
-            .unwrap_or_else(|| panic!("No front matter in {}", expected_name));
-
-        let (_, aa_page, depth, label) = flat_entries[flat_index];
-
-        if fm.position != flat_index + 1 {
+        if !in_modernized {
             panic!(
-                "{}: position mismatch: file has {}, expected {}",
+                "{}: found in reviewed dir but missing from modernized dir",
+                expected_name
+            );
+        }
+        if !in_reviewed {
+            panic!(
+                "{}: found in modernized dir but missing from reviewed dir",
+                expected_name
+            );
+        }
+
+        let blocks = parse_file(modernized_dir, expected_name, flat_index, &flat_entries);
+        let original_blocks =
+            parse_file(reviewed_dir, expected_name, flat_index, &flat_entries);
+
+        if blocks.len() != original_blocks.len() {
+            panic!(
+                "{}: block count mismatch: modernized has {}, reviewed has {}",
                 expected_name,
-                fm.position,
-                flat_index + 1
+                blocks.len(),
+                original_blocks.len()
             );
         }
-        if fm.label != label {
-            panic!(
-                "{}: label mismatch: file has {:?}, expected {:?}",
-                expected_name, fm.label, label
-            );
-        }
-        if fm.depth != depth {
-            panic!(
-                "{}: depth mismatch: file has {}, expected {}",
-                expected_name, fm.depth, depth
-            );
-        }
-        if fm.aa_page != aa_page {
-            panic!(
-                "{}: aa_page mismatch: file has {}, expected {}",
-                expected_name, fm.aa_page, aa_page
-            );
-        }
-
-        let blocks = parse_blocks(body);
 
         parsed_files.push(ParsedFile {
             flat_index,
             blocks,
+            original_blocks,
         });
     }
 
-    // Check for unexpected files
+    // Check for unexpected files in both directories
     let expected_names: Vec<&String> = expected_files.iter().map(|(_, n)| n).collect();
-    for name in &dir_entries {
+    for name in &modernized_entries {
         if !expected_names.contains(&name) {
-            panic!("Unexpected file in input directory: {}", name);
+            panic!("Unexpected file in modernized directory: {}", name);
+        }
+    }
+    for name in &reviewed_entries {
+        if !expected_names.contains(&name) {
+            panic!("Unexpected file in reviewed directory: {}", name);
         }
     }
 
@@ -235,11 +264,13 @@ fn run_extract(input_dir_str: &str, output_file: &str) -> String {
             .write_all(json.as_bytes())
             .expect("Failed to write to stdout");
         println!();
-        "-".to_string()
     } else {
+        if let Some(parent) = Path::new(output_file).parent() {
+            fs::create_dir_all(parent)
+                .unwrap_or_else(|e| panic!("Cannot create directory {}: {e}", parent.display()));
+        }
         fs::write(output_file, &json)
             .unwrap_or_else(|e| panic!("Cannot write {}: {e}", output_file));
         eprintln!("Wrote {}", output_file);
-        output_file.to_string()
     }
 }

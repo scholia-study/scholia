@@ -21,6 +21,7 @@ struct BlockRow {
     block_type: String,
     paragraph_number: Option<i32>,
     html: String,
+    original_html: Option<String>,
 }
 
 struct SentenceRow {
@@ -30,6 +31,8 @@ struct SentenceRow {
     sentence_number: Option<i32>,
     text: String,
     html: String,
+    original_text: Option<String>,
+    original_html: Option<String>,
 }
 
 struct MarkerRow {
@@ -135,7 +138,7 @@ pub async fn get_node_page(
 
     let blocks = sqlx::query_as!(
         BlockRow,
-        r#"SELECT id, node_id, position, block_type::TEXT AS "block_type!", paragraph_number, html
+        r#"SELECT id, node_id, position, block_type::TEXT AS "block_type!", paragraph_number, html, original_html
            FROM content_blocks
            WHERE node_id = ANY($1)
            ORDER BY node_id, position"#,
@@ -146,7 +149,7 @@ pub async fn get_node_page(
 
     let sentences = sqlx::query_as!(
         SentenceRow,
-        r#"SELECT id, block_id, position, sentence_number, text, html
+        r#"SELECT id, block_id, position, sentence_number, text, html, original_text, original_html
            FROM sentences
            WHERE block_id = ANY(
                SELECT id FROM content_blocks WHERE node_id = ANY($1)
@@ -200,6 +203,8 @@ pub async fn get_node_page(
                 sentence_number: s.sentence_number,
                 text: s.text,
                 html: s.html,
+                original_text: s.original_text,
+                original_html: s.original_html,
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
             });
     }
@@ -218,6 +223,7 @@ pub async fn get_node_page(
                 block_type: b.block_type,
                 paragraph_number: b.paragraph_number,
                 html: b.html,
+                original_html: b.original_html,
                 sentences,
             });
     }

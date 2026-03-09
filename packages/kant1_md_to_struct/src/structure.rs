@@ -3,20 +3,23 @@ use common::kant1::toc;
 use common::sentences::split_sentences;
 
 use crate::html::{md_to_html, md_to_plain};
-use crate::model::*;
 use crate::parse::{MarkerKind, ParsedBlock, ParsedBlockType, RawMarker};
 use crate::roman::roman_to_int;
+use kant1_md_to_struct::model::*;
 
 /// Intermediate per-file parsed data.
 pub struct ParsedFile {
     pub flat_index: usize,
+    /// Modernized blocks (primary text/html).
     pub blocks: Vec<ParsedBlock>,
+    /// Reviewed blocks (original_text/original_html).
+    pub original_blocks: Vec<ParsedBlock>,
 }
 
 /// Build the complete nested output from parsed files.
 pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
     let book = BookData {
-        slug: "kant-krv".to_string(),
+        slug: "kritik-der-reinen-vernunft-b".to_string(),
         title: "Kritik der reinen Vernunft".to_string(),
         author: "Immanuel Kant".to_string(),
         language: "de".to_string(),
@@ -51,11 +54,14 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
             let content_blocks = pf
                 .blocks
                 .iter()
+                .zip(pf.original_blocks.iter())
                 .enumerate()
-                .map(|(block_pos, block)| {
+                .map(|(block_pos, (block, original_block))| {
                     build_block(
                         block,
+                        original_block,
                         block_pos,
+                        pf.flat_index,
                         &mut paragraph_counter,
                         &mut sentence_counter,
                     )
@@ -84,7 +90,9 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
 
 fn build_block(
     block: &ParsedBlock,
+    original_block: &ParsedBlock,
     block_pos: usize,
+    flat_index: usize,
     paragraph_counter: &mut i32,
     sentence_counter: &mut i32,
 ) -> ContentBlockData {
@@ -98,16 +106,38 @@ fn build_block(
         ParsedBlockType::Footnote { .. } => ("footnote", None),
     };
 
+    // Modernized (primary)
     let block_plain = md_to_plain(&block.text);
     let block_html = md_to_html(&block.text);
     let sentence_pairs = split_sentences(&block_plain, &block_html);
+
+    // Original (reviewed)
+    let orig_plain = md_to_plain(&original_block.text);
+    let orig_html = md_to_html(&original_block.text);
+    let orig_sentence_pairs = split_sentences(&orig_plain, &orig_html);
+
+    // Validate sentence counts match
+    if sentence_pairs.len() != orig_sentence_pairs.len() {
+        panic!(
+            "Sentence count mismatch in file index {}, block {} ({}): modernized has {} sentences, reviewed has {}",
+            flat_index + 1,
+            block_pos,
+            block_type_str,
+            sentence_pairs.len(),
+            orig_sentence_pairs.len(),
+        );
+    }
 
     // Build sentences with cumulative char tracking for marker resolution
     let mut sentences = Vec::new();
     let mut cumulative_chars: Vec<usize> = Vec::new();
     let mut offset: usize = 0;
 
-    for (sent_pos, (sent_text, sent_html)) in sentence_pairs.iter().enumerate() {
+    for (sent_pos, ((sent_text, sent_html), (orig_sent_text, orig_sent_html))) in sentence_pairs
+        .iter()
+        .zip(orig_sentence_pairs.iter())
+        .enumerate()
+    {
         cumulative_chars.push(offset);
         let sent_char_count = sent_text.chars().count();
         offset += sent_char_count + 1; // +1 for space between sentences
@@ -125,11 +155,13 @@ fn build_block(
             sentence_number: sent_num,
             text: sent_text.clone(),
             html: sent_html.clone(),
+            original_text: Some(orig_sent_text.clone()),
+            original_html: Some(orig_sent_html.clone()),
             page_markers: Vec::new(),
         });
     }
 
-    // Assign page markers to their sentences
+    // Assign page markers to their sentences (based on modernized text positions)
     for marker in &block.markers {
         if sentences.is_empty() {
             continue;
@@ -163,6 +195,8 @@ fn build_block(
         paragraph_number: para_num,
         text: block_plain,
         html: block_html,
+        original_text: Some(orig_plain),
+        original_html: Some(orig_html),
         sentences,
     }
 }
@@ -262,7 +296,10 @@ mod tests {
     fn test_resolve_marker_second_sentence() {
         let pairs = vec![
             ("First sentence.".to_string(), "First sentence.".to_string()),
-            ("Second sentence.".to_string(), "Second sentence.".to_string()),
+            (
+                "Second sentence.".to_string(),
+                "Second sentence.".to_string(),
+            ),
         ];
         let cumulative = vec![0, 16]; // 15 chars + 1 space
         let marker = RawMarker {

@@ -45,6 +45,10 @@ pub struct ContentBlockData {
     pub paragraph_number: Option<i32>,
     pub text: String,
     pub html: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_text: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_html: Option<String>,
     pub sentences: Vec<SentenceData>,
 }
 
@@ -55,6 +59,10 @@ pub struct SentenceData {
     pub sentence_number: Option<i32>,
     pub text: String,
     pub html: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_text: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_html: Option<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub page_markers: Vec<PageMarkerData>,
 }
