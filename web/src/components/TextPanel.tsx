@@ -17,7 +17,11 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useGetBook } from "../api/books/books";
 import type { SentenceResponse, TocNodeResponse } from "../api/model";
 import { useGetToc } from "../api/toc/toc";
-import { sentenceKey, sentenceMatchesKey, type MarginSettings } from "./BlockRenderer";
+import {
+    type MarginSettings,
+    sentenceKey,
+    sentenceMatchesKey,
+} from "./BlockRenderer";
 import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";
 import { ResourcesPanel } from "./ResourcesPanel";
@@ -64,7 +68,9 @@ export function TextPanel({
     onAddComparisonPanel,
     canAddPanel,
 }: TextPanelProps) {
-    const [visibleSlug, setVisibleSlug] = useState<string | undefined>(nodeSlug);
+    const [visibleSlug, setVisibleSlug] = useState<string | undefined>(
+        nodeSlug,
+    );
     const [selectedSentence, setSelectedSentence] = useState<
         SentenceResponse | undefined
     >();
@@ -143,7 +149,8 @@ export function TextPanel({
         [nodeSlug, toc],
     );
     const showSentenceDetail =
-        selectedSentence != null && sentenceMatchesKey(selectedSentence, selectedSentenceId);
+        selectedSentence != null &&
+        sentenceMatchesKey(selectedSentence, selectedSentenceId);
     const availableSystems = Object.keys(marginSettings.systemSides);
 
     const handleSelectSentence = useCallback(
@@ -199,9 +206,7 @@ export function TextPanel({
                         >
                             <IconButton
                                 size="small"
-                                onClick={(e) =>
-                                    setMenuAnchor(e.currentTarget)
-                                }
+                                onClick={(e) => setMenuAnchor(e.currentTarget)}
                                 title="Text display options"
                             >
                                 <TextFormatOutlined fontSize="small" />
@@ -231,9 +236,7 @@ export function TextPanel({
                                         checked={showOriginal}
                                         tabIndex={-1}
                                     />
-                                    <ListItemText
-                                        primary="Original orthography"
-                                    />
+                                    <ListItemText primary="Original orthography" />
                                 </MenuItem>
                                 {availableSystems.length > 0 && [
                                     <Divider key="margin-divider" />,
@@ -248,60 +251,61 @@ export function TextPanel({
                                         Margin references
                                     </Typography>,
                                     ...availableSystems.map((slug) => (
-                                            <MenuItem
-                                                key={slug}
-                                                disableRipple
-                                                sx={{
-                                                    py: 0,
-                                                    pl: 1.5,
-                                                    pr: 2,
-                                                    "&:hover": {
-                                                        backgroundColor:
-                                                            "transparent",
-                                                    },
-                                                }}
-                                            >
-                                                <FormControlLabel
-                                                    control={
-                                                        <Checkbox
-                                                            size="small"
-                                                            checked={marginSettings.enabledSystems.has(
+                                        <MenuItem
+                                            key={slug}
+                                            disableRipple
+                                            sx={{
+                                                py: 0,
+                                                pl: 1.5,
+                                                pr: 2,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        "transparent",
+                                                },
+                                            }}
+                                        >
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        size="small"
+                                                        checked={marginSettings.enabledSystems.has(
+                                                            slug,
+                                                        )}
+                                                        onChange={() =>
+                                                            handleToggleSystem(
                                                                 slug,
-                                                            )}
-                                                            onChange={() =>
-                                                                handleToggleSystem(
-                                                                    slug,
-                                                                )
-                                                            }
-                                                        />
-                                                    }
-                                                    label={
-                                                        <ListItemText
-                                                            primary={slug}
-                                                        />
-                                                    }
-                                                    sx={{ flex: 1, mr: 0 }}
-                                                />
-                                                <ToggleButtonGroup
-                                                    value={
-                                                        marginSettings
-                                                            .systemSides[slug]
-                                                    }
-                                                    exclusive
-                                                    size="small"
-                                                    onChange={() =>
-                                                        handleToggleSide(slug)
-                                                    }
-                                                >
-                                                    <ToggleButton value="left">
-                                                        L
-                                                    </ToggleButton>
-                                                    <ToggleButton value="right">
-                                                        R
-                                                    </ToggleButton>
-                                                </ToggleButtonGroup>
-                                            </MenuItem>
-                                        )),
+                                                            )
+                                                        }
+                                                    />
+                                                }
+                                                label={
+                                                    <ListItemText
+                                                        primary={slug}
+                                                    />
+                                                }
+                                                sx={{ flex: 1, mr: 0 }}
+                                            />
+                                            <ToggleButtonGroup
+                                                value={
+                                                    marginSettings.systemSides[
+                                                        slug
+                                                    ]
+                                                }
+                                                exclusive
+                                                size="small"
+                                                onChange={() =>
+                                                    handleToggleSide(slug)
+                                                }
+                                            >
+                                                <ToggleButton value="left">
+                                                    L
+                                                </ToggleButton>
+                                                <ToggleButton value="right">
+                                                    R
+                                                </ToggleButton>
+                                            </ToggleButtonGroup>
+                                        </MenuItem>
+                                    )),
                                 ]}
                             </Menu>
                         </div>

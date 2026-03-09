@@ -47,7 +47,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <head>
                 <HeadContent />
             </head>
-            <body className="min-h-screen bg-stone-50 text-stone-900">
+            <body className="min-h-screen bg-stone-50  text-stone-900">
                 {children}
                 <Scripts />
             </body>

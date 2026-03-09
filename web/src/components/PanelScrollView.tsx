@@ -11,6 +11,7 @@ import {
     useRef,
     useState,
 } from "react";
+import { Paper } from "@mui/material";
 import type { NodeDetail, SentenceResponse } from "../api/model";
 import { getNodePage, type getNodePageResponse } from "../api/nodes/nodes";
 import type { MarginSettings } from "./BlockRenderer";
@@ -465,7 +466,12 @@ const VirtualizedScroll = forwardRef<
     }, [nodes, pendingScrollTarget, virtualizer, suppressObserver, items]);
 
     return (
-        <div ref={parentRef} className="h-full overflow-y-auto relative">
+        <Paper
+            ref={parentRef}
+            square
+            elevation={0}
+            className="h-full overflow-y-auto relative"
+        >
             {pendingScrollTarget && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-stone-50">
                     <p className="text-stone-400">Loading...</p>
@@ -521,6 +527,6 @@ const VirtualizedScroll = forwardRef<
                     <p>Loading more...</p>
                 </div>
             )}
-        </div>
+        </Paper>
     );
 });
