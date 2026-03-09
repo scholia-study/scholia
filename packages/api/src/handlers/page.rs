@@ -18,6 +18,9 @@ pub struct PageParams {
     before: Option<i32>,
     /// page size, default 20, max 50
     limit: Option<i32>,
+    /// include original_text/original_html fields
+    #[serde(default)]
+    original: Option<bool>,
 }
 
 /// Get paginated nodes for infinite scroll
@@ -40,6 +43,7 @@ pub async fn get_node_page(
     Query(params): Query<PageParams>,
 ) -> Result<Json<NodePage>, AppError> {
     let limit = params.limit.unwrap_or(20).min(50).max(1);
-    let page = db::page::get_node_page(&pool, &slug, params.after, params.before, limit).await?;
+    let include_original = params.original.unwrap_or(false);
+    let page = db::page::get_node_page(&pool, &slug, params.after, params.before, limit, include_original).await?;
     Ok(Json(page))
 }

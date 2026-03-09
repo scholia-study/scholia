@@ -11,6 +11,8 @@ export interface ContentBlockResponse {
     html: string;
     id: string;
     /** @nullable */
+    original_html?: string | null;
+    /** @nullable */
     paragraph_number?: number | null;
     position: number;
     sentences: SentenceResponse[];

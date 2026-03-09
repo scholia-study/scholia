@@ -12,6 +12,7 @@ interface ReaderLayoutProps {
     panels: PanelState[];
     selections: Map<number, string>; // panelIndex -> sentenceId
     resourcesOpen: Set<number>; // panelIndex -> resources panel open
+    showOriginal: Set<number>;
 }
 
 /** Build search params from secondary panels, selections, and resources state */
@@ -19,6 +20,7 @@ function buildSearch(
     panels: PanelState[],
     selections: Map<number, string>,
     resourcesOpen: Set<number>,
+    showOriginal: Set<number>,
 ): ReaderSearch {
     const search: ReaderSearch = {};
 
@@ -47,6 +49,15 @@ function buildSearch(
         }
     }
 
+    // Show original text per panel: og, og2, og3, og4
+    for (const idx of showOriginal) {
+        if (idx === 0) search.og = "1";
+        else {
+            const key = `og${idx + 1}` as keyof ReaderSearch;
+            search[key] = "1";
+        }
+    }
+
     return search;
 }
 
@@ -56,6 +67,7 @@ export function ReaderLayout({
     panels,
     selections,
     resourcesOpen,
+    showOriginal,
 }: ReaderLayoutProps) {
     const navigate = useNavigate();
 
@@ -74,6 +86,7 @@ export function ReaderLayout({
             newSelections: Map<number, string>,
             newResourcesOpen: Set<number>,
             replace?: boolean,
+            overrideShowOriginal?: Set<number>,
         ) => {
             navigate({
                 to: "/books/$bookSlug/$nodeSlug",
@@ -81,11 +94,11 @@ export function ReaderLayout({
                     bookSlug: panels[0].bookSlug,
                     nodeSlug: panels[0].nodeSlug!,
                 },
-                search: buildSearch(newPanels, newSelections, newResourcesOpen),
+                search: buildSearch(newPanels, newSelections, newResourcesOpen, overrideShowOriginal ?? showOriginal),
                 replace,
             });
         },
-        [navigate, panels],
+        [navigate, panels, showOriginal],
     );
 
     /** Navigate changing the path (primary panel node changed) */
@@ -95,6 +108,7 @@ export function ReaderLayout({
             newSelections: Map<number, string>,
             newResourcesOpen: Set<number>,
             replace?: boolean,
+            overrideShowOriginal?: Set<number>,
         ) => {
             const primary = newPanels[0];
             navigate({
@@ -103,11 +117,11 @@ export function ReaderLayout({
                     bookSlug: primary.bookSlug,
                     nodeSlug: primary.nodeSlug!,
                 },
-                search: buildSearch(newPanels, newSelections, newResourcesOpen),
+                search: buildSearch(newPanels, newSelections, newResourcesOpen, overrideShowOriginal ?? showOriginal),
                 replace,
             });
         },
-        [navigate],
+        [navigate, showOriginal],
     );
 
     const handleSelectSentence = useCallback(
@@ -142,6 +156,13 @@ export function ReaderLayout({
                 else if (idx > panelIndex) newResourcesOpen.add(idx - 1);
             }
 
+            // Shift show-original indices
+            const newShowOriginal = new Set<number>();
+            for (const idx of showOriginal) {
+                if (idx < panelIndex) newShowOriginal.add(idx);
+                else if (idx > panelIndex) newShowOriginal.add(idx - 1);
+            }
+
             // Update stable keys: remove the closed panel's key
             panelKeysRef.current = panelKeysRef.current.filter(
                 (_, i) => i !== panelIndex,
@@ -155,7 +176,7 @@ export function ReaderLayout({
             } else {
                 const primary = newPanels[0];
                 if (primary.nodeSlug) {
-                    navigatePath(newPanels, newSelections, newResourcesOpen);
+                    navigatePath(newPanels, newSelections, newResourcesOpen, false, newShowOriginal);
                 } else {
                     navigate({
                         to: "/books/$bookSlug",
@@ -164,7 +185,7 @@ export function ReaderLayout({
                 }
             }
         },
-        [panels, selections, resourcesOpen, navigate, navigatePath],
+        [panels, selections, resourcesOpen, showOriginal, navigate, navigatePath],
     );
 
     const handleCloseResources = useCallback(
@@ -204,6 +225,13 @@ export function ReaderLayout({
                 else newResourcesOpen.add(idx + 1);
             }
 
+            // Shift show-original indices
+            const newShowOriginal = new Set<number>();
+            for (const idx of showOriginal) {
+                if (idx < insertAt) newShowOriginal.add(idx);
+                else newShowOriginal.add(idx + 1);
+            }
+
             // Insert stable key
             panelKeysRef.current = [
                 ...panelKeysRef.current.slice(0, insertAt),
@@ -211,9 +239,9 @@ export function ReaderLayout({
                 ...panelKeysRef.current.slice(insertAt),
             ];
 
-            navigateSearch(newPanels, newSelections, newResourcesOpen);
+            navigateSearch(newPanels, newSelections, newResourcesOpen, false, newShowOriginal);
         },
-        [panels, selections, resourcesOpen, navigateSearch],
+        [panels, selections, resourcesOpen, showOriginal, navigateSearch],
     );
 
     /** Replace-navigate for scroll-driven URL updates (no history entry) */
@@ -231,6 +259,23 @@ export function ReaderLayout({
         [panels, selections, resourcesOpen, navigatePath, navigateSearch],
     );
 
+    const handleToggleOriginal = useCallback(
+        (panelIndex: number) => {
+            const newShowOriginal = new Set(showOriginal);
+            if (newShowOriginal.has(panelIndex)) newShowOriginal.delete(panelIndex);
+            else newShowOriginal.add(panelIndex);
+            navigate({
+                to: "/books/$bookSlug/$nodeSlug",
+                params: {
+                    bookSlug: panels[0].bookSlug,
+                    nodeSlug: panels[0].nodeSlug!,
+                },
+                search: buildSearch(panels, selections, resourcesOpen, newShowOriginal),
+            });
+        },
+        [panels, selections, resourcesOpen, showOriginal, navigate],
+    );
+
     const canAddPanel = panels.length < 4;
 
     return (
@@ -243,9 +288,11 @@ export function ReaderLayout({
                     nodeSlug={panel.nodeSlug}
                     resourcesOpen={resourcesOpen.has(idx)}
                     selectedSentenceId={selections.get(idx)}
+                    showOriginal={showOriginal.has(idx)}
                     onSelectSentence={(sentenceId) =>
                         handleSelectSentence(idx, sentenceId)
                     }
+                    onToggleOriginal={() => handleToggleOriginal(idx)}
                     onToggleResources={() => handleCloseResources(idx)}
                     onClose={
                         panels.length > 1

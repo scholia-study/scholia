@@ -45,6 +45,7 @@ pub async fn get_node_content(
     pool: &PgPool,
     book_slug: &str,
     node_slug: &str,
+    include_original: bool,
 ) -> Result<NodeDetail, AppError> {
     let node = sqlx::query_as!(
         NodeRow,
@@ -121,8 +122,8 @@ pub async fn get_node_content(
                 sentence_number: s.sentence_number,
                 text: s.text,
                 html: s.html,
-                original_text: s.original_text,
-                original_html: s.original_html,
+                original_text: if include_original { s.original_text } else { None },
+                original_html: if include_original { s.original_html } else { None },
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
             });
     }
@@ -137,7 +138,7 @@ pub async fn get_node_content(
                 block_type: b.block_type,
                 paragraph_number: b.paragraph_number,
                 html: b.html,
-                original_html: b.original_html,
+                original_html: if include_original { b.original_html } else { None },
                 sentences,
             }
         })

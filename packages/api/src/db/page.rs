@@ -49,6 +49,7 @@ pub async fn get_node_page(
     after: Option<i32>,
     before: Option<i32>,
     limit: i32,
+    include_original: bool,
 ) -> Result<NodePage, AppError> {
     let fetch_limit = (limit + 1) as i64;
 
@@ -203,8 +204,8 @@ pub async fn get_node_page(
                 sentence_number: s.sentence_number,
                 text: s.text,
                 html: s.html,
-                original_text: s.original_text,
-                original_html: s.original_html,
+                original_text: if include_original { s.original_text } else { None },
+                original_html: if include_original { s.original_html } else { None },
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
             });
     }
@@ -223,7 +224,7 @@ pub async fn get_node_page(
                 block_type: b.block_type,
                 paragraph_number: b.paragraph_number,
                 html: b.html,
-                original_html: b.original_html,
+                original_html: if include_original { b.original_html } else { None },
                 sentences,
             });
     }

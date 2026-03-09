@@ -9,6 +9,10 @@ import type { PageMarkerResponse } from "./pageMarkerResponse";
 export interface SentenceResponse {
     html: string;
     id: string;
+    /** @nullable */
+    original_html?: string | null;
+    /** @nullable */
+    original_text?: string | null;
     page_markers: PageMarkerResponse[];
     position: number;
     /** @nullable */

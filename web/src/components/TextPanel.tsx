@@ -2,11 +2,13 @@ import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import TextFormatOutlined from "@mui/icons-material/TextFormatOutlined";
 import {
     Checkbox,
+    Divider,
     FormControlLabel,
     IconButton,
     ListItemText,
     Menu,
     MenuItem,
+    Switch,
     ToggleButton,
     ToggleButtonGroup,
     Typography,
@@ -15,7 +17,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useGetBook } from "../api/books/books";
 import type { SentenceResponse, TocNodeResponse } from "../api/model";
 import { useGetToc } from "../api/toc/toc";
-import type { MarginSettings } from "./BlockRenderer";
+import { sentenceKey, sentenceMatchesKey, type MarginSettings } from "./BlockRenderer";
 import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";
 import { ResourcesPanel } from "./ResourcesPanel";
@@ -38,7 +40,9 @@ interface TextPanelProps {
     nodeSlug: string | undefined;
     resourcesOpen: boolean;
     selectedSentenceId: string | undefined;
+    showOriginal: boolean;
     onSelectSentence: (sentenceId: string) => void;
+    onToggleOriginal: () => void;
     onToggleResources: () => void;
     onClose: () => void;
     onScrollNavigate: (nodeSlug: string) => void;
@@ -51,7 +55,9 @@ export function TextPanel({
     nodeSlug,
     resourcesOpen,
     selectedSentenceId,
+    showOriginal,
     onSelectSentence,
+    onToggleOriginal,
     onToggleResources,
     onClose,
     onScrollNavigate,
@@ -137,13 +143,13 @@ export function TextPanel({
         [nodeSlug, toc],
     );
     const showSentenceDetail =
-        selectedSentence != null && selectedSentence.id === selectedSentenceId;
+        selectedSentence != null && sentenceMatchesKey(selectedSentence, selectedSentenceId);
     const availableSystems = Object.keys(marginSettings.systemSides);
 
     const handleSelectSentence = useCallback(
         (sentence: SentenceResponse) => {
             setSelectedSentence(sentence);
-            onSelectSentence(sentence.id);
+            onSelectSentence(sentenceKey(sentence));
         },
         [onSelectSentence],
     );
@@ -191,41 +197,64 @@ export function TextPanel({
                             className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1"
                             style={{ left: "calc(50% + 19rem + 0.5rem)" }}
                         >
-                            {availableSystems.length > 0 && (
-                                <>
-                                    <IconButton
+                            <IconButton
+                                size="small"
+                                onClick={(e) =>
+                                    setMenuAnchor(e.currentTarget)
+                                }
+                                title="Text display options"
+                            >
+                                <TextFormatOutlined fontSize="small" />
+                            </IconButton>
+                            <Menu
+                                anchorEl={menuAnchor}
+                                open={Boolean(menuAnchor)}
+                                onClose={() => setMenuAnchor(null)}
+                                slotProps={{
+                                    paper: { sx: { minWidth: 200, py: 1 } },
+                                }}
+                            >
+                                <MenuItem
+                                    disableRipple
+                                    onClick={onToggleOriginal}
+                                    sx={{
+                                        py: 0.5,
+                                        px: 2,
+                                        gap: 1,
+                                        "&:hover": {
+                                            backgroundColor: "transparent",
+                                        },
+                                    }}
+                                >
+                                    <Switch
                                         size="small"
-                                        onClick={(e) =>
-                                            setMenuAnchor(e.currentTarget)
-                                        }
-                                        title="Text display options"
-                                    >
-                                        <TextFormatOutlined fontSize="small" />
-                                    </IconButton>
-                                    <Menu
-                                        anchorEl={menuAnchor}
-                                        open={Boolean(menuAnchor)}
-                                        onClose={() => setMenuAnchor(null)}
-                                        slotProps={{
-                                            paper: { sx: { minWidth: 200 } },
+                                        checked={showOriginal}
+                                        tabIndex={-1}
+                                    />
+                                    <ListItemText
+                                        primary="Original orthography"
+                                    />
+                                </MenuItem>
+                                {availableSystems.length > 0 && [
+                                    <Divider key="margin-divider" />,
+                                    <Typography
+                                        key="margin-label"
+                                        variant="overline"
+                                        sx={{
+                                            px: 2,
+                                            color: "text.secondary",
                                         }}
                                     >
-                                        <Typography
-                                            variant="overline"
-                                            sx={{
-                                                px: 2,
-                                                color: "text.secondary",
-                                            }}
-                                        >
-                                            Margin references
-                                        </Typography>
-                                        {availableSystems.map((slug) => (
+                                        Margin references
+                                    </Typography>,
+                                    ...availableSystems.map((slug) => (
                                             <MenuItem
                                                 key={slug}
                                                 disableRipple
                                                 sx={{
                                                     py: 0,
-                                                    pl: 1,
+                                                    pl: 1.5,
+                                                    pr: 2,
                                                     "&:hover": {
                                                         backgroundColor:
                                                             "transparent",
@@ -272,10 +301,9 @@ export function TextPanel({
                                                     </ToggleButton>
                                                 </ToggleButtonGroup>
                                             </MenuItem>
-                                        ))}
-                                    </Menu>
-                                </>
-                            )}
+                                        )),
+                                ]}
+                            </Menu>
                         </div>
                     </div>
                 </div>
@@ -287,6 +315,7 @@ export function TextPanel({
                     initialNodeSlug={nodeSlug}
                     initialSortOrder={initialSortOrder}
                     selectedSentenceId={selectedSentenceId}
+                    showOriginal={showOriginal}
                     onSelectSentence={handleSelectSentence}
                     onVisibleNodeChange={handleVisibleNodeChange}
                     onSystemsDiscovered={handleSystemsDiscovered}

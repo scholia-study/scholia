@@ -27,6 +27,7 @@ interface PanelScrollViewProps {
     initialNodeSlug: string | undefined;
     initialSortOrder: number | undefined;
     selectedSentenceId: string | undefined;
+    showOriginal: boolean;
     onSelectSentence: (sentence: SentenceResponse) => void;
     onVisibleNodeChange?: (nodeSlug: string) => void;
     onSystemsDiscovered?: (systems: string[]) => void;
@@ -42,6 +43,7 @@ export const PanelScrollView = forwardRef<
         initialNodeSlug,
         initialSortOrder,
         selectedSentenceId,
+        showOriginal,
         onSelectSentence,
         onVisibleNodeChange,
         onSystemsDiscovered,
@@ -91,13 +93,14 @@ export const PanelScrollView = forwardRef<
         PageCursor | undefined
     >({
         enabled: !waitingForSortOrder,
-        queryKey: ["node-page-bidir", bookSlug, String(startSortOrder)],
+        queryKey: ["node-page-bidir", bookSlug, String(startSortOrder), showOriginal ? "og" : ""],
         queryFn: async ({ pageParam, signal }) => {
+            const base = showOriginal ? { limit: 20, original: true } : { limit: 20 };
             const params = pageParam
                 ? "after" in pageParam
-                    ? { after: pageParam.after, limit: 20 }
-                    : { before: pageParam.before, limit: 20 }
-                : { limit: 20 };
+                    ? { ...base, after: pageParam.after }
+                    : { ...base, before: pageParam.before }
+                : base;
             return getNodePage(bookSlug, params, { signal });
         },
         initialPageParam,
@@ -182,6 +185,7 @@ export const PanelScrollView = forwardRef<
             fetchPreviousPage={fetchPreviousPage}
             setStartSortOrder={setStartSortOrder}
             selectedSentenceId={selectedSentenceId}
+            showOriginal={showOriginal}
             onSelectSentence={onSelectSentence}
             onVisibleNodeChange={onVisibleNodeChange}
             marginSettings={marginSettings}
@@ -202,6 +206,7 @@ interface VirtualizedScrollProps {
     fetchPreviousPage: () => void;
     setStartSortOrder: (sortOrder: number | undefined) => void;
     selectedSentenceId: string | undefined;
+    showOriginal: boolean;
     onSelectSentence: (sentence: SentenceResponse) => void;
     onVisibleNodeChange?: (nodeSlug: string) => void;
     marginSettings?: MarginSettings;
@@ -222,6 +227,7 @@ const VirtualizedScroll = forwardRef<
         fetchPreviousPage,
         setStartSortOrder,
         selectedSentenceId,
+        showOriginal,
         onSelectSentence,
         onVisibleNodeChange,
         marginSettings,
@@ -499,6 +505,7 @@ const VirtualizedScroll = forwardRef<
                                             selectedSentenceId={
                                                 selectedSentenceId ?? null
                                             }
+                                            showOriginal={showOriginal}
                                             onSelectSentence={onSelectSentence}
                                             marginSettings={marginSettings}
                                         />

@@ -21,4 +21,9 @@ export type GetNodePageParams = {
      * @nullable
      */
     limit?: number | null;
+    /**
+     * include original_text/original_html fields
+     * @nullable
+     */
+    original?: boolean | null;
 };

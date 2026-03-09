@@ -5,6 +5,20 @@ import type {
     SentenceResponse,
 } from "../api/model";
 
+/** URL-friendly key for a sentence: sentence_number if available, otherwise ID. */
+export function sentenceKey(s: SentenceResponse): string {
+    return s.sentence_number != null ? String(s.sentence_number) : s.id;
+}
+
+/** Check if a sentence matches a URL key (sentence_number or ID). */
+export function sentenceMatchesKey(
+    s: SentenceResponse,
+    key: string | undefined | null,
+): boolean {
+    if (!key) return false;
+    return s.id === key || (s.sentence_number != null && String(s.sentence_number) === key);
+}
+
 export interface MarginSettings {
     enabledSystems: Set<string>;
     systemSides: Record<string, "left" | "right">;
@@ -41,11 +55,13 @@ function MarginNotes({
 export function Sentence({
     sentence,
     isSelected,
+    showOriginal,
     onSelect,
     marginSettings,
 }: {
     sentence: SentenceResponse;
     isSelected: boolean;
+    showOriginal?: boolean;
     onSelect: (sentence: SentenceResponse) => void;
     marginSettings?: MarginSettings;
 }) {
@@ -82,7 +98,7 @@ export function Sentence({
                     isSelected ? "bg-amber-200" : "hover:bg-stone-200"
                 }`}
             >
-                {parse(sentence.html)}
+                {parse(showOriginal && sentence.original_html ? sentence.original_html : sentence.html)}
             </span>{" "}
         </>
     );
@@ -90,9 +106,11 @@ export function Sentence({
 
 function HeadingSentence({
     sentence,
+    showOriginal,
     marginSettings,
 }: {
     sentence: SentenceResponse;
+    showOriginal?: boolean;
     marginSettings?: MarginSettings;
 }) {
     let leftMarkers: PageMarkerResponse[] | undefined;
@@ -122,7 +140,7 @@ function HeadingSentence({
             {rightMarkers && (
                 <MarginNotes markers={rightMarkers} side="right" />
             )}
-            <span>{parse(sentence.html)}</span>{" "}
+            <span>{parse(showOriginal && sentence.original_html ? sentence.original_html : sentence.html)}</span>{" "}
         </>
     );
 }
@@ -130,14 +148,18 @@ function HeadingSentence({
 export function Block({
     block,
     selectedSentenceId,
+    showOriginal,
     onSelectSentence,
     marginSettings,
 }: {
     block: ContentBlockResponse;
     selectedSentenceId: string | null;
+    showOriginal?: boolean;
     onSelectSentence: (sentence: SentenceResponse) => void;
     marginSettings?: MarginSettings;
 }) {
+    const blockHtml = showOriginal && block.original_html ? block.original_html : block.html;
+
     switch (block.block_type) {
         case "heading":
             return (
@@ -147,10 +169,11 @@ export function Block({
                               <HeadingSentence
                                   key={s.id}
                                   sentence={s}
+                                  showOriginal={showOriginal}
                                   marginSettings={marginSettings}
                               />
                           ))
-                        : parse(block.html)}
+                        : parse(blockHtml)}
                 </h2>
             );
         case "paragraph":
@@ -160,7 +183,8 @@ export function Block({
                         <Sentence
                             key={s.id}
                             sentence={s}
-                            isSelected={s.id === selectedSentenceId}
+                            isSelected={sentenceMatchesKey(s, selectedSentenceId)}
+                            showOriginal={showOriginal}
                             onSelect={onSelectSentence}
                             marginSettings={marginSettings}
                         />
@@ -174,7 +198,8 @@ export function Block({
                         <Sentence
                             key={s.id}
                             sentence={s}
-                            isSelected={s.id === selectedSentenceId}
+                            isSelected={sentenceMatchesKey(s, selectedSentenceId)}
+                            showOriginal={showOriginal}
                             onSelect={onSelectSentence}
                             marginSettings={marginSettings}
                         />
@@ -184,6 +209,6 @@ export function Block({
         case "separator":
             return <hr className="my-8 border-stone-200" />;
         default:
-            return <div className="mb-4">{parse(block.html)}</div>;
+            return <div className="mb-4">{parse(blockHtml)}</div>;
     }
 }

@@ -15,6 +15,10 @@ export type ReaderSearch = {
     r2?: string;
     r3?: string;
     r4?: string;
+    og?: string;
+    og2?: string;
+    og3?: string;
+    og4?: string;
 };
 
 function parsePanel(param: string): PanelState {
@@ -39,6 +43,10 @@ export const Route = createFileRoute("/books/$bookSlug/$nodeSlug")({
         r2: search.r2 as string | undefined,
         r3: search.r3 as string | undefined,
         r4: search.r4 as string | undefined,
+        og: search.og as string | undefined,
+        og2: search.og2 as string | undefined,
+        og3: search.og3 as string | undefined,
+        og4: search.og4 as string | undefined,
     }),
     loader: async ({ context, params }) => {
         await context.queryClient.ensureQueryData(
@@ -71,11 +79,18 @@ function ReaderPage() {
     if (search.r3) resourcesOpen.add(2);
     if (search.r4) resourcesOpen.add(3);
 
+    const showOriginal = new Set<number>();
+    if (search.og) showOriginal.add(0);
+    if (search.og2) showOriginal.add(1);
+    if (search.og3) showOriginal.add(2);
+    if (search.og4) showOriginal.add(3);
+
     return (
         <ReaderLayout
             panels={panels}
             selections={selections}
             resourcesOpen={resourcesOpen}
+            showOriginal={showOriginal}
         />
     );
 }
