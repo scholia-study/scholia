@@ -30,10 +30,8 @@ import {
     useSuspenseInfiniteQuery,
     useSuspenseQuery,
 } from "@tanstack/react-query";
-import { customFetch } from "../../lib/fetcher";
-import type { GetNodePageParams, NodeDetail, NodePage } from ".././model";
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+import type { GetNodePageParams, NodeDetail, NodePage } from ".././model";
 
 /**
  * @summary Get paginated nodes for infinite scroll
@@ -74,8 +72,8 @@ export const getGetNodePageUrl = (slug: string, params?: GetNodePageParams) => {
     const stringifiedParams = normalizedParams.toString();
 
     return stringifiedParams.length > 0
-        ? `/api/books/${slug}/nodes?${stringifiedParams}`
-        : `/api/books/${slug}/nodes`;
+        ? `http://localhost:4000/api/books/${slug}/nodes?${stringifiedParams}`
+        : `http://localhost:4000/api/books/${slug}/nodes`;
 };
 
 export const getNodePage = async (
@@ -83,10 +81,19 @@ export const getNodePage = async (
     params?: GetNodePageParams,
     options?: RequestInit,
 ): Promise<getNodePageResponse> => {
-    return customFetch<getNodePageResponse>(getGetNodePageUrl(slug, params), {
+    const res = await fetch(getGetNodePageUrl(slug, params), {
         ...options,
         method: "GET",
     });
+
+    const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+    const data: getNodePageResponse["data"] = body ? JSON.parse(body) : {};
+    return {
+        data,
+        status: res.status,
+        headers: res.headers,
+    } as getNodePageResponse;
 };
 
 export const getGetNodePageInfiniteQueryKey = (
@@ -95,7 +102,7 @@ export const getGetNodePageInfiniteQueryKey = (
 ) => {
     return [
         "infinite",
-        `/api/books/${slug}/nodes`,
+        `http://localhost:4000/api/books/${slug}/nodes`,
         ...(params ? [params] : []),
     ] as const;
 };
@@ -104,7 +111,10 @@ export const getGetNodePageQueryKey = (
     slug: string,
     params?: GetNodePageParams,
 ) => {
-    return [`/api/books/${slug}/nodes`, ...(params ? [params] : [])] as const;
+    return [
+        `http://localhost:4000/api/books/${slug}/nodes`,
+        ...(params ? [params] : []),
+    ] as const;
 };
 
 export const getGetNodePageInfiniteQueryOptions = <
@@ -126,10 +136,10 @@ export const getGetNodePageInfiniteQueryOptions = <
                 GetNodePageParams["after"]
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
 ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {};
+    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
     const queryKey =
         queryOptions?.queryKey ?? getGetNodePageInfiniteQueryKey(slug, params);
@@ -142,7 +152,7 @@ export const getGetNodePageInfiniteQueryOptions = <
         getNodePage(
             slug,
             { ...params, after: pageParam || params?.["after"] },
-            { signal, ...requestOptions },
+            { signal, ...fetchOptions },
         );
 
     return {
@@ -192,7 +202,7 @@ export function useGetNodePageInfinite<
                 >,
                 "initialData"
             >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & {
@@ -226,7 +236,7 @@ export function useGetNodePageInfinite<
                 >,
                 "initialData"
             >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & {
@@ -251,7 +261,7 @@ export function useGetNodePageInfinite<
                 GetNodePageParams["after"]
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & {
@@ -280,7 +290,7 @@ export function useGetNodePageInfinite<
                 GetNodePageParams["after"]
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & {
@@ -316,17 +326,17 @@ export const getGetNodePageQueryOptions = <
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
 ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {};
+    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
     const queryKey =
         queryOptions?.queryKey ?? getGetNodePageQueryKey(slug, params);
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getNodePage>>> = ({
         signal,
-    }) => getNodePage(slug, params, { signal, ...requestOptions });
+    }) => getNodePage(slug, params, { signal, ...fetchOptions });
 
     return {
         queryKey,
@@ -367,7 +377,7 @@ export function useGetNodePage<
                 >,
                 "initialData"
             >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -395,7 +405,7 @@ export function useGetNodePage<
                 >,
                 "initialData"
             >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -415,7 +425,7 @@ export function useGetNodePage<
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -439,7 +449,7 @@ export function useGetNodePage<
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -469,17 +479,17 @@ export const getGetNodePageSuspenseQueryOptions = <
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
 ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {};
+    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
     const queryKey =
         queryOptions?.queryKey ?? getGetNodePageQueryKey(slug, params);
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getNodePage>>> = ({
         signal,
-    }) => getNodePage(slug, params, { signal, ...requestOptions });
+    }) => getNodePage(slug, params, { signal, ...fetchOptions });
 
     return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getNodePage>>,
@@ -507,7 +517,7 @@ export function useGetNodePageSuspense<
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -527,7 +537,7 @@ export function useGetNodePageSuspense<
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -547,7 +557,7 @@ export function useGetNodePageSuspense<
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -571,7 +581,7 @@ export function useGetNodePageSuspense<
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -612,10 +622,10 @@ export const getGetNodePageSuspenseInfiniteQueryOptions = <
                 GetNodePageParams["after"]
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
 ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {};
+    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
     const queryKey =
         queryOptions?.queryKey ?? getGetNodePageInfiniteQueryKey(slug, params);
@@ -628,7 +638,7 @@ export const getGetNodePageSuspenseInfiniteQueryOptions = <
         getNodePage(
             slug,
             { ...params, after: pageParam || params?.["after"] },
-            { signal, ...requestOptions },
+            { signal, ...fetchOptions },
         );
 
     return {
@@ -668,7 +678,7 @@ export function useGetNodePageSuspenseInfinite<
                 GetNodePageParams["after"]
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & {
@@ -693,7 +703,7 @@ export function useGetNodePageSuspenseInfinite<
                 GetNodePageParams["after"]
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & {
@@ -718,7 +728,7 @@ export function useGetNodePageSuspenseInfinite<
                 GetNodePageParams["after"]
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & {
@@ -747,7 +757,7 @@ export function useGetNodePageSuspenseInfinite<
                 GetNodePageParams["after"]
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & {
@@ -792,7 +802,7 @@ export type getNodeResponseError = getNodeResponse404 & {
 export type getNodeResponse = getNodeResponseSuccess | getNodeResponseError;
 
 export const getGetNodeUrl = (slug: string, nodeSlug: string) => {
-    return `/api/books/${slug}/nodes/${nodeSlug}`;
+    return `http://localhost:4000/api/books/${slug}/nodes/${nodeSlug}`;
 };
 
 export const getNode = async (
@@ -800,14 +810,25 @@ export const getNode = async (
     nodeSlug: string,
     options?: RequestInit,
 ): Promise<getNodeResponse> => {
-    return customFetch<getNodeResponse>(getGetNodeUrl(slug, nodeSlug), {
+    const res = await fetch(getGetNodeUrl(slug, nodeSlug), {
         ...options,
         method: "GET",
     });
+
+    const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+    const data: getNodeResponse["data"] = body ? JSON.parse(body) : {};
+    return {
+        data,
+        status: res.status,
+        headers: res.headers,
+    } as getNodeResponse;
 };
 
 export const getGetNodeQueryKey = (slug: string, nodeSlug: string) => {
-    return [`/api/books/${slug}/nodes/${nodeSlug}`] as const;
+    return [
+        `http://localhost:4000/api/books/${slug}/nodes/${nodeSlug}`,
+    ] as const;
 };
 
 export const getGetNodeQueryOptions = <
@@ -820,17 +841,17 @@ export const getGetNodeQueryOptions = <
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
 ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {};
+    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
     const queryKey =
         queryOptions?.queryKey ?? getGetNodeQueryKey(slug, nodeSlug);
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getNode>>> = ({
         signal,
-    }) => getNode(slug, nodeSlug, { signal, ...requestOptions });
+    }) => getNode(slug, nodeSlug, { signal, ...fetchOptions });
 
     return {
         queryKey,
@@ -865,7 +886,7 @@ export function useGetNode<
                 >,
                 "initialData"
             >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -889,7 +910,7 @@ export function useGetNode<
                 >,
                 "initialData"
             >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -905,7 +926,7 @@ export function useGetNode<
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -925,7 +946,7 @@ export function useGetNode<
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -955,17 +976,17 @@ export const getGetNodeSuspenseQueryOptions = <
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
 ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {};
+    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
     const queryKey =
         queryOptions?.queryKey ?? getGetNodeQueryKey(slug, nodeSlug);
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getNode>>> = ({
         signal,
-    }) => getNode(slug, nodeSlug, { signal, ...requestOptions });
+    }) => getNode(slug, nodeSlug, { signal, ...fetchOptions });
 
     return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getNode>>,
@@ -993,7 +1014,7 @@ export function useGetNodeSuspense<
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -1013,7 +1034,7 @@ export function useGetNodeSuspense<
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -1033,7 +1054,7 @@ export function useGetNodeSuspense<
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -1057,7 +1078,7 @@ export function useGetNodeSuspense<
                 TData
             >
         >;
-        request?: SecondParameter<typeof customFetch>;
+        fetch?: RequestInit;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {

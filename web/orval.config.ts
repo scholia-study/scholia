@@ -6,15 +6,12 @@ export default defineConfig({
             target: "../openapi.json",
         },
         output: {
+            baseUrl: "http://localhost:4000",
             mode: "tags-split",
             target: "src/api",
             schemas: "src/api/model",
             client: "react-query",
             override: {
-                mutator: {
-                    path: "./src/lib/fetcher.ts",
-                    name: "customFetch",
-                },
                 query: {
                     useSuspenseQuery: true,
                 },
