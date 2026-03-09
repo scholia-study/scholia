@@ -1,19 +1,30 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+    getGetBookQueryOptions,
+    useGetBookSuspense,
+} from "../api/books/books";
 import { getGetTocQueryOptions, useGetTocSuspense } from "../api/toc/toc";
 import { PanelToc } from "../components/PanelToc";
 
 export const Route = createFileRoute("/books/$bookSlug/")({
     loader: async ({ context, params }) => {
-        await context.queryClient.ensureQueryData(
-            getGetTocQueryOptions(params.bookSlug),
-        );
+        await Promise.all([
+            context.queryClient.ensureQueryData(
+                getGetBookQueryOptions(params.bookSlug),
+            ),
+            context.queryClient.ensureQueryData(
+                getGetTocQueryOptions(params.bookSlug),
+            ),
+        ]);
     },
     component: BookPage,
 });
 
 function BookPage() {
     const { bookSlug } = Route.useParams();
+    const { data: bookData } = useGetBookSuspense(bookSlug);
     const { data: tocData, isLoading, error } = useGetTocSuspense(bookSlug);
+    const book = bookData?.data;
     const toc = tocData?.data;
 
     return (
@@ -26,7 +37,7 @@ function BookPage() {
                     &larr; All books
                 </Link>
                 <h1 className="text-3xl font-bold text-stone-900 mb-8">
-                    {bookSlug}
+                    {book?.title ?? bookSlug}
                 </h1>
                 {isLoading && <p className="text-stone-400">Loading...</p>}
                 {error ? (

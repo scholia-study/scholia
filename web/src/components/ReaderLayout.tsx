@@ -250,7 +250,10 @@ export function ReaderLayout({
                     onClose={
                         panels.length > 1
                             ? () => handleClosePanel(idx)
-                            : undefined
+                            : () =>
+                                  navigate({
+                                      to: "/books",
+                                  })
                     }
                     onScrollNavigate={(nodeSlug) =>
                         handleScrollNavigate(idx, nodeSlug)

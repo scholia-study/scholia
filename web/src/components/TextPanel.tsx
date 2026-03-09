@@ -1,3 +1,4 @@
+import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import TextFormatOutlined from "@mui/icons-material/TextFormatOutlined";
 import {
     Checkbox,
@@ -39,7 +40,7 @@ interface TextPanelProps {
     selectedSentenceId: string | undefined;
     onSelectSentence: (sentenceId: string) => void;
     onToggleResources: () => void;
-    onClose: (() => void) | undefined;
+    onClose: () => void;
     onScrollNavigate: (nodeSlug: string) => void;
     onAddComparisonPanel: (bookSlug: string, nodeSlug: string) => void;
     canAddPanel: boolean;
@@ -57,7 +58,7 @@ export function TextPanel({
     onAddComparisonPanel,
     canAddPanel,
 }: TextPanelProps) {
-    const [visibleSlug, setVisibleSlug] = useState<string | undefined>();
+    const [visibleSlug, setVisibleSlug] = useState<string | undefined>(nodeSlug);
     const [selectedSentence, setSelectedSentence] = useState<
         SentenceResponse | undefined
     >();
@@ -174,6 +175,19 @@ export function TextPanel({
                         </div>
 
                         <div
+                            className="absolute top-1/2 -translate-y-1/2 flex items-center"
+                            style={{ right: "calc(50% + 19rem + 0.5rem)" }}
+                        >
+                            <IconButton
+                                size="small"
+                                onClick={onClose}
+                                title="Close panel"
+                            >
+                                <CloseOutlined fontSize="small" />
+                            </IconButton>
+                        </div>
+
+                        <div
                             className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1"
                             style={{ left: "calc(50% + 19rem + 0.5rem)" }}
                         >
@@ -261,15 +275,6 @@ export function TextPanel({
                                         ))}
                                     </Menu>
                                 </>
-                            )}
-                            {onClose && (
-                                <button
-                                    onClick={onClose}
-                                    className="text-stone-400 hover:text-stone-600 text-lg leading-none"
-                                    title="Close panel"
-                                >
-                                    &times;
-                                </button>
                             )}
                         </div>
                     </div>
