@@ -1,7 +1,6 @@
 import TextFormatOutlined from "@mui/icons-material/TextFormatOutlined";
 import {
     Checkbox,
-    Divider,
     FormControlLabel,
     IconButton,
     ListItemText,
@@ -11,18 +10,14 @@ import {
     ToggleButtonGroup,
     Typography,
 } from "@mui/material";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useGetBook } from "../api/books/books";
 import type { SentenceResponse, TocNodeResponse } from "../api/model";
-import { useGetNode } from "../api/nodes/nodes";
 import { useGetToc } from "../api/toc/toc";
 import type { MarginSettings } from "./BlockRenderer";
-import { PanelContent } from "./PanelContent";
 import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";
 import { ResourcesPanel } from "./ResourcesPanel";
-
-type ViewMode = "section" | "scroll";
 
 function findNodeInToc(
     nodes: TocNodeResponse[],
@@ -42,7 +37,6 @@ interface TextPanelProps {
     nodeSlug: string | undefined;
     resourcesOpen: boolean;
     selectedSentenceId: string | undefined;
-    onNavigate: (nodeSlug: string) => void;
     onSelectSentence: (sentenceId: string) => void;
     onToggleResources: () => void;
     onClose: (() => void) | undefined;
@@ -51,26 +45,11 @@ interface TextPanelProps {
     canAddPanel: boolean;
 }
 
-function collectSystemsFromBlocks(
-    blocks: { sentences: { page_markers: { system_slug: string }[] }[] }[],
-): string[] {
-    const systems = new Set<string>();
-    for (const block of blocks) {
-        for (const sentence of block.sentences) {
-            for (const pm of sentence.page_markers) {
-                systems.add(pm.system_slug);
-            }
-        }
-    }
-    return Array.from(systems);
-}
-
 export function TextPanel({
     bookSlug,
     nodeSlug,
     resourcesOpen,
     selectedSentenceId,
-    onNavigate,
     onSelectSentence,
     onToggleResources,
     onClose,
@@ -78,7 +57,6 @@ export function TextPanel({
     onAddComparisonPanel,
     canAddPanel,
 }: TextPanelProps) {
-    const [viewMode, setViewMode] = useState<ViewMode>("scroll");
     const [visibleSlug, setVisibleSlug] = useState<string | undefined>();
     const [selectedSentence, setSelectedSentence] = useState<
         SentenceResponse | undefined
@@ -105,26 +83,6 @@ export function TextPanel({
 
     const { data: bookData } = useGetBook(bookSlug);
     const bookTitle = bookData?.status === 200 ? bookData.data.title : bookSlug;
-
-    // In section mode, fetch the specific node
-    const {
-        data: nodeData,
-        isLoading,
-        error,
-    } = useGetNode(bookSlug, nodeSlug ?? "", {
-        query: { enabled: !!nodeSlug && viewMode === "section" },
-    });
-    const node =
-        nodeSlug && viewMode === "section" && nodeData?.status === 200
-            ? nodeData.data
-            : undefined;
-
-    // Discover reference systems from section-mode node data
-    useEffect(() => {
-        if (!node) return;
-        const systems = collectSystemsFromBlocks(node.blocks);
-        if (systems.length > 0) handleSystemsDiscovered(systems);
-    }, [node]);
 
     const handleSystemsDiscovered = useCallback((systems: string[]) => {
         setMarginSettings((prev) => {
@@ -162,7 +120,7 @@ export function TextPanel({
         }));
     }, []);
 
-    const activeNodeSlug = viewMode === "scroll" ? visibleSlug : nodeSlug;
+    const activeNodeSlug = visibleSlug;
     const activeNodeLabel = useMemo(
         () =>
             activeNodeSlug && toc
@@ -189,34 +147,20 @@ export function TextPanel({
         [onSelectSentence],
     );
 
-    const handleToggleView = useCallback(() => {
-        setViewMode((prev) => {
-            if (prev === "scroll" && visibleSlug) {
-                onNavigate(visibleSlug);
-            }
-            return prev === "section" ? "scroll" : "section";
-        });
-    }, [visibleSlug, onNavigate]);
-
     const handleTocNavigate = useCallback(
         (slug: string) => {
-            if (viewMode === "scroll") {
-                const sortOrder = toc
-                    ? findNodeInToc(toc, slug)?.sort_order
-                    : undefined;
-                scrollViewRef.current?.scrollToNode(slug, sortOrder);
-            } else {
-                onNavigate(slug);
-            }
+            const sortOrder = toc
+                ? findNodeInToc(toc, slug)?.sort_order
+                : undefined;
+            scrollViewRef.current?.scrollToNode(slug, sortOrder);
         },
-        [viewMode, onNavigate, toc],
+        [toc],
     );
 
     return (
         <div className="flex flex-1 min-w-0 border-r border-stone-200 last:border-r-0">
             {/* Main content area */}
             <div className="flex-1 flex flex-col min-w-0">
-                {/* Toolbar */}
                 {/* Toolbar */}
                 <div className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 relative z-10">
                     <div className="relative max-w-4xl mx-auto">
@@ -233,118 +177,91 @@ export function TextPanel({
                             className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1"
                             style={{ left: "calc(50% + 19rem + 0.5rem)" }}
                         >
-                            <IconButton
-                                size="small"
-                                onClick={(e) => setMenuAnchor(e.currentTarget)}
-                                title="Text display options"
-                            >
-                                <TextFormatOutlined fontSize="small" />
-                            </IconButton>
-                            <Menu
-                                anchorEl={menuAnchor}
-                                open={Boolean(menuAnchor)}
-                                onClose={() => setMenuAnchor(null)}
-                                slotProps={{ paper: { sx: { minWidth: 200 } } }}
-                            >
-                                <Typography
-                                    variant="overline"
-                                    sx={{ px: 2, color: "text.secondary" }}
-                                >
-                                    View mode
-                                </Typography>
-                                <MenuItem
-                                    disableRipple
-                                    sx={{
-                                        px: 2,
-                                        py: 0.5,
-                                        "&:hover": {
-                                            backgroundColor: "transparent",
-                                        },
-                                    }}
-                                >
-                                    <ToggleButtonGroup
-                                        value={viewMode}
-                                        exclusive
+                            {availableSystems.length > 0 && (
+                                <>
+                                    <IconButton
                                         size="small"
-                                        onChange={(_, val) => {
-                                            if (val && val !== viewMode)
-                                                handleToggleView();
+                                        onClick={(e) =>
+                                            setMenuAnchor(e.currentTarget)
+                                        }
+                                        title="Text display options"
+                                    >
+                                        <TextFormatOutlined fontSize="small" />
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={menuAnchor}
+                                        open={Boolean(menuAnchor)}
+                                        onClose={() => setMenuAnchor(null)}
+                                        slotProps={{
+                                            paper: { sx: { minWidth: 200 } },
                                         }}
                                     >
-                                        <ToggleButton value="scroll">
-                                            Scroll
-                                        </ToggleButton>
-                                        <ToggleButton value="section">
-                                            Section
-                                        </ToggleButton>
-                                    </ToggleButtonGroup>
-                                </MenuItem>
-                                {availableSystems.length > 0 && [
-                                    <Divider key="div" />,
-                                    <Typography
-                                        key="label"
-                                        variant="overline"
-                                        sx={{ px: 2, color: "text.secondary" }}
-                                    >
-                                        Margin references
-                                    </Typography>,
-                                    ...availableSystems.map((slug) => (
-                                        <MenuItem
-                                            key={slug}
-                                            disableRipple
+                                        <Typography
+                                            variant="overline"
                                             sx={{
-                                                py: 0,
-                                                pl: 1,
-                                                "&:hover": {
-                                                    backgroundColor:
-                                                        "transparent",
-                                                },
+                                                px: 2,
+                                                color: "text.secondary",
                                             }}
                                         >
-                                            <FormControlLabel
-                                                control={
-                                                    <Checkbox
-                                                        size="small"
-                                                        checked={marginSettings.enabledSystems.has(
-                                                            slug,
-                                                        )}
-                                                        onChange={() =>
-                                                            handleToggleSystem(
-                                                                slug,
-                                                            )
-                                                        }
-                                                    />
-                                                }
-                                                label={
-                                                    <ListItemText
-                                                        primary={slug}
-                                                    />
-                                                }
-                                                sx={{ flex: 1, mr: 0 }}
-                                            />
-                                            <ToggleButtonGroup
-                                                value={
-                                                    marginSettings.systemSides[
-                                                        slug
-                                                    ]
-                                                }
-                                                exclusive
-                                                size="small"
-                                                onChange={() =>
-                                                    handleToggleSide(slug)
-                                                }
+                                            Margin references
+                                        </Typography>
+                                        {availableSystems.map((slug) => (
+                                            <MenuItem
+                                                key={slug}
+                                                disableRipple
+                                                sx={{
+                                                    py: 0,
+                                                    pl: 1,
+                                                    "&:hover": {
+                                                        backgroundColor:
+                                                            "transparent",
+                                                    },
+                                                }}
                                             >
-                                                <ToggleButton value="left">
-                                                    L
-                                                </ToggleButton>
-                                                <ToggleButton value="right">
-                                                    R
-                                                </ToggleButton>
-                                            </ToggleButtonGroup>
-                                        </MenuItem>
-                                    )),
-                                ]}
-                            </Menu>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            size="small"
+                                                            checked={marginSettings.enabledSystems.has(
+                                                                slug,
+                                                            )}
+                                                            onChange={() =>
+                                                                handleToggleSystem(
+                                                                    slug,
+                                                                )
+                                                            }
+                                                        />
+                                                    }
+                                                    label={
+                                                        <ListItemText
+                                                            primary={slug}
+                                                        />
+                                                    }
+                                                    sx={{ flex: 1, mr: 0 }}
+                                                />
+                                                <ToggleButtonGroup
+                                                    value={
+                                                        marginSettings
+                                                            .systemSides[slug]
+                                                    }
+                                                    exclusive
+                                                    size="small"
+                                                    onChange={() =>
+                                                        handleToggleSide(slug)
+                                                    }
+                                                >
+                                                    <ToggleButton value="left">
+                                                        L
+                                                    </ToggleButton>
+                                                    <ToggleButton value="right">
+                                                        R
+                                                    </ToggleButton>
+                                                </ToggleButtonGroup>
+                                            </MenuItem>
+                                        ))}
+                                    </Menu>
+                                </>
+                            )}
                             {onClose && (
                                 <button
                                     onClick={onClose}
@@ -359,44 +276,17 @@ export function TextPanel({
                 </div>
 
                 {/* Content */}
-                {viewMode === "scroll" ? (
-                    <PanelScrollView
-                        ref={scrollViewRef}
-                        bookSlug={bookSlug}
-                        initialNodeSlug={nodeSlug}
-                        initialSortOrder={initialSortOrder}
-                        selectedSentenceId={selectedSentenceId}
-                        onSelectSentence={handleSelectSentence}
-                        onVisibleNodeChange={handleVisibleNodeChange}
-                        onSystemsDiscovered={handleSystemsDiscovered}
-                        marginSettings={marginSettings}
-                    />
-                ) : (
-                    <div className="flex-1 overflow-y-auto">
-                        {!nodeSlug ? (
-                            <div className="flex items-center justify-center h-full text-stone-400">
-                                <p>
-                                    Select a section from the table of contents.
-                                </p>
-                            </div>
-                        ) : isLoading ? (
-                            <div className="flex items-center justify-center h-full text-stone-400">
-                                <p>Loading...</p>
-                            </div>
-                        ) : error ? (
-                            <div className="flex items-center justify-center h-full text-red-500">
-                                <p>Failed to load content.</p>
-                            </div>
-                        ) : node ? (
-                            <PanelContent
-                                node={node}
-                                selectedSentenceId={selectedSentenceId}
-                                onSelectSentence={handleSelectSentence}
-                                marginSettings={marginSettings}
-                            />
-                        ) : null}
-                    </div>
-                )}
+                <PanelScrollView
+                    ref={scrollViewRef}
+                    bookSlug={bookSlug}
+                    initialNodeSlug={nodeSlug}
+                    initialSortOrder={initialSortOrder}
+                    selectedSentenceId={selectedSentenceId}
+                    onSelectSentence={handleSelectSentence}
+                    onVisibleNodeChange={handleVisibleNodeChange}
+                    onSystemsDiscovered={handleSystemsDiscovered}
+                    marginSettings={marginSettings}
+                />
             </div>
 
             {/* Resources panel */}

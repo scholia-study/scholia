@@ -110,20 +110,6 @@ export function ReaderLayout({
         [navigate],
     );
 
-    const handleNavigate = useCallback(
-        (panelIndex: number, nodeSlug: string) => {
-            const newPanels = panels.map((p, i) =>
-                i === panelIndex ? { ...p, nodeSlug } : p,
-            );
-            if (panelIndex === 0) {
-                navigatePath(newPanels, selections, resourcesOpen);
-            } else {
-                navigateSearch(newPanels, selections, resourcesOpen);
-            }
-        },
-        [panels, selections, resourcesOpen, navigatePath, navigateSearch],
-    );
-
     const handleSelectSentence = useCallback(
         (panelIndex: number, sentenceId: string) => {
             const newSelections = new Map(selections);
@@ -262,11 +248,9 @@ export function ReaderLayout({
                     nodeSlug={panel.nodeSlug}
                     resourcesOpen={resourcesOpen.has(idx)}
                     selectedSentenceId={selections.get(idx)}
-                    onNavigate={(nodeSlug) => handleNavigate(idx, nodeSlug)}
                     onSelectSentence={(sentenceId) =>
                         handleSelectSentence(idx, sentenceId)
                     }
-
                     onToggleResources={() => handleCloseResources(idx)}
                     onClose={
                         panels.length > 1

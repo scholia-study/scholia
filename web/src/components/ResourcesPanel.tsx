@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import type { SentenceResponse, TocNodeResponse } from "../api/model";
 import { useListBooks } from "../api/books/books";
+import type { SentenceResponse, TocNodeResponse } from "../api/model";
 import { useGetToc } from "../api/toc/toc";
 import { PanelToc } from "./PanelToc";
 import { SentenceDetail } from "./SentenceDetail";
@@ -126,9 +126,7 @@ export function ResourcesPanel({
                         onNavigate={onNavigate}
                     />
                 ) : (
-                    <div className="p-4 text-sm text-stone-400">
-                        Loading...
-                    </div>
+                    <div className="p-4 text-sm text-stone-400">Loading...</div>
                 ))}
 
             {effectiveView.kind === "picker" && (

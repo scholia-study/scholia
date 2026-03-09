@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getGetNodeQueryOptions } from "../api/nodes/nodes";
 import { getGetTocQueryOptions } from "../api/toc/toc";
 import type { PanelState } from "../components/ReaderLayout";
 import { ReaderLayout } from "../components/ReaderLayout";
@@ -42,14 +41,9 @@ export const Route = createFileRoute("/books/$bookSlug/$nodeSlug")({
         r4: search.r4 as string | undefined,
     }),
     loader: async ({ context, params }) => {
-        await Promise.all([
-            context.queryClient.ensureQueryData(
-                getGetTocQueryOptions(params.bookSlug),
-            ),
-            context.queryClient.ensureQueryData(
-                getGetNodeQueryOptions(params.bookSlug, params.nodeSlug),
-            ),
-        ]);
+        await context.queryClient.ensureQueryData(
+            getGetTocQueryOptions(params.bookSlug),
+        );
     },
     component: ReaderPage,
 });
