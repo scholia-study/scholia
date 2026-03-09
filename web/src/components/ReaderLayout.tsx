@@ -126,7 +126,6 @@ export function ReaderLayout({
         [panels, selections, resourcesOpen, navigateSearch],
     );
 
-
     const handleClosePanel = useCallback(
         (panelIndex: number) => {
             const newPanels = panels.filter((_, i) => i !== panelIndex);
@@ -156,11 +155,7 @@ export function ReaderLayout({
             } else {
                 const primary = newPanels[0];
                 if (primary.nodeSlug) {
-                    navigatePath(
-                        newPanels,
-                        newSelections,
-                        newResourcesOpen,
-                    );
+                    navigatePath(newPanels, newSelections, newResourcesOpen);
                 } else {
                     navigate({
                         to: "/books/$bookSlug",

@@ -71,5 +71,11 @@ function ReaderPage() {
     if (search.r3) resourcesOpen.add(2);
     if (search.r4) resourcesOpen.add(3);
 
-    return <ReaderLayout panels={panels} selections={selections} resourcesOpen={resourcesOpen} />;
+    return (
+        <ReaderLayout
+            panels={panels}
+            selections={selections}
+            resourcesOpen={resourcesOpen}
+        />
+    );
 }

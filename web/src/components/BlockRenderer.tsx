@@ -61,9 +61,11 @@ export function Sentence({
             if (!marginSettings.enabledSystems.has(pm.system_slug)) continue;
             const side = marginSettings.systemSides[pm.system_slug] ?? "right";
             if (side === "left") {
-                (leftMarkers ??= []).push(pm);
+                if (!leftMarkers) leftMarkers = [];
+                leftMarkers.push(pm);
             } else {
-                (rightMarkers ??= []).push(pm);
+                if (!rightMarkers) rightMarkers = [];
+                rightMarkers.push(pm);
             }
         }
     }
@@ -105,9 +107,11 @@ function HeadingSentence({
             if (!marginSettings.enabledSystems.has(pm.system_slug)) continue;
             const side = marginSettings.systemSides[pm.system_slug] ?? "right";
             if (side === "left") {
-                (leftMarkers ??= []).push(pm);
+                if (!leftMarkers) leftMarkers = [];
+                leftMarkers.push(pm);
             } else {
-                (rightMarkers ??= []).push(pm);
+                if (!rightMarkers) rightMarkers = [];
+                rightMarkers.push(pm);
             }
         }
     }
