@@ -2,7 +2,10 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::error::AppError;
-use crate::models::node::{ContentBlockResponse, NodeDetail, PageMarkerResponse, SentenceResponse};
+use crate::models::node::{
+    ContentBlockResponse, FootnoteResponse, FootnoteSentenceResponse, NodeDetail,
+    PageMarkerResponse, SentenceResponse,
+};
 use crate::models::page::NodePage;
 
 struct NodeRow {
@@ -41,6 +44,22 @@ struct MarkerRow {
     ref_value: String,
     sort_order: i32,
     char_offset: Option<i32>,
+}
+
+struct FootnoteRow {
+    id: Uuid,
+    number: i32,
+    anchor_sentence_id: Uuid,
+}
+
+struct FootnoteSentenceRow {
+    id: Uuid,
+    footnote_id: Uuid,
+    position: i16,
+    text: String,
+    html: String,
+    original_text: Option<String>,
+    original_html: Option<String>,
 }
 
 pub async fn get_node_page(
@@ -150,9 +169,9 @@ pub async fn get_node_page(
 
     let sentences = sqlx::query_as!(
         SentenceRow,
-        r#"SELECT id, block_id, position, sentence_number, text, html, original_text, original_html
+        r#"SELECT id, block_id AS "block_id!", position, sentence_number, text, html, original_text, original_html
            FROM sentences
-           WHERE block_id = ANY(
+           WHERE block_id IS NOT NULL AND block_id = ANY(
                SELECT id FROM content_blocks WHERE node_id = ANY($1)
            )
            ORDER BY block_id, position"#,
@@ -168,14 +187,81 @@ pub async fn get_node_page(
            JOIN reference_systems rs ON rs.id = pm.system_id
            WHERE pm.sentence_id = ANY(
                SELECT s.id FROM sentences s
-               JOIN content_blocks cb ON cb.id = s.block_id
-               WHERE cb.node_id = ANY($1)
+               WHERE s.block_id IS NOT NULL AND s.block_id = ANY(
+                   SELECT id FROM content_blocks WHERE node_id = ANY($1)
+               )
            )
            ORDER BY pm.sort_order"#,
         &node_ids,
     )
     .fetch_all(pool)
     .await?;
+
+    // Fetch footnotes anchored to sentences in these nodes
+    let anchor_sentence_ids: Vec<Uuid> = sentences.iter().map(|s| s.id).collect();
+
+    let footnotes = if anchor_sentence_ids.is_empty() {
+        vec![]
+    } else {
+        sqlx::query_as!(
+            FootnoteRow,
+            r#"SELECT id, number, anchor_sentence_id
+               FROM footnotes
+               WHERE anchor_sentence_id = ANY($1)
+               ORDER BY number"#,
+            &anchor_sentence_ids,
+        )
+        .fetch_all(pool)
+        .await?
+    };
+
+    let footnote_ids: Vec<Uuid> = footnotes.iter().map(|f| f.id).collect();
+
+    let footnote_sentences = if footnote_ids.is_empty() {
+        vec![]
+    } else {
+        sqlx::query_as!(
+            FootnoteSentenceRow,
+            r#"SELECT id, footnote_id AS "footnote_id!", position, text, html, original_text, original_html
+               FROM sentences
+               WHERE footnote_id = ANY($1)
+               ORDER BY footnote_id, position"#,
+            &footnote_ids,
+        )
+        .fetch_all(pool)
+        .await?
+    };
+
+    // Group footnote sentences by footnote_id
+    let mut fn_sentence_map: std::collections::HashMap<Uuid, Vec<FootnoteSentenceResponse>> =
+        std::collections::HashMap::new();
+    for fs in footnote_sentences {
+        fn_sentence_map
+            .entry(fs.footnote_id)
+            .or_default()
+            .push(FootnoteSentenceResponse {
+                id: fs.id.to_string(),
+                position: fs.position,
+                text: fs.text,
+                html: fs.html,
+                original_text: if include_original { fs.original_text } else { None },
+                original_html: if include_original { fs.original_html } else { None },
+            });
+    }
+
+    // Group footnotes by anchor_sentence_id
+    let mut footnote_map: std::collections::HashMap<Uuid, Vec<FootnoteResponse>> =
+        std::collections::HashMap::new();
+    for f in footnotes {
+        footnote_map
+            .entry(f.anchor_sentence_id)
+            .or_default()
+            .push(FootnoteResponse {
+                id: f.id.to_string(),
+                number: f.number,
+                sentences: fn_sentence_map.remove(&f.id).unwrap_or_default(),
+            });
+    }
 
     // Group markers by sentence_id
     let mut marker_map: std::collections::HashMap<Uuid, Vec<PageMarkerResponse>> =
@@ -207,6 +293,7 @@ pub async fn get_node_page(
                 original_text: if include_original { s.original_text } else { None },
                 original_html: if include_original { s.original_html } else { None },
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
+                footnotes: footnote_map.remove(&s.id).unwrap_or_default(),
             });
     }
 

@@ -31,7 +31,12 @@ import {
     useSuspenseQuery,
 } from "@tanstack/react-query";
 
-import type { GetNodePageParams, NodeDetail, NodePage } from ".././model";
+import type {
+    GetNodePageParams,
+    GetNodeParams,
+    NodeDetail,
+    NodePage,
+} from ".././model";
 
 /**
  * @summary Get paginated nodes for infinite scroll
@@ -801,16 +806,36 @@ export type getNodeResponseError = getNodeResponse404 & {
 
 export type getNodeResponse = getNodeResponseSuccess | getNodeResponseError;
 
-export const getGetNodeUrl = (slug: string, nodeSlug: string) => {
-    return `http://localhost:4000/api/books/${slug}/nodes/${nodeSlug}`;
+export const getGetNodeUrl = (
+    slug: string,
+    nodeSlug: string,
+    params?: GetNodeParams,
+) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : value.toString(),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `http://localhost:4000/api/books/${slug}/nodes/${nodeSlug}?${stringifiedParams}`
+        : `http://localhost:4000/api/books/${slug}/nodes/${nodeSlug}`;
 };
 
 export const getNode = async (
     slug: string,
     nodeSlug: string,
+    params?: GetNodeParams,
     options?: RequestInit,
 ): Promise<getNodeResponse> => {
-    const res = await fetch(getGetNodeUrl(slug, nodeSlug), {
+    const res = await fetch(getGetNodeUrl(slug, nodeSlug, params), {
         ...options,
         method: "GET",
     });
@@ -825,9 +850,14 @@ export const getNode = async (
     } as getNodeResponse;
 };
 
-export const getGetNodeQueryKey = (slug: string, nodeSlug: string) => {
+export const getGetNodeQueryKey = (
+    slug: string,
+    nodeSlug: string,
+    params?: GetNodeParams,
+) => {
     return [
         `http://localhost:4000/api/books/${slug}/nodes/${nodeSlug}`,
+        ...(params ? [params] : []),
     ] as const;
 };
 
@@ -837,6 +867,7 @@ export const getGetNodeQueryOptions = <
 >(
     slug: string,
     nodeSlug: string,
+    params?: GetNodeParams,
     options?: {
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>
@@ -847,11 +878,11 @@ export const getGetNodeQueryOptions = <
     const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
     const queryKey =
-        queryOptions?.queryKey ?? getGetNodeQueryKey(slug, nodeSlug);
+        queryOptions?.queryKey ?? getGetNodeQueryKey(slug, nodeSlug, params);
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getNode>>> = ({
         signal,
-    }) => getNode(slug, nodeSlug, { signal, ...fetchOptions });
+    }) => getNode(slug, nodeSlug, params, { signal, ...fetchOptions });
 
     return {
         queryKey,
@@ -874,6 +905,7 @@ export function useGetNode<
 >(
     slug: string,
     nodeSlug: string,
+    params: undefined | GetNodeParams,
     options: {
         query: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>
@@ -898,6 +930,7 @@ export function useGetNode<
 >(
     slug: string,
     nodeSlug: string,
+    params?: GetNodeParams,
     options?: {
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>
@@ -922,6 +955,7 @@ export function useGetNode<
 >(
     slug: string,
     nodeSlug: string,
+    params?: GetNodeParams,
     options?: {
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>
@@ -942,6 +976,7 @@ export function useGetNode<
 >(
     slug: string,
     nodeSlug: string,
+    params?: GetNodeParams,
     options?: {
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getNode>>, TError, TData>
@@ -952,7 +987,12 @@ export function useGetNode<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 } {
-    const queryOptions = getGetNodeQueryOptions(slug, nodeSlug, options);
+    const queryOptions = getGetNodeQueryOptions(
+        slug,
+        nodeSlug,
+        params,
+        options,
+    );
 
     const query = useQuery(queryOptions, queryClient) as UseQueryResult<
         TData,
@@ -968,6 +1008,7 @@ export const getGetNodeSuspenseQueryOptions = <
 >(
     slug: string,
     nodeSlug: string,
+    params?: GetNodeParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -982,11 +1023,11 @@ export const getGetNodeSuspenseQueryOptions = <
     const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
     const queryKey =
-        queryOptions?.queryKey ?? getGetNodeQueryKey(slug, nodeSlug);
+        queryOptions?.queryKey ?? getGetNodeQueryKey(slug, nodeSlug, params);
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getNode>>> = ({
         signal,
-    }) => getNode(slug, nodeSlug, { signal, ...fetchOptions });
+    }) => getNode(slug, nodeSlug, params, { signal, ...fetchOptions });
 
     return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getNode>>,
@@ -1006,6 +1047,7 @@ export function useGetNodeSuspense<
 >(
     slug: string,
     nodeSlug: string,
+    params: undefined | GetNodeParams,
     options: {
         query: Partial<
             UseSuspenseQueryOptions<
@@ -1026,6 +1068,7 @@ export function useGetNodeSuspense<
 >(
     slug: string,
     nodeSlug: string,
+    params?: GetNodeParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1046,6 +1089,7 @@ export function useGetNodeSuspense<
 >(
     slug: string,
     nodeSlug: string,
+    params?: GetNodeParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1070,6 +1114,7 @@ export function useGetNodeSuspense<
 >(
     slug: string,
     nodeSlug: string,
+    params?: GetNodeParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1087,6 +1132,7 @@ export function useGetNodeSuspense<
     const queryOptions = getGetNodeSuspenseQueryOptions(
         slug,
         nodeSlug,
+        params,
         options,
     );
 

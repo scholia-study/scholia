@@ -23,6 +23,8 @@ pub mod models;
         models::node::ContentBlockResponse,
         models::node::SentenceResponse,
         models::node::PageMarkerResponse,
+        models::node::FootnoteResponse,
+        models::node::FootnoteSentenceResponse,
         models::page::NodePage,
     ))
 )]

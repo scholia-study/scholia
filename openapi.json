@@ -123,6 +123,18 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "original",
+            "in": "query",
+            "description": "include original_text/original_html fields",
+            "required": false,
+            "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
           }
         ],
         "responses": {
@@ -166,6 +178,18 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "original",
+            "in": "query",
+            "description": "include original_text/original_html fields",
+            "required": false,
+            "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ]
             }
           }
         ],
@@ -312,6 +336,12 @@
           "id": {
             "type": "string"
           },
+          "original_html": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "paragraph_number": {
             "type": [
               "integer",
@@ -328,6 +358,65 @@
             "items": {
               "$ref": "#/components/schemas/SentenceResponse"
             }
+          }
+        }
+      },
+      "FootnoteResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "number",
+          "sentences"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sentences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FootnoteSentenceResponse"
+            }
+          }
+        }
+      },
+      "FootnoteSentenceResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "position",
+          "text",
+          "html"
+        ],
+        "properties": {
+          "html": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "original_html": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "original_text": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "text": {
+            "type": "string"
           }
         }
       },
@@ -430,11 +519,29 @@
           "page_markers"
         ],
         "properties": {
+          "footnotes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FootnoteResponse"
+            }
+          },
           "html": {
             "type": "string"
           },
           "id": {
             "type": "string"
+          },
+          "original_html": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "original_text": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "page_markers": {
             "type": "array",

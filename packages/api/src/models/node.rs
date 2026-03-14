@@ -36,6 +36,8 @@ pub struct SentenceResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub original_html: Option<String>,
     pub page_markers: Vec<PageMarkerResponse>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub footnotes: Vec<FootnoteResponse>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -44,4 +46,23 @@ pub struct PageMarkerResponse {
     pub ref_value: String,
     pub sort_order: i32,
     pub char_offset: Option<i32>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct FootnoteResponse {
+    pub id: String,
+    pub number: i32,
+    pub sentences: Vec<FootnoteSentenceResponse>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct FootnoteSentenceResponse {
+    pub id: String,
+    pub position: i16,
+    pub text: String,
+    pub html: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub original_text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub original_html: Option<String>,
 }

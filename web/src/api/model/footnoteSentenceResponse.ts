@@ -4,20 +4,14 @@
  * Prospero API
  * OpenAPI spec version: 0.1.0
  */
-import type { FootnoteResponse } from "./footnoteResponse";
-import type { PageMarkerResponse } from "./pageMarkerResponse";
 
-export interface SentenceResponse {
-    footnotes?: FootnoteResponse[];
+export interface FootnoteSentenceResponse {
     html: string;
     id: string;
     /** @nullable */
     original_html?: string | null;
     /** @nullable */
     original_text?: string | null;
-    page_markers: PageMarkerResponse[];
     position: number;
-    /** @nullable */
-    sentence_number?: number | null;
     text: string;
 }

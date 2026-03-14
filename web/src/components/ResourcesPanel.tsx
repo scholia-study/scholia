@@ -2,6 +2,7 @@ import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import CommitOutlined from "@mui/icons-material/CommitOutlined";
 import CompareOutlined from "@mui/icons-material/CompareOutlined";
+import FormatQuoteOutlined from "@mui/icons-material/FormatQuoteOutlined";
 import ListOutlined from "@mui/icons-material/ListOutlined";
 import { IconButton } from "@mui/material";
 import type React from "react";
@@ -9,10 +10,11 @@ import { useEffect, useRef, useState } from "react";
 import { useListBooks } from "../api/books/books";
 import type { SentenceResponse, TocNodeResponse } from "../api/model";
 import { useGetToc } from "../api/toc/toc";
+import { FootnotesView } from "./FootnotesView";
 import { PanelToc } from "./PanelToc";
 import { SentenceDetail } from "./SentenceDetail";
 
-type ViewKind = "toc" | "compare" | "sentence";
+type ViewKind = "toc" | "compare" | "sentence" | "footnotes";
 
 interface ResourcesPanelProps {
     toc: TocNodeResponse[] | undefined;
@@ -87,7 +89,9 @@ export function ResourcesPanel({
                               ? "Sentence Details"
                               : viewKind === "compare"
                                 ? "Compare Text"
-                                : "\u00A0"}
+                                : viewKind === "footnotes"
+                                  ? "Footnotes"
+                                  : "\u00A0"}
                     </div>
                 </div>
                 <IconButton
@@ -121,6 +125,17 @@ export function ResourcesPanel({
                             disabled={!selectedSentence}
                             icon={<CommitOutlined fontSize="small" />}
                         />
+                        <MenuButton
+                            onClick={() => onViewChange("footnotes")}
+                            label="Footnotes"
+                            disabled={
+                                !selectedSentence ||
+                                !selectedSentence.footnotes?.length
+                            }
+                            icon={
+                                <FormatQuoteOutlined fontSize="small" />
+                            }
+                        />
                     </nav>
                 </div>
             )}
@@ -145,6 +160,16 @@ export function ResourcesPanel({
                 ) : (
                     <div className="p-4 text-sm text-stone-400">
                         Click a sentence to see its details.
+                    </div>
+                ))}
+
+            {/* Footnotes view */}
+            {viewKind === "footnotes" &&
+                (selectedSentence?.footnotes?.length ? (
+                    <FootnotesView sentence={selectedSentence} />
+                ) : (
+                    <div className="p-4 text-sm text-stone-400">
+                        Click a sentence with a footnote to see it here.
                     </div>
                 ))}
 
