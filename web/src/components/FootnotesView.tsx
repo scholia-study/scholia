@@ -1,3 +1,4 @@
+import parse from "html-react-parser";
 import type { SentenceResponse } from "../api/model";
 
 interface FootnotesViewProps {
@@ -23,17 +24,13 @@ export function FootnotesView({ sentence }: FootnotesViewProps) {
                         <div className="text-xs text-stone-500 mb-1.5">
                             Footnote {fn.number}
                         </div>
-                        <div className="space-y-1">
-                            {fn.sentences.map((s) => (
-                                <p
-                                    key={s.id}
-                                    className="text-sm text-stone-800 leading-relaxed"
-                                    dangerouslySetInnerHTML={{
-                                        __html: s.html,
-                                    }}
-                                />
-                            ))}
-                        </div>
+                        <p className="text-sm text-stone-800 leading-relaxed">
+                            {parse(
+                                fn.sentences
+                                    .map((s) => s.html)
+                                    .join(" "),
+                            )}
+                        </p>
                     </div>
                 ))}
             </div>

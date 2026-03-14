@@ -17,13 +17,11 @@ static BOLD_RE: LazyLock<Regex> =
 ///
 /// Same processing order as md_to_html but replaces with content only.
 pub fn md_to_plain(text: &str) -> String {
-    // Use placeholder for stars in footnote markers to prevent false bold matches
-    let result = FOOTNOTE_REF_RE.replace_all(text, |caps: &regex::Captures| {
-        caps[1].replace('*', "\u{FFFC}")
-    });
+    // Strip footnote refs entirely from plain text (they only appear in HTML as <sup>)
+    let result = FOOTNOTE_REF_RE.replace_all(text, "");
     let result = BOLD_RE.replace_all(&result, "$1");
     let result = EMPHASIS_RE.replace_all(&result, "$1");
-    result.replace('\u{FFFC}', "*")
+    result.into_owned()
 }
 
 /// Convert markdown-formatted text to HTML.
@@ -110,5 +108,17 @@ mod tests {
     #[test]
     fn test_plain() {
         assert_eq!(md_to_html("plain text"), "plain text");
+    }
+
+    #[test]
+    fn test_plain_strips_footnote_refs() {
+        assert_eq!(md_to_plain("end.[^5] Next sentence."), "end. Next sentence.");
+        assert_eq!(md_to_plain("text[^1] more"), "text more");
+        assert_eq!(md_to_plain("[^*]"), "");
+    }
+
+    #[test]
+    fn test_plain_keeps_bold_and_emphasis() {
+        assert_eq!(md_to_plain("**bold** and _italic_"), "bold and italic");
     }
 }
