@@ -43,11 +43,13 @@ interface TextPanelProps {
     bookSlug: string;
     nodeSlug: string | undefined;
     resourcesOpen: boolean;
+    resourceView: string | undefined;
     selectedSentenceId: string | undefined;
     showOriginal: boolean;
     onSelectSentence: (sentenceId: string) => void;
     onToggleOriginal: () => void;
     onToggleResources: () => void;
+    onResourceViewChange: (view: string | undefined) => void;
     onClose: () => void;
     onScrollNavigate: (nodeSlug: string) => void;
     onAddComparisonPanel: (bookSlug: string, nodeSlug: string) => void;
@@ -58,11 +60,13 @@ export function TextPanel({
     bookSlug,
     nodeSlug,
     resourcesOpen,
+    resourceView,
     selectedSentenceId,
     showOriginal,
     onSelectSentence,
     onToggleOriginal,
     onToggleResources,
+    onResourceViewChange,
     onClose,
     onScrollNavigate,
     onAddComparisonPanel,
@@ -177,20 +181,8 @@ export function TextPanel({
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Toolbar */}
                 <div className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 relative z-10">
-                    <div className="relative max-w-4xl mx-auto">
-                        <div className="text-center">
-                            <div className="text-sm text-stone-800 truncate">
-                                {activeNodeLabel ?? bookTitle}
-                            </div>
-                            <div className="text-xs text-stone-400 truncate">
-                                {bookTitle}
-                            </div>
-                        </div>
-
-                        <div
-                            className="absolute top-1/2 -translate-y-1/2 flex items-center"
-                            style={{ right: "calc(50% + 19rem + 0.5rem)" }}
-                        >
+                    <div className="flex items-center max-w-2xl mx-auto px-2">
+                        <div className="flex items-center shrink-0">
                             <IconButton
                                 size="small"
                                 onClick={onClose}
@@ -200,10 +192,16 @@ export function TextPanel({
                             </IconButton>
                         </div>
 
-                        <div
-                            className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1"
-                            style={{ left: "calc(50% + 19rem + 0.5rem)" }}
-                        >
+                        <div className="flex-1 min-w-0 text-center">
+                            <div className="text-sm text-stone-800 truncate">
+                                {activeNodeLabel ?? bookTitle}
+                            </div>
+                            <div className="text-xs text-stone-400 truncate">
+                                {bookTitle}
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
                             <IconButton
                                 size="small"
                                 onClick={(e) => setMenuAnchor(e.currentTarget)}
@@ -340,6 +338,8 @@ export function TextPanel({
                         showSentenceDetail ? selectedSentence : undefined
                     }
                     onClose={onToggleResources}
+                    activeView={resourceView}
+                    onViewChange={onResourceViewChange}
                 />
             )}
         </div>
