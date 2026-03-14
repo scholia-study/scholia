@@ -1,11 +1,18 @@
+use std::collections::HashMap;
+
 use common::kant1::filenames::slugify;
 use common::kant1::toc;
 use common::sentences::split_sentences;
+use regex::Regex;
+use std::sync::LazyLock;
 
-use crate::html::{md_to_html, md_to_plain};
+use crate::html::{md_to_html, md_to_plain, FOOTNOTE_REF_RE};
 use crate::parse::{MarkerKind, ParsedBlock, ParsedBlockType, RawMarker};
-use crate::roman::roman_to_int;
 use kant1_md_to_struct::model::*;
+
+/// Regex to find `<sup>NUMBER</sup>` in rendered HTML (only footnote refs produce these).
+static SUP_NUMBER_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"<sup>(\d+)</sup>").unwrap());
 
 /// Intermediate per-file parsed data.
 pub struct ParsedFile {
@@ -14,6 +21,31 @@ pub struct ParsedFile {
     pub blocks: Vec<ParsedBlock>,
     /// Reviewed blocks (original_text/original_html).
     pub original_blocks: Vec<ParsedBlock>,
+}
+
+/// Collected footnote content (modernized + original text) keyed by (flat_index, marker).
+struct FootnoteContent {
+    modernized_text: String,
+    original_text: String,
+}
+
+/// Rewrite footnote references in raw markdown text: `[^*]` → `[^1]` etc.
+fn rewrite_footnote_refs(
+    text: &str,
+    flat_index: usize,
+    marker_map: &HashMap<(usize, String), i32>,
+) -> String {
+    FOOTNOTE_REF_RE
+        .replace_all(text, |caps: &regex::Captures| {
+            let marker = &caps[1];
+            if let Some(&number) = marker_map.get(&(flat_index, marker.to_string())) {
+                format!("[^{number}]")
+            } else {
+                // Not a known footnote marker — leave unchanged
+                caps[0].to_string()
+            }
+        })
+        .into_owned()
 }
 
 /// Build the complete nested output from parsed files.
@@ -40,6 +72,34 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
         },
     ];
 
+    // === Pass 1: Collect footnotes, assign global numbers ===
+    let mut footnote_counter: i32 = 0;
+    // (flat_index, marker_string) → global number
+    let mut marker_map: HashMap<(usize, String), i32> = HashMap::new();
+    // (flat_index, marker_string) → footnote content
+    let mut footnote_content: HashMap<(usize, String), FootnoteContent> = HashMap::new();
+    // global_number → (flat_index, marker_string) for reverse lookup
+    let mut number_to_key: HashMap<i32, (usize, String)> = HashMap::new();
+
+    for pf in parsed_files {
+        for (block, orig_block) in pf.blocks.iter().zip(pf.original_blocks.iter()) {
+            if let ParsedBlockType::Footnote { marker } = &block.block_type {
+                footnote_counter += 1;
+                let key = (pf.flat_index, marker.clone());
+                marker_map.insert(key.clone(), footnote_counter);
+                number_to_key.insert(footnote_counter, key.clone());
+                footnote_content.insert(
+                    key,
+                    FootnoteContent {
+                        modernized_text: block.text.clone(),
+                        original_text: orig_block.text.clone(),
+                    },
+                );
+            }
+        }
+    }
+
+    // === Pass 2: Build toc nodes, filtering out footnote blocks ===
     let flat_entries = toc::flat_toc_entries();
     let mut paragraph_counter: i32 = 1;
     let mut sentence_counter: i32 = 1;
@@ -51,10 +111,17 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
             let parent_source_ref = find_parent_source_ref(&flat_entries, pf.flat_index, depth);
             let path = build_path(&flat_entries, pf.flat_index, depth);
 
-            let content_blocks = pf
+            let content_blocks: Vec<ContentBlockData> = pf
                 .blocks
                 .iter()
                 .zip(pf.original_blocks.iter())
+                .filter_map(|(block, original_block)| {
+                    // Skip footnote blocks — they are now attached to sentences
+                    if matches!(&block.block_type, ParsedBlockType::Footnote { .. }) {
+                        return None;
+                    }
+                    Some((block, original_block))
+                })
                 .enumerate()
                 .map(|(block_pos, (block, original_block))| {
                     build_block(
@@ -64,6 +131,9 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
                         pf.flat_index,
                         &mut paragraph_counter,
                         &mut sentence_counter,
+                        &marker_map,
+                        &footnote_content,
+                        &number_to_key,
                     )
                 })
                 .collect();
@@ -95,6 +165,9 @@ fn build_block(
     flat_index: usize,
     paragraph_counter: &mut i32,
     sentence_counter: &mut i32,
+    marker_map: &HashMap<(usize, String), i32>,
+    footnote_content: &HashMap<(usize, String), FootnoteContent>,
+    number_to_key: &HashMap<i32, (usize, String)>,
 ) -> ContentBlockData {
     let (block_type_str, para_num) = match &block.block_type {
         ParsedBlockType::Heading => ("heading", None),
@@ -103,17 +176,21 @@ fn build_block(
             *paragraph_counter += 1;
             ("paragraph", Some(n))
         }
-        ParsedBlockType::Footnote { .. } => ("footnote", None),
+        ParsedBlockType::Footnote { .. } => unreachable!("footnote blocks filtered out"),
     };
 
+    // Rewrite footnote refs in raw text before conversion
+    let rewritten_text = rewrite_footnote_refs(&block.text, flat_index, marker_map);
+    let rewritten_orig = rewrite_footnote_refs(&original_block.text, flat_index, marker_map);
+
     // Modernized (primary)
-    let block_plain = md_to_plain(&block.text);
-    let block_html = md_to_html(&block.text);
+    let block_plain = md_to_plain(&rewritten_text);
+    let block_html = md_to_html(&rewritten_text);
     let sentence_pairs = split_sentences(&block_plain, &block_html);
 
     // Original (reviewed)
-    let orig_plain = md_to_plain(&original_block.text);
-    let orig_html = md_to_html(&original_block.text);
+    let orig_plain = md_to_plain(&rewritten_orig);
+    let orig_html = md_to_html(&rewritten_orig);
     let orig_sentence_pairs = split_sentences(&orig_plain, &orig_html);
 
     // Validate sentence counts match
@@ -150,6 +227,43 @@ fn build_block(
             None
         };
 
+        // Scan sentence HTML for <sup>N</sup> to attach footnotes
+        let footnotes: Vec<FootnoteData> = SUP_NUMBER_RE
+            .captures_iter(sent_html)
+            .filter_map(|caps| {
+                let number: i32 = caps[1].parse().ok()?;
+                let key = number_to_key.get(&number)?;
+                let content = footnote_content.get(key)?;
+
+                // Sentence-split the footnote body
+                let fn_plain = md_to_plain(&content.modernized_text);
+                let fn_html = md_to_html(&content.modernized_text);
+                let fn_pairs = split_sentences(&fn_plain, &fn_html);
+
+                let fn_orig_plain = md_to_plain(&content.original_text);
+                let fn_orig_html = md_to_html(&content.original_text);
+                let fn_orig_pairs = split_sentences(&fn_orig_plain, &fn_orig_html);
+
+                let fn_sentences: Vec<FootnoteSentenceData> = fn_pairs
+                    .iter()
+                    .zip(fn_orig_pairs.iter())
+                    .enumerate()
+                    .map(|(pos, ((ft, fh), (fot, foh)))| FootnoteSentenceData {
+                        position: pos as i16,
+                        text: ft.clone(),
+                        html: fh.clone(),
+                        original_text: Some(fot.clone()),
+                        original_html: Some(foh.clone()),
+                    })
+                    .collect();
+
+                Some(FootnoteData {
+                    number,
+                    sentences: fn_sentences,
+                })
+            })
+            .collect();
+
         sentences.push(SentenceData {
             position: sent_pos as i16,
             sentence_number: sent_num,
@@ -158,6 +272,7 @@ fn build_block(
             original_text: Some(orig_sent_text.clone()),
             original_html: Some(orig_sent_html.clone()),
             page_markers: Vec::new(),
+            footnotes,
         });
     }
 
@@ -273,6 +388,8 @@ fn resolve_marker_to_sentence(
     (0, 0)
 }
 
+use crate::roman::roman_to_int;
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -317,5 +434,22 @@ mod tests {
         let entries = toc::flat_toc_entries();
         let path = build_path(&entries, 0, 1);
         assert_eq!(path, "motto");
+    }
+
+    #[test]
+    fn test_rewrite_footnote_refs() {
+        let mut marker_map = HashMap::new();
+        marker_map.insert((0, "*".to_string()), 1);
+        marker_map.insert((0, "**".to_string()), 2);
+
+        let result = rewrite_footnote_refs("text[^*] more[^**] end", 0, &marker_map);
+        assert_eq!(result, "text[^1] more[^2] end");
+    }
+
+    #[test]
+    fn test_rewrite_footnote_refs_unknown_marker() {
+        let marker_map = HashMap::new();
+        let result = rewrite_footnote_refs("text[^*] end", 0, &marker_map);
+        assert_eq!(result, "text[^*] end");
     }
 }

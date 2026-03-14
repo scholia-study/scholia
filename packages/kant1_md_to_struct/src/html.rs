@@ -2,7 +2,7 @@ use regex::Regex;
 use std::sync::LazyLock;
 
 // Footnote ref: [^marker] — must be parsed BEFORE bold
-static FOOTNOTE_REF_RE: LazyLock<Regex> =
+pub static FOOTNOTE_REF_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\[\^([^\]]+)\]").unwrap());
 
 // Emphasis: _text_ — simple pattern, no lookaround needed in these files

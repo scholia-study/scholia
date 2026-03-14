@@ -63,7 +63,7 @@ CREATE INDEX idx_nodes_book_order ON toc_nodes (book_id, sort_order);
 -- Four types: paragraph (body text), heading (section title),
 -- footnote (authorial note), separator (visual break).
 CREATE TYPE block_type AS ENUM (
-    'paragraph', 'heading', 'footnote', 'separator'
+    'paragraph', 'heading', 'separator'
 );
 
 CREATE TABLE content_blocks (
@@ -92,12 +92,9 @@ CREATE INDEX idx_blocks_fts ON content_blocks
     USING gin (to_tsvector('german', text))
     WHERE block_type = 'paragraph';
 
--- Individual sentences within content blocks.
--- All non-separator block types get sentence rows:
---   heading   → 1 sentence (the heading text)
---   footnote  → 1+ sentences (sentence-split like paragraphs)
---   paragraph → 1+ sentences
---   separator → no sentences
+-- Individual sentences within content blocks or footnotes.
+-- Block sentences: heading/paragraph sentences (block_id set, footnote_id NULL).
+-- Footnote sentences: belong to a footnote (footnote_id set, block_id NULL).
 --
 -- sentence_number is only set for paragraph sentences (global
 -- body-text enumeration). Heading/footnote sentences exist for
@@ -112,7 +109,8 @@ CREATE TABLE sentences (
     id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     book_id                   UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
     node_id                   UUID NOT NULL REFERENCES toc_nodes(id) ON DELETE CASCADE,
-    block_id                  UUID NOT NULL REFERENCES content_blocks(id) ON DELETE CASCADE,
+    block_id                  UUID REFERENCES content_blocks(id) ON DELETE CASCADE,
+    footnote_id               UUID,
     position                  SMALLINT NOT NULL,
     sentence_number           INT,
     source_sentence_start_id  UUID REFERENCES sentences(id) ON DELETE SET NULL,
@@ -125,7 +123,10 @@ CREATE TABLE sentences (
     created_at                TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at                TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-    UNIQUE (block_id, position),
+    CONSTRAINT chk_sentence_parent CHECK (
+        (block_id IS NOT NULL AND footnote_id IS NULL) OR
+        (block_id IS NULL AND footnote_id IS NOT NULL)
+    ),
 
     CONSTRAINT chk_source_sentence_range CHECK (
         source_sentence_end_id IS NULL OR source_sentence_start_id IS NOT NULL
@@ -135,12 +136,34 @@ CREATE TABLE sentences (
 CREATE UNIQUE INDEX idx_sentences_num
     ON sentences (book_id, sentence_number)
     WHERE sentence_number IS NOT NULL;
-CREATE INDEX idx_sentences_block_pos ON sentences (block_id, position);
+CREATE UNIQUE INDEX idx_sentences_block_pos ON sentences (block_id, position)
+    WHERE block_id IS NOT NULL;
+CREATE UNIQUE INDEX idx_sentences_footnote_pos ON sentences (footnote_id, position)
+    WHERE footnote_id IS NOT NULL;
 CREATE INDEX idx_sentences_node ON sentences (node_id);
 CREATE INDEX idx_sentences_source ON sentences (source_sentence_start_id)
     WHERE source_sentence_start_id IS NOT NULL;
 CREATE INDEX idx_sentences_fts ON sentences
     USING gin (to_tsvector('german', text));
+
+-- ============================================================
+-- FOOTNOTES (authorial notes attached to anchor sentences)
+-- ============================================================
+
+CREATE TABLE footnotes (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    book_id             UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    number              INT NOT NULL,
+    anchor_sentence_id  UUID NOT NULL REFERENCES sentences(id) ON DELETE CASCADE,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (book_id, number)
+);
+CREATE INDEX idx_footnotes_anchor ON footnotes (anchor_sentence_id);
+
+-- Now add the FK from sentences.footnote_id -> footnotes.id
+ALTER TABLE sentences ADD CONSTRAINT fk_sentences_footnote
+    FOREIGN KEY (footnote_id) REFERENCES footnotes(id) ON DELETE CASCADE;
 
 -- ============================================================
 -- REFERENCE SYSTEMS (page numbers, edition markers, etc.)

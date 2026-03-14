@@ -179,9 +179,10 @@ fn run_extract(modernized_dir_str: &str, reviewed_dir_str: &str, output_file: &s
     let mut total_blocks = 0;
     let mut para_blocks = 0;
     let mut heading_blocks = 0;
-    let mut footnote_blocks = 0;
     let mut total_sentences = 0;
     let mut numbered_sentences = 0;
+    let mut footnote_count = 0;
+    let mut footnote_sentence_count = 0;
     let mut aa_markers = 0;
     let mut b_markers = 0;
     let mut aa_sort_values = Vec::new();
@@ -193,13 +194,16 @@ fn run_extract(modernized_dir_str: &str, reviewed_dir_str: &str, output_file: &s
             match block.block_type.as_str() {
                 "paragraph" => para_blocks += 1,
                 "heading" => heading_blocks += 1,
-                "footnote" => footnote_blocks += 1,
                 _ => {}
             }
             for sent in &block.sentences {
                 total_sentences += 1;
                 if sent.sentence_number.is_some() {
                     numbered_sentences += 1;
+                }
+                for footnote in &sent.footnotes {
+                    footnote_count += 1;
+                    footnote_sentence_count += footnote.sentences.len();
                 }
                 for pm in &sent.page_markers {
                     if pm.system == "aa_iii" {
@@ -227,12 +231,16 @@ fn run_extract(modernized_dir_str: &str, reviewed_dir_str: &str, output_file: &s
         );
     }
     eprintln!(
-        "  content_blocks: {} ({} paragraphs, {} headings, {} footnotes)",
-        total_blocks, para_blocks, heading_blocks, footnote_blocks
+        "  content_blocks: {} ({} paragraphs, {} headings)",
+        total_blocks, para_blocks, heading_blocks
     );
     eprintln!(
         "  sentences:      {} ({} numbered)",
         total_sentences, numbered_sentences
+    );
+    eprintln!(
+        "  footnotes:      {} ({} footnote sentences)",
+        footnote_count, footnote_sentence_count
     );
     eprintln!(
         "  page_markers:   {} ({} AA, {} B-edition)",

@@ -65,6 +65,25 @@ pub struct SentenceData {
     pub original_html: Option<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub page_markers: Vec<PageMarkerData>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub footnotes: Vec<FootnoteData>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct FootnoteData {
+    pub number: i32,
+    pub sentences: Vec<FootnoteSentenceData>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct FootnoteSentenceData {
+    pub position: i16,
+    pub text: String,
+    pub html: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_text: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_html: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
