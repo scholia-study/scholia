@@ -1,6 +1,3 @@
-mod html;
-mod parse;
-mod roman;
 mod structure;
 
 use std::fs;
@@ -11,7 +8,7 @@ use clap::Parser;
 
 use common::kant1::filenames;
 use common::kant1::toc;
-use parse::{parse_blocks, parse_front_matter};
+use kant1_md_to_struct::parse::{self, parse_blocks, parse_front_matter};
 use structure::{build_output, ParsedFile};
 
 #[derive(Parser)]

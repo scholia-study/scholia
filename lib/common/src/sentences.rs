@@ -90,87 +90,9 @@ pub fn split_sentences(text: &str, html: &str) -> Vec<(String, String)> {
         .collect()
 }
 
-/// Find byte positions in `text` where new sentences begin.
+/// Find byte positions in `text` where new sentences begin (German).
 fn find_text_split_positions(text: &str) -> Vec<usize> {
-    let mut positions = Vec::new();
-
-    for m in SPLIT_RE.find_iter(text) {
-        let match_start = m.start();
-
-        // The match includes the punctuation, whitespace, and the first char of new sentence.
-        // We want to find where the whitespace ends (= start of new sentence).
-        let matched = m.as_str();
-        let ws_start = matched.find(|c: char| c.is_whitespace()).unwrap();
-        let after_ws = matched[ws_start..]
-            .find(|c: char| !c.is_whitespace())
-            .unwrap();
-        let split_pos = match_start + ws_start + after_ws;
-
-        // Check if this is a false positive due to abbreviation
-        let preceding = &text[..match_start + ws_start];
-        if is_single_abbreviation(preceding) {
-            continue;
-        }
-
-        // Check for multi-word abbreviations spanning the split point
-        if is_multi_word_abbreviation(text, match_start) {
-            continue;
-        }
-
-        // Check for single-letter initials
-        if INITIAL_RE.is_match(preceding) {
-            continue;
-        }
-
-        // Check for numbered paragraph labels (e.g. "1." "2." "12.")
-        if NUMBERED_LABEL_RE.is_match(preceding) {
-            continue;
-        }
-
-        positions.push(split_pos);
-    }
-
-    positions
-}
-
-/// Check if the text preceding a split ends with a single-word abbreviation.
-fn is_single_abbreviation(preceding: &str) -> bool {
-    let trimmed = preceding.trim_end();
-    for abbrev in SINGLE_ABBREVS.iter() {
-        if trimmed.ends_with(abbrev) {
-            return true;
-        }
-    }
-    false
-}
-
-/// Check if the candidate split point falls within a multi-word abbreviation.
-/// We look at a window around the split point in the full text.
-fn is_multi_word_abbreviation(text: &str, match_start: usize) -> bool {
-    // Look at a window: up to 10 bytes before and 15 bytes after the match start
-    // Ensure we land on char boundaries
-    let mut window_start = match_start.saturating_sub(10);
-    while window_start > 0 && !text.is_char_boundary(window_start) {
-        window_start -= 1;
-    }
-    let mut window_end = (match_start + 15).min(text.len());
-    while window_end < text.len() && !text.is_char_boundary(window_end) {
-        window_end += 1;
-    }
-    let window = &text[window_start..window_end];
-
-    for re in MULTI_ABBREV_RE.iter() {
-        if let Some(m) = re.find(window) {
-            // The abbreviation match's position in the original text
-            let abbrev_start = window_start + m.start();
-            let abbrev_end = window_start + m.end();
-            // The split candidate (period) must be inside the abbreviation
-            if match_start >= abbrev_start && match_start < abbrev_end {
-                return true;
-            }
-        }
-    }
-    false
+    find_text_split_positions_with(text, &SINGLE_ABBREVS, &MULTI_ABBREV_RE)
 }
 
 /// Split text at the given byte positions.
@@ -369,6 +291,136 @@ fn tag_name_of(full_tag: &str) -> &str {
     full_tag.split_once(' ').map_or(full_tag, |(name, _)| name)
 }
 
+// ---------------------------------------------------------------------------
+// English sentence splitting
+// ---------------------------------------------------------------------------
+
+/// English single-word abbreviations that should NOT trigger a sentence split.
+static SINGLE_ABBREVS_EN: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
+    vec![
+        "Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Rev.", "St.", "Jr.", "Sr.",
+        "vs.", "Vol.", "No.", "Gen.", "Gov.", "Sgt.", "Corp.", "Inc.", "Ltd.",
+        "Jan.", "Feb.", "Mar.", "Apr.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec.",
+    ]
+});
+
+/// English multi-word abbreviation patterns.
+static MULTI_ABBREV_RE_EN: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    let patterns = vec![
+        r"e\.?\s*g\.", // e.g.
+        r"i\.?\s*e\.", // i.e.
+        r"c\.?\s*f\.", // c.f.
+    ];
+    patterns
+        .into_iter()
+        .map(|p| Regex::new(p).unwrap())
+        .collect()
+});
+
+/// Split English text into sentences, returning (text, html) pairs.
+///
+/// Uses English-specific abbreviation lists but the same splitting algorithm.
+pub fn split_sentences_en(text: &str, html: &str) -> Vec<(String, String)> {
+    if text.is_empty() {
+        return vec![];
+    }
+
+    let split_positions = find_text_split_positions_with(
+        text,
+        &SINGLE_ABBREVS_EN,
+        &MULTI_ABBREV_RE_EN,
+    );
+
+    if split_positions.is_empty() {
+        return vec![(text.to_string(), html.to_string())];
+    }
+
+    let text_parts = split_at_positions(text, &split_positions);
+    let html_split_positions = map_text_positions_to_html(text, html, &split_positions);
+    let html_parts = split_html_with_rebalance(html, &html_split_positions);
+
+    assert_eq!(text_parts.len(), html_parts.len());
+
+    text_parts
+        .into_iter()
+        .zip(html_parts)
+        .map(|(t, h)| (t.trim().to_string(), h.trim().to_string()))
+        .filter(|(t, _)| !t.is_empty())
+        .collect()
+}
+
+/// Generalized split-position finder parameterized by abbreviation lists.
+fn find_text_split_positions_with(
+    text: &str,
+    single_abbrevs: &[&str],
+    multi_abbrev_res: &[Regex],
+) -> Vec<usize> {
+    let mut positions = Vec::new();
+
+    for m in SPLIT_RE.find_iter(text) {
+        let match_start = m.start();
+
+        let matched = m.as_str();
+        let ws_start = matched.find(|c: char| c.is_whitespace()).unwrap();
+        let after_ws = matched[ws_start..]
+            .find(|c: char| !c.is_whitespace())
+            .unwrap();
+        let split_pos = match_start + ws_start + after_ws;
+
+        let preceding = &text[..match_start + ws_start];
+
+        // Check single-word abbreviations
+        let trimmed = preceding.trim_end();
+        let is_single = single_abbrevs.iter().any(|abbrev| trimmed.ends_with(abbrev));
+        if is_single {
+            continue;
+        }
+
+        // Check multi-word abbreviations
+        if is_multi_word_abbreviation_with(text, match_start, multi_abbrev_res) {
+            continue;
+        }
+
+        // Check single-letter initials
+        if INITIAL_RE.is_match(preceding) {
+            continue;
+        }
+
+        // Check numbered paragraph labels
+        if NUMBERED_LABEL_RE.is_match(preceding) {
+            continue;
+        }
+
+        positions.push(split_pos);
+    }
+
+    positions
+}
+
+/// Check multi-word abbreviations with a given set of patterns.
+fn is_multi_word_abbreviation_with(text: &str, match_start: usize, patterns: &[Regex]) -> bool {
+    let mut window_start = match_start.saturating_sub(10);
+    while window_start > 0 && !text.is_char_boundary(window_start) {
+        window_start -= 1;
+    }
+    let mut window_end = (match_start + 15).min(text.len());
+    while window_end < text.len() && !text.is_char_boundary(window_end) {
+        window_end += 1;
+    }
+    let window = &text[window_start..window_end];
+
+    for re in patterns {
+        if let Some(m) = re.find(window) {
+            let abbrev_start = window_start + m.start();
+            let abbrev_end = window_start + m.end();
+            if match_start >= abbrev_start && match_start < abbrev_end {
+                return true;
+            }
+        }
+    }
+    false
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -514,6 +566,61 @@ mod tests {
     #[test]
     fn test_empty_text() {
         let result = split_sentences("", "");
+        assert_eq!(result.len(), 0);
+    }
+
+    // === English sentence splitting tests ===
+
+    #[test]
+    fn test_en_two_sentences() {
+        let text = "First sentence. Second sentence.";
+        let result = split_sentences_en(text, text);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].0, "First sentence.");
+        assert_eq!(result[1].0, "Second sentence.");
+    }
+
+    #[test]
+    fn test_en_eg_not_split() {
+        let text = "For example, e.g. this case. Next sentence.";
+        let result = split_sentences_en(text, text);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].0, "For example, e.g. this case.");
+    }
+
+    #[test]
+    fn test_en_ie_not_split() {
+        let text = "That is, i.e. the thing. Another sentence.";
+        let result = split_sentences_en(text, text);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].0, "That is, i.e. the thing.");
+    }
+
+    #[test]
+    fn test_en_dr_not_split() {
+        let text = "Dr. Smith arrived. He sat down.";
+        let result = split_sentences_en(text, text);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].0, "Dr. Smith arrived.");
+    }
+
+    #[test]
+    fn test_en_mr_mrs_not_split() {
+        let text = "Mr. Jones and Mrs. Smith agree.";
+        let result = split_sentences_en(text, text);
+        assert_eq!(result.len(), 1);
+    }
+
+    #[test]
+    fn test_en_single_sentence() {
+        let text = "This is a single sentence about reason.";
+        let result = split_sentences_en(text, text);
+        assert_eq!(result.len(), 1);
+    }
+
+    #[test]
+    fn test_en_empty() {
+        let result = split_sentences_en("", "");
         assert_eq!(result.len(), 0);
     }
 }
