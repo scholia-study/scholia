@@ -3,6 +3,7 @@ use axum::Json;
 use serde::Deserialize;
 use sqlx::PgPool;
 use utoipa::IntoParams;
+use uuid::Uuid;
 
 use crate::db;
 use crate::error::AppError;
@@ -21,6 +22,9 @@ pub struct PageParams {
     /// include original_text/original_html fields
     #[serde(default)]
     original: Option<bool>,
+    /// Comma-separated source node UUIDs — fetch nodes whose source_node_id matches
+    #[serde(default)]
+    source_nodes: Option<String>,
 }
 
 /// Get paginated nodes for infinite scroll
@@ -42,8 +46,25 @@ pub async fn get_node_page(
     Path(slug): Path<String>,
     Query(params): Query<PageParams>,
 ) -> Result<Json<NodePage>, AppError> {
-    let limit = params.limit.unwrap_or(20).min(50).max(1);
     let include_original = params.original.unwrap_or(false);
+
+    if let Some(ref source_nodes_str) = params.source_nodes {
+        let source_node_ids: Vec<Uuid> = source_nodes_str
+            .split(',')
+            .filter_map(|s| s.trim().parse::<Uuid>().ok())
+            .collect();
+        if source_node_ids.is_empty() {
+            return Ok(Json(NodePage {
+                nodes: vec![],
+                has_more: false,
+                has_previous: false,
+            }));
+        }
+        let page = db::page::get_nodes_by_source_ids(&pool, &slug, &source_node_ids, include_original).await?;
+        return Ok(Json(page));
+    }
+
+    let limit = params.limit.unwrap_or(20).min(50).max(1);
     let page = db::page::get_node_page(&pool, &slug, params.after, params.before, limit, include_original).await?;
     Ok(Json(page))
 }

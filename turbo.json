@@ -1,16 +1,22 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "tasks": {
-    "openapi": {
-      "outputs": ["../../openapi.json"]
-    },
-    "codegen": {
-      "dependsOn": ["api#openapi"],
-      "outputs": ["src/api/**"]
-    },
-    "dev": {
-      "persistent": true,
-      "cache": false
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        "ct": {
+            "dependsOn": []
+        },
+        "lint": {
+            "dependsOn": []
+        },
+        "openapi": {
+            "outputs": ["../../openapi.json"]
+        },
+        "codegen": {
+            "dependsOn": ["api#openapi"],
+            "outputs": ["src/api/**"]
+        },
+        "dev": {
+            "persistent": true,
+            "cache": false
+        }
     }
-  }
 }

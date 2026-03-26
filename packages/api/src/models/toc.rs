@@ -11,6 +11,8 @@ pub struct TocNodeResponse {
     pub depth: i16,
     pub sort_order: i32,
     pub has_content: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_node_id: Option<String>,
     pub children: Vec<TocNodeResponse>,
 }
 
@@ -64,6 +66,11 @@ impl utoipa::ToSchema for TocNodeResponse {
                 ObjectBuilder::new().schema_type(SchemaType::new(Type::Boolean)),
             )
             .required("has_content")
+            .property(
+                "source_node_id",
+                ObjectBuilder::new()
+                    .schema_type(SchemaType::new(Type::String)),
+            )
             .property(
                 "children",
                 ArrayBuilder::new().items(RefOr::Ref(utoipa::openapi::Ref::new(

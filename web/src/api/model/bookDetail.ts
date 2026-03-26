@@ -4,6 +4,7 @@
  * Prospero API
  * OpenAPI spec version: 0.1.0
  */
+import type { BookSummary } from "./bookSummary";
 
 export interface BookDetail {
     author: string;
@@ -13,6 +14,11 @@ export interface BookDetail {
     /** @nullable */
     source?: string | null;
     /** @nullable */
+    source_book_id?: string | null;
+    /** @nullable */
+    source_book_slug?: string | null;
+    /** @nullable */
     source_date?: string | null;
     title: string;
+    translations: BookSummary[];
 }

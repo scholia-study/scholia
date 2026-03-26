@@ -13,5 +13,7 @@ export interface NodeDetail {
     label: string;
     slug: string;
     sort_order: number;
+    /** @nullable */
+    source_node_id?: string | null;
     source_ref: string;
 }

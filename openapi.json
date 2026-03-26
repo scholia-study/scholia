@@ -135,6 +135,18 @@
                 "null"
               ]
             }
+          },
+          {
+            "name": "source_nodes",
+            "in": "query",
+            "description": "Comma-separated source node UUIDs — fetch nodes whose source_node_id matches",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         ],
         "responses": {
@@ -258,7 +270,8 @@
           "slug",
           "title",
           "author",
-          "language"
+          "language",
+          "translations"
         ],
         "properties": {
           "author": {
@@ -279,6 +292,18 @@
               "null"
             ]
           },
+          "source_book_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_book_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "source_date": {
             "type": [
               "string",
@@ -287,6 +312,12 @@
           },
           "title": {
             "type": "string"
+          },
+          "translations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookSummary"
+            }
           }
         }
       },
@@ -455,6 +486,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "source_node_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "source_ref": {
             "type": "string"
           }
@@ -560,6 +597,18 @@
             ],
             "format": "int32"
           },
+          "source_sentence_end_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_sentence_start_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "text": {
             "type": "string"
           }
@@ -601,6 +650,9 @@
           },
           "sort_order": {
             "type": "integer"
+          },
+          "source_node_id": {
+            "type": "string"
           },
           "source_ref": {
             "type": "string"

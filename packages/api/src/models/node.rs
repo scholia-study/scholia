@@ -9,6 +9,8 @@ pub struct NodeDetail {
     pub label: String,
     pub depth: i16,
     pub sort_order: i32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_node_id: Option<String>,
     pub blocks: Vec<ContentBlockResponse>,
 }
 
@@ -35,6 +37,10 @@ pub struct SentenceResponse {
     pub original_text: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub original_html: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_sentence_start_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_sentence_end_id: Option<String>,
     pub page_markers: Vec<PageMarkerResponse>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub footnotes: Vec<FootnoteResponse>,

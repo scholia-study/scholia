@@ -1,5 +1,5 @@
 import type { InfiniteData } from "@tanstack/react-query";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
     forwardRef,
@@ -16,6 +16,7 @@ import type { NodeDetail, SentenceResponse } from "../api/model";
 import { getNodePage, type getNodePageResponse } from "../api/nodes/nodes";
 import type { MarginSettings } from "./BlockRenderer";
 import { Block } from "./BlockRenderer";
+import { InterleavedNodeRenderer } from "./InterleavedNodeRenderer";
 
 type PageCursor = { after: number } | { before: number };
 
@@ -29,6 +30,11 @@ interface PanelScrollViewProps {
     initialSortOrder: number | undefined;
     selectedSentenceId: string | undefined;
     showOriginal: boolean;
+    viewMode?: string;
+    viewLayout?: string;
+    companionSlug?: string;
+    primaryLabel?: string;
+    companionLabel?: string;
     onSelectSentence: (sentence: SentenceResponse) => void;
     onVisibleNodeChange?: (nodeSlug: string) => void;
     onSystemsDiscovered?: (systems: string[]) => void;
@@ -45,6 +51,11 @@ export const PanelScrollView = forwardRef<
         initialSortOrder,
         selectedSentenceId,
         showOriginal,
+        viewMode,
+        viewLayout,
+        companionSlug,
+        primaryLabel,
+        companionLabel,
         onSelectSentence,
         onVisibleNodeChange,
         onSystemsDiscovered,
@@ -157,6 +168,35 @@ export const PanelScrollView = forwardRef<
         if (systems.size > 0) onSystemsDiscovered(Array.from(systems));
     }, [nodes, onSystemsDiscovered]);
 
+    // Companion data fetching for interleaved view
+    const primaryNodeIds = useMemo(() => {
+        if (viewMode !== "st" || !companionSlug) return "";
+        return nodes.map((n) => n.id).join(",");
+    }, [viewMode, companionSlug, nodes]);
+
+    const { data: companionData } = useQuery({
+        enabled: viewMode === "st" && !!companionSlug && primaryNodeIds.length > 0,
+        queryKey: ["companion-nodes", companionSlug, primaryNodeIds, showOriginal ? "og" : ""],
+        queryFn: async ({ signal }) => {
+            const params = showOriginal
+                ? { source_nodes: primaryNodeIds, original: true }
+                : { source_nodes: primaryNodeIds };
+            return getNodePage(companionSlug!, params, { signal });
+        },
+        placeholderData: keepPreviousData,
+    });
+
+    const companionNodeMap = useMemo(() => {
+        if (!companionData || companionData.status !== 200) return undefined;
+        const map = new Map<string, NodeDetail>();
+        for (const node of companionData.data.nodes) {
+            if (node.source_node_id) {
+                map.set(node.source_node_id, node);
+            }
+        }
+        return map;
+    }, [companionData]);
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-full text-stone-400">
@@ -187,6 +227,11 @@ export const PanelScrollView = forwardRef<
             setStartSortOrder={setStartSortOrder}
             selectedSentenceId={selectedSentenceId}
             showOriginal={showOriginal}
+            viewMode={viewMode}
+            viewLayout={viewLayout}
+            companionNodeMap={companionNodeMap}
+            primaryLabel={primaryLabel}
+            companionLabel={companionLabel}
             onSelectSentence={onSelectSentence}
             onVisibleNodeChange={onVisibleNodeChange}
             marginSettings={marginSettings}
@@ -208,6 +253,11 @@ interface VirtualizedScrollProps {
     setStartSortOrder: (sortOrder: number | undefined) => void;
     selectedSentenceId: string | undefined;
     showOriginal: boolean;
+    viewMode?: string;
+    viewLayout?: string;
+    companionNodeMap?: Map<string, NodeDetail>;
+    primaryLabel?: string;
+    companionLabel?: string;
     onSelectSentence: (sentence: SentenceResponse) => void;
     onVisibleNodeChange?: (nodeSlug: string) => void;
     marginSettings?: MarginSettings;
@@ -229,6 +279,11 @@ const VirtualizedScroll = forwardRef<
         setStartSortOrder,
         selectedSentenceId,
         showOriginal,
+        viewMode,
+        viewLayout,
+        companionNodeMap,
+        primaryLabel,
+        companionLabel,
         onSelectSentence,
         onVisibleNodeChange,
         marginSettings,
@@ -273,10 +328,13 @@ const VirtualizedScroll = forwardRef<
     const hasActiveMargins =
         marginSettings && marginSettings.enabledSystems.size > 0;
 
+    const isInterleaved = viewMode === "st";
+    const isSideBySide = viewLayout === "bpl" || viewLayout === "bpr" || viewLayout === "bsl" || viewLayout === "bsr";
+
     const virtualizer = useVirtualizer({
         count: nodes.length,
         getScrollElement: () => parentRef.current,
-        estimateSize: () => 400,
+        estimateSize: () => (isInterleaved ? 700 : 400),
         overscan: 3,
     });
 
@@ -483,6 +541,13 @@ const VirtualizedScroll = forwardRef<
             >
                 {items.map((virtualRow) => {
                     const node = nodes[virtualRow.index];
+                    const companion = companionNodeMap?.get(node.id);
+                    const containerClass =
+                        isInterleaved && isSideBySide
+                            ? "max-w-5xl mx-auto px-8"
+                            : hasActiveMargins
+                              ? "max-w-4xl mx-auto"
+                              : "max-w-2xl mx-auto px-8";
                     return (
                         <div
                             key={node.id}
@@ -494,28 +559,36 @@ const VirtualizedScroll = forwardRef<
                                 transform: `translateY(${virtualRow.start}px)`,
                             }}
                         >
-                            <div
-                                className={
-                                    hasActiveMargins
-                                        ? "max-w-4xl mx-auto"
-                                        : "max-w-2xl mx-auto px-8"
-                                }
-                            >
+                            <div className={containerClass}>
                                 <div
-                                    className={`py-8 border-b border-stone-100 ${hasActiveMargins ? "max-w-2xl mx-auto px-8" : ""}`}
+                                    className={`py-8 border-b border-stone-100 ${hasActiveMargins && !isInterleaved ? "max-w-2xl mx-auto px-8" : ""}`}
                                 >
-                                    {node.blocks.map((block) => (
-                                        <Block
-                                            key={block.id}
-                                            block={block}
-                                            selectedSentenceId={
-                                                selectedSentenceId ?? null
-                                            }
+                                    {isInterleaved ? (
+                                        <InterleavedNodeRenderer
+                                            primaryNode={node}
+                                            companionNode={companion}
+                                            viewLayout={(viewLayout ?? "sp") as "sp" | "ss" | "bpl" | "bpr" | "bsl" | "bsr"}
+                                            selectedSentenceId={selectedSentenceId ?? null}
                                             showOriginal={showOriginal}
                                             onSelectSentence={onSelectSentence}
                                             marginSettings={marginSettings}
+                                            primaryLabel={primaryLabel ?? "Source"}
+                                            companionLabel={companionLabel ?? "Translation"}
                                         />
-                                    ))}
+                                    ) : (
+                                        node.blocks.map((block) => (
+                                            <Block
+                                                key={block.id}
+                                                block={block}
+                                                selectedSentenceId={
+                                                    selectedSentenceId ?? null
+                                                }
+                                                showOriginal={showOriginal}
+                                                onSelectSentence={onSelectSentence}
+                                                marginSettings={marginSettings}
+                                            />
+                                        ))
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -14,6 +14,9 @@ interface ReaderLayoutProps {
     resourcesOpen: Set<number>; // panelIndex -> resources panel open
     showOriginal: Set<number>;
     resourceViews: Map<number, string>; // panelIndex -> resource view (toc, compare, sentence)
+    viewModes: Map<number, string>; // panelIndex -> "s" | "t" | "st"
+    viewLayouts: Map<number, string>; // panelIndex -> "sp" | "ss" | "bpl" | "bpr" | "bsl" | "bsr"
+    companionSlugs: Map<number, string>; // panelIndex -> companion book slug
 }
 
 /** Build search params from secondary panels, selections, and resources state */
@@ -23,6 +26,9 @@ function buildSearch(
     resourcesOpen: Set<number>,
     showOriginal: Set<number>,
     resourceViews: Map<number, string>,
+    viewModes?: Map<number, string>,
+    viewLayouts?: Map<number, string>,
+    companionSlugs?: Map<number, string>,
 ): ReaderSearch {
     const search: ReaderSearch = {};
 
@@ -69,6 +75,39 @@ function buildSearch(
         }
     }
 
+    // View mode per panel: vm, vm2, vm3, vm4
+    if (viewModes) {
+        for (const [idx, mode] of viewModes) {
+            if (idx === 0) search.vm = mode;
+            else {
+                const key = `vm${idx + 1}` as keyof ReaderSearch;
+                search[key] = mode;
+            }
+        }
+    }
+
+    // View layout per panel: vl, vl2, vl3, vl4
+    if (viewLayouts) {
+        for (const [idx, layout] of viewLayouts) {
+            if (idx === 0) search.vl = layout;
+            else {
+                const key = `vl${idx + 1}` as keyof ReaderSearch;
+                search[key] = layout;
+            }
+        }
+    }
+
+    // Companion slug per panel: vt, vt2, vt3, vt4
+    if (companionSlugs) {
+        for (const [idx, slug] of companionSlugs) {
+            if (idx === 0) search.vt = slug;
+            else {
+                const key = `vt${idx + 1}` as keyof ReaderSearch;
+                search[key] = slug;
+            }
+        }
+    }
+
     return search;
 }
 
@@ -80,6 +119,9 @@ export function ReaderLayout({
     resourcesOpen,
     showOriginal,
     resourceViews,
+    viewModes,
+    viewLayouts,
+    companionSlugs,
 }: ReaderLayoutProps) {
     const navigate = useNavigate();
 
@@ -91,6 +133,14 @@ export function ReaderLayout({
         }
     }
 
+    interface NavigateOverrides {
+        showOriginal?: Set<number>;
+        resourceViews?: Map<number, string>;
+        viewModes?: Map<number, string>;
+        viewLayouts?: Map<number, string>;
+        companionSlugs?: Map<number, string>;
+    }
+
     /** Navigate changing only search params (no path change) */
     const navigateSearch = useCallback(
         (
@@ -98,8 +148,7 @@ export function ReaderLayout({
             newSelections: Map<number, string>,
             newResourcesOpen: Set<number>,
             replace?: boolean,
-            overrideShowOriginal?: Set<number>,
-            overrideResourceViews?: Map<number, string>,
+            overrides?: NavigateOverrides,
         ) => {
             navigate({
                 to: "/books/$bookSlug/$nodeSlug",
@@ -107,11 +156,18 @@ export function ReaderLayout({
                     bookSlug: panels[0].bookSlug,
                     nodeSlug: panels[0].nodeSlug!,
                 },
-                search: buildSearch(newPanels, newSelections, newResourcesOpen, overrideShowOriginal ?? showOriginal, overrideResourceViews ?? resourceViews),
+                search: buildSearch(
+                    newPanels, newSelections, newResourcesOpen,
+                    overrides?.showOriginal ?? showOriginal,
+                    overrides?.resourceViews ?? resourceViews,
+                    overrides?.viewModes ?? viewModes,
+                    overrides?.viewLayouts ?? viewLayouts,
+                    overrides?.companionSlugs ?? companionSlugs,
+                ),
                 replace,
             });
         },
-        [navigate, panels, showOriginal, resourceViews],
+        [navigate, panels, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs],
     );
 
     /** Navigate changing the path (primary panel node changed) */
@@ -121,8 +177,7 @@ export function ReaderLayout({
             newSelections: Map<number, string>,
             newResourcesOpen: Set<number>,
             replace?: boolean,
-            overrideShowOriginal?: Set<number>,
-            overrideResourceViews?: Map<number, string>,
+            overrides?: NavigateOverrides,
         ) => {
             const primary = newPanels[0];
             navigate({
@@ -131,11 +186,18 @@ export function ReaderLayout({
                     bookSlug: primary.bookSlug,
                     nodeSlug: primary.nodeSlug!,
                 },
-                search: buildSearch(newPanels, newSelections, newResourcesOpen, overrideShowOriginal ?? showOriginal, overrideResourceViews ?? resourceViews),
+                search: buildSearch(
+                    newPanels, newSelections, newResourcesOpen,
+                    overrides?.showOriginal ?? showOriginal,
+                    overrides?.resourceViews ?? resourceViews,
+                    overrides?.viewModes ?? viewModes,
+                    overrides?.viewLayouts ?? viewLayouts,
+                    overrides?.companionSlugs ?? companionSlugs,
+                ),
                 replace,
             });
         },
-        [navigate, showOriginal, resourceViews],
+        [navigate, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs],
     );
 
     const handleSelectSentence = useCallback(
@@ -184,6 +246,27 @@ export function ReaderLayout({
                 else if (idx > panelIndex) newResourceViews.set(idx - 1, view);
             }
 
+            // Shift view mode indices
+            const newViewModes = new Map<number, string>();
+            for (const [idx, mode] of viewModes) {
+                if (idx < panelIndex) newViewModes.set(idx, mode);
+                else if (idx > panelIndex) newViewModes.set(idx - 1, mode);
+            }
+
+            // Shift view layout indices
+            const newViewLayouts = new Map<number, string>();
+            for (const [idx, layout] of viewLayouts) {
+                if (idx < panelIndex) newViewLayouts.set(idx, layout);
+                else if (idx > panelIndex) newViewLayouts.set(idx - 1, layout);
+            }
+
+            // Shift companion slug indices
+            const newCompanionSlugs = new Map<number, string>();
+            for (const [idx, slug] of companionSlugs) {
+                if (idx < panelIndex) newCompanionSlugs.set(idx, slug);
+                else if (idx > panelIndex) newCompanionSlugs.set(idx - 1, slug);
+            }
+
             // Update stable keys: remove the closed panel's key
             panelKeysRef.current = panelKeysRef.current.filter(
                 (_, i) => i !== panelIndex,
@@ -197,7 +280,13 @@ export function ReaderLayout({
             } else {
                 const primary = newPanels[0];
                 if (primary.nodeSlug) {
-                    navigatePath(newPanels, newSelections, newResourcesOpen, false, newShowOriginal, newResourceViews);
+                    navigatePath(newPanels, newSelections, newResourcesOpen, false, {
+                        showOriginal: newShowOriginal,
+                        resourceViews: newResourceViews,
+                        viewModes: newViewModes,
+                        viewLayouts: newViewLayouts,
+                        companionSlugs: newCompanionSlugs,
+                    });
                 } else {
                     navigate({
                         to: "/books/$bookSlug",
@@ -206,7 +295,7 @@ export function ReaderLayout({
                 }
             }
         },
-        [panels, selections, resourcesOpen, showOriginal, resourceViews, navigate, navigatePath],
+        [panels, selections, resourcesOpen, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, navigate, navigatePath],
     );
 
     const handleCloseResources = useCallback(
@@ -218,7 +307,7 @@ export function ReaderLayout({
             newSelections.delete(panelIndex);
             const newResourceViews = new Map(resourceViews);
             newResourceViews.delete(panelIndex);
-            navigateSearch(panels, newSelections, newResourcesOpen, false, undefined, newResourceViews);
+            navigateSearch(panels, newSelections, newResourcesOpen, false, { resourceViews: newResourceViews });
         },
         [panels, selections, resourcesOpen, resourceViews, navigateSearch],
     );
@@ -263,6 +352,27 @@ export function ReaderLayout({
                 else newResourceViews.set(idx + 1, view);
             }
 
+            // Shift view mode indices
+            const newViewModes = new Map<number, string>();
+            for (const [idx, mode] of viewModes) {
+                if (idx < insertAt) newViewModes.set(idx, mode);
+                else newViewModes.set(idx + 1, mode);
+            }
+
+            // Shift view layout indices
+            const newViewLayouts = new Map<number, string>();
+            for (const [idx, layout] of viewLayouts) {
+                if (idx < insertAt) newViewLayouts.set(idx, layout);
+                else newViewLayouts.set(idx + 1, layout);
+            }
+
+            // Shift companion slug indices
+            const newCompanionSlugs = new Map<number, string>();
+            for (const [idx, slug] of companionSlugs) {
+                if (idx < insertAt) newCompanionSlugs.set(idx, slug);
+                else newCompanionSlugs.set(idx + 1, slug);
+            }
+
             // Insert stable key
             panelKeysRef.current = [
                 ...panelKeysRef.current.slice(0, insertAt),
@@ -270,9 +380,15 @@ export function ReaderLayout({
                 ...panelKeysRef.current.slice(insertAt),
             ];
 
-            navigateSearch(newPanels, newSelections, newResourcesOpen, false, newShowOriginal, newResourceViews);
+            navigateSearch(newPanels, newSelections, newResourcesOpen, false, {
+                showOriginal: newShowOriginal,
+                resourceViews: newResourceViews,
+                viewModes: newViewModes,
+                viewLayouts: newViewLayouts,
+                companionSlugs: newCompanionSlugs,
+            });
         },
-        [panels, selections, resourcesOpen, showOriginal, resourceViews, navigateSearch],
+        [panels, selections, resourcesOpen, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, navigateSearch],
     );
 
     /** Replace-navigate for scroll-driven URL updates (no history entry) */
@@ -295,16 +411,9 @@ export function ReaderLayout({
             const newShowOriginal = new Set(showOriginal);
             if (newShowOriginal.has(panelIndex)) newShowOriginal.delete(panelIndex);
             else newShowOriginal.add(panelIndex);
-            navigate({
-                to: "/books/$bookSlug/$nodeSlug",
-                params: {
-                    bookSlug: panels[0].bookSlug,
-                    nodeSlug: panels[0].nodeSlug!,
-                },
-                search: buildSearch(panels, selections, resourcesOpen, newShowOriginal, resourceViews),
-            });
+            navigateSearch(panels, selections, resourcesOpen, false, { showOriginal: newShowOriginal });
         },
-        [panels, selections, resourcesOpen, showOriginal, resourceViews, navigate],
+        [panels, selections, resourcesOpen, showOriginal, navigateSearch],
     );
 
     const handleResourceViewChange = useCallback(
@@ -315,9 +424,72 @@ export function ReaderLayout({
             } else {
                 newResourceViews.delete(panelIndex);
             }
-            navigateSearch(panels, selections, resourcesOpen, false, undefined, newResourceViews);
+            navigateSearch(panels, selections, resourcesOpen, false, { resourceViews: newResourceViews });
         },
         [panels, selections, resourcesOpen, resourceViews, navigateSearch],
+    );
+
+    const handleViewModeChange = useCallback(
+        (panelIndex: number, mode: string, companionSlug?: string) => {
+            const newViewModes = new Map(viewModes);
+            const newViewLayouts = new Map(viewLayouts);
+            const newCompanionSlugs = new Map(companionSlugs);
+
+            if (mode === "st") {
+                newViewModes.set(panelIndex, "st");
+                if (!newViewLayouts.has(panelIndex)) {
+                    newViewLayouts.set(panelIndex, "sp");
+                }
+                if (companionSlug) {
+                    newCompanionSlugs.set(panelIndex, companionSlug);
+                }
+                navigateSearch(panels, selections, resourcesOpen, false, {
+                    viewModes: newViewModes,
+                    viewLayouts: newViewLayouts,
+                    companionSlugs: newCompanionSlugs,
+                });
+            } else if (companionSlug) {
+                // "s" or "t" with a target — navigate to the target book, clear interleaved state
+                newViewModes.delete(panelIndex);
+                newViewLayouts.delete(panelIndex);
+                newCompanionSlugs.delete(panelIndex);
+                const newPanels = panels.map((p, i) =>
+                    i === panelIndex ? { bookSlug: companionSlug, nodeSlug: undefined as string | undefined } : p,
+                );
+                if (panelIndex === 0) {
+                    navigate({
+                        to: "/books/$bookSlug",
+                        params: { bookSlug: companionSlug },
+                    });
+                } else {
+                    navigateSearch(newPanels, selections, resourcesOpen, false, {
+                        viewModes: newViewModes,
+                        viewLayouts: newViewLayouts,
+                        companionSlugs: newCompanionSlugs,
+                    });
+                }
+            } else {
+                // "s" or "t" without navigation — just clear interleaved state
+                newViewModes.delete(panelIndex);
+                newViewLayouts.delete(panelIndex);
+                newCompanionSlugs.delete(panelIndex);
+                navigateSearch(panels, selections, resourcesOpen, false, {
+                    viewModes: newViewModes,
+                    viewLayouts: newViewLayouts,
+                    companionSlugs: newCompanionSlugs,
+                });
+            }
+        },
+        [panels, selections, resourcesOpen, viewModes, viewLayouts, companionSlugs, navigateSearch, navigate],
+    );
+
+    const handleViewLayoutChange = useCallback(
+        (panelIndex: number, layout: string) => {
+            const newViewLayouts = new Map(viewLayouts);
+            newViewLayouts.set(panelIndex, layout);
+            navigateSearch(panels, selections, resourcesOpen, false, { viewLayouts: newViewLayouts });
+        },
+        [panels, selections, resourcesOpen, viewLayouts, navigateSearch],
     );
 
     const canAddPanel = panels.length < 4;
@@ -334,12 +506,21 @@ export function ReaderLayout({
                     resourceView={resourceViews.get(idx)}
                     selectedSentenceId={selections.get(idx)}
                     showOriginal={showOriginal.has(idx)}
+                    viewMode={viewModes.get(idx)}
+                    viewLayout={viewLayouts.get(idx)}
+                    companionSlug={companionSlugs.get(idx)}
                     onSelectSentence={(sentenceId) =>
                         handleSelectSentence(idx, sentenceId)
                     }
                     onToggleOriginal={() => handleToggleOriginal(idx)}
                     onToggleResources={() => handleCloseResources(idx)}
                     onResourceViewChange={(view) => handleResourceViewChange(idx, view)}
+                    onViewModeChange={(mode, companionSlug) =>
+                        handleViewModeChange(idx, mode, companionSlug)
+                    }
+                    onViewLayoutChange={(layout) =>
+                        handleViewLayoutChange(idx, layout)
+                    }
                     onClose={
                         panels.length > 1
                             ? () => handleClosePanel(idx)

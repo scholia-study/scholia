@@ -15,6 +15,7 @@ struct TocRow {
     depth: i16,
     sort_order: i32,
     has_content: bool,
+    source_node_id: Option<Uuid>,
 }
 
 pub async fn get_toc_tree(pool: &PgPool, slug: &str) -> Result<Vec<TocNodeResponse>, AppError> {
@@ -28,7 +29,8 @@ pub async fn get_toc_tree(pool: &PgPool, slug: &str) -> Result<Vec<TocNodeRespon
                tn.label,
                tn.depth,
                tn.sort_order,
-               EXISTS(SELECT 1 FROM content_blocks cb WHERE cb.node_id = tn.id) AS "has_content!"
+               EXISTS(SELECT 1 FROM content_blocks cb WHERE cb.node_id = tn.id) AS "has_content!",
+               tn.source_node_id
            FROM toc_nodes tn
            JOIN books b ON b.id = tn.book_id
            WHERE b.slug = $1
@@ -61,6 +63,7 @@ fn build_tree(rows: Vec<TocRow>) -> Vec<TocNodeResponse> {
                 depth: row.depth,
                 sort_order: row.sort_order,
                 has_content: row.has_content,
+                source_node_id: row.source_node_id.map(|id| id.to_string()),
                 children: Vec::new(),
             },
         );

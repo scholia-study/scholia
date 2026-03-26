@@ -8,6 +8,8 @@ import {
     ListItemText,
     Menu,
     MenuItem,
+    Radio,
+    Select,
     Switch,
     ToggleButton,
     ToggleButtonGroup,
@@ -25,6 +27,7 @@ import {
 import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";
 import { ResourcesPanel } from "./ResourcesPanel";
+import { SentenceSelectionProvider } from "./SentenceSelectionContext";
 
 function findNodeInToc(
     nodes: TocNodeResponse[],
@@ -46,10 +49,15 @@ interface TextPanelProps {
     resourceView: string | undefined;
     selectedSentenceId: string | undefined;
     showOriginal: boolean;
+    viewMode: string | undefined;
+    viewLayout: string | undefined;
+    companionSlug: string | undefined;
     onSelectSentence: (sentenceId: string) => void;
     onToggleOriginal: () => void;
     onToggleResources: () => void;
     onResourceViewChange: (view: string | undefined) => void;
+    onViewModeChange: (mode: string, companionSlug?: string) => void;
+    onViewLayoutChange: (layout: string) => void;
     onClose: () => void;
     onScrollNavigate: (nodeSlug: string) => void;
     onAddComparisonPanel: (bookSlug: string, nodeSlug: string) => void;
@@ -63,10 +71,15 @@ export function TextPanel({
     resourceView,
     selectedSentenceId,
     showOriginal,
+    viewMode,
+    viewLayout,
+    companionSlug,
     onSelectSentence,
     onToggleOriginal,
     onToggleResources,
     onResourceViewChange,
+    onViewModeChange,
+    onViewLayoutChange,
     onClose,
     onScrollNavigate,
     onAddComparisonPanel,
@@ -99,7 +112,20 @@ export function TextPanel({
     const toc = tocData?.data;
 
     const { data: bookData } = useGetBook(bookSlug);
-    const bookTitle = bookData?.status === 200 ? bookData.data.title : bookSlug;
+    const bookDetail = bookData?.status === 200 ? bookData.data : undefined;
+    const bookTitle = bookDetail?.title ?? bookSlug;
+
+    // Determine translation relationships
+    const isTranslation = !!bookDetail?.source_book_id;
+    const hasTranslations = (bookDetail?.translations?.length ?? 0) > 0;
+    const hasRelationship = isTranslation || hasTranslations;
+
+    // Fetch companion book title for labels
+    const { data: companionBookData } = useGetBook(companionSlug ?? "", {
+        query: { enabled: !!companionSlug && viewMode === "st" },
+    });
+    const companionBookTitle =
+        companionBookData?.status === 200 ? companionBookData.data.title : companionSlug;
 
     const handleSystemsDiscovered = useCallback((systems: string[]) => {
         setMarginSettings((prev) => {
@@ -165,6 +191,14 @@ export function TextPanel({
         [onSelectSentence],
     );
 
+    const selectionCtx = useMemo(
+        () => ({
+            selectedKey: selectedSentenceId ?? null,
+            clickedId: selectedSentence?.id,
+        }),
+        [selectedSentenceId, selectedSentence],
+    );
+
     const handleTocNavigate = useCallback(
         (slug: string) => {
             const sortOrder = toc
@@ -176,6 +210,7 @@ export function TextPanel({
     );
 
     return (
+        <SentenceSelectionProvider value={selectionCtx}>
         <div className="flex flex-1 min-w-0 border-r border-stone-200 last:border-r-0">
             {/* Main content area */}
             <div className="flex-1 flex flex-col min-w-0">
@@ -214,9 +249,146 @@ export function TextPanel({
                                 open={Boolean(menuAnchor)}
                                 onClose={() => setMenuAnchor(null)}
                                 slotProps={{
-                                    paper: { sx: { minWidth: 200, py: 1 } },
+                                    paper: { sx: { minWidth: 240, py: 1 } },
                                 }}
                             >
+                                {hasRelationship && [
+                                    <Typography
+                                        key="vm-label"
+                                        variant="overline"
+                                        sx={{ px: 2, color: "text.secondary" }}
+                                    >
+                                        View mode
+                                    </Typography>,
+                                    <MenuItem
+                                        key="vm-source"
+                                        disabled={!isTranslation && !hasTranslations}
+                                        onClick={() => {
+                                            if (isTranslation && bookDetail?.source_book_slug) {
+                                                // On translation, navigate to source
+                                                onViewModeChange("s", bookDetail.source_book_slug);
+                                            } else if (viewMode === "st") {
+                                                // On source with interleaved active, just clear interleaved mode
+                                                onViewModeChange("s");
+                                            }
+                                            setMenuAnchor(null);
+                                        }}
+                                        sx={{ py: 0.5, px: 2 }}
+                                    >
+                                        <Radio
+                                            size="small"
+                                            checked={!viewMode || viewMode === "s" ? !isTranslation : false}
+                                            tabIndex={-1}
+                                            sx={{ p: 0.5, mr: 1 }}
+                                        />
+                                        <ListItemText primary="Source" />
+                                    </MenuItem>,
+                                    <MenuItem
+                                        key="vm-translation"
+                                        disabled={!isTranslation && !hasTranslations}
+                                        onClick={() => {
+                                            if (!isTranslation && hasTranslations) {
+                                                // On source, navigate to first translation
+                                                onViewModeChange("t", bookDetail!.translations[0].slug);
+                                            } else if (isTranslation && viewMode === "st") {
+                                                // On translation with interleaved active, just clear interleaved mode
+                                                onViewModeChange("t");
+                                            }
+                                            setMenuAnchor(null);
+                                        }}
+                                        sx={{ py: 0.5, px: 2 }}
+                                    >
+                                        <Radio
+                                            size="small"
+                                            checked={!viewMode || viewMode === "t" ? isTranslation : false}
+                                            tabIndex={-1}
+                                            sx={{ p: 0.5, mr: 1 }}
+                                        />
+                                        <ListItemText primary="Translation" />
+                                    </MenuItem>,
+                                    <MenuItem
+                                        key="vm-both"
+                                        disabled={!hasRelationship}
+                                        onClick={() => {
+                                            const companion = isTranslation
+                                                ? bookDetail!.source_book_slug!
+                                                : bookDetail!.translations[0]?.slug;
+                                            if (companion) {
+                                                onViewModeChange("st", companion);
+                                            }
+                                            setMenuAnchor(null);
+                                        }}
+                                        sx={{ py: 0.5, px: 2 }}
+                                    >
+                                        <Radio
+                                            size="small"
+                                            checked={viewMode === "st"}
+                                            tabIndex={-1}
+                                            sx={{ p: 0.5, mr: 1 }}
+                                        />
+                                        <ListItemText primary="Source with Translation" />
+                                    </MenuItem>,
+                                    ...(viewMode === "st" && !isTranslation && bookDetail!.translations.length > 1
+                                        ? [
+                                              <MenuItem key="vm-picker" disableRipple sx={{ py: 0.5, px: 2, "&:hover": { backgroundColor: "transparent" } }}>
+                                                  <Select
+                                                      size="small"
+                                                      value={companionSlug ?? ""}
+                                                      onChange={(e) => {
+                                                          onViewModeChange("st", e.target.value);
+                                                          setMenuAnchor(null);
+                                                      }}
+                                                      fullWidth
+                                                      sx={{ fontSize: "0.875rem" }}
+                                                  >
+                                                      {bookDetail!.translations.map((t) => (
+                                                          <MenuItem key={t.slug} value={t.slug}>
+                                                              {t.title}
+                                                          </MenuItem>
+                                                      ))}
+                                                  </Select>
+                                              </MenuItem>,
+                                          ]
+                                        : []),
+                                    ...(viewMode === "st"
+                                        ? [
+                                              <Divider key="vl-divider" />,
+                                              <Typography
+                                                  key="vl-label"
+                                                  variant="overline"
+                                                  sx={{ px: 2, color: "text.secondary" }}
+                                              >
+                                                  Layout
+                                              </Typography>,
+                                              ...([
+                                                  ["sp", "Stacked paragraphs"],
+                                                  ["ss", "Stacked sentences"],
+                                                  ["bpl", "Side-by-side (source left)"],
+                                                  ["bpr", "Side-by-side (source right)"],
+                                                  ["bsl", "Side-by-side sentences (source left)"],
+                                                  ["bsr", "Side-by-side sentences (source right)"],
+                                              ] as const).map(([code, label]) => (
+                                                  <MenuItem
+                                                      key={`vl-${code}`}
+                                                      onClick={() => {
+                                                          onViewLayoutChange(code);
+                                                          setMenuAnchor(null);
+                                                      }}
+                                                      sx={{ py: 0.5, px: 2 }}
+                                                  >
+                                                      <Radio
+                                                          size="small"
+                                                          checked={(viewLayout ?? "sp") === code}
+                                                          tabIndex={-1}
+                                                          sx={{ p: 0.5, mr: 1 }}
+                                                      />
+                                                      <ListItemText primary={label} />
+                                                  </MenuItem>
+                                              )),
+                                          ]
+                                        : []),
+                                    <Divider key="vm-bottom-divider" />,
+                                ]}
                                 <MenuItem
                                     disableRipple
                                     onClick={onToggleOriginal}
@@ -318,6 +490,11 @@ export function TextPanel({
                     initialSortOrder={initialSortOrder}
                     selectedSentenceId={selectedSentenceId}
                     showOriginal={showOriginal}
+                    viewMode={viewMode}
+                    viewLayout={viewLayout}
+                    companionSlug={companionSlug}
+                    primaryLabel={bookTitle}
+                    companionLabel={companionBookTitle}
                     onSelectSentence={handleSelectSentence}
                     onVisibleNodeChange={handleVisibleNodeChange}
                     onSystemsDiscovered={handleSystemsDiscovered}
@@ -343,5 +520,6 @@ export function TextPanel({
                 />
             )}
         </div>
+        </SentenceSelectionProvider>
     );
 }

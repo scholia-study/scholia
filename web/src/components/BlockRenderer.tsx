@@ -4,6 +4,7 @@ import type {
     PageMarkerResponse,
     SentenceResponse,
 } from "../api/model";
+import { useSentenceSelection } from "./SentenceSelectionContext";
 
 /** URL-friendly key for a sentence: sentence_number if available, otherwise ID. */
 export function sentenceKey(s: SentenceResponse): string {
@@ -65,6 +66,8 @@ export function Sentence({
     onSelect: (sentence: SentenceResponse) => void;
     marginSettings?: MarginSettings;
 }) {
+    const { isCorrespondent } = useSentenceSelection(sentence);
+
     let leftMarkers: PageMarkerResponse[] | undefined;
     let rightMarkers: PageMarkerResponse[] | undefined;
 
@@ -86,6 +89,12 @@ export function Sentence({
         }
     }
 
+    const highlightClass = isSelected
+        ? isCorrespondent
+            ? "bg-amber-100"
+            : "bg-amber-200"
+        : "hover:bg-stone-200";
+
     return (
         <>
             {leftMarkers && <MarginNotes markers={leftMarkers} side="left" />}
@@ -94,9 +103,7 @@ export function Sentence({
             )}
             <span
                 onClick={() => onSelect(sentence)}
-                className={`cursor-pointer transition-colors rounded-sm ${
-                    isSelected ? "bg-amber-200" : "hover:bg-stone-200"
-                }`}
+                className={`cursor-pointer transition-colors rounded-sm ${highlightClass}`}
             >
                 {parse(showOriginal && sentence.original_html ? sentence.original_html : sentence.html)}
             </span>{" "}

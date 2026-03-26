@@ -23,6 +23,18 @@ export type ReaderSearch = {
     rv2?: string;
     rv3?: string;
     rv4?: string;
+    vm?: string;
+    vm2?: string;
+    vm3?: string;
+    vm4?: string;
+    vl?: string;
+    vl2?: string;
+    vl3?: string;
+    vl4?: string;
+    vt?: string;
+    vt2?: string;
+    vt3?: string;
+    vt4?: string;
 };
 
 function parsePanel(param: string): PanelState {
@@ -55,6 +67,18 @@ export const Route = createFileRoute("/books/$bookSlug/$nodeSlug")({
         rv2: search.rv2 as string | undefined,
         rv3: search.rv3 as string | undefined,
         rv4: search.rv4 as string | undefined,
+        vm: search.vm as string | undefined,
+        vm2: search.vm2 as string | undefined,
+        vm3: search.vm3 as string | undefined,
+        vm4: search.vm4 as string | undefined,
+        vl: search.vl as string | undefined,
+        vl2: search.vl2 as string | undefined,
+        vl3: search.vl3 as string | undefined,
+        vl4: search.vl4 as string | undefined,
+        vt: search.vt as string | undefined,
+        vt2: search.vt2 as string | undefined,
+        vt3: search.vt3 as string | undefined,
+        vt4: search.vt4 as string | undefined,
     }),
     loader: async ({ context, params }) => {
         await context.queryClient.ensureQueryData(
@@ -99,6 +123,24 @@ function ReaderPage() {
     if (search.rv3) resourceViews.set(2, search.rv3);
     if (search.rv4) resourceViews.set(3, search.rv4);
 
+    const viewModes = new Map<number, string>();
+    if (search.vm) viewModes.set(0, search.vm);
+    if (search.vm2) viewModes.set(1, search.vm2);
+    if (search.vm3) viewModes.set(2, search.vm3);
+    if (search.vm4) viewModes.set(3, search.vm4);
+
+    const viewLayouts = new Map<number, string>();
+    if (search.vl) viewLayouts.set(0, search.vl);
+    if (search.vl2) viewLayouts.set(1, search.vl2);
+    if (search.vl3) viewLayouts.set(2, search.vl3);
+    if (search.vl4) viewLayouts.set(3, search.vl4);
+
+    const companionSlugs = new Map<number, string>();
+    if (search.vt) companionSlugs.set(0, search.vt);
+    if (search.vt2) companionSlugs.set(1, search.vt2);
+    if (search.vt3) companionSlugs.set(2, search.vt3);
+    if (search.vt4) companionSlugs.set(3, search.vt4);
+
     return (
         <ReaderLayout
             panels={panels}
@@ -106,6 +148,9 @@ function ReaderPage() {
             resourcesOpen={resourcesOpen}
             showOriginal={showOriginal}
             resourceViews={resourceViews}
+            viewModes={viewModes}
+            viewLayouts={viewLayouts}
+            companionSlugs={companionSlugs}
         />
     );
 }

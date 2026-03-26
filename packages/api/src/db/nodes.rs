@@ -14,6 +14,7 @@ struct NodeRow {
     label: String,
     depth: i16,
     sort_order: i32,
+    source_node_id: Option<Uuid>,
 }
 
 struct BlockRow {
@@ -34,6 +35,8 @@ struct SentenceRow {
     html: String,
     original_text: Option<String>,
     original_html: Option<String>,
+    source_sentence_start_id: Option<Uuid>,
+    source_sentence_end_id: Option<Uuid>,
 }
 
 struct MarkerRow {
@@ -68,7 +71,7 @@ pub async fn get_node_content(
 ) -> Result<NodeDetail, AppError> {
     let node = sqlx::query_as!(
         NodeRow,
-        r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order
+        r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order, tn.source_node_id
            FROM toc_nodes tn
            JOIN books b ON b.id = tn.book_id
            WHERE b.slug = $1 AND tn.slug = $2"#,
@@ -92,7 +95,8 @@ pub async fn get_node_content(
 
     let sentences = sqlx::query_as!(
         SentenceRow,
-        r#"SELECT id, block_id AS "block_id!", position, sentence_number, text, html, original_text, original_html
+        r#"SELECT id, block_id AS "block_id!", position, sentence_number, text, html, original_text, original_html,
+                  source_sentence_start_id, source_sentence_end_id
            FROM sentences
            WHERE node_id = $1 AND block_id IS NOT NULL
            ORDER BY block_id, position"#,
@@ -209,6 +213,8 @@ pub async fn get_node_content(
                 html: s.html,
                 original_text: if include_original { s.original_text } else { None },
                 original_html: if include_original { s.original_html } else { None },
+                source_sentence_start_id: s.source_sentence_start_id.map(|id| id.to_string()),
+                source_sentence_end_id: s.source_sentence_end_id.map(|id| id.to_string()),
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
                 footnotes: footnote_map.remove(&s.id).unwrap_or_default(),
             });
@@ -237,6 +243,7 @@ pub async fn get_node_content(
         label: node.label,
         depth: node.depth,
         sort_order: node.sort_order,
+        source_node_id: node.source_node_id.map(|id| id.to_string()),
         blocks,
     })
 }

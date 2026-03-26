@@ -7,6 +7,7 @@
     },
     "scripts": {
         "dev": "vite dev --port 3000",
+        "ct": "tsc -p tsconfig.json --pretty --noEmit",
         "build": "vite build",
         "preview": "vite preview",
         "test": "vitest run",

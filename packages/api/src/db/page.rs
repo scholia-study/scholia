@@ -15,6 +15,7 @@ struct NodeRow {
     label: String,
     depth: i16,
     sort_order: i32,
+    source_node_id: Option<Uuid>,
 }
 
 struct BlockRow {
@@ -36,6 +37,8 @@ struct SentenceRow {
     html: String,
     original_text: Option<String>,
     original_html: Option<String>,
+    source_sentence_start_id: Option<Uuid>,
+    source_sentence_end_id: Option<Uuid>,
 }
 
 struct MarkerRow {
@@ -76,7 +79,7 @@ pub async fn get_node_page(
     let (nodes, is_backward) = if let Some(before_cursor) = before {
         let rows = sqlx::query_as!(
             NodeRow,
-            r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order
+            r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order, tn.source_node_id
                FROM toc_nodes tn
                JOIN books b ON b.id = tn.book_id
                WHERE b.slug = $1 AND tn.sort_order < $2
@@ -93,7 +96,7 @@ pub async fn get_node_page(
         let after_cursor = after.unwrap_or(-1);
         let rows = sqlx::query_as!(
             NodeRow,
-            r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order
+            r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order, tn.source_node_id
                FROM toc_nodes tn
                JOIN books b ON b.id = tn.book_id
                WHERE b.slug = $1 AND tn.sort_order > $2
@@ -169,7 +172,8 @@ pub async fn get_node_page(
 
     let sentences = sqlx::query_as!(
         SentenceRow,
-        r#"SELECT id, block_id AS "block_id!", position, sentence_number, text, html, original_text, original_html
+        r#"SELECT id, block_id AS "block_id!", position, sentence_number, text, html, original_text, original_html,
+                  source_sentence_start_id, source_sentence_end_id
            FROM sentences
            WHERE block_id IS NOT NULL AND block_id = ANY(
                SELECT id FROM content_blocks WHERE node_id = ANY($1)
@@ -292,6 +296,8 @@ pub async fn get_node_page(
                 html: s.html,
                 original_text: if include_original { s.original_text } else { None },
                 original_html: if include_original { s.original_html } else { None },
+                source_sentence_start_id: s.source_sentence_start_id.map(|id| id.to_string()),
+                source_sentence_end_id: s.source_sentence_end_id.map(|id| id.to_string()),
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
                 footnotes: footnote_map.remove(&s.id).unwrap_or_default(),
             });
@@ -325,6 +331,7 @@ pub async fn get_node_page(
             label: n.label,
             depth: n.depth,
             sort_order: n.sort_order,
+            source_node_id: n.source_node_id.map(|id| id.to_string()),
             blocks: block_map.remove(&n.id).unwrap_or_default(),
         })
         .collect();
@@ -333,5 +340,213 @@ pub async fn get_node_page(
         nodes: result_nodes,
         has_more,
         has_previous,
+    })
+}
+
+pub async fn get_nodes_by_source_ids(
+    pool: &PgPool,
+    slug: &str,
+    source_node_ids: &[Uuid],
+    include_original: bool,
+) -> Result<NodePage, AppError> {
+    let nodes = sqlx::query_as!(
+        NodeRow,
+        r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order, tn.source_node_id
+           FROM toc_nodes tn
+           JOIN books b ON b.id = tn.book_id
+           WHERE b.slug = $1 AND tn.source_node_id = ANY($2)
+           ORDER BY tn.sort_order"#,
+        slug,
+        source_node_ids,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    if nodes.is_empty() {
+        return Ok(NodePage {
+            nodes: vec![],
+            has_more: false,
+            has_previous: false,
+        });
+    }
+
+    let node_ids: Vec<Uuid> = nodes.iter().map(|n| n.id).collect();
+
+    let blocks = sqlx::query_as!(
+        BlockRow,
+        r#"SELECT id, node_id, position, block_type::TEXT AS "block_type!", paragraph_number, html, original_html
+           FROM content_blocks
+           WHERE node_id = ANY($1)
+           ORDER BY node_id, position"#,
+        &node_ids,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let sentences = sqlx::query_as!(
+        SentenceRow,
+        r#"SELECT id, block_id AS "block_id!", position, sentence_number, text, html, original_text, original_html,
+                  source_sentence_start_id, source_sentence_end_id
+           FROM sentences
+           WHERE block_id IS NOT NULL AND block_id = ANY(
+               SELECT id FROM content_blocks WHERE node_id = ANY($1)
+           )
+           ORDER BY block_id, position"#,
+        &node_ids,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let markers = sqlx::query_as!(
+        MarkerRow,
+        r#"SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset
+           FROM page_markers pm
+           JOIN reference_systems rs ON rs.id = pm.system_id
+           JOIN sentences s ON s.id = pm.sentence_id
+           WHERE s.node_id = ANY($1)
+           ORDER BY pm.sort_order"#,
+        &node_ids,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let sentence_ids: Vec<Uuid> = sentences.iter().map(|s| s.id).collect();
+
+    let footnotes = if sentence_ids.is_empty() {
+        vec![]
+    } else {
+        sqlx::query_as!(
+            FootnoteRow,
+            r#"SELECT id, number, anchor_sentence_id
+               FROM footnotes
+               WHERE anchor_sentence_id = ANY($1)
+               ORDER BY number"#,
+            &sentence_ids,
+        )
+        .fetch_all(pool)
+        .await?
+    };
+
+    let footnote_ids: Vec<Uuid> = footnotes.iter().map(|f| f.id).collect();
+
+    let footnote_sentences = if footnote_ids.is_empty() {
+        vec![]
+    } else {
+        sqlx::query_as!(
+            FootnoteSentenceRow,
+            r#"SELECT id, footnote_id AS "footnote_id!", position, text, html, original_text, original_html
+               FROM sentences
+               WHERE footnote_id = ANY($1)
+               ORDER BY footnote_id, position"#,
+            &footnote_ids,
+        )
+        .fetch_all(pool)
+        .await?
+    };
+
+    // Group footnote sentences by footnote_id
+    let mut fn_sentence_map: std::collections::HashMap<Uuid, Vec<FootnoteSentenceResponse>> =
+        std::collections::HashMap::new();
+    for fs in footnote_sentences {
+        fn_sentence_map
+            .entry(fs.footnote_id)
+            .or_default()
+            .push(FootnoteSentenceResponse {
+                id: fs.id.to_string(),
+                position: fs.position,
+                text: fs.text,
+                html: fs.html,
+                original_text: if include_original { fs.original_text } else { None },
+                original_html: if include_original { fs.original_html } else { None },
+            });
+    }
+
+    // Group footnotes by anchor_sentence_id
+    let mut footnote_map: std::collections::HashMap<Uuid, Vec<FootnoteResponse>> =
+        std::collections::HashMap::new();
+    for f in footnotes {
+        footnote_map
+            .entry(f.anchor_sentence_id)
+            .or_default()
+            .push(FootnoteResponse {
+                id: f.id.to_string(),
+                number: f.number,
+                sentences: fn_sentence_map.remove(&f.id).unwrap_or_default(),
+            });
+    }
+
+    // Group markers by sentence_id
+    let mut marker_map: std::collections::HashMap<Uuid, Vec<PageMarkerResponse>> =
+        std::collections::HashMap::new();
+    for m in markers {
+        marker_map.entry(m.sentence_id).or_default().push(
+            PageMarkerResponse {
+                system_slug: m.system_slug,
+                ref_value: m.ref_value,
+                sort_order: m.sort_order,
+                char_offset: m.char_offset,
+            },
+        );
+    }
+
+    // Group sentences by block_id
+    let mut sentence_map: std::collections::HashMap<Uuid, Vec<SentenceResponse>> =
+        std::collections::HashMap::new();
+    for s in sentences {
+        sentence_map
+            .entry(s.block_id)
+            .or_default()
+            .push(SentenceResponse {
+                id: s.id.to_string(),
+                position: s.position,
+                sentence_number: s.sentence_number,
+                text: s.text,
+                html: s.html,
+                original_text: if include_original { s.original_text } else { None },
+                original_html: if include_original { s.original_html } else { None },
+                source_sentence_start_id: s.source_sentence_start_id.map(|id| id.to_string()),
+                source_sentence_end_id: s.source_sentence_end_id.map(|id| id.to_string()),
+                page_markers: marker_map.remove(&s.id).unwrap_or_default(),
+                footnotes: footnote_map.remove(&s.id).unwrap_or_default(),
+            });
+    }
+
+    // Group blocks by node_id
+    let mut block_map: std::collections::HashMap<Uuid, Vec<ContentBlockResponse>> =
+        std::collections::HashMap::new();
+    for b in blocks {
+        let sentences = sentence_map.remove(&b.id).unwrap_or_default();
+        block_map
+            .entry(b.node_id)
+            .or_default()
+            .push(ContentBlockResponse {
+                id: b.id.to_string(),
+                position: b.position,
+                block_type: b.block_type,
+                paragraph_number: b.paragraph_number,
+                html: b.html,
+                original_html: if include_original { b.original_html } else { None },
+                sentences,
+            });
+    }
+
+    let result_nodes = nodes
+        .into_iter()
+        .map(|n| NodeDetail {
+            id: n.id.to_string(),
+            source_ref: n.source_ref,
+            slug: n.slug,
+            label: n.label,
+            depth: n.depth,
+            sort_order: n.sort_order,
+            source_node_id: n.source_node_id.map(|id| id.to_string()),
+            blocks: block_map.remove(&n.id).unwrap_or_default(),
+        })
+        .collect();
+
+    Ok(NodePage {
+        nodes: result_nodes,
+        has_more: false,
+        has_previous: false,
     })
 }

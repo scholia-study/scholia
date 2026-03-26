@@ -13,5 +13,6 @@ export interface TocNodeResponse {
     label: string;
     slug: string;
     sort_order: number;
+    source_node_id?: string;
     source_ref: string;
 }

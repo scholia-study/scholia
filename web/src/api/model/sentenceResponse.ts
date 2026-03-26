@@ -19,5 +19,9 @@ export interface SentenceResponse {
     position: number;
     /** @nullable */
     sentence_number?: number | null;
+    /** @nullable */
+    source_sentence_end_id?: string | null;
+    /** @nullable */
+    source_sentence_start_id?: string | null;
     text: string;
 }
