@@ -147,6 +147,18 @@
                 "null"
               ]
             }
+          },
+          {
+            "name": "node_ids",
+            "in": "query",
+            "description": "Comma-separated node UUIDs — fetch nodes by their own ID",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         ],
         "responses": {

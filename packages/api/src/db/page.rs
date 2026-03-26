@@ -362,6 +362,36 @@ pub async fn get_nodes_by_source_ids(
     .fetch_all(pool)
     .await?;
 
+    assemble_node_page(pool, nodes, include_original).await
+}
+
+pub async fn get_nodes_by_ids(
+    pool: &PgPool,
+    slug: &str,
+    ids: &[Uuid],
+    include_original: bool,
+) -> Result<NodePage, AppError> {
+    let nodes = sqlx::query_as!(
+        NodeRow,
+        r#"SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order, tn.source_node_id
+           FROM toc_nodes tn
+           JOIN books b ON b.id = tn.book_id
+           WHERE b.slug = $1 AND tn.id = ANY($2)
+           ORDER BY tn.sort_order"#,
+        slug,
+        ids,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    assemble_node_page(pool, nodes, include_original).await
+}
+
+async fn assemble_node_page(
+    pool: &PgPool,
+    nodes: Vec<NodeRow>,
+    include_original: bool,
+) -> Result<NodePage, AppError> {
     if nodes.is_empty() {
         return Ok(NodePage {
             nodes: vec![],

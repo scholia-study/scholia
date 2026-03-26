@@ -25,6 +25,9 @@ pub struct PageParams {
     /// Comma-separated source node UUIDs — fetch nodes whose source_node_id matches
     #[serde(default)]
     source_nodes: Option<String>,
+    /// Comma-separated node UUIDs — fetch nodes by their own ID
+    #[serde(default)]
+    node_ids: Option<String>,
 }
 
 /// Get paginated nodes for infinite scroll
@@ -61,6 +64,22 @@ pub async fn get_node_page(
             }));
         }
         let page = db::page::get_nodes_by_source_ids(&pool, &slug, &source_node_ids, include_original).await?;
+        return Ok(Json(page));
+    }
+
+    if let Some(ref node_ids_str) = params.node_ids {
+        let ids: Vec<Uuid> = node_ids_str
+            .split(',')
+            .filter_map(|s| s.trim().parse::<Uuid>().ok())
+            .collect();
+        if ids.is_empty() {
+            return Ok(Json(NodePage {
+                nodes: vec![],
+                has_more: false,
+                has_previous: false,
+            }));
+        }
+        let page = db::page::get_nodes_by_ids(&pool, &slug, &ids, include_original).await?;
         return Ok(Json(page));
     }
 

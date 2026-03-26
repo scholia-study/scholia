@@ -31,4 +31,9 @@ export type GetNodePageParams = {
      * @nullable
      */
     source_nodes?: string | null;
+    /**
+     * Comma-separated node UUIDs — fetch nodes by their own ID
+     * @nullable
+     */
+    node_ids?: string | null;
 };

@@ -169,18 +169,30 @@ export const PanelScrollView = forwardRef<
     }, [nodes, onSystemsDiscovered]);
 
     // Companion data fetching for interleaved view
-    const primaryNodeIds = useMemo(() => {
-        if (viewMode !== "st" || !companionSlug) return "";
-        return nodes.map((n) => n.id).join(",");
+    // Determine fetch direction: if primary nodes have source_node_id, primary is a translation
+    // and we fetch the source by node_ids. Otherwise, primary is a source and we fetch
+    // the translation by source_nodes.
+    const companionFetchParams = useMemo(() => {
+        if (viewMode !== "st" || !companionSlug || nodes.length === 0) return null;
+        const primaryIsTranslation = nodes.some((n) => n.source_node_id);
+        if (primaryIsTranslation) {
+            // Primary's source_node_id values point to the companion (source) nodes
+            const ids = nodes.map((n) => n.source_node_id).filter(Boolean).join(",");
+            return ids ? { key: "node_ids" as const, ids } : null;
+        }
+        // Primary is source — companion's source_node_id points to primary
+        const ids = nodes.map((n) => n.id).join(",");
+        return { key: "source_nodes" as const, ids };
     }, [viewMode, companionSlug, nodes]);
 
     const { data: companionData } = useQuery({
-        enabled: viewMode === "st" && !!companionSlug && primaryNodeIds.length > 0,
-        queryKey: ["companion-nodes", companionSlug, primaryNodeIds, showOriginal ? "og" : ""],
+        enabled: !!companionFetchParams,
+        queryKey: ["companion-nodes", companionSlug, companionFetchParams?.key, companionFetchParams?.ids, showOriginal ? "og" : ""],
         queryFn: async ({ signal }) => {
-            const params = showOriginal
-                ? { source_nodes: primaryNodeIds, original: true }
-                : { source_nodes: primaryNodeIds };
+            const base = showOriginal ? { original: true } : {};
+            const params = companionFetchParams!.key === "node_ids"
+                ? { ...base, node_ids: companionFetchParams!.ids }
+                : { ...base, source_nodes: companionFetchParams!.ids };
             return getNodePage(companionSlug!, params, { signal });
         },
         placeholderData: keepPreviousData,
@@ -189,13 +201,23 @@ export const PanelScrollView = forwardRef<
     const companionNodeMap = useMemo(() => {
         if (!companionData || companionData.status !== 200) return undefined;
         const map = new Map<string, NodeDetail>();
+        const primaryIsTranslation = nodes.some((n) => n.source_node_id);
         for (const node of companionData.data.nodes) {
-            if (node.source_node_id) {
+            if (primaryIsTranslation) {
+                // Companion is source — map by companion's own id (primary's source_node_id points here)
+                // We need reverse lookup: find primary node whose source_node_id = companion.id
+                for (const pn of nodes) {
+                    if (pn.source_node_id === node.id) {
+                        map.set(pn.id, node);
+                    }
+                }
+            } else if (node.source_node_id) {
+                // Companion is translation — map by companion's source_node_id (= primary's id)
                 map.set(node.source_node_id, node);
             }
         }
         return map;
-    }, [companionData]);
+    }, [companionData, nodes]);
 
     if (isLoading) {
         return (

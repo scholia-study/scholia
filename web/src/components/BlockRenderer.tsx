@@ -41,7 +41,7 @@ function MarginNotes({
             }`}
             style={{ lineHeight: "inherit" }}
         >
-            {markers.map((pm, i) => (
+            {[...markers].sort((a, b) => a.system_slug.localeCompare(b.system_slug)).map((pm, i) => (
                 <span
                     key={`${pm.system_slug}-${pm.ref_value}-${i}`}
                     title={`${pm.system_slug}: ${pm.ref_value}`}
