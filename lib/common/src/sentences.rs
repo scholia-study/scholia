@@ -4,7 +4,7 @@ use std::sync::LazyLock;
 /// Regex matching a sentence-ending punctuation followed by whitespace and an uppercase letter or ».
 /// We capture the punctuation+space so we can check abbreviation context before accepting the split.
 static SPLIT_RE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"[.!?][)»\u{201c}\u{201d}\u{201e}\u{201f}]*\s+(?:[A-ZÄÖÜ»\u{201e}(])").unwrap()
+    Regex::new(r#"[.!?][)»""\u{201c}\u{201d}\u{201e}\u{201f}]*\s+(?:[A-ZÄÖÜ»\u{201e}(])"#).unwrap()
 });
 
 /// Known German abbreviations that should NOT trigger a sentence split.
@@ -48,7 +48,7 @@ static INITIAL_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b[A-ZÄÖÜ]
 /// Numbered label pattern: detects "1." "2." "12." at the start of text or after whitespace.
 /// These are paragraph numbering markers, not sentence endings.
 static NUMBERED_LABEL_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"(?:^|\s)\d+\.\s*$").unwrap());
+    LazyLock::new(|| Regex::new(r"(?:^|\s)\d{1,2}\.\s*$").unwrap());
 
 /// Split a paragraph into sentences, returning (text, html) pairs.
 ///
@@ -622,5 +622,29 @@ mod tests {
     fn test_en_empty() {
         let result = split_sentences_en("", "");
         assert_eq!(result.len(), 0);
+    }
+
+    #[test]
+    fn test_en_page_ref_not_suppressed() {
+        let text = "proof of the objective reality of outer intuition p. 275. However innocent idealism may be.";
+        let result = split_sentences_en(text, text);
+        assert_eq!(result.len(), 2);
+        assert_eq!(
+            result[0].0,
+            "proof of the objective reality of outer intuition p. 275."
+        );
+        assert_eq!(
+            result[1].0,
+            "However innocent idealism may be."
+        );
+    }
+
+    #[test]
+    fn test_en_split_after_closing_quote() {
+        let text = r#"their change can be determined." Against this proof one will say something."#;
+        let result = split_sentences_en(text, text);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].0, r#"their change can be determined.""#);
+        assert_eq!(result[1].0, "Against this proof one will say something.");
     }
 }

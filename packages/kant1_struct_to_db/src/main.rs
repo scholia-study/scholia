@@ -12,6 +12,10 @@ struct Cli {
     /// PostgreSQL connection URL (overrides DATABASE_URL env var)
     #[arg(long)]
     database_url: Option<String>,
+
+    /// Source book slug (for translation imports — links to existing book)
+    #[arg(long)]
+    source_book_slug: Option<String>,
 }
 
 fn main() {
@@ -19,7 +23,7 @@ fn main() {
 
     let rt = tokio::runtime::Runtime::new().expect("Failed to create tokio runtime");
     rt.block_on(async {
-        if let Err(e) = import::run(&cli.input_file, cli.database_url).await {
+        if let Err(e) = import::run(&cli.input_file, cli.database_url, cli.source_book_slug).await {
             eprintln!("Import failed: {e}");
             std::process::exit(1);
         }
