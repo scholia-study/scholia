@@ -18,7 +18,8 @@ import {
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useGetBook } from "../api/books/books";
 import type { SentenceResponse, TocNodeResponse } from "../api/model";
-import { useGetToc } from "../api/toc/toc";
+import { useGetToc, getGetTocQueryOptions } from "../api/toc/toc";
+import { useQueryClient } from "@tanstack/react-query";
 import {
     type MarginSettings,
     sentenceKey,
@@ -28,6 +29,17 @@ import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";
 import { ResourcesPanel } from "./ResourcesPanel";
 import { SentenceSelectionProvider } from "./SentenceSelectionContext";
+
+function findNodeInTocBySourceRef(
+    nodes: TocNodeResponse[],
+    sourceRef: string,
+): TocNodeResponse | undefined {
+    for (const node of nodes) {
+        if (node.source_ref === sourceRef) return node;
+        const found = findNodeInTocBySourceRef(node.children, sourceRef);
+        if (found) return found;
+    }
+}
 
 function findNodeInToc(
     nodes: TocNodeResponse[],
@@ -56,7 +68,7 @@ interface TextPanelProps {
     onToggleOriginal: () => void;
     onToggleResources: () => void;
     onResourceViewChange: (view: string | undefined) => void;
-    onViewModeChange: (mode: string, companionSlug?: string) => void;
+    onViewModeChange: (mode: string, companionSlug?: string, targetNodeSlug?: string) => void;
     onViewLayoutChange: (layout: string) => void;
     onClose: () => void;
     onScrollNavigate: (nodeSlug: string) => void;
@@ -88,6 +100,12 @@ export function TextPanel({
     const [visibleSlug, setVisibleSlug] = useState<string | undefined>(
         nodeSlug,
     );
+    // Sync visibleSlug when nodeSlug prop changes (e.g. navigating to a different book)
+    const [prevNodeSlug, setPrevNodeSlug] = useState(nodeSlug);
+    if (nodeSlug !== prevNodeSlug) {
+        setPrevNodeSlug(nodeSlug);
+        setVisibleSlug(nodeSlug);
+    }
     const [selectedSentence, setSelectedSentence] = useState<
         SentenceResponse | undefined
     >();
@@ -119,6 +137,8 @@ export function TextPanel({
     const isTranslation = !!bookDetail?.source_book_id;
     const hasTranslations = (bookDetail?.translations?.length ?? 0) > 0;
     const hasRelationship = isTranslation || hasTranslations;
+
+    const queryClient = useQueryClient();
 
     // Fetch companion book title for labels
     const { data: companionBookData } = useGetBook(companionSlug ?? "", {
@@ -199,6 +219,27 @@ export function TextPanel({
         [selectedSentenceId, selectedSentence],
     );
 
+    /** Find the companion node slug corresponding to the current active node.
+     *  Uses source_ref (shared between source and translation) as the primary lookup.
+     *  Reads the companion TOC from the query cache (eagerly fetching if needed). */
+    const resolveCompanionNodeSlug = useCallback(async (companionBookSlug: string): Promise<string | undefined> => {
+        if (!activeNodeSlug || !toc) return undefined;
+
+        const activeNode = findNodeInToc(toc, activeNodeSlug);
+        if (!activeNode) return undefined;
+
+        // Fetch companion TOC from cache or network
+        const companionTocData = await queryClient.ensureQueryData(
+            getGetTocQueryOptions(companionBookSlug),
+        );
+        const companionToc = companionTocData?.data;
+        if (!companionToc) return undefined;
+
+        // source_ref is shared between source and translation nodes
+        const companion = findNodeInTocBySourceRef(companionToc, activeNode.source_ref);
+        return companion?.slug;
+    }, [activeNodeSlug, toc, queryClient]);
+
     const handleTocNavigate = useCallback(
         (slug: string) => {
             const sortOrder = toc
@@ -263,12 +304,11 @@ export function TextPanel({
                                     <MenuItem
                                         key="vm-source"
                                         disabled={!isTranslation && !hasTranslations}
-                                        onClick={() => {
+                                        onClick={async () => {
                                             if (isTranslation && bookDetail?.source_book_slug) {
-                                                // On translation, navigate to source
-                                                onViewModeChange("s", bookDetail.source_book_slug);
+                                                const targetSlug = await resolveCompanionNodeSlug(bookDetail.source_book_slug);
+                                                onViewModeChange("s", bookDetail.source_book_slug, targetSlug);
                                             } else if (viewMode === "st") {
-                                                // On source with interleaved active, just clear interleaved mode
                                                 onViewModeChange("s");
                                             }
                                             setMenuAnchor(null);
@@ -286,12 +326,12 @@ export function TextPanel({
                                     <MenuItem
                                         key="vm-translation"
                                         disabled={!isTranslation && !hasTranslations}
-                                        onClick={() => {
+                                        onClick={async () => {
                                             if (!isTranslation && hasTranslations) {
-                                                // On source, navigate to first translation
-                                                onViewModeChange("t", bookDetail!.translations[0].slug);
+                                                const translationSlug = bookDetail!.translations[0].slug;
+                                                const targetSlug = await resolveCompanionNodeSlug(translationSlug);
+                                                onViewModeChange("t", translationSlug, targetSlug);
                                             } else if (isTranslation && viewMode === "st") {
-                                                // On translation with interleaved active, just clear interleaved mode
                                                 onViewModeChange("t");
                                             }
                                             setMenuAnchor(null);

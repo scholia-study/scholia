@@ -430,7 +430,7 @@ export function ReaderLayout({
     );
 
     const handleViewModeChange = useCallback(
-        (panelIndex: number, mode: string, companionSlug?: string) => {
+        (panelIndex: number, mode: string, companionSlug?: string, targetNodeSlug?: string) => {
             const newViewModes = new Map(viewModes);
             const newViewLayouts = new Map(viewLayouts);
             const newCompanionSlugs = new Map(companionSlugs);
@@ -454,13 +454,20 @@ export function ReaderLayout({
                 newViewLayouts.delete(panelIndex);
                 newCompanionSlugs.delete(panelIndex);
                 const newPanels = panels.map((p, i) =>
-                    i === panelIndex ? { bookSlug: companionSlug, nodeSlug: undefined as string | undefined } : p,
+                    i === panelIndex ? { bookSlug: companionSlug, nodeSlug: targetNodeSlug } : p,
                 );
                 if (panelIndex === 0) {
-                    navigate({
-                        to: "/books/$bookSlug",
-                        params: { bookSlug: companionSlug },
-                    });
+                    if (targetNodeSlug) {
+                        navigate({
+                            to: "/books/$bookSlug/$nodeSlug",
+                            params: { bookSlug: companionSlug, nodeSlug: targetNodeSlug },
+                        });
+                    } else {
+                        navigate({
+                            to: "/books/$bookSlug",
+                            params: { bookSlug: companionSlug },
+                        });
+                    }
                 } else {
                     navigateSearch(newPanels, selections, resourcesOpen, false, {
                         viewModes: newViewModes,
@@ -470,17 +477,21 @@ export function ReaderLayout({
                 }
             } else {
                 // "s" or "t" without navigation — just clear interleaved state
+                // Navigate to current path with updated search to preserve scroll position
                 newViewModes.delete(panelIndex);
                 newViewLayouts.delete(panelIndex);
                 newCompanionSlugs.delete(panelIndex);
-                navigateSearch(panels, selections, resourcesOpen, false, {
-                    viewModes: newViewModes,
-                    viewLayouts: newViewLayouts,
-                    companionSlugs: newCompanionSlugs,
+                navigate({
+                    to: ".",
+                    search: buildSearch(
+                        panels, selections, resourcesOpen,
+                        showOriginal, resourceViews,
+                        newViewModes, newViewLayouts, newCompanionSlugs,
+                    ),
                 });
             }
         },
-        [panels, selections, resourcesOpen, viewModes, viewLayouts, companionSlugs, navigateSearch, navigate],
+        [panels, selections, resourcesOpen, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, navigateSearch, navigate],
     );
 
     const handleViewLayoutChange = useCallback(
@@ -515,8 +526,8 @@ export function ReaderLayout({
                     onToggleOriginal={() => handleToggleOriginal(idx)}
                     onToggleResources={() => handleCloseResources(idx)}
                     onResourceViewChange={(view) => handleResourceViewChange(idx, view)}
-                    onViewModeChange={(mode, companionSlug) =>
-                        handleViewModeChange(idx, mode, companionSlug)
+                    onViewModeChange={(mode, companionSlug, targetNodeSlug) =>
+                        handleViewModeChange(idx, mode, companionSlug, targetNodeSlug)
                     }
                     onViewLayoutChange={(layout) =>
                         handleViewLayoutChange(idx, layout)
