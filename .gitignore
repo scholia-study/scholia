@@ -1,1 +1,7 @@
 /target
+assets/
+.env
+web/node_modules/
+web/dist/
+.turbo
+node_modules

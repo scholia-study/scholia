@@ -1,0 +1,676 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Prospero API",
+    "description": "",
+    "license": {
+      "name": ""
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/books": {
+      "get": {
+        "tags": [
+          "books"
+        ],
+        "summary": "List all books",
+        "operationId": "list_books",
+        "responses": {
+          "200": {
+            "description": "List of books",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BookSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/books/{slug}": {
+      "get": {
+        "tags": [
+          "books"
+        ],
+        "summary": "Get a book by slug",
+        "operationId": "get_book",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        }
+      }
+    },
+    "/api/books/{slug}/nodes": {
+      "get": {
+        "tags": [
+          "nodes"
+        ],
+        "summary": "Get paginated nodes for infinite scroll",
+        "operationId": "get_node_page",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "sort_order cursor — fetch nodes after this value",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "sort_order cursor — fetch nodes before this value",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "page size, default 20, max 50",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "original",
+            "in": "query",
+            "description": "include original_text/original_html fields",
+            "required": false,
+            "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "source_nodes",
+            "in": "query",
+            "description": "Comma-separated source node UUIDs — fetch nodes whose source_node_id matches",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "node_ids",
+            "in": "query",
+            "description": "Comma-separated node UUIDs — fetch nodes by their own ID",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Page of nodes with content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NodePage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        }
+      }
+    },
+    "/api/books/{slug}/nodes/{node_slug}": {
+      "get": {
+        "tags": [
+          "nodes"
+        ],
+        "summary": "Get node content (blocks + sentences)",
+        "operationId": "get_node",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "node_slug",
+            "in": "path",
+            "description": "Node slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "original",
+            "in": "query",
+            "description": "include original_text/original_html fields",
+            "required": false,
+            "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Node with content blocks and sentences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NodeDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node not found"
+          }
+        }
+      }
+    },
+    "/api/books/{slug}/toc": {
+      "get": {
+        "tags": [
+          "toc"
+        ],
+        "summary": "Get the full TOC tree for a book",
+        "operationId": "get_toc",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TOC tree",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TocNodeResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BookDetail": {
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "title",
+          "author",
+          "language",
+          "translations"
+        ],
+        "properties": {
+          "author": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_book_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_book_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "translations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookSummary"
+            }
+          }
+        }
+      },
+      "BookSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "title",
+          "author",
+          "language"
+        ],
+        "properties": {
+          "author": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "ContentBlockResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "position",
+          "block_type",
+          "html",
+          "sentences"
+        ],
+        "properties": {
+          "block_type": {
+            "type": "string"
+          },
+          "html": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "original_html": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "paragraph_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sentences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SentenceResponse"
+            }
+          }
+        }
+      },
+      "FootnoteResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "number",
+          "sentences"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sentences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FootnoteSentenceResponse"
+            }
+          }
+        }
+      },
+      "FootnoteSentenceResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "position",
+          "text",
+          "html"
+        ],
+        "properties": {
+          "html": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "original_html": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "original_text": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "NodeDetail": {
+        "type": "object",
+        "required": [
+          "id",
+          "source_ref",
+          "slug",
+          "label",
+          "depth",
+          "sort_order",
+          "blocks"
+        ],
+        "properties": {
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContentBlockResponse"
+            }
+          },
+          "depth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "sort_order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "source_node_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_ref": {
+            "type": "string"
+          }
+        }
+      },
+      "NodePage": {
+        "type": "object",
+        "required": [
+          "nodes",
+          "has_more",
+          "has_previous"
+        ],
+        "properties": {
+          "has_more": {
+            "type": "boolean"
+          },
+          "has_previous": {
+            "type": "boolean"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NodeDetail"
+            }
+          }
+        }
+      },
+      "PageMarkerResponse": {
+        "type": "object",
+        "required": [
+          "system_slug",
+          "ref_value",
+          "sort_order"
+        ],
+        "properties": {
+          "char_offset": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "ref_value": {
+            "type": "string"
+          },
+          "sort_order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "system_slug": {
+            "type": "string"
+          }
+        }
+      },
+      "SentenceResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "position",
+          "text",
+          "html",
+          "page_markers"
+        ],
+        "properties": {
+          "footnotes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FootnoteResponse"
+            }
+          },
+          "html": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "original_html": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "original_text": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "page_markers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PageMarkerResponse"
+            }
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sentence_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "source_sentence_end_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_sentence_start_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "TocNodeResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "source_ref",
+          "slug",
+          "label",
+          "depth",
+          "sort_order",
+          "has_content",
+          "children"
+        ],
+        "properties": {
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TocNodeResponse"
+            }
+          },
+          "depth": {
+            "type": "integer"
+          },
+          "has_content": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "sort_order": {
+            "type": "integer"
+          },
+          "source_node_id": {
+            "type": "string"
+          },
+          "source_ref": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

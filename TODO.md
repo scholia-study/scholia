@@ -1,0 +1,2 @@
+- fix: left and right pages margin extraction (B ed on every other page, etc.)
+- manually make the toc as reference point

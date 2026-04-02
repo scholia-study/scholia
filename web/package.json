@@ -1,0 +1,66 @@
+{
+    "name": "web",
+    "private": true,
+    "type": "module",
+    "imports": {
+        "#/*": "./src/*"
+    },
+    "scripts": {
+        "dev": "vite dev --port 3000",
+        "ct": "tsc -p tsconfig.json --pretty --noEmit",
+        "build": "vite build",
+        "preview": "vite preview",
+        "test": "vitest run",
+        "format": "biome format",
+        "lint": "biome lint",
+        "check": "biome check",
+        "generate-api": "orval",
+        "codegen": "orval && pnpx @biomejs/biome check --write ./src/api"
+    },
+    "dependencies": {
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.1",
+        "@fontsource/libre-baskerville": "^5.2.10",
+        "@fontsource/roboto": "^5.2.10",
+        "@mui/icons-material": "^7.3.9",
+        "@mui/material": "^7.3.9",
+        "@tailwindcss/vite": "^4.1.18",
+        "@tanstack/react-devtools": "latest",
+        "@tanstack/react-query": "^5.90.21",
+        "@tanstack/react-router": "latest",
+        "@tanstack/react-router-devtools": "latest",
+        "@tanstack/react-router-ssr-query": "latest",
+        "@tanstack/react-start": "latest",
+        "@tanstack/react-virtual": "^3.13.19",
+        "@tanstack/router-plugin": "^1.132.0",
+        "axios": "^1.13.6",
+        "html-react-parser": "^5.2.17",
+        "lucide-react": "^0.545.0",
+        "nitro": "npm:nitro-nightly@latest",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+        "tailwindcss": "^4.1.18"
+    },
+    "devDependencies": {
+        "@tailwindcss/typography": "^0.5.16",
+        "@tanstack/devtools-vite": "latest",
+        "@testing-library/dom": "^10.4.1",
+        "@testing-library/react": "^16.3.0",
+        "@types/node": "^22.10.2",
+        "@types/react": "^19.2.0",
+        "@types/react-dom": "^19.2.0",
+        "@vitejs/plugin-react": "^5.1.4",
+        "jsdom": "^28.1.0",
+        "orval": "^8.5.1",
+        "typescript": "^5.7.2",
+        "vite": "^7.3.1",
+        "vite-tsconfig-paths": "^5.1.4",
+        "vitest": "^3.0.5"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "esbuild",
+            "lightningcss"
+        ]
+    }
+}

@@ -1,0 +1,56 @@
+{
+    "extends": "//",
+    "linter": {
+        "enabled": true,
+        "domains": {
+            "project": "recommended",
+            "react": "recommended"
+        },
+        "rules": {
+            "recommended": true
+        }
+    },
+    "files": {
+        "ignoreUnknown": false,
+        "includes": [
+            "**/src/**/*",
+            "**/.vscode/**/*",
+            "**/index.html",
+            "**/vite.config.ts",
+            "!**/src/routeTree.gen.ts",
+            "!**/src/styles.css"
+        ]
+    },
+    "formatter": {
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineEnding": "lf",
+        "lineWidth": 80
+    },
+    "overrides": [
+        {
+            "includes": ["src/api/**"],
+            "linter": {
+                "rules": {
+                    "suspicious": {
+                        "noConfusingVoidType": "off"
+                    },
+                    "complexity": {
+                        "useLiteralKeys": "off"
+                    }
+                }
+            }
+        },
+        {
+            "includes": ["**"],
+            "linter": {
+                "rules": {
+                    "a11y": {
+                        "noStaticElementInteractions": "off",
+                        "useKeyWithClickEvents": "off"
+                    }
+                }
+            }
+        }
+    ]
+}

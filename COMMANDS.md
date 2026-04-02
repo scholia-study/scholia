@@ -1,0 +1,7 @@
+```sh
+
+cargo run -p kant1_struct_to_db -- --input-file assets/kant1_md_to_struct/output.json
+
+cargo run -p kant1_struct_to_db -- --input-file assets/kant1_md_translation_to_struct/output.json --source-book-slug kritik-der-reinen-vernunft-b
+
+```
