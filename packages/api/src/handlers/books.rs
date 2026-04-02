@@ -1,5 +1,5 @@
-use axum::extract::{Path, State};
 use axum::Json;
+use axum::extract::{Path, State};
 use sqlx::PgPool;
 
 use crate::db;
@@ -15,9 +15,7 @@ use crate::models::book::{BookDetail, BookSummary};
     ),
     tag = "books"
 )]
-pub async fn list_books(
-    State(pool): State<PgPool>,
-) -> Result<Json<Vec<BookSummary>>, AppError> {
+pub async fn list_books(State(pool): State<PgPool>) -> Result<Json<Vec<BookSummary>>, AppError> {
     let books = db::books::list_books(&pool).await?;
     Ok(Json(books))
 }

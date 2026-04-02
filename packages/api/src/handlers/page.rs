@@ -1,5 +1,5 @@
-use axum::extract::{Path, Query, State};
 use axum::Json;
+use axum::extract::{Path, Query, State};
 use serde::Deserialize;
 use sqlx::PgPool;
 use utoipa::IntoParams;
@@ -63,7 +63,9 @@ pub async fn get_node_page(
                 has_previous: false,
             }));
         }
-        let page = db::page::get_nodes_by_source_ids(&pool, &slug, &source_node_ids, include_original).await?;
+        let page =
+            db::page::get_nodes_by_source_ids(&pool, &slug, &source_node_ids, include_original)
+                .await?;
         return Ok(Json(page));
     }
 
@@ -83,7 +85,15 @@ pub async fn get_node_page(
         return Ok(Json(page));
     }
 
-    let limit = params.limit.unwrap_or(20).min(50).max(1);
-    let page = db::page::get_node_page(&pool, &slug, params.after, params.before, limit, include_original).await?;
+    let limit = params.limit.unwrap_or(20).clamp(1, 50);
+    let page = db::page::get_node_page(
+        &pool,
+        &slug,
+        params.after,
+        params.before,
+        limit,
+        include_original,
+    )
+    .await?;
     Ok(Json(page))
 }

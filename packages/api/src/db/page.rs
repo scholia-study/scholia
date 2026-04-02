@@ -1,4 +1,5 @@
 use sqlx::PgPool;
+use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::error::AppError;
@@ -237,8 +238,7 @@ pub async fn get_node_page(
     };
 
     // Group footnote sentences by footnote_id
-    let mut fn_sentence_map: std::collections::HashMap<Uuid, Vec<FootnoteSentenceResponse>> =
-        std::collections::HashMap::new();
+    let mut fn_sentence_map: HashMap<Uuid, Vec<FootnoteSentenceResponse>> = HashMap::new();
     for fs in footnote_sentences {
         fn_sentence_map
             .entry(fs.footnote_id)
@@ -248,14 +248,21 @@ pub async fn get_node_page(
                 position: fs.position,
                 text: fs.text,
                 html: fs.html,
-                original_text: if include_original { fs.original_text } else { None },
-                original_html: if include_original { fs.original_html } else { None },
+                original_text: if include_original {
+                    fs.original_text
+                } else {
+                    None
+                },
+                original_html: if include_original {
+                    fs.original_html
+                } else {
+                    None
+                },
             });
     }
 
     // Group footnotes by anchor_sentence_id
-    let mut footnote_map: std::collections::HashMap<Uuid, Vec<FootnoteResponse>> =
-        std::collections::HashMap::new();
+    let mut footnote_map: HashMap<Uuid, Vec<FootnoteResponse>> = HashMap::new();
     for f in footnotes {
         footnote_map
             .entry(f.anchor_sentence_id)
@@ -268,22 +275,21 @@ pub async fn get_node_page(
     }
 
     // Group markers by sentence_id
-    let mut marker_map: std::collections::HashMap<Uuid, Vec<PageMarkerResponse>> =
-        std::collections::HashMap::new();
+    let mut marker_map: HashMap<Uuid, Vec<PageMarkerResponse>> = HashMap::new();
     for m in markers {
-        marker_map.entry(m.sentence_id).or_default().push(
-            PageMarkerResponse {
+        marker_map
+            .entry(m.sentence_id)
+            .or_default()
+            .push(PageMarkerResponse {
                 system_slug: m.system_slug,
                 ref_value: m.ref_value,
                 sort_order: m.sort_order,
                 char_offset: m.char_offset,
-            },
-        );
+            });
     }
 
     // Group sentences by block_id
-    let mut sentence_map: std::collections::HashMap<Uuid, Vec<SentenceResponse>> =
-        std::collections::HashMap::new();
+    let mut sentence_map: HashMap<Uuid, Vec<SentenceResponse>> = HashMap::new();
     for s in sentences {
         sentence_map
             .entry(s.block_id)
@@ -294,8 +300,16 @@ pub async fn get_node_page(
                 sentence_number: s.sentence_number,
                 text: s.text,
                 html: s.html,
-                original_text: if include_original { s.original_text } else { None },
-                original_html: if include_original { s.original_html } else { None },
+                original_text: if include_original {
+                    s.original_text
+                } else {
+                    None
+                },
+                original_html: if include_original {
+                    s.original_html
+                } else {
+                    None
+                },
                 source_sentence_start_id: s.source_sentence_start_id.map(|id| id.to_string()),
                 source_sentence_end_id: s.source_sentence_end_id.map(|id| id.to_string()),
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
@@ -304,8 +318,7 @@ pub async fn get_node_page(
     }
 
     // Group blocks by node_id
-    let mut block_map: std::collections::HashMap<Uuid, Vec<ContentBlockResponse>> =
-        std::collections::HashMap::new();
+    let mut block_map: HashMap<Uuid, Vec<ContentBlockResponse>> = HashMap::new();
     for b in blocks {
         let sentences = sentence_map.remove(&b.id).unwrap_or_default();
         block_map
@@ -317,7 +330,11 @@ pub async fn get_node_page(
                 block_type: b.block_type,
                 paragraph_number: b.paragraph_number,
                 html: b.html,
-                original_html: if include_original { b.original_html } else { None },
+                original_html: if include_original {
+                    b.original_html
+                } else {
+                    None
+                },
                 sentences,
             });
     }
@@ -475,8 +492,7 @@ async fn assemble_node_page(
     };
 
     // Group footnote sentences by footnote_id
-    let mut fn_sentence_map: std::collections::HashMap<Uuid, Vec<FootnoteSentenceResponse>> =
-        std::collections::HashMap::new();
+    let mut fn_sentence_map: HashMap<Uuid, Vec<FootnoteSentenceResponse>> = HashMap::new();
     for fs in footnote_sentences {
         fn_sentence_map
             .entry(fs.footnote_id)
@@ -486,14 +502,21 @@ async fn assemble_node_page(
                 position: fs.position,
                 text: fs.text,
                 html: fs.html,
-                original_text: if include_original { fs.original_text } else { None },
-                original_html: if include_original { fs.original_html } else { None },
+                original_text: if include_original {
+                    fs.original_text
+                } else {
+                    None
+                },
+                original_html: if include_original {
+                    fs.original_html
+                } else {
+                    None
+                },
             });
     }
 
     // Group footnotes by anchor_sentence_id
-    let mut footnote_map: std::collections::HashMap<Uuid, Vec<FootnoteResponse>> =
-        std::collections::HashMap::new();
+    let mut footnote_map: HashMap<Uuid, Vec<FootnoteResponse>> = HashMap::new();
     for f in footnotes {
         footnote_map
             .entry(f.anchor_sentence_id)
@@ -506,22 +529,21 @@ async fn assemble_node_page(
     }
 
     // Group markers by sentence_id
-    let mut marker_map: std::collections::HashMap<Uuid, Vec<PageMarkerResponse>> =
-        std::collections::HashMap::new();
+    let mut marker_map: HashMap<Uuid, Vec<PageMarkerResponse>> = HashMap::new();
     for m in markers {
-        marker_map.entry(m.sentence_id).or_default().push(
-            PageMarkerResponse {
+        marker_map
+            .entry(m.sentence_id)
+            .or_default()
+            .push(PageMarkerResponse {
                 system_slug: m.system_slug,
                 ref_value: m.ref_value,
                 sort_order: m.sort_order,
                 char_offset: m.char_offset,
-            },
-        );
+            });
     }
 
     // Group sentences by block_id
-    let mut sentence_map: std::collections::HashMap<Uuid, Vec<SentenceResponse>> =
-        std::collections::HashMap::new();
+    let mut sentence_map: HashMap<Uuid, Vec<SentenceResponse>> = HashMap::new();
     for s in sentences {
         sentence_map
             .entry(s.block_id)
@@ -532,8 +554,16 @@ async fn assemble_node_page(
                 sentence_number: s.sentence_number,
                 text: s.text,
                 html: s.html,
-                original_text: if include_original { s.original_text } else { None },
-                original_html: if include_original { s.original_html } else { None },
+                original_text: if include_original {
+                    s.original_text
+                } else {
+                    None
+                },
+                original_html: if include_original {
+                    s.original_html
+                } else {
+                    None
+                },
                 source_sentence_start_id: s.source_sentence_start_id.map(|id| id.to_string()),
                 source_sentence_end_id: s.source_sentence_end_id.map(|id| id.to_string()),
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
@@ -542,8 +572,7 @@ async fn assemble_node_page(
     }
 
     // Group blocks by node_id
-    let mut block_map: std::collections::HashMap<Uuid, Vec<ContentBlockResponse>> =
-        std::collections::HashMap::new();
+    let mut block_map: HashMap<Uuid, Vec<ContentBlockResponse>> = HashMap::new();
     for b in blocks {
         let sentences = sentence_map.remove(&b.id).unwrap_or_default();
         block_map
@@ -555,7 +584,11 @@ async fn assemble_node_page(
                 block_type: b.block_type,
                 paragraph_number: b.paragraph_number,
                 html: b.html,
-                original_html: if include_original { b.original_html } else { None },
+                original_html: if include_original {
+                    b.original_html
+                } else {
+                    None
+                },
                 sentences,
             });
     }

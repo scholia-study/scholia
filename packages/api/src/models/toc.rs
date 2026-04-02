@@ -68,8 +68,7 @@ impl utoipa::ToSchema for TocNodeResponse {
             .required("has_content")
             .property(
                 "source_node_id",
-                ObjectBuilder::new()
-                    .schema_type(SchemaType::new(Type::String)),
+                ObjectBuilder::new().schema_type(SchemaType::new(Type::String)),
             )
             .property(
                 "children",
@@ -80,9 +79,6 @@ impl utoipa::ToSchema for TocNodeResponse {
             .required("children")
             .build();
 
-        schemas.push((
-            "TocNodeResponse".to_string(),
-            RefOr::T(Schema::Object(obj)),
-        ));
+        schemas.push(("TocNodeResponse".to_string(), RefOr::T(Schema::Object(obj))));
     }
 }
