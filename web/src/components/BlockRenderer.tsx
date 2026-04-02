@@ -213,9 +213,12 @@ export function Sentence({
                 if (domNode instanceof Element && domNode.name === "sup") {
                     const textContent = domNode.children
                         .map((c) => ("data" in c ? c.data : ""))
-                        .join("");
+                        .join("")
+                        .trim();
+                    if (!textContent || !/^\d+$/.test(textContent)) return;
                     const num = Number(textContent);
-                    if (!Number.isNaN(num)) {
+                    // Only intercept if this sentence actually has a footnote with this number
+                    if (sentence.footnotes?.some((fn) => fn.number === num)) {
                         return (
                             <FootnoteSup
                                 footnoteNumber={num}
