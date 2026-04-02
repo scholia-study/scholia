@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useGetBook } from "../api/books/books";
-import type { SentenceResponse, TocNodeResponse } from "../api/model";
+import type { FootnoteSentenceResponse, SentenceResponse, TocNodeResponse } from "../api/model";
 import { useGetToc, getGetTocQueryOptions } from "../api/toc/toc";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -28,6 +28,7 @@ import {
 import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";
 import { ResourcesPanel } from "./ResourcesPanel";
+import { FootnoteSelectionProvider } from "./FootnoteSelectionContext";
 import { SentenceSelectionProvider } from "./SentenceSelectionContext";
 
 function findNodeInTocBySourceRef(
@@ -64,7 +65,9 @@ interface TextPanelProps {
     viewMode: string | undefined;
     viewLayout: string | undefined;
     companionSlug: string | undefined;
+    footnoteSentenceId: string | undefined;
     onSelectSentence: (sentenceId: string) => void;
+    onSelectFootnoteSentence: (id: string | undefined) => void;
     onToggleOriginal: () => void;
     onToggleResources: () => void;
     onResourceViewChange: (view: string | undefined) => void;
@@ -86,7 +89,9 @@ export function TextPanel({
     viewMode,
     viewLayout,
     companionSlug,
+    footnoteSentenceId,
     onSelectSentence,
+    onSelectFootnoteSentence,
     onToggleOriginal,
     onToggleResources,
     onResourceViewChange,
@@ -109,6 +114,17 @@ export function TextPanel({
     const [selectedSentence, setSelectedSentence] = useState<
         SentenceResponse | undefined
     >();
+
+    // Resolve footnote sentence from the selected main sentence's footnotes
+    const selectedFootnoteSentence = useMemo((): FootnoteSentenceResponse | undefined => {
+        if (!footnoteSentenceId || !selectedSentence?.footnotes) return undefined;
+        for (const fn of selectedSentence.footnotes) {
+            const found = fn.sentences.find((s) => s.id === footnoteSentenceId);
+            if (found) return found;
+        }
+        return undefined;
+    }, [footnoteSentenceId, selectedSentence]);
+
     const scrollViewRef = useRef<PanelScrollViewHandle>(null);
 
     // Margin annotation settings
@@ -219,6 +235,26 @@ export function TextPanel({
         [selectedSentenceId, selectedSentence],
     );
 
+    const handleSelectFootnoteSentence = useCallback(
+        (sentence: FootnoteSentenceResponse) => {
+            onSelectFootnoteSentence(sentence.id);
+        },
+        [onSelectFootnoteSentence],
+    );
+
+    const handleClearFootnoteSentence = useCallback(() => {
+        onSelectFootnoteSentence(undefined);
+    }, [onSelectFootnoteSentence]);
+
+    const footnoteSelectionCtx = useMemo(
+        () => ({
+            selectedFootnoteSentenceId: footnoteSentenceId,
+            onSelectFootnoteSentence: handleSelectFootnoteSentence,
+            onClearFootnoteSentence: handleClearFootnoteSentence,
+        }),
+        [footnoteSentenceId, handleSelectFootnoteSentence, handleClearFootnoteSentence],
+    );
+
     /** Find the companion node slug corresponding to the current active node.
      *  Uses source_ref (shared between source and translation) as the primary lookup.
      *  Reads the companion TOC from the query cache (eagerly fetching if needed). */
@@ -250,8 +286,12 @@ export function TextPanel({
         [toc],
     );
 
+    // Determine what to show in the resource panel: footnote sentence takes priority
+    const resourcePanelSentence = selectedFootnoteSentence ?? (showSentenceDetail ? selectedSentence : undefined);
+
     return (
         <SentenceSelectionProvider value={selectionCtx}>
+        <FootnoteSelectionProvider value={footnoteSelectionCtx}>
         <div className="flex flex-1 min-w-0 border-r border-stone-200 last:border-r-0">
             {/* Main content area */}
             <div className="flex-1 flex flex-col min-w-0">
@@ -551,15 +591,14 @@ export function TextPanel({
                     onNavigate={handleTocNavigate}
                     onAddComparisonPanel={onAddComparisonPanel}
                     canAddPanel={canAddPanel}
-                    selectedSentence={
-                        showSentenceDetail ? selectedSentence : undefined
-                    }
+                    selectedSentence={resourcePanelSentence}
                     onClose={onToggleResources}
                     activeView={resourceView}
                     onViewChange={onResourceViewChange}
                 />
             )}
         </div>
+        </FootnoteSelectionProvider>
         </SentenceSelectionProvider>
     );
 }

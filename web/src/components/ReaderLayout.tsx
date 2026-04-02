@@ -17,6 +17,7 @@ interface ReaderLayoutProps {
     viewModes: Map<number, string>; // panelIndex -> "s" | "t" | "st"
     viewLayouts: Map<number, string>; // panelIndex -> "sp" | "ss" | "bpl" | "bpr" | "bsl" | "bsr"
     companionSlugs: Map<number, string>; // panelIndex -> companion book slug
+    footnoteSentenceSelections: Map<number, string>; // panelIndex -> footnote sentence id
 }
 
 /** Build search params from secondary panels, selections, and resources state */
@@ -29,6 +30,7 @@ function buildSearch(
     viewModes?: Map<number, string>,
     viewLayouts?: Map<number, string>,
     companionSlugs?: Map<number, string>,
+    footnoteSentenceSelections?: Map<number, string>,
 ): ReaderSearch {
     const search: ReaderSearch = {};
 
@@ -108,6 +110,17 @@ function buildSearch(
         }
     }
 
+    // Footnote sentence selections: fs, fs2, fs3, fs4
+    if (footnoteSentenceSelections) {
+        for (const [idx, id] of footnoteSentenceSelections) {
+            if (idx === 0) search.fs = id;
+            else {
+                const key = `fs${idx + 1}` as keyof ReaderSearch;
+                search[key] = id;
+            }
+        }
+    }
+
     return search;
 }
 
@@ -122,6 +135,7 @@ export function ReaderLayout({
     viewModes,
     viewLayouts,
     companionSlugs,
+    footnoteSentenceSelections,
 }: ReaderLayoutProps) {
     const navigate = useNavigate();
 
@@ -139,6 +153,7 @@ export function ReaderLayout({
         viewModes?: Map<number, string>;
         viewLayouts?: Map<number, string>;
         companionSlugs?: Map<number, string>;
+        footnoteSentenceSelections?: Map<number, string>;
     }
 
     /** Navigate changing only search params (no path change) */
@@ -163,11 +178,12 @@ export function ReaderLayout({
                     overrides?.viewModes ?? viewModes,
                     overrides?.viewLayouts ?? viewLayouts,
                     overrides?.companionSlugs ?? companionSlugs,
+                    overrides?.footnoteSentenceSelections ?? footnoteSentenceSelections,
                 ),
                 replace,
             });
         },
-        [navigate, panels, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs],
+        [navigate, panels, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, footnoteSentenceSelections],
     );
 
     /** Navigate changing the path (primary panel node changed) */
@@ -193,11 +209,12 @@ export function ReaderLayout({
                     overrides?.viewModes ?? viewModes,
                     overrides?.viewLayouts ?? viewLayouts,
                     overrides?.companionSlugs ?? companionSlugs,
+                    overrides?.footnoteSentenceSelections ?? footnoteSentenceSelections,
                 ),
                 replace,
             });
         },
-        [navigate, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs],
+        [navigate, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, footnoteSentenceSelections],
     );
 
     const handleSelectSentence = useCallback(
@@ -211,9 +228,30 @@ export function ReaderLayout({
             // Open resources panel when selecting a sentence
             const newResourcesOpen = new Set(resourcesOpen);
             newResourcesOpen.add(panelIndex);
-            navigateSearch(panels, newSelections, newResourcesOpen);
+            // Clear footnote sentence selection when selecting a new main sentence
+            const newFsSelections = new Map(footnoteSentenceSelections);
+            newFsSelections.delete(panelIndex);
+            navigateSearch(panels, newSelections, newResourcesOpen, false, { footnoteSentenceSelections: newFsSelections });
         },
-        [panels, selections, resourcesOpen, navigateSearch],
+        [panels, selections, resourcesOpen, footnoteSentenceSelections, navigateSearch],
+    );
+
+    const handleSelectFootnoteSentence = useCallback(
+        (panelIndex: number, sentenceId: string | undefined) => {
+            const newFsSelections = new Map(footnoteSentenceSelections);
+            if (sentenceId) {
+                newFsSelections.set(panelIndex, sentenceId);
+            } else {
+                newFsSelections.delete(panelIndex);
+            }
+            // Open resources panel when selecting a footnote sentence
+            const newResourcesOpen = new Set(resourcesOpen);
+            if (sentenceId) {
+                newResourcesOpen.add(panelIndex);
+            }
+            navigateSearch(panels, selections, newResourcesOpen, false, { footnoteSentenceSelections: newFsSelections });
+        },
+        [panels, selections, resourcesOpen, footnoteSentenceSelections, navigateSearch],
     );
 
     const handleClosePanel = useCallback(
@@ -267,6 +305,13 @@ export function ReaderLayout({
                 else if (idx > panelIndex) newCompanionSlugs.set(idx - 1, slug);
             }
 
+            // Shift footnote sentence selection indices
+            const newFsSelections = new Map<number, string>();
+            for (const [idx, id] of footnoteSentenceSelections) {
+                if (idx < panelIndex) newFsSelections.set(idx, id);
+                else if (idx > panelIndex) newFsSelections.set(idx - 1, id);
+            }
+
             // Update stable keys: remove the closed panel's key
             panelKeysRef.current = panelKeysRef.current.filter(
                 (_, i) => i !== panelIndex,
@@ -286,6 +331,7 @@ export function ReaderLayout({
                         viewModes: newViewModes,
                         viewLayouts: newViewLayouts,
                         companionSlugs: newCompanionSlugs,
+                        footnoteSentenceSelections: newFsSelections,
                     });
                 } else {
                     navigate({
@@ -295,21 +341,23 @@ export function ReaderLayout({
                 }
             }
         },
-        [panels, selections, resourcesOpen, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, navigate, navigatePath],
+        [panels, selections, resourcesOpen, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, footnoteSentenceSelections, navigate, navigatePath],
     );
 
     const handleCloseResources = useCallback(
         (panelIndex: number) => {
             const newResourcesOpen = new Set(resourcesOpen);
             newResourcesOpen.delete(panelIndex);
-            // Also deselect sentence when closing resources
+            // Also deselect sentence and footnote sentence when closing resources
             const newSelections = new Map(selections);
             newSelections.delete(panelIndex);
             const newResourceViews = new Map(resourceViews);
             newResourceViews.delete(panelIndex);
-            navigateSearch(panels, newSelections, newResourcesOpen, false, { resourceViews: newResourceViews });
+            const newFsSelections = new Map(footnoteSentenceSelections);
+            newFsSelections.delete(panelIndex);
+            navigateSearch(panels, newSelections, newResourcesOpen, false, { resourceViews: newResourceViews, footnoteSentenceSelections: newFsSelections });
         },
-        [panels, selections, resourcesOpen, resourceViews, navigateSearch],
+        [panels, selections, resourcesOpen, resourceViews, footnoteSentenceSelections, navigateSearch],
     );
 
     const handleAddComparisonPanel = useCallback(
@@ -373,6 +421,14 @@ export function ReaderLayout({
                 else newCompanionSlugs.set(idx + 1, slug);
             }
 
+            // Shift footnote sentence selection indices, clear source panel's
+            const newFsSelections = new Map<number, string>();
+            for (const [idx, id] of footnoteSentenceSelections) {
+                if (idx === afterIndex) continue;
+                if (idx < insertAt) newFsSelections.set(idx, id);
+                else newFsSelections.set(idx + 1, id);
+            }
+
             // Insert stable key
             panelKeysRef.current = [
                 ...panelKeysRef.current.slice(0, insertAt),
@@ -386,9 +442,10 @@ export function ReaderLayout({
                 viewModes: newViewModes,
                 viewLayouts: newViewLayouts,
                 companionSlugs: newCompanionSlugs,
+                footnoteSentenceSelections: newFsSelections,
             });
         },
-        [panels, selections, resourcesOpen, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, navigateSearch],
+        [panels, selections, resourcesOpen, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, footnoteSentenceSelections, navigateSearch],
     );
 
     /** Replace-navigate for scroll-driven URL updates (no history entry) */
@@ -487,11 +544,12 @@ export function ReaderLayout({
                         panels, selections, resourcesOpen,
                         showOriginal, resourceViews,
                         newViewModes, newViewLayouts, newCompanionSlugs,
+                        footnoteSentenceSelections,
                     ),
                 });
             }
         },
-        [panels, selections, resourcesOpen, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, navigateSearch, navigate],
+        [panels, selections, resourcesOpen, showOriginal, resourceViews, viewModes, viewLayouts, companionSlugs, footnoteSentenceSelections, navigateSearch, navigate],
     );
 
     const handleViewLayoutChange = useCallback(
@@ -520,8 +578,12 @@ export function ReaderLayout({
                     viewMode={viewModes.get(idx)}
                     viewLayout={viewLayouts.get(idx)}
                     companionSlug={companionSlugs.get(idx)}
+                    footnoteSentenceId={footnoteSentenceSelections.get(idx)}
                     onSelectSentence={(sentenceId) =>
                         handleSelectSentence(idx, sentenceId)
+                    }
+                    onSelectFootnoteSentence={(id) =>
+                        handleSelectFootnoteSentence(idx, id)
                     }
                     onToggleOriginal={() => handleToggleOriginal(idx)}
                     onToggleResources={() => handleCloseResources(idx)}

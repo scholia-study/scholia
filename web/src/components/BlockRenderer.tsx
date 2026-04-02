@@ -1,9 +1,13 @@
-import parse from "html-react-parser";
+import parse, { Element } from "html-react-parser";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
     ContentBlockResponse,
+    FootnoteSentenceResponse,
     PageMarkerResponse,
     SentenceResponse,
 } from "../api/model";
+import { FootnotePopover } from "./FootnotePopover";
+import { useFootnoteSelection } from "./FootnoteSelectionContext";
 import { useSentenceSelection } from "./SentenceSelectionContext";
 
 /** URL-friendly key for a sentence: sentence_number if available, otherwise ID. */
@@ -53,6 +57,100 @@ function MarginNotes({
     );
 }
 
+function FootnoteSup({
+    footnoteNumber,
+    sentence,
+    showOriginal,
+    onSelectSentence,
+}: {
+    footnoteNumber: number;
+    sentence: SentenceResponse;
+    showOriginal?: boolean;
+    onSelectSentence: (sentence: SentenceResponse) => void;
+}) {
+    const { selectedFootnoteSentenceId, onSelectFootnoteSentence, onClearFootnoteSentence } =
+        useFootnoteSelection();
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const supRef = useRef<HTMLElement>(null);
+
+    const footnote = sentence.footnotes?.find((fn) => fn.number === footnoteNumber);
+
+    // Auto-open popover if a footnote sentence from this footnote is selected
+    const shouldAutoOpen = useMemo(() => {
+        if (!selectedFootnoteSentenceId || !footnote) return false;
+        return footnote.sentences.some((s) => s.id === selectedFootnoteSentenceId);
+    }, [selectedFootnoteSentenceId, footnote]);
+
+    useEffect(() => {
+        if (shouldAutoOpen && !anchorEl && supRef.current) {
+            setAnchorEl(supRef.current);
+        }
+    }, [shouldAutoOpen, anchorEl]);
+
+    const handleClick = useCallback(
+        (e: React.MouseEvent<HTMLElement>) => {
+            e.stopPropagation();
+            if (anchorEl) {
+                setAnchorEl(null);
+                onClearFootnoteSentence();
+            } else {
+                setAnchorEl(e.currentTarget);
+                // Ensure the main sentence is selected too
+                onSelectSentence(sentence);
+            }
+        },
+        [anchorEl, onClearFootnoteSentence, onSelectSentence, sentence],
+    );
+
+    const handleClose = useCallback(() => {
+        setAnchorEl(null);
+        onClearFootnoteSentence();
+    }, [onClearFootnoteSentence]);
+
+    // Dismiss if anchor unmounts (virtualization)
+    useEffect(() => {
+        if (!anchorEl) return;
+        const check = () => {
+            if (!anchorEl.isConnected) {
+                setAnchorEl(null);
+                onClearFootnoteSentence();
+            }
+        };
+        const id = setInterval(check, 500);
+        return () => clearInterval(id);
+    }, [anchorEl, onClearFootnoteSentence]);
+
+    const handleSelectFootnoteSentence = useCallback(
+        (fsSentence: FootnoteSentenceResponse) => {
+            onSelectFootnoteSentence(fsSentence);
+        },
+        [onSelectFootnoteSentence],
+    );
+
+    return (
+        <>
+            <sup
+                ref={supRef}
+                onClick={handleClick}
+                className="cursor-pointer hover:bg-stone-200 rounded-sm transition-colors"
+            >
+                {footnoteNumber}
+            </sup>
+            {footnote && (
+                <FootnotePopover
+                    footnote={footnote}
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                    selectedFootnoteSentenceId={selectedFootnoteSentenceId}
+                    onSelectFootnoteSentence={handleSelectFootnoteSentence}
+                    showOriginal={showOriginal}
+                />
+            )}
+        </>
+    );
+}
+
 export function Sentence({
     sentence,
     isSelected,
@@ -67,6 +165,15 @@ export function Sentence({
     marginSettings?: MarginSettings;
 }) {
     const { isCorrespondent } = useSentenceSelection(sentence);
+    const { selectedFootnoteSentenceId } = useFootnoteSelection();
+
+    // Check if this sentence is the anchor for a selected footnote sentence
+    const isFootnoteAnchor = useMemo(() => {
+        if (!selectedFootnoteSentenceId || !sentence.footnotes) return false;
+        return sentence.footnotes.some((fn) =>
+            fn.sentences.some((s) => s.id === selectedFootnoteSentenceId),
+        );
+    }, [selectedFootnoteSentenceId, sentence.footnotes]);
 
     let leftMarkers: PageMarkerResponse[] | undefined;
     let rightMarkers: PageMarkerResponse[] | undefined;
@@ -92,8 +199,36 @@ export function Sentence({
     const highlightClass = isSelected
         ? isCorrespondent
             ? "bg-amber-100"
-            : "bg-amber-200"
-        : "hover:bg-stone-200";
+            : isFootnoteAnchor
+              ? "bg-amber-100"
+              : "bg-amber-200"
+        : isFootnoteAnchor
+          ? "bg-amber-100"
+          : "hover:bg-stone-200";
+
+    const parsedHtml = useMemo(() => {
+        const html = showOriginal && sentence.original_html ? sentence.original_html : sentence.html;
+        return parse(html, {
+            replace: (domNode) => {
+                if (domNode instanceof Element && domNode.name === "sup") {
+                    const textContent = domNode.children
+                        .map((c) => ("data" in c ? c.data : ""))
+                        .join("");
+                    const num = Number(textContent);
+                    if (!Number.isNaN(num)) {
+                        return (
+                            <FootnoteSup
+                                footnoteNumber={num}
+                                sentence={sentence}
+                                showOriginal={showOriginal}
+                                onSelectSentence={onSelect}
+                            />
+                        );
+                    }
+                }
+            },
+        });
+    }, [showOriginal, sentence, onSelect]);
 
     return (
         <>
@@ -105,7 +240,7 @@ export function Sentence({
                 onClick={() => onSelect(sentence)}
                 className={`cursor-pointer transition-colors rounded-sm ${highlightClass}`}
             >
-                {parse(showOriginal && sentence.original_html ? sentence.original_html : sentence.html)}
+                {parsedHtml}
             </span>{" "}
         </>
     );

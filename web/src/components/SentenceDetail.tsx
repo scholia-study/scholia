@@ -1,22 +1,23 @@
-import type { SentenceResponse } from "../api/model";
+import type { FootnoteSentenceResponse, SentenceResponse } from "../api/model";
 
 interface SentenceDetailProps {
-    sentence: SentenceResponse;
+    sentence: SentenceResponse | FootnoteSentenceResponse;
 }
 
 export function SentenceDetail({ sentence }: SentenceDetailProps) {
     return (
         <div className="flex-1 overflow-y-auto">
             <div className="px-3 py-3 space-y-3 text-sm">
-                {sentence.sentence_number != null && (
-                    <Field
-                        label="Sentence #"
-                        value={sentence.sentence_number}
-                    />
-                )}
+                {"sentence_number" in sentence &&
+                    sentence.sentence_number != null && (
+                        <Field
+                            label="Sentence #"
+                            value={sentence.sentence_number}
+                        />
+                    )}
                 <Field label="Position" value={sentence.position} />
                 <Field label="ID" value={sentence.id} />
-                {sentence.page_markers.length > 0 && (
+                {"page_markers" in sentence && sentence.page_markers.length > 0 && (
                     <div>
                         <dt className="text-stone-500 mb-1">Page Markers</dt>
                         <dd className="space-y-1">

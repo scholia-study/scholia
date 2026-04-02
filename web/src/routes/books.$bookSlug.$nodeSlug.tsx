@@ -35,6 +35,10 @@ export type ReaderSearch = {
     vt2?: string;
     vt3?: string;
     vt4?: string;
+    fs?: string;
+    fs2?: string;
+    fs3?: string;
+    fs4?: string;
 };
 
 function parsePanel(param: string): PanelState {
@@ -79,6 +83,10 @@ export const Route = createFileRoute("/books/$bookSlug/$nodeSlug")({
         vt2: search.vt2 as string | undefined,
         vt3: search.vt3 as string | undefined,
         vt4: search.vt4 as string | undefined,
+        fs: search.fs as string | undefined,
+        fs2: search.fs2 as string | undefined,
+        fs3: search.fs3 as string | undefined,
+        fs4: search.fs4 as string | undefined,
     }),
     loader: async ({ context, params }) => {
         await context.queryClient.ensureQueryData(
@@ -141,6 +149,12 @@ function ReaderPage() {
     if (search.vt3) companionSlugs.set(2, search.vt3);
     if (search.vt4) companionSlugs.set(3, search.vt4);
 
+    const footnoteSentenceSelections = new Map<number, string>();
+    if (search.fs) footnoteSentenceSelections.set(0, search.fs);
+    if (search.fs2) footnoteSentenceSelections.set(1, search.fs2);
+    if (search.fs3) footnoteSentenceSelections.set(2, search.fs3);
+    if (search.fs4) footnoteSentenceSelections.set(3, search.fs4);
+
     return (
         <ReaderLayout
             panels={panels}
@@ -151,6 +165,7 @@ function ReaderPage() {
             viewModes={viewModes}
             viewLayouts={viewLayouts}
             companionSlugs={companionSlugs}
+            footnoteSentenceSelections={footnoteSentenceSelections}
         />
     );
 }
