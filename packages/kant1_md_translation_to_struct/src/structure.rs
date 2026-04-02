@@ -2,7 +2,9 @@ use std::collections::HashMap;
 
 use common::kant1::filenames::slugify;
 use common::kant1::toc_en;
-use common::sentences::split_sentences_en;
+use common::sentences::{
+    split_sentences_en_forced, strip_forced_split_markers, strip_forced_splits,
+};
 use regex::Regex;
 use std::sync::LazyLock;
 
@@ -165,9 +167,9 @@ fn build_block(
     // Rewrite footnote refs in raw text before conversion
     let rewritten_text = rewrite_footnote_refs(&block.text, flat_index, marker_map);
 
-    let block_plain = md_to_plain(&rewritten_text);
-    let block_html = md_to_html(&rewritten_text);
-    let sentence_pairs = split_sentences_en(&block_plain, &block_html);
+    let (block_plain, forced_splits) = strip_forced_splits(&md_to_plain(&rewritten_text));
+    let block_html = strip_forced_split_markers(&md_to_html(&rewritten_text));
+    let sentence_pairs = split_sentences_en_forced(&block_plain, &block_html, &forced_splits);
 
     // Build sentences with cumulative char tracking for marker resolution
     let mut sentences = Vec::new();
@@ -196,9 +198,9 @@ fn build_block(
                 let content = footnote_content.get(key)?;
 
                 // Sentence-split the footnote body
-                let fn_plain = md_to_plain(&content.text);
-                let fn_html = md_to_html(&content.text);
-                let fn_pairs = split_sentences_en(&fn_plain, &fn_html);
+                let (fn_plain, fn_forced) = strip_forced_splits(&md_to_plain(&content.text));
+                let fn_html = strip_forced_split_markers(&md_to_html(&content.text));
+                let fn_pairs = split_sentences_en_forced(&fn_plain, &fn_html, &fn_forced);
 
                 let fn_sentences: Vec<FootnoteSentenceData> = fn_pairs
                     .iter()

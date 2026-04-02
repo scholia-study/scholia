@@ -1,6 +1,27 @@
 use regex::Regex;
 use std::sync::LazyLock;
 
+/// Strip `|||` markers from text, returning (cleaned text, byte positions of forced splits).
+/// Each position is the byte offset in the cleaned text where a new sentence should begin.
+pub fn strip_forced_splits(text: &str) -> (String, Vec<usize>) {
+    let mut cleaned = String::with_capacity(text.len());
+    let mut positions = Vec::new();
+    let mut last_end = 0;
+
+    for (idx, _) in text.match_indices("|||") {
+        cleaned.push_str(&text[last_end..idx]);
+        positions.push(cleaned.len());
+        last_end = idx + 3;
+    }
+    cleaned.push_str(&text[last_end..]);
+    (cleaned, positions)
+}
+
+/// Strip `|||` markers from text without tracking positions.
+pub fn strip_forced_split_markers(text: &str) -> String {
+    text.replace("|||", "")
+}
+
 /// Regex matching a sentence-ending punctuation followed by whitespace and an uppercase letter or ».
 /// We capture the punctuation+space so we can check abbreviation context before accepting the split.
 static SPLIT_RE: LazyLock<Regex> = LazyLock::new(|| {
@@ -58,14 +79,27 @@ static NUMBERED_LABEL_RE: LazyLock<Regex> =
 /// 3. Map text split positions to HTML positions (walking both in parallel)
 /// 4. Re-balance open inline tags at each split boundary
 pub fn split_sentences(text: &str, html: &str) -> Vec<(String, String)> {
+    split_sentences_forced(text, html, &[])
+}
+
+/// Split a paragraph into sentences with additional forced split positions.
+///
+/// `forced` contains byte offsets in `text` where sentence boundaries should be inserted
+/// regardless of punctuation.
+pub fn split_sentences_forced(
+    text: &str,
+    html: &str,
+    forced: &[usize],
+) -> Vec<(String, String)> {
     if text.is_empty() {
         return vec![];
     }
 
-    // Step 1: Find split positions in plain text.
-    // A split position is the byte index where a new sentence starts
-    // (i.e., the first character of the new sentence).
-    let split_positions = find_text_split_positions(text);
+    // Step 1: Find split positions in plain text, merge with forced positions.
+    let mut split_positions = find_text_split_positions(text);
+    split_positions.extend_from_slice(forced);
+    split_positions.sort_unstable();
+    split_positions.dedup();
 
     if split_positions.is_empty() {
         return vec![(text.to_string(), html.to_string())];
@@ -321,15 +355,27 @@ static MULTI_ABBREV_RE_EN: LazyLock<Vec<Regex>> = LazyLock::new(|| {
 ///
 /// Uses English-specific abbreviation lists but the same splitting algorithm.
 pub fn split_sentences_en(text: &str, html: &str) -> Vec<(String, String)> {
+    split_sentences_en_forced(text, html, &[])
+}
+
+/// Split English text into sentences with additional forced split positions.
+pub fn split_sentences_en_forced(
+    text: &str,
+    html: &str,
+    forced: &[usize],
+) -> Vec<(String, String)> {
     if text.is_empty() {
         return vec![];
     }
 
-    let split_positions = find_text_split_positions_with(
+    let mut split_positions = find_text_split_positions_with(
         text,
         &SINGLE_ABBREVS_EN,
         &MULTI_ABBREV_RE_EN,
     );
+    split_positions.extend_from_slice(forced);
+    split_positions.sort_unstable();
+    split_positions.dedup();
 
     if split_positions.is_empty() {
         return vec![(text.to_string(), html.to_string())];
@@ -646,5 +692,63 @@ mod tests {
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].0, r#"their change can be determined.""#);
         assert_eq!(result[1].0, "Against this proof one will say something.");
+    }
+
+    // === Forced split tests ===
+
+    #[test]
+    fn test_strip_forced_splits() {
+        let (text, positions) = strip_forced_splits("before:||| after text");
+        assert_eq!(text, "before: after text");
+        assert_eq!(positions, vec![7]); // byte offset of " after"
+    }
+
+    #[test]
+    fn test_strip_forced_splits_multiple() {
+        let (text, positions) = strip_forced_splits("a||| b||| c");
+        assert_eq!(text, "a b c");
+        assert_eq!(positions, vec![1, 3]);
+    }
+
+    #[test]
+    fn test_strip_forced_splits_none() {
+        let (text, positions) = strip_forced_splits("no markers here");
+        assert_eq!(text, "no markers here");
+        assert!(positions.is_empty());
+    }
+
+    #[test]
+    fn test_strip_forced_split_markers() {
+        assert_eq!(strip_forced_split_markers("a||| b||| c"), "a b c");
+    }
+
+    #[test]
+    fn test_forced_split_de() {
+        let text = "as follows: \"This permanent thing.\"";
+        let html = "as follows: \"This permanent thing.\"";
+        let result = split_sentences_forced(text, html, &[12]); // split before "This
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].0, "as follows:");
+        assert_eq!(result[1].0, "\"This permanent thing.\"");
+    }
+
+    #[test]
+    fn test_forced_split_en() {
+        let text = "altered as follows: \"This permanent, however, cannot be an intuition in me.\"";
+        let html = "altered as follows: \"This permanent, however, cannot be an intuition in me.\"";
+        let result = split_sentences_en_forced(text, html, &[20]); // split before the quote
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].0, "altered as follows:");
+        assert_eq!(result[1].0, "\"This permanent, however, cannot be an intuition in me.\"");
+    }
+
+    #[test]
+    fn test_forced_split_combined_with_auto() {
+        let text = "First part: Second part. Third sentence.";
+        let result = split_sentences_forced(text, text, &[12]); // forced split before "Second"
+        assert_eq!(result.len(), 3);
+        assert_eq!(result[0].0, "First part:");
+        assert_eq!(result[1].0, "Second part.");
+        assert_eq!(result[2].0, "Third sentence.");
     }
 }

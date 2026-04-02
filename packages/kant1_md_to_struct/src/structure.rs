@@ -2,7 +2,9 @@ use std::collections::HashMap;
 
 use common::kant1::filenames::slugify;
 use common::kant1::toc;
-use common::sentences::split_sentences;
+use common::sentences::{
+    split_sentences_forced, strip_forced_split_markers, strip_forced_splits,
+};
 use regex::Regex;
 use std::sync::LazyLock;
 
@@ -184,14 +186,14 @@ fn build_block(
     let rewritten_orig = rewrite_footnote_refs(&original_block.text, flat_index, marker_map);
 
     // Modernized (primary)
-    let block_plain = md_to_plain(&rewritten_text);
-    let block_html = md_to_html(&rewritten_text);
-    let sentence_pairs = split_sentences(&block_plain, &block_html);
+    let (block_plain, forced_splits) = strip_forced_splits(&md_to_plain(&rewritten_text));
+    let block_html = strip_forced_split_markers(&md_to_html(&rewritten_text));
+    let sentence_pairs = split_sentences_forced(&block_plain, &block_html, &forced_splits);
 
     // Original (reviewed)
-    let orig_plain = md_to_plain(&rewritten_orig);
-    let orig_html = md_to_html(&rewritten_orig);
-    let orig_sentence_pairs = split_sentences(&orig_plain, &orig_html);
+    let (orig_plain, _) = strip_forced_splits(&md_to_plain(&rewritten_orig));
+    let orig_html = strip_forced_split_markers(&md_to_html(&rewritten_orig));
+    let orig_sentence_pairs = split_sentences_forced(&orig_plain, &orig_html, &forced_splits);
 
     // Validate sentence counts match
     if sentence_pairs.len() != orig_sentence_pairs.len() {
@@ -236,13 +238,13 @@ fn build_block(
                 let content = footnote_content.get(key)?;
 
                 // Sentence-split the footnote body
-                let fn_plain = md_to_plain(&content.modernized_text);
-                let fn_html = md_to_html(&content.modernized_text);
-                let fn_pairs = split_sentences(&fn_plain, &fn_html);
+                let (fn_plain, fn_forced) = strip_forced_splits(&md_to_plain(&content.modernized_text));
+                let fn_html = strip_forced_split_markers(&md_to_html(&content.modernized_text));
+                let fn_pairs = split_sentences_forced(&fn_plain, &fn_html, &fn_forced);
 
-                let fn_orig_plain = md_to_plain(&content.original_text);
-                let fn_orig_html = md_to_html(&content.original_text);
-                let fn_orig_pairs = split_sentences(&fn_orig_plain, &fn_orig_html);
+                let (fn_orig_plain, _) = strip_forced_splits(&md_to_plain(&content.original_text));
+                let fn_orig_html = strip_forced_split_markers(&md_to_html(&content.original_text));
+                let fn_orig_pairs = split_sentences_forced(&fn_orig_plain, &fn_orig_html, &fn_forced);
 
                 let fn_sentences: Vec<FootnoteSentenceData> = fn_pairs
                     .iter()
