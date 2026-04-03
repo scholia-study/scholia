@@ -363,6 +363,9 @@ const VirtualizedScroll = forwardRef<
         getScrollElement: () => parentRef.current,
         estimateSize: () => (isInterleaved ? 700 : 400),
         overscan: 3,
+        // Stable keys so measurement cache survives when backward fetching
+        // prepends nodes and shifts indices.
+        getItemKey: (index) => nodes[index]?.id ?? index,
     });
 
     const items = virtualizer.getVirtualItems();
