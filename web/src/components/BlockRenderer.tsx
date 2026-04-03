@@ -240,6 +240,7 @@ export function Sentence({
                 <MarginNotes markers={rightMarkers} side="right" />
             )}
             <span
+                data-sentence-key={sentenceKey(sentence)}
                 onClick={() => onSelect(sentence)}
                 className={`cursor-pointer transition-colors rounded-sm ${highlightClass}`}
             >

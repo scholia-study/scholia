@@ -317,6 +317,11 @@ const VirtualizedScroll = forwardRef<
         string | null
     >(initialNodeSlug ?? null);
 
+    // Track whether we still need to scroll to the initial sentence from URL params.
+    const pendingSentenceScroll = useRef<string | null>(
+        selectedSentenceId ?? null,
+    );
+
     const lastEmittedSlugRef = useRef<string | null>(null);
 
     const [prevInitialSlug, setPrevInitialSlug] = useState(initialNodeSlug);
@@ -544,6 +549,46 @@ const VirtualizedScroll = forwardRef<
             return () => clearTimeout(timer);
         }
     }, [nodes, pendingScrollTarget, virtualizer, suppressObserver, items]);
+
+    // After the node-level scroll finishes, scroll to the selected sentence
+    // (only on initial load from URL params).
+    useEffect(() => {
+        if (pendingScrollTarget) return; // node scroll not done yet
+        if (!pendingSentenceScroll.current) return; // no sentence to scroll to
+
+        const container = parentRef.current;
+        if (!container) return;
+
+        const key = pendingSentenceScroll.current;
+        const el = container.querySelector(
+            `[data-sentence-key="${CSS.escape(key)}"]`,
+        );
+        if (el) {
+            pendingSentenceScroll.current = null;
+
+            // Find the full sentence object and notify the parent so the
+            // resource panel can display sentence details on initial load.
+            for (const node of nodes) {
+                for (const block of node.blocks) {
+                    for (const sentence of block.sentences) {
+                        if (
+                            sentence.id === key ||
+                            (sentence.sentence_number != null &&
+                                String(sentence.sentence_number) === key)
+                        ) {
+                            onSelectSentence(sentence);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Small delay to let the virtualizer settle after node scroll
+            requestAnimationFrame(() => {
+                el.scrollIntoView({ block: "center" });
+            });
+        }
+    }, [pendingScrollTarget, items, nodes, onSelectSentence]);
 
     return (
         <Paper
