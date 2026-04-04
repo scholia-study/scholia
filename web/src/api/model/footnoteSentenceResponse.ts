@@ -13,5 +13,7 @@ export interface FootnoteSentenceResponse {
     /** @nullable */
     original_text?: string | null;
     position: number;
+    /** @nullable */
+    sentence_number?: number | null;
     text: string;
 }

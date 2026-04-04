@@ -133,9 +133,12 @@ CREATE TABLE sentences (
     )
 );
 
-CREATE UNIQUE INDEX idx_sentences_num
+CREATE UNIQUE INDEX idx_sentences_block_num
     ON sentences (book_id, sentence_number)
-    WHERE sentence_number IS NOT NULL;
+    WHERE sentence_number IS NOT NULL AND block_id IS NOT NULL;
+CREATE UNIQUE INDEX idx_sentences_fn_num
+    ON sentences (book_id, sentence_number)
+    WHERE sentence_number IS NOT NULL AND footnote_id IS NOT NULL;
 CREATE UNIQUE INDEX idx_sentences_block_pos ON sentences (block_id, position)
     WHERE block_id IS NOT NULL;
 CREATE UNIQUE INDEX idx_sentences_footnote_pos ON sentences (footnote_id, position)

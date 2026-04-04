@@ -24,6 +24,20 @@ export function sentenceMatchesKey(
     return s.id === key || (s.sentence_number != null && String(s.sentence_number) === key);
 }
 
+/** URL-friendly key for a footnote sentence: sentence_number if available, otherwise ID. */
+export function footnoteSentenceKey(s: FootnoteSentenceResponse): string {
+    return s.sentence_number != null ? String(s.sentence_number) : s.id;
+}
+
+/** Check if a footnote sentence matches a URL key (sentence_number or ID). */
+export function footnoteSentenceMatchesKey(
+    s: FootnoteSentenceResponse,
+    key: string | undefined | null,
+): boolean {
+    if (!key) return false;
+    return s.id === key || (s.sentence_number != null && String(s.sentence_number) === key);
+}
+
 export interface MarginSettings {
     enabledSystems: Set<string>;
     systemSides: Record<string, "left" | "right">;
@@ -78,7 +92,7 @@ function FootnoteSup({
     // Auto-open popover if a footnote sentence from this footnote is selected
     const shouldAutoOpen = useMemo(() => {
         if (!selectedFootnoteSentenceId || !footnote) return false;
-        return footnote.sentences.some((s) => s.id === selectedFootnoteSentenceId);
+        return footnote.sentences.some((s) => footnoteSentenceMatchesKey(s, selectedFootnoteSentenceId));
     }, [selectedFootnoteSentenceId, footnote]);
 
     useEffect(() => {
@@ -171,7 +185,7 @@ export function Sentence({
     const isFootnoteAnchor = useMemo(() => {
         if (!selectedFootnoteSentenceId || !sentence.footnotes) return false;
         return sentence.footnotes.some((fn) =>
-            fn.sentences.some((s) => s.id === selectedFootnoteSentenceId),
+            fn.sentences.some((s) => footnoteSentenceMatchesKey(s, selectedFootnoteSentenceId)),
         );
     }, [selectedFootnoteSentenceId, sentence.footnotes]);
 

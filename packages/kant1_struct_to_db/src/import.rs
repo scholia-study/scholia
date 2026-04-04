@@ -161,6 +161,7 @@ pub async fn run(
     let mut marker_count = 0u32;
     let mut footnote_count = 0u32;
     let mut footnote_sentence_count = 0u32;
+    let mut footnote_sentence_number = 1i32;
 
     for node in &output.toc_nodes {
         let parent_id: Option<Uuid> = node
@@ -315,14 +316,18 @@ pub async fn run(
                             None
                         };
 
+                        let fn_sent_num = footnote_sentence_number;
+                        footnote_sentence_number += 1;
+
                         sqlx::query(
-                            "INSERT INTO sentences (book_id, node_id, footnote_id, position, source_sentence_start_id, text, html, original_text, original_html)
-                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+                            "INSERT INTO sentences (book_id, node_id, footnote_id, position, sentence_number, source_sentence_start_id, text, html, original_text, original_html)
+                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
                         )
                         .bind(book_id)
                         .bind(node_id)
                         .bind(footnote_id)
                         .bind(fn_sent.position)
+                        .bind(fn_sent_num)
                         .bind(source_fn_sentence_id)
                         .bind(&fn_sent.text)
                         .bind(&fn_sent.html)

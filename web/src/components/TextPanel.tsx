@@ -22,6 +22,8 @@ import { useGetToc, getGetTocQueryOptions } from "../api/toc/toc";
 import { useQueryClient } from "@tanstack/react-query";
 import {
     type MarginSettings,
+    footnoteSentenceKey,
+    footnoteSentenceMatchesKey,
     sentenceKey,
     sentenceMatchesKey,
 } from "./BlockRenderer";
@@ -119,7 +121,7 @@ export function TextPanel({
     const selectedFootnoteSentence = useMemo((): FootnoteSentenceResponse | undefined => {
         if (!footnoteSentenceId || !selectedSentence?.footnotes) return undefined;
         for (const fn of selectedSentence.footnotes) {
-            const found = fn.sentences.find((s) => s.id === footnoteSentenceId);
+            const found = fn.sentences.find((s) => footnoteSentenceMatchesKey(s, footnoteSentenceId));
             if (found) return found;
         }
         return undefined;
@@ -237,7 +239,7 @@ export function TextPanel({
 
     const handleSelectFootnoteSentence = useCallback(
         (sentence: FootnoteSentenceResponse) => {
-            onSelectFootnoteSentence(sentence.id);
+            onSelectFootnoteSentence(footnoteSentenceKey(sentence));
         },
         [onSelectFootnoteSentence],
     );

@@ -78,6 +78,8 @@ pub struct FootnoteData {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FootnoteSentenceData {
     pub position: i16,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sentence_number: Option<i32>,
     pub text: String,
     pub html: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]

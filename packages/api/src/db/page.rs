@@ -60,6 +60,7 @@ struct FootnoteSentenceRow {
     id: Uuid,
     footnote_id: Uuid,
     position: i16,
+    sentence_number: Option<i32>,
     text: String,
     html: String,
     original_text: Option<String>,
@@ -227,7 +228,7 @@ pub async fn get_node_page(
     } else {
         sqlx::query_as!(
             FootnoteSentenceRow,
-            r#"SELECT id, footnote_id AS "footnote_id!", position, text, html, original_text, original_html
+            r#"SELECT id, footnote_id AS "footnote_id!", position, sentence_number, text, html, original_text, original_html
                FROM sentences
                WHERE footnote_id = ANY($1)
                ORDER BY footnote_id, position"#,
@@ -246,6 +247,7 @@ pub async fn get_node_page(
             .push(FootnoteSentenceResponse {
                 id: fs.id.to_string(),
                 position: fs.position,
+                sentence_number: fs.sentence_number,
                 text: fs.text,
                 html: fs.html,
                 original_text: if include_original {
@@ -481,7 +483,7 @@ async fn assemble_node_page(
     } else {
         sqlx::query_as!(
             FootnoteSentenceRow,
-            r#"SELECT id, footnote_id AS "footnote_id!", position, text, html, original_text, original_html
+            r#"SELECT id, footnote_id AS "footnote_id!", position, sentence_number, text, html, original_text, original_html
                FROM sentences
                WHERE footnote_id = ANY($1)
                ORDER BY footnote_id, position"#,
@@ -500,6 +502,7 @@ async fn assemble_node_page(
             .push(FootnoteSentenceResponse {
                 id: fs.id.to_string(),
                 position: fs.position,
+                sentence_number: fs.sentence_number,
                 text: fs.text,
                 html: fs.html,
                 original_text: if include_original {

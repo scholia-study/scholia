@@ -65,6 +65,7 @@ pub struct FootnoteResponse {
 pub struct FootnoteSentenceResponse {
     pub id: String,
     pub position: i16,
+    pub sentence_number: Option<i32>,
     pub text: String,
     pub html: String,
     #[serde(skip_serializing_if = "Option::is_none")]

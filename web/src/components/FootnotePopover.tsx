@@ -1,6 +1,7 @@
 import { Popover } from "@mui/material";
 import parse from "html-react-parser";
 import type { FootnoteResponse, FootnoteSentenceResponse } from "../api/model";
+import { footnoteSentenceMatchesKey } from "./BlockRenderer";
 
 interface FootnotePopoverProps {
     footnote: FootnoteResponse;
@@ -41,7 +42,7 @@ export function FootnotePopover({
             </div>
             <div className="px-3 py-2 max-h-[40vh] overflow-y-auto leading-relaxed text-sm text-stone-700">
                 {footnote.sentences.map((sentence) => {
-                    const isSelected = sentence.id === selectedFootnoteSentenceId;
+                    const isSelected = footnoteSentenceMatchesKey(sentence, selectedFootnoteSentenceId);
                     const html =
                         showOriginal && sentence.original_html
                             ? sentence.original_html

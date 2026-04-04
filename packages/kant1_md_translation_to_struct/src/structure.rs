@@ -207,6 +207,7 @@ fn build_block(
                     .enumerate()
                     .map(|(pos, (ft, fh))| FootnoteSentenceData {
                         position: pos as i16,
+                        sentence_number: None,
                         text: ft.clone(),
                         html: fh.clone(),
                         original_text: None,

@@ -823,6 +823,13 @@
             "type": "integer",
             "format": "int32"
           },
+          "sentence_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
           "text": {
             "type": "string"
           }
