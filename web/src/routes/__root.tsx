@@ -1,10 +1,13 @@
 import type { QueryClient } from "@tanstack/react-query";
 import {
+    Outlet,
     createRootRouteWithContext,
     HeadContent,
     Scripts,
 } from "@tanstack/react-router";
+import { Toaster } from "react-hot-toast";
 import appCss from "../styles.css?url";
+import { Navbar } from "../components/Navbar";
 
 interface RouterContext {
     queryClient: QueryClient;
@@ -23,12 +26,25 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         links: [{ rel: "stylesheet", href: appCss }],
     }),
     shellComponent: RootDocument,
+    component: RootComponent,
     notFoundComponent: NotFound,
 });
 
+function RootComponent() {
+    return (
+        <>
+            <Navbar />
+            <main className="min-h-screen pt-12">
+                <Outlet />
+            </main>
+            <Toaster position="bottom-right" />
+        </>
+    );
+}
+
 function NotFound() {
     return (
-        <div className="flex items-center justify-center h-screen">
+        <div className="flex items-center justify-center h-[calc(100vh-3rem)]">
             <div className="text-center">
                 <h1 className="text-2xl font-bold text-stone-900 mb-2">
                     Page not found

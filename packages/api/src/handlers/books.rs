@@ -1,10 +1,10 @@
 use axum::Json;
 use axum::extract::{Path, State};
-use sqlx::PgPool;
 
 use crate::db;
 use crate::error::AppError;
 use crate::models::book::{BookDetail, BookSummary};
+use crate::state::AppState;
 
 /// List all books
 #[utoipa::path(
@@ -15,8 +15,10 @@ use crate::models::book::{BookDetail, BookSummary};
     ),
     tag = "books"
 )]
-pub async fn list_books(State(pool): State<PgPool>) -> Result<Json<Vec<BookSummary>>, AppError> {
-    let books = db::books::list_books(&pool).await?;
+pub async fn list_books(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<BookSummary>>, AppError> {
+    let books = db::books::list_books(&state.pool).await?;
     Ok(Json(books))
 }
 
@@ -32,9 +34,9 @@ pub async fn list_books(State(pool): State<PgPool>) -> Result<Json<Vec<BookSumma
     tag = "books"
 )]
 pub async fn get_book(
-    State(pool): State<PgPool>,
+    State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<BookDetail>, AppError> {
-    let book = db::books::get_book_by_slug(&pool, &slug).await?;
+    let book = db::books::get_book_by_slug(&state.pool, &slug).await?;
     Ok(Json(book))
 }

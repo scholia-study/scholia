@@ -1,13 +1,13 @@
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use serde::Deserialize;
-use sqlx::PgPool;
 use utoipa::IntoParams;
 use uuid::Uuid;
 
 use crate::db;
 use crate::error::AppError;
 use crate::models::page::NodePage;
+use crate::state::AppState;
 
 #[derive(Deserialize, IntoParams)]
 pub struct PageParams {
@@ -45,10 +45,11 @@ pub struct PageParams {
     tag = "nodes"
 )]
 pub async fn get_node_page(
-    State(pool): State<PgPool>,
+    State(state): State<AppState>,
     Path(slug): Path<String>,
     Query(params): Query<PageParams>,
 ) -> Result<Json<NodePage>, AppError> {
+    let pool = &state.pool;
     let include_original = params.original.unwrap_or(false);
 
     if let Some(ref source_nodes_str) = params.source_nodes {

@@ -304,14 +304,86 @@ CREATE INDEX idx_xref_target_block ON cross_references (target_block_id)
 -- ============================================================
 
 CREATE TABLE users (
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    external_id   TEXT UNIQUE,
-    display_name  TEXT NOT NULL,
-    email         TEXT,
-    admin_notes   TEXT,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    display_name      TEXT NOT NULL,
+    email             TEXT NOT NULL UNIQUE,
+    password_hash     TEXT,
+    avatar_url        TEXT,
+    email_verified_at TIMESTAMPTZ,
+    admin_notes       TEXT,
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- ============================================================
+-- ROLES & PERMISSIONS
+-- ============================================================
+
+CREATE TABLE roles (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name        TEXT NOT NULL UNIQUE,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE user_roles (
+    user_id  UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    role_id  UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, role_id)
+);
+
+CREATE INDEX idx_user_roles_role ON user_roles (role_id);
+
+-- Seed default roles
+INSERT INTO roles (name) VALUES ('admin'), ('editor'), ('user');
+
+-- ============================================================
+-- OAUTH ACCOUNTS
+-- ============================================================
+
+CREATE TABLE user_oauth_accounts (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id           UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    provider          TEXT NOT NULL,
+    provider_user_id  TEXT NOT NULL,
+    email             TEXT,
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    UNIQUE (provider, provider_user_id)
+);
+
+CREATE INDEX idx_oauth_user ON user_oauth_accounts (user_id);
+
+-- ============================================================
+-- EMAIL VERIFICATION TOKENS
+-- ============================================================
+
+CREATE TABLE email_verification_tokens (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash  TEXT NOT NULL,
+    expires_at  TIMESTAMPTZ NOT NULL,
+    used_at     TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_email_verify_user ON email_verification_tokens (user_id);
+
+-- ============================================================
+-- PASSWORD RESET TOKENS
+-- ============================================================
+
+CREATE TABLE password_reset_tokens (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash  TEXT NOT NULL,
+    expires_at  TIMESTAMPTZ NOT NULL,
+    used_at     TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_password_reset_user ON password_reset_tokens (user_id);
 
 -- User notes anchored to text locations. Same anchor pattern
 -- as resources but with an owner.

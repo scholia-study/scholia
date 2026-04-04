@@ -564,7 +564,7 @@ export function ReaderLayout({
     const canAddPanel = panels.length < 4;
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-[calc(100vh-3rem)]">
             {panels.map((panel, idx) => (
                 <TextPanel
                     key={panelKeysRef.current[idx] ?? `text-${idx}`}

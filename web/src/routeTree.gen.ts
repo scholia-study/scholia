@@ -9,11 +9,42 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BooksIndexRouteImport } from './routes/books.index'
+import { Route as UserProfileRouteImport } from './routes/user.profile'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -22,6 +53,11 @@ const IndexRoute = IndexRouteImport.update({
 const BooksIndexRoute = BooksIndexRouteImport.update({
   id: '/books/',
   path: '/books/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserProfileRoute = UserProfileRouteImport.update({
+  id: '/user/profile',
+  path: '/user/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BooksBookSlugIndexRoute = BooksBookSlugIndexRouteImport.update({
@@ -37,12 +73,24 @@ const BooksBookSlugNodeSlugRoute = BooksBookSlugNodeSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/user/profile': typeof UserProfileRoute
   '/books/': typeof BooksIndexRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/user/profile': typeof UserProfileRoute
   '/books': typeof BooksIndexRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
@@ -50,6 +98,12 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/user/profile': typeof UserProfileRoute
   '/books/': typeof BooksIndexRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
@@ -58,14 +112,36 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/verify-email'
+    | '/user/profile'
     | '/books/'
     | '/books/$bookSlug/$nodeSlug'
     | '/books/$bookSlug/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/books' | '/books/$bookSlug/$nodeSlug' | '/books/$bookSlug'
+  to:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/verify-email'
+    | '/user/profile'
+    | '/books'
+    | '/books/$bookSlug/$nodeSlug'
+    | '/books/$bookSlug'
   id:
     | '__root__'
     | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/verify-email'
+    | '/user/profile'
     | '/books/'
     | '/books/$bookSlug/$nodeSlug'
     | '/books/$bookSlug/'
@@ -73,6 +149,12 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  VerifyEmailRoute: typeof VerifyEmailRoute
+  UserProfileRoute: typeof UserProfileRoute
   BooksIndexRoute: typeof BooksIndexRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
   BooksBookSlugIndexRoute: typeof BooksBookSlugIndexRoute
@@ -80,6 +162,41 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -92,6 +209,13 @@ declare module '@tanstack/react-router' {
       path: '/books'
       fullPath: '/books/'
       preLoaderRoute: typeof BooksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/profile': {
+      id: '/user/profile'
+      path: '/user/profile'
+      fullPath: '/user/profile'
+      preLoaderRoute: typeof UserProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/books/$bookSlug/': {
@@ -113,6 +237,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  VerifyEmailRoute: VerifyEmailRoute,
+  UserProfileRoute: UserProfileRoute,
   BooksIndexRoute: BooksIndexRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
   BooksBookSlugIndexRoute: BooksBookSlugIndexRoute,

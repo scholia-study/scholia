@@ -6,7 +6,7 @@ export const Route = createFileRoute("/")({
 
 function IndexPage() {
     return (
-        <div className="flex items-center justify-center h-screen">
+        <div className="flex items-center justify-center h-[calc(100vh-3rem)]">
             <div className="text-center">
                 <h1 className="text-3xl font-bold text-stone-900 mb-2">
                     Prospero

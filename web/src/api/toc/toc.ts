@@ -19,8 +19,10 @@ import type {
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-
+import { customFetch } from ".././fetcher";
 import type { TocNodeResponse } from ".././model";
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
  * @summary Get the full TOC tree for a book
@@ -45,26 +47,21 @@ export type getTocResponseError = getTocResponse404 & {
 export type getTocResponse = getTocResponseSuccess | getTocResponseError;
 
 export const getGetTocUrl = (slug: string) => {
-    return `http://localhost:4000/api/books/${slug}/toc`;
+    return `/api/books/${slug}/toc`;
 };
 
 export const getToc = async (
     slug: string,
     options?: RequestInit,
 ): Promise<getTocResponse> => {
-    const res = await fetch(getGetTocUrl(slug), {
+    return customFetch<getTocResponse>(getGetTocUrl(slug), {
         ...options,
         method: "GET",
     });
-
-    const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-    const data: getTocResponse["data"] = body ? JSON.parse(body) : {};
-    return { data, status: res.status, headers: res.headers } as getTocResponse;
 };
 
 export const getGetTocQueryKey = (slug: string) => {
-    return [`http://localhost:4000/api/books/${slug}/toc`] as const;
+    return [`/api/books/${slug}/toc`] as const;
 };
 
 export const getGetTocQueryOptions = <
@@ -76,16 +73,16 @@ export const getGetTocQueryOptions = <
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
 ) => {
-    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
     const queryKey = queryOptions?.queryKey ?? getGetTocQueryKey(slug);
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getToc>>> = ({
         signal,
-    }) => getToc(slug, { signal, ...fetchOptions });
+    }) => getToc(slug, { signal, ...requestOptions });
 
     return {
         queryKey,
@@ -117,7 +114,7 @@ export function useGetToc<
                 >,
                 "initialData"
             >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -140,7 +137,7 @@ export function useGetToc<
                 >,
                 "initialData"
             >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -155,7 +152,7 @@ export function useGetToc<
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -174,7 +171,7 @@ export function useGetToc<
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getToc>>, TError, TData>
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -203,16 +200,16 @@ export const getGetTocSuspenseQueryOptions = <
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
 ) => {
-    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
     const queryKey = queryOptions?.queryKey ?? getGetTocQueryKey(slug);
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getToc>>> = ({
         signal,
-    }) => getToc(slug, { signal, ...fetchOptions });
+    }) => getToc(slug, { signal, ...requestOptions });
 
     return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getToc>>,
@@ -239,7 +236,7 @@ export function useGetTocSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -258,7 +255,7 @@ export function useGetTocSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -277,7 +274,7 @@ export function useGetTocSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -300,7 +297,7 @@ export function useGetTocSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {

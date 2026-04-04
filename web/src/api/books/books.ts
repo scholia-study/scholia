@@ -19,8 +19,10 @@ import type {
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-
+import { customFetch } from ".././fetcher";
 import type { BookDetail, BookSummary } from ".././model";
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
  * @summary List all books
@@ -37,29 +39,20 @@ export type listBooksResponseSuccess = listBooksResponse200 & {
 export type listBooksResponse = listBooksResponseSuccess;
 
 export const getListBooksUrl = () => {
-    return `http://localhost:4000/api/books`;
+    return `/api/books`;
 };
 
 export const listBooks = async (
     options?: RequestInit,
 ): Promise<listBooksResponse> => {
-    const res = await fetch(getListBooksUrl(), {
+    return customFetch<listBooksResponse>(getListBooksUrl(), {
         ...options,
         method: "GET",
     });
-
-    const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-    const data: listBooksResponse["data"] = body ? JSON.parse(body) : {};
-    return {
-        data,
-        status: res.status,
-        headers: res.headers,
-    } as listBooksResponse;
 };
 
 export const getListBooksQueryKey = () => {
-    return [`http://localhost:4000/api/books`] as const;
+    return [`/api/books`] as const;
 };
 
 export const getListBooksQueryOptions = <
@@ -69,15 +62,15 @@ export const getListBooksQueryOptions = <
     query?: Partial<
         UseQueryOptions<Awaited<ReturnType<typeof listBooks>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
 }) => {
-    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
     const queryKey = queryOptions?.queryKey ?? getListBooksQueryKey();
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof listBooks>>> = ({
         signal,
-    }) => listBooks({ signal, ...fetchOptions });
+    }) => listBooks({ signal, ...requestOptions });
 
     return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
         Awaited<ReturnType<typeof listBooks>>,
@@ -111,7 +104,7 @@ export function useListBooks<
                 >,
                 "initialData"
             >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -137,7 +130,7 @@ export function useListBooks<
                 >,
                 "initialData"
             >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -155,7 +148,7 @@ export function useListBooks<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -177,7 +170,7 @@ export function useListBooks<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -204,15 +197,15 @@ export const getListBooksSuspenseQueryOptions = <
             TData
         >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
 }) => {
-    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
     const queryKey = queryOptions?.queryKey ?? getListBooksQueryKey();
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof listBooks>>> = ({
         signal,
-    }) => listBooks({ signal, ...fetchOptions });
+    }) => listBooks({ signal, ...requestOptions });
 
     return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listBooks>>,
@@ -238,7 +231,7 @@ export function useListBooksSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -256,7 +249,7 @@ export function useListBooksSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -274,7 +267,7 @@ export function useListBooksSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -296,7 +289,7 @@ export function useListBooksSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -337,30 +330,21 @@ export type getBookResponseError = getBookResponse404 & {
 export type getBookResponse = getBookResponseSuccess | getBookResponseError;
 
 export const getGetBookUrl = (slug: string) => {
-    return `http://localhost:4000/api/books/${slug}`;
+    return `/api/books/${slug}`;
 };
 
 export const getBook = async (
     slug: string,
     options?: RequestInit,
 ): Promise<getBookResponse> => {
-    const res = await fetch(getGetBookUrl(slug), {
+    return customFetch<getBookResponse>(getGetBookUrl(slug), {
         ...options,
         method: "GET",
     });
-
-    const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-    const data: getBookResponse["data"] = body ? JSON.parse(body) : {};
-    return {
-        data,
-        status: res.status,
-        headers: res.headers,
-    } as getBookResponse;
 };
 
 export const getGetBookQueryKey = (slug: string) => {
-    return [`http://localhost:4000/api/books/${slug}`] as const;
+    return [`/api/books/${slug}`] as const;
 };
 
 export const getGetBookQueryOptions = <
@@ -372,16 +356,16 @@ export const getGetBookQueryOptions = <
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getBook>>, TError, TData>
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
 ) => {
-    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
     const queryKey = queryOptions?.queryKey ?? getGetBookQueryKey(slug);
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getBook>>> = ({
         signal,
-    }) => getBook(slug, { signal, ...fetchOptions });
+    }) => getBook(slug, { signal, ...requestOptions });
 
     return {
         queryKey,
@@ -415,7 +399,7 @@ export function useGetBook<
                 >,
                 "initialData"
             >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -438,7 +422,7 @@ export function useGetBook<
                 >,
                 "initialData"
             >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -453,7 +437,7 @@ export function useGetBook<
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getBook>>, TError, TData>
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -472,7 +456,7 @@ export function useGetBook<
         query?: Partial<
             UseQueryOptions<Awaited<ReturnType<typeof getBook>>, TError, TData>
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -501,16 +485,16 @@ export const getGetBookSuspenseQueryOptions = <
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
 ) => {
-    const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
     const queryKey = queryOptions?.queryKey ?? getGetBookQueryKey(slug);
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getBook>>> = ({
         signal,
-    }) => getBook(slug, { signal, ...fetchOptions });
+    }) => getBook(slug, { signal, ...requestOptions });
 
     return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getBook>>,
@@ -537,7 +521,7 @@ export function useGetBookSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -556,7 +540,7 @@ export function useGetBookSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -575,7 +559,7 @@ export function useGetBookSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
@@ -598,7 +582,7 @@ export function useGetBookSuspense<
                 TData
             >
         >;
-        fetch?: RequestInit;
+        request?: SecondParameter<typeof customFetch>;
     },
     queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {

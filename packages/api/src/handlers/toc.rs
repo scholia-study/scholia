@@ -1,10 +1,10 @@
 use axum::Json;
 use axum::extract::{Path, State};
-use sqlx::PgPool;
 
 use crate::db;
 use crate::error::AppError;
 use crate::models::toc::TocNodeResponse;
+use crate::state::AppState;
 
 /// Get the full TOC tree for a book
 #[utoipa::path(
@@ -18,9 +18,9 @@ use crate::models::toc::TocNodeResponse;
     tag = "toc"
 )]
 pub async fn get_toc(
-    State(pool): State<PgPool>,
+    State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<Vec<TocNodeResponse>>, AppError> {
-    let tree = db::toc::get_toc_tree(&pool, &slug).await?;
+    let tree = db::toc::get_toc_tree(&state.pool, &slug).await?;
     Ok(Json(tree))
 }

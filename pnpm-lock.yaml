@@ -25,9 +25,6 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(@types/react@19.2.14)(react@19.2.4)
-      '@fontsource-variable/libre-baskerville':
-        specifier: ^5.2.1
-        version: 5.2.1
       '@fontsource/libre-baskerville':
         specifier: ^5.2.10
         version: 5.2.10
@@ -85,6 +82,9 @@ importers:
       react-dom:
         specifier: ^19.2.0
         version: 19.2.4(react@19.2.4)
+      react-hot-toast:
+        specifier: ^2.6.0
+        version: 2.6.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       tailwindcss:
         specifier: ^4.1.18
         version: 4.2.1
@@ -574,9 +574,6 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
-
-  '@fontsource-variable/libre-baskerville@5.2.1':
-    resolution: {integrity: sha512-O1FvkY4XMmIkoG6F+YS8cQKxLh0w0+h85ats/3gRnAAo4WEFUaja5efq07pA0tUI5biNZQi2dLmIznD8F7EkMg==}
 
   '@fontsource/libre-baskerville@5.2.10':
     resolution: {integrity: sha512-Y/bGj4cOdWhAxU4+sBPen3MB5Og3t/WvezVL+05CJ7cvhDQUKpQFUuw/hm1IQKRc9u0lWs8VP2MKDOK2uQtloQ==}
@@ -2530,6 +2527,13 @@ packages:
     peerDependencies:
       react: ^19.2.4
 
+  react-hot-toast@2.6.0:
+    resolution: {integrity: sha512-bH+2EBMZ4sdyou/DPrfgIouFpcRLCJ+HoCA32UoAYHn6T3Ur5yfcDCeSr5mwldl6pFOsiocmrXMuoCJ1vV8bWg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -3559,8 +3563,6 @@ snapshots:
     optional: true
 
   '@exodus/bytes@1.15.0': {}
-
-  '@fontsource-variable/libre-baskerville@5.2.1': {}
 
   '@fontsource/libre-baskerville@5.2.10': {}
 
@@ -5619,6 +5621,13 @@ snapshots:
     dependencies:
       react: 19.2.4
       scheduler: 0.27.0
+
+  react-hot-toast@2.6.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      csstype: 3.2.3
+      goober: 2.1.18(csstype@3.2.3)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
   react-is@16.13.1: {}
 

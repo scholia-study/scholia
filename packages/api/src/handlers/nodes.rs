@@ -1,12 +1,12 @@
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use serde::Deserialize;
-use sqlx::PgPool;
 use utoipa::IntoParams;
 
 use crate::db;
 use crate::error::AppError;
 use crate::models::node::NodeDetail;
+use crate::state::AppState;
 
 #[derive(Deserialize, IntoParams)]
 pub struct NodeParams {
@@ -31,11 +31,12 @@ pub struct NodeParams {
     tag = "nodes"
 )]
 pub async fn get_node(
-    State(pool): State<PgPool>,
+    State(state): State<AppState>,
     Path((slug, node_slug)): Path<(String, String)>,
     Query(params): Query<NodeParams>,
 ) -> Result<Json<NodeDetail>, AppError> {
     let include_original = params.original.unwrap_or(false);
-    let node = db::nodes::get_node_content(&pool, &slug, &node_slug, include_original).await?;
+    let node =
+        db::nodes::get_node_content(&state.pool, &slug, &node_slug, include_original).await?;
     Ok(Json(node))
 }

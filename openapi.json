@@ -271,10 +271,375 @@
           }
         }
       }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Request a password reset email",
+        "operationId": "forgot_password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "If the email exists, a reset link was sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/github": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Redirect to GitHub OAuth",
+        "operationId": "github_login",
+        "responses": {
+          "302": {
+            "description": "Redirect to GitHub"
+          }
+        }
+      }
+    },
+    "/auth/github/callback": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Handle GitHub OAuth callback",
+        "operationId": "github_callback",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "description": "Authorization code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "CSRF state",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to frontend"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Log in with email and password",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "403": {
+            "description": "Email not verified"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Log out (destroy session)",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "Logged out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get current authenticated user",
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "description": "Current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get current user's profile with linked providers",
+        "operationId": "get_profile",
+        "responses": {
+          "200": {
+            "description": "User profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Update display name",
+        "operationId": "update_profile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register a new user with email and password",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Email already exists"
+          }
+        }
+      }
+    },
+    "/auth/request-password-change": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Request a password change email (for authenticated users)",
+        "operationId": "request_password_change",
+        "responses": {
+          "200": {
+            "description": "Password change email sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Reset password using a token",
+        "operationId": "reset_password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired token"
+          }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Verify email using a token",
+        "operationId": "verify_email",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Verification token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirects to frontend"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AuthResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "display_name"
+        ],
+        "properties": {
+          "avatar_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
       "BookDetail": {
         "type": "object",
         "required": [
@@ -463,6 +828,60 @@
           }
         }
       },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "LinkedProvider": {
+        "type": "object",
+        "required": [
+          "provider"
+        ],
+        "properties": {
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "provider": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "MessageResponse": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
       "NodeDetail": {
         "type": "object",
         "required": [
@@ -554,6 +973,76 @@
             "format": "int32"
           },
           "system_slug": {
+            "type": "string"
+          }
+        }
+      },
+      "ProfileResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "display_name",
+          "has_password",
+          "providers"
+        ],
+        "properties": {
+          "avatar_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "has_password": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "providers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkedProvider"
+            }
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "display_name",
+          "password"
+        ],
+        "properties": {
+          "display_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "password"
+        ],
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "token": {
             "type": "string"
           }
         }
@@ -667,6 +1156,17 @@
             "type": "string"
           },
           "source_ref": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "required": [
+          "display_name"
+        ],
+        "properties": {
+          "display_name": {
             "type": "string"
           }
         }

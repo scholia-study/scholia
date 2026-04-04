@@ -5,15 +5,26 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./authResponse";
 export * from "./bookDetail";
 export * from "./bookSummary";
 export * from "./contentBlockResponse";
 export * from "./footnoteResponse";
 export * from "./footnoteSentenceResponse";
+export * from "./forgotPasswordRequest";
 export * from "./getNodePageParams";
 export * from "./getNodeParams";
+export * from "./githubCallbackParams";
+export * from "./linkedProvider";
+export * from "./loginRequest";
+export * from "./messageResponse";
 export * from "./nodeDetail";
 export * from "./nodePage";
 export * from "./pageMarkerResponse";
+export * from "./profileResponse";
+export * from "./registerRequest";
+export * from "./resetPasswordRequest";
 export * from "./sentenceResponse";
 export * from "./tocNodeResponse";
+export * from "./updateProfileRequest";
+export * from "./verifyEmailParams";
