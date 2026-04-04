@@ -984,6 +984,7 @@
           "email",
           "display_name",
           "has_password",
+          "roles",
           "providers"
         ],
         "properties": {
@@ -1009,6 +1010,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/LinkedProvider"
+            }
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           }
         }

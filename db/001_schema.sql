@@ -307,9 +307,10 @@ CREATE TABLE users (
     id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     display_name      TEXT NOT NULL,
     email             TEXT NOT NULL UNIQUE,
-    password_hash     TEXT,
-    avatar_url        TEXT,
-    email_verified_at TIMESTAMPTZ,
+    password_hash         TEXT,
+    avatar_url            TEXT,
+    email_verified_at     TIMESTAMPTZ,
+    sessions_invalidated_at TIMESTAMPTZ,
     admin_notes       TEXT,
     created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -354,6 +355,19 @@ CREATE TABLE user_oauth_accounts (
 );
 
 CREATE INDEX idx_oauth_user ON user_oauth_accounts (user_id);
+
+-- ============================================================
+-- USER SESSIONS (maps users to tower-sessions session IDs)
+-- ============================================================
+
+CREATE TABLE user_sessions (
+    session_id  TEXT NOT NULL,
+    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (session_id)
+);
+
+CREATE INDEX idx_user_sessions_user ON user_sessions (user_id);
 
 -- ============================================================
 -- EMAIL VERIFICATION TOKENS

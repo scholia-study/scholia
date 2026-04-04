@@ -14,4 +14,5 @@ export interface ProfileResponse {
     has_password: boolean;
     id: string;
     providers: LinkedProvider[];
+    roles: string[];
 }

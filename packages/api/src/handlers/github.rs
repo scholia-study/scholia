@@ -269,7 +269,7 @@ pub async fn github_callback(
     };
 
     // Create session
-    if set_session_user(&session, user_id).await.is_err() {
+    if set_session_user(&session, &state.pool, user_id).await.is_err() {
         return error_redirect("session_failed");
     }
 

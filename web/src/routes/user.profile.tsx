@@ -72,19 +72,28 @@ function ProfilePage() {
         <div className="max-w-md mx-auto px-8 py-16">
             <h1 className="text-2xl font-bold text-stone-900 mb-8">Profile</h1>
 
-            <div className="flex items-center gap-4 mb-8">
-                <Avatar
-                    src={profile.avatar_url ?? undefined}
-                    alt={profile.display_name}
-                    sx={{ width: 56, height: 56, fontSize: 24 }}
-                >
-                    {profile.display_name.charAt(0).toUpperCase()}
-                </Avatar>
-                <div>
-                    <p className="font-medium text-stone-900">
-                        {profile.display_name}
-                    </p>
-                    <p className="text-sm text-stone-500">{profile.email}</p>
+            <div className="mb-8">
+                <div className="flex items-center gap-4">
+                    <Avatar
+                        src={profile.avatar_url ?? undefined}
+                        alt={profile.display_name}
+                        sx={{ width: 56, height: 56, fontSize: 24 }}
+                    >
+                        {profile.display_name.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <div>
+                        <p className="font-medium text-stone-900">
+                            {profile.display_name}
+                        </p>
+                        <p className="text-sm text-stone-500">
+                            {profile.email}
+                        </p>
+                    </div>
+                </div>
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                    {profile.roles.map((role) => (
+                        <Chip key={role} label={role} size="small" color="primary" variant="outlined" />
+                    ))}
                 </div>
             </div>
 

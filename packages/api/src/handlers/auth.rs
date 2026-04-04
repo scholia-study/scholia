@@ -12,7 +12,7 @@ use tower_sessions::Session;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::auth::middleware::{set_session_user, AuthUser};
+use crate::auth::middleware::{invalidate_user_sessions, set_session_user, AuthUser};
 use crate::auth::tokens;
 use crate::email;
 use crate::state::AppState;
@@ -68,6 +68,7 @@ pub struct ProfileResponse {
     pub display_name: String,
     pub avatar_url: Option<String>,
     pub has_password: bool,
+    pub roles: Vec<String>,
     pub providers: Vec<LinkedProvider>,
 }
 
@@ -241,7 +242,7 @@ pub async fn login(
     }
 
     // Create session
-    if set_session_user(&session, user_id).await.is_err() {
+    if set_session_user(&session, &state.pool, user_id).await.is_err() {
         return StatusCode::INTERNAL_SERVER_ERROR.into_response();
     }
 
@@ -263,8 +264,21 @@ pub async fn login(
     ),
     tag = "auth"
 )]
-pub async fn logout(session: Session) -> Json<MessageResponse> {
+pub async fn logout(
+    State(state): State<AppState>,
+    session: Session,
+) -> Json<MessageResponse> {
+    let session_id = session.id().map(|id| id.to_string());
     let _ = session.flush().await;
+
+    // Clean up our mapping
+    if let Some(id) = session_id {
+        let _ = sqlx::query("DELETE FROM user_sessions WHERE session_id = $1")
+            .bind(&id)
+            .execute(&state.pool)
+            .await;
+    }
+
     Json(MessageResponse {
         message: "Logged out".to_string(),
     })
@@ -393,9 +407,9 @@ pub async fn reset_password(
         Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
     };
 
-    // Update password and verify email (two birds, one stone)
+    // Update password, verify email, and set password_changed_at to invalidate existing sessions
     let _ = sqlx::query(
-        "UPDATE users SET password_hash = $1, email_verified_at = COALESCE(email_verified_at, now()), updated_at = now() WHERE id = $2",
+        "UPDATE users SET password_hash = $1, email_verified_at = COALESCE(email_verified_at, now()), sessions_invalidated_at = now(), updated_at = now() WHERE id = $2",
     )
     .bind(&new_hash)
     .bind(user_id)
@@ -408,11 +422,8 @@ pub async fn reset_password(
         .execute(&state.pool)
         .await;
 
-    // Invalidate all sessions for this user (best effort — search session data for user ID)
-    let _ = sqlx::query("DELETE FROM tower_sessions WHERE data::text LIKE $1")
-        .bind(format!("%{}%", user_id))
-        .execute(&state.pool)
-        .await;
+    // Purge all sessions for this user
+    invalidate_user_sessions(&state.pool, user_id).await;
 
     Json(MessageResponse {
         message: "Password reset successfully. Please log in.".to_string(),
@@ -472,7 +483,7 @@ pub async fn verify_email(
         .await;
 
     // Auto-login
-    let _ = set_session_user(&session, user_id).await;
+    let _ = set_session_user(&session, &state.pool, user_id).await;
 
     Redirect::to(&format!(
         "{}/verify-email?success=true",
@@ -505,6 +516,14 @@ pub async fn get_profile(
 
     let has_password: bool = row.get("has_password");
 
+    let roles: Vec<String> = sqlx::query_scalar(
+        "SELECT r.name FROM user_roles ur JOIN roles r ON r.id = ur.role_id WHERE ur.user_id = $1 ORDER BY r.name",
+    )
+    .bind(user.id)
+    .fetch_all(&state.pool)
+    .await
+    .unwrap_or_default();
+
     let provider_rows = sqlx::query("SELECT provider, email FROM user_oauth_accounts WHERE user_id = $1")
         .bind(user.id)
         .fetch_all(&state.pool)
@@ -525,6 +544,7 @@ pub async fn get_profile(
         display_name: user.display_name,
         avatar_url: user.avatar_url,
         has_password,
+        roles,
         providers,
     })
 }
