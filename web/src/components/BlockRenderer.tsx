@@ -273,6 +273,9 @@ export function Sentence({
             )}
             <span
                 data-sentence-key={sentenceKey(sentence)}
+                onMouseDown={(e) => {
+                    if (e.shiftKey) e.preventDefault();
+                }}
                 onClick={(e) => onSelect(sentence, e.shiftKey)}
                 className={`cursor-pointer transition-colors rounded-sm ${highlightClass}`}
             >
