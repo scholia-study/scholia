@@ -14,7 +14,7 @@ interface InterleavedNodeRendererProps {
     viewLayout: ViewLayout;
     selectedSentenceId: string | null;
     showOriginal: boolean;
-    onSelectSentence: (sentence: SentenceResponse) => void;
+    onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
     marginSettings?: MarginSettings;
     primaryLabel: string;
     companionLabel: string;
@@ -190,7 +190,7 @@ function StackedParagraphs({
     aligned: AlignedBlock[];
     selectedSentenceId: string | null;
     showOriginal: boolean;
-    onSelectSentence: (sentence: SentenceResponse) => void;
+    onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
     marginSettings?: MarginSettings;
     primaryLabel: string;
     companionLabel: string;
@@ -246,7 +246,7 @@ function StackedSentences({
     aligned: AlignedBlock[];
     selectedSentenceId: string | null;
     showOriginal: boolean;
-    onSelectSentence: (sentence: SentenceResponse) => void;
+    onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
     marginSettings?: MarginSettings;
     primaryLabel: string;
     companionLabel: string;
@@ -364,7 +364,7 @@ function SideBySideParagraphs({
     aligned: AlignedBlock[];
     selectedSentenceId: string | null;
     showOriginal: boolean;
-    onSelectSentence: (sentence: SentenceResponse) => void;
+    onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
     marginSettings?: MarginSettings;
     primaryLabel: string;
     companionLabel: string;
@@ -438,7 +438,7 @@ function SideBySideSentences({
     aligned: AlignedBlock[];
     selectedSentenceId: string | null;
     showOriginal: boolean;
-    onSelectSentence: (sentence: SentenceResponse) => void;
+    onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
     marginSettings?: MarginSettings;
     primaryLabel: string;
     companionLabel: string;

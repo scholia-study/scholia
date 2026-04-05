@@ -21,7 +21,7 @@ interface ResourcesPanelProps {
     onNavigate?: (nodeSlug: string) => void;
     onAddComparisonPanel: (bookSlug: string, nodeSlug: string) => void;
     canAddPanel: boolean;
-    selectedSentence: SentenceResponse | FootnoteSentenceResponse | undefined;
+    selectedSentence: SentenceResponse | FootnoteSentenceResponse | (SentenceResponse | FootnoteSentenceResponse)[] | undefined;
     onClose: () => void;
     activeView: string | undefined;
     onViewChange: (view: string | undefined) => void;

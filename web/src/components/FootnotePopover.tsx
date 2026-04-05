@@ -9,7 +9,7 @@ interface FootnotePopoverProps {
     open: boolean;
     onClose: () => void;
     selectedFootnoteSentenceId: string | undefined;
-    onSelectFootnoteSentence: (sentence: FootnoteSentenceResponse) => void;
+    onSelectFootnoteSentence: (sentence: FootnoteSentenceResponse, shiftKey: boolean) => void;
     showOriginal?: boolean;
 }
 
@@ -52,7 +52,7 @@ export function FootnotePopover({
                             <span
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    onSelectFootnoteSentence(sentence);
+                                    onSelectFootnoteSentence(sentence, e.shiftKey);
                                 }}
                                 className={`cursor-pointer transition-colors rounded-sm ${
                                     isSelected

@@ -22,6 +22,7 @@ type PageCursor = { after: number } | { before: number };
 
 export interface PanelScrollViewHandle {
     scrollToNode: (nodeSlug: string, sortOrder?: number) => void;
+    getSentencesInRange: (start: number, end: number) => SentenceResponse[];
 }
 
 interface PanelScrollViewProps {
@@ -35,7 +36,7 @@ interface PanelScrollViewProps {
     companionSlug?: string;
     primaryLabel?: string;
     companionLabel?: string;
-    onSelectSentence: (sentence: SentenceResponse) => void;
+    onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
     onVisibleNodeChange?: (nodeSlug: string) => void;
     onSystemsDiscovered?: (systems: string[]) => void;
     marginSettings?: MarginSettings;
@@ -280,7 +281,7 @@ interface VirtualizedScrollProps {
     companionNodeMap?: Map<string, NodeDetail>;
     primaryLabel?: string;
     companionLabel?: string;
-    onSelectSentence: (sentence: SentenceResponse) => void;
+    onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
     onVisibleNodeChange?: (nodeSlug: string) => void;
     marginSettings?: MarginSettings;
 }
@@ -510,6 +511,23 @@ const VirtualizedScroll = forwardRef<
     useImperativeHandle(
         ref,
         () => ({
+            getSentencesInRange(start: number, end: number) {
+                const result: SentenceResponse[] = [];
+                for (const node of nodes) {
+                    for (const block of node.blocks) {
+                        for (const sentence of block.sentences) {
+                            if (
+                                sentence.sentence_number != null &&
+                                sentence.sentence_number >= start &&
+                                sentence.sentence_number <= end
+                            ) {
+                                result.push(sentence);
+                            }
+                        }
+                    }
+                }
+                return result.sort((a, b) => a.sentence_number! - b.sentence_number!);
+            },
             scrollToNode(nodeSlug: string, sortOrder?: number) {
                 const index = nodes.findIndex((n) => n.slug === nodeSlug);
                 if (index >= 0) {
@@ -579,7 +597,7 @@ const VirtualizedScroll = forwardRef<
                             (sentence.sentence_number != null &&
                                 String(sentence.sentence_number) === key)
                         ) {
-                            onSelectSentence(sentence);
+                            onSelectSentence(sentence, false);
                             break;
                         }
                     }

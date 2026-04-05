@@ -3,7 +3,7 @@ import type { FootnoteSentenceResponse } from "../api/model";
 
 interface FootnoteSelectionState {
     selectedFootnoteSentenceId: string | undefined;
-    onSelectFootnoteSentence: (sentence: FootnoteSentenceResponse) => void;
+    onSelectFootnoteSentence: (sentence: FootnoteSentenceResponse, shiftKey: boolean) => void;
     onClearFootnoteSentence: () => void;
 }
 

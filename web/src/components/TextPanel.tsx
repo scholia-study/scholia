@@ -15,15 +15,17 @@ import {
     ToggleButtonGroup,
     Typography,
 } from "@mui/material";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useGetBook } from "../api/books/books";
 import type { FootnoteSentenceResponse, SentenceResponse, TocNodeResponse } from "../api/model";
 import { useGetToc, getGetTocQueryOptions } from "../api/toc/toc";
 import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import {
     type MarginSettings,
     footnoteSentenceKey,
     footnoteSentenceMatchesKey,
+    parseRangeKey,
     sentenceKey,
     sentenceMatchesKey,
 } from "./BlockRenderer";
@@ -117,14 +119,18 @@ export function TextPanel({
         SentenceResponse | undefined
     >();
 
-    // Resolve footnote sentence from the selected main sentence's footnotes
-    const selectedFootnoteSentence = useMemo((): FootnoteSentenceResponse | undefined => {
-        if (!footnoteSentenceId || !selectedSentence?.footnotes) return undefined;
+    // Resolve footnote sentence(s) from the selected main sentence's footnotes
+    const selectedFootnoteSentences = useMemo((): FootnoteSentenceResponse[] => {
+        if (!footnoteSentenceId || !selectedSentence?.footnotes) return [];
+        const result: FootnoteSentenceResponse[] = [];
         for (const fn of selectedSentence.footnotes) {
-            const found = fn.sentences.find((s) => footnoteSentenceMatchesKey(s, footnoteSentenceId));
-            if (found) return found;
+            for (const s of fn.sentences) {
+                if (footnoteSentenceMatchesKey(s, footnoteSentenceId)) {
+                    result.push(s);
+                }
+            }
         }
-        return undefined;
+        return result;
     }, [footnoteSentenceId, selectedSentence]);
 
     const scrollViewRef = useRef<PanelScrollViewHandle>(null);
@@ -221,30 +227,96 @@ export function TextPanel({
         sentenceMatchesKey(selectedSentence, selectedSentenceId);
     const availableSystems = Object.keys(marginSettings.systemSides);
 
+    const MAX_RANGE_SENTENCES = 10;
+    const anchorSentenceRef = useRef<SentenceResponse | null>(null);
+
     const handleSelectSentence = useCallback(
-        (sentence: SentenceResponse) => {
-            setSelectedSentence(sentence);
-            onSelectSentence(sentenceKey(sentence));
+        (sentence: SentenceResponse, shiftKey: boolean) => {
+            if (
+                shiftKey &&
+                anchorSentenceRef.current &&
+                anchorSentenceRef.current.sentence_number != null &&
+                sentence.sentence_number != null
+            ) {
+                const anchorNum = anchorSentenceRef.current.sentence_number;
+                const targetNum = sentence.sentence_number;
+                const start = Math.min(anchorNum, targetNum);
+                const end = Math.max(anchorNum, targetNum);
+                if (end - start + 1 > MAX_RANGE_SENTENCES) {
+                    toast.error(`Range selection is limited to ${MAX_RANGE_SENTENCES} sentences`);
+                    return;
+                }
+                if (start === end) {
+                    // Same sentence — single select
+                    setSelectedSentence(sentence);
+                    onSelectSentence(sentenceKey(sentence));
+                } else {
+                    setSelectedSentence(sentence);
+                    onSelectSentence(`${start}-${end}`);
+                }
+            } else {
+                // Regular click — set new anchor
+                anchorSentenceRef.current = sentence;
+                setSelectedSentence(sentence);
+                onSelectSentence(sentenceKey(sentence));
+            }
         },
         [onSelectSentence],
     );
 
+    // Collect sentences for range display in ResourcesPanel
+    const [selectedSentences, setSelectedSentences] = useState<SentenceResponse[]>([]);
+    const rangeKey = selectedSentenceId ? parseRangeKey(selectedSentenceId) : null;
+
+    useEffect(() => {
+        if (rangeKey && scrollViewRef.current) {
+            setSelectedSentences(scrollViewRef.current.getSentencesInRange(rangeKey[0], rangeKey[1]));
+        } else {
+            setSelectedSentences([]);
+        }
+    }, [rangeKey?.[0], rangeKey?.[1]]);
+
     const selectionCtx = useMemo(
         () => ({
             selectedKey: selectedSentenceId ?? null,
-            clickedId: selectedSentence?.id,
+            clickedId: rangeKey ? undefined : selectedSentence?.id,
         }),
-        [selectedSentenceId, selectedSentence],
+        [selectedSentenceId, selectedSentence, rangeKey],
     );
 
+    const anchorFootnoteSentenceRef = useRef<FootnoteSentenceResponse | null>(null);
+
     const handleSelectFootnoteSentence = useCallback(
-        (sentence: FootnoteSentenceResponse) => {
-            onSelectFootnoteSentence(footnoteSentenceKey(sentence));
+        (sentence: FootnoteSentenceResponse, shiftKey: boolean) => {
+            if (
+                shiftKey &&
+                anchorFootnoteSentenceRef.current &&
+                anchorFootnoteSentenceRef.current.sentence_number != null &&
+                sentence.sentence_number != null
+            ) {
+                const anchorNum = anchorFootnoteSentenceRef.current.sentence_number;
+                const targetNum = sentence.sentence_number;
+                const start = Math.min(anchorNum, targetNum);
+                const end = Math.max(anchorNum, targetNum);
+                if (end - start + 1 > MAX_RANGE_SENTENCES) {
+                    toast.error(`Range selection is limited to ${MAX_RANGE_SENTENCES} sentences`);
+                    return;
+                }
+                if (start === end) {
+                    onSelectFootnoteSentence(footnoteSentenceKey(sentence));
+                } else {
+                    onSelectFootnoteSentence(`${start}-${end}`);
+                }
+            } else {
+                anchorFootnoteSentenceRef.current = sentence;
+                onSelectFootnoteSentence(footnoteSentenceKey(sentence));
+            }
         },
         [onSelectFootnoteSentence],
     );
 
     const handleClearFootnoteSentence = useCallback(() => {
+        anchorFootnoteSentenceRef.current = null;
         onSelectFootnoteSentence(undefined);
     }, [onSelectFootnoteSentence]);
 
@@ -288,8 +360,14 @@ export function TextPanel({
         [toc],
     );
 
-    // Determine what to show in the resource panel: footnote sentence takes priority
-    const resourcePanelSentence = selectedFootnoteSentence ?? (showSentenceDetail ? selectedSentence : undefined);
+    // Determine what to show in the resource panel: footnote sentences > range > single sentence
+    const resourcePanelSentence = useMemo((): SentenceResponse | FootnoteSentenceResponse | (SentenceResponse | FootnoteSentenceResponse)[] | undefined => {
+        if (selectedFootnoteSentences.length > 1) return selectedFootnoteSentences;
+        if (selectedFootnoteSentences.length === 1) return selectedFootnoteSentences[0];
+        if (selectedSentences.length > 0) return selectedSentences;
+        if (showSentenceDetail) return selectedSentence;
+        return undefined;
+    }, [selectedFootnoteSentences, selectedSentences, showSentenceDetail, selectedSentence]);
 
     return (
         <SentenceSelectionProvider value={selectionCtx}>

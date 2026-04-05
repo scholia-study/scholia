@@ -15,12 +15,26 @@ export function sentenceKey(s: SentenceResponse): string {
     return s.sentence_number != null ? String(s.sentence_number) : s.id;
 }
 
-/** Check if a sentence matches a URL key (sentence_number or ID). */
+/** Parse a range key like "12-21" into [start, end] or null. */
+export function parseRangeKey(key: string): [number, number] | null {
+    const dashIdx = key.indexOf("-");
+    if (dashIdx <= 0) return null;
+    const start = Number(key.slice(0, dashIdx));
+    const end = Number(key.slice(dashIdx + 1));
+    if (isNaN(start) || isNaN(end)) return null;
+    return [start, end];
+}
+
+/** Check if a sentence matches a URL key (sentence_number, ID, or range like "12-21"). */
 export function sentenceMatchesKey(
     s: SentenceResponse,
     key: string | undefined | null,
 ): boolean {
     if (!key) return false;
+    const range = parseRangeKey(key);
+    if (range && s.sentence_number != null) {
+        return s.sentence_number >= range[0] && s.sentence_number <= range[1];
+    }
     return s.id === key || (s.sentence_number != null && String(s.sentence_number) === key);
 }
 
@@ -29,12 +43,16 @@ export function footnoteSentenceKey(s: FootnoteSentenceResponse): string {
     return s.sentence_number != null ? String(s.sentence_number) : s.id;
 }
 
-/** Check if a footnote sentence matches a URL key (sentence_number or ID). */
+/** Check if a footnote sentence matches a URL key (sentence_number, ID, or range like "5-8"). */
 export function footnoteSentenceMatchesKey(
     s: FootnoteSentenceResponse,
     key: string | undefined | null,
 ): boolean {
     if (!key) return false;
+    const range = parseRangeKey(key);
+    if (range && s.sentence_number != null) {
+        return s.sentence_number >= range[0] && s.sentence_number <= range[1];
+    }
     return s.id === key || (s.sentence_number != null && String(s.sentence_number) === key);
 }
 
@@ -80,7 +98,7 @@ function FootnoteSup({
     footnoteNumber: number;
     sentence: SentenceResponse;
     showOriginal?: boolean;
-    onSelectSentence: (sentence: SentenceResponse) => void;
+    onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
 }) {
     const { selectedFootnoteSentenceId, onSelectFootnoteSentence, onClearFootnoteSentence } =
         useFootnoteSelection();
@@ -110,7 +128,7 @@ function FootnoteSup({
             } else {
                 setAnchorEl(e.currentTarget);
                 // Ensure the main sentence is selected too
-                onSelectSentence(sentence);
+                onSelectSentence(sentence, false);
             }
         },
         [anchorEl, onClearFootnoteSentence, onSelectSentence, sentence],
@@ -135,8 +153,8 @@ function FootnoteSup({
     }, [anchorEl, onClearFootnoteSentence]);
 
     const handleSelectFootnoteSentence = useCallback(
-        (fsSentence: FootnoteSentenceResponse) => {
-            onSelectFootnoteSentence(fsSentence);
+        (fsSentence: FootnoteSentenceResponse, shiftKey: boolean) => {
+            onSelectFootnoteSentence(fsSentence, shiftKey);
         },
         [onSelectFootnoteSentence],
     );
@@ -175,7 +193,7 @@ export function Sentence({
     sentence: SentenceResponse;
     isSelected: boolean;
     showOriginal?: boolean;
-    onSelect: (sentence: SentenceResponse) => void;
+    onSelect: (sentence: SentenceResponse, shiftKey: boolean) => void;
     marginSettings?: MarginSettings;
 }) {
     const { isCorrespondent } = useSentenceSelection(sentence);
@@ -255,7 +273,7 @@ export function Sentence({
             )}
             <span
                 data-sentence-key={sentenceKey(sentence)}
-                onClick={() => onSelect(sentence)}
+                onClick={(e) => onSelect(sentence, e.shiftKey)}
                 className={`cursor-pointer transition-colors rounded-sm ${highlightClass}`}
             >
                 {parsedHtml}
@@ -315,7 +333,7 @@ export function Block({
     block: ContentBlockResponse;
     selectedSentenceId: string | null;
     showOriginal?: boolean;
-    onSelectSentence: (sentence: SentenceResponse) => void;
+    onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
     marginSettings?: MarginSettings;
 }) {
     const blockHtml = showOriginal && block.original_html ? block.original_html : block.html;
