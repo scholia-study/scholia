@@ -54,6 +54,7 @@ pub struct AuthResponse {
     pub email: String,
     pub display_name: String,
     pub avatar_url: Option<String>,
+    pub roles: Vec<String>,
 }
 
 #[derive(Serialize, ToSchema)]
@@ -246,11 +247,20 @@ pub async fn login(
         return StatusCode::INTERNAL_SERVER_ERROR.into_response();
     }
 
+    let roles: Vec<String> = sqlx::query_scalar(
+        "SELECT r.name FROM user_roles ur JOIN roles r ON r.id = ur.role_id WHERE ur.user_id = $1 ORDER BY r.name",
+    )
+    .bind(user_id)
+    .fetch_all(&state.pool)
+    .await
+    .unwrap_or_default();
+
     Json(AuthResponse {
         id: user_id.to_string(),
         email: user_email,
         display_name: user_display_name,
         avatar_url,
+        roles,
     })
     .into_response()
 }
@@ -300,6 +310,7 @@ pub async fn me(user: AuthUser) -> Json<AuthResponse> {
         email: user.email,
         display_name: user.display_name,
         avatar_url: user.avatar_url,
+        roles: user.roles,
     })
 }
 

@@ -3,14 +3,20 @@ use axum::response::{IntoResponse, Response};
 
 #[derive(Debug)]
 pub enum AppError {
+    BadRequest(String),
+    Forbidden(String),
     NotFound(String),
+    Conflict(String),
     Internal(String),
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, message) = match self {
+            AppError::BadRequest(msg) => (StatusCode::BAD_REQUEST, msg),
+            AppError::Forbidden(msg) => (StatusCode::FORBIDDEN, msg),
             AppError::NotFound(msg) => (StatusCode::NOT_FOUND, msg),
+            AppError::Conflict(msg) => (StatusCode::CONFLICT, msg),
             AppError::Internal(msg) => {
                 tracing::error!("Internal error: {msg}");
                 (

@@ -112,12 +112,47 @@ async fn main() {
         .routes(utoipa_axum::routes!(api::handlers::books::get_book))
         .routes(utoipa_axum::routes!(api::handlers::toc::get_toc))
         .routes(utoipa_axum::routes!(api::handlers::nodes::get_node))
-        .routes(utoipa_axum::routes!(api::handlers::page::get_node_page));
+        .routes(utoipa_axum::routes!(api::handlers::page::get_node_page))
+        .routes(utoipa_axum::routes!(api::handlers::resources::list_resources));
+
+    // Editor routes (auth checked in each handler)
+    let editor_router = OpenApiRouter::new()
+        .routes(utoipa_axum::routes!(
+            api::handlers::resources::create_resource
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::resources::update_resource,
+            api::handlers::resources::delete_resource
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::sources::search_sources,
+            api::handlers::sources::create_source
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::sources::update_source
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::sources::add_source_person
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::sources::remove_source_person
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::sources::check_source_references
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::persons::search_persons,
+            api::handlers::persons::create_person
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::persons::update_person
+        ));
 
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
         .merge(auth_router)
         .merge(user_router)
         .merge(public_router)
+        .merge(editor_router)
         .split_for_parts();
 
     let app = router

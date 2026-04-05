@@ -64,6 +64,18 @@ pub async fn get_book_by_slug(pool: &PgPool, slug: &str) -> Result<BookDetail, A
     Ok(detail)
 }
 
+pub async fn get_book_id_by_slug(pool: &PgPool, slug: &str) -> Result<Uuid, AppError> {
+    let id = sqlx::query_scalar!(
+        r#"SELECT id FROM books WHERE slug = $1"#,
+        slug,
+    )
+    .fetch_optional(pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound(format!("Book not found: {slug}")))?;
+
+    Ok(id)
+}
+
 struct BookRow {
     id: Uuid,
     slug: String,

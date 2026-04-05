@@ -210,58 +210,6 @@ CREATE INDEX idx_markers_sentence ON page_markers (sentence_id);
 CREATE INDEX idx_markers_system_order ON page_markers (system_id, sort_order);
 CREATE INDEX idx_markers_system_value ON page_markers (system_id, ref_value);
 
--- ============================================================
--- RESOURCE TABLES (curated/editorial content)
--- ============================================================
-
--- Resources attached to text locations: commentary, definitions,
--- external links, essays, etc. Uses a type discriminator + JSONB
--- for type-specific fields.
---
--- ANCHOR PATTERN (shared by resources, user_notes, chat_conversations):
---
--- Every anchored row points to a text location at one of four
--- granularities:
---
---   node-level:       anchor_node_id only
---   block-level:      + anchor_block_id
---   single sentence:  + anchor_sentence_start_id (end is NULL)
---   sentence range:   + anchor_sentence_start_id + anchor_sentence_end_id
---
--- Sentence ranges can span multiple paragraphs (e.g. the last
--- sentence of one paragraph through the first of the next).
--- The sentences themselves carry their block FK, so we don't
--- require anchor_block_id when sentences are set.
-CREATE TABLE resources (
-    id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    book_id                   UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
-    resource_type             TEXT NOT NULL,
-    anchor_node_id            UUID NOT NULL REFERENCES toc_nodes(id) ON DELETE CASCADE,
-    anchor_block_id           UUID REFERENCES content_blocks(id) ON DELETE CASCADE,
-    anchor_sentence_start_id  UUID REFERENCES sentences(id) ON DELETE CASCADE,
-    anchor_sentence_end_id    UUID REFERENCES sentences(id) ON DELETE CASCADE,
-    title                     TEXT,
-    body                      TEXT,
-    metadata                  JSONB NOT NULL DEFAULT '{}',
-    sort_order                INT NOT NULL DEFAULT 0,
-    admin_notes               TEXT,
-    created_at                TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at                TIMESTAMPTZ NOT NULL DEFAULT now(),
-
-    CONSTRAINT chk_resource_anchor CHECK (
-        anchor_sentence_end_id IS NULL OR anchor_sentence_start_id IS NOT NULL
-    )
-);
-
-CREATE INDEX idx_resources_sentence_start ON resources (anchor_sentence_start_id)
-    WHERE anchor_sentence_start_id IS NOT NULL;
-CREATE INDEX idx_resources_sentence_end ON resources (anchor_sentence_end_id)
-    WHERE anchor_sentence_end_id IS NOT NULL;
-CREATE INDEX idx_resources_block ON resources (anchor_block_id)
-    WHERE anchor_block_id IS NOT NULL;
-CREATE INDEX idx_resources_node ON resources (anchor_node_id);
-CREATE INDEX idx_resources_book_type ON resources (book_id, resource_type);
-
 -- Links between two text locations. Separate from resources
 -- because it connects TWO anchors and needs bidirectional queries.
 CREATE TABLE cross_references (
@@ -318,6 +266,131 @@ CREATE TABLE users (
     created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- ============================================================
+-- BIBLIOGRAPHIC TABLES (sources & persons for commentary)
+-- ============================================================
+
+CREATE TABLE persons (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name        TEXT NOT NULL,
+    sort_name   TEXT,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TYPE source_type AS ENUM ('book', 'article', 'chapter', 'journal', 'web');
+
+CREATE TABLE sources (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    source_type       source_type NOT NULL,
+    title             TEXT NOT NULL,
+    publication_year  SMALLINT,
+    publisher         TEXT,
+    isbn              TEXT[],
+    doi               TEXT,
+    edition           TEXT,
+    volume            TEXT,
+    journal_name      TEXT,
+    url               TEXT,
+    page_start        INT,
+    page_end          INT,
+    parent_source_id  UUID REFERENCES sources(id) ON DELETE SET NULL,
+    created_by        UUID REFERENCES users(id),
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    CONSTRAINT chk_chapter_has_parent CHECK (
+        source_type != 'chapter' OR parent_source_id IS NOT NULL
+    ),
+    CONSTRAINT chk_no_parent CHECK (
+        source_type NOT IN ('book', 'web') OR parent_source_id IS NULL
+    )
+);
+
+CREATE INDEX idx_sources_parent ON sources (parent_source_id)
+    WHERE parent_source_id IS NOT NULL;
+CREATE INDEX idx_sources_title ON sources USING gin (to_tsvector('english', title));
+
+CREATE TYPE source_person_role AS ENUM ('author', 'editor', 'translator', 'contributor');
+
+CREATE TABLE source_persons (
+    source_id  UUID NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
+    person_id  UUID NOT NULL REFERENCES persons(id) ON DELETE RESTRICT,
+    role       source_person_role NOT NULL,
+    position   SMALLINT NOT NULL DEFAULT 0,
+    PRIMARY KEY (source_id, person_id, role)
+);
+
+CREATE INDEX idx_source_persons_person ON source_persons (person_id);
+
+-- ============================================================
+-- RESOURCE TABLES (curated/editorial content)
+-- ============================================================
+
+-- Resources attached to text locations: commentary, definitions,
+-- external links, essays, etc.
+--
+-- ANCHOR PATTERN (shared by resources, user_notes, chat_conversations):
+--
+-- Every anchored row points to a text location at one of four
+-- granularities:
+--
+--   node-level:       anchor_node_id only
+--   block-level:      + anchor_block_id
+--   single sentence:  + anchor_sentence_start_id (end is NULL)
+--   sentence range:   + anchor_sentence_start_id + anchor_sentence_end_id
+--
+-- Sentence ranges can span multiple paragraphs (e.g. the last
+-- sentence of one paragraph through the first of the next).
+-- The sentences themselves carry their block FK, so we don't
+-- require anchor_block_id when sentences are set.
+
+CREATE TYPE resource_type AS ENUM ('verbatim', 'paraphrase', 'allusion');
+CREATE TYPE verbatim_kind AS ENUM ('entirety', 'fragmentary');
+CREATE TYPE sentence_kind AS ENUM ('body', 'footnote');
+
+CREATE TABLE resources (
+    id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    book_id                   UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    resource_type             resource_type NOT NULL,
+    anchor_node_id            UUID NOT NULL REFERENCES toc_nodes(id) ON DELETE CASCADE,
+    anchor_block_id           UUID REFERENCES content_blocks(id) ON DELETE CASCADE,
+    anchor_sentence_start_id  UUID REFERENCES sentences(id) ON DELETE CASCADE,
+    anchor_sentence_end_id    UUID REFERENCES sentences(id) ON DELETE CASCADE,
+    sentence_kind             sentence_kind NOT NULL DEFAULT 'body',
+    source_id                 UUID REFERENCES sources(id),
+    source_page_start         INT,
+    source_page_end           INT,
+    source_location_freeform  TEXT,
+    verbatim_kind             verbatim_kind,
+    quoted_text               TEXT,
+    editor_note               TEXT,
+    is_featured               BOOLEAN NOT NULL DEFAULT false,
+    archived_at               TIMESTAMPTZ,
+    archived_by               UUID REFERENCES users(id),
+    admin_notes               TEXT,
+    created_at                TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at                TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    CONSTRAINT chk_resource_anchor CHECK (
+        anchor_sentence_end_id IS NULL OR anchor_sentence_start_id IS NOT NULL
+    ),
+    CONSTRAINT chk_source_location CHECK (
+        NOT (source_page_start IS NOT NULL AND source_location_freeform IS NOT NULL)
+    )
+);
+
+CREATE INDEX idx_resources_sentence_start ON resources (anchor_sentence_start_id)
+    WHERE anchor_sentence_start_id IS NOT NULL;
+CREATE INDEX idx_resources_sentence_end ON resources (anchor_sentence_end_id)
+    WHERE anchor_sentence_end_id IS NOT NULL;
+CREATE INDEX idx_resources_block ON resources (anchor_block_id)
+    WHERE anchor_block_id IS NOT NULL;
+CREATE INDEX idx_resources_node ON resources (anchor_node_id);
+CREATE INDEX idx_resources_book_type ON resources (book_id, resource_type);
+CREATE INDEX idx_resources_source ON resources (source_id)
+    WHERE source_id IS NOT NULL;
+CREATE INDEX idx_resources_active ON resources (book_id, sentence_kind)
+    WHERE archived_at IS NULL;
 
 -- ============================================================
 -- ROLES & PERMISSIONS

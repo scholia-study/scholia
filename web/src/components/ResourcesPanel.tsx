@@ -2,17 +2,22 @@ import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import CommitOutlined from "@mui/icons-material/CommitOutlined";
 import CompareOutlined from "@mui/icons-material/CompareOutlined";
+import MenuBookOutlined from "@mui/icons-material/MenuBookOutlined";
 import ListOutlined from "@mui/icons-material/ListOutlined";
 import { IconButton } from "@mui/material";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useListBooks } from "../api/books/books";
-import type { FootnoteSentenceResponse, SentenceResponse, TocNodeResponse } from "../api/model";
+import type { FootnoteSentenceResponse, ResourceResponse, SentenceResponse, TocNodeResponse } from "../api/model";
 import { useGetToc } from "../api/toc/toc";
+import { useListResources } from "../api/resources/resources";
+import { useAuth } from "../hooks/useAuth";
+import { CommentaryView, getSentenceRange } from "./CommentaryView";
 import { PanelToc } from "./PanelToc";
+import { ResourceFormModal } from "./ResourceFormModal";
 import { SentenceDetail } from "./SentenceDetail";
 
-type ViewKind = "toc" | "compare" | "sentence";
+type ViewKind = "toc" | "compare" | "verbatim" | "paraphrase" | "allusion" | "sentence";
 
 interface ResourcesPanelProps {
     toc: TocNodeResponse[] | undefined;
@@ -39,14 +44,62 @@ export function ResourcesPanel({
     activeView,
     onViewChange,
 }: ResourcesPanelProps) {
-    // Auto-switch to sentence view when a new sentence is selected
-    const prevSentenceRef = useRef(selectedSentence);
-    useEffect(() => {
-        if (selectedSentence && selectedSentence !== prevSentenceRef.current) {
-            onViewChange("sentence");
-        }
-        prevSentenceRef.current = selectedSentence;
-    }, [selectedSentence, onViewChange]);
+    const { user } = useAuth();
+    const isEditor =
+        user?.roles?.includes("editor") || user?.roles?.includes("admin") || false;
+
+    // Fetch resource counts for menu badges
+    const sentenceRange = useMemo(
+        () => getSentenceRange(selectedSentence),
+        [selectedSentence],
+    );
+    const { data: resourcesData } = useListResources(
+        bookSlug,
+        {
+            start: sentenceRange?.start ?? 0,
+            end: sentenceRange?.end ?? 0,
+            kind: sentenceRange?.kind ?? "body",
+        },
+        { query: { enabled: !!sentenceRange } },
+    );
+    const commentaryCounts = useMemo(() => {
+        const all = resourcesData?.data?.resources ?? [];
+        return {
+            verbatim: all.filter((r) => r.resource_type === "verbatim").length,
+            paraphrase: all.filter((r) => r.resource_type === "paraphrase").length,
+            allusion: all.filter((r) => r.resource_type === "allusion").length,
+        };
+    }, [resourcesData]);
+
+    // Modal state for resource create/edit (used by ResourceFormModal)
+    const [resourceModalOpen, setResourceModalOpen] = useState(false);
+    const [editingResource, setEditingResource] = useState<
+        ResourceResponse | undefined
+    >();
+    const [modalDefaults, setModalDefaults] = useState<{
+        type: "verbatim" | "paraphrase" | "allusion";
+        start: number;
+        end: number | undefined;
+        kind: string;
+    } | null>(null);
+
+    const handleAddResource = (
+        type: "verbatim" | "paraphrase" | "allusion",
+        start: number,
+        end: number | undefined,
+        kind: string,
+    ) => {
+        setEditingResource(undefined);
+        setModalDefaults({ type, start, end, kind });
+        setResourceModalOpen(true);
+    };
+
+    const handleEditResource = (resource: ResourceResponse) => {
+        setEditingResource(resource);
+        setModalDefaults(null);
+        setResourceModalOpen(true);
+    };
+
 
     const viewKind = activeView as ViewKind | undefined;
     const isMenu = !viewKind;
@@ -87,7 +140,13 @@ export function ResourcesPanel({
                               ? "Sentence Details"
                               : viewKind === "compare"
                                 ? "Compare Text"
-                                : "\u00A0"}
+                                : viewKind === "verbatim"
+                                  ? "Verbatim Quotations"
+                                  : viewKind === "paraphrase"
+                                    ? "Paraphrases"
+                                    : viewKind === "allusion"
+                                      ? "Allusions"
+                                      : "\u00A0"}
                     </div>
                 </div>
                 <IconButton
@@ -108,6 +167,12 @@ export function ResourcesPanel({
                             label="Table of Contents"
                             icon={<ListOutlined fontSize="small" />}
                         />
+                        <MenuButton
+                            onClick={() => onViewChange("sentence")}
+                            label="Sentence Details"
+                            disabled={!selectedSentence}
+                            icon={<CommitOutlined fontSize="small" />}
+                        />
                         {canAddPanel && (
                             <MenuButton
                                 onClick={() => onViewChange("compare")}
@@ -115,11 +180,26 @@ export function ResourcesPanel({
                                 icon={<CompareOutlined fontSize="small" />}
                             />
                         )}
+                        <div className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-3 pb-1">
+                            Commentary
+                        </div>
                         <MenuButton
-                            onClick={() => onViewChange("sentence")}
-                            label="Sentence Details"
+                            onClick={() => onViewChange("verbatim")}
+                            label={`Verbatim${commentaryCounts.verbatim ? ` (${commentaryCounts.verbatim})` : ""}`}
                             disabled={!selectedSentence}
-                            icon={<CommitOutlined fontSize="small" />}
+                            icon={<MenuBookOutlined fontSize="small" sx={{ color: "#722f37" }} />}
+                        />
+                        <MenuButton
+                            onClick={() => onViewChange("paraphrase")}
+                            label={`Paraphrase${commentaryCounts.paraphrase ? ` (${commentaryCounts.paraphrase})` : ""}`}
+                            disabled={!selectedSentence}
+                            icon={<MenuBookOutlined fontSize="small" sx={{ color: "#5c6b8b" }} />}
+                        />
+                        <MenuButton
+                            onClick={() => onViewChange("allusion")}
+                            label={`Allusion${commentaryCounts.allusion ? ` (${commentaryCounts.allusion})` : ""}`}
+                            disabled={!selectedSentence}
+                            icon={<MenuBookOutlined fontSize="small" sx={{ color: "#5c7a5c" }} />}
                         />
                     </nav>
                 </div>
@@ -148,6 +228,20 @@ export function ResourcesPanel({
                     </div>
                 ))}
 
+            {/* Commentary views */}
+            {(viewKind === "verbatim" ||
+                viewKind === "paraphrase" ||
+                viewKind === "allusion") && (
+                <CommentaryView
+                    bookSlug={bookSlug}
+                    resourceType={viewKind}
+                    selectedSentence={selectedSentence}
+                    isEditor={isEditor}
+                    onAdd={handleAddResource}
+                    onEdit={handleEditResource}
+                />
+            )}
+
             {/* Compare Text view */}
             {viewKind === "compare" &&
                 (!compareBookSlug ? (
@@ -163,6 +257,21 @@ export function ResourcesPanel({
                         onBack={() => setCompareBookSlug(undefined)}
                     />
                 ))}
+
+            {/* Resource create/edit modal */}
+            <ResourceFormModal
+                key={editingResource?.id ?? `${modalDefaults?.type}-${modalDefaults?.start}-${modalDefaults?.end}-${modalDefaults?.kind}`}
+                open={resourceModalOpen}
+                onClose={() => setResourceModalOpen(false)}
+                bookSlug={bookSlug}
+                mode={editingResource ? "edit" : "create"}
+                initialData={editingResource}
+                defaultType={modalDefaults?.type}
+                defaultSentenceStart={modalDefaults?.start}
+                defaultSentenceEnd={modalDefaults?.end}
+                defaultSentenceKind={modalDefaults?.kind}
+                isAdmin={user?.roles?.includes("admin") ?? false}
+            />
         </aside>
     );
 }

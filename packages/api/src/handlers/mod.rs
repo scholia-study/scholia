@@ -3,4 +3,7 @@ pub mod books;
 pub mod github;
 pub mod nodes;
 pub mod page;
+pub mod persons;
+pub mod resources;
+pub mod sources;
 pub mod toc;

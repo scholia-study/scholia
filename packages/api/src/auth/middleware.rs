@@ -86,6 +86,7 @@ pub struct AuthUser {
     pub email: String,
     pub display_name: String,
     pub avatar_url: Option<String>,
+    pub roles: Vec<String>,
     pub permissions: HashSet<Permission>,
 }
 
@@ -169,11 +170,14 @@ async fn load_auth_user(
     .await
     .ok()?;
 
+    let permissions = resolve_permissions(&role_names);
+
     Some(AuthUser {
         id: row.get("id"),
         email: row.get("email"),
         display_name: row.get("display_name"),
         avatar_url: row.get("avatar_url"),
-        permissions: resolve_permissions(&role_names),
+        roles: role_names,
+        permissions,
     })
 }
