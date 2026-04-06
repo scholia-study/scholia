@@ -46,6 +46,7 @@ function NotesPage() {
     const queryClient = useQueryClient();
     const [bookFilter, setBookFilter] = useState<string>("");
     const [searchQuery, setSearchQuery] = useState<string>("");
+    const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
     const [editingNote, setEditingNote] =
         useState<NoteWithContextResponse | null>(null);
 
@@ -62,10 +63,41 @@ function NotesPage() {
         return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]));
     }, [allNotes]);
 
+    // Notes filtered by book only (for deriving available tags)
+    const bookFilteredNotes = useMemo(() => {
+        if (!bookFilter) return allNotes;
+        return allNotes.filter((n) => n.book_slug === bookFilter);
+    }, [allNotes, bookFilter]);
+
+    // Derive available tags from book-filtered notes
+    const availableTags = useMemo(() => {
+        const counts = new Map<string, number>();
+        for (const n of bookFilteredNotes) {
+            for (const t of n.tags) {
+                counts.set(t.name, (counts.get(t.name) ?? 0) + 1);
+            }
+        }
+        return [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    }, [bookFilteredNotes]);
+
+    const toggleTag = (tag: string) => {
+        setSelectedTags((prev) => {
+            const next = new Set(prev);
+            if (next.has(tag)) {
+                next.delete(tag);
+            } else {
+                next.add(tag);
+            }
+            return next;
+        });
+    };
+
     const notes = useMemo(() => {
-        let filtered = allNotes;
-        if (bookFilter) {
-            filtered = filtered.filter((n) => n.book_slug === bookFilter);
+        let filtered = bookFilteredNotes;
+        if (selectedTags.size > 0) {
+            filtered = filtered.filter((n) =>
+                n.tags.some((t) => selectedTags.has(t.name)),
+            );
         }
         if (searchQuery.trim()) {
             const q = searchQuery.toLowerCase();
@@ -76,7 +108,7 @@ function NotesPage() {
             );
         }
         return filtered;
-    }, [allNotes, bookFilter, searchQuery]);
+    }, [bookFilteredNotes, selectedTags, searchQuery]);
 
     const deleteNoteMutation = useDeleteNote({
         mutation: {
@@ -120,7 +152,7 @@ function NotesPage() {
                     </Select>
                 </FormControl>
             </div>
-            <div className="mb-8">
+            <div className="mb-4">
                 <TextField
                     size="small"
                     fullWidth
@@ -129,6 +161,21 @@ function NotesPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
             </div>
+            {availableTags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-6">
+                    {availableTags.map(([name, count]) => (
+                        <Chip
+                            key={name}
+                            label={`${name} (${count})`}
+                            size="small"
+                            variant={selectedTags.has(name) ? "filled" : "outlined"}
+                            color={selectedTags.has(name) ? "primary" : "default"}
+                            onClick={() => toggleTag(name)}
+                            sx={{ cursor: "pointer" }}
+                        />
+                    ))}
+                </div>
+            )}
 
             {isLoading && (
                 <p className="text-sm text-stone-400">Loading...</p>

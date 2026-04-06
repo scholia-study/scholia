@@ -161,7 +161,7 @@ export function NoteFormModal({
                             {...params}
                             variant="outlined"
                             size="small"
-                            placeholder="Add tags..."
+                            placeholder="Add tags (press Enter to add)..."
                             sx={{ mt: 1.5 }}
                         />
                     )}
