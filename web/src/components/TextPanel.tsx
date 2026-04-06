@@ -294,10 +294,15 @@ export function TextPanel({
                 // Regular click — set new anchor
                 anchorSentenceRef.current = sentence;
                 setSelectedSentence(sentence);
-                onSelectSentence(sentenceKey(sentence));
+                // Only notify parent if the selection actually changed
+                // (avoids toggle-off when re-selecting from scroll-to-sentence on initial load)
+                const key = sentenceKey(sentence);
+                if (key !== selectedSentenceId) {
+                    onSelectSentence(key);
+                }
             }
         },
-        [onSelectSentence],
+        [onSelectSentence, selectedSentenceId],
     );
 
     // Collect sentences for range display in ResourcesPanel
