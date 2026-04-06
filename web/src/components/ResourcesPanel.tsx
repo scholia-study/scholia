@@ -35,6 +35,7 @@ interface ResourcesPanelProps {
     onAddComparisonPanel: (bookSlug: string, nodeSlug: string) => void;
     canAddPanel: boolean;
     selectedSentence: SentenceResponse | FootnoteSentenceResponse | (SentenceResponse | FootnoteSentenceResponse)[] | undefined;
+    selectedSentenceId: string | undefined;
     onClose: () => void;
     activeView: string | undefined;
     onViewChange: (view: string | undefined) => void;
@@ -48,6 +49,7 @@ export function ResourcesPanel({
     onAddComparisonPanel,
     canAddPanel,
     selectedSentence,
+    selectedSentenceId,
     onClose,
     activeView,
     onViewChange,
@@ -428,6 +430,7 @@ export function ResourcesPanel({
                     bookSlug={bookSlug}
                     activeNodeId={activeNodeId}
                     selectedSentence={selectedSentence}
+                    selectedSentenceId={selectedSentenceId}
                     onOpenNoteModal={handleOpenNoteModal}
                 />
             )}

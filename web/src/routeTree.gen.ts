@@ -16,7 +16,9 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BooksIndexRouteImport } from './routes/books.index'
+import { Route as UserQuotationsRouteImport } from './routes/user.quotations'
 import { Route as UserProfileRouteImport } from './routes/user.profile'
+import { Route as UserNotesRouteImport } from './routes/user.notes'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
 
@@ -55,9 +57,19 @@ const BooksIndexRoute = BooksIndexRouteImport.update({
   path: '/books/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserQuotationsRoute = UserQuotationsRouteImport.update({
+  id: '/user/quotations',
+  path: '/user/quotations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UserProfileRoute = UserProfileRouteImport.update({
   id: '/user/profile',
   path: '/user/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserNotesRoute = UserNotesRouteImport.update({
+  id: '/user/notes',
+  path: '/user/notes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BooksBookSlugIndexRoute = BooksBookSlugIndexRouteImport.update({
@@ -78,7 +90,9 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/user/notes': typeof UserNotesRoute
   '/user/profile': typeof UserProfileRoute
+  '/user/quotations': typeof UserQuotationsRoute
   '/books/': typeof BooksIndexRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
@@ -90,7 +104,9 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/user/notes': typeof UserNotesRoute
   '/user/profile': typeof UserProfileRoute
+  '/user/quotations': typeof UserQuotationsRoute
   '/books': typeof BooksIndexRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
@@ -103,7 +119,9 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/user/notes': typeof UserNotesRoute
   '/user/profile': typeof UserProfileRoute
+  '/user/quotations': typeof UserQuotationsRoute
   '/books/': typeof BooksIndexRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
@@ -117,7 +135,9 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/user/notes'
     | '/user/profile'
+    | '/user/quotations'
     | '/books/'
     | '/books/$bookSlug/$nodeSlug'
     | '/books/$bookSlug/'
@@ -129,7 +149,9 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/user/notes'
     | '/user/profile'
+    | '/user/quotations'
     | '/books'
     | '/books/$bookSlug/$nodeSlug'
     | '/books/$bookSlug'
@@ -141,7 +163,9 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/user/notes'
     | '/user/profile'
+    | '/user/quotations'
     | '/books/'
     | '/books/$bookSlug/$nodeSlug'
     | '/books/$bookSlug/'
@@ -154,7 +178,9 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  UserNotesRoute: typeof UserNotesRoute
   UserProfileRoute: typeof UserProfileRoute
+  UserQuotationsRoute: typeof UserQuotationsRoute
   BooksIndexRoute: typeof BooksIndexRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
   BooksBookSlugIndexRoute: typeof BooksBookSlugIndexRoute
@@ -211,11 +237,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BooksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/quotations': {
+      id: '/user/quotations'
+      path: '/user/quotations'
+      fullPath: '/user/quotations'
+      preLoaderRoute: typeof UserQuotationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/user/profile': {
       id: '/user/profile'
       path: '/user/profile'
       fullPath: '/user/profile'
       preLoaderRoute: typeof UserProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/notes': {
+      id: '/user/notes'
+      path: '/user/notes'
+      fullPath: '/user/notes'
+      preLoaderRoute: typeof UserNotesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/books/$bookSlug/': {
@@ -242,7 +282,9 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  UserNotesRoute: UserNotesRoute,
   UserProfileRoute: UserProfileRoute,
+  UserQuotationsRoute: UserQuotationsRoute,
   BooksIndexRoute: BooksIndexRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
   BooksBookSlugIndexRoute: BooksBookSlugIndexRoute,

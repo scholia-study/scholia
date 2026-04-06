@@ -3,7 +3,10 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::error::AppError;
-use crate::models::quotation::{NoteResponse, QuotationResponse, TagResponse};
+use crate::models::quotation::{
+    NoteResponse, NoteWithContextResponse, QuotationResponse, QuotationWithContextResponse,
+    TagResponse,
+};
 
 // ── Row types ──────────────────────────────────────────────
 
@@ -433,6 +436,189 @@ pub async fn list_tags(
         })
         .collect())
 }
+
+// ── Global listing queries ─────────────────────────────────
+
+struct QuotationWithContextRow {
+    id: Uuid,
+    book_slug: String,
+    book_title: String,
+    node_label: String,
+    node_slug: String,
+    start_number: Option<i32>,
+    end_number: Option<i32>,
+    sentence_kind: String,
+    start_text: Option<String>,
+    end_text: Option<String>,
+    note_count: Option<i64>,
+    created_at: time::OffsetDateTime,
+}
+
+pub async fn list_all_quotations(
+    pool: &PgPool,
+    user_id: Uuid,
+    book_slug: Option<&str>,
+) -> Result<Vec<QuotationWithContextResponse>, AppError> {
+    let rows = sqlx::query_as!(
+        QuotationWithContextRow,
+        r#"SELECT q.id,
+                  b.slug AS "book_slug!",
+                  b.title AS "book_title!",
+                  n.label AS "node_label!",
+                  n.slug AS "node_slug!",
+                  ss.sentence_number AS "start_number?",
+                  se.sentence_number AS "end_number?",
+                  q.sentence_kind::TEXT AS "sentence_kind!",
+                  ss.text AS "start_text?",
+                  se.text AS "end_text?",
+                  COUNT(qn.id) AS "note_count?",
+                  q.created_at
+           FROM quotations q
+           JOIN books b ON b.id = q.book_id
+           JOIN toc_nodes n ON n.id = q.anchor_node_id
+           JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
+           LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
+           LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
+           WHERE q.user_id = $1
+             AND ($2::TEXT IS NULL OR b.slug = $2)
+           GROUP BY q.id, b.slug, b.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text
+           ORDER BY q.created_at DESC"#,
+        user_id,
+        book_slug,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(rows
+        .into_iter()
+        .map(|r| {
+            let start_snippet = r.start_text.map(|t| truncate_snippet(&t, 80));
+            let end_snippet = r.end_text.map(|t| truncate_snippet(&t, 60));
+            QuotationWithContextResponse {
+                id: r.id.to_string(),
+                book_slug: r.book_slug,
+                book_title: r.book_title,
+                node_label: r.node_label,
+                node_slug: r.node_slug,
+                anchor_sentence_start_number: r.start_number.unwrap_or(0),
+                anchor_sentence_end_number: r.end_number,
+                sentence_kind: r.sentence_kind,
+                start_text_snippet: start_snippet,
+                end_text_snippet: end_snippet,
+                note_count: r.note_count.unwrap_or(0),
+                created_at: fmt_time(r.created_at),
+            }
+        })
+        .collect())
+}
+
+struct NoteWithContextRow {
+    id: Uuid,
+    body: String,
+    quotation_id: Uuid,
+    book_slug: String,
+    book_title: String,
+    node_label: String,
+    node_slug: String,
+    start_number: Option<i32>,
+    end_number: Option<i32>,
+    sentence_kind: String,
+    created_at: time::OffsetDateTime,
+    updated_at: time::OffsetDateTime,
+}
+
+pub async fn list_all_notes(
+    pool: &PgPool,
+    user_id: Uuid,
+    book_slug: Option<&str>,
+) -> Result<Vec<NoteWithContextResponse>, AppError> {
+    let rows = sqlx::query_as!(
+        NoteWithContextRow,
+        r#"SELECT qn.id, qn.body, qn.quotation_id,
+                  b.slug AS "book_slug!",
+                  b.title AS "book_title!",
+                  n.label AS "node_label!",
+                  n.slug AS "node_slug!",
+                  ss.sentence_number AS "start_number?",
+                  se.sentence_number AS "end_number?",
+                  q.sentence_kind::TEXT AS "sentence_kind!",
+                  qn.created_at, qn.updated_at
+           FROM quotation_notes qn
+           JOIN quotations q ON q.id = qn.quotation_id
+           JOIN books b ON b.id = q.book_id
+           JOIN toc_nodes n ON n.id = q.anchor_node_id
+           JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
+           LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
+           WHERE q.user_id = $1
+             AND ($2::TEXT IS NULL OR b.slug = $2)
+           ORDER BY qn.created_at DESC"#,
+        user_id,
+        book_slug,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    if rows.is_empty() {
+        return Ok(vec![]);
+    }
+
+    let note_ids: Vec<Uuid> = rows.iter().map(|n| n.id).collect();
+    let tag_rows = sqlx::query_as!(
+        TagRow,
+        r#"SELECT qnt.note_id, t.id AS tag_id, t.name AS tag_name
+           FROM quotation_note_tags qnt
+           JOIN tags t ON t.id = qnt.tag_id
+           WHERE qnt.note_id = ANY($1)
+           ORDER BY t.name"#,
+        &note_ids,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let mut tags_map: HashMap<Uuid, Vec<TagResponse>> = HashMap::new();
+    for tr in tag_rows {
+        tags_map
+            .entry(tr.note_id)
+            .or_default()
+            .push(TagResponse {
+                id: tr.tag_id.to_string(),
+                name: tr.tag_name,
+            });
+    }
+
+    Ok(rows
+        .into_iter()
+        .map(|r| NoteWithContextResponse {
+            id: r.id.to_string(),
+            body: r.body,
+            tags: tags_map.remove(&r.id).unwrap_or_default(),
+            book_slug: r.book_slug,
+            book_title: r.book_title,
+            node_label: r.node_label,
+            node_slug: r.node_slug,
+            anchor_sentence_start_number: r.start_number.unwrap_or(0),
+            anchor_sentence_end_number: r.end_number,
+            sentence_kind: r.sentence_kind,
+            quotation_id: r.quotation_id.to_string(),
+            created_at: fmt_time(r.created_at),
+            updated_at: fmt_time(r.updated_at),
+        })
+        .collect())
+}
+
+fn truncate_snippet(text: &str, max_len: usize) -> String {
+    if text.len() <= max_len {
+        text.to_string()
+    } else {
+        let mut end = max_len;
+        while end > 0 && !text.is_char_boundary(end) {
+            end -= 1;
+        }
+        format!("{}…", &text[..end])
+    }
+}
+
+// ── Helpers ────────────────────────────────────────────────
 
 async fn upsert_and_link_tags(
     pool: &PgPool,

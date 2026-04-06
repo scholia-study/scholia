@@ -931,6 +931,7 @@ export function TextPanel({
                             onAddComparisonPanel={onAddComparisonPanel}
                             canAddPanel={canAddPanel}
                             selectedSentence={resourcePanelSentence}
+                            selectedSentenceId={selectedSentenceId}
                             onClose={onToggleResources}
                             activeView={resourceView}
                             onViewChange={onResourceViewChange}

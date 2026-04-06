@@ -31,6 +31,7 @@ import {
     useListNotes,
     useListQuotations,
 } from "../api/quotations/quotations";
+import { parseRangeKey } from "./BlockRenderer";
 import { getSentenceRange } from "./CommentaryView";
 
 interface NotesViewProps {
@@ -41,6 +42,7 @@ interface NotesViewProps {
         | FootnoteSentenceResponse
         | (SentenceResponse | FootnoteSentenceResponse)[]
         | undefined;
+    selectedSentenceId: string | undefined;
     onOpenNoteModal: (quotationId: string, note?: NoteResponse) => void;
 }
 
@@ -55,10 +57,26 @@ export function NotesView({
     bookSlug,
     activeNodeId,
     selectedSentence,
+    selectedSentenceId,
     onOpenNoteModal,
 }: NotesViewProps) {
     const queryClient = useQueryClient();
-    const range = getSentenceRange(selectedSentence);
+
+    // Derive range from selectedSentence if available, otherwise fall back to parsing selectedSentenceId
+    const range = useMemo(() => {
+        const fromSentence = getSentenceRange(selectedSentence);
+        if (fromSentence) return fromSentence;
+        if (!selectedSentenceId) return null;
+        const parsed = parseRangeKey(selectedSentenceId);
+        if (parsed) {
+            return { start: parsed[0], end: parsed[1], kind: "body" as const };
+        }
+        const num = Number(selectedSentenceId);
+        if (!Number.isNaN(num)) {
+            return { start: num, end: num, kind: "body" as const };
+        }
+        return null;
+    }, [selectedSentence, selectedSentenceId]);
 
     // Fetch all quotations for this node
     const { data: quotationsData } = useListQuotations(

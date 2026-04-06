@@ -122,6 +122,12 @@ async fn main() {
         ))
         .routes(utoipa_axum::routes!(
             api::handlers::quotations::list_tags
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::quotations::list_all_quotations
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::quotations::list_all_notes
         ));
 
     // Public routes (no rate limiting)

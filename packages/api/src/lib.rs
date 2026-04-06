@@ -51,6 +51,8 @@ pub mod state;
         handlers::quotations::update_note,
         handlers::quotations::delete_note,
         handlers::quotations::list_tags,
+        handlers::quotations::list_all_quotations,
+        handlers::quotations::list_all_notes,
     ),
     components(schemas(
         models::book::BookSummary,
@@ -97,6 +99,10 @@ pub mod state;
         models::quotation::UpdateNoteRequest,
         models::quotation::TagResponse,
         models::quotation::TagListResponse,
+        models::quotation::QuotationWithContextResponse,
+        models::quotation::QuotationWithContextListResponse,
+        models::quotation::NoteWithContextResponse,
+        models::quotation::NoteWithContextListResponse,
     ))
 )]
 pub struct ApiDoc;

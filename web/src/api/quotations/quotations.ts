@@ -27,10 +27,14 @@ import type {
     CreateNoteRequest,
     CreateQuotationRequest,
     CreateQuotationResponse,
+    ListAllNotesParams,
+    ListAllQuotationsParams,
     ListQuotationsParams,
     NoteListResponse,
     NoteResponse,
+    NoteWithContextListResponse,
     QuotationListResponse,
+    QuotationWithContextListResponse,
     UpdateNoteRequest,
 } from ".././model";
 
@@ -1338,3 +1342,668 @@ export const useDeleteNote = <TError = void, TContext = unknown>(
 > => {
     return useMutation(getDeleteNoteMutationOptions(options), queryClient);
 };
+/**
+ * @summary List all notes for the authenticated user (across all books)
+ */
+export type listAllNotesResponse200 = {
+    data: NoteWithContextListResponse;
+    status: 200;
+};
+
+export type listAllNotesResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type listAllNotesResponseSuccess = listAllNotesResponse200 & {
+    headers: Headers;
+};
+export type listAllNotesResponseError = listAllNotesResponse401 & {
+    headers: Headers;
+};
+
+export type listAllNotesResponse =
+    | listAllNotesResponseSuccess
+    | listAllNotesResponseError;
+
+export const getListAllNotesUrl = (params?: ListAllNotesParams) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : value.toString(),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `/api/notes?${stringifiedParams}`
+        : `/api/notes`;
+};
+
+export const listAllNotes = async (
+    params?: ListAllNotesParams,
+    options?: RequestInit,
+): Promise<listAllNotesResponse> => {
+    return customFetch<listAllNotesResponse>(getListAllNotesUrl(params), {
+        ...options,
+        method: "GET",
+    });
+};
+
+export const getListAllNotesQueryKey = (params?: ListAllNotesParams) => {
+    return [`/api/notes`, ...(params ? [params] : [])] as const;
+};
+
+export const getListAllNotesQueryOptions = <
+    TData = Awaited<ReturnType<typeof listAllNotes>>,
+    TError = void,
+>(
+    params?: ListAllNotesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listAllNotes>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getListAllNotesQueryKey(params);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAllNotes>>> = ({
+        signal,
+    }) => listAllNotes(params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof listAllNotes>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListAllNotesQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listAllNotes>>
+>;
+export type ListAllNotesQueryError = void;
+
+export function useListAllNotes<
+    TData = Awaited<ReturnType<typeof listAllNotes>>,
+    TError = void,
+>(
+    params: undefined | ListAllNotesParams,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listAllNotes>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listAllNotes>>,
+                    TError,
+                    Awaited<ReturnType<typeof listAllNotes>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListAllNotes<
+    TData = Awaited<ReturnType<typeof listAllNotes>>,
+    TError = void,
+>(
+    params?: ListAllNotesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listAllNotes>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listAllNotes>>,
+                    TError,
+                    Awaited<ReturnType<typeof listAllNotes>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListAllNotes<
+    TData = Awaited<ReturnType<typeof listAllNotes>>,
+    TError = void,
+>(
+    params?: ListAllNotesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listAllNotes>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List all notes for the authenticated user (across all books)
+ */
+
+export function useListAllNotes<
+    TData = Awaited<ReturnType<typeof listAllNotes>>,
+    TError = void,
+>(
+    params?: ListAllNotesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listAllNotes>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListAllNotesQueryOptions(params, options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getListAllNotesSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof listAllNotes>>,
+    TError = void,
+>(
+    params?: ListAllNotesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listAllNotes>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getListAllNotesQueryKey(params);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAllNotes>>> = ({
+        signal,
+    }) => listAllNotes(params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listAllNotes>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListAllNotesSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listAllNotes>>
+>;
+export type ListAllNotesSuspenseQueryError = void;
+
+export function useListAllNotesSuspense<
+    TData = Awaited<ReturnType<typeof listAllNotes>>,
+    TError = void,
+>(
+    params: undefined | ListAllNotesParams,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listAllNotes>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListAllNotesSuspense<
+    TData = Awaited<ReturnType<typeof listAllNotes>>,
+    TError = void,
+>(
+    params?: ListAllNotesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listAllNotes>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListAllNotesSuspense<
+    TData = Awaited<ReturnType<typeof listAllNotes>>,
+    TError = void,
+>(
+    params?: ListAllNotesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listAllNotes>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List all notes for the authenticated user (across all books)
+ */
+
+export function useListAllNotesSuspense<
+    TData = Awaited<ReturnType<typeof listAllNotes>>,
+    TError = void,
+>(
+    params?: ListAllNotesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listAllNotes>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListAllNotesSuspenseQueryOptions(params, options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary List all quotations for the authenticated user (across all books)
+ */
+export type listAllQuotationsResponse200 = {
+    data: QuotationWithContextListResponse;
+    status: 200;
+};
+
+export type listAllQuotationsResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type listAllQuotationsResponseSuccess = listAllQuotationsResponse200 & {
+    headers: Headers;
+};
+export type listAllQuotationsResponseError = listAllQuotationsResponse401 & {
+    headers: Headers;
+};
+
+export type listAllQuotationsResponse =
+    | listAllQuotationsResponseSuccess
+    | listAllQuotationsResponseError;
+
+export const getListAllQuotationsUrl = (params?: ListAllQuotationsParams) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : value.toString(),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `/api/quotations?${stringifiedParams}`
+        : `/api/quotations`;
+};
+
+export const listAllQuotations = async (
+    params?: ListAllQuotationsParams,
+    options?: RequestInit,
+): Promise<listAllQuotationsResponse> => {
+    return customFetch<listAllQuotationsResponse>(
+        getListAllQuotationsUrl(params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
+};
+
+export const getListAllQuotationsQueryKey = (
+    params?: ListAllQuotationsParams,
+) => {
+    return [`/api/quotations`, ...(params ? [params] : [])] as const;
+};
+
+export const getListAllQuotationsQueryOptions = <
+    TData = Awaited<ReturnType<typeof listAllQuotations>>,
+    TError = void,
+>(
+    params?: ListAllQuotationsParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listAllQuotations>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getListAllQuotationsQueryKey(params);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listAllQuotations>>
+    > = ({ signal }) =>
+        listAllQuotations(params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof listAllQuotations>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListAllQuotationsQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listAllQuotations>>
+>;
+export type ListAllQuotationsQueryError = void;
+
+export function useListAllQuotations<
+    TData = Awaited<ReturnType<typeof listAllQuotations>>,
+    TError = void,
+>(
+    params: undefined | ListAllQuotationsParams,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listAllQuotations>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listAllQuotations>>,
+                    TError,
+                    Awaited<ReturnType<typeof listAllQuotations>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListAllQuotations<
+    TData = Awaited<ReturnType<typeof listAllQuotations>>,
+    TError = void,
+>(
+    params?: ListAllQuotationsParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listAllQuotations>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listAllQuotations>>,
+                    TError,
+                    Awaited<ReturnType<typeof listAllQuotations>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListAllQuotations<
+    TData = Awaited<ReturnType<typeof listAllQuotations>>,
+    TError = void,
+>(
+    params?: ListAllQuotationsParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listAllQuotations>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List all quotations for the authenticated user (across all books)
+ */
+
+export function useListAllQuotations<
+    TData = Awaited<ReturnType<typeof listAllQuotations>>,
+    TError = void,
+>(
+    params?: ListAllQuotationsParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listAllQuotations>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListAllQuotationsQueryOptions(params, options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getListAllQuotationsSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof listAllQuotations>>,
+    TError = void,
+>(
+    params?: ListAllQuotationsParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listAllQuotations>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getListAllQuotationsQueryKey(params);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listAllQuotations>>
+    > = ({ signal }) =>
+        listAllQuotations(params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listAllQuotations>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListAllQuotationsSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listAllQuotations>>
+>;
+export type ListAllQuotationsSuspenseQueryError = void;
+
+export function useListAllQuotationsSuspense<
+    TData = Awaited<ReturnType<typeof listAllQuotations>>,
+    TError = void,
+>(
+    params: undefined | ListAllQuotationsParams,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listAllQuotations>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListAllQuotationsSuspense<
+    TData = Awaited<ReturnType<typeof listAllQuotations>>,
+    TError = void,
+>(
+    params?: ListAllQuotationsParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listAllQuotations>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListAllQuotationsSuspense<
+    TData = Awaited<ReturnType<typeof listAllQuotations>>,
+    TError = void,
+>(
+    params?: ListAllQuotationsParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listAllQuotations>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List all quotations for the authenticated user (across all books)
+ */
+
+export function useListAllQuotationsSuspense<
+    TData = Awaited<ReturnType<typeof listAllQuotations>>,
+    TError = void,
+>(
+    params?: ListAllQuotationsParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listAllQuotations>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListAllQuotationsSuspenseQueryOptions(
+        params,
+        options,
+    );
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}

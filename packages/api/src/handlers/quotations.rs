@@ -6,8 +6,9 @@ use crate::auth::permissions::Permission;
 use crate::db;
 use crate::error::AppError;
 use crate::models::quotation::{
-    CreateNoteRequest, CreateQuotationRequest, CreateQuotationResponse, NoteListResponse,
-    NoteResponse, QuotationListResponse, QuotationQuery, TagListResponse, UpdateNoteRequest,
+    CreateNoteRequest, CreateQuotationRequest, CreateQuotationResponse, GlobalListQuery,
+    NoteListResponse, NoteResponse, NoteWithContextListResponse, QuotationListResponse,
+    QuotationQuery, QuotationWithContextListResponse, TagListResponse, UpdateNoteRequest,
 };
 use crate::state::AppState;
 
@@ -286,4 +287,62 @@ pub async fn list_tags(
     let tags = db::quotations::list_tags(&state.pool, user.id).await?;
 
     Ok(Json(TagListResponse { tags }))
+}
+
+/// List all quotations for the authenticated user (across all books)
+#[utoipa::path(
+    get,
+    path = "/api/quotations",
+    params(GlobalListQuery),
+    responses(
+        (status = 200, description = "User's quotations across books", body = QuotationWithContextListResponse),
+        (status = 401, description = "Not authenticated")
+    ),
+    tag = "quotations"
+)]
+pub async fn list_all_quotations(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Query(params): Query<GlobalListQuery>,
+) -> Result<Json<QuotationWithContextListResponse>, AppError> {
+    user.require_permission(Permission::NotesCreate)
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+
+    let quotations = db::quotations::list_all_quotations(
+        &state.pool,
+        user.id,
+        params.book_slug.as_deref(),
+    )
+    .await?;
+
+    Ok(Json(QuotationWithContextListResponse { quotations }))
+}
+
+/// List all notes for the authenticated user (across all books)
+#[utoipa::path(
+    get,
+    path = "/api/notes",
+    params(GlobalListQuery),
+    responses(
+        (status = 200, description = "User's notes across books", body = NoteWithContextListResponse),
+        (status = 401, description = "Not authenticated")
+    ),
+    tag = "quotations"
+)]
+pub async fn list_all_notes(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Query(params): Query<GlobalListQuery>,
+) -> Result<Json<NoteWithContextListResponse>, AppError> {
+    user.require_permission(Permission::NotesCreate)
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+
+    let notes = db::quotations::list_all_notes(
+        &state.pool,
+        user.id,
+        params.book_slug.as_deref(),
+    )
+    .await?;
+
+    Ok(Json(NoteWithContextListResponse { notes }))
 }

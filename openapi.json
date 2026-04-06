@@ -825,6 +825,43 @@
         }
       }
     },
+    "/api/notes": {
+      "get": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "List all notes for the authenticated user (across all books)",
+        "operationId": "list_all_notes",
+        "parameters": [
+          {
+            "name": "book_slug",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User's notes across books",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteWithContextListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
     "/api/persons": {
       "get": {
         "tags": [
@@ -947,6 +984,43 @@
           },
           "404": {
             "description": "Person not found"
+          }
+        }
+      }
+    },
+    "/api/quotations": {
+      "get": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "List all quotations for the authenticated user (across all books)",
+        "operationId": "list_all_quotations",
+        "parameters": [
+          {
+            "name": "book_slug",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User's quotations across books",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotationWithContextListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
           }
         }
       }
@@ -2229,6 +2303,86 @@
           }
         }
       },
+      "NoteWithContextListResponse": {
+        "type": "object",
+        "required": [
+          "notes"
+        ],
+        "properties": {
+          "notes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteWithContextResponse"
+            }
+          }
+        }
+      },
+      "NoteWithContextResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "body",
+          "tags",
+          "book_slug",
+          "book_title",
+          "node_label",
+          "node_slug",
+          "anchor_sentence_start_number",
+          "sentence_kind",
+          "quotation_id",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "anchor_sentence_end_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "anchor_sentence_start_number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "body": {
+            "type": "string"
+          },
+          "book_slug": {
+            "type": "string"
+          },
+          "book_title": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "node_label": {
+            "type": "string"
+          },
+          "node_slug": {
+            "type": "string"
+          },
+          "quotation_id": {
+            "type": "string"
+          },
+          "sentence_kind": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagResponse"
+            }
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        }
+      },
       "PageMarkerResponse": {
         "type": "object",
         "required": [
@@ -2406,6 +2560,84 @@
           },
           "sentence_kind": {
             "type": "string"
+          }
+        }
+      },
+      "QuotationWithContextListResponse": {
+        "type": "object",
+        "required": [
+          "quotations"
+        ],
+        "properties": {
+          "quotations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuotationWithContextResponse"
+            }
+          }
+        }
+      },
+      "QuotationWithContextResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "book_slug",
+          "book_title",
+          "node_label",
+          "node_slug",
+          "anchor_sentence_start_number",
+          "sentence_kind",
+          "note_count",
+          "created_at"
+        ],
+        "properties": {
+          "anchor_sentence_end_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "anchor_sentence_start_number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "book_slug": {
+            "type": "string"
+          },
+          "book_title": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "end_text_snippet": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "node_label": {
+            "type": "string"
+          },
+          "node_slug": {
+            "type": "string"
+          },
+          "note_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sentence_kind": {
+            "type": "string"
+          },
+          "start_text_snippet": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       },

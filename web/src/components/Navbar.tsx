@@ -98,6 +98,27 @@ export function Navbar() {
                                             Profile
                                         </Typography>
                                     </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null);
+                                            navigate({ to: "/user/quotations" });
+                                        }}
+                                    >
+                                        <Typography variant="body2">
+                                            My Quotations
+                                        </Typography>
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null);
+                                            navigate({ to: "/user/notes" });
+                                        }}
+                                    >
+                                        <Typography variant="body2">
+                                            My Notes
+                                        </Typography>
+                                    </MenuItem>
+                                    <Divider />
                                     <MenuItem onClick={handleLogout}>
                                         <Typography variant="body2">
                                             Log out
