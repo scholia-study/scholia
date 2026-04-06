@@ -8,6 +8,7 @@ import {
     MenuItem,
     Paper,
     Select,
+    TextField,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, redirect } from "@tanstack/react-router";
@@ -44,6 +45,7 @@ function sentenceLabel(n: NoteWithContextResponse): string {
 function NotesPage() {
     const queryClient = useQueryClient();
     const [bookFilter, setBookFilter] = useState<string>("");
+    const [searchQuery, setSearchQuery] = useState<string>("");
     const [editingNote, setEditingNote] =
         useState<NoteWithContextResponse | null>(null);
 
@@ -61,9 +63,20 @@ function NotesPage() {
     }, [allNotes]);
 
     const notes = useMemo(() => {
-        if (!bookFilter) return allNotes;
-        return allNotes.filter((n) => n.book_slug === bookFilter);
-    }, [allNotes, bookFilter]);
+        let filtered = allNotes;
+        if (bookFilter) {
+            filtered = filtered.filter((n) => n.book_slug === bookFilter);
+        }
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            filtered = filtered.filter(
+                (n) =>
+                    n.body.toLowerCase().includes(q) ||
+                    n.tags.some((t) => t.name.toLowerCase().includes(q)),
+            );
+        }
+        return filtered;
+    }, [allNotes, bookFilter, searchQuery]);
 
     const deleteNoteMutation = useDeleteNote({
         mutation: {
@@ -89,7 +102,7 @@ function NotesPage() {
 
     return (
         <div className="max-w-3xl mx-auto px-8 py-16">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-bold text-stone-900">My Notes</h1>
                 <FormControl size="small" sx={{ minWidth: 200 }}>
                     <InputLabel>Filter by book</InputLabel>
@@ -106,6 +119,15 @@ function NotesPage() {
                         ))}
                     </Select>
                 </FormControl>
+            </div>
+            <div className="mb-8">
+                <TextField
+                    size="small"
+                    fullWidth
+                    placeholder="Search notes and tags..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
             </div>
 
             {isLoading && (
