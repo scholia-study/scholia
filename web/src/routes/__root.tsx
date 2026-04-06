@@ -4,10 +4,12 @@ import {
     createRootRouteWithContext,
     HeadContent,
     Scripts,
+    useMatches,
 } from "@tanstack/react-router";
 import { Toaster } from "react-hot-toast";
 import appCss from "../styles.css?url";
 import { Navbar } from "../components/Navbar";
+import { UserSubnav } from "../components/UserSubnav";
 
 interface RouterContext {
     queryClient: QueryClient;
@@ -31,10 +33,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootComponent() {
+    const matches = useMatches();
+    const isUserRoute = matches.some((m) => m.fullPath.startsWith("/user/"));
+
     return (
         <>
             <Navbar />
-            <main className="min-h-screen pt-12">
+            <UserSubnav />
+            <main className={`min-h-screen pt-12 ${isUserRoute ? "md:pt-[5.5rem]" : ""}`}>
                 <Outlet />
             </main>
             <Toaster position="bottom-right" />
