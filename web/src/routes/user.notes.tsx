@@ -1,15 +1,26 @@
+import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
+import EditOutlined from "@mui/icons-material/EditOutlined";
 import {
     Chip,
     FormControl,
+    IconButton,
     InputLabel,
     MenuItem,
+    Paper,
     Select,
 } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, redirect } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { NoteWithContextResponse } from "../api/model";
-import { useListAllNotes } from "../api/quotations/quotations";
+import {
+    getListAllNotesQueryKey,
+    useDeleteNote,
+    useListAllNotes,
+} from "../api/quotations/quotations";
+import { NoteFormModal } from "../components/NoteFormModal";
 
 export const Route = createFileRoute("/user/notes")({
     beforeLoad: async ({ context }) => {
@@ -31,13 +42,14 @@ function sentenceLabel(n: NoteWithContextResponse): string {
 }
 
 function NotesPage() {
+    const queryClient = useQueryClient();
     const [bookFilter, setBookFilter] = useState<string>("");
+    const [editingNote, setEditingNote] =
+        useState<NoteWithContextResponse | null>(null);
 
-    // Fetch all notes (unfiltered) to derive available books
     const { data: allNotesData, isLoading } = useListAllNotes({});
     const allNotes = allNotesData?.data?.notes ?? [];
 
-    // Derive book list from actual data
     const availableBooks = useMemo(() => {
         const map = new Map<string, string>();
         for (const n of allNotes) {
@@ -48,11 +60,32 @@ function NotesPage() {
         return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]));
     }, [allNotes]);
 
-    // Apply client-side filter
     const notes = useMemo(() => {
         if (!bookFilter) return allNotes;
         return allNotes.filter((n) => n.book_slug === bookFilter);
     }, [allNotes, bookFilter]);
+
+    const deleteNoteMutation = useDeleteNote({
+        mutation: {
+            onSuccess: () => {
+                toast.success("Note deleted");
+                queryClient.invalidateQueries({
+                    queryKey: getListAllNotesQueryKey(),
+                });
+            },
+            onError: () => toast.error("Failed to delete note"),
+        },
+    });
+
+    const handleDelete = (note: NoteWithContextResponse) => {
+        if (window.confirm("Delete this note?")) {
+            deleteNoteMutation.mutate({
+                slug: note.book_slug,
+                id: note.quotation_id,
+                noteId: note.id,
+            });
+        }
+    };
 
     return (
         <div className="max-w-3xl mx-auto px-8 py-16">
@@ -85,14 +118,51 @@ function NotesPage() {
 
             <div className="space-y-2">
                 {notes.map((note) => (
-                    <NoteItem key={note.id} note={note} />
+                    <NoteItem
+                        key={note.id}
+                        note={note}
+                        onEdit={() => setEditingNote(note)}
+                        onDelete={() => handleDelete(note)}
+                    />
                 ))}
             </div>
+
+            {editingNote && (
+                <NoteFormModal
+                    key={editingNote.id}
+                    open
+                    onClose={() => {
+                        setEditingNote(null);
+                        queryClient.invalidateQueries({
+                            queryKey: getListAllNotesQueryKey(),
+                        });
+                    }}
+                    bookSlug={editingNote.book_slug}
+                    quotationId={editingNote.quotation_id}
+                    mode="edit"
+                    initialData={{
+                        id: editingNote.id,
+                        body: editingNote.body,
+                        tags: editingNote.tags,
+                        created_at: editingNote.created_at,
+                        updated_at: editingNote.updated_at,
+                    }}
+                    sentenceContext={`${editingNote.node_label} · ${sentenceLabel(editingNote)}`}
+                />
+            )}
         </div>
     );
 }
 
-function NoteItem({ note }: { note: NoteWithContextResponse }) {
+function NoteItem({
+    note,
+    onEdit,
+    onDelete,
+}: {
+    note: NoteWithContextResponse;
+    onEdit: () => void;
+    onDelete: () => void;
+}) {
     const date = new Date(note.updated_at);
     const dateStr = date.toLocaleDateString(undefined, {
         month: "short",
@@ -101,50 +171,88 @@ function NoteItem({ note }: { note: NoteWithContextResponse }) {
     });
 
     return (
-        <Link
-            to="/books/$bookSlug/$nodeSlug"
-            params={{
-                bookSlug: note.book_slug,
-                nodeSlug: note.node_slug,
+        <Paper
+            elevation={0}
+            sx={{
+                border: "1px solid rgb(214 211 209)",
+                p: 1.5,
+                transition: "box-shadow 0.15s",
+                "&:hover": {
+                    boxShadow: 3,
+                },
+                "&:hover .note-actions": {
+                    opacity: "1 !important",
+                },
             }}
-            search={{
-                s: note.anchor_sentence_end_number && note.anchor_sentence_end_number !== note.anchor_sentence_start_number
-                    ? `${note.anchor_sentence_start_number}-${note.anchor_sentence_end_number}`
-                    : String(note.anchor_sentence_start_number),
-                r: "1",
-                rv: "notes",
-            }}
-            className="block border border-stone-300 rounded p-3 hover:shadow-md transition-all"
         >
-            <p className="text-sm text-stone-700 whitespace-pre-wrap break-words line-clamp-3">
-                {note.body}
-            </p>
-            {note.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-1.5">
-                    {note.tags.map((tag) => (
-                        <Chip
-                            key={tag.id}
-                            label={tag.name}
-                            size="small"
-                            variant="outlined"
-                            sx={{
-                                height: 20,
-                                fontSize: "0.65rem",
-                                borderColor: "rgb(214 211 209)",
-                                color: "rgb(120 113 108)",
-                            }}
-                        />
-                    ))}
+            <div className="flex items-start gap-2">
+                <Link
+                    to="/books/$bookSlug/$nodeSlug"
+                    params={{
+                        bookSlug: note.book_slug,
+                        nodeSlug: note.node_slug,
+                    }}
+                    search={{
+                        s:
+                            note.anchor_sentence_end_number &&
+                            note.anchor_sentence_end_number !==
+                                note.anchor_sentence_start_number
+                                ? `${note.anchor_sentence_start_number}-${note.anchor_sentence_end_number}`
+                                : String(note.anchor_sentence_start_number),
+                        r: "1",
+                        rv: "notes",
+                    }}
+                    className="flex-1 min-w-0"
+                >
+                    <p className="text-sm text-stone-700 whitespace-pre-wrap break-words line-clamp-3">
+                        {note.body}
+                    </p>
+                    {note.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                            {note.tags.map((tag) => (
+                                <Chip
+                                    key={tag.id}
+                                    label={tag.name}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{
+                                        height: 20,
+                                        fontSize: "0.65rem",
+                                        borderColor: "rgb(214 211 209)",
+                                        color: "rgb(120 113 108)",
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    )}
+                    <div className="flex items-center mt-2 text-[10px] text-stone-400">
+                        <span>{note.book_title}</span>
+                        <span className="mx-1">&middot;</span>
+                        <span>{note.node_label}</span>
+                        <span className="mx-1">&middot;</span>
+                        <span>{sentenceLabel(note)}</span>
+                        <span className="ml-auto">{dateStr}</span>
+                    </div>
+                </Link>
+                <div className="note-actions" style={{ opacity: 0, transition: "opacity 0.15s", display: "flex", gap: 2, flexShrink: 0 }}>
+                    <IconButton
+                        size="small"
+                        onClick={onEdit}
+                        title="Edit note"
+                        sx={{ p: 0.5 }}
+                    >
+                        <EditOutlined sx={{ fontSize: 16 }} />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        onClick={onDelete}
+                        title="Delete note"
+                        sx={{ p: 0.5, color: "rgb(168 162 158)" }}
+                    >
+                        <DeleteOutlined sx={{ fontSize: 16 }} />
+                    </IconButton>
                 </div>
-            )}
-            <div className="flex items-center mt-2 text-[10px] text-stone-400">
-                <span>{note.book_title}</span>
-                <span className="mx-1">&middot;</span>
-                <span>{note.node_label}</span>
-                <span className="mx-1">&middot;</span>
-                <span>{sentenceLabel(note)}</span>
-                <span className="ml-auto">{dateStr}</span>
             </div>
-        </Link>
+        </Paper>
     );
 }

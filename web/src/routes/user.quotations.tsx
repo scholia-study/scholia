@@ -1,7 +1,10 @@
+import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
 import {
     FormControl,
+    IconButton,
     InputLabel,
     MenuItem,
+    Paper,
     Select,
 } from "@mui/material";
 import { Link, createFileRoute, redirect } from "@tanstack/react-router";
@@ -9,6 +12,7 @@ import { useMemo, useState } from "react";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { QuotationWithContextResponse } from "../api/model";
 import { useListAllQuotations } from "../api/quotations/quotations";
+import { useUnsaveQuotation } from "../hooks/useUnsaveQuotation";
 
 export const Route = createFileRoute("/user/quotations")({
     beforeLoad: async ({ context }) => {
@@ -32,11 +36,9 @@ function sentenceLabel(q: QuotationWithContextResponse): string {
 function QuotationsPage() {
     const [bookFilter, setBookFilter] = useState<string>("");
 
-    // Fetch all quotations (unfiltered) to derive available books
     const { data: allQuotationsData, isLoading } = useListAllQuotations({});
     const allQuotations = allQuotationsData?.data?.quotations ?? [];
 
-    // Derive book list from actual data
     const availableBooks = useMemo(() => {
         const map = new Map<string, string>();
         for (const q of allQuotations) {
@@ -47,13 +49,11 @@ function QuotationsPage() {
         return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]));
     }, [allQuotations]);
 
-    // Apply client-side filter
     const quotations = useMemo(() => {
         if (!bookFilter) return allQuotations;
         return allQuotations.filter((q) => q.book_slug === bookFilter);
     }, [allQuotations, bookFilter]);
 
-    // Group by book
     const grouped = useMemo(() => {
         const map = new Map<string, QuotationWithContextResponse[]>();
         for (const q of quotations) {
@@ -63,6 +63,8 @@ function QuotationsPage() {
         }
         return map;
     }, [quotations]);
+
+    const { requestUnsave, UnsaveDialog } = useUnsaveQuotation({});
 
     return (
         <div className="max-w-3xl mx-auto px-8 py-16">
@@ -104,44 +106,63 @@ function QuotationsPage() {
                     </h2>
                     <div className="space-y-2">
                         {quots.map((q) => (
-                            <Link
+                            <Paper
                                 key={q.id}
-                                to="/books/$bookSlug/$nodeSlug"
-                                params={{
-                                    bookSlug: q.book_slug,
-                                    nodeSlug: q.node_slug,
+                                elevation={0}
+                                sx={{
+                                    border: "1px solid rgb(214 211 209)",
+                                    p: 1.5,
+                                    display: "flex",
+                                    alignItems: "flex-start",
+                                    gap: 1,
+                                    transition: "box-shadow 0.15s",
+                                    "&:hover": {
+                                        boxShadow: 3,
+                                    },
+                                    "&:hover .unsave-btn": {
+                                        opacity: 1,
+                                    },
                                 }}
-                                search={{
-                                    s: q.anchor_sentence_end_number && q.anchor_sentence_end_number !== q.anchor_sentence_start_number
-                                        ? `${q.anchor_sentence_start_number}-${q.anchor_sentence_end_number}`
-                                        : String(q.anchor_sentence_start_number),
-                                    r: "1",
-                                    rv: "notes",
-                                }}
-                                className="block border border-stone-300 rounded p-3 hover:shadow-md transition-all"
                             >
-                                <div className="flex items-start justify-between gap-2">
-                                    <div className="flex-1 min-w-0">
-                                        <div className="text-xs text-stone-400 mb-1">
-                                            {q.node_label} &middot;{" "}
-                                            {sentenceLabel(q)}
-                                        </div>
-                                        {q.start_text_snippet && (
-                                            <p className="text-sm text-stone-700 truncate">
-                                                &ldquo;{q.start_text_snippet}
-                                                &rdquo;
-                                                {q.end_text_snippet && (
-                                                    <span className="text-stone-400">
-                                                        {" "}
-                                                        &hellip; &ldquo;
-                                                        {q.end_text_snippet}
-                                                        &rdquo;
-                                                    </span>
-                                                )}
-                                            </p>
-                                        )}
+                                <Link
+                                    to="/books/$bookSlug/$nodeSlug"
+                                    params={{
+                                        bookSlug: q.book_slug,
+                                        nodeSlug: q.node_slug,
+                                    }}
+                                    search={{
+                                        s:
+                                            q.anchor_sentence_end_number &&
+                                            q.anchor_sentence_end_number !==
+                                                q.anchor_sentence_start_number
+                                                ? `${q.anchor_sentence_start_number}-${q.anchor_sentence_end_number}`
+                                                : String(
+                                                      q.anchor_sentence_start_number,
+                                                  ),
+                                        r: "1",
+                                        rv: "notes",
+                                    }}
+                                    className="flex-1 min-w-0"
+                                >
+                                    <div className="text-xs text-stone-400 mb-1">
+                                        {q.node_label} &middot;{" "}
+                                        {sentenceLabel(q)}
                                     </div>
-                                    <div className="text-right shrink-0">
+                                    {q.start_text_snippet && (
+                                        <p className="text-sm text-stone-700 truncate">
+                                            &ldquo;{q.start_text_snippet}&rdquo;
+                                            {q.end_text_snippet && (
+                                                <span className="text-stone-400">
+                                                    {" "}
+                                                    &hellip; &ldquo;
+                                                    {q.end_text_snippet}&rdquo;
+                                                </span>
+                                            )}
+                                        </p>
+                                    )}
+                                </Link>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <div className="text-right">
                                         {q.note_count > 0 && (
                                             <span className="text-xs text-stone-400">
                                                 {q.note_count} note
@@ -158,12 +179,27 @@ function QuotationsPage() {
                                             })}
                                         </div>
                                     </div>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => requestUnsave(q)}
+                                        title="Remove quotation"
+                                        className="unsave-btn"
+                                        sx={{
+                                            opacity: 0,
+                                            transition: "opacity 0.15s",
+                                            color: "rgb(168 162 158)",
+                                        }}
+                                    >
+                                        <DeleteOutlined fontSize="small" />
+                                    </IconButton>
                                 </div>
-                            </Link>
+                            </Paper>
                         ))}
                     </div>
                 </div>
             ))}
+
+            {UnsaveDialog}
         </div>
     );
 }

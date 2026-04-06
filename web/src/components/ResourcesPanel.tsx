@@ -7,17 +7,18 @@ import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
 import FavoriteOutlined from "@mui/icons-material/FavoriteOutlined";
 import MenuBookOutlined from "@mui/icons-material/MenuBookOutlined";
 import ListOutlined from "@mui/icons-material/ListOutlined";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useListBooks } from "../api/books/books";
 import type { FootnoteSentenceResponse, NoteResponse, ResourceResponse, SentenceResponse, TocNodeResponse } from "../api/model";
 import { useGetToc } from "../api/toc/toc";
 import { useListResources } from "../api/resources/resources";
-import { getListQuotationsQueryKey, useCreateQuotation, useDeleteQuotation, useListQuotations } from "../api/quotations/quotations";
+import { getListQuotationsQueryKey, useCreateQuotation, useListQuotations } from "../api/quotations/quotations";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
+import { useUnsaveQuotation } from "../hooks/useUnsaveQuotation";
 import { CommentaryView, getSentenceRange } from "./CommentaryView";
 import { NoteFormModal } from "./NoteFormModal";
 import { NotesView } from "./NotesView";
@@ -172,30 +173,15 @@ export function ResourcesPanel({
         },
     });
 
-    const deleteQuotationMutation = useDeleteQuotation({
-        mutation: {
-            onSuccess: () => {
-                toast.success("Quotation removed");
-                if (activeNodeId) {
-                    queryClient.invalidateQueries({
-                        queryKey: getListQuotationsQueryKey(bookSlug, { node_id: activeNodeId }),
-                    });
-                }
-            },
-            onError: () => toast.error("Failed to remove quotation"),
-        },
+    const { requestUnsave, UnsaveDialog, isPending: unsavePending } = useUnsaveQuotation({
+        bookSlug,
+        activeNodeId,
     });
-
-    const [unsaveConfirmOpen, setUnsaveConfirmOpen] = useState(false);
 
     const handleToggleSaveQuotation = () => {
         if (!sentenceRange) return;
         if (exactQuotation) {
-            if (exactQuotation.note_count > 0) {
-                setUnsaveConfirmOpen(true);
-            } else {
-                deleteQuotationMutation.mutate({ slug: bookSlug, id: exactQuotation.id });
-            }
+            requestUnsave(exactQuotation);
         } else {
             createQuotation.mutate({
                 slug: bookSlug,
@@ -206,13 +192,6 @@ export function ResourcesPanel({
                 },
             });
         }
-    };
-
-    const confirmUnsave = () => {
-        if (exactQuotation) {
-            deleteQuotationMutation.mutate({ slug: bookSlug, id: exactQuotation.id });
-        }
-        setUnsaveConfirmOpen(false);
     };
 
     // Modal state for note create/edit
@@ -359,7 +338,7 @@ export function ResourcesPanel({
                                 <MenuButton
                                     onClick={handleToggleSaveQuotation}
                                     label={exactQuotation ? "Unsave Quotation" : "Save Quotation"}
-                                    disabled={!selectedSentence || createQuotation.isPending || deleteQuotationMutation.isPending}
+                                    disabled={!selectedSentence || createQuotation.isPending || unsavePending}
                                     icon={exactQuotation
                                         ? <FavoriteOutlined fontSize="small" sx={{ color: "#b45264" }} />
                                         : <FavoriteBorderOutlined fontSize="small" sx={{ color: "#b45264" }} />
@@ -465,30 +444,7 @@ export function ResourcesPanel({
                 />
             )}
 
-            {/* Unsave confirmation dialog */}
-            <Dialog
-                open={unsaveConfirmOpen}
-                onClose={() => setUnsaveConfirmOpen(false)}
-            >
-                <DialogTitle sx={{ fontSize: "0.95rem" }}>
-                    Remove saved quotation?
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText sx={{ fontSize: "0.875rem" }}>
-                        {exactQuotation && exactQuotation.note_count > 0
-                            ? `This will permanently delete ${exactQuotation.note_count} note${exactQuotation.note_count > 1 ? "s" : ""} attached to this quotation.`
-                            : "This will remove the saved quotation."}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 2 }}>
-                    <Button onClick={() => setUnsaveConfirmOpen(false)} size="small">
-                        Cancel
-                    </Button>
-                    <Button onClick={confirmUnsave} size="small" color="error" variant="contained">
-                        Remove
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            {UnsaveDialog}
         </aside>
     );
 }

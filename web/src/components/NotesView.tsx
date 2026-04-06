@@ -3,18 +3,9 @@ import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
 import FavoriteOutlined from "@mui/icons-material/FavoriteOutlined";
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
 import EditOutlined from "@mui/icons-material/EditOutlined";
-import {
-    Button,
-    Chip,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    IconButton,
-} from "@mui/material";
+import { Chip, IconButton } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import toast from "react-hot-toast";
 import type {
     FootnoteSentenceResponse,
@@ -27,10 +18,10 @@ import {
     getListQuotationsQueryKey,
     useCreateQuotation,
     useDeleteNote,
-    useDeleteQuotation,
     useListNotes,
     useListQuotations,
 } from "../api/quotations/quotations";
+import { useUnsaveQuotation } from "../hooks/useUnsaveQuotation";
 import { parseRangeKey } from "./BlockRenderer";
 import { getSentenceRange } from "./CommentaryView";
 
@@ -128,20 +119,9 @@ export function NotesView({
         },
     });
 
-    const deleteQuotation = useDeleteQuotation({
-        mutation: {
-            onSuccess: () => {
-                toast.success("Quotation removed");
-                if (activeNodeId) {
-                    queryClient.invalidateQueries({
-                        queryKey: getListQuotationsQueryKey(bookSlug, {
-                            node_id: activeNodeId,
-                        }),
-                    });
-                }
-            },
-            onError: () => toast.error("Failed to remove quotation"),
-        },
+    const { requestUnsave, UnsaveDialog } = useUnsaveQuotation({
+        bookSlug,
+        activeNodeId,
     });
 
     const handleSaveQuotation = () => {
@@ -155,15 +135,6 @@ export function NotesView({
                 sentence_kind: range.kind,
             },
         });
-    };
-
-    const [unsaveTarget, setUnsaveTarget] = useState<QuotationResponse | null>(null);
-
-    const confirmUnsave = () => {
-        if (unsaveTarget) {
-            deleteQuotation.mutate({ slug: bookSlug, id: unsaveTarget.id });
-            setUnsaveTarget(null);
-        }
     };
 
     const handleAddNote = () => {
@@ -239,7 +210,7 @@ export function NotesView({
                         </IconButton>
                         <IconButton
                             size="small"
-                            onClick={() => setUnsaveTarget(exactQuotation)}
+                            onClick={() => requestUnsave(exactQuotation)}
                             title="Unsave quotation"
                             sx={{ color: "rgb(168 162 158)" }}
                         >
@@ -294,38 +265,7 @@ export function NotesView({
                     )}
             </div>
 
-            {/* Unsave confirmation dialog */}
-            <Dialog
-                open={unsaveTarget != null}
-                onClose={() => setUnsaveTarget(null)}
-            >
-                <DialogTitle sx={{ fontSize: "0.95rem" }}>
-                    Remove saved quotation?
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText sx={{ fontSize: "0.875rem" }}>
-                        {unsaveTarget && unsaveTarget.note_count > 0
-                            ? `This will permanently delete ${unsaveTarget.note_count} note${unsaveTarget.note_count > 1 ? "s" : ""} attached to this quotation.`
-                            : "This will remove the saved quotation."}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 2 }}>
-                    <Button
-                        onClick={() => setUnsaveTarget(null)}
-                        size="small"
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={confirmUnsave}
-                        size="small"
-                        color="error"
-                        variant="contained"
-                    >
-                        Remove
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            {UnsaveDialog}
         </div>
     );
 }
