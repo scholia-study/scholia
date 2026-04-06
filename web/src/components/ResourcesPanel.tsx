@@ -2,22 +2,30 @@ import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import CommitOutlined from "@mui/icons-material/CommitOutlined";
 import CompareOutlined from "@mui/icons-material/CompareOutlined";
+import EditNoteOutlined from "@mui/icons-material/EditNoteOutlined";
+import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
+import FavoriteOutlined from "@mui/icons-material/FavoriteOutlined";
 import MenuBookOutlined from "@mui/icons-material/MenuBookOutlined";
 import ListOutlined from "@mui/icons-material/ListOutlined";
-import { IconButton } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from "@mui/material";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useListBooks } from "../api/books/books";
-import type { FootnoteSentenceResponse, ResourceResponse, SentenceResponse, TocNodeResponse } from "../api/model";
+import type { FootnoteSentenceResponse, NoteResponse, ResourceResponse, SentenceResponse, TocNodeResponse } from "../api/model";
 import { useGetToc } from "../api/toc/toc";
 import { useListResources } from "../api/resources/resources";
+import { getListQuotationsQueryKey, useCreateQuotation, useDeleteQuotation, useListQuotations } from "../api/quotations/quotations";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import { CommentaryView, getSentenceRange } from "./CommentaryView";
+import { NoteFormModal } from "./NoteFormModal";
+import { NotesView } from "./NotesView";
 import { PanelToc } from "./PanelToc";
 import { ResourceFormModal } from "./ResourceFormModal";
 import { SentenceDetail } from "./SentenceDetail";
 
-type ViewKind = "toc" | "compare" | "verbatim" | "paraphrase" | "allusion" | "sentence";
+type ViewKind = "toc" | "compare" | "verbatim" | "paraphrase" | "allusion" | "sentence" | "notes";
 
 interface ResourcesPanelProps {
     toc: TocNodeResponse[] | undefined;
@@ -100,6 +108,138 @@ export function ResourcesPanel({
         setResourceModalOpen(true);
     };
 
+    // Resolve active node ID from toc
+    const activeNodeId = useMemo(() => {
+        if (!activeNodeSlug || !toc) return undefined;
+        const find = (nodes: TocNodeResponse[]): string | undefined => {
+            for (const n of nodes) {
+                if (n.slug === activeNodeSlug) return n.id;
+                const found = find(n.children);
+                if (found) return found;
+            }
+        };
+        return find(toc);
+    }, [activeNodeSlug, toc]);
+
+    // Fetch quotation note count for menu badge
+    const { data: quotationsData } = useListQuotations(
+        bookSlug,
+        { node_id: activeNodeId ?? "" },
+        { query: { enabled: !!activeNodeId && !!user } },
+    );
+    const noteCount = useMemo(() => {
+        if (!quotationsData?.data?.quotations || !sentenceRange) return 0;
+        return quotationsData.data.quotations
+            .filter((q) => {
+                if (q.sentence_kind !== sentenceRange.kind) return false;
+                const qStart = q.anchor_sentence_start_number;
+                const qEnd = q.anchor_sentence_end_number ?? qStart;
+                return qStart <= sentenceRange.end && qEnd >= sentenceRange.start;
+            })
+            .reduce((sum, q) => sum + q.note_count, 0);
+    }, [quotationsData, sentenceRange]);
+
+    // Check if current selection has an exact-match saved quotation
+    const exactQuotation = useMemo(() => {
+        if (!sentenceRange || !quotationsData?.data?.quotations) return undefined;
+        return quotationsData.data.quotations.find((q) => {
+            const startMatch = q.anchor_sentence_start_number === sentenceRange.start;
+            const endMatch =
+                sentenceRange.start === sentenceRange.end
+                    ? q.anchor_sentence_end_number == null ||
+                      q.anchor_sentence_end_number === sentenceRange.start
+                    : q.anchor_sentence_end_number === sentenceRange.end;
+            const kindMatch = q.sentence_kind === sentenceRange.kind;
+            return startMatch && endMatch && kindMatch;
+        });
+    }, [sentenceRange, quotationsData]);
+
+    const queryClient = useQueryClient();
+
+    const createQuotation = useCreateQuotation({
+        mutation: {
+            onSuccess: () => {
+                toast.success("Quotation saved");
+                if (activeNodeId) {
+                    queryClient.invalidateQueries({
+                        queryKey: getListQuotationsQueryKey(bookSlug, { node_id: activeNodeId }),
+                    });
+                }
+            },
+            onError: () => toast.error("Failed to save quotation"),
+        },
+    });
+
+    const deleteQuotationMutation = useDeleteQuotation({
+        mutation: {
+            onSuccess: () => {
+                toast.success("Quotation removed");
+                if (activeNodeId) {
+                    queryClient.invalidateQueries({
+                        queryKey: getListQuotationsQueryKey(bookSlug, { node_id: activeNodeId }),
+                    });
+                }
+            },
+            onError: () => toast.error("Failed to remove quotation"),
+        },
+    });
+
+    const [unsaveConfirmOpen, setUnsaveConfirmOpen] = useState(false);
+
+    const handleToggleSaveQuotation = () => {
+        if (!sentenceRange) return;
+        if (exactQuotation) {
+            if (exactQuotation.note_count > 0) {
+                setUnsaveConfirmOpen(true);
+            } else {
+                deleteQuotationMutation.mutate({ slug: bookSlug, id: exactQuotation.id });
+            }
+        } else {
+            createQuotation.mutate({
+                slug: bookSlug,
+                data: {
+                    sentence_start: sentenceRange.start,
+                    sentence_end: sentenceRange.start !== sentenceRange.end ? sentenceRange.end : undefined,
+                    sentence_kind: sentenceRange.kind,
+                },
+            });
+        }
+    };
+
+    const confirmUnsave = () => {
+        if (exactQuotation) {
+            deleteQuotationMutation.mutate({ slug: bookSlug, id: exactQuotation.id });
+        }
+        setUnsaveConfirmOpen(false);
+    };
+
+    // Modal state for note create/edit
+    const [noteModalOpen, setNoteModalOpen] = useState(false);
+    const [noteModalQuotationId, setNoteModalQuotationId] = useState<string>("");
+    const [editingNote, setEditingNote] = useState<NoteResponse | undefined>();
+
+    const handleOpenNoteModal = (quotationId: string, note?: NoteResponse) => {
+        setNoteModalQuotationId(quotationId);
+        setEditingNote(note);
+        setNoteModalOpen(true);
+    };
+
+    // Build sentence context string for note modal
+    const sentenceContextStr = useMemo(() => {
+        if (!sentenceRange) return undefined;
+        const { start, end } = sentenceRange;
+        const label = start === end ? `Sentence ${start}` : `Sentences ${start}–${end}`;
+        // Try to get a text snippet from selected sentences
+        if (!selectedSentence) return label;
+        const sentences = Array.isArray(selectedSentence) ? selectedSentence : [selectedSentence];
+        if (sentences.length === 0) return label;
+        const firstText = sentences[0].text;
+        const snippet = firstText.length > 60 ? `${firstText.slice(0, 60)}...` : firstText;
+        if (sentences.length === 1) return `${label}: "${snippet}"`;
+        const lastText = sentences[sentences.length - 1].text;
+        const endSnippet = lastText.length > 40 ? `...${lastText.slice(-40)}` : lastText;
+        return `${label}: "${snippet}" ... "${endSnippet}"`;
+    }, [sentenceRange, selectedSentence]);
 
     const viewKind = activeView as ViewKind | undefined;
     const isMenu = !viewKind;
@@ -146,7 +286,9 @@ export function ResourcesPanel({
                                     ? "Paraphrases"
                                     : viewKind === "allusion"
                                       ? "Allusions"
-                                      : "\u00A0"}
+                                      : viewKind === "notes"
+                                        ? "Notes"
+                                        : "\u00A0"}
                     </div>
                 </div>
                 <IconButton
@@ -201,6 +343,28 @@ export function ResourcesPanel({
                             disabled={!selectedSentence}
                             icon={<MenuBookOutlined fontSize="small" sx={{ color: "#5c7a5c" }} />}
                         />
+                        {user && (
+                            <>
+                                <div className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-3 pb-1">
+                                    My Notes
+                                </div>
+                                <MenuButton
+                                    onClick={() => onViewChange("notes")}
+                                    label={`Notes${noteCount ? ` (${noteCount})` : ""}`}
+                                    disabled={!selectedSentence}
+                                    icon={<EditNoteOutlined fontSize="small" sx={{ color: "#6b5b73" }} />}
+                                />
+                                <MenuButton
+                                    onClick={handleToggleSaveQuotation}
+                                    label={exactQuotation ? "Unsave Quotation" : "Save Quotation"}
+                                    disabled={!selectedSentence || createQuotation.isPending || deleteQuotationMutation.isPending}
+                                    icon={exactQuotation
+                                        ? <FavoriteOutlined fontSize="small" sx={{ color: "#b45264" }} />
+                                        : <FavoriteBorderOutlined fontSize="small" sx={{ color: "#b45264" }} />
+                                    }
+                                />
+                            </>
+                        )}
                     </nav>
                 </div>
             )}
@@ -258,6 +422,16 @@ export function ResourcesPanel({
                     />
                 ))}
 
+            {/* Notes view */}
+            {viewKind === "notes" && (
+                <NotesView
+                    bookSlug={bookSlug}
+                    activeNodeId={activeNodeId}
+                    selectedSentence={selectedSentence}
+                    onOpenNoteModal={handleOpenNoteModal}
+                />
+            )}
+
             {/* Resource create/edit modal */}
             <ResourceFormModal
                 key={editingResource?.id ?? `${modalDefaults?.type}-${modalDefaults?.start}-${modalDefaults?.end}-${modalDefaults?.kind}`}
@@ -272,6 +446,46 @@ export function ResourcesPanel({
                 defaultSentenceKind={modalDefaults?.kind}
                 isAdmin={user?.roles?.includes("admin") ?? false}
             />
+
+            {/* Note create/edit modal */}
+            {noteModalOpen && (
+                <NoteFormModal
+                    key={editingNote?.id ?? `new-note-${noteModalQuotationId}`}
+                    open={noteModalOpen}
+                    onClose={() => setNoteModalOpen(false)}
+                    bookSlug={bookSlug}
+                    quotationId={noteModalQuotationId}
+                    mode={editingNote ? "edit" : "create"}
+                    initialData={editingNote}
+                    sentenceContext={sentenceContextStr}
+                    activeNodeId={activeNodeId}
+                />
+            )}
+
+            {/* Unsave confirmation dialog */}
+            <Dialog
+                open={unsaveConfirmOpen}
+                onClose={() => setUnsaveConfirmOpen(false)}
+            >
+                <DialogTitle sx={{ fontSize: "0.95rem" }}>
+                    Remove saved quotation?
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText sx={{ fontSize: "0.875rem" }}>
+                        {exactQuotation && exactQuotation.note_count > 0
+                            ? `This will permanently delete ${exactQuotation.note_count} note${exactQuotation.note_count > 1 ? "s" : ""} attached to this quotation.`
+                            : "This will remove the saved quotation."}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2 }}>
+                    <Button onClick={() => setUnsaveConfirmOpen(false)} size="small">
+                        Cancel
+                    </Button>
+                    <Button onClick={confirmUnsave} size="small" color="error" variant="contained">
+                        Remove
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </aside>
     );
 }

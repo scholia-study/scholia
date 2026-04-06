@@ -234,6 +234,352 @@
         }
       }
     },
+    "/api/books/{slug}/quotations": {
+      "get": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "List quotations for a node (authenticated user only)",
+        "operationId": "list_quotations",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "node_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User's quotations for the node",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotationListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Save a quotation (returns existing if duplicate)",
+        "operationId": "create_quotation",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuotationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Quotation saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateQuotationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/api/books/{slug}/quotations/{id}": {
+      "delete": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Delete a quotation (cascade-deletes notes)",
+        "operationId": "delete_quotation",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Quotation ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quotation deleted"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Quotation not found"
+          }
+        }
+      }
+    },
+    "/api/books/{slug}/quotations/{id}/notes": {
+      "get": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "List notes for a quotation",
+        "operationId": "list_notes",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Quotation ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notes for the quotation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Quotation not found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Create a note on a quotation",
+        "operationId": "create_note",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Quotation ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNoteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Note created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Quotation not found"
+          }
+        }
+      }
+    },
+    "/api/books/{slug}/quotations/{id}/notes/{note_id}": {
+      "put": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Update a note",
+        "operationId": "update_note",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Quotation ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "note_id",
+            "in": "path",
+            "description": "Note ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNoteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Note updated"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Delete a note",
+        "operationId": "delete_note",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Book slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Quotation ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "note_id",
+            "in": "path",
+            "description": "Note ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note deleted"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      }
+    },
     "/api/books/{slug}/resources": {
       "get": {
         "tags": [
@@ -859,6 +1205,30 @@
         }
       }
     },
+    "/api/tags": {
+      "get": {
+        "tags": [
+          "tags"
+        ],
+        "summary": "List all tags for the authenticated user",
+        "operationId": "list_tags",
+        "responses": {
+          "200": {
+            "description": "User's tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
     "/auth/forgot-password": {
       "post": {
         "tags": [
@@ -1363,6 +1733,23 @@
           }
         }
       },
+      "CreateNoteRequest": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "CreatePersonRequest": {
         "type": "object",
         "required": [
@@ -1377,6 +1764,44 @@
               "string",
               "null"
             ]
+          }
+        }
+      },
+      "CreateQuotationRequest": {
+        "type": "object",
+        "required": [
+          "sentence_start",
+          "sentence_kind"
+        ],
+        "properties": {
+          "sentence_end": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "sentence_kind": {
+            "type": "string"
+          },
+          "sentence_start": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CreateQuotationResponse": {
+        "type": "object",
+        "required": [
+          "quotation",
+          "created"
+        ],
+        "properties": {
+          "created": {
+            "type": "boolean"
+          },
+          "quotation": {
+            "$ref": "#/components/schemas/QuotationResponse"
           }
         }
       },
@@ -1760,6 +2185,50 @@
           }
         }
       },
+      "NoteListResponse": {
+        "type": "object",
+        "required": [
+          "notes"
+        ],
+        "properties": {
+          "notes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteResponse"
+            }
+          }
+        }
+      },
+      "NoteResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "body",
+          "tags",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagResponse"
+            }
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        }
+      },
       "PageMarkerResponse": {
         "type": "object",
         "required": [
@@ -1887,6 +2356,56 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "QuotationListResponse": {
+        "type": "object",
+        "required": [
+          "quotations"
+        ],
+        "properties": {
+          "quotations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuotationResponse"
+            }
+          }
+        }
+      },
+      "QuotationResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "anchor_sentence_start_number",
+          "sentence_kind",
+          "note_count",
+          "created_at"
+        ],
+        "properties": {
+          "anchor_sentence_end_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "anchor_sentence_start_number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "note_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sentence_kind": {
+            "type": "string"
           }
         }
       },
@@ -2283,6 +2802,35 @@
           }
         }
       },
+      "TagListResponse": {
+        "type": "object",
+        "required": [
+          "tags"
+        ],
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagResponse"
+            }
+          }
+        }
+      },
+      "TagResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "TocNodeResponse": {
         "type": "object",
         "required": [
@@ -2325,6 +2873,26 @@
           },
           "source_ref": {
             "type": "string"
+          }
+        }
+      },
+      "UpdateNoteRequest": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
           }
         }
       },

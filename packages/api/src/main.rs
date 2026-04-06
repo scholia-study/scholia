@@ -104,6 +104,24 @@ async fn main() {
         ))
         .routes(utoipa_axum::routes!(
             api::handlers::auth::request_password_change
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::quotations::list_quotations,
+            api::handlers::quotations::create_quotation
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::quotations::delete_quotation
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::quotations::list_notes,
+            api::handlers::quotations::create_note
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::quotations::update_note,
+            api::handlers::quotations::delete_note
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::quotations::list_tags
         ));
 
     // Public routes (no rate limiting)

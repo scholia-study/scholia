@@ -475,33 +475,57 @@ CREATE TABLE password_reset_tokens (
 
 CREATE INDEX idx_password_reset_user ON password_reset_tokens (user_id);
 
--- User notes anchored to text locations. Same anchor pattern
--- as resources but with an owner.
-CREATE TABLE user_notes (
+-- ============================================================
+-- QUOTATIONS & NOTES (user-saved text anchors + commentary)
+-- ============================================================
+
+-- A quotation is a user's saved pointer to a sentence or sentence range.
+-- No copied text — always a strict reference to the source.
+CREATE TABLE quotations (
     id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id                   UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     book_id                   UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
     anchor_node_id            UUID NOT NULL REFERENCES toc_nodes(id) ON DELETE CASCADE,
-    anchor_block_id           UUID REFERENCES content_blocks(id) ON DELETE CASCADE,
-    anchor_sentence_start_id  UUID REFERENCES sentences(id) ON DELETE CASCADE,
+    anchor_sentence_start_id  UUID NOT NULL REFERENCES sentences(id) ON DELETE CASCADE,
     anchor_sentence_end_id    UUID REFERENCES sentences(id) ON DELETE CASCADE,
-    body                      TEXT NOT NULL,
-    is_public                 BOOLEAN NOT NULL DEFAULT FALSE,
-    admin_notes               TEXT,
-    created_at                TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at                TIMESTAMPTZ NOT NULL DEFAULT now(),
-
-    CONSTRAINT chk_note_anchor CHECK (
-        anchor_sentence_end_id IS NULL OR anchor_sentence_start_id IS NOT NULL
-    )
+    sentence_kind             sentence_kind NOT NULL DEFAULT 'body',
+    created_at                TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_notes_sentence_start ON user_notes (anchor_sentence_start_id)
-    WHERE anchor_sentence_start_id IS NOT NULL;
-CREATE INDEX idx_notes_block ON user_notes (anchor_block_id)
-    WHERE anchor_block_id IS NOT NULL;
-CREATE INDEX idx_notes_node ON user_notes (anchor_node_id);
-CREATE INDEX idx_notes_user_book ON user_notes (user_id, book_id, created_at DESC);
+-- Deduplicate: one quotation per user per unique sentence range.
+-- COALESCE handles nullable end_id for the unique constraint.
+CREATE UNIQUE INDEX idx_quotations_user_range
+    ON quotations (user_id, anchor_sentence_start_id, COALESCE(anchor_sentence_end_id, '00000000-0000-0000-0000-000000000000'));
+CREATE INDEX idx_quotations_node ON quotations (user_id, book_id, anchor_node_id);
+CREATE INDEX idx_quotations_user_book ON quotations (user_id, book_id, created_at DESC);
+
+-- Notes attached to quotations. Plain text, private, one-to-many.
+CREATE TABLE quotation_notes (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    quotation_id    UUID NOT NULL REFERENCES quotations(id) ON DELETE CASCADE,
+    body            TEXT NOT NULL,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_qnotes_quotation ON quotation_notes (quotation_id, created_at DESC);
+
+-- Free-form tags, scoped per user.
+CREATE TABLE tags (
+    id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id   UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name      TEXT NOT NULL,
+    UNIQUE(user_id, name)
+);
+
+-- Many-to-many: tags on notes.
+CREATE TABLE quotation_note_tags (
+    note_id   UUID NOT NULL REFERENCES quotation_notes(id) ON DELETE CASCADE,
+    tag_id    UUID NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (note_id, tag_id)
+);
+
+CREATE INDEX idx_qntags_tag ON quotation_note_tags (tag_id);
 
 -- AI chat conversations anchored to text locations.
 CREATE TABLE chat_conversations (

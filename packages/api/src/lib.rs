@@ -43,6 +43,14 @@ pub mod state;
         handlers::persons::search_persons,
         handlers::persons::create_person,
         handlers::persons::update_person,
+        handlers::quotations::list_quotations,
+        handlers::quotations::create_quotation,
+        handlers::quotations::delete_quotation,
+        handlers::quotations::list_notes,
+        handlers::quotations::create_note,
+        handlers::quotations::update_note,
+        handlers::quotations::delete_note,
+        handlers::quotations::list_tags,
     ),
     components(schemas(
         models::book::BookSummary,
@@ -79,6 +87,16 @@ pub mod state;
         models::resource::UpdatePersonRequest,
         models::resource::LinkSourcePersonRequest,
         models::resource::ReferenceCheckResponse,
+        models::quotation::QuotationResponse,
+        models::quotation::QuotationListResponse,
+        models::quotation::CreateQuotationRequest,
+        models::quotation::CreateQuotationResponse,
+        models::quotation::NoteResponse,
+        models::quotation::NoteListResponse,
+        models::quotation::CreateNoteRequest,
+        models::quotation::UpdateNoteRequest,
+        models::quotation::TagResponse,
+        models::quotation::TagListResponse,
     ))
 )]
 pub struct ApiDoc;

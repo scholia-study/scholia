@@ -1,3 +1,4 @@
+import EditNoteOutlined from "@mui/icons-material/EditNoteOutlined";
 import parse, { Element } from "html-react-parser";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
@@ -8,6 +9,7 @@ import type {
 } from "../api/model";
 import { FootnotePopover } from "./FootnotePopover";
 import { useFootnoteSelection } from "./FootnoteSelectionContext";
+import { useQuotationContext } from "./QuotationContext";
 import { useSentenceSelection } from "./SentenceSelectionContext";
 
 /** URL-friendly key for a sentence: sentence_number if available, otherwise ID. */
@@ -198,6 +200,7 @@ export function Sentence({
 }) {
     const { isCorrespondent } = useSentenceSelection(sentence);
     const { selectedFootnoteSentenceId } = useFootnoteSelection();
+    const { showBookmarks, isSentenceSaved } = useQuotationContext();
 
     // Check if this sentence is the anchor for a selected footnote sentence
     const isFootnoteAnchor = useMemo(() => {
@@ -265,8 +268,19 @@ export function Sentence({
         });
     }, [showOriginal, sentence, onSelect]);
 
+    const isSaved = showBookmarks && sentence.sentence_number != null && isSentenceSaved(sentence.sentence_number);
+
     return (
         <>
+            {isSaved && (
+                <span
+                    className="absolute right-full mr-1 text-stone-300 select-none pointer-events-none"
+                    style={{ lineHeight: "inherit" }}
+                    title="Saved quotation"
+                >
+                    <EditNoteOutlined sx={{ fontSize: 14 }} />
+                </span>
+            )}
             {leftMarkers && <MarginNotes markers={leftMarkers} side="left" />}
             {rightMarkers && (
                 <MarginNotes markers={rightMarkers} side="right" />
