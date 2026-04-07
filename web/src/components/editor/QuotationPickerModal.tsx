@@ -25,7 +25,10 @@ export interface QuotationPickerResult {
     end?: number;
     kind: string;
     mode: "source" | "translation" | "source+translation";
-    layout: "stacked" | "side-by-side-source-left" | "side-by-side-source-right";
+    layout:
+        | "stacked"
+        | "side-by-side-source-left"
+        | "side-by-side-source-right";
 }
 
 interface QuotationPickerModalProps {
@@ -40,9 +43,12 @@ export function QuotationPickerModal({
     onSelect,
 }: QuotationPickerModalProps) {
     const [bookFilter, setBookFilter] = useState<string>("");
-    const [selected, setSelected] = useState<QuotationWithContextResponse | null>(null);
-    const [mode, setMode] = useState<QuotationPickerResult["mode"]>("translation");
-    const [layout, setLayout] = useState<QuotationPickerResult["layout"]>("stacked");
+    const [selected, setSelected] =
+        useState<QuotationWithContextResponse | null>(null);
+    const [mode, setMode] =
+        useState<QuotationPickerResult["mode"]>("translation");
+    const [layout, setLayout] =
+        useState<QuotationPickerResult["layout"]>("stacked");
 
     const { data: quotationsData, isLoading } = useListAllQuotations(
         {},
@@ -109,12 +115,15 @@ export function QuotationPickerModal({
                 </div>
 
                 {isLoading && (
-                    <p className="text-sm text-stone-400">Loading quotations...</p>
+                    <p className="text-sm text-stone-400">
+                        Loading quotations...
+                    </p>
                 )}
 
                 {!isLoading && filtered.length === 0 && (
                     <p className="text-sm text-stone-400">
-                        No saved quotations. Save quotations from the reader first.
+                        No saved quotations. Save quotations from the reader
+                        first.
                     </p>
                 )}
 
@@ -140,7 +149,8 @@ export function QuotationPickerModal({
                             <div className="text-xs text-stone-400 mb-0.5">
                                 {q.book_title} &middot; {q.node_label} &middot;{" "}
                                 {q.anchor_sentence_end_number &&
-                                q.anchor_sentence_end_number !== q.anchor_sentence_start_number
+                                q.anchor_sentence_end_number !==
+                                    q.anchor_sentence_start_number
                                     ? `Sentences ${q.anchor_sentence_start_number}\u2013${q.anchor_sentence_end_number}`
                                     : `Sentence ${q.anchor_sentence_start_number}`}
                             </div>
@@ -163,7 +173,8 @@ export function QuotationPickerModal({
                                 value={mode}
                                 onChange={(e) =>
                                     setMode(
-                                        e.target.value as QuotationPickerResult["mode"],
+                                        e.target
+                                            .value as QuotationPickerResult["mode"],
                                     )
                                 }
                                 row
@@ -172,19 +183,25 @@ export function QuotationPickerModal({
                                     value="source"
                                     control={<Radio size="small" />}
                                     label="Source"
-                                    slotProps={{ typography: { fontSize: "0.8rem" } }}
+                                    slotProps={{
+                                        typography: { fontSize: "0.8rem" },
+                                    }}
                                 />
                                 <FormControlLabel
                                     value="translation"
                                     control={<Radio size="small" />}
                                     label="Translation"
-                                    slotProps={{ typography: { fontSize: "0.8rem" } }}
+                                    slotProps={{
+                                        typography: { fontSize: "0.8rem" },
+                                    }}
                                 />
                                 <FormControlLabel
                                     value="source+translation"
                                     control={<Radio size="small" />}
                                     label="Both"
-                                    slotProps={{ typography: { fontSize: "0.8rem" } }}
+                                    slotProps={{
+                                        typography: { fontSize: "0.8rem" },
+                                    }}
                                 />
                             </RadioGroup>
                         </FormControl>
@@ -197,7 +214,8 @@ export function QuotationPickerModal({
                                 value={layout}
                                 onChange={(e) =>
                                     setLayout(
-                                        e.target.value as QuotationPickerResult["layout"],
+                                        e.target
+                                            .value as QuotationPickerResult["layout"],
                                     )
                                 }
                                 row
@@ -206,19 +224,25 @@ export function QuotationPickerModal({
                                     value="stacked"
                                     control={<Radio size="small" />}
                                     label="Stacked"
-                                    slotProps={{ typography: { fontSize: "0.8rem" } }}
+                                    slotProps={{
+                                        typography: { fontSize: "0.8rem" },
+                                    }}
                                 />
                                 <FormControlLabel
                                     value="side-by-side-source-left"
                                     control={<Radio size="small" />}
                                     label="Side-by-side (source left)"
-                                    slotProps={{ typography: { fontSize: "0.8rem" } }}
+                                    slotProps={{
+                                        typography: { fontSize: "0.8rem" },
+                                    }}
                                 />
                                 <FormControlLabel
                                     value="side-by-side-source-right"
                                     control={<Radio size="small" />}
                                     label="Side-by-side (source right)"
-                                    slotProps={{ typography: { fontSize: "0.8rem" } }}
+                                    slotProps={{
+                                        typography: { fontSize: "0.8rem" },
+                                    }}
                                 />
                             </RadioGroup>
                         </FormControl>

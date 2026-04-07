@@ -1,15 +1,15 @@
 import type { QueryClient } from "@tanstack/react-query";
 import {
-    Outlet,
     createRootRouteWithContext,
     HeadContent,
+    Outlet,
     Scripts,
     useMatches,
 } from "@tanstack/react-router";
 import { Toaster } from "react-hot-toast";
-import appCss from "../styles.css?url";
 import { Navbar } from "../components/Navbar";
 import { UserSubnav } from "../components/UserSubnav";
+import appCss from "../styles.css?url";
 
 interface RouterContext {
     queryClient: QueryClient;
@@ -40,7 +40,9 @@ function RootComponent() {
         <>
             <Navbar />
             <UserSubnav />
-            <main className={`min-h-screen pt-12 ${isUserRoute ? "md:pt-[5.5rem]" : ""}`}>
+            <main
+                className={`min-h-screen pt-12 ${isUserRoute ? "md:pt-[5.5rem]" : ""}`}
+            >
                 <Outlet />
             </main>
             <Toaster position="bottom-right" />

@@ -1,4 +1,3 @@
-import FormatQuoteOutlined from "@mui/icons-material/FormatQuoteOutlined";
 import PublishOutlined from "@mui/icons-material/PublishOutlined";
 import SaveOutlined from "@mui/icons-material/SaveOutlined";
 import UnpublishedOutlined from "@mui/icons-material/UnpublishedOutlined";
@@ -9,7 +8,7 @@ import {
     TextField,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
     getGetUserArticleQueryKey,
@@ -23,9 +22,9 @@ import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { TopicResponse } from "../api/model";
 import { useListTopics } from "../api/topics/topics";
 import {
-    MilkdownEditorComponent,
-    type MilkdownEditorHandle,
-} from "../components/editor/MilkdownEditor";
+    ArticleEditorLazy as ArticleEditor,
+    type ArticleEditorHandle,
+} from "../components/editor/ArticleEditorLazy";
 import {
     QuotationPickerModal,
     type QuotationPickerResult,
@@ -66,7 +65,7 @@ function ArticleEditorPage() {
     const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "unsaved">("saved");
     const [pickerOpen, setPickerOpen] = useState(false);
 
-    const editorRef = useRef<MilkdownEditorHandle>(null);
+    const editorRef = useRef<ArticleEditorHandle>(null);
     const initialized = useRef(false);
 
     // Initialize from article data
@@ -227,16 +226,26 @@ function ArticleEditorPage() {
                         </Button>
                     )}
                     {article.status === "published" && (
-                        <Button
-                            size="small"
-                            variant="outlined"
-                            startIcon={<UnpublishedOutlined />}
-                            onClick={handleUnpublish}
-                            disabled={unpublishMutation.isPending}
-                            sx={{ textTransform: "none" }}
-                        >
-                            Unpublish
-                        </Button>
+                        <>
+                            <Link
+                                to="/articles/$slug"
+                                params={{ slug: currentSlug.current }}
+                                target="_blank"
+                                className="text-xs text-blue-500 hover:text-blue-700 underline"
+                            >
+                                View published
+                            </Link>
+                            <Button
+                                size="small"
+                                variant="outlined"
+                                startIcon={<UnpublishedOutlined />}
+                                onClick={handleUnpublish}
+                                disabled={unpublishMutation.isPending}
+                                sx={{ textTransform: "none" }}
+                            >
+                                Unpublish
+                            </Button>
+                        </>
                     )}
                     <Button
                         size="small"
@@ -334,28 +343,13 @@ function ArticleEditorPage() {
                 sx={{ mb: 4 }}
             />
 
-            {/* Toolbar */}
-            <div className="flex items-center gap-1 mb-2">
-                <Button
-                    size="small"
-                    variant="outlined"
-                    startIcon={<FormatQuoteOutlined />}
-                    onClick={() => setPickerOpen(true)}
-                    sx={{ textTransform: "none", fontSize: "0.8rem" }}
-                >
-                    Insert Quotation
-                </Button>
-            </div>
-
-            {/* Milkdown Editor */}
-            <div
-                className="border border-stone-200 rounded-lg overflow-hidden min-h-[500px] prose prose-stone max-w-none p-4"
-                style={{ fontFamily: "'Libre Baskerville', serif" }}
-            >
-                <MilkdownEditorComponent
+            {/* MDXEditor */}
+            <div className="border border-stone-200 rounded-lg overflow-hidden">
+                <ArticleEditor
                     ref={editorRef}
-                    defaultValue={article.markdown}
+                    markdown={article.markdown}
                     onChange={handleMarkdownChange}
+                    onInsertQuotationClick={() => setPickerOpen(true)}
                 />
             </div>
 

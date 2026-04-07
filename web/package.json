@@ -22,11 +22,9 @@
         "@emotion/styled": "^11.14.1",
         "@fontsource/libre-baskerville": "^5.2.10",
         "@fontsource/roboto": "^5.2.10",
-        "@milkdown/kit": "^7.20.0",
-        "@milkdown/react": "^7.20.0",
+        "@mdxeditor/editor": "^3.53.1",
         "@mui/icons-material": "^7.3.9",
         "@mui/material": "^7.3.9",
-        "@prosemirror-adapter/react": "^0.5.3",
         "@tailwindcss/vite": "^4.1.18",
         "@tanstack/react-devtools": "latest",
         "@tanstack/react-query": "^5.90.21",
@@ -43,7 +41,6 @@
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "react-hot-toast": "^2.6.0",
-        "remark-directive": "^4.0.0",
         "tailwindcss": "^4.1.18"
     },
     "devDependencies": {
