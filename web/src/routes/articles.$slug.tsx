@@ -33,10 +33,7 @@ function PublishedArticlePage() {
         <div className="max-w-3xl mx-auto px-8 py-16">
             {/* Header */}
             <header className="mb-8">
-                <h1
-                    className="text-3xl font-bold text-stone-900 mb-3"
-                    style={{ fontFamily: "'Libre Baskerville', serif" }}
-                >
+                <h1 className="text-3xl font-bold text-stone-900 mb-3">
                     {article.title}
                 </h1>
                 {article.description && (
@@ -97,10 +94,7 @@ function PublishedArticlePage() {
             </header>
 
             {/* Article body */}
-            <div
-                className="prose prose-stone max-w-none"
-                style={{ fontFamily: "'Libre Baskerville', serif" }}
-            >
+            <div className="prose prose-stone max-w-none">
                 {parse(article.html, {
                     replace: (domNode: DOMNode) => {
                         if (
