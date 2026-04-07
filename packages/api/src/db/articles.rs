@@ -105,9 +105,8 @@ fn article_detail_response(r: ArticleRow, topics: Vec<TopicResponse>) -> Article
 
 /// Render article markdown to HTML, converting quotation directives to placeholder divs.
 pub fn render_article_markdown(markdown: &str) -> String {
-    // Pre-process: extract :quotation{...} directives and replace with placeholders
-    let directive_re =
-        Regex::new(r#":quotation\{([^}]+)\}"#).expect("Invalid directive regex");
+    // Pre-process: extract ::quotation{...} directives and replace with placeholders
+    let directive_re = Regex::new(r#"::quotation\{([^}]+)\}"#).expect("Invalid directive regex");
 
     let mut placeholder_map: Vec<String> = Vec::new();
     let processed = directive_re.replace_all(markdown, |caps: &regex::Captures| {
@@ -433,21 +432,14 @@ pub async fn update_article(
     }
 
     // Return updated article
-    let new_slug = sqlx::query_scalar!(
-        r#"SELECT slug FROM articles WHERE id = $1"#,
-        article_id,
-    )
-    .fetch_one(pool)
-    .await?;
+    let new_slug = sqlx::query_scalar!(r#"SELECT slug FROM articles WHERE id = $1"#, article_id,)
+        .fetch_one(pool)
+        .await?;
 
     get_user_article_by_slug(pool, &new_slug, user_id).await
 }
 
-pub async fn publish_article(
-    pool: &PgPool,
-    slug: &str,
-    user_id: Uuid,
-) -> Result<(), AppError> {
+pub async fn publish_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result<(), AppError> {
     let result = sqlx::query!(
         r#"UPDATE articles
            SET status = 'published',
@@ -466,11 +458,7 @@ pub async fn publish_article(
     Ok(())
 }
 
-pub async fn unpublish_article(
-    pool: &PgPool,
-    slug: &str,
-    user_id: Uuid,
-) -> Result<(), AppError> {
+pub async fn unpublish_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result<(), AppError> {
     let result = sqlx::query!(
         r#"UPDATE articles SET status = 'draft', updated_at = now()
            WHERE slug = $1 AND user_id = $2 AND status = 'published'"#,
@@ -486,11 +474,7 @@ pub async fn unpublish_article(
     Ok(())
 }
 
-pub async fn archive_article(
-    pool: &PgPool,
-    slug: &str,
-    user_id: Uuid,
-) -> Result<(), AppError> {
+pub async fn archive_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result<(), AppError> {
     let result = sqlx::query!(
         r#"UPDATE articles SET status = 'archived', updated_at = now()
            WHERE slug = $1 AND user_id = $2"#,
@@ -506,10 +490,7 @@ pub async fn archive_article(
     Ok(())
 }
 
-pub async fn get_user_article_counts(
-    pool: &PgPool,
-    user_id: Uuid,
-) -> Result<(i64, i64), AppError> {
+pub async fn get_user_article_counts(pool: &PgPool, user_id: Uuid) -> Result<(i64, i64), AppError> {
     let row = sqlx::query_as!(
         CountRow,
         r#"SELECT
@@ -630,9 +611,7 @@ async fn set_article_topics(
     topic_ids: &[String],
 ) -> Result<(), AppError> {
     if topic_ids.len() > 5 {
-        return Err(AppError::BadRequest(
-            "Maximum 5 topics per article".into(),
-        ));
+        return Err(AppError::BadRequest("Maximum 5 topics per article".into()));
     }
 
     // Clear existing

@@ -67,12 +67,8 @@ pub async fn list_user_articles(
     user.require_permission(Permission::ArticlesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
-    let articles = db::articles::list_user_articles(
-        &state.pool,
-        user.id,
-        params.status.as_deref(),
-    )
-    .await?;
+    let articles =
+        db::articles::list_user_articles(&state.pool, user.id, params.status.as_deref()).await?;
 
     let limits =
         db::articles::get_article_limits_response(&state.pool, user.id, &user.roles).await?;
