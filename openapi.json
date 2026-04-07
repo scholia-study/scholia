@@ -2300,6 +2300,16 @@
             "items": {
               "$ref": "#/components/schemas/SentenceData"
             }
+          },
+          "source": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SourceContext"
+              }
+            ]
           }
         }
       },
@@ -3570,6 +3580,29 @@
             ]
           },
           "text": {
+            "type": "string"
+          }
+        }
+      },
+      "SourceContext": {
+        "type": "object",
+        "required": [
+          "book_slug",
+          "book_title",
+          "node_slug",
+          "node_label"
+        ],
+        "properties": {
+          "book_slug": {
+            "type": "string"
+          },
+          "book_title": {
+            "type": "string"
+          },
+          "node_label": {
+            "type": "string"
+          },
+          "node_slug": {
             "type": "string"
           }
         }

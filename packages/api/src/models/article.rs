@@ -95,11 +95,21 @@ pub struct SentenceData {
 }
 
 #[derive(Debug, Serialize, ToSchema)]
+pub struct SourceContext {
+    pub book_slug: String,
+    pub book_title: String,
+    pub node_slug: String,
+    pub node_label: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
 pub struct BatchSentenceResponseItem {
     pub book_slug: String,
     pub book_title: String,
     pub node_slug: String,
     pub node_label: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source: Option<SourceContext>,
     pub sentences: Vec<SentenceData>,
 }
 

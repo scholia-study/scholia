@@ -6,7 +6,7 @@ use uuid::Uuid;
 use crate::error::AppError;
 use crate::models::article::{
     ArticleDetailResponse, ArticleLimitsResponse, ArticleResponse, BatchSentenceResponseItem,
-    SentenceData, TopicResponse,
+    SentenceData, SourceContext, TopicResponse,
 };
 
 // ── Constants ─────────────────────────────────────────────
@@ -680,9 +680,12 @@ pub async fn batch_get_sentences(
     let rows = if is_body {
         sqlx::query_as!(
             SentenceRow,
-            r#"SELECT s.sentence_number AS "sentence_number?", s.html AS "html!", s.original_html
+            r#"SELECT s.sentence_number AS "sentence_number?",
+                      s.html AS "html!",
+                      COALESCE(s.original_html, src.html) AS original_html
                FROM sentences s
                JOIN books b ON b.id = s.book_id
+               LEFT JOIN sentences src ON src.id = s.source_sentence_start_id
                WHERE b.slug = $1
                  AND s.sentence_number >= $2
                  AND s.sentence_number <= $3
@@ -697,9 +700,12 @@ pub async fn batch_get_sentences(
     } else {
         sqlx::query_as!(
             SentenceRow,
-            r#"SELECT s.sentence_number AS "sentence_number?", s.html AS "html!", s.original_html
+            r#"SELECT s.sentence_number AS "sentence_number?",
+                      s.html AS "html!",
+                      COALESCE(s.original_html, src.html) AS original_html
                FROM sentences s
                JOIN books b ON b.id = s.book_id
+               LEFT JOIN sentences src ON src.id = s.source_sentence_start_id
                WHERE b.slug = $1
                  AND s.sentence_number >= $2
                  AND s.sentence_number <= $3
@@ -713,11 +719,45 @@ pub async fn batch_get_sentences(
         .await?
     };
 
+    // Fetch source book/node context if sentences link to a source
+    struct SourceRow {
+        book_slug: String,
+        book_title: String,
+        node_slug: String,
+        node_label: String,
+    }
+    let source_context = sqlx::query_as!(
+        SourceRow,
+        r#"SELECT b.slug AS "book_slug!", b.title AS "book_title!",
+                  n.slug AS "node_slug!", n.label AS "node_label!"
+           FROM sentences s
+           JOIN books cur ON cur.id = s.book_id
+           JOIN sentences src ON src.id = s.source_sentence_start_id
+           JOIN books b ON b.id = src.book_id
+           JOIN toc_nodes n ON n.id = src.node_id
+           WHERE cur.slug = $1
+             AND s.sentence_number >= $2
+             AND s.sentence_number <= $3
+           LIMIT 1"#,
+        book_slug,
+        start_number,
+        end,
+    )
+    .fetch_optional(pool)
+    .await?
+    .map(|r| SourceContext {
+        book_slug: r.book_slug,
+        book_title: r.book_title,
+        node_slug: r.node_slug,
+        node_label: r.node_label,
+    });
+
     Ok(BatchSentenceResponseItem {
         book_slug: book_slug.to_string(),
         book_title: context.book_title,
         node_slug: node_slug.to_string(),
         node_label: context.node_label,
+        source: source_context,
         sentences: rows
             .into_iter()
             .map(|r| SentenceData {

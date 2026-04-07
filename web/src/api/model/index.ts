@@ -64,6 +64,7 @@ export * from "./searchPersonsParams";
 export * from "./searchSourcesParams";
 export * from "./sentenceData";
 export * from "./sentenceResponse";
+export * from "./sourceContext";
 export * from "./sourcePersonResponse";
 export * from "./sourceResponse";
 export * from "./sourceSearchResponse";

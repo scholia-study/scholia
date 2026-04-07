@@ -5,6 +5,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { SentenceData } from "./sentenceData";
+import type { SourceContext } from "./sourceContext";
 
 export interface BatchSentenceResponseItem {
     book_slug: string;
@@ -12,4 +13,5 @@ export interface BatchSentenceResponseItem {
     node_label: string;
     node_slug: string;
     sentences: SentenceData[];
+    source?: null | SourceContext;
 }

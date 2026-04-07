@@ -1,4 +1,3 @@
-import OpenInNewOutlined from "@mui/icons-material/OpenInNewOutlined";
 import { Paper, Skeleton } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -85,11 +84,58 @@ export function QuotationCard({
     // Build sentence HTML blocks
     const translationHtml = item.sentences.map((s) => s.html).join(" ");
     const sourceHtml = item.sentences
-        .map((s) => s.original_html ?? s.html)
-        .join(" ");
+        .map((s) => s.original_html)
+        .filter(Boolean)
+        .join(" ") || null;
 
     const sentenceKey =
         end && end !== start ? `${start}-${end}` : String(start);
+
+    const isFootnote = kind === "footnote";
+    const prefix = isFootnote ? "fn. s." : "s.";
+    const sentenceLabel =
+        end && end !== start
+            ? `${prefix} ${start}\u2013${end}`
+            : `${prefix} ${start}`;
+
+    const srcBook = item.source ?? {
+        book_slug: book,
+        book_title: item.book_title,
+        node_slug: node,
+        node_label: item.node_label,
+    };
+    const sourceAttribution = showSource && (
+        <div className="flex justify-end mt-1">
+            <Link
+                to="/books/$bookSlug/$nodeSlug"
+                params={{
+                    bookSlug: srcBook.book_slug,
+                    nodeSlug: srcBook.node_slug,
+                }}
+                search={{ s: sentenceKey }}
+                target="_blank"
+                className="!text-xs !text-stone-400 !no-underline hover:!underline !transition-colors"
+            >
+                {srcBook.book_title} &middot; {srcBook.node_label} &middot;{" "}
+                {sentenceLabel}
+            </Link>
+        </div>
+    );
+
+    const translationAttribution = showTranslation && (
+        <div className="flex justify-end mt-1">
+            <Link
+                to="/books/$bookSlug/$nodeSlug"
+                params={{ bookSlug: book, nodeSlug: node }}
+                search={{ s: sentenceKey }}
+                target="_blank"
+                className="!text-xs !text-stone-400 !no-underline hover:!underline !transition-colors"
+            >
+                {item.book_title} &middot; {item.node_label} &middot;{" "}
+                {sentenceLabel}
+            </Link>
+        </div>
+    );
 
     return (
         <Paper
@@ -101,25 +147,9 @@ export function QuotationCard({
                 backgroundColor: "rgb(250 250 249)",
             }}
         >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-stone-400">
-                    {item.book_title} &middot; {item.node_label}
-                </span>
-                <Link
-                    to="/books/$bookSlug/$nodeSlug"
-                    params={{ bookSlug: book, nodeSlug: node }}
-                    search={{ s: sentenceKey }}
-                    target="_blank"
-                    className="text-stone-400 hover:text-stone-600 transition-colors"
-                    title="View in context"
-                >
-                    <OpenInNewOutlined sx={{ fontSize: 14 }} />
-                </Link>
-            </div>
-
-            {/* Content */}
-            {mode === "source+translation" && layout !== "stacked" ? (
+            {mode === "source+translation" &&
+            layout !== "stacked" &&
+            sourceHtml ? (
                 <div
                     className="grid grid-cols-2 gap-4"
                     style={{
@@ -129,49 +159,65 @@ export function QuotationCard({
                                 : "ltr",
                     }}
                 >
-                    <div
-                        className="text-sm leading-relaxed text-stone-600 italic"
-                        style={{
-                            fontFamily: "'Libre Baskerville', serif",
-                            direction: "ltr",
-                        }}
-                    >
-                        {parse(sourceHtml)}
+                    <div className="flex flex-col" style={{ direction: "ltr" }}>
+                        <div
+                            className="text-sm leading-relaxed text-stone-600"
+                            style={{
+                                fontFamily: "'Libre Baskerville', serif",
+                            }}
+                        >
+                            {parse(sourceHtml)}
+                        </div>
+                        <div className="mt-auto">{sourceAttribution}</div>
                     </div>
-                    <div
-                        className="text-sm leading-relaxed text-stone-700"
-                        style={{
-                            fontFamily: "'Libre Baskerville', serif",
-                            direction: "ltr",
-                        }}
-                    >
-                        {parse(translationHtml)}
+                    <div className="flex flex-col" style={{ direction: "ltr" }}>
+                        <div
+                            className="text-sm leading-relaxed text-stone-700"
+                            style={{
+                                fontFamily: "'Libre Baskerville', serif",
+                            }}
+                        >
+                            {parse(translationHtml)}
+                        </div>
+                        <div className="mt-auto">{translationAttribution}</div>
                     </div>
                 </div>
             ) : (
                 <div>
-                    {showSource && (
-                        <div
-                            className={`text-sm leading-relaxed ${
-                                mode === "source+translation"
-                                    ? "text-stone-600 italic mb-2"
-                                    : "text-stone-700"
-                            }`}
-                            style={{ fontFamily: "'Libre Baskerville', serif" }}
-                        >
-                            {parse(sourceHtml)}
-                        </div>
+                    {showSource && sourceHtml && (
+                        <>
+                            <div
+                                className={`text-sm leading-relaxed ${
+                                    mode === "source+translation"
+                                        ? "text-stone-600"
+                                        : "text-stone-700"
+                                }`}
+                                style={{
+                                    fontFamily: "'Libre Baskerville', serif",
+                                }}
+                            >
+                                {parse(sourceHtml)}
+                            </div>
+                            {sourceAttribution}
+                        </>
                     )}
-                    {showTranslation && mode === "source+translation" && (
-                        <hr className="my-2 border-stone-200" />
-                    )}
+                    {showTranslation &&
+                        mode === "source+translation" &&
+                        sourceHtml && (
+                            <hr className="my-2 border-stone-200" />
+                        )}
                     {showTranslation && (
-                        <div
-                            className="text-sm leading-relaxed text-stone-700"
-                            style={{ fontFamily: "'Libre Baskerville', serif" }}
-                        >
-                            {parse(translationHtml)}
-                        </div>
+                        <>
+                            <div
+                                className="text-sm leading-relaxed text-stone-700"
+                                style={{
+                                    fontFamily: "'Libre Baskerville', serif",
+                                }}
+                            >
+                                {parse(translationHtml)}
+                            </div>
+                            {translationAttribution}
+                        </>
                     )}
                 </div>
             )}
