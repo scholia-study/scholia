@@ -564,3 +564,59 @@ CREATE TABLE chat_messages (
 );
 
 CREATE INDEX idx_messages_conv ON chat_messages (conversation_id, created_at);
+
+-- ═══════════════════════════════════════════════════════════
+-- ARTICLES & TOPICS
+-- ═══════════════════════════════════════════════════════════
+
+CREATE TYPE article_status AS ENUM ('draft', 'published', 'archived');
+
+-- Global topics managed by editors/admins.
+CREATE TABLE topics (
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name       TEXT NOT NULL UNIQUE,
+    slug       TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- User-authored articles with markdown source and rendered HTML.
+CREATE TABLE articles (
+    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title        TEXT NOT NULL,
+    slug         TEXT NOT NULL UNIQUE,
+    description  TEXT,
+    markdown     TEXT NOT NULL DEFAULT '',
+    html         TEXT NOT NULL DEFAULT '',
+    status       article_status NOT NULL DEFAULT 'draft',
+    published_at TIMESTAMPTZ,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_articles_user_status ON articles (user_id, status);
+CREATE INDEX idx_articles_user_updated ON articles (user_id, updated_at DESC);
+CREATE INDEX idx_articles_published ON articles (status, published_at DESC) WHERE status = 'published';
+
+-- Many-to-many: topics on articles (max 5 per article, enforced in app).
+CREATE TABLE article_topics (
+    article_id UUID NOT NULL REFERENCES articles(id) ON DELETE CASCADE,
+    topic_id   UUID NOT NULL REFERENCES topics(id) ON DELETE CASCADE,
+    PRIMARY KEY (article_id, topic_id)
+);
+
+CREATE INDEX idx_article_topics_topic ON article_topics (topic_id);
+
+-- Seed initial topics.
+INSERT INTO topics (name, slug) VALUES
+    ('Philosophy', 'philosophy'),
+    ('Metaphysics', 'metaphysics'),
+    ('Epistemology', 'epistemology'),
+    ('Ethics', 'ethics'),
+    ('Aesthetics', 'aesthetics'),
+    ('Logic', 'logic'),
+    ('Political Philosophy', 'political-philosophy'),
+    ('Philosophy of Mind', 'philosophy-of-mind'),
+    ('Phenomenology', 'phenomenology'),
+    ('German Idealism', 'german-idealism');

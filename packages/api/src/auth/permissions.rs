@@ -9,6 +9,8 @@ pub enum Permission {
     NotesEdit,
     NotesDelete,
     ChatUse,
+    ArticlesCreate,
+    ArticlesPublish,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -46,6 +48,8 @@ impl Role {
                 Permission::NotesEdit,
                 Permission::NotesDelete,
                 Permission::ChatUse,
+                Permission::ArticlesCreate,
+                Permission::ArticlesPublish,
             ],
             Self::Editor => &[
                 Permission::ResourcesManage,
@@ -53,12 +57,16 @@ impl Role {
                 Permission::NotesEdit,
                 Permission::NotesDelete,
                 Permission::ChatUse,
+                Permission::ArticlesCreate,
+                Permission::ArticlesPublish,
             ],
             Self::User => &[
                 Permission::NotesCreate,
                 Permission::NotesEdit,
                 Permission::NotesDelete,
                 Permission::ChatUse,
+                Permission::ArticlesCreate,
+                Permission::ArticlesPublish,
             ],
         }
     }

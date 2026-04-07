@@ -4,6 +4,7 @@ const USER_ROUTES = [
     { to: "/user/profile" as const, label: "Profile" },
     { to: "/user/quotations" as const, label: "Quotations" },
     { to: "/user/notes" as const, label: "Notes" },
+    { to: "/user/articles" as const, label: "Articles" },
 ];
 
 export function UserSubnav() {

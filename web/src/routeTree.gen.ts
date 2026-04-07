@@ -16,10 +16,14 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BooksIndexRouteImport } from './routes/books.index'
+import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as UserQuotationsRouteImport } from './routes/user.quotations'
 import { Route as UserProfileRouteImport } from './routes/user.profile'
 import { Route as UserNotesRouteImport } from './routes/user.notes'
+import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
+import { Route as UserArticlesIndexRouteImport } from './routes/user.articles.index'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
+import { Route as UserArticlesSlugRouteImport } from './routes/user.articles.$slug'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -57,6 +61,11 @@ const BooksIndexRoute = BooksIndexRouteImport.update({
   path: '/books/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
+  id: '/articles/',
+  path: '/articles/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UserQuotationsRoute = UserQuotationsRouteImport.update({
   id: '/user/quotations',
   path: '/user/quotations',
@@ -72,9 +81,24 @@ const UserNotesRoute = UserNotesRouteImport.update({
   path: '/user/notes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
+  id: '/articles/$slug',
+  path: '/articles/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserArticlesIndexRoute = UserArticlesIndexRouteImport.update({
+  id: '/user/articles/',
+  path: '/user/articles/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BooksBookSlugIndexRoute = BooksBookSlugIndexRouteImport.update({
   id: '/books/$bookSlug/',
   path: '/books/$bookSlug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserArticlesSlugRoute = UserArticlesSlugRouteImport.update({
+  id: '/user/articles/$slug',
+  path: '/user/articles/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BooksBookSlugNodeSlugRoute = BooksBookSlugNodeSlugRouteImport.update({
@@ -90,12 +114,16 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/articles/$slug': typeof ArticlesSlugRoute
   '/user/notes': typeof UserNotesRoute
   '/user/profile': typeof UserProfileRoute
   '/user/quotations': typeof UserQuotationsRoute
+  '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
+  '/user/articles/$slug': typeof UserArticlesSlugRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
+  '/user/articles/': typeof UserArticlesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -104,12 +132,16 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/articles/$slug': typeof ArticlesSlugRoute
   '/user/notes': typeof UserNotesRoute
   '/user/profile': typeof UserProfileRoute
   '/user/quotations': typeof UserQuotationsRoute
+  '/articles': typeof ArticlesIndexRoute
   '/books': typeof BooksIndexRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
+  '/user/articles/$slug': typeof UserArticlesSlugRoute
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
+  '/user/articles': typeof UserArticlesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -119,12 +151,16 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/articles/$slug': typeof ArticlesSlugRoute
   '/user/notes': typeof UserNotesRoute
   '/user/profile': typeof UserProfileRoute
   '/user/quotations': typeof UserQuotationsRoute
+  '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
+  '/user/articles/$slug': typeof UserArticlesSlugRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
+  '/user/articles/': typeof UserArticlesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -135,12 +171,16 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/articles/$slug'
     | '/user/notes'
     | '/user/profile'
     | '/user/quotations'
+    | '/articles/'
     | '/books/'
     | '/books/$bookSlug/$nodeSlug'
+    | '/user/articles/$slug'
     | '/books/$bookSlug/'
+    | '/user/articles/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -149,12 +189,16 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/articles/$slug'
     | '/user/notes'
     | '/user/profile'
     | '/user/quotations'
+    | '/articles'
     | '/books'
     | '/books/$bookSlug/$nodeSlug'
+    | '/user/articles/$slug'
     | '/books/$bookSlug'
+    | '/user/articles'
   id:
     | '__root__'
     | '/'
@@ -163,12 +207,16 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/articles/$slug'
     | '/user/notes'
     | '/user/profile'
     | '/user/quotations'
+    | '/articles/'
     | '/books/'
     | '/books/$bookSlug/$nodeSlug'
+    | '/user/articles/$slug'
     | '/books/$bookSlug/'
+    | '/user/articles/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -178,12 +226,16 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  ArticlesSlugRoute: typeof ArticlesSlugRoute
   UserNotesRoute: typeof UserNotesRoute
   UserProfileRoute: typeof UserProfileRoute
   UserQuotationsRoute: typeof UserQuotationsRoute
+  ArticlesIndexRoute: typeof ArticlesIndexRoute
   BooksIndexRoute: typeof BooksIndexRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
+  UserArticlesSlugRoute: typeof UserArticlesSlugRoute
   BooksBookSlugIndexRoute: typeof BooksBookSlugIndexRoute
+  UserArticlesIndexRoute: typeof UserArticlesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -237,6 +289,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BooksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/articles/': {
+      id: '/articles/'
+      path: '/articles'
+      fullPath: '/articles/'
+      preLoaderRoute: typeof ArticlesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/user/quotations': {
       id: '/user/quotations'
       path: '/user/quotations'
@@ -258,11 +317,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserNotesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/articles/$slug': {
+      id: '/articles/$slug'
+      path: '/articles/$slug'
+      fullPath: '/articles/$slug'
+      preLoaderRoute: typeof ArticlesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/articles/': {
+      id: '/user/articles/'
+      path: '/user/articles'
+      fullPath: '/user/articles/'
+      preLoaderRoute: typeof UserArticlesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/books/$bookSlug/': {
       id: '/books/$bookSlug/'
       path: '/books/$bookSlug'
       fullPath: '/books/$bookSlug/'
       preLoaderRoute: typeof BooksBookSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/articles/$slug': {
+      id: '/user/articles/$slug'
+      path: '/user/articles/$slug'
+      fullPath: '/user/articles/$slug'
+      preLoaderRoute: typeof UserArticlesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/books/$bookSlug/$nodeSlug': {
@@ -282,12 +362,16 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  ArticlesSlugRoute: ArticlesSlugRoute,
   UserNotesRoute: UserNotesRoute,
   UserProfileRoute: UserProfileRoute,
   UserQuotationsRoute: UserQuotationsRoute,
+  ArticlesIndexRoute: ArticlesIndexRoute,
   BooksIndexRoute: BooksIndexRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
+  UserArticlesSlugRoute: UserArticlesSlugRoute,
   BooksBookSlugIndexRoute: BooksBookSlugIndexRoute,
+  UserArticlesIndexRoute: UserArticlesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

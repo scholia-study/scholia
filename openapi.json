@@ -9,6 +9,137 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/api/articles": {
+      "get": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "List published articles",
+        "operationId": "list_published_articles",
+        "parameters": [
+          {
+            "name": "topic_slug",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Published articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishedArticleListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "Create a new article",
+        "operationId": "create_article",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArticleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Article created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or limit reached"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Insufficient permissions"
+          }
+        }
+      }
+    },
+    "/api/articles/{slug}": {
+      "get": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "Get a published article by slug",
+        "operationId": "get_published_article",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Article slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Published article",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDetailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Article not found"
+          }
+        }
+      }
+    },
     "/api/books": {
       "get": {
         "tags": [
@@ -1025,6 +1156,37 @@
         }
       }
     },
+    "/api/sentences/batch": {
+      "post": {
+        "tags": [
+          "sentences"
+        ],
+        "summary": "Batch fetch sentences for quotation card hydration",
+        "operationId": "batch_sentences",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchSentencesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Sentence data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchSentencesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/sources": {
       "get": {
         "tags": [
@@ -1299,6 +1461,247 @@
           },
           "401": {
             "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/api/topics": {
+      "get": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "List all topics",
+        "operationId": "list_topics",
+        "responses": {
+          "200": {
+            "description": "All topics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/articles": {
+      "get": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "List current user's articles",
+        "operationId": "list_user_articles",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User's articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/api/user/articles/{slug}": {
+      "get": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "Get a specific article for editing (owner only)",
+        "operationId": "get_user_article",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Article slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDetailResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Article not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "Update an article (owner only)",
+        "operationId": "update_article",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Article slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateArticleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Article updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Article not found"
+          }
+        }
+      }
+    },
+    "/api/user/articles/{slug}/archive": {
+      "post": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "Archive an article (soft delete)",
+        "operationId": "archive_article",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Article slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article archived"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Article not found"
+          }
+        }
+      }
+    },
+    "/api/user/articles/{slug}/publish": {
+      "post": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "Publish an article",
+        "operationId": "publish_article",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Article slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article published"
+          },
+          "400": {
+            "description": "Publish limit reached"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Article not found"
+          }
+        }
+      }
+    },
+    "/api/user/articles/{slug}/unpublish": {
+      "post": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "Unpublish an article (back to draft)",
+        "operationId": "unpublish_article",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Article slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article unpublished"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Article not found"
           }
         }
       }
@@ -1646,6 +2049,167 @@
   },
   "components": {
     "schemas": {
+      "ArticleDetailResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "markdown",
+          "html",
+          "status",
+          "author_display_name",
+          "topics",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "author_display_name": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "html": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopicResponse"
+            }
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        }
+      },
+      "ArticleLimitsResponse": {
+        "type": "object",
+        "required": [
+          "max_total",
+          "max_published",
+          "current_total",
+          "current_published"
+        ],
+        "properties": {
+          "current_published": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "current_total": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "max_published": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "max_total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ArticleListResponse": {
+        "type": "object",
+        "required": [
+          "articles",
+          "limits"
+        ],
+        "properties": {
+          "articles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleResponse"
+            }
+          },
+          "limits": {
+            "$ref": "#/components/schemas/ArticleLimitsResponse"
+          }
+        }
+      },
+      "ArticleResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "status",
+          "author_display_name",
+          "topics",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "author_display_name": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopicResponse"
+            }
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        }
+      },
       "AuthResponse": {
         "type": "object",
         "required": [
@@ -1674,6 +2238,95 @@
             "type": "array",
             "items": {
               "type": "string"
+            }
+          }
+        }
+      },
+      "BatchSentenceRequest": {
+        "type": "object",
+        "required": [
+          "book_slug",
+          "node_slug",
+          "start_number",
+          "kind"
+        ],
+        "properties": {
+          "book_slug": {
+            "type": "string"
+          },
+          "end_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "node_slug": {
+            "type": "string"
+          },
+          "start_number": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "BatchSentenceResponseItem": {
+        "type": "object",
+        "required": [
+          "book_slug",
+          "book_title",
+          "node_slug",
+          "node_label",
+          "sentences"
+        ],
+        "properties": {
+          "book_slug": {
+            "type": "string"
+          },
+          "book_title": {
+            "type": "string"
+          },
+          "node_label": {
+            "type": "string"
+          },
+          "node_slug": {
+            "type": "string"
+          },
+          "sentences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SentenceData"
+            }
+          }
+        }
+      },
+      "BatchSentencesRequest": {
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchSentenceRequest"
+            }
+          }
+        }
+      },
+      "BatchSentencesResponse": {
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchSentenceResponseItem"
             }
           }
         }
@@ -1804,6 +2457,17 @@
             "items": {
               "$ref": "#/components/schemas/SentenceResponse"
             }
+          }
+        }
+      },
+      "CreateArticleRequest": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
           }
         }
       },
@@ -2513,6 +3177,25 @@
           }
         }
       },
+      "PublishedArticleListResponse": {
+        "type": "object",
+        "required": [
+          "articles",
+          "total"
+        ],
+        "properties": {
+          "articles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleResponse"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "QuotationListResponse": {
         "type": "object",
         "required": [
@@ -2798,6 +3481,28 @@
               "string",
               "null"
             ]
+          }
+        }
+      },
+      "SentenceData": {
+        "type": "object",
+        "required": [
+          "sentence_number",
+          "html"
+        ],
+        "properties": {
+          "html": {
+            "type": "string"
+          },
+          "original_html": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sentence_number": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -3105,6 +3810,71 @@
           },
           "source_ref": {
             "type": "string"
+          }
+        }
+      },
+      "TopicListResponse": {
+        "type": "object",
+        "required": [
+          "topics"
+        ],
+        "properties": {
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopicResponse"
+            }
+          }
+        }
+      },
+      "TopicResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "slug"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateArticleRequest": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "markdown": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "topic_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
           }
         }
       },

@@ -29,3 +29,6 @@ hex = "0.4"
 oauth2 = "5"
 resend-rs = "0.22"
 reqwest = { version = "0.12", features = ["json"] }
+pulldown-cmark = "0.12"
+slug = "0.1"
+regex = "1"

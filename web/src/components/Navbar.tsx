@@ -118,6 +118,16 @@ export function Navbar() {
                                             My Notes
                                         </Typography>
                                     </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null);
+                                            navigate({ to: "/user/articles" });
+                                        }}
+                                    >
+                                        <Typography variant="body2">
+                                            My Articles
+                                        </Typography>
+                                    </MenuItem>
                                     <Divider />
                                     <MenuItem onClick={handleLogout}>
                                         <Typography variant="body2">

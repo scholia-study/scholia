@@ -128,6 +128,26 @@ async fn main() {
         ))
         .routes(utoipa_axum::routes!(
             api::handlers::quotations::list_all_notes
+        ))
+        // Article endpoints
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::create_article
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::list_user_articles
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::get_user_article,
+            api::handlers::articles::update_article
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::publish_article
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::unpublish_article
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::archive_article
         ));
 
     // Public routes (no rate limiting)
@@ -137,7 +157,20 @@ async fn main() {
         .routes(utoipa_axum::routes!(api::handlers::toc::get_toc))
         .routes(utoipa_axum::routes!(api::handlers::nodes::get_node))
         .routes(utoipa_axum::routes!(api::handlers::page::get_node_page))
-        .routes(utoipa_axum::routes!(api::handlers::resources::list_resources));
+        .routes(utoipa_axum::routes!(api::handlers::resources::list_resources))
+        // Public article endpoints
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::list_published_articles
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::get_published_article
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::list_topics
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::batch_sentences
+        ));
 
     // Editor routes (auth checked in each handler)
     let editor_router = OpenApiRouter::new()
