@@ -412,6 +412,11 @@ pub async fn update_article(
 
     // Update description
     if let Some(desc) = description {
+        if desc.len() > 250 {
+            return Err(AppError::BadRequest(
+                "Description must be 250 characters or fewer".into(),
+            ));
+        }
         sqlx::query!(
             r#"UPDATE articles SET description = $2, updated_at = now()
                WHERE id = $1"#,

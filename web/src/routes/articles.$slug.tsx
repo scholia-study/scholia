@@ -1,5 +1,5 @@
 import { Chip } from "@mui/material";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import parse, { type DOMNode, Element } from "html-react-parser";
 import { useGetPublishedArticle } from "../api/articles/articles";
 import { QuotationCard } from "../components/QuotationCard";
@@ -50,7 +50,9 @@ function PublishedArticlePage() {
                         <>
                             <span>&middot;</span>
                             <span>
-                                {new Date(article.published_at).toLocaleDateString(undefined, {
+                                {new Date(
+                                    article.published_at,
+                                ).toLocaleDateString(undefined, {
                                     month: "long",
                                     day: "numeric",
                                     year: "numeric",
@@ -63,7 +65,9 @@ function PublishedArticlePage() {
                             <span>&middot;</span>
                             <span>
                                 Updated{" "}
-                                {new Date(article.updated_at).toLocaleDateString(undefined, {
+                                {new Date(
+                                    article.updated_at,
+                                ).toLocaleDateString(undefined, {
                                     month: "long",
                                     day: "numeric",
                                     year: "numeric",
@@ -93,7 +97,10 @@ function PublishedArticlePage() {
             </header>
 
             {/* Article body */}
-            <div className="prose prose-stone max-w-none" style={{ fontFamily: "'Libre Baskerville', serif" }}>
+            <div
+                className="prose prose-stone max-w-none"
+                style={{ fontFamily: "'Libre Baskerville', serif" }}
+            >
                 {parse(article.html, {
                     replace: (domNode: DOMNode) => {
                         if (
@@ -105,24 +112,33 @@ function PublishedArticlePage() {
                                 <QuotationCard
                                     book={attrs["data-quotation-book"] ?? ""}
                                     node={attrs["data-quotation-node"] ?? ""}
-                                    start={Number(attrs["data-quotation-start"]) || 0}
+                                    start={
+                                        Number(attrs["data-quotation-start"]) ||
+                                        0
+                                    }
                                     end={
                                         attrs["data-quotation-end"]
-                                            ? Number(attrs["data-quotation-end"])
+                                            ? Number(
+                                                  attrs["data-quotation-end"],
+                                              )
                                             : undefined
                                     }
-                                    kind={attrs["data-quotation-kind"] ?? "body"}
+                                    kind={
+                                        attrs["data-quotation-kind"] ?? "body"
+                                    }
                                     mode={
                                         (attrs["data-quotation-mode"] as
                                             | "source"
                                             | "translation"
-                                            | "source+translation") ?? "translation"
+                                            | "source+translation") ??
+                                        "translation"
                                     }
                                     layout={
                                         (attrs["data-quotation-layout"] as
                                             | "stacked"
                                             | "side-by-side-source-left"
-                                            | "side-by-side-source-right") ?? "stacked"
+                                            | "side-by-side-source-right") ??
+                                        "stacked"
                                     }
                                 />
                             );

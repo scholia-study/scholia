@@ -1,15 +1,15 @@
 import PublishOutlined from "@mui/icons-material/PublishOutlined";
 import SaveOutlined from "@mui/icons-material/SaveOutlined";
 import UnpublishedOutlined from "@mui/icons-material/UnpublishedOutlined";
-import {
-    Autocomplete,
-    Button,
-    Chip,
-    TextField,
-} from "@mui/material";
+import { Autocomplete, Button, Chip, TextField } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+    createFileRoute,
+    Link,
+    redirect,
+    useNavigate,
+} from "@tanstack/react-router";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
     getGetUserArticleQueryKey,
     getListUserArticlesQueryKey,
@@ -29,6 +29,25 @@ import {
     QuotationPickerModal,
     type QuotationPickerResult,
 } from "../components/editor/QuotationPickerModal";
+
+const MemoizedEditor = memo(
+    ({ markdown, onChange, onInsertQuotationClick, ref }: {
+        markdown: string;
+        onChange: (markdown: string) => void;
+        onInsertQuotationClick: () => void;
+        ref: React.Ref<ArticleEditorHandle>;
+    }) => (
+        <div className="border border-stone-200 rounded-lg overflow-hidden">
+            <ArticleEditor
+                ref={ref}
+                markdown={markdown}
+                onChange={onChange}
+                onInsertQuotationClick={onInsertQuotationClick}
+            />
+        </div>
+    ),
+);
+MemoizedEditor.displayName = "MemoizedEditor";
 
 export const Route = createFileRoute("/user/articles/$slug")({
     beforeLoad: async ({ context }) => {
@@ -62,11 +81,14 @@ function ArticleEditorPage() {
     const [description, setDescription] = useState("");
     const [markdown, setMarkdown] = useState("");
     const [selectedTopics, setSelectedTopics] = useState<TopicResponse[]>([]);
-    const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "unsaved">("saved");
+    const [saveStatus, setSaveStatus] = useState<
+        "saved" | "saving" | "unsaved"
+    >("saved");
     const [pickerOpen, setPickerOpen] = useState(false);
 
     const editorRef = useRef<ArticleEditorHandle>(null);
     const initialized = useRef(false);
+    const openPicker = useCallback(() => setPickerOpen(true), []);
 
     // Initialize from article data
     useEffect(() => {
@@ -252,7 +274,9 @@ function ArticleEditorPage() {
                         variant="outlined"
                         startIcon={<SaveOutlined />}
                         onClick={() => save({ title, markdown, description })}
-                        disabled={saveStatus === "saved" || saveStatus === "saving"}
+                        disabled={
+                            saveStatus === "saved" || saveStatus === "saving"
+                        }
                         sx={{ textTransform: "none" }}
                     >
                         Save
@@ -288,19 +312,31 @@ function ArticleEditorPage() {
             <TextField
                 fullWidth
                 variant="standard"
-                placeholder="Description (optional, used for listings and SEO)"
+                placeholder="Description (optional)"
                 value={description}
                 onChange={(e) => {
-                    setDescription(e.target.value);
-                    setSaveStatus("unsaved");
+                    if (e.target.value.length <= 250) {
+                        setDescription(e.target.value);
+                        setSaveStatus("unsaved");
+                    }
                 }}
                 onBlur={handleDescriptionBlur}
                 multiline
                 maxRows={3}
+                helperText={description.length >= 200 ? `${description.length}/250` : " "}
                 slotProps={{
                     input: {
                         sx: { fontSize: "0.875rem", color: "rgb(120 113 108)" },
                         disableUnderline: true,
+                    },
+                    formHelperText: {
+                        sx: {
+                            textAlign: "right",
+                            color:
+                                description.length >= 230
+                                    ? "rgb(239 68 68)"
+                                    : undefined,
+                        },
                     },
                 }}
                 sx={{ mb: 2 }}
@@ -318,7 +354,11 @@ function ArticleEditorPage() {
                     <TextField
                         {...params}
                         variant="standard"
-                        placeholder={selectedTopics.length === 0 ? "Add topics (max 5)" : ""}
+                        placeholder={
+                            selectedTopics.length === 0
+                                ? "Add topics (max 5)"
+                                : ""
+                        }
                         slotProps={{
                             input: {
                                 ...params.InputProps,
@@ -344,14 +384,12 @@ function ArticleEditorPage() {
             />
 
             {/* MDXEditor */}
-            <div className="border border-stone-200 rounded-lg overflow-hidden">
-                <ArticleEditor
-                    ref={editorRef}
-                    markdown={article.markdown}
-                    onChange={handleMarkdownChange}
-                    onInsertQuotationClick={() => setPickerOpen(true)}
-                />
-            </div>
+            <MemoizedEditor
+                ref={editorRef}
+                markdown={article.markdown}
+                onChange={handleMarkdownChange}
+                onInsertQuotationClick={openPicker}
+            />
 
             <QuotationPickerModal
                 open={pickerOpen}

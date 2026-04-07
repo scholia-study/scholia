@@ -12,7 +12,10 @@ export interface QuotationCardProps {
     end?: number;
     kind: string;
     mode: "source" | "translation" | "source+translation";
-    layout: "stacked" | "side-by-side-source-left" | "side-by-side-source-right";
+    layout:
+        | "stacked"
+        | "side-by-side-source-left"
+        | "side-by-side-source-right";
 }
 
 export function QuotationCard({
@@ -50,7 +53,12 @@ export function QuotationCard({
                 sx={{ p: 2, my: 2, borderLeft: "3px solid rgb(214 211 209)" }}
             >
                 <Skeleton variant="text" width="40%" height={16} />
-                <Skeleton variant="text" width="100%" height={20} sx={{ mt: 1 }} />
+                <Skeleton
+                    variant="text"
+                    width="100%"
+                    height={20}
+                    sx={{ mt: 1 }}
+                />
                 <Skeleton variant="text" width="80%" height={20} />
             </Paper>
         );
@@ -70,7 +78,8 @@ export function QuotationCard({
     }
 
     // Determine which content to show based on mode
-    const showTranslation = mode === "translation" || mode === "source+translation";
+    const showTranslation =
+        mode === "translation" || mode === "source+translation";
     const showSource = mode === "source" || mode === "source+translation";
 
     // Build sentence HTML blocks
@@ -115,7 +124,9 @@ export function QuotationCard({
                     className="grid grid-cols-2 gap-4"
                     style={{
                         direction:
-                            layout === "side-by-side-source-right" ? "rtl" : "ltr",
+                            layout === "side-by-side-source-right"
+                                ? "rtl"
+                                : "ltr",
                     }}
                 >
                     <div
