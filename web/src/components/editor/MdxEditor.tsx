@@ -343,7 +343,7 @@ function InsertCitationButton({
             type="button"
             onClick={onClick}
             className="px-2 py-1 text-xs rounded hover:bg-stone-100 text-stone-600"
-            title="Insert Citation (Ctrl+Shift+C)"
+            title="Insert Citation"
         >
             Cite
         </button>

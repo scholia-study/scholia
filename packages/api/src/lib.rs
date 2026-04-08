@@ -11,7 +11,7 @@ pub mod state;
 
 #[derive(OpenApi)]
 #[openapi(
-    info(title = "Prospero API", version = "0.1.0"),
+    info(title = "Scholia API", version = "0.1.0"),
     paths(
         handlers::books::list_books,
         handlers::books::get_book,

@@ -9,7 +9,7 @@ function IndexPage() {
         <div className="flex items-center justify-center h-[calc(100vh-3rem)]">
             <div className="text-center">
                 <h1 className="text-3xl font-bold text-stone-900 mb-2">
-                    Prospero
+                    Scholia
                 </h1>
                 <p className="text-stone-500 mb-6">No texts open.</p>
                 <Link

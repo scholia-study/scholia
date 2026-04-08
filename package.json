@@ -1,18 +1,18 @@
 {
-  "name": "prospero",
-  "private": true,
-  "packageManager": "pnpm@10.31.0",
-  "scripts": {
-    "ready": "pnpm run db:reset && pnpm run extract && pnpm run db:import",
-    "db:reset": "./db_reset.sh",
-    "extract": "cargo run -p hegel-wdl",
-    "db:import": "cargo run -p db-import -- assets/wdl.json",
-    "dp:kant1": "cargo run -p kant1_ocr_to_lines && cargo run -p kant1_lines_to_elements",
-    "dev": "turbo run dev",
-    "codegen": "turbo run codegen"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.4.5",
-    "turbo": "^2"
-  }
+    "name": "scholia",
+    "private": true,
+    "packageManager": "pnpm@10.31.0",
+    "scripts": {
+        "ready": "pnpm run db:reset && pnpm run extract && pnpm run db:import",
+        "db:reset": "./db_reset.sh",
+        "extract": "cargo run -p hegel-wdl",
+        "db:import": "cargo run -p db-import -- assets/wdl.json",
+        "dp:kant1": "cargo run -p kant1_ocr_to_lines && cargo run -p kant1_lines_to_elements",
+        "dev": "turbo run dev",
+        "codegen": "turbo run codegen"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.4.5",
+        "turbo": "^2"
+    }
 }

@@ -1,20 +1,20 @@
 {
-  "version": "0.2",
-  "ignorePaths": ["*.toml", "*.rs"],
-  "dictionaryDefinitions": [],
-  "dictionaries": [],
-  "words": [
-    "crossterm",
-    "Epub",
-    "greenb",
-    "mdata",
-    "optimus",
-    "prospero",
-    "ratatui",
-    "Rema",
-    "serde",
-    "yellowb"
-  ],
-  "ignoreWords": [],
-  "import": []
+    "version": "0.2",
+    "ignorePaths": ["*.toml", "*.rs"],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [
+        "crossterm",
+        "Epub",
+        "greenb",
+        "mdata",
+        "optimus",
+        "scholia",
+        "ratatui",
+        "Rema",
+        "serde",
+        "yellowb"
+    ],
+    "ignoreWords": [],
+    "import": []
 }

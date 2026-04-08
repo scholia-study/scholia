@@ -28,7 +28,7 @@ export function Navbar() {
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-4 bg-white/80 backdrop-blur border-b border-stone-200">
             <Link to="/" className="font-bold text-stone-900 text-sm">
-                Prospero
+                Scholia
             </Link>
 
             <div className="w-28 flex justify-end">
@@ -101,7 +101,9 @@ export function Navbar() {
                                     <MenuItem
                                         onClick={() => {
                                             setAnchorEl(null);
-                                            navigate({ to: "/user/quotations" });
+                                            navigate({
+                                                to: "/user/quotations",
+                                            });
                                         }}
                                     >
                                         <Typography variant="body2">

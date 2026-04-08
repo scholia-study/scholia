@@ -1,4 +1,4 @@
--- Prospero: interactive reader schema
+-- Scholia: interactive reader schema
 -- PostgreSQL 15+, requires ltree extension
 
 CREATE EXTENSION IF NOT EXISTS ltree;

@@ -1,7 +1,7 @@
 import { defineConfig } from "orval";
 
 export default defineConfig({
-    prospero: {
+    scholia: {
         input: {
             target: "../openapi.json",
         },

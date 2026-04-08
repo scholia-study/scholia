@@ -58,9 +58,7 @@ struct GitHubEmail {
 
 fn build_oauth_client(state: &AppState) -> OAuthClient {
     BasicClient::new(ClientId::new(state.config.github_client_id.clone()))
-        .set_client_secret(ClientSecret::new(
-            state.config.github_client_secret.clone(),
-        ))
+        .set_client_secret(ClientSecret::new(state.config.github_client_secret.clone()))
         .set_auth_uri(AuthUrl::new(GITHUB_AUTH_URL.to_string()).unwrap())
         .set_token_uri(TokenUrl::new(GITHUB_TOKEN_URL.to_string()).unwrap())
         .set_redirect_uri(RedirectUrl::new(state.config.github_redirect_uri.clone()).unwrap())
@@ -148,7 +146,7 @@ pub async fn github_callback(
     let github_user: GitHubUser = match http_client
         .get(GITHUB_USER_API)
         .header("Authorization", format!("Bearer {access_token}"))
-        .header("User-Agent", "Prospero")
+        .header("User-Agent", "Scholia")
         .send()
         .await
         .and_then(|r| Ok(r.error_for_status()?))
@@ -164,7 +162,7 @@ pub async fn github_callback(
     let emails: Vec<GitHubEmail> = match http_client
         .get(GITHUB_EMAILS_API)
         .header("Authorization", format!("Bearer {access_token}"))
-        .header("User-Agent", "Prospero")
+        .header("User-Agent", "Scholia")
         .send()
         .await
         .and_then(|r| Ok(r.error_for_status()?))
@@ -269,7 +267,10 @@ pub async fn github_callback(
     };
 
     // Create session
-    if set_session_user(&session, &state.pool, user_id).await.is_err() {
+    if set_session_user(&session, &state.pool, user_id)
+        .await
+        .is_err()
+    {
         return error_redirect("session_failed");
     }
 

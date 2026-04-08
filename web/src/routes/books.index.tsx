@@ -17,7 +17,7 @@ function BooksPage() {
 
     return (
         <div className="max-w-2xl mx-auto px-8 py-16">
-            <h1 className="text-3xl font-bold text-stone-900 mb-2">Prospero</h1>
+            <h1 className="text-3xl font-bold text-stone-900 mb-2">Scholia</h1>
             <p className="text-stone-500 mb-8">
                 Select a book to begin reading.
             </p>

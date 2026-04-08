@@ -1,6 +1,6 @@
 ---
 name: Project commands reference
-description: Key pnpm/turbo commands for the Prospero project - codegen, openapi, db_reset
+description: Key pnpm/turbo commands for the Scholia project - codegen, openapi, db_reset
 type: reference
 ---
 
