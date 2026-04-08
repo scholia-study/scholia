@@ -53,8 +53,8 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
         title: "Critique of Pure Reason".to_string(),
         author: "Immanuel Kant".to_string(),
         language: "en".to_string(),
-        source: "Akademie-Ausgabe Band III".to_string(),
-        source_date: "1787".to_string(),
+        source: "Scholia Community Edition".to_string(),
+        source_date: "2026".to_string(),
     };
 
     let reference_systems = vec![
