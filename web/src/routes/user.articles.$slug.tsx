@@ -31,13 +31,18 @@ import {
 } from "../components/editor/QuotationPickerModal";
 
 const MemoizedEditor = memo(
-    ({ markdown, onChange, onInsertQuotationClick, ref }: {
+    ({
+        markdown,
+        onChange,
+        onInsertQuotationClick,
+        ref,
+    }: {
         markdown: string;
         onChange: (markdown: string) => void;
         onInsertQuotationClick: () => void;
         ref: React.Ref<ArticleEditorHandle>;
     }) => (
-        <div className="border border-stone-200 rounded-lg overflow-hidden">
+        <div>
             <ArticleEditor
                 ref={ref}
                 markdown={markdown}
@@ -203,199 +208,215 @@ function ArticleEditorPage() {
 
     if (!article) {
         return (
-            <div className="max-w-4xl mx-auto px-8 py-16">
-                <p className="text-sm text-stone-400">Loading...</p>
+            <div className="min-h-screen bg-white">
+                <div className="max-w-4xl mx-auto px-8 py-16">
+                    <p className="text-sm text-stone-400">Loading...</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-8 py-16">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                    <Chip
-                        label={article.status}
-                        size="small"
-                        color={
-                            article.status === "published"
-                                ? "success"
-                                : article.status === "archived"
-                                  ? "warning"
-                                  : "default"
-                        }
-                        sx={{ fontSize: "0.65rem", height: 20 }}
-                    />
-                    <span className="text-xs text-stone-400">
-                        {saveStatus === "saving"
-                            ? "Saving..."
-                            : saveStatus === "unsaved"
-                              ? "Unsaved changes"
-                              : "Saved"}
-                    </span>
-                </div>
-                <div className="flex items-center gap-2">
-                    {article.status === "draft" && (
-                        <Button
+        <div className="min-h-screen bg-white">
+            <div className="max-w-4xl mx-auto px-8 py-16">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2">
+                        <Chip
+                            label={article.status}
                             size="small"
-                            variant="contained"
-                            startIcon={<PublishOutlined />}
-                            onClick={handlePublish}
-                            disabled={publishMutation.isPending}
-                            sx={{ textTransform: "none" }}
-                        >
-                            Publish
-                        </Button>
-                    )}
-                    {article.status === "published" && (
-                        <>
-                            <Link
-                                to="/articles/$slug"
-                                params={{ slug: currentSlug.current }}
-                                target="_blank"
-                                className="text-xs text-blue-500 hover:text-blue-700 underline"
-                            >
-                                View published
-                            </Link>
+                            color={
+                                article.status === "published"
+                                    ? "success"
+                                    : article.status === "archived"
+                                      ? "warning"
+                                      : "default"
+                            }
+                            sx={{ fontSize: "0.65rem", height: 20 }}
+                        />
+                        <span className="text-xs text-stone-400">
+                            {saveStatus === "saving"
+                                ? "Saving..."
+                                : saveStatus === "unsaved"
+                                  ? "Unsaved changes"
+                                  : "Saved"}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {article.status === "draft" && (
                             <Button
                                 size="small"
-                                variant="outlined"
-                                startIcon={<UnpublishedOutlined />}
-                                onClick={handleUnpublish}
-                                disabled={unpublishMutation.isPending}
+                                variant="contained"
+                                startIcon={<PublishOutlined />}
+                                onClick={handlePublish}
+                                disabled={publishMutation.isPending}
                                 sx={{ textTransform: "none" }}
                             >
-                                Unpublish
+                                Publish
                             </Button>
-                        </>
-                    )}
-                    <Button
-                        size="small"
-                        variant="outlined"
-                        startIcon={<SaveOutlined />}
-                        onClick={() => save({ title, markdown, description })}
-                        disabled={
-                            saveStatus === "saved" || saveStatus === "saving"
-                        }
-                        sx={{ textTransform: "none" }}
-                    >
-                        Save
-                    </Button>
+                        )}
+                        {article.status === "published" && (
+                            <>
+                                <Link
+                                    to="/articles/$slug"
+                                    params={{ slug: currentSlug.current }}
+                                    target="_blank"
+                                    className="text-xs text-blue-500 hover:text-blue-700 underline"
+                                >
+                                    View published
+                                </Link>
+                                <Button
+                                    size="small"
+                                    variant="outlined"
+                                    startIcon={<UnpublishedOutlined />}
+                                    onClick={handleUnpublish}
+                                    disabled={unpublishMutation.isPending}
+                                    sx={{ textTransform: "none" }}
+                                >
+                                    Unpublish
+                                </Button>
+                            </>
+                        )}
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            startIcon={<SaveOutlined />}
+                            onClick={() =>
+                                save({ title, markdown, description })
+                            }
+                            disabled={
+                                saveStatus === "saved" ||
+                                saveStatus === "saving"
+                            }
+                            sx={{ textTransform: "none" }}
+                        >
+                            Save
+                        </Button>
+                    </div>
                 </div>
-            </div>
 
-            {/* Title */}
-            <TextField
-                fullWidth
-                variant="standard"
-                placeholder="Article title"
-                value={title}
-                onChange={(e) => {
-                    setTitle(e.target.value);
-                    setSaveStatus("unsaved");
-                }}
-                onBlur={handleTitleBlur}
-                slotProps={{
-                    input: {
-                        sx: {
-                            fontSize: "1.75rem",
-                            fontWeight: 700,
-                            fontFamily: "'Libre Baskerville', serif",
-                        },
-                        disableUnderline: true,
-                    },
-                }}
-                sx={{ mb: 2 }}
-            />
-
-            {/* Description */}
-            <TextField
-                fullWidth
-                variant="standard"
-                placeholder="Description (optional)"
-                value={description}
-                onChange={(e) => {
-                    if (e.target.value.length <= 250) {
-                        setDescription(e.target.value);
+                {/* Title */}
+                <TextField
+                    fullWidth
+                    variant="standard"
+                    placeholder="Article title"
+                    value={title}
+                    onChange={(e) => {
+                        setTitle(e.target.value);
                         setSaveStatus("unsaved");
-                    }
-                }}
-                onBlur={handleDescriptionBlur}
-                multiline
-                maxRows={3}
-                helperText={description.length >= 200 ? `${description.length}/250` : " "}
-                slotProps={{
-                    input: {
-                        sx: { fontSize: "0.875rem", color: "rgb(120 113 108)" },
-                        disableUnderline: true,
-                    },
-                    formHelperText: {
-                        sx: {
-                            textAlign: "right",
-                            color:
-                                description.length >= 230
-                                    ? "rgb(239 68 68)"
-                                    : undefined,
-                        },
-                    },
-                }}
-                sx={{ mb: 2 }}
-            />
-
-            {/* Topics */}
-            <Autocomplete
-                multiple
-                options={allTopics}
-                getOptionLabel={(option) => option.name}
-                value={selectedTopics}
-                onChange={handleTopicsChange}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        variant="standard"
-                        placeholder={
-                            selectedTopics.length === 0
-                                ? "Add topics (max 5)"
-                                : ""
-                        }
-                        slotProps={{
-                            input: {
-                                ...params.InputProps,
-                                disableUnderline: true,
+                    }}
+                    onBlur={handleTitleBlur}
+                    slotProps={{
+                        input: {
+                            sx: {
+                                fontSize: "1.75rem",
+                                fontWeight: 700,
+                                fontFamily: "'Libre Baskerville', serif",
                             },
-                        }}
-                    />
-                )}
-                renderTags={(value, getTagProps) =>
-                    value.map((option, index) => {
-                        const { key, ...rest } = getTagProps({ index });
-                        return (
-                            <Chip
-                                key={key}
-                                label={option.name}
-                                size="small"
-                                {...rest}
-                            />
-                        );
-                    })
-                }
-                sx={{ mb: 4 }}
-            />
+                            disableUnderline: true,
+                        },
+                    }}
+                    sx={{ mb: 2 }}
+                />
 
-            {/* MDXEditor */}
-            <MemoizedEditor
-                ref={editorRef}
-                markdown={article.markdown}
-                onChange={handleMarkdownChange}
-                onInsertQuotationClick={openPicker}
-            />
+                {/* Description */}
+                <TextField
+                    fullWidth
+                    variant="standard"
+                    placeholder="Description (optional)"
+                    value={description}
+                    onChange={(e) => {
+                        if (e.target.value.length <= 250) {
+                            setDescription(e.target.value);
+                            setSaveStatus("unsaved");
+                        }
+                    }}
+                    onBlur={handleDescriptionBlur}
+                    multiline
+                    maxRows={3}
+                    helperText={
+                        description.length >= 200
+                            ? `${description.length}/250`
+                            : " "
+                    }
+                    slotProps={{
+                        input: {
+                            sx: {
+                                fontSize: "0.875rem",
+                                color: "rgb(120 113 108)",
+                            },
+                            disableUnderline: true,
+                        },
+                        formHelperText: {
+                            sx: {
+                                textAlign: "right",
+                                color:
+                                    description.length >= 230
+                                        ? "rgb(239 68 68)"
+                                        : undefined,
+                            },
+                        },
+                    }}
+                    sx={{ mb: 2 }}
+                />
 
-            <QuotationPickerModal
-                open={pickerOpen}
-                onClose={() => setPickerOpen(false)}
-                onSelect={handleInsertQuotation}
-            />
+                {/* Topics */}
+                <Autocomplete
+                    multiple
+                    options={allTopics}
+                    getOptionLabel={(option) => option.name}
+                    value={selectedTopics}
+                    onChange={handleTopicsChange}
+                    isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                    }
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            variant="standard"
+                            placeholder={
+                                selectedTopics.length === 0
+                                    ? "Add topics (max 5)"
+                                    : ""
+                            }
+                            slotProps={{
+                                input: {
+                                    ...params.InputProps,
+                                    disableUnderline: true,
+                                },
+                            }}
+                        />
+                    )}
+                    renderTags={(value, getTagProps) =>
+                        value.map((option, index) => {
+                            const { key, ...rest } = getTagProps({ index });
+                            return (
+                                <Chip
+                                    key={key}
+                                    label={option.name}
+                                    size="small"
+                                    {...rest}
+                                />
+                            );
+                        })
+                    }
+                    sx={{ mb: 4 }}
+                />
+
+                {/* MDXEditor */}
+                <MemoizedEditor
+                    ref={editorRef}
+                    markdown={article.markdown}
+                    onChange={handleMarkdownChange}
+                    onInsertQuotationClick={openPicker}
+                />
+
+                <QuotationPickerModal
+                    open={pickerOpen}
+                    onClose={() => setPickerOpen(false)}
+                    onSelect={handleInsertQuotation}
+                />
+            </div>
         </div>
     );
 }

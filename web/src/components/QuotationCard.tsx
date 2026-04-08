@@ -144,7 +144,7 @@ export function QuotationCard({
                 p: 2,
                 my: 2,
                 borderLeft: "3px solid rgb(168 162 158)",
-                backgroundColor: "rgb(250 250 249)",
+                backgroundColor: "#fff",
             }}
         >
             {mode === "source+translation" &&

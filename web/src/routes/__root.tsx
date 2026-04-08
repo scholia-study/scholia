@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { Toaster } from "react-hot-toast";
 import { Navbar } from "../components/Navbar";
+import { ScrollToTop } from "../components/ScrollToTop";
 import { UserSubnav } from "../components/UserSubnav";
 import appCss from "../styles.css?url";
 
@@ -45,6 +46,7 @@ function RootComponent() {
             >
                 <Outlet />
             </main>
+            <ScrollToTop />
             <Toaster position="bottom-right" />
         </>
     );
