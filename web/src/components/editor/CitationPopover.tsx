@@ -284,20 +284,32 @@ export function CitationPopover({
                     onClose={() => setSourceModalOpen(false)}
                     onCreated={(source) => {
                         setSourceModalOpen(false);
-                        // Find first empty entry and populate it, or add new
                         const emptyIdx = entries.findIndex(
                             (e) => !e.sourceId,
                         );
-                        const label =
-                            source.persons
-                                ?.map((p) => p.name)
-                                .join(", ") +
-                            (source.persons?.length ? " — " : "") +
-                            source.title;
+                        const personNames = source.persons
+                            ?.map((p) => p.name)
+                            .join(", ");
+                        const label = personNames
+                            ? `${personNames} — ${source.title}`
+                            : source.title;
+                        const firstAuthor = source.persons?.[0]?.name ?? "";
+                        const lastNameParts = firstAuthor.split(/\s+/);
+                        const authorLastName =
+                            source.persons && source.persons.length > 2
+                                ? `${lastNameParts[lastNameParts.length - 1]} et al.`
+                                : source.persons && source.persons.length === 2
+                                  ? `${lastNameParts[lastNameParts.length - 1]} and ${source.persons[1].name.split(/\s+/).pop()}`
+                                  : lastNameParts[lastNameParts.length - 1] || "Unknown";
+                        const year = source.publication_year
+                            ? String(source.publication_year)
+                            : "n.d.";
                         const newEntry: CitationEntry = {
                             sourceId: source.id,
                             sourceLabel: label,
                             pages: "",
+                            year,
+                            authorLastName,
                         };
                         if (emptyIdx >= 0) {
                             updateEntry(emptyIdx, newEntry);
