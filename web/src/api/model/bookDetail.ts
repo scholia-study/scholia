@@ -10,15 +10,14 @@ export interface BookDetail {
     author: string;
     id: string;
     language: string;
+    /** @nullable */
+    publication_year?: number | null;
+    /** @nullable */
+    publisher?: string | null;
     slug: string;
     /** @nullable */
-    source?: string | null;
-    /** @nullable */
-    source_book_id?: string | null;
-    /** @nullable */
     source_book_slug?: string | null;
-    /** @nullable */
-    source_date?: string | null;
+    source_id: string;
     title: string;
     translations: BookSummary[];
 }

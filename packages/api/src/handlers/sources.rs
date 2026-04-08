@@ -62,10 +62,18 @@ pub async fn create_source(
         .transpose()
         .map_err(|_| AppError::BadRequest("Invalid parent_source_id".into()))?;
 
+    let translation_of_id = body
+        .translation_of_id
+        .as_deref()
+        .map(uuid::Uuid::parse_str)
+        .transpose()
+        .map_err(|_| AppError::BadRequest("Invalid translation_of_id".into()))?;
+
     let source = db::sources::create_source(
         &state.pool,
         &body.source_type,
         &body.title,
+        body.title_display.as_deref(),
         body.publication_year,
         body.publisher.as_deref(),
         body.isbn.as_deref(),
@@ -77,6 +85,7 @@ pub async fn create_source(
         body.page_start,
         body.page_end,
         parent_source_id,
+        translation_of_id,
         user.id,
     )
     .await?;
@@ -117,11 +126,19 @@ pub async fn update_source(
         .transpose()
         .map_err(|_| AppError::BadRequest("Invalid parent_source_id".into()))?;
 
+    let translation_of_id = body
+        .translation_of_id
+        .as_deref()
+        .map(uuid::Uuid::parse_str)
+        .transpose()
+        .map_err(|_| AppError::BadRequest("Invalid translation_of_id".into()))?;
+
     let source = db::sources::update_source(
         &state.pool,
         source_id,
         body.source_type.as_deref(),
         body.title.as_deref(),
+        body.title_display.as_deref(),
         body.publication_year,
         body.publisher.as_deref(),
         body.isbn.as_deref(),
@@ -133,6 +150,7 @@ pub async fn update_source(
         body.page_start,
         body.page_end,
         parent_source_id,
+        translation_of_id,
     )
     .await?;
 

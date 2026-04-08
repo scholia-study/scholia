@@ -2349,6 +2349,7 @@
           "title",
           "author",
           "language",
+          "source_id",
           "translations"
         ],
         "properties": {
@@ -2361,20 +2362,21 @@
           "language": {
             "type": "string"
           },
+          "publication_year": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "publisher": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "slug": {
             "type": "string"
-          },
-          "source": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "source_book_id": {
-            "type": [
-              "string",
-              "null"
-            ]
           },
           "source_book_slug": {
             "type": [
@@ -2382,11 +2384,8 @@
               "null"
             ]
           },
-          "source_date": {
-            "type": [
-              "string",
-              "null"
-            ]
+          "source_id": {
+            "type": "string"
           },
           "title": {
             "type": "string"
@@ -2708,6 +2707,18 @@
           },
           "title": {
             "type": "string"
+          },
+          "title_display": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "translation_of_id": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "url": {
             "type": [
@@ -3725,6 +3736,18 @@
           "title": {
             "type": "string"
           },
+          "title_display": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "translation_of_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "url": {
             "type": [
               "string",
@@ -4116,6 +4139,18 @@
             ]
           },
           "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title_display": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "translation_of_id": {
             "type": [
               "string",
               "null"

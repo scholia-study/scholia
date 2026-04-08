@@ -174,7 +174,7 @@ export function TextPanel({
     const bookTitle = bookDetail?.title ?? bookSlug;
 
     // Determine translation relationships
-    const isTranslation = !!bookDetail?.source_book_id;
+    const isTranslation = !!bookDetail?.source_book_slug;
     const hasTranslations = (bookDetail?.translations?.length ?? 0) > 0;
     const hasRelationship = isTranslation || hasTranslations;
 

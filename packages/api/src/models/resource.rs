@@ -42,6 +42,8 @@ pub struct SourceResponse {
     pub source_type: String,
     pub title: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub title_display: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub publication_year: Option<i16>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,
@@ -61,6 +63,8 @@ pub struct SourceResponse {
     pub page_start: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub page_end: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub translation_of_id: Option<String>,
     pub persons: Vec<SourcePersonResponse>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent: Option<Box<ParentSourceResponse>>,
@@ -165,6 +169,7 @@ pub struct UpdateResourceRequest {
 pub struct CreateSourceRequest {
     pub source_type: String,
     pub title: String,
+    pub title_display: Option<String>,
     pub publication_year: Option<i16>,
     pub publisher: Option<String>,
     pub isbn: Option<Vec<String>>,
@@ -176,12 +181,14 @@ pub struct CreateSourceRequest {
     pub page_start: Option<i32>,
     pub page_end: Option<i32>,
     pub parent_source_id: Option<String>,
+    pub translation_of_id: Option<String>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateSourceRequest {
     pub source_type: Option<String>,
     pub title: Option<String>,
+    pub title_display: Option<String>,
     pub publication_year: Option<i16>,
     pub publisher: Option<String>,
     pub isbn: Option<Vec<String>>,
@@ -193,6 +200,7 @@ pub struct UpdateSourceRequest {
     pub page_start: Option<i32>,
     pub page_end: Option<i32>,
     pub parent_source_id: Option<String>,
+    pub translation_of_id: Option<String>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]

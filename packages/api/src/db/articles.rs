@@ -666,8 +666,9 @@ pub async fn batch_get_sentences(
 
     let context = sqlx::query_as!(
         BookNodeRow,
-        r#"SELECT b.title AS "book_title!", n.label AS "node_label!"
+        r#"SELECT COALESCE(s.title_display, s.title) AS "book_title!", n.label AS "node_label!"
            FROM books b
+           JOIN sources s ON s.id = b.source_id
            JOIN toc_nodes n ON n.book_id = b.id AND n.slug = $2
            WHERE b.slug = $1"#,
         book_slug,
@@ -728,12 +729,13 @@ pub async fn batch_get_sentences(
     }
     let source_context = sqlx::query_as!(
         SourceRow,
-        r#"SELECT b.slug AS "book_slug!", b.title AS "book_title!",
+        r#"SELECT b.slug AS "book_slug!", COALESCE(bs.title_display, bs.title) AS "book_title!",
                   n.slug AS "node_slug!", n.label AS "node_label!"
            FROM sentences s
            JOIN books cur ON cur.id = s.book_id
            JOIN sentences src ON src.id = s.source_sentence_start_id
            JOIN books b ON b.id = src.book_id
+           JOIN sources bs ON bs.id = b.source_id
            JOIN toc_nodes n ON n.id = src.node_id
            WHERE cur.slug = $1
              AND s.sentence_number >= $2

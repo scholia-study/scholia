@@ -463,7 +463,7 @@ pub async fn list_all_quotations(
         QuotationWithContextRow,
         r#"SELECT q.id,
                   b.slug AS "book_slug!",
-                  b.title AS "book_title!",
+                  COALESCE(s.title_display, s.title) AS "book_title!",
                   n.label AS "node_label!",
                   n.slug AS "node_slug!",
                   ss.sentence_number AS "start_number?",
@@ -475,13 +475,14 @@ pub async fn list_all_quotations(
                   q.created_at
            FROM quotations q
            JOIN books b ON b.id = q.book_id
+           JOIN sources s ON s.id = b.source_id
            JOIN toc_nodes n ON n.id = q.anchor_node_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.user_id = $1
              AND ($2::TEXT IS NULL OR b.slug = $2)
-           GROUP BY q.id, b.slug, b.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text
+           GROUP BY q.id, b.slug, s.title_display, s.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text
            ORDER BY q.created_at DESC"#,
         user_id,
         book_slug,
@@ -536,7 +537,7 @@ pub async fn list_all_notes(
         NoteWithContextRow,
         r#"SELECT qn.id, qn.body, qn.quotation_id,
                   b.slug AS "book_slug!",
-                  b.title AS "book_title!",
+                  COALESCE(s.title_display, s.title) AS "book_title!",
                   n.label AS "node_label!",
                   n.slug AS "node_slug!",
                   ss.sentence_number AS "start_number?",
@@ -546,6 +547,7 @@ pub async fn list_all_notes(
            FROM quotation_notes qn
            JOIN quotations q ON q.id = qn.quotation_id
            JOIN books b ON b.id = q.book_id
+           JOIN sources s ON s.id = b.source_id
            JOIN toc_nodes n ON n.id = q.anchor_node_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id

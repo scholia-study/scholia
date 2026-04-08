@@ -4,20 +4,93 @@
 CREATE EXTENSION IF NOT EXISTS ltree;
 
 -- ============================================================
+-- USER TABLES
+-- ============================================================
+
+CREATE TABLE users (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    display_name      TEXT NOT NULL,
+    email             TEXT NOT NULL UNIQUE,
+    password_hash         TEXT,
+    avatar_url            TEXT,
+    email_verified_at     TIMESTAMPTZ,
+    sessions_invalidated_at TIMESTAMPTZ,
+    admin_notes       TEXT,
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- ============================================================
+-- BIBLIOGRAPHIC TABLES (sources & persons)
+-- ============================================================
+
+CREATE TABLE persons (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name        TEXT NOT NULL UNIQUE,
+    sort_name   TEXT,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TYPE source_type AS ENUM ('book', 'article', 'chapter', 'journal', 'web');
+
+CREATE TABLE sources (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    source_type       source_type NOT NULL,
+    title             TEXT NOT NULL,
+    title_display     TEXT,
+    publication_year  SMALLINT,
+    publisher         TEXT,
+    isbn              TEXT[],
+    doi               TEXT,
+    edition           TEXT,
+    volume            TEXT,
+    journal_name      TEXT,
+    url               TEXT,
+    page_start        INT,
+    page_end          INT,
+    parent_source_id    UUID REFERENCES sources(id) ON DELETE SET NULL,
+    translation_of_id   UUID REFERENCES sources(id) ON DELETE SET NULL,
+    created_by          UUID REFERENCES users(id),
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    CONSTRAINT chk_chapter_has_parent CHECK (
+        source_type != 'chapter' OR parent_source_id IS NOT NULL
+    ),
+    CONSTRAINT chk_no_parent CHECK (
+        source_type NOT IN ('book', 'web') OR parent_source_id IS NULL
+    ),
+    UNIQUE (title, source_type, publication_year)
+);
+
+CREATE INDEX idx_sources_parent ON sources (parent_source_id)
+    WHERE parent_source_id IS NOT NULL;
+CREATE INDEX idx_sources_translation ON sources (translation_of_id)
+    WHERE translation_of_id IS NOT NULL;
+CREATE INDEX idx_sources_title ON sources USING gin (to_tsvector('english', title));
+
+CREATE TYPE source_person_role AS ENUM ('author', 'editor', 'translator', 'contributor');
+
+CREATE TABLE source_persons (
+    source_id  UUID NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
+    person_id  UUID NOT NULL REFERENCES persons(id) ON DELETE RESTRICT,
+    role       source_person_role NOT NULL,
+    position   SMALLINT NOT NULL DEFAULT 0,
+    PRIMARY KEY (source_id, person_id, role)
+);
+
+CREATE INDEX idx_source_persons_person ON source_persons (person_id);
+
+-- ============================================================
 -- TEXT TABLES
 -- ============================================================
 
--- One row per work. For translations, source_book_id points to
--- the original work. Source texts have source_book_id = NULL.
+-- One row per hosted text. Bibliographic metadata (title, authors,
+-- translation linkage) lives in the linked source.
 CREATE TABLE books (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    source_book_id  UUID REFERENCES books(id) ON DELETE SET NULL,
+    source_id       UUID NOT NULL REFERENCES sources(id),
     slug            TEXT NOT NULL UNIQUE,
-    title           TEXT NOT NULL,
-    author          TEXT NOT NULL,
     language        TEXT NOT NULL,
-    source          TEXT,
-    source_date     TEXT,
     admin_notes     TEXT,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -249,78 +322,6 @@ CREATE INDEX idx_xref_source_block ON cross_references (source_block_id)
     WHERE source_block_id IS NOT NULL;
 CREATE INDEX idx_xref_target_block ON cross_references (target_block_id)
     WHERE target_block_id IS NOT NULL;
-
--- ============================================================
--- USER TABLES
--- ============================================================
-
-CREATE TABLE users (
-    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    display_name      TEXT NOT NULL,
-    email             TEXT NOT NULL UNIQUE,
-    password_hash         TEXT,
-    avatar_url            TEXT,
-    email_verified_at     TIMESTAMPTZ,
-    sessions_invalidated_at TIMESTAMPTZ,
-    admin_notes       TEXT,
-    created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
--- ============================================================
--- BIBLIOGRAPHIC TABLES (sources & persons for commentary)
--- ============================================================
-
-CREATE TABLE persons (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name        TEXT NOT NULL,
-    sort_name   TEXT,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE TYPE source_type AS ENUM ('book', 'article', 'chapter', 'journal', 'web');
-
-CREATE TABLE sources (
-    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    source_type       source_type NOT NULL,
-    title             TEXT NOT NULL,
-    publication_year  SMALLINT,
-    publisher         TEXT,
-    isbn              TEXT[],
-    doi               TEXT,
-    edition           TEXT,
-    volume            TEXT,
-    journal_name      TEXT,
-    url               TEXT,
-    page_start        INT,
-    page_end          INT,
-    parent_source_id  UUID REFERENCES sources(id) ON DELETE SET NULL,
-    created_by        UUID REFERENCES users(id),
-    created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
-
-    CONSTRAINT chk_chapter_has_parent CHECK (
-        source_type != 'chapter' OR parent_source_id IS NOT NULL
-    ),
-    CONSTRAINT chk_no_parent CHECK (
-        source_type NOT IN ('book', 'web') OR parent_source_id IS NULL
-    )
-);
-
-CREATE INDEX idx_sources_parent ON sources (parent_source_id)
-    WHERE parent_source_id IS NOT NULL;
-CREATE INDEX idx_sources_title ON sources USING gin (to_tsvector('english', title));
-
-CREATE TYPE source_person_role AS ENUM ('author', 'editor', 'translator', 'contributor');
-
-CREATE TABLE source_persons (
-    source_id  UUID NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
-    person_id  UUID NOT NULL REFERENCES persons(id) ON DELETE RESTRICT,
-    role       source_person_role NOT NULL,
-    position   SMALLINT NOT NULL DEFAULT 0,
-    PRIMARY KEY (source_id, person_id, role)
-);
-
-CREATE INDEX idx_source_persons_person ON source_persons (person_id);
 
 -- ============================================================
 -- RESOURCE TABLES (curated/editorial content)

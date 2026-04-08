@@ -29,6 +29,10 @@ export interface UpdateSourceRequest {
     /** @nullable */
     title?: string | null;
     /** @nullable */
+    title_display?: string | null;
+    /** @nullable */
+    translation_of_id?: string | null;
+    /** @nullable */
     url?: string | null;
     /** @nullable */
     volume?: string | null;

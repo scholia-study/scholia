@@ -14,6 +14,7 @@ struct SourceRow {
     id: Uuid,
     source_type: String,
     title: String,
+    title_display: Option<String>,
     publication_year: Option<i16>,
     publisher: Option<String>,
     isbn: Option<Vec<String>>,
@@ -25,6 +26,7 @@ struct SourceRow {
     page_start: Option<i32>,
     page_end: Option<i32>,
     parent_source_id: Option<Uuid>,
+    translation_of_id: Option<Uuid>,
 }
 
 struct SourcePersonRow {
@@ -46,12 +48,15 @@ pub async fn search_sources(
 
     let rows = sqlx::query_as!(
         SourceRow,
-        r#"SELECT id, source_type::TEXT AS "source_type!", title, publication_year,
-                  publisher, isbn, doi, edition, volume, journal_name, url,
-                  page_start, page_end, parent_source_id
-           FROM sources
-           WHERE title ILIKE $1
-           ORDER BY title
+        r#"SELECT DISTINCT s.id, s.source_type::TEXT AS "source_type!", s.title, s.title_display,
+                  s.publication_year, s.publisher, s.isbn, s.doi, s.edition, s.volume,
+                  s.journal_name, s.url, s.page_start, s.page_end,
+                  s.parent_source_id, s.translation_of_id
+           FROM sources s
+           LEFT JOIN source_persons sp ON sp.source_id = s.id
+           LEFT JOIN persons p ON p.id = sp.person_id
+           WHERE s.title ILIKE $1 OR p.name ILIKE $1
+           ORDER BY s.title
            LIMIT 20"#,
         pattern,
     )
@@ -79,9 +84,9 @@ pub async fn search_sources(
 pub async fn get_source(pool: &PgPool, source_id: Uuid) -> Result<SourceResponse, AppError> {
     let row = sqlx::query_as!(
         SourceRow,
-        r#"SELECT id, source_type::TEXT AS "source_type!", title, publication_year,
+        r#"SELECT id, source_type::TEXT AS "source_type!", title, title_display, publication_year,
                   publisher, isbn, doi, edition, volume, journal_name, url,
-                  page_start, page_end, parent_source_id
+                  page_start, page_end, parent_source_id, translation_of_id
            FROM sources
            WHERE id = $1"#,
         source_id,
@@ -105,6 +110,7 @@ pub async fn create_source(
     pool: &PgPool,
     source_type: &str,
     title: &str,
+    title_display: Option<&str>,
     publication_year: Option<i16>,
     publisher: Option<&str>,
     isbn: Option<&[String]>,
@@ -116,16 +122,18 @@ pub async fn create_source(
     page_start: Option<i32>,
     page_end: Option<i32>,
     parent_source_id: Option<Uuid>,
+    translation_of_id: Option<Uuid>,
     created_by: Uuid,
 ) -> Result<SourceResponse, AppError> {
     let id = sqlx::query_scalar!(
-        r#"INSERT INTO sources (source_type, title, publication_year, publisher, isbn, doi,
+        r#"INSERT INTO sources (source_type, title, title_display, publication_year, publisher, isbn, doi,
                                 edition, volume, journal_name, url, page_start, page_end,
-                                parent_source_id, created_by)
-           VALUES ($1::source_type, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                                parent_source_id, translation_of_id, created_by)
+           VALUES ($1::source_type, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
            RETURNING id"#,
         source_type as _,
         title,
+        title_display,
         publication_year,
         publisher,
         isbn,
@@ -137,6 +145,7 @@ pub async fn create_source(
         page_start,
         page_end,
         parent_source_id,
+        translation_of_id,
         created_by,
     )
     .fetch_one(pool)
@@ -150,6 +159,7 @@ pub async fn update_source(
     source_id: Uuid,
     source_type: Option<&str>,
     title: Option<&str>,
+    title_display: Option<&str>,
     publication_year: Option<i16>,
     publisher: Option<&str>,
     isbn: Option<&[String]>,
@@ -161,26 +171,30 @@ pub async fn update_source(
     page_start: Option<i32>,
     page_end: Option<i32>,
     parent_source_id: Option<Uuid>,
+    translation_of_id: Option<Uuid>,
 ) -> Result<SourceResponse, AppError> {
     sqlx::query!(
         r#"UPDATE sources
            SET source_type = COALESCE($2::source_type, source_type),
                title = COALESCE($3, title),
-               publication_year = COALESCE($4, publication_year),
-               publisher = COALESCE($5, publisher),
-               isbn = COALESCE($6, isbn),
-               doi = COALESCE($7, doi),
-               edition = COALESCE($8, edition),
-               volume = COALESCE($9, volume),
-               journal_name = COALESCE($10, journal_name),
-               url = COALESCE($11, url),
-               page_start = COALESCE($12, page_start),
-               page_end = COALESCE($13, page_end),
-               parent_source_id = COALESCE($14, parent_source_id)
+               title_display = COALESCE($4, title_display),
+               publication_year = COALESCE($5, publication_year),
+               publisher = COALESCE($6, publisher),
+               isbn = COALESCE($7, isbn),
+               doi = COALESCE($8, doi),
+               edition = COALESCE($9, edition),
+               volume = COALESCE($10, volume),
+               journal_name = COALESCE($11, journal_name),
+               url = COALESCE($12, url),
+               page_start = COALESCE($13, page_start),
+               page_end = COALESCE($14, page_end),
+               parent_source_id = COALESCE($15, parent_source_id),
+               translation_of_id = COALESCE($16, translation_of_id)
            WHERE id = $1"#,
         source_id,
         source_type as _,
         title,
+        title_display,
         publication_year,
         publisher,
         isbn,
@@ -192,6 +206,7 @@ pub async fn update_source(
         page_start,
         page_end,
         parent_source_id,
+        translation_of_id,
     )
     .execute(pool)
     .await?;
@@ -341,6 +356,7 @@ fn build_source_response(
         id: row.id.to_string(),
         source_type: row.source_type,
         title: row.title,
+        title_display: row.title_display,
         publication_year: row.publication_year,
         publisher: row.publisher,
         isbn: row.isbn,
@@ -351,6 +367,7 @@ fn build_source_response(
         url: row.url,
         page_start: row.page_start,
         page_end: row.page_end,
+        translation_of_id: row.translation_of_id.map(|id| id.to_string()),
         persons,
         parent,
     }

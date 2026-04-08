@@ -7,12 +7,24 @@ use crate::models::book::{BookDetail, BookSummary};
 pub async fn list_books(pool: &PgPool) -> Result<Vec<BookSummary>, AppError> {
     let rows = sqlx::query_as!(
         BookRow,
-        r#"SELECT b.id, b.slug, b.title, b.author, b.language, b.source, b.source_date,
-                  b.source_book_id,
-                  src.slug AS "source_book_slug?"
+        r#"SELECT b.id, b.slug, b.language,
+                  b.source_id,
+                  COALESCE(s.title_display, s.title) AS "title!",
+                  s.publication_year,
+                  s.publisher,
+
+                  STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author,
+                  src_book.slug AS "source_book_slug?"
            FROM books b
-           LEFT JOIN books src ON src.id = b.source_book_id
-           ORDER BY b.title"#,
+           JOIN sources s ON s.id = b.source_id
+           LEFT JOIN source_persons sp ON sp.source_id = s.id AND sp.role = 'author'
+           LEFT JOIN persons p ON p.id = sp.person_id
+           LEFT JOIN books src_book ON src_book.source_id = s.translation_of_id
+           GROUP BY b.id, b.slug, b.language,
+                    b.source_id, s.title_display, s.title,
+                    s.publication_year, s.publisher,
+                    src_book.slug
+           ORDER BY COALESCE(s.title_display, s.title)"#,
     )
     .fetch_all(pool)
     .await?;
@@ -23,29 +35,47 @@ pub async fn list_books(pool: &PgPool) -> Result<Vec<BookSummary>, AppError> {
 pub async fn get_book_by_slug(pool: &PgPool, slug: &str) -> Result<BookDetail, AppError> {
     let row = sqlx::query_as!(
         BookRow,
-        r#"SELECT b.id, b.slug, b.title, b.author, b.language, b.source, b.source_date,
-                  b.source_book_id,
-                  src.slug AS "source_book_slug?"
+        r#"SELECT b.id, b.slug, b.language,
+                  b.source_id,
+                  COALESCE(s.title_display, s.title) AS "title!",
+                  s.publication_year,
+                  s.publisher,
+
+                  STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author,
+                  src_book.slug AS "source_book_slug?"
            FROM books b
-           LEFT JOIN books src ON src.id = b.source_book_id
-           WHERE b.slug = $1"#,
+           JOIN sources s ON s.id = b.source_id
+           LEFT JOIN source_persons sp ON sp.source_id = s.id AND sp.role = 'author'
+           LEFT JOIN persons p ON p.id = sp.person_id
+           LEFT JOIN books src_book ON src_book.source_id = s.translation_of_id
+           WHERE b.slug = $1
+           GROUP BY b.id, b.slug, b.language,
+                    b.source_id, s.title_display, s.title,
+                    s.publication_year, s.publisher,
+                    src_book.slug"#,
         slug,
     )
     .fetch_optional(pool)
     .await?
     .ok_or_else(|| AppError::NotFound(format!("Book not found: {slug}")))?;
 
-    let book_id: Uuid = row.id;
+    let source_id: Uuid = row.source_id;
     let mut detail = row.into_detail();
 
-    // Fetch translations (books where source_book_id = this book)
+    // Fetch translations: books whose source has translation_of_id = this book's source
     let translation_rows = sqlx::query_as!(
         TranslationRow,
-        r#"SELECT id, slug, title, author, language
-           FROM books
-           WHERE source_book_id = $1
-           ORDER BY title"#,
-        book_id,
+        r#"SELECT b.id, b.slug, b.language,
+                  COALESCE(s.title_display, s.title) AS "title!",
+                  STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author
+           FROM books b
+           JOIN sources s ON s.id = b.source_id
+           LEFT JOIN source_persons sp ON sp.source_id = s.id AND sp.role = 'author'
+           LEFT JOIN persons p ON p.id = sp.person_id
+           WHERE s.translation_of_id = $1
+           GROUP BY b.id, b.slug, b.language, s.title_display, s.title
+           ORDER BY COALESCE(s.title_display, s.title)"#,
+        source_id,
     )
     .fetch_all(pool)
     .await?;
@@ -56,7 +86,7 @@ pub async fn get_book_by_slug(pool: &PgPool, slug: &str) -> Result<BookDetail, A
             id: r.id.to_string(),
             slug: r.slug,
             title: r.title,
-            author: r.author,
+            author: r.author.unwrap_or_default(),
             language: r.language,
         })
         .collect();
@@ -80,11 +110,11 @@ struct BookRow {
     id: Uuid,
     slug: String,
     title: String,
-    author: String,
     language: String,
-    source: Option<String>,
-    source_date: Option<String>,
-    source_book_id: Option<Uuid>,
+    source_id: Uuid,
+    publication_year: Option<i16>,
+    publisher: Option<String>,
+    author: Option<String>,
     source_book_slug: Option<String>,
 }
 
@@ -94,7 +124,7 @@ impl BookRow {
             id: self.id.to_string(),
             slug: self.slug,
             title: self.title,
-            author: self.author,
+            author: self.author.unwrap_or_default(),
             language: self.language,
         }
     }
@@ -104,11 +134,11 @@ impl BookRow {
             id: self.id.to_string(),
             slug: self.slug,
             title: self.title,
-            author: self.author,
+            author: self.author.unwrap_or_default(),
             language: self.language,
-            source: self.source,
-            source_date: self.source_date,
-            source_book_id: self.source_book_id.map(|id| id.to_string()),
+            source_id: self.source_id.to_string(),
+            publication_year: self.publication_year,
+            publisher: self.publisher,
             source_book_slug: self.source_book_slug,
             translations: vec![],
         }
@@ -119,6 +149,6 @@ struct TranslationRow {
     id: Uuid,
     slug: String,
     title: String,
-    author: String,
+    author: Option<String>,
     language: String,
 }

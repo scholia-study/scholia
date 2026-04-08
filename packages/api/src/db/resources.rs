@@ -29,6 +29,7 @@ struct ResourceRow {
     src_id: Option<Uuid>,
     src_type: Option<String>,
     src_title: Option<String>,
+    src_title_display: Option<String>,
     src_year: Option<i16>,
     src_publisher: Option<String>,
     src_isbn: Option<Vec<String>>,
@@ -40,6 +41,7 @@ struct ResourceRow {
     src_page_start: Option<i32>,
     src_page_end: Option<i32>,
     src_parent_id: Option<Uuid>,
+    src_translation_of_id: Option<Uuid>,
 }
 
 // ── Queries ────────────────────────────────────────────────
@@ -65,6 +67,7 @@ pub async fn list_resources(
                   s.id AS "src_id?",
                   s.source_type::TEXT AS "src_type?",
                   s.title AS "src_title?",
+                  s.title_display AS "src_title_display?",
                   s.publication_year AS "src_year?",
                   s.publisher AS "src_publisher?",
                   s.isbn AS "src_isbn?",
@@ -75,7 +78,8 @@ pub async fn list_resources(
                   s.url AS "src_url?",
                   s.page_start AS "src_page_start?",
                   s.page_end AS "src_page_end?",
-                  s.parent_source_id AS "src_parent_id?"
+                  s.parent_source_id AS "src_parent_id?",
+                  s.translation_of_id AS "src_translation_of_id?"
            FROM resources r
            JOIN sentences ss ON ss.id = r.anchor_sentence_start_id
            LEFT JOIN sentences se ON se.id = r.anchor_sentence_end_id
@@ -159,6 +163,7 @@ pub async fn list_resources(
                     id: sid.to_string(),
                     source_type: r.src_type.unwrap_or_default(),
                     title: r.src_title.unwrap_or_default(),
+                    title_display: r.src_title_display,
                     publication_year: r.src_year,
                     publisher: r.src_publisher,
                     isbn: r.src_isbn,
@@ -169,6 +174,7 @@ pub async fn list_resources(
                     url: r.src_url,
                     page_start: r.src_page_start,
                     page_end: r.src_page_end,
+                    translation_of_id: r.src_translation_of_id.map(|id| id.to_string()),
                     persons,
                     parent,
                 }

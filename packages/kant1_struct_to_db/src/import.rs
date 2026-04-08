@@ -26,32 +26,77 @@ pub async fn run(
     let is_translation = source_book_slug.is_some();
 
     // 0. Look up source book (translation mode only)
-    let source_book_id: Option<Uuid> = if let Some(ref slug) = source_book_slug {
-        let id: Option<Uuid> =
-            sqlx::query_scalar("SELECT id FROM books WHERE slug = $1")
+    let source_book: Option<(Uuid, Uuid)> = if let Some(ref slug) = source_book_slug {
+        let row: Option<(Uuid, Uuid)> =
+            sqlx::query_as("SELECT id, source_id FROM books WHERE slug = $1")
                 .bind(slug)
                 .fetch_optional(&mut *tx)
                 .await?;
-        let id = id.ok_or_else(|| format!("Source book not found: {slug}"))?;
-        eprintln!("Source book {:?} ({})", slug, id);
-        Some(id)
+        let (book_id, src_id) = row.ok_or_else(|| format!("Source book not found: {slug}"))?;
+        eprintln!("Source book {:?} (book={}, source={})", slug, book_id, src_id);
+        Some((book_id, src_id))
     } else {
         None
     };
+    let source_book_id: Option<Uuid> = source_book.map(|(id, _)| id);
+    let translation_of_id: Option<Uuid> = source_book.map(|(_, id)| id);
 
-    // 1. Insert book
+    // 1a. Upsert person (author)
+    let person_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO persons (name, sort_name)
+         VALUES ($1, $2)
+         ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+         RETURNING id",
+    )
+    .bind(&output.book.author)
+    .bind({
+        // Auto-generate sort_name: "Immanuel Kant" → "Kant, Immanuel"
+        let parts: Vec<&str> = output.book.author.split_whitespace().collect();
+        if parts.len() >= 2 {
+            Some(format!("{}, {}", parts.last().unwrap(), parts[..parts.len() - 1].join(" ")))
+        } else {
+            None
+        }
+    })
+    .fetch_one(&mut *tx)
+    .await?;
+    eprintln!("Person {:?} ({})", output.book.author, person_id);
+
+    // 1b. Insert bibliographic source
+    let publication_year: Option<i16> = output.book.source_date.parse::<i16>().ok();
+    let bib_source_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO sources (source_type, title, publication_year, publisher, translation_of_id)
+         VALUES ('book', $1, $2, $3, $4)
+         RETURNING id",
+    )
+    .bind(&output.book.title)
+    .bind(publication_year)
+    .bind(&output.book.source)
+    .bind(translation_of_id)
+    .fetch_one(&mut *tx)
+    .await?;
+    eprintln!("Source {:?} ({})", output.book.title, bib_source_id);
+
+    // 1c. Link person to source as author
+    sqlx::query(
+        "INSERT INTO source_persons (source_id, person_id, role, position)
+         VALUES ($1, $2, 'author', 0)
+         ON CONFLICT DO NOTHING",
+    )
+    .bind(bib_source_id)
+    .bind(person_id)
+    .execute(&mut *tx)
+    .await?;
+
+    // 1d. Insert book
     let book_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO books (slug, title, author, language, source, source_date, source_book_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+        "INSERT INTO books (slug, source_id, language)
+         VALUES ($1, $2, $3)
          RETURNING id",
     )
     .bind(&output.book.slug)
-    .bind(&output.book.title)
-    .bind(&output.book.author)
+    .bind(bib_source_id)
     .bind(&output.book.language)
-    .bind(&output.book.source)
-    .bind(&output.book.source_date)
-    .bind(source_book_id)
     .fetch_one(&mut *tx)
     .await?;
 
