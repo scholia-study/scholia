@@ -186,6 +186,7 @@ async fn main() {
             api::handlers::sources::create_source
         ))
         .routes(utoipa_axum::routes!(
+            api::handlers::sources::get_source,
             api::handlers::sources::update_source
         ))
         .routes(utoipa_axum::routes!(

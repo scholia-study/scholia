@@ -104,14 +104,24 @@ fn article_detail_response(r: ArticleRow, topics: Vec<TopicResponse>) -> Article
 }
 
 /// Render article markdown to HTML, converting quotation directives to placeholder divs.
-pub fn render_article_markdown(markdown: &str) -> String {
+pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
     // Pre-process: extract ::quotation{...} directives and replace with placeholders
     let directive_re = Regex::new(r#"::quotation\{([^}]+)\}"#).expect("Invalid directive regex");
 
     let mut placeholder_map: Vec<String> = Vec::new();
+    let mut quotation_book_slugs: Vec<String> = Vec::new();
     let processed = directive_re.replace_all(markdown, |caps: &regex::Captures| {
         let attrs_str = &caps[1];
         let idx = placeholder_map.len();
+
+        // Extract book slug for bibliography
+        let book_re = Regex::new(r#"book="([^"]*)""#).expect("Invalid book regex");
+        if let Some(book_cap) = book_re.captures(attrs_str) {
+            let slug = book_cap[1].to_string();
+            if !quotation_book_slugs.contains(&slug) {
+                quotation_book_slugs.push(slug);
+            }
+        }
 
         // Parse key="value" pairs
         let attr_re = Regex::new(r#"(\w+)="([^"]*)""#).expect("Invalid attr regex");
@@ -137,19 +147,275 @@ pub fn render_article_markdown(markdown: &str) -> String {
         format!("\n<!--QUOTATION_PLACEHOLDER_{idx}-->\n")
     });
 
+    // Pre-process: extract :cite{sources="..."} directives
+    let cite_re = Regex::new(r#":cite\{[^}]*?sources="([^"]+)"[^}]*?\}"#).expect("Invalid cite regex");
+
+    // Collect all citation entries: Vec<(placeholder_index, Vec<(source_id, pages)>)>
+    let mut citation_map: Vec<Vec<(String, String)>> = Vec::new();
+    let mut all_source_ids: Vec<Uuid> = Vec::new();
+
+    let processed = cite_re.replace_all(&processed, |caps: &regex::Captures| {
+        let sources_str = &caps[1];
+        let idx = citation_map.len();
+        let mut entries = Vec::new();
+
+        for entry in sources_str.split(',') {
+            let parts: Vec<&str> = entry.splitn(2, ':').collect();
+            let source_id = parts[0].trim().to_string();
+            let pages = parts.get(1).unwrap_or(&"").trim().to_string();
+            if let Ok(uuid) = Uuid::parse_str(&source_id) {
+                all_source_ids.push(uuid);
+            }
+            entries.push((source_id, pages));
+        }
+
+        citation_map.push(entries);
+        format!("<!--CITATION_PLACEHOLDER_{idx}-->")
+    });
+
+    // Look up source IDs for quotation book slugs
+    if !quotation_book_slugs.is_empty() {
+        // Get source IDs for quoted books, plus their originals (for translations)
+        let rows: Vec<(Uuid, Option<Uuid>)> = sqlx::query_as(
+            "SELECT s.id, s.translation_of_id
+             FROM books b
+             JOIN sources s ON s.id = b.source_id
+             WHERE b.slug = ANY($1)",
+        )
+        .bind(&quotation_book_slugs)
+        .fetch_all(pool)
+        .await
+        .unwrap_or_default();
+
+        for (source_id, translation_of_id) in rows {
+            if !all_source_ids.contains(&source_id) {
+                all_source_ids.push(source_id);
+            }
+            if let Some(orig_id) = translation_of_id {
+                if !all_source_ids.contains(&orig_id) {
+                    all_source_ids.push(orig_id);
+                }
+            }
+        }
+    }
+    // Batch fetch source + person data for all citations and quotations
+    let source_data = if !all_source_ids.is_empty() {
+        fetch_citation_data(pool, &all_source_ids).await
+    } else {
+        HashMap::new()
+    };
+
     // Run pulldown-cmark on the cleaned markdown
     let parser = pulldown_cmark::Parser::new(&processed);
     let mut html_output = String::new();
     pulldown_cmark::html::push_html(&mut html_output, parser);
 
-    // Post-process: replace placeholder comments with actual divs
+    // Post-process: replace quotation placeholder comments with actual divs
     for (idx, data_attrs) in placeholder_map.iter().enumerate() {
         let placeholder = format!("<!--QUOTATION_PLACEHOLDER_{idx}-->");
         let replacement = format!(r#"<div class="quotation-embed"{data_attrs}></div>"#);
         html_output = html_output.replace(&placeholder, &replacement);
     }
 
+    // Post-process: replace citation placeholders with inline spans
+    // Seed bibliography with all collected source IDs (quotations + citations)
+    let mut bibliography_sources: Vec<Uuid> = all_source_ids
+        .iter()
+        .copied()
+        .collect::<std::collections::HashSet<_>>()
+        .into_iter()
+        .collect();
+    for (idx, entries) in citation_map.iter().enumerate() {
+        let placeholder = format!("<!--CITATION_PLACEHOLDER_{idx}-->");
+        let inline_text = format_inline_citation(entries, &source_data);
+        let replacement = format!(r#"<span class="citation">{inline_text}</span>"#);
+        html_output = html_output.replace(&placeholder, &replacement);
+
+        // Track unique sources for bibliography
+        for (id_str, _) in entries {
+            if let Ok(uuid) = Uuid::parse_str(id_str) {
+                if !bibliography_sources.contains(&uuid) {
+                    bibliography_sources.push(uuid);
+                }
+            }
+        }
+    }
+
+    // Append bibliography if any citations exist
+    if !bibliography_sources.is_empty() {
+        html_output.push_str("\n<section class=\"bibliography\">\n<h2>Bibliography</h2>\n<ul style=\"list-style:none;padding:0;margin:0\">\n");
+        // Sort bibliography by author last name
+        let mut bib_entries: Vec<String> = bibliography_sources
+            .iter()
+            .filter_map(|id| {
+                source_data.get(id).map(|data| format_bibliography_entry(data))
+            })
+            .collect();
+        bib_entries.sort();
+        for entry in bib_entries {
+            html_output.push_str(&format!("<li style=\"margin:0.25em 0\">{entry}</li>\n"));
+        }
+        html_output.push_str("</ul>\n</section>\n");
+    }
+
     html_output
+}
+
+// ── Citation helpers ─────────────────────────────────────
+
+struct CitationSourceData {
+    title: String,
+    publication_year: Option<i16>,
+    publisher: Option<String>,
+    authors: Vec<String>,         // sorted by position
+    author_sort_names: Vec<String>,
+}
+
+async fn fetch_citation_data(
+    pool: &PgPool,
+    source_ids: &[Uuid],
+) -> HashMap<Uuid, CitationSourceData> {
+    let mut map = HashMap::new();
+
+    struct SourceRow {
+        id: Uuid,
+        title: String,
+        publication_year: Option<i16>,
+        publisher: Option<String>,
+    }
+
+    let sources: Vec<SourceRow> = sqlx::query_as!(
+        SourceRow,
+        r#"SELECT id, title, publication_year, publisher
+           FROM sources WHERE id = ANY($1)"#,
+        source_ids,
+    )
+    .fetch_all(pool)
+    .await
+    .unwrap_or_default();
+
+    for s in &sources {
+        map.insert(s.id, CitationSourceData {
+            title: s.title.clone(),
+            publication_year: s.publication_year,
+            publisher: s.publisher.clone(),
+            authors: Vec::new(),
+            author_sort_names: Vec::new(),
+        });
+    }
+
+    struct PersonRow {
+        source_id: Uuid,
+        name: String,
+        sort_name: Option<String>,
+    }
+
+    let persons: Vec<PersonRow> = sqlx::query_as!(
+        PersonRow,
+        r#"SELECT sp.source_id, p.name, p.sort_name
+           FROM source_persons sp
+           JOIN persons p ON p.id = sp.person_id
+           WHERE sp.source_id = ANY($1) AND sp.role = 'author'
+           ORDER BY sp.position"#,
+        source_ids,
+    )
+    .fetch_all(pool)
+    .await
+    .unwrap_or_default();
+
+    for p in persons {
+        if let Some(data) = map.get_mut(&p.source_id) {
+            data.authors.push(p.name.clone());
+            data.author_sort_names.push(
+                p.sort_name.unwrap_or_else(|| {
+                    // Derive last name from full name
+                    p.name.split_whitespace().last().unwrap_or(&p.name).to_string()
+                }),
+            );
+        }
+    }
+
+    map
+}
+
+/// Format inline citation: (LastName Year, Pages; ...)
+fn format_inline_citation(
+    entries: &[(String, String)],
+    source_data: &HashMap<Uuid, CitationSourceData>,
+) -> String {
+    let parts: Vec<String> = entries
+        .iter()
+        .map(|(id_str, pages)| {
+            let uuid = Uuid::parse_str(id_str).ok();
+            let data = uuid.and_then(|id| source_data.get(&id));
+
+            let author_part = match data {
+                Some(d) if d.authors.is_empty() => "Unknown".to_string(),
+                Some(d) if d.authors.len() == 1 => last_name(&d.authors[0]),
+                Some(d) if d.authors.len() == 2 => {
+                    format!("{} and {}", last_name(&d.authors[0]), last_name(&d.authors[1]))
+                }
+                Some(d) => format!("{} et al.", last_name(&d.authors[0])),
+                None => "Unknown".to_string(),
+            };
+
+            let year = data
+                .and_then(|d| d.publication_year)
+                .map(|y| y.to_string())
+                .unwrap_or_else(|| "n.d.".to_string());
+
+            if pages.is_empty() {
+                format!("{author_part} {year}")
+            } else {
+                format!("{author_part} {year}, {pages}")
+            }
+        })
+        .collect();
+
+    format!("({})", parts.join("; "))
+}
+
+/// Format a bibliography entry in Chicago author-date style
+fn format_bibliography_entry(data: &CitationSourceData) -> String {
+    // Author(s)
+    let author_part = if data.author_sort_names.is_empty() {
+        "Unknown".to_string()
+    } else if data.author_sort_names.len() == 1 {
+        // "Last, First"
+        data.author_sort_names[0].clone()
+    } else {
+        // "Last, First, and First Last"
+        let first = &data.author_sort_names[0];
+        let rest: Vec<&str> = data.authors[1..].iter().map(|s| s.as_str()).collect();
+        if rest.len() == 1 {
+            format!("{first}, and {}", rest[0])
+        } else {
+            format!("{first}, {}, and {}", rest[..rest.len() - 1].join(", "), rest.last().unwrap())
+        }
+    };
+
+    // Year
+    let year = data
+        .publication_year
+        .map(|y| y.to_string())
+        .unwrap_or_else(|| "n.d.".to_string());
+
+    // Title (italicized)
+    let title = &data.title;
+
+    // Publisher
+    let publisher = data.publisher.as_deref().unwrap_or("");
+
+    if publisher.is_empty() {
+        format!("{author_part}. {year}. <em>{title}</em>.")
+    } else {
+        format!("{author_part}. {year}. <em>{title}</em>. {publisher}.")
+    }
+}
+
+/// Extract last name from a full name
+fn last_name(name: &str) -> String {
+    name.split_whitespace().last().unwrap_or(name).to_string()
 }
 
 // ── Article queries ───────────────────────────────────────
@@ -397,7 +663,7 @@ pub async fn update_article(
 
     // Update markdown and re-render HTML
     if let Some(md) = markdown {
-        let html = render_article_markdown(md);
+        let html = render_article_markdown(pool, md).await;
         sqlx::query!(
             r#"UPDATE articles SET markdown = $2, html = $3, updated_at = now()
                WHERE id = $1"#,

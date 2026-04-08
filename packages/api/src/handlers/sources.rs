@@ -28,11 +28,45 @@ pub async fn search_sources(
     user: AuthUser,
     Query(params): Query<SearchQuery>,
 ) -> Result<Json<Vec<SourceSearchResponse>>, AppError> {
-    user.require_permission(Permission::ResourcesManage)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
 
     let results = db::sources::search_sources(&state.pool, &params.q).await?;
     Ok(Json(results))
+}
+
+/// Get a source by ID
+#[utoipa::path(
+    get,
+    path = "/api/sources/{id}",
+    params(("id" = String, Path, description = "Source ID")),
+    responses(
+        (status = 200, description = "Source details", body = SourceResponse),
+        (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Source not found")
+    ),
+    tag = "sources"
+)]
+pub async fn get_source(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(id): Path<String>,
+) -> Result<Json<SourceResponse>, AppError> {
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
+
+    let source_id = uuid::Uuid::parse_str(&id)
+        .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+
+    let source = db::sources::get_source(&state.pool, source_id).await?;
+    Ok(Json(source))
 }
 
 /// Create a new source
@@ -52,8 +86,11 @@ pub async fn create_source(
     user: AuthUser,
     Json(body): Json<CreateSourceRequest>,
 ) -> Result<Json<SourceResponse>, AppError> {
-    user.require_permission(Permission::ResourcesManage)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
 
     let parent_source_id = body
         .parent_source_id
@@ -113,11 +150,21 @@ pub async fn update_source(
     Path(id): Path<String>,
     Json(body): Json<UpdateSourceRequest>,
 ) -> Result<Json<SourceResponse>, AppError> {
-    user.require_permission(Permission::ResourcesManage)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
 
     let source_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+
+    // Protected sources require ResourcesManage
+    if db::sources::is_source_protected(&state.pool, source_id).await?
+        && !user.has_permission(Permission::ResourcesManage)
+    {
+        return Err(AppError::Forbidden("This source is protected".into()));
+    }
 
     let parent_source_id = body
         .parent_source_id
@@ -176,11 +223,21 @@ pub async fn add_source_person(
     Path(id): Path<String>,
     Json(body): Json<LinkSourcePersonRequest>,
 ) -> Result<Json<()>, AppError> {
-    user.require_permission(Permission::ResourcesManage)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
 
     let source_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+
+    if db::sources::is_source_protected(&state.pool, source_id).await?
+        && !user.has_permission(Permission::ResourcesManage)
+    {
+        return Err(AppError::Forbidden("This source is protected".into()));
+    }
+
     let person_id = uuid::Uuid::parse_str(&body.person_id)
         .map_err(|_| AppError::BadRequest("Invalid person_id".into()))?;
 
@@ -217,11 +274,21 @@ pub async fn remove_source_person(
     user: AuthUser,
     Path((id, person_id, role)): Path<(String, String, String)>,
 ) -> Result<Json<()>, AppError> {
-    user.require_permission(Permission::ResourcesManage)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
 
     let source_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+
+    if db::sources::is_source_protected(&state.pool, source_id).await?
+        && !user.has_permission(Permission::ResourcesManage)
+    {
+        return Err(AppError::Forbidden("This source is protected".into()));
+    }
+
     let person_uuid = uuid::Uuid::parse_str(&person_id)
         .map_err(|_| AppError::BadRequest("Invalid person ID".into()))?;
 
@@ -247,8 +314,11 @@ pub async fn check_source_references(
     user: AuthUser,
     Path(id): Path<String>,
 ) -> Result<Json<ReferenceCheckResponse>, AppError> {
-    user.require_permission(Permission::ResourcesManage)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
 
     let source_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;

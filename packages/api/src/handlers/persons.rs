@@ -25,8 +25,11 @@ pub async fn search_persons(
     user: AuthUser,
     Query(params): Query<SearchQuery>,
 ) -> Result<Json<Vec<PersonResponse>>, AppError> {
-    user.require_permission(Permission::ResourcesManage)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
 
     let results = db::persons::search_persons(&state.pool, &params.q).await?;
     Ok(Json(results))
@@ -49,8 +52,11 @@ pub async fn create_person(
     user: AuthUser,
     Json(body): Json<CreatePersonRequest>,
 ) -> Result<Json<PersonResponse>, AppError> {
-    user.require_permission(Permission::ResourcesManage)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
 
     let person = db::persons::create_person(
         &state.pool,
@@ -82,11 +88,20 @@ pub async fn update_person(
     Path(id): Path<String>,
     Json(body): Json<UpdatePersonRequest>,
 ) -> Result<Json<PersonResponse>, AppError> {
-    user.require_permission(Permission::ResourcesManage)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
 
     let person_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid person ID".into()))?;
+
+    if db::sources::is_person_protected(&state.pool, person_id).await?
+        && !user.has_permission(Permission::ResourcesManage)
+    {
+        return Err(AppError::Forbidden("This person is protected".into()));
+    }
 
     let person = db::persons::update_person(
         &state.pool,

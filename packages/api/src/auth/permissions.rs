@@ -11,6 +11,7 @@ pub enum Permission {
     ChatUse,
     ArticlesCreate,
     ArticlesPublish,
+    SourcesCreate,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -50,6 +51,7 @@ impl Role {
                 Permission::ChatUse,
                 Permission::ArticlesCreate,
                 Permission::ArticlesPublish,
+                Permission::SourcesCreate,
             ],
             Self::Editor => &[
                 Permission::ResourcesManage,
@@ -59,6 +61,7 @@ impl Role {
                 Permission::ChatUse,
                 Permission::ArticlesCreate,
                 Permission::ArticlesPublish,
+                Permission::SourcesCreate,
             ],
             Self::User => &[
                 Permission::NotesCreate,
@@ -67,6 +70,7 @@ impl Role {
                 Permission::ChatUse,
                 Permission::ArticlesCreate,
                 Permission::ArticlesPublish,
+                Permission::SourcesCreate,
             ],
         }
     }

@@ -278,6 +278,30 @@ pub async fn check_source_references(
     Ok((count, ids))
 }
 
+pub async fn is_source_protected(pool: &PgPool, source_id: Uuid) -> Result<bool, AppError> {
+    let protected = sqlx::query_scalar!(
+        r#"SELECT protected FROM sources WHERE id = $1"#,
+        source_id,
+    )
+    .fetch_optional(pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound("Source not found".into()))?;
+
+    Ok(protected)
+}
+
+pub async fn is_person_protected(pool: &PgPool, person_id: Uuid) -> Result<bool, AppError> {
+    let protected = sqlx::query_scalar!(
+        r#"SELECT protected FROM persons WHERE id = $1"#,
+        person_id,
+    )
+    .fetch_optional(pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound("Person not found".into()))?;
+
+    Ok(protected)
+}
+
 // ── Helpers ────────────────────────────────────────────────
 
 pub async fn fetch_source_persons(

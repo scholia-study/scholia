@@ -28,6 +28,7 @@ CREATE TABLE persons (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name        TEXT NOT NULL UNIQUE,
     sort_name   TEXT,
+    protected   BOOLEAN NOT NULL DEFAULT false,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -50,6 +51,7 @@ CREATE TABLE sources (
     page_end          INT,
     parent_source_id    UUID REFERENCES sources(id) ON DELETE SET NULL,
     translation_of_id   UUID REFERENCES sources(id) ON DELETE SET NULL,
+    protected           BOOLEAN NOT NULL DEFAULT false,
     created_by          UUID REFERENCES users(id),
     created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
 
