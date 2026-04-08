@@ -11,6 +11,7 @@ import {
     TextField,
 } from "@mui/material";
 import { useState } from "react";
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import toast from "react-hot-toast";
 import type {
     PersonResponse,
@@ -61,18 +62,20 @@ export function SourceFormModal({
 
     // Parent source search
     const [parentSearch, setParentSearch] = useState("");
+    const debouncedParentSearch = useDebouncedValue(parentSearch);
     const { data: parentResults } = useSearchSources(
-        { q: parentSearch },
-        { query: { enabled: parentSearch.length > 1 } },
+        { q: debouncedParentSearch },
+        { query: { enabled: debouncedParentSearch.length >= 3 } },
     );
 
     // Person management
     const [persons, setPersons] = useState<SourcePersonResponse[]>([]);
     const [personSearch, setPersonSearch] = useState("");
+    const debouncedPersonSearch = useDebouncedValue(personSearch);
     const [addPersonRole, setAddPersonRole] = useState<string>("author");
     const { data: personResults } = useSearchPersons(
-        { q: personSearch },
-        { query: { enabled: personSearch.length > 1 } },
+        { q: debouncedPersonSearch },
+        { query: { enabled: debouncedPersonSearch.length >= 3 } },
     );
 
     // Person creation modal
@@ -444,7 +447,7 @@ export function SourceFormModal({
                                 />
                                 {Array.isArray(personResults?.data) &&
                                     personResults.data.length > 0 &&
-                                    personSearch.length > 1 && (
+                                    personSearch.length >= 3 && (
                                         <ul className="absolute z-10 w-full border border-stone-200 rounded bg-white mt-0.5 max-h-32 overflow-y-auto shadow-sm">
                                             {personResults.data.map((p) => (
                                                 <li key={p.id}>

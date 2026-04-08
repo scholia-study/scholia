@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import toast from "react-hot-toast";
 import type { ResourceResponse, SourceResponse } from "../api/model";
 import {
@@ -79,9 +80,10 @@ export function ResourceFormModal({
         isEdit ? (initialData.source?.title ?? "") : "",
     );
     const [sourceSearch, setSourceSearch] = useState("");
+    const debouncedSourceSearch = useDebouncedValue(sourceSearch);
     const { data: sourceResults } = useSearchSources(
-        { q: sourceSearch },
-        { query: { enabled: sourceSearch.length > 1 } },
+        { q: debouncedSourceSearch },
+        { query: { enabled: debouncedSourceSearch.length >= 3 } },
     );
 
     // Source location
@@ -343,7 +345,7 @@ export function ResourceFormModal({
                                 </div>
                                 {Array.isArray(sourceResults?.data) &&
                                     sourceResults.data.length > 0 &&
-                                    sourceSearch.length > 1 && (
+                                    sourceSearch.length >= 3 && (
                                         <ul className="absolute z-10 w-full border border-stone-200 rounded bg-white mt-0.5 max-h-32 overflow-y-auto shadow-sm">
                                             {sourceResults.data.map((s) => (
                                                 <li key={s.id}>
