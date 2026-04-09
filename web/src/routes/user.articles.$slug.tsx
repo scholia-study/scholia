@@ -1,7 +1,17 @@
 import PublishOutlined from "@mui/icons-material/PublishOutlined";
 import SaveOutlined from "@mui/icons-material/SaveOutlined";
-import UnpublishedOutlined from "@mui/icons-material/UnpublishedOutlined";
-import { Autocomplete, Button, Chip, TextField } from "@mui/material";
+import ArchiveOutlined from "@mui/icons-material/ArchiveOutlined";
+import {
+    Autocomplete,
+    Button,
+    Chip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    TextField,
+} from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import {
     createFileRoute,
@@ -14,8 +24,8 @@ import {
     getGetUserArticleQueryKey,
     getListUserArticlesQueryKey,
     useGetUserArticle,
+    useArchiveArticle,
     usePublishArticle,
-    useUnpublishArticle,
     useUpdateArticle,
 } from "../api/articles/articles";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
@@ -79,7 +89,7 @@ function ArticleEditorPage() {
 
     const updateMutation = useUpdateArticle();
     const publishMutation = usePublishArticle();
-    const unpublishMutation = useUnpublishArticle();
+    const archiveMutation = useArchiveArticle();
 
     // Local state for editing
     const [title, setTitle] = useState("");
@@ -181,7 +191,10 @@ function ArticleEditorPage() {
         editorRef.current?.insertQuotation(result);
     };
 
-    const handlePublish = async () => {
+    const [publishDialogOpen, setPublishDialogOpen] = useState(false);
+
+    const handlePublishConfirm = async () => {
+        setPublishDialogOpen(false);
         // Save any pending changes first
         if (saveTimer.current) {
             clearTimeout(saveTimer.current);
@@ -196,8 +209,8 @@ function ArticleEditorPage() {
         });
     };
 
-    const handleUnpublish = async () => {
-        await unpublishMutation.mutateAsync({ slug: currentSlug.current });
+    const handleArchive = async () => {
+        await archiveMutation.mutateAsync({ slug: currentSlug.current });
         queryClient.invalidateQueries({
             queryKey: getGetUserArticleQueryKey(currentSlug.current),
         });
@@ -248,7 +261,7 @@ function ArticleEditorPage() {
                                 size="small"
                                 variant="contained"
                                 startIcon={<PublishOutlined />}
-                                onClick={handlePublish}
+                                onClick={() => setPublishDialogOpen(true)}
                                 disabled={publishMutation.isPending}
                                 sx={{ textTransform: "none" }}
                             >
@@ -268,12 +281,12 @@ function ArticleEditorPage() {
                                 <Button
                                     size="small"
                                     variant="outlined"
-                                    startIcon={<UnpublishedOutlined />}
-                                    onClick={handleUnpublish}
-                                    disabled={unpublishMutation.isPending}
+                                    startIcon={<ArchiveOutlined />}
+                                    onClick={handleArchive}
+                                    disabled={archiveMutation.isPending}
                                     sx={{ textTransform: "none" }}
                                 >
-                                    Unpublish
+                                    Archive
                                 </Button>
                             </>
                         )}
@@ -416,6 +429,44 @@ function ArticleEditorPage() {
                     onClose={() => setPickerOpen(false)}
                     onSelect={handleInsertQuotation}
                 />
+
+                <Dialog
+                    open={publishDialogOpen}
+                    onClose={() => setPublishDialogOpen(false)}
+                    maxWidth="sm"
+                >
+                    <DialogTitle>Publish this article?</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText sx={{ fontSize: "0.875rem", mb: 1.5 }}>
+                            Once published, this article becomes public and
+                            cannot be reverted to a draft. You can:
+                        </DialogContentText>
+                        <ul className="text-sm text-stone-600 list-disc pl-5 space-y-1">
+                            <li>Continue editing the article at any time</li>
+                            <li>
+                                Archive it later, which removes it from
+                                listings but keeps it accessible via direct
+                                link for historical references
+                            </li>
+                        </ul>
+                    </DialogContent>
+                    <DialogActions sx={{ px: 3, pb: 2 }}>
+                        <Button
+                            onClick={() => setPublishDialogOpen(false)}
+                            size="small"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handlePublishConfirm}
+                            size="small"
+                            variant="contained"
+                            disabled={publishMutation.isPending}
+                        >
+                            Publish
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </div>
         </div>
     );

@@ -489,6 +489,323 @@ export const useCreateArticle = <TError = void, TContext = unknown>(
     return useMutation(getCreateArticleMutationOptions(options), queryClient);
 };
 /**
+ * @summary Get a published/archived article by UUID (stable URL)
+ */
+export type getArticleByIdResponse200 = {
+    data: ArticleDetailResponse;
+    status: 200;
+};
+
+export type getArticleByIdResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type getArticleByIdResponseSuccess = getArticleByIdResponse200 & {
+    headers: Headers;
+};
+export type getArticleByIdResponseError = getArticleByIdResponse404 & {
+    headers: Headers;
+};
+
+export type getArticleByIdResponse =
+    | getArticleByIdResponseSuccess
+    | getArticleByIdResponseError;
+
+export const getGetArticleByIdUrl = (id: string) => {
+    return `/api/articles/by-id/${id}`;
+};
+
+export const getArticleById = async (
+    id: string,
+    options?: RequestInit,
+): Promise<getArticleByIdResponse> => {
+    return customFetch<getArticleByIdResponse>(getGetArticleByIdUrl(id), {
+        ...options,
+        method: "GET",
+    });
+};
+
+export const getGetArticleByIdQueryKey = (id: string) => {
+    return [`/api/articles/by-id/${id}`] as const;
+};
+
+export const getGetArticleByIdQueryOptions = <
+    TData = Awaited<ReturnType<typeof getArticleById>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getArticleById>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getGetArticleByIdQueryKey(id);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof getArticleById>>
+    > = ({ signal }) => getArticleById(id, { signal, ...requestOptions });
+
+    return {
+        queryKey,
+        queryFn,
+        enabled: !!id,
+        ...queryOptions,
+    } as UseQueryOptions<
+        Awaited<ReturnType<typeof getArticleById>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetArticleByIdQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getArticleById>>
+>;
+export type GetArticleByIdQueryError = void;
+
+export function useGetArticleById<
+    TData = Awaited<ReturnType<typeof getArticleById>>,
+    TError = void,
+>(
+    id: string,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getArticleById>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getArticleById>>,
+                    TError,
+                    Awaited<ReturnType<typeof getArticleById>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetArticleById<
+    TData = Awaited<ReturnType<typeof getArticleById>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getArticleById>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getArticleById>>,
+                    TError,
+                    Awaited<ReturnType<typeof getArticleById>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetArticleById<
+    TData = Awaited<ReturnType<typeof getArticleById>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getArticleById>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get a published/archived article by UUID (stable URL)
+ */
+
+export function useGetArticleById<
+    TData = Awaited<ReturnType<typeof getArticleById>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getArticleById>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetArticleByIdQueryOptions(id, options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getGetArticleByIdSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof getArticleById>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getArticleById>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getGetArticleByIdQueryKey(id);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof getArticleById>>
+    > = ({ signal }) => getArticleById(id, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getArticleById>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetArticleByIdSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getArticleById>>
+>;
+export type GetArticleByIdSuspenseQueryError = void;
+
+export function useGetArticleByIdSuspense<
+    TData = Awaited<ReturnType<typeof getArticleById>>,
+    TError = void,
+>(
+    id: string,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getArticleById>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetArticleByIdSuspense<
+    TData = Awaited<ReturnType<typeof getArticleById>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getArticleById>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetArticleByIdSuspense<
+    TData = Awaited<ReturnType<typeof getArticleById>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getArticleById>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get a published/archived article by UUID (stable URL)
+ */
+
+export function useGetArticleByIdSuspense<
+    TData = Awaited<ReturnType<typeof getArticleById>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getArticleById>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetArticleByIdSuspenseQueryOptions(id, options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
  * @summary Get a published article by slug
  */
 export type getPublishedArticleResponse200 = {
@@ -1601,7 +1918,7 @@ export const useUpdateArticle = <TError = void, TContext = unknown>(
     return useMutation(getUpdateArticleMutationOptions(options), queryClient);
 };
 /**
- * @summary Archive an article (soft delete)
+ * @summary Archive an article (one-way from published)
  */
 export type archiveArticleResponse200 = {
     data: void;
@@ -1691,7 +2008,7 @@ export type ArchiveArticleMutationResult = NonNullable<
 export type ArchiveArticleMutationError = void;
 
 /**
- * @summary Archive an article (soft delete)
+ * @summary Archive an article (one-way from published)
  */
 export const useArchiveArticle = <TError = void, TContext = unknown>(
     options?: {
@@ -1829,119 +2146,4 @@ export const usePublishArticle = <TError = void, TContext = unknown>(
     TContext
 > => {
     return useMutation(getPublishArticleMutationOptions(options), queryClient);
-};
-/**
- * @summary Unpublish an article (back to draft)
- */
-export type unpublishArticleResponse200 = {
-    data: void;
-    status: 200;
-};
-
-export type unpublishArticleResponse401 = {
-    data: void;
-    status: 401;
-};
-
-export type unpublishArticleResponse404 = {
-    data: void;
-    status: 404;
-};
-
-export type unpublishArticleResponseSuccess = unpublishArticleResponse200 & {
-    headers: Headers;
-};
-export type unpublishArticleResponseError = (
-    | unpublishArticleResponse401
-    | unpublishArticleResponse404
-) & {
-    headers: Headers;
-};
-
-export type unpublishArticleResponse =
-    | unpublishArticleResponseSuccess
-    | unpublishArticleResponseError;
-
-export const getUnpublishArticleUrl = (slug: string) => {
-    return `/api/user/articles/${slug}/unpublish`;
-};
-
-export const unpublishArticle = async (
-    slug: string,
-    options?: RequestInit,
-): Promise<unpublishArticleResponse> => {
-    return customFetch<unpublishArticleResponse>(getUnpublishArticleUrl(slug), {
-        ...options,
-        method: "POST",
-    });
-};
-
-export const getUnpublishArticleMutationOptions = <
-    TError = void,
-    TContext = unknown,
->(options?: {
-    mutation?: UseMutationOptions<
-        Awaited<ReturnType<typeof unpublishArticle>>,
-        TError,
-        { slug: string },
-        TContext
-    >;
-    request?: SecondParameter<typeof customFetch>;
-}): UseMutationOptions<
-    Awaited<ReturnType<typeof unpublishArticle>>,
-    TError,
-    { slug: string },
-    TContext
-> => {
-    const mutationKey = ["unpublishArticle"];
-    const { mutation: mutationOptions, request: requestOptions } = options
-        ? options.mutation &&
-          "mutationKey" in options.mutation &&
-          options.mutation.mutationKey
-            ? options
-            : { ...options, mutation: { ...options.mutation, mutationKey } }
-        : { mutation: { mutationKey }, request: undefined };
-
-    const mutationFn: MutationFunction<
-        Awaited<ReturnType<typeof unpublishArticle>>,
-        { slug: string }
-    > = (props) => {
-        const { slug } = props ?? {};
-
-        return unpublishArticle(slug, requestOptions);
-    };
-
-    return { mutationFn, ...mutationOptions };
-};
-
-export type UnpublishArticleMutationResult = NonNullable<
-    Awaited<ReturnType<typeof unpublishArticle>>
->;
-
-export type UnpublishArticleMutationError = void;
-
-/**
- * @summary Unpublish an article (back to draft)
- */
-export const useUnpublishArticle = <TError = void, TContext = unknown>(
-    options?: {
-        mutation?: UseMutationOptions<
-            Awaited<ReturnType<typeof unpublishArticle>>,
-            TError,
-            { slug: string },
-            TContext
-        >;
-        request?: SecondParameter<typeof customFetch>;
-    },
-    queryClient?: QueryClient,
-): UseMutationResult<
-    Awaited<ReturnType<typeof unpublishArticle>>,
-    TError,
-    { slug: string },
-    TContext
-> => {
-    return useMutation(
-        getUnpublishArticleMutationOptions(options),
-        queryClient,
-    );
 };

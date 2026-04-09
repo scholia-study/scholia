@@ -535,7 +535,7 @@ pub async fn list_all_notes(
 ) -> Result<Vec<NoteWithContextResponse>, AppError> {
     let rows = sqlx::query_as!(
         NoteWithContextRow,
-        r#"SELECT qn.id, qn.body, qn.quotation_id,
+        r#"SELECT qn.id, qn.body, qn.quotation_id AS "quotation_id!",
                   b.slug AS "book_slug!",
                   COALESCE(s.title_display, s.title) AS "book_title!",
                   n.label AS "node_label!",

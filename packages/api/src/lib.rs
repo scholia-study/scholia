@@ -58,12 +58,16 @@ pub mod state;
         handlers::articles::get_user_article,
         handlers::articles::update_article,
         handlers::articles::publish_article,
-        handlers::articles::unpublish_article,
         handlers::articles::archive_article,
         handlers::articles::list_published_articles,
         handlers::articles::get_published_article,
+        handlers::articles::get_article_by_id,
         handlers::articles::list_topics,
         handlers::articles::batch_sentences,
+        handlers::article_quotations::create_article_quotation,
+        handlers::article_quotations::list_article_quotations,
+        handlers::article_quotations::get_article_quotation,
+        handlers::article_quotations::delete_article_quotation,
     ),
     components(schemas(
         models::book::BookSummary,
@@ -128,6 +132,12 @@ pub mod state;
         models::article::SentenceData,
         models::article::BatchSentenceResponseItem,
         models::article::BatchSentencesResponse,
+        models::article_quotation::ArticleQuotationResponse,
+        models::article_quotation::ArticleQuotationListResponse,
+        models::article_quotation::CreateArticleQuotationRequest,
+        models::article_quotation::CreateArticleQuotationResponse,
+        models::article_quotation::UnifiedQuotationResponse,
+        models::article_quotation::UnifiedQuotationListResponse,
     ))
 )]
 pub struct ApiDoc;

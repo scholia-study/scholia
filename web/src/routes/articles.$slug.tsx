@@ -1,12 +1,56 @@
 import { Chip } from "@mui/material";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import parse, { type DOMNode, Element } from "html-react-parser";
+import type { Element } from "html-react-parser";
 import { useGetPublishedArticle } from "../api/articles/articles";
+import { ArticleQuotationCard } from "../components/ArticleQuotationCard";
+import { ArticleSentences } from "../components/ArticleSentences";
 import { QuotationCard } from "../components/QuotationCard";
 
 export const Route = createFileRoute("/articles/$slug")({
     component: PublishedArticlePage,
 });
+
+function replaceEmbed(domNode: Element) {
+    // Book quotation embed
+    if (domNode.attribs?.class?.includes("quotation-embed")) {
+        const attrs = domNode.attribs;
+        return (
+            <QuotationCard
+                book={attrs["data-quotation-book"] ?? ""}
+                node={attrs["data-quotation-node"] ?? ""}
+                start={Number(attrs["data-quotation-start"]) || 0}
+                end={
+                    attrs["data-quotation-end"]
+                        ? Number(attrs["data-quotation-end"])
+                        : undefined
+                }
+                kind={attrs["data-quotation-kind"] ?? "body"}
+                mode={
+                    (attrs["data-quotation-mode"] as
+                        | "source"
+                        | "translation"
+                        | "source+translation") ?? "translation"
+                }
+                layout={
+                    (attrs["data-quotation-layout"] as
+                        | "stacked"
+                        | "side-by-side-source-left"
+                        | "side-by-side-source-right") ?? "stacked"
+                }
+            />
+        );
+    }
+
+    // Article quotation embed
+    if (domNode.attribs?.class?.includes("article-quotation-embed")) {
+        const id = domNode.attribs["data-article-quotation-id"];
+        if (id) {
+            return <ArticleQuotationCard id={id} />;
+        }
+    }
+
+    return undefined;
+}
 
 function PublishedArticlePage() {
     const { slug } = Route.useParams();
@@ -96,54 +140,20 @@ function PublishedArticlePage() {
                             ))}
                         </div>
                     )}
+                    {article.status === "archived" && (
+                        <div className="mt-4 px-3 py-2 bg-stone-100 rounded text-sm text-stone-500">
+                            This article has been archived by the author.
+                        </div>
+                    )}
                 </header>
 
-                {/* Article body */}
+                {/* Article body with clickable sentences */}
                 <div className="prose prose-stone max-w-none">
-                    {parse(article.html, {
-                        replace: (domNode: DOMNode) => {
-                            if (
-                                domNode instanceof Element &&
-                                domNode.attribs?.class?.includes("quotation-embed")
-                            ) {
-                                const attrs = domNode.attribs;
-                                return (
-                                    <QuotationCard
-                                        book={attrs["data-quotation-book"] ?? ""}
-                                        node={attrs["data-quotation-node"] ?? ""}
-                                        start={
-                                            Number(attrs["data-quotation-start"]) ||
-                                            0
-                                        }
-                                        end={
-                                            attrs["data-quotation-end"]
-                                                ? Number(
-                                                      attrs["data-quotation-end"],
-                                                  )
-                                                : undefined
-                                        }
-                                        kind={
-                                            attrs["data-quotation-kind"] ?? "body"
-                                        }
-                                        mode={
-                                            (attrs["data-quotation-mode"] as
-                                                | "source"
-                                                | "translation"
-                                                | "source+translation") ??
-                                            "translation"
-                                        }
-                                        layout={
-                                            (attrs["data-quotation-layout"] as
-                                                | "stacked"
-                                                | "side-by-side-source-left"
-                                                | "side-by-side-source-right") ??
-                                            "stacked"
-                                        }
-                                    />
-                                );
-                            }
-                        },
-                    })}
+                    <ArticleSentences
+                        html={article.html}
+                        articleId={article.id}
+                        replaceEmbed={replaceEmbed}
+                    />
                 </div>
             </div>
         </div>

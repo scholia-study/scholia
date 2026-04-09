@@ -144,10 +144,15 @@ async fn main() {
             api::handlers::articles::publish_article
         ))
         .routes(utoipa_axum::routes!(
-            api::handlers::articles::unpublish_article
+            api::handlers::articles::archive_article
+        ))
+        // Article quotation endpoints
+        .routes(utoipa_axum::routes!(
+            api::handlers::article_quotations::create_article_quotation,
+            api::handlers::article_quotations::list_article_quotations
         ))
         .routes(utoipa_axum::routes!(
-            api::handlers::articles::archive_article
+            api::handlers::article_quotations::delete_article_quotation
         ));
 
     // Public routes (no rate limiting)
@@ -166,10 +171,16 @@ async fn main() {
             api::handlers::articles::get_published_article
         ))
         .routes(utoipa_axum::routes!(
+            api::handlers::articles::get_article_by_id
+        ))
+        .routes(utoipa_axum::routes!(
             api::handlers::articles::list_topics
         ))
         .routes(utoipa_axum::routes!(
             api::handlers::articles::batch_sentences
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::article_quotations::get_article_quotation
         ));
 
     // Editor routes (auth checked in each handler)

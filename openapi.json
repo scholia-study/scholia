@@ -9,6 +9,129 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/api/article-quotations": {
+      "get": {
+        "tags": [
+          "article-quotations"
+        ],
+        "summary": "List current user's article quotations",
+        "operationId": "list_article_quotations",
+        "responses": {
+          "200": {
+            "description": "User's article quotations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleQuotationListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "article-quotations"
+        ],
+        "summary": "Save a quotation from an article (returns existing if duplicate)",
+        "operationId": "create_article_quotation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArticleQuotationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Article quotation saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArticleQuotationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/api/article-quotations/{id}": {
+      "get": {
+        "tags": [
+          "article-quotations"
+        ],
+        "summary": "Get a single article quotation (for directive hydration)",
+        "operationId": "get_article_quotation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Article quotation ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article quotation detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleQuotationResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "article-quotations"
+        ],
+        "summary": "Delete an article quotation",
+        "operationId": "delete_article_quotation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Article quotation ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article quotation deleted"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
     "/api/articles": {
       "get": {
         "tags": [
@@ -101,6 +224,41 @@
           },
           "403": {
             "description": "Insufficient permissions"
+          }
+        }
+      }
+    },
+    "/api/articles/by-id/{id}": {
+      "get": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "Get a published/archived article by UUID (stable URL)",
+        "operationId": "get_article_by_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Article UUID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDetailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Article not found"
           }
         }
       }
@@ -1124,7 +1282,7 @@
         "tags": [
           "quotations"
         ],
-        "summary": "List all quotations for the authenticated user (across all books)",
+        "summary": "List all quotations for the authenticated user (books + articles, unified)",
         "operationId": "list_all_quotations",
         "parameters": [
           {
@@ -1137,15 +1295,26 @@
                 "null"
               ]
             }
+          },
+          {
+            "name": "source_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "User's quotations across books",
+            "description": "User's quotations across books and articles",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuotationWithContextListResponse"
+                  "$ref": "#/components/schemas/UnifiedQuotationListResponse"
                 }
               }
             }
@@ -1615,7 +1784,7 @@
         "tags": [
           "articles"
         ],
-        "summary": "Archive an article (soft delete)",
+        "summary": "Archive an article (one-way from published)",
         "operationId": "archive_article",
         "parameters": [
           {
@@ -1665,37 +1834,6 @@
           },
           "400": {
             "description": "Publish limit reached"
-          },
-          "401": {
-            "description": "Not authenticated"
-          },
-          "404": {
-            "description": "Article not found"
-          }
-        }
-      }
-    },
-    "/api/user/articles/{slug}/unpublish": {
-      "post": {
-        "tags": [
-          "articles"
-        ],
-        "summary": "Unpublish an article (back to draft)",
-        "operationId": "unpublish_article",
-        "parameters": [
-          {
-            "name": "slug",
-            "in": "path",
-            "description": "Article slug",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Article unpublished"
           },
           "401": {
             "description": "Not authenticated"
@@ -2156,6 +2294,62 @@
           }
         }
       },
+      "ArticleQuotationListResponse": {
+        "type": "object",
+        "required": [
+          "article_quotations"
+        ],
+        "properties": {
+          "article_quotations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleQuotationResponse"
+            }
+          }
+        }
+      },
+      "ArticleQuotationResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "article_title",
+          "author_display_name",
+          "text",
+          "html",
+          "note_count",
+          "created_at"
+        ],
+        "properties": {
+          "article_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "article_title": {
+            "type": "string"
+          },
+          "author_display_name": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "html": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "note_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
       "ArticleResponse": {
         "type": "object",
         "required": [
@@ -2466,6 +2660,40 @@
             "items": {
               "$ref": "#/components/schemas/SentenceResponse"
             }
+          }
+        }
+      },
+      "CreateArticleQuotationRequest": {
+        "type": "object",
+        "required": [
+          "article_id",
+          "text",
+          "html"
+        ],
+        "properties": {
+          "article_id": {
+            "type": "string"
+          },
+          "html": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateArticleQuotationResponse": {
+        "type": "object",
+        "required": [
+          "article_quotation",
+          "created"
+        ],
+        "properties": {
+          "article_quotation": {
+            "$ref": "#/components/schemas/ArticleQuotationResponse"
+          },
+          "created": {
+            "type": "boolean"
           }
         }
       },
@@ -3901,6 +4129,140 @@
             "type": "string"
           }
         }
+      },
+      "UnifiedQuotationListResponse": {
+        "type": "object",
+        "required": [
+          "quotations"
+        ],
+        "properties": {
+          "quotations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UnifiedQuotationResponse"
+            }
+          }
+        }
+      },
+      "UnifiedQuotationResponse": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "book_slug",
+              "book_title",
+              "node_label",
+              "node_slug",
+              "anchor_sentence_start_number",
+              "sentence_kind",
+              "note_count",
+              "created_at",
+              "source_type"
+            ],
+            "properties": {
+              "anchor_sentence_end_number": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32"
+              },
+              "anchor_sentence_start_number": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "book_slug": {
+                "type": "string"
+              },
+              "book_title": {
+                "type": "string"
+              },
+              "created_at": {
+                "type": "string"
+              },
+              "end_text_snippet": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "node_label": {
+                "type": "string"
+              },
+              "node_slug": {
+                "type": "string"
+              },
+              "note_count": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "sentence_kind": {
+                "type": "string"
+              },
+              "source_type": {
+                "type": "string",
+                "enum": [
+                  "book"
+                ]
+              },
+              "start_text_snippet": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "article_title",
+              "author_display_name",
+              "text_snippet",
+              "note_count",
+              "created_at",
+              "source_type"
+            ],
+            "properties": {
+              "article_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "article_title": {
+                "type": "string"
+              },
+              "author_display_name": {
+                "type": "string"
+              },
+              "created_at": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "note_count": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "source_type": {
+                "type": "string",
+                "enum": [
+                  "article"
+                ]
+              },
+              "text_snippet": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       },
       "UpdateArticleRequest": {
         "type": "object",

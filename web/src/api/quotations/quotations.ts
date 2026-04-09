@@ -34,7 +34,7 @@ import type {
     NoteResponse,
     NoteWithContextListResponse,
     QuotationListResponse,
-    QuotationWithContextListResponse,
+    UnifiedQuotationListResponse,
     UpdateNoteRequest,
 } from ".././model";
 
@@ -1670,10 +1670,10 @@ export function useListAllNotesSuspense<
 }
 
 /**
- * @summary List all quotations for the authenticated user (across all books)
+ * @summary List all quotations for the authenticated user (books + articles, unified)
  */
 export type listAllQuotationsResponse200 = {
-    data: QuotationWithContextListResponse;
+    data: UnifiedQuotationListResponse;
     status: 200;
 };
 
@@ -1843,7 +1843,7 @@ export function useListAllQuotations<
     queryKey: DataTag<QueryKey, TData, TError>;
 };
 /**
- * @summary List all quotations for the authenticated user (across all books)
+ * @summary List all quotations for the authenticated user (books + articles, unified)
  */
 
 export function useListAllQuotations<
@@ -1971,7 +1971,7 @@ export function useListAllQuotationsSuspense<
     queryKey: DataTag<QueryKey, TData, TError>;
 };
 /**
- * @summary List all quotations for the authenticated user (across all books)
+ * @summary List all quotations for the authenticated user (books + articles, unified)
  */
 
 export function useListAllQuotationsSuspense<

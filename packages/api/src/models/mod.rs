@@ -1,4 +1,5 @@
 pub mod article;
+pub mod article_quotation;
 pub mod book;
 pub mod node;
 pub mod page;

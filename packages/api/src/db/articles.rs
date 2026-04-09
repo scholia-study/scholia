@@ -147,6 +147,26 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
         format!("\n<!--QUOTATION_PLACEHOLDER_{idx}-->\n")
     });
 
+    // Pre-process: extract ::article-quotation{id="..."} directives
+    let article_q_re =
+        Regex::new(r#"::article-quotation\{([^}]+)\}"#).expect("Invalid article-quotation regex");
+    let mut article_q_placeholder_map: Vec<String> = Vec::new();
+    let processed = article_q_re.replace_all(&processed, |caps: &regex::Captures| {
+        let attrs_str = &caps[1];
+        let idx = article_q_placeholder_map.len();
+
+        let attr_re = Regex::new(r#"(\w+)="([^"]*)""#).expect("Invalid attr regex");
+        let mut data_attrs = String::new();
+        for attr_cap in attr_re.captures_iter(attrs_str) {
+            let key = &attr_cap[1];
+            let val = &attr_cap[2];
+            data_attrs.push_str(&format!(r#" data-article-quotation-{key}="{val}""#));
+        }
+
+        article_q_placeholder_map.push(data_attrs);
+        format!("\n<!--ARTICLE_QUOTATION_PLACEHOLDER_{idx}-->\n")
+    });
+
     // Pre-process: extract :cite{sources="..."} directives
     let cite_re = Regex::new(r#":cite\{[^}]*?sources="([^"]+)"[^}]*?\}"#).expect("Invalid cite regex");
 
@@ -214,6 +234,14 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
     for (idx, data_attrs) in placeholder_map.iter().enumerate() {
         let placeholder = format!("<!--QUOTATION_PLACEHOLDER_{idx}-->");
         let replacement = format!(r#"<div class="quotation-embed"{data_attrs}></div>"#);
+        html_output = html_output.replace(&placeholder, &replacement);
+    }
+
+    // Post-process: replace article quotation placeholder comments with actual divs
+    for (idx, data_attrs) in article_q_placeholder_map.iter().enumerate() {
+        let placeholder = format!("<!--ARTICLE_QUOTATION_PLACEHOLDER_{idx}-->");
+        let replacement =
+            format!(r#"<div class="article-quotation-embed"{data_attrs}></div>"#);
         html_output = html_output.replace(&placeholder, &replacement);
     }
 
@@ -503,8 +531,31 @@ pub async fn get_published_article_by_slug(
                   a.published_at, a.created_at, a.updated_at
            FROM articles a
            JOIN users u ON u.id = a.user_id
-           WHERE a.slug = $1 AND a.status = 'published'"#,
+           WHERE a.slug = $1 AND a.status IN ('published', 'archived')"#,
         slug,
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(|_| AppError::NotFound("Article not found".into()))?;
+
+    let topics = load_article_topics(pool, row.id).await?;
+    Ok(article_detail_response(row, topics))
+}
+
+pub async fn get_article_by_id(
+    pool: &PgPool,
+    id: Uuid,
+) -> Result<ArticleDetailResponse, AppError> {
+    let row = sqlx::query_as!(
+        ArticleRow,
+        r#"SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,
+                  a.status::TEXT AS "status!",
+                  u.display_name AS "author_display_name!",
+                  a.published_at, a.created_at, a.updated_at
+           FROM articles a
+           JOIN users u ON u.id = a.user_id
+           WHERE a.id = $1 AND a.status IN ('published', 'archived')"#,
+        id,
     )
     .fetch_one(pool)
     .await
@@ -711,7 +762,7 @@ pub async fn publish_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result
            SET status = 'published',
                published_at = COALESCE(published_at, now()),
                updated_at = now()
-           WHERE slug = $1 AND user_id = $2 AND status != 'archived'"#,
+           WHERE slug = $1 AND user_id = $2 AND status = 'draft'"#,
         slug,
         user_id,
     )
@@ -719,14 +770,16 @@ pub async fn publish_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result
     .await?;
 
     if result.rows_affected() == 0 {
-        return Err(AppError::NotFound("Article not found".into()));
+        return Err(AppError::NotFound(
+            "Article not found or not in draft status".into(),
+        ));
     }
     Ok(())
 }
 
-pub async fn unpublish_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result<(), AppError> {
+pub async fn archive_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result<(), AppError> {
     let result = sqlx::query!(
-        r#"UPDATE articles SET status = 'draft', updated_at = now()
+        r#"UPDATE articles SET status = 'archived', updated_at = now()
            WHERE slug = $1 AND user_id = $2 AND status = 'published'"#,
         slug,
         user_id,
@@ -735,23 +788,9 @@ pub async fn unpublish_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Resu
     .await?;
 
     if result.rows_affected() == 0 {
-        return Err(AppError::NotFound("Article not found".into()));
-    }
-    Ok(())
-}
-
-pub async fn archive_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result<(), AppError> {
-    let result = sqlx::query!(
-        r#"UPDATE articles SET status = 'archived', updated_at = now()
-           WHERE slug = $1 AND user_id = $2"#,
-        slug,
-        user_id,
-    )
-    .execute(pool)
-    .await?;
-
-    if result.rows_affected() == 0 {
-        return Err(AppError::NotFound("Article not found".into()));
+        return Err(AppError::NotFound(
+            "Article not found or not in published status".into(),
+        ));
     }
     Ok(())
 }

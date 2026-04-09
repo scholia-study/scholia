@@ -2,13 +2,13 @@ import AddOutlined from "@mui/icons-material/AddOutlined";
 import ArchiveOutlined from "@mui/icons-material/ArchiveOutlined";
 import EditOutlined from "@mui/icons-material/EditOutlined";
 import PublishOutlined from "@mui/icons-material/PublishOutlined";
-import UnpublishedOutlined from "@mui/icons-material/UnpublishedOutlined";
 import {
     Button,
     Chip,
     Dialog,
     DialogActions,
     DialogContent,
+    DialogContentText,
     DialogTitle,
     IconButton,
     Paper,
@@ -26,7 +26,6 @@ import {
     useCreateArticle,
     useListUserArticles,
     usePublishArticle,
-    useUnpublishArticle,
 } from "../api/articles/articles";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { ArticleResponse } from "../api/model";
@@ -74,9 +73,10 @@ function ArticlesPage() {
         return articles.filter((a) => a.status === statusTab);
     }, [articles, statusTab]);
 
+    const [publishSlug, setPublishSlug] = useState<string | null>(null);
+
     const createMutation = useCreateArticle();
     const publishMutation = usePublishArticle();
-    const unpublishMutation = useUnpublishArticle();
     const archiveMutation = useArchiveArticle();
 
     const handleCreate = async () => {
@@ -90,13 +90,10 @@ function ArticlesPage() {
         }
     };
 
-    const handlePublish = async (slug: string) => {
-        await publishMutation.mutateAsync({ slug });
-        queryClient.invalidateQueries({ queryKey: getListUserArticlesQueryKey() });
-    };
-
-    const handleUnpublish = async (slug: string) => {
-        await unpublishMutation.mutateAsync({ slug });
+    const handlePublishConfirm = async () => {
+        if (!publishSlug) return;
+        setPublishSlug(null);
+        await publishMutation.mutateAsync({ slug: publishSlug });
         queryClient.invalidateQueries({ queryKey: getListUserArticlesQueryKey() });
     };
 
@@ -168,8 +165,7 @@ function ArticlesPage() {
                         key={article.id}
                         article={article}
                         canPublish={canPublish}
-                        onPublish={handlePublish}
-                        onUnpublish={handleUnpublish}
+                        onPublish={(slug) => setPublishSlug(slug)}
                         onArchive={handleArchive}
                     />
                 ))}
@@ -206,6 +202,44 @@ function ArticlesPage() {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            <Dialog
+                open={publishSlug != null}
+                onClose={() => setPublishSlug(null)}
+                maxWidth="sm"
+            >
+                <DialogTitle>Publish this article?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText sx={{ fontSize: "0.875rem", mb: 1.5 }}>
+                        Once published, this article becomes public and
+                        cannot be reverted to a draft. You can:
+                    </DialogContentText>
+                    <ul className="text-sm text-stone-600 list-disc pl-5 space-y-1">
+                        <li>Continue editing the article at any time</li>
+                        <li>
+                            Archive it later, which removes it from
+                            listings but keeps it accessible via direct
+                            link for historical references
+                        </li>
+                    </ul>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2 }}>
+                    <Button
+                        onClick={() => setPublishSlug(null)}
+                        size="small"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handlePublishConfirm}
+                        size="small"
+                        variant="contained"
+                        disabled={publishMutation.isPending}
+                    >
+                        Publish
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }
@@ -214,13 +248,11 @@ function ArticleRow({
     article,
     canPublish,
     onPublish,
-    onUnpublish,
     onArchive,
 }: {
     article: ArticleResponse;
     canPublish: boolean;
     onPublish: (slug: string) => void;
-    onUnpublish: (slug: string) => void;
     onArchive: (slug: string) => void;
 }) {
     return (
@@ -292,17 +324,6 @@ function ArticleRow({
                 )}
 
                 {article.status === "published" && (
-                    <Tooltip title="Unpublish">
-                        <IconButton
-                            size="small"
-                            onClick={() => onUnpublish(article.slug)}
-                        >
-                            <UnpublishedOutlined fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                )}
-
-                {article.status !== "archived" && (
                     <Tooltip title="Archive">
                         <IconButton
                             size="small"

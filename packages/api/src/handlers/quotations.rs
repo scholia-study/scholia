@@ -5,10 +5,13 @@ use crate::auth::middleware::AuthUser;
 use crate::auth::permissions::Permission;
 use crate::db;
 use crate::error::AppError;
+use crate::models::article_quotation::{
+    UnifiedListQuery, UnifiedQuotationListResponse, UnifiedQuotationResponse,
+};
 use crate::models::quotation::{
     CreateNoteRequest, CreateQuotationRequest, CreateQuotationResponse, GlobalListQuery,
     NoteListResponse, NoteResponse, NoteWithContextListResponse, QuotationListResponse,
-    QuotationQuery, QuotationWithContextListResponse, TagListResponse, UpdateNoteRequest,
+    QuotationQuery, TagListResponse, UpdateNoteRequest,
 };
 use crate::state::AppState;
 
@@ -289,13 +292,13 @@ pub async fn list_tags(
     Ok(Json(TagListResponse { tags }))
 }
 
-/// List all quotations for the authenticated user (across all books)
+/// List all quotations for the authenticated user (books + articles, unified)
 #[utoipa::path(
     get,
     path = "/api/quotations",
-    params(GlobalListQuery),
+    params(UnifiedListQuery),
     responses(
-        (status = 200, description = "User's quotations across books", body = QuotationWithContextListResponse),
+        (status = 200, description = "User's quotations across books and articles", body = UnifiedQuotationListResponse),
         (status = 401, description = "Not authenticated")
     ),
     tag = "quotations"
@@ -303,19 +306,94 @@ pub async fn list_tags(
 pub async fn list_all_quotations(
     State(state): State<AppState>,
     user: AuthUser,
-    Query(params): Query<GlobalListQuery>,
-) -> Result<Json<QuotationWithContextListResponse>, AppError> {
+    Query(params): Query<UnifiedListQuery>,
+) -> Result<Json<UnifiedQuotationListResponse>, AppError> {
     user.require_permission(Permission::NotesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
-    let quotations = db::quotations::list_all_quotations(
-        &state.pool,
-        user.id,
-        params.book_slug.as_deref(),
-    )
-    .await?;
+    let mut quotations: Vec<UnifiedQuotationResponse> = Vec::new();
 
-    Ok(Json(QuotationWithContextListResponse { quotations }))
+    let include_books = params
+        .source_type
+        .as_deref()
+        .map_or(true, |t| t == "book");
+    let include_articles = params
+        .source_type
+        .as_deref()
+        .map_or(true, |t| t == "article");
+
+    if include_books {
+        let book_quotations = db::quotations::list_all_quotations(
+            &state.pool,
+            user.id,
+            params.book_slug.as_deref(),
+        )
+        .await?;
+
+        for q in book_quotations {
+            quotations.push(UnifiedQuotationResponse::Book {
+                id: q.id,
+                book_slug: q.book_slug,
+                book_title: q.book_title,
+                node_label: q.node_label,
+                node_slug: q.node_slug,
+                anchor_sentence_start_number: q.anchor_sentence_start_number,
+                anchor_sentence_end_number: q.anchor_sentence_end_number,
+                sentence_kind: q.sentence_kind,
+                start_text_snippet: q.start_text_snippet,
+                end_text_snippet: q.end_text_snippet,
+                note_count: q.note_count,
+                created_at: q.created_at,
+            });
+        }
+    }
+
+    if include_articles && params.book_slug.is_none() {
+        let article_quotations =
+            db::article_quotations::list_article_quotations_for_unified(&state.pool, user.id)
+                .await?;
+
+        for q in article_quotations {
+            quotations.push(UnifiedQuotationResponse::Article {
+                id: q.id.to_string(),
+                article_id: q.article_id.map(|id| id.to_string()),
+                article_title: q.article_title,
+                author_display_name: q.author_display_name,
+                text_snippet: truncate_snippet(&q.text, 80),
+                note_count: q.note_count.unwrap_or(0),
+                created_at: q.created_at
+                    .format(&time::format_description::well_known::Rfc3339)
+                    .unwrap_or_default(),
+            });
+        }
+    }
+
+    // Sort by created_at DESC
+    quotations.sort_by(|a, b| {
+        let a_time = match a {
+            UnifiedQuotationResponse::Book { created_at, .. } => created_at,
+            UnifiedQuotationResponse::Article { created_at, .. } => created_at,
+        };
+        let b_time = match b {
+            UnifiedQuotationResponse::Book { created_at, .. } => created_at,
+            UnifiedQuotationResponse::Article { created_at, .. } => created_at,
+        };
+        b_time.cmp(a_time)
+    });
+
+    Ok(Json(UnifiedQuotationListResponse { quotations }))
+}
+
+fn truncate_snippet(text: &str, max_len: usize) -> String {
+    if text.len() <= max_len {
+        text.to_string()
+    } else {
+        let mut end = max_len;
+        while end > 0 && !text.is_char_boundary(end) {
+            end -= 1;
+        }
+        format!("{}…", &text[..end])
+    }
 }
 
 /// List all notes for the authenticated user (across all books)

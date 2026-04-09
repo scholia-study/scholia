@@ -15,8 +15,13 @@ import {
     Select,
 } from "@mui/material";
 import { useMemo, useState } from "react";
-import type { QuotationWithContextResponse } from "../../api/model";
+import type { UnifiedQuotationResponse } from "../../api/model";
 import { useListAllQuotations } from "../../api/quotations/quotations";
+
+type BookQuotation = Extract<
+    UnifiedQuotationResponse,
+    { source_type: "book" }
+>;
 
 export interface QuotationPickerResult {
     book: string;
@@ -43,18 +48,22 @@ export function QuotationPickerModal({
     onSelect,
 }: QuotationPickerModalProps) {
     const [bookFilter, setBookFilter] = useState<string>("");
-    const [selected, setSelected] =
-        useState<QuotationWithContextResponse | null>(null);
+    const [selected, setSelected] = useState<BookQuotation | null>(null);
     const [mode, setMode] =
         useState<QuotationPickerResult["mode"]>("translation");
     const [layout, setLayout] =
         useState<QuotationPickerResult["layout"]>("stacked");
 
     const { data: quotationsData, isLoading } = useListAllQuotations(
-        {},
+        { source_type: "book" },
         { query: { enabled: open } },
     );
-    const allQuotations = quotationsData?.data?.quotations ?? [];
+    const allQuotations = useMemo(() => {
+        const qs = quotationsData?.data?.quotations ?? [];
+        return qs.filter(
+            (q): q is BookQuotation => q.source_type === "book",
+        );
+    }, [quotationsData]);
 
     const availableBooks = useMemo(() => {
         const map = new Map<string, string>();

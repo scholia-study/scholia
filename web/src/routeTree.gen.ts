@@ -25,6 +25,7 @@ import { Route as UserArticlesIndexRouteImport } from './routes/user.articles.in
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
 import { Route as UserArticlesSlugRouteImport } from './routes/user.articles.$slug'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
+import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -106,6 +107,11 @@ const BooksBookSlugNodeSlugRoute = BooksBookSlugNodeSlugRouteImport.update({
   path: '/books/$bookSlug/$nodeSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArticlesByIdIdRoute = ArticlesByIdIdRouteImport.update({
+  id: '/articles/by-id/$id',
+  path: '/articles/by-id/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/user/quotations': typeof UserQuotationsRoute
   '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
+  '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/user/articles/$slug': typeof UserArticlesSlugRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/user/quotations': typeof UserQuotationsRoute
   '/articles': typeof ArticlesIndexRoute
   '/books': typeof BooksIndexRoute
+  '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/user/articles/$slug': typeof UserArticlesSlugRoute
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/user/quotations': typeof UserQuotationsRoute
   '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
+  '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/user/articles/$slug': typeof UserArticlesSlugRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/user/quotations'
     | '/articles/'
     | '/books/'
+    | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
     | '/user/articles/$slug'
     | '/books/$bookSlug/'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/user/quotations'
     | '/articles'
     | '/books'
+    | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
     | '/user/articles/$slug'
     | '/books/$bookSlug'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/user/quotations'
     | '/articles/'
     | '/books/'
+    | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
     | '/user/articles/$slug'
     | '/books/$bookSlug/'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   UserQuotationsRoute: typeof UserQuotationsRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
   BooksIndexRoute: typeof BooksIndexRoute
+  ArticlesByIdIdRoute: typeof ArticlesByIdIdRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
   UserArticlesSlugRoute: typeof UserArticlesSlugRoute
   BooksBookSlugIndexRoute: typeof BooksBookSlugIndexRoute
@@ -352,6 +365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BooksBookSlugNodeSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/articles/by-id/$id': {
+      id: '/articles/by-id/$id'
+      path: '/articles/by-id/$id'
+      fullPath: '/articles/by-id/$id'
+      preLoaderRoute: typeof ArticlesByIdIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -368,6 +388,7 @@ const rootRouteChildren: RootRouteChildren = {
   UserQuotationsRoute: UserQuotationsRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
   BooksIndexRoute: BooksIndexRoute,
+  ArticlesByIdIdRoute: ArticlesByIdIdRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
   UserArticlesSlugRoute: UserArticlesSlugRoute,
   BooksBookSlugIndexRoute: BooksBookSlugIndexRoute,

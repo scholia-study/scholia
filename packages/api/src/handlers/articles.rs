@@ -164,7 +164,7 @@ pub async fn publish_article(
     let (_, max_published) = db::articles::get_article_limits(&user.roles);
     if current_published >= max_published as i64 {
         return Err(AppError::BadRequest(format!(
-            "Published article limit reached ({max_published}). Unpublish an existing article first."
+            "Published article limit reached ({max_published}). Archive an existing article first."
         )));
     }
 
@@ -172,31 +172,7 @@ pub async fn publish_article(
     Ok(Json(()))
 }
 
-/// Unpublish an article (back to draft)
-#[utoipa::path(
-    post,
-    path = "/api/user/articles/{slug}/unpublish",
-    params(("slug" = String, Path, description = "Article slug")),
-    responses(
-        (status = 200, description = "Article unpublished"),
-        (status = 401, description = "Not authenticated"),
-        (status = 404, description = "Article not found")
-    ),
-    tag = "articles"
-)]
-pub async fn unpublish_article(
-    State(state): State<AppState>,
-    user: AuthUser,
-    Path(slug): Path<String>,
-) -> Result<Json<()>, AppError> {
-    user.require_permission(Permission::ArticlesCreate)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
-
-    db::articles::unpublish_article(&state.pool, &slug, user.id).await?;
-    Ok(Json(()))
-}
-
-/// Archive an article (soft delete)
+/// Archive an article (one-way from published)
 #[utoipa::path(
     post,
     path = "/api/user/articles/{slug}/archive",
@@ -285,6 +261,28 @@ pub async fn list_topics(
 ) -> Result<Json<TopicListResponse>, AppError> {
     let topics = db::articles::list_topics(&state.pool).await?;
     Ok(Json(TopicListResponse { topics }))
+}
+
+/// Get a published/archived article by UUID (stable URL)
+#[utoipa::path(
+    get,
+    path = "/api/articles/by-id/{id}",
+    params(("id" = String, Path, description = "Article UUID")),
+    responses(
+        (status = 200, description = "Article detail", body = ArticleDetailResponse),
+        (status = 404, description = "Article not found")
+    ),
+    tag = "articles"
+)]
+pub async fn get_article_by_id(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+) -> Result<Json<ArticleDetailResponse>, AppError> {
+    let article_id = uuid::Uuid::parse_str(&id)
+        .map_err(|_| AppError::BadRequest("Invalid article ID".into()))?;
+
+    let article = db::articles::get_article_by_id(&state.pool, article_id).await?;
+    Ok(Json(article))
 }
 
 // ── Batch sentence endpoint ───────────────────────────────

@@ -10,4 +10,8 @@ export type ListAllQuotationsParams = {
      * @nullable
      */
     book_slug?: string | null;
+    /**
+     * @nullable
+     */
+    source_type?: string | null;
 };
