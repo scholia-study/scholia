@@ -125,16 +125,6 @@ export function Navbar() {
                                     <MenuItem
                                         onClick={() => {
                                             setAnchorEl(null);
-                                            navigate({ to: "/user/profile" });
-                                        }}
-                                    >
-                                        <Typography variant="body2">
-                                            Profile
-                                        </Typography>
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={() => {
-                                            setAnchorEl(null);
                                             navigate({
                                                 to: "/user/quotations",
                                             });
@@ -165,6 +155,16 @@ export function Navbar() {
                                         </Typography>
                                     </MenuItem>
                                     <Divider />
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null);
+                                            navigate({ to: "/user/profile" });
+                                        }}
+                                    >
+                                        <Typography variant="body2">
+                                            Profile
+                                        </Typography>
+                                    </MenuItem>
                                     <MenuItem onClick={handleLogout}>
                                         <Typography variant="body2">
                                             Log out

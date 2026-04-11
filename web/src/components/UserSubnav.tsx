@@ -1,10 +1,10 @@
 import { Link, useMatches } from "@tanstack/react-router";
 
 const USER_ROUTES = [
+    { to: "/user/quotations" as const, label: "My Quotations" },
+    { to: "/user/notes" as const, label: "My Notes" },
+    { to: "/user/articles" as const, label: "My Articles" },
     { to: "/user/profile" as const, label: "Profile" },
-    { to: "/user/quotations" as const, label: "Quotations" },
-    { to: "/user/notes" as const, label: "Notes" },
-    { to: "/user/articles" as const, label: "Articles" },
 ];
 
 export function UserSubnav() {
