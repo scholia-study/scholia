@@ -7,6 +7,7 @@ import type {
     LibraryVersion,
     LibraryWork,
 } from "../api/model";
+import { InfoLinks } from "../components/InfoLinks";
 
 export const Route = createFileRoute("/")({
     component: IndexPage,
@@ -19,36 +20,40 @@ function IndexPage() {
     return (
         <div className="min-h-full bg-white flex justify-center">
             <div className="flex w-full max-w-[88rem]">
-            <div className="flex-1 min-w-0 px-6 md:pl-20 md:pr-8 py-10 md:pt-24 md:pb-14">
-                <div className="max-w-3xl mx-auto">
-                    <h1 className="sr-only">Library</h1>
-                    {!isLoading && library && library.authors.length === 0 && (
-                        <p className="text-sm text-stone-400">
-                            No books in the library yet.
-                        </p>
-                    )}
-                    {!isLoading && library && library.authors.length > 0 && (
-                        <div className="space-y-10">
-                            {library.authors.map((author) => (
-                                <AuthorSection
-                                    key={author.id}
-                                    author={author}
-                                />
-                            ))}
-                        </div>
-                    )}
+                <div className="flex-1 min-w-0 px-6 md:pl-20 md:pr-8 py-10 md:pt-24 md:pb-14">
+                    <div className="max-w-3xl mx-auto">
+                        <h1 className="sr-only">Library</h1>
+                        {!isLoading &&
+                            library &&
+                            library.authors.length === 0 && (
+                                <p className="text-sm text-stone-400">
+                                    No books in the library yet.
+                                </p>
+                            )}
+                        {!isLoading &&
+                            library &&
+                            library.authors.length > 0 && (
+                                <div className="space-y-10">
+                                    {library.authors.map((author) => (
+                                        <AuthorSection
+                                            key={author.id}
+                                            author={author}
+                                        />
+                                    ))}
+                                </div>
+                            )}
 
-                    <div className="md:hidden mt-10">
-                        <AboutPanel stats={library?.stats} />
+                        <div className="md:hidden mt-10">
+                            <AboutPanel stats={library?.stats} />
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <aside className="hidden md:block md:w-96 md:shrink-0 bg-stone-50">
-                <div className="sticky top-0 h-[calc(100vh-3rem)] overflow-y-auto px-6 pt-24 pb-6">
-                    <AboutPanel stats={library?.stats} />
-                </div>
-            </aside>
+                <aside className="hidden md:block md:w-96 md:shrink-0 bg-stone-50">
+                    <div className="sticky top-0 h-[calc(100vh-3rem)] overflow-y-auto px-6 pt-24 pb-6">
+                        <AboutPanel stats={library?.stats} />
+                    </div>
+                </aside>
             </div>
         </div>
     );
@@ -141,22 +146,31 @@ function WorkCard({ work }: { work: LibraryWork }) {
 }
 
 function AboutPanel({ stats }: { stats: LibraryStats | undefined }) {
+    const pClasses = "text-sm text-stone-600 leading-relaxed";
     return (
         <div className="md:border-0 border border-stone-200 md:p-0 p-5 md:bg-transparent bg-stone-100">
             <h2 className="text-base font-semibold text-stone-900 mb-2">
                 A scholarly library
             </h2>
-            <p className="text-sm text-stone-600 leading-relaxed">
+            <p className={pClasses}>
                 Scholia is a reading and annotation library for philosophical
                 and literary texts. Every work is structured down to the
                 sentence, linked across translations, and open for quotation,
                 notes, and citation in your own writing.
+            </p>
+            <br />
+            <p className={pClasses}>
+                Inspired by marginal notes that ancient and medieval scholars
+                wrote alongside classical texts, Scholia aims to be a digital
+                sanctuary for careful study, developing original insights, and
+                build collaborative commentary.
             </p>
             {stats && (
                 <p className="text-xs text-stone-400 mt-4 pt-4 border-t border-stone-200">
                     {formatStats(stats)}
                 </p>
             )}
+            <InfoLinks className="text-sm mt-6 md:mt-16 flex flex-wrap gap-x-4 gap-y-1 text-stone-500" />
         </div>
     );
 }

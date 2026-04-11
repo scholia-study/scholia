@@ -1,5 +1,5 @@
-import { Chip } from "@mui/material";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Chip, Paper } from "@mui/material";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useListPublishedArticles } from "../api/articles/articles";
 import { useListTopics } from "../api/topics/topics";
@@ -27,9 +27,7 @@ function ArticlesListingPage() {
 
     return (
         <div className="max-w-3xl mx-auto px-8 py-16">
-            <h1 className="text-2xl font-bold text-stone-900 mb-6">
-                Articles
-            </h1>
+            <h1 className="text-2xl font-bold text-stone-900 mb-6">Articles</h1>
 
             {/* Topic filters */}
             {topics.length > 0 && (
@@ -49,9 +47,13 @@ function ArticlesListingPage() {
                             key={t.id}
                             label={t.name}
                             size="small"
-                            variant={topicSlug === t.slug ? "filled" : "outlined"}
+                            variant={
+                                topicSlug === t.slug ? "filled" : "outlined"
+                            }
                             onClick={() => {
-                                setTopicSlug(topicSlug === t.slug ? undefined : t.slug);
+                                setTopicSlug(
+                                    topicSlug === t.slug ? undefined : t.slug,
+                                );
                                 setPage(1);
                             }}
                             sx={{ fontSize: "0.75rem" }}
@@ -60,9 +62,7 @@ function ArticlesListingPage() {
                 </div>
             )}
 
-            {isLoading && (
-                <p className="text-sm text-stone-400">Loading...</p>
-            )}
+            {isLoading && <p className="text-sm text-stone-400">Loading...</p>}
 
             {!isLoading && articles.length === 0 && (
                 <p className="text-sm text-stone-400">
@@ -78,7 +78,19 @@ function ArticlesListingPage() {
                         params={{ slug: article.slug }}
                         className="block group"
                     >
-                        <article className="border border-stone-200 rounded-lg p-4 transition-shadow hover:shadow-md">
+                        <Paper
+                            component="article"
+                            square
+                            elevation={2}
+                            sx={{
+                                p: 2.5,
+                                transition: "box-shadow 0.15s",
+                                "&:hover": {
+                                    boxShadow:
+                                        "3px 5px 10px -1px rgba(0,0,0,0.16), 2px 2px 3px 0 rgba(0,0,0,0.10)",
+                                },
+                            }}
+                        >
                             <h2 className="text-lg font-semibold text-stone-900 group-hover:underline mb-1">
                                 {article.title}
                             </h2>
@@ -93,10 +105,13 @@ function ArticlesListingPage() {
                                     <>
                                         <span>&middot;</span>
                                         <span>
-                                            {new Date(article.published_at).toLocaleDateString(
-                                                undefined,
-                                                { month: "long", day: "numeric", year: "numeric" },
-                                            )}
+                                            {new Date(
+                                                article.published_at,
+                                            ).toLocaleDateString(undefined, {
+                                                month: "long",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })}
                                         </span>
                                     </>
                                 )}
@@ -109,7 +124,7 @@ function ArticlesListingPage() {
                                     </>
                                 )}
                             </div>
-                        </article>
+                        </Paper>
                     </Link>
                 ))}
             </div>
@@ -117,20 +132,22 @@ function ArticlesListingPage() {
             {/* Pagination */}
             {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-8">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                        <button
-                            key={p}
-                            type="button"
-                            onClick={() => setPage(p)}
-                            className={`px-3 py-1 text-sm rounded ${
-                                p === page
-                                    ? "bg-stone-800 text-white"
-                                    : "text-stone-500 hover:bg-stone-100"
-                            }`}
-                        >
-                            {p}
-                        </button>
-                    ))}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (p) => (
+                            <button
+                                key={p}
+                                type="button"
+                                onClick={() => setPage(p)}
+                                className={`px-3 py-1 text-sm rounded ${
+                                    p === page
+                                        ? "bg-stone-800 text-white"
+                                        : "text-stone-500 hover:bg-stone-100"
+                                }`}
+                            >
+                                {p}
+                            </button>
+                        ),
+                    )}
                 </div>
             )}
         </div>

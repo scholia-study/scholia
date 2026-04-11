@@ -61,7 +61,7 @@ function PublishedArticlePage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-full bg-white">
+            <div className="flex-1 bg-white">
                 <div className="max-w-3xl mx-auto px-8 py-16">
                     <p className="text-sm text-stone-400">Loading...</p>
                 </div>
@@ -71,7 +71,7 @@ function PublishedArticlePage() {
 
     if (!article) {
         return (
-            <div className="min-h-full bg-white">
+            <div className="flex-1 bg-white">
                 <div className="max-w-3xl mx-auto px-8 py-16">
                     <p className="text-sm text-stone-400">Article not found.</p>
                 </div>
@@ -80,7 +80,7 @@ function PublishedArticlePage() {
     }
 
     return (
-        <div className="min-h-full bg-white">
+        <div className="flex-1 bg-white">
             <div className="max-w-3xl mx-auto px-8 py-16">
                 {/* Header */}
                 <header className="mb-8">

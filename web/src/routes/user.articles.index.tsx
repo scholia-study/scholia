@@ -8,7 +8,6 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogContentText,
     DialogTitle,
     IconButton,
     Paper,
@@ -29,6 +28,8 @@ import {
 } from "../api/articles/articles";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { ArticleResponse } from "../api/model";
+import { useArchiveArticleDialog } from "../hooks/useArchiveArticleDialog";
+import { usePublishArticleDialog } from "../hooks/usePublishArticleDialog";
 
 export const Route = createFileRoute("/user/articles/")({
     beforeLoad: async ({ context }) => {
@@ -68,6 +69,19 @@ function ArticlesPage() {
     const articles = articlesData?.data?.articles ?? [];
     const limits = articlesData?.data?.limits;
 
+    const counts = useMemo(() => {
+        const c: Record<string, number> = {
+            all: articles.length,
+            draft: 0,
+            published: 0,
+            archived: 0,
+        };
+        for (const a of articles) {
+            if (a.status in c) c[a.status]++;
+        }
+        return c;
+    }, [articles]);
+
     const filtered = useMemo(() => {
         const list =
             statusTab === "all"
@@ -86,11 +100,29 @@ function ArticlesPage() {
         });
     }, [articles, statusTab]);
 
-    const [publishSlug, setPublishSlug] = useState<string | null>(null);
-
     const createMutation = useCreateArticle();
     const publishMutation = usePublishArticle();
     const archiveMutation = useArchiveArticle();
+
+    const publishDialog = usePublishArticleDialog({
+        onConfirm: async (slug) => {
+            await publishMutation.mutateAsync({ slug });
+            queryClient.invalidateQueries({
+                queryKey: getListUserArticlesQueryKey(),
+            });
+        },
+        isPending: publishMutation.isPending,
+    });
+
+    const archiveDialog = useArchiveArticleDialog({
+        onConfirm: async (slug) => {
+            await archiveMutation.mutateAsync({ slug });
+            queryClient.invalidateQueries({
+                queryKey: getListUserArticlesQueryKey(),
+            });
+        },
+        isPending: archiveMutation.isPending,
+    });
 
     const handleCreate = async () => {
         if (!newTitle.trim()) return;
@@ -103,35 +135,16 @@ function ArticlesPage() {
         }
     };
 
-    const handlePublishConfirm = async () => {
-        if (!publishSlug) return;
-        setPublishSlug(null);
-        await publishMutation.mutateAsync({ slug: publishSlug });
-        queryClient.invalidateQueries({ queryKey: getListUserArticlesQueryKey() });
-    };
-
-    const handleArchive = async (slug: string) => {
-        await archiveMutation.mutateAsync({ slug });
-        queryClient.invalidateQueries({ queryKey: getListUserArticlesQueryKey() });
-    };
-
     const canCreate = limits ? limits.current_total < limits.max_total : true;
     const canPublish = limits ? limits.current_published < limits.max_published : true;
 
     return (
         <div className="max-w-3xl mx-auto px-8 py-16">
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-stone-900">
-                    My Articles
-                </h1>
-                <div className="flex items-center gap-3">
-                    {limits && (
-                        <span className="text-xs text-stone-400">
-                            {limits.current_published}/{limits.max_published} published
-                            {" \u00B7 "}
-                            {limits.current_total}/{limits.max_total} total
-                        </span>
-                    )}
+            <div className="mb-6">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-bold text-stone-900">
+                        My Articles
+                    </h1>
                     <Button
                         variant="contained"
                         size="small"
@@ -143,6 +156,13 @@ function ArticlesPage() {
                         New Article
                     </Button>
                 </div>
+                {limits && (
+                    <div className="text-xs text-stone-400 text-right mt-1">
+                        {limits.current_published}/{limits.max_published} published
+                        {" \u00B7 "}
+                        {limits.current_total}/{limits.max_total} total
+                    </div>
+                )}
             </div>
 
             <Tabs
@@ -150,14 +170,26 @@ function ArticlesPage() {
                 onChange={(_, v) => setStatusTab(v)}
                 sx={{ mb: 3, minHeight: 36 }}
             >
-                {STATUS_TABS.map((tab) => (
-                    <Tab
-                        key={tab}
-                        value={tab}
-                        label={tab === "all" ? "All" : tab.charAt(0).toUpperCase() + tab.slice(1)}
-                        sx={{ minHeight: 36, textTransform: "none", fontSize: "0.875rem" }}
-                    />
-                ))}
+                {STATUS_TABS.map((tab) => {
+                    const baseLabel =
+                        tab === "all"
+                            ? "All"
+                            : tab.charAt(0).toUpperCase() + tab.slice(1);
+                    const count = counts[tab] ?? 0;
+                    const label = count > 0 ? `${baseLabel} (${count})` : baseLabel;
+                    return (
+                        <Tab
+                            key={tab}
+                            value={tab}
+                            label={label}
+                            sx={{
+                                minHeight: 36,
+                                textTransform: "none",
+                                fontSize: "0.875rem",
+                            }}
+                        />
+                    );
+                })}
             </Tabs>
 
             {isLoading && (
@@ -178,8 +210,8 @@ function ArticlesPage() {
                         key={article.id}
                         article={article}
                         canPublish={canPublish}
-                        onPublish={(slug) => setPublishSlug(slug)}
-                        onArchive={handleArchive}
+                        onPublish={publishDialog.openFor}
+                        onArchive={archiveDialog.openFor}
                     />
                 ))}
             </div>
@@ -216,43 +248,8 @@ function ArticlesPage() {
                 </DialogActions>
             </Dialog>
 
-            <Dialog
-                open={publishSlug != null}
-                onClose={() => setPublishSlug(null)}
-                maxWidth="sm"
-            >
-                <DialogTitle>Publish this article?</DialogTitle>
-                <DialogContent>
-                    <DialogContentText sx={{ fontSize: "0.875rem", mb: 1.5 }}>
-                        Once published, this article becomes public and
-                        cannot be reverted to a draft. You can:
-                    </DialogContentText>
-                    <ul className="text-sm text-stone-600 list-disc pl-5 space-y-1">
-                        <li>Continue editing the article at any time</li>
-                        <li>
-                            Archive it later, which removes it from
-                            listings but keeps it accessible via direct
-                            link for historical references
-                        </li>
-                    </ul>
-                </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 2 }}>
-                    <Button
-                        onClick={() => setPublishSlug(null)}
-                        size="small"
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handlePublishConfirm}
-                        size="small"
-                        variant="contained"
-                        disabled={publishMutation.isPending}
-                    >
-                        Publish
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            {publishDialog.dialog}
+            {archiveDialog.dialog}
         </div>
     );
 }

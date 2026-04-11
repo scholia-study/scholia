@@ -27,17 +27,42 @@ export function Navbar() {
 
     return (
         <nav className="shrink-0 h-12 flex items-center justify-between px-4 bg-white border-b border-stone-200">
-            <Link
-                to="/"
-                className="flex items-center gap-2 font-bold text-stone-900 text-sm"
-            >
-                <img
-                    src="/scholia_book.webp"
-                    alt=""
-                    className="h-7 w-7 object-contain"
-                />
-                Scholia
-            </Link>
+            <div className="flex items-center gap-6">
+                <Link
+                    to="/"
+                    className="flex items-center gap-2 font-bold text-stone-900 text-sm"
+                >
+                    <img
+                        src="/scholia_book.webp"
+                        alt=""
+                        className="h-7 w-7 object-contain"
+                    />
+                    Scholia
+                </Link>
+                <div className="flex items-center gap-1">
+                    <Link
+                        to="/"
+                        className="text-sm px-3 py-1 rounded transition-colors text-stone-500 no-underline hover:text-stone-900 hover:underline"
+                        activeProps={{
+                            className:
+                                "text-sm px-3 py-1 rounded transition-colors text-stone-900 font-medium",
+                        }}
+                        activeOptions={{ exact: true }}
+                    >
+                        Texts
+                    </Link>
+                    <Link
+                        to="/articles"
+                        className="text-sm px-3 py-1 rounded transition-colors text-stone-500 no-underline hover:text-stone-900 hover:underline"
+                        activeProps={{
+                            className:
+                                "text-sm px-3 py-1 rounded transition-colors text-stone-900 font-medium",
+                        }}
+                    >
+                        Articles
+                    </Link>
+                </div>
+            </div>
 
             <div className="w-28 flex justify-end">
                 <Fade in={!isLoading} timeout={300}>

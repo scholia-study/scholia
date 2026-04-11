@@ -5,11 +5,6 @@ import {
     Autocomplete,
     Button,
     Chip,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
     TextField,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
@@ -39,6 +34,8 @@ import {
     QuotationPickerModal,
     type QuotationPickerResult,
 } from "../components/editor/QuotationPickerModal";
+import { useArchiveArticleDialog } from "../hooks/useArchiveArticleDialog";
+import { usePublishArticleDialog } from "../hooks/usePublishArticleDialog";
 
 const MemoizedEditor = memo(
     ({
@@ -194,39 +191,40 @@ function ArticleEditorPage() {
         editorRef.current?.insertQuotation(result);
     };
 
-    const [publishDialogOpen, setPublishDialogOpen] = useState(false);
-    const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+    const publishDialog = usePublishArticleDialog({
+        onConfirm: async (slug) => {
+            // Save any pending changes first.
+            if (saveTimer.current) {
+                clearTimeout(saveTimer.current);
+                await save({ title, markdown, description });
+            }
+            await publishMutation.mutateAsync({ slug });
+            queryClient.invalidateQueries({
+                queryKey: getGetUserArticleQueryKey(slug),
+            });
+            queryClient.invalidateQueries({
+                queryKey: getListUserArticlesQueryKey(),
+            });
+        },
+        isPending: publishMutation.isPending,
+    });
 
-    const handlePublishConfirm = async () => {
-        setPublishDialogOpen(false);
-        // Save any pending changes first
-        if (saveTimer.current) {
-            clearTimeout(saveTimer.current);
-            await save({ title, markdown, description });
-        }
-        await publishMutation.mutateAsync({ slug: currentSlug.current });
-        queryClient.invalidateQueries({
-            queryKey: getGetUserArticleQueryKey(currentSlug.current),
-        });
-        queryClient.invalidateQueries({
-            queryKey: getListUserArticlesQueryKey(),
-        });
-    };
-
-    const handleArchive = async () => {
-        setArchiveDialogOpen(false);
-        await archiveMutation.mutateAsync({ slug: currentSlug.current });
-        queryClient.invalidateQueries({
-            queryKey: getGetUserArticleQueryKey(currentSlug.current),
-        });
-        queryClient.invalidateQueries({
-            queryKey: getListUserArticlesQueryKey(),
-        });
-    };
+    const archiveDialog = useArchiveArticleDialog({
+        onConfirm: async (slug) => {
+            await archiveMutation.mutateAsync({ slug });
+            queryClient.invalidateQueries({
+                queryKey: getGetUserArticleQueryKey(slug),
+            });
+            queryClient.invalidateQueries({
+                queryKey: getListUserArticlesQueryKey(),
+            });
+        },
+        isPending: archiveMutation.isPending,
+    });
 
     if (!article) {
         return (
-            <div className="min-h-full bg-white">
+            <div className="flex-1 bg-white">
                 <div className="max-w-4xl mx-auto px-8 py-16">
                     <p className="text-sm text-stone-400">Loading...</p>
                 </div>
@@ -237,7 +235,7 @@ function ArticleEditorPage() {
     const isArchived = article.status === "archived";
 
     return (
-        <div className="min-h-full bg-white">
+        <div className="flex-1 bg-white">
             <div className="max-w-4xl mx-auto px-8 py-16">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
@@ -268,7 +266,9 @@ function ArticleEditorPage() {
                                 size="small"
                                 variant="contained"
                                 startIcon={<PublishOutlined />}
-                                onClick={() => setPublishDialogOpen(true)}
+                                onClick={() =>
+                                    publishDialog.openFor(currentSlug.current)
+                                }
                                 disabled={publishMutation.isPending}
                                 sx={{ textTransform: "none" }}
                             >
@@ -289,7 +289,11 @@ function ArticleEditorPage() {
                                     size="small"
                                     variant="outlined"
                                     startIcon={<ArchiveOutlined />}
-                                    onClick={() => setArchiveDialogOpen(true)}
+                                    onClick={() =>
+                                        archiveDialog.openFor(
+                                            currentSlug.current,
+                                        )
+                                    }
                                     disabled={archiveMutation.isPending}
                                     sx={{ textTransform: "none" }}
                                 >
@@ -450,84 +454,8 @@ function ArticleEditorPage() {
                     onSelect={handleInsertQuotation}
                 />
 
-                <Dialog
-                    open={publishDialogOpen}
-                    onClose={() => setPublishDialogOpen(false)}
-                    maxWidth="sm"
-                >
-                    <DialogTitle>Publish this article?</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText sx={{ fontSize: "0.875rem", mb: 1.5 }}>
-                            Once published, this article becomes public and
-                            cannot be reverted to a draft. You can:
-                        </DialogContentText>
-                        <ul className="text-sm text-stone-600 list-disc pl-5 space-y-1">
-                            <li>Continue editing the article at any time</li>
-                            <li>
-                                Archive it later, which removes it from
-                                listings but keeps it accessible via direct
-                                link for historical references
-                            </li>
-                        </ul>
-                    </DialogContent>
-                    <DialogActions sx={{ px: 3, pb: 2 }}>
-                        <Button
-                            onClick={() => setPublishDialogOpen(false)}
-                            size="small"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handlePublishConfirm}
-                            size="small"
-                            variant="contained"
-                            disabled={publishMutation.isPending}
-                        >
-                            Publish
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-
-                <Dialog
-                    open={archiveDialogOpen}
-                    onClose={() => setArchiveDialogOpen(false)}
-                    maxWidth="sm"
-                >
-                    <DialogTitle>Archive this article?</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText sx={{ fontSize: "0.875rem", mb: 1.5 }}>
-                            Archiving is irreversible. Before archiving, you
-                            can keep editing the article as long as you like.
-                            Once archived:
-                        </DialogContentText>
-                        <ul className="text-sm text-stone-600 list-disc pl-5 space-y-1">
-                            <li>
-                                The article is removed from public listings
-                            </li>
-                            <li>
-                                It remains accessible via its direct link, so
-                                historical references keep working
-                            </li>
-                        </ul>
-                    </DialogContent>
-                    <DialogActions sx={{ px: 3, pb: 2 }}>
-                        <Button
-                            onClick={() => setArchiveDialogOpen(false)}
-                            size="small"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handleArchive}
-                            size="small"
-                            variant="contained"
-                            color="warning"
-                            disabled={archiveMutation.isPending}
-                        >
-                            Archive
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                {publishDialog.dialog}
+                {archiveDialog.dialog}
             </div>
         </div>
     );

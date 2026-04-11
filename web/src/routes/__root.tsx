@@ -4,8 +4,11 @@ import {
     HeadContent,
     Outlet,
     Scripts,
+    useLocation,
 } from "@tanstack/react-router";
 import { Toaster } from "react-hot-toast";
+import { Footer } from "../components/Footer";
+import { InfoSubnav } from "../components/InfoSubnav";
 import { Navbar } from "../components/Navbar";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { UserSubnav } from "../components/UserSubnav";
@@ -32,13 +35,29 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     notFoundComponent: NotFound,
 });
 
+/** Match the reader route shape: /books/<bookSlug>/<nodeSlug>. */
+const READER_PATH = /^\/books\/[^/]+\/[^/]+/;
+
 function RootComponent() {
+    const { pathname } = useLocation();
+    // Footer lives inside <main> and scrolls with the content.
+    // Suppressed on the root library page (which has its own info links)
+    // and on the reader route, which fills the viewport with internally
+    // scrolling panels and has nowhere to put a non-overlapping footer.
+    const showFooter = pathname !== "/" && !READER_PATH.test(pathname);
+
     return (
         <>
             <Navbar />
             <UserSubnav />
+            <InfoSubnav />
             <main className="flex-1 overflow-y-auto">
-                <Outlet />
+                <div className="min-h-full flex flex-col">
+                    <div className="flex-1 min-h-0 flex flex-col">
+                        <Outlet />
+                    </div>
+                    {showFooter && <Footer />}
+                </div>
             </main>
             <ScrollToTop />
             <Toaster position="bottom-right" />
