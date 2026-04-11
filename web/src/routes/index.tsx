@@ -22,7 +22,6 @@ function IndexPage() {
             <div className="flex-1 min-w-0 px-6 md:pl-20 md:pr-8 py-10 md:pt-24 md:pb-14">
                 <div className="max-w-3xl mx-auto">
                     <h1 className="sr-only">Library</h1>
-                    {isLoading && <LibrarySkeleton />}
                     {!isLoading && library && library.authors.length === 0 && (
                         <p className="text-sm text-stone-400">
                             No books in the library yet.
@@ -158,30 +157,6 @@ function AboutPanel({ stats }: { stats: LibraryStats | undefined }) {
                     {formatStats(stats)}
                 </p>
             )}
-        </div>
-    );
-}
-
-function LibrarySkeleton() {
-    return (
-        <div className="space-y-10 animate-pulse">
-            {[0, 1, 2].map((i) => (
-                <div key={i}>
-                    <div className="h-3 w-32 bg-stone-200 rounded mb-4" />
-                    <div className="space-y-5">
-                        {[0, 1].map((j) => (
-                            <div key={j}>
-                                <div className="h-4 w-2/3 bg-stone-200 rounded mb-2" />
-                                <div className="h-3 w-24 bg-stone-100 rounded mb-2" />
-                                <div className="flex gap-1.5">
-                                    <div className="h-5 w-10 bg-stone-100 rounded" />
-                                    <div className="h-5 w-10 bg-stone-100 rounded" />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ))}
         </div>
     );
 }
