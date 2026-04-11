@@ -1114,6 +1114,27 @@
         }
       }
     },
+    "/api/library": {
+      "get": {
+        "tags": [
+          "books"
+        ],
+        "summary": "Get the grouped library tree (authors → works → versions) with stats.",
+        "operationId": "get_library",
+        "responses": {
+          "200": {
+            "description": "Library tree",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/notes": {
       "get": {
         "tags": [
@@ -3035,6 +3056,156 @@
         ],
         "properties": {
           "email": {
+            "type": "string"
+          }
+        }
+      },
+      "LibraryAuthor": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "sort_name",
+          "books"
+        ],
+        "properties": {
+          "books": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LibraryWork"
+            }
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sort_name": {
+            "type": "string"
+          }
+        }
+      },
+      "LibraryResponse": {
+        "type": "object",
+        "required": [
+          "authors",
+          "stats"
+        ],
+        "properties": {
+          "authors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LibraryAuthor"
+            }
+          },
+          "stats": {
+            "$ref": "#/components/schemas/LibraryStats"
+          }
+        }
+      },
+      "LibraryStats": {
+        "type": "object",
+        "required": [
+          "works",
+          "authors",
+          "languages"
+        ],
+        "properties": {
+          "authors": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "languages": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "works": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "LibraryVersion": {
+        "type": "object",
+        "required": [
+          "book_slug",
+          "language",
+          "is_original",
+          "translator_names"
+        ],
+        "properties": {
+          "book_slug": {
+            "type": "string"
+          },
+          "is_original": {
+            "type": "boolean"
+          },
+          "language": {
+            "type": "string"
+          },
+          "publication_year": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "publisher": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "translator_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "LibraryWork": {
+        "type": "object",
+        "required": [
+          "work_id",
+          "title",
+          "co_authors",
+          "versions"
+        ],
+        "properties": {
+          "co_authors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "editor_names": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "publication_year": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LibraryVersion"
+            }
+          },
+          "work_id": {
             "type": "string"
           }
         }

@@ -20,7 +20,7 @@ import type {
 } from "@tanstack/react-query";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { customFetch } from ".././fetcher";
-import type { BookDetail, BookSummary } from ".././model";
+import type { BookDetail, BookSummary, LibraryResponse } from ".././model";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -589,6 +589,289 @@ export function useGetBookSuspense<
     queryKey: DataTag<QueryKey, TData, TError>;
 } {
     const queryOptions = getGetBookSuspenseQueryOptions(slug, options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get the grouped library tree (authors → works → versions) with stats.
+ */
+export type getLibraryResponse200 = {
+    data: LibraryResponse;
+    status: 200;
+};
+
+export type getLibraryResponseSuccess = getLibraryResponse200 & {
+    headers: Headers;
+};
+
+export type getLibraryResponse = getLibraryResponseSuccess;
+
+export const getGetLibraryUrl = () => {
+    return `/api/library`;
+};
+
+export const getLibrary = async (
+    options?: RequestInit,
+): Promise<getLibraryResponse> => {
+    return customFetch<getLibraryResponse>(getGetLibraryUrl(), {
+        ...options,
+        method: "GET",
+    });
+};
+
+export const getGetLibraryQueryKey = () => {
+    return [`/api/library`] as const;
+};
+
+export const getGetLibraryQueryOptions = <
+    TData = Awaited<ReturnType<typeof getLibrary>>,
+    TError = unknown,
+>(options?: {
+    query?: Partial<
+        UseQueryOptions<Awaited<ReturnType<typeof getLibrary>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getGetLibraryQueryKey();
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLibrary>>> = ({
+        signal,
+    }) => getLibrary({ signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof getLibrary>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetLibraryQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getLibrary>>
+>;
+export type GetLibraryQueryError = unknown;
+
+export function useGetLibrary<
+    TData = Awaited<ReturnType<typeof getLibrary>>,
+    TError = unknown,
+>(
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getLibrary>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getLibrary>>,
+                    TError,
+                    Awaited<ReturnType<typeof getLibrary>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetLibrary<
+    TData = Awaited<ReturnType<typeof getLibrary>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getLibrary>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getLibrary>>,
+                    TError,
+                    Awaited<ReturnType<typeof getLibrary>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetLibrary<
+    TData = Awaited<ReturnType<typeof getLibrary>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getLibrary>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get the grouped library tree (authors → works → versions) with stats.
+ */
+
+export function useGetLibrary<
+    TData = Awaited<ReturnType<typeof getLibrary>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getLibrary>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetLibraryQueryOptions(options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getGetLibrarySuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof getLibrary>>,
+    TError = unknown,
+>(options?: {
+    query?: Partial<
+        UseSuspenseQueryOptions<
+            Awaited<ReturnType<typeof getLibrary>>,
+            TError,
+            TData
+        >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getGetLibraryQueryKey();
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLibrary>>> = ({
+        signal,
+    }) => getLibrary({ signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getLibrary>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetLibrarySuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getLibrary>>
+>;
+export type GetLibrarySuspenseQueryError = unknown;
+
+export function useGetLibrarySuspense<
+    TData = Awaited<ReturnType<typeof getLibrary>>,
+    TError = unknown,
+>(
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getLibrary>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetLibrarySuspense<
+    TData = Awaited<ReturnType<typeof getLibrary>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getLibrary>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetLibrarySuspense<
+    TData = Awaited<ReturnType<typeof getLibrary>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getLibrary>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get the grouped library tree (authors → works → versions) with stats.
+ */
+
+export function useGetLibrarySuspense<
+    TData = Awaited<ReturnType<typeof getLibrary>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getLibrary>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetLibrarySuspenseQueryOptions(options);
 
     const query = useSuspenseQuery(
         queryOptions,

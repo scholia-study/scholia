@@ -599,7 +599,7 @@ export function ReaderLayout({
                             ? () => handleClosePanel(idx)
                             : () =>
                                   navigate({
-                                      to: "/books",
+                                      to: "/",
                                   })
                     }
                     onScrollNavigate={(nodeSlug) =>

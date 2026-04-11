@@ -31,10 +31,10 @@ function BookPage() {
         <div className="flex h-[calc(100vh-3rem)]">
             <div className="max-w-3xl mx-auto px-8 py-16 w-full">
                 <Link
-                    to="/books"
+                    to="/"
                     className="text-sm text-stone-500 hover:text-stone-700 mb-4 inline-block"
                 >
-                    &larr; All books
+                    &larr; Library
                 </Link>
                 <h1 className="text-3xl font-bold text-stone-900 mb-8">
                     {book?.title ?? bookSlug}

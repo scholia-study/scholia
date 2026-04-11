@@ -15,6 +15,7 @@ pub mod state;
     paths(
         handlers::books::list_books,
         handlers::books::get_book,
+        handlers::library::get_library,
         handlers::toc::get_toc,
         handlers::nodes::get_node,
         handlers::page::get_node_page,
@@ -72,6 +73,11 @@ pub mod state;
     components(schemas(
         models::book::BookSummary,
         models::book::BookDetail,
+        models::library::LibraryResponse,
+        models::library::LibraryAuthor,
+        models::library::LibraryWork,
+        models::library::LibraryVersion,
+        models::library::LibraryStats,
         models::toc::TocNodeResponse,
         models::node::NodeDetail,
         models::node::ContentBlockResponse,
