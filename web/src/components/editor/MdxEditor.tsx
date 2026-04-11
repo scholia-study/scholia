@@ -22,8 +22,10 @@ import {
 } from "@mdxeditor/editor";
 import { Popover } from "@mui/material";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { ArticleQuotationCard } from "../ArticleQuotationCard";
 import { QuotationCard } from "../QuotationCard";
 import { CitationPopover, type CitationEntry } from "./CitationPopover";
+import type { QuotationPickerResult } from "./QuotationPickerModal";
 
 // ── Quotation directive descriptor ────────────────────────
 
@@ -214,6 +216,65 @@ const quotationDirectiveDescriptor: DirectiveDescriptor = {
     Editor: QuotationDirectiveEditor,
 };
 
+// ── Article quotation directive descriptor ────────────────
+
+function ArticleQuotationDirectiveEditor({
+    mdastNode,
+    parentEditor,
+    lexicalNode,
+}: DirectiveEditorProps) {
+    const attrs = mdastNode.attributes ?? {};
+    const id = (attrs.id as string) ?? "";
+
+    const handleDelete = () => {
+        parentEditor.update(() => {
+            lexicalNode.remove();
+        });
+    };
+
+    return (
+        <div contentEditable={false} className="group relative">
+            <ArticleQuotationCard id={id} />
+            <div className="absolute -top-3 -right-3 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                    type="button"
+                    onClick={handleDelete}
+                    title="Remove quotation"
+                    className="bg-white rounded-full p-1.5 text-stone-400 hover:text-red-500 shadow-sm border border-stone-200"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <title>Remove quotation</title>
+                        <path d="M3 6h18" />
+                        <path d="M8 6V4h8v2" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    );
+}
+
+const articleQuotationDirectiveDescriptor: DirectiveDescriptor = {
+    name: "article-quotation",
+    testNode: (node) => node.name === "article-quotation",
+    attributes: ["id"],
+    hasChildren: false,
+    type: "leafDirective",
+    Editor: ArticleQuotationDirectiveEditor,
+};
+
 // ── Citation directive descriptor ─────────────────────────
 
 /** Parse the sources attribute: "uuid1:pages,uuid2:pages" */
@@ -353,15 +414,7 @@ function InsertCitationButton({
 // ── Editor component ──────────────────────────────────────
 
 export interface ArticleEditorHandle {
-    insertQuotation: (attrs: {
-        book: string;
-        node: string;
-        start: number;
-        end?: number;
-        kind: string;
-        mode: string;
-        layout: string;
-    }) => void;
+    insertQuotation: (result: QuotationPickerResult) => void;
     insertCitation: (
         entries: { sourceId: string; pages: string }[],
     ) => void;
@@ -371,32 +424,38 @@ interface ArticleEditorProps {
     markdown: string;
     onChange: (markdown: string) => void;
     onInsertQuotationClick: () => void;
+    readOnly?: boolean;
 }
 
 export const ArticleEditor = forwardRef<
     ArticleEditorHandle,
     ArticleEditorProps
->(({ markdown, onChange, onInsertQuotationClick }, ref) => {
+>(({ markdown, onChange, onInsertQuotationClick, readOnly }, ref) => {
     const editorRef = useRef<MDXEditorMethods>(null);
     const [citeAnchorEl, setCiteAnchorEl] = useState<HTMLElement | null>(null);
 
     useImperativeHandle(
         ref,
         () => ({
-            insertQuotation: (attrs) => {
+            insertQuotation: (result) => {
                 if (!editorRef.current) return;
+                if (result.source_type === "article") {
+                    const directive = `\n::article-quotation{id="${result.id}"}\n`;
+                    editorRef.current.insertMarkdown(directive);
+                    return;
+                }
                 const parts = [
-                    `book="${attrs.book}"`,
-                    `node="${attrs.node}"`,
-                    `start="${attrs.start}"`,
+                    `book="${result.book}"`,
+                    `node="${result.node}"`,
+                    `start="${result.start}"`,
                 ];
-                if (attrs.end != null) {
-                    parts.push(`end="${attrs.end}"`);
+                if (result.end != null) {
+                    parts.push(`end="${result.end}"`);
                 }
                 parts.push(
-                    `kind="${attrs.kind}"`,
-                    `mode="${attrs.mode}"`,
-                    `layout="${attrs.layout}"`,
+                    `kind="${result.kind}"`,
+                    `mode="${result.mode}"`,
+                    `layout="${result.layout}"`,
                 );
                 const directive = `\n::quotation{${parts.join(" ")}}\n`;
                 editorRef.current.insertMarkdown(directive);
@@ -435,6 +494,7 @@ export const ArticleEditor = forwardRef<
                 ref={editorRef}
                 markdown={markdown}
                 onChange={onChange}
+                readOnly={readOnly}
                 contentEditableClassName="!prose !prose-stone max-w-none min-h-[400px] font-serif"
                 plugins={[
                     headingsPlugin(),
@@ -445,6 +505,7 @@ export const ArticleEditor = forwardRef<
                     directivesPlugin({
                         directiveDescriptors: [
                             quotationDirectiveDescriptor,
+                            articleQuotationDirectiveDescriptor,
                             citationDirectiveDescriptor,
                         ],
                     }),

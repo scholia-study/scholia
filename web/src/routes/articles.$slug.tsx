@@ -11,6 +11,16 @@ export const Route = createFileRoute("/articles/$slug")({
 });
 
 function replaceEmbed(domNode: Element) {
+    // Article quotation embed (check first — "article-quotation-embed"
+    // also matches "quotation-embed" via substring)
+    if (domNode.attribs?.class?.includes("article-quotation-embed")) {
+        const id = domNode.attribs["data-article-quotation-id"];
+        if (id) {
+            return <ArticleQuotationCard id={id} />;
+        }
+        return undefined;
+    }
+
     // Book quotation embed
     if (domNode.attribs?.class?.includes("quotation-embed")) {
         const attrs = domNode.attribs;
@@ -39,14 +49,6 @@ function replaceEmbed(domNode: Element) {
                 }
             />
         );
-    }
-
-    // Article quotation embed
-    if (domNode.attribs?.class?.includes("article-quotation-embed")) {
-        const id = domNode.attribs["data-article-quotation-id"];
-        if (id) {
-            return <ArticleQuotationCard id={id} />;
-        }
     }
 
     return undefined;

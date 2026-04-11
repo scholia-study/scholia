@@ -147,9 +147,13 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
         format!("\n<!--QUOTATION_PLACEHOLDER_{idx}-->\n")
     });
 
-    // Pre-process: extract ::article-quotation{id="..."} directives
+    // Pre-process: extract ::article-quotation{...} directives.
+    // mdast-util-directive serializes `id="xxx"` as the shorthand `#xxx`,
+    // so accept both forms.
     let article_q_re =
         Regex::new(r#"::article-quotation\{([^}]+)\}"#).expect("Invalid article-quotation regex");
+    let id_shorthand_re =
+        Regex::new(r#"#([^\s}]+)"#).expect("Invalid id shorthand regex");
     let mut article_q_placeholder_map: Vec<String> = Vec::new();
     let processed = article_q_re.replace_all(&processed, |caps: &regex::Captures| {
         let attrs_str = &caps[1];
@@ -161,6 +165,13 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
             let key = &attr_cap[1];
             let val = &attr_cap[2];
             data_attrs.push_str(&format!(r#" data-article-quotation-{key}="{val}""#));
+        }
+        if !data_attrs.contains("data-article-quotation-id=") {
+            if let Some(id_cap) = id_shorthand_re.captures(attrs_str) {
+                let val = &id_cap[1];
+                data_attrs
+                    .push_str(&format!(r#" data-article-quotation-id="{val}""#));
+            }
         }
 
         article_q_placeholder_map.push(data_attrs);
@@ -669,14 +680,22 @@ pub async fn update_article(
     topic_ids: Option<&[String]>,
 ) -> Result<ArticleDetailResponse, AppError> {
     // Fetch article and verify ownership
-    let article_id = sqlx::query_scalar!(
-        r#"SELECT id FROM articles WHERE slug = $1 AND user_id = $2"#,
+    let row = sqlx::query!(
+        r#"SELECT id, status AS "status: String" FROM articles
+           WHERE slug = $1 AND user_id = $2"#,
         slug,
         user_id,
     )
     .fetch_one(pool)
     .await
     .map_err(|_| AppError::NotFound("Article not found".into()))?;
+
+    if row.status == "archived" {
+        return Err(AppError::BadRequest(
+            "Archived articles cannot be edited".into(),
+        ));
+    }
+    let article_id = row.id;
 
     // Update title and regenerate slug if title changed
     if let Some(title) = title {

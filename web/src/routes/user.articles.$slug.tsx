@@ -45,11 +45,13 @@ const MemoizedEditor = memo(
         markdown,
         onChange,
         onInsertQuotationClick,
+        readOnly,
         ref,
     }: {
         markdown: string;
         onChange: (markdown: string) => void;
         onInsertQuotationClick: () => void;
+        readOnly?: boolean;
         ref: React.Ref<ArticleEditorHandle>;
     }) => (
         <div>
@@ -58,6 +60,7 @@ const MemoizedEditor = memo(
                 markdown={markdown}
                 onChange={onChange}
                 onInsertQuotationClick={onInsertQuotationClick}
+                readOnly={readOnly}
             />
         </div>
     ),
@@ -192,6 +195,7 @@ function ArticleEditorPage() {
     };
 
     const [publishDialogOpen, setPublishDialogOpen] = useState(false);
+    const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
 
     const handlePublishConfirm = async () => {
         setPublishDialogOpen(false);
@@ -210,6 +214,7 @@ function ArticleEditorPage() {
     };
 
     const handleArchive = async () => {
+        setArchiveDialogOpen(false);
         await archiveMutation.mutateAsync({ slug: currentSlug.current });
         queryClient.invalidateQueries({
             queryKey: getGetUserArticleQueryKey(currentSlug.current),
@@ -228,6 +233,8 @@ function ArticleEditorPage() {
             </div>
         );
     }
+
+    const isArchived = article.status === "archived";
 
     return (
         <div className="min-h-screen bg-white">
@@ -282,7 +289,7 @@ function ArticleEditorPage() {
                                     size="small"
                                     variant="outlined"
                                     startIcon={<ArchiveOutlined />}
-                                    onClick={handleArchive}
+                                    onClick={() => setArchiveDialogOpen(true)}
                                     disabled={archiveMutation.isPending}
                                     sx={{ textTransform: "none" }}
                                 >
@@ -298,6 +305,7 @@ function ArticleEditorPage() {
                                 save({ title, markdown, description })
                             }
                             disabled={
+                                isArchived ||
                                 saveStatus === "saved" ||
                                 saveStatus === "saving"
                             }
@@ -307,6 +315,14 @@ function ArticleEditorPage() {
                         </Button>
                     </div>
                 </div>
+
+                {isArchived && (
+                    <div className="mb-4 px-3 py-2 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800">
+                        This article is archived and is now read-only. It
+                        stays accessible via its direct link for historical
+                        references, but can no longer be edited.
+                    </div>
+                )}
 
                 {/* Title */}
                 <TextField
@@ -319,6 +335,7 @@ function ArticleEditorPage() {
                         setSaveStatus("unsaved");
                     }}
                     onBlur={handleTitleBlur}
+                    disabled={isArchived}
                     slotProps={{
                         input: {
                             sx: {
@@ -345,6 +362,7 @@ function ArticleEditorPage() {
                         }
                     }}
                     onBlur={handleDescriptionBlur}
+                    disabled={isArchived}
                     multiline
                     maxRows={3}
                     helperText={
@@ -380,6 +398,7 @@ function ArticleEditorPage() {
                     getOptionLabel={(option) => option.name}
                     value={selectedTopics}
                     onChange={handleTopicsChange}
+                    disabled={isArchived}
                     isOptionEqualToValue={(option, value) =>
                         option.id === value.id
                     }
@@ -422,6 +441,7 @@ function ArticleEditorPage() {
                     markdown={article.markdown}
                     onChange={handleMarkdownChange}
                     onInsertQuotationClick={openPicker}
+                    readOnly={isArchived}
                 />
 
                 <QuotationPickerModal
@@ -464,6 +484,47 @@ function ArticleEditorPage() {
                             disabled={publishMutation.isPending}
                         >
                             Publish
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                <Dialog
+                    open={archiveDialogOpen}
+                    onClose={() => setArchiveDialogOpen(false)}
+                    maxWidth="sm"
+                >
+                    <DialogTitle>Archive this article?</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText sx={{ fontSize: "0.875rem", mb: 1.5 }}>
+                            Archiving is irreversible. Before archiving, you
+                            can keep editing the article as long as you like.
+                            Once archived:
+                        </DialogContentText>
+                        <ul className="text-sm text-stone-600 list-disc pl-5 space-y-1">
+                            <li>
+                                The article is removed from public listings
+                            </li>
+                            <li>
+                                It remains accessible via its direct link, so
+                                historical references keep working
+                            </li>
+                        </ul>
+                    </DialogContent>
+                    <DialogActions sx={{ px: 3, pb: 2 }}>
+                        <Button
+                            onClick={() => setArchiveDialogOpen(false)}
+                            size="small"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleArchive}
+                            size="small"
+                            variant="contained"
+                            color="warning"
+                            disabled={archiveMutation.isPending}
+                        >
+                            Archive
                         </Button>
                     </DialogActions>
                 </Dialog>

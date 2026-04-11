@@ -69,8 +69,21 @@ function ArticlesPage() {
     const limits = articlesData?.data?.limits;
 
     const filtered = useMemo(() => {
-        if (statusTab === "all") return articles;
-        return articles.filter((a) => a.status === statusTab);
+        const list =
+            statusTab === "all"
+                ? articles
+                : articles.filter((a) => a.status === statusTab);
+        return [...list].sort((a, b) => {
+            if (statusTab === "all") {
+                const aArch = a.status === "archived" ? 1 : 0;
+                const bArch = b.status === "archived" ? 1 : 0;
+                if (aArch !== bArch) return aArch - bArch;
+            }
+            return (
+                new Date(b.updated_at).getTime() -
+                new Date(a.updated_at).getTime()
+            );
+        });
     }, [articles, statusTab]);
 
     const [publishSlug, setPublishSlug] = useState<string | null>(null);
@@ -270,13 +283,20 @@ function ArticleRow({
         >
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                    <Link
-                        to="/user/articles/$slug"
-                        params={{ slug: article.slug }}
-                        className="text-sm font-medium text-stone-900 hover:underline truncate"
-                    >
-                        {article.title}
-                    </Link>
+                    {article.status === "published" ? (
+                        <Link
+                            to="/articles/$slug"
+                            params={{ slug: article.slug }}
+                            target="_blank"
+                            className="text-sm font-medium text-stone-900 hover:underline truncate"
+                        >
+                            {article.title}
+                        </Link>
+                    ) : (
+                        <span className="text-sm font-medium text-stone-500 truncate">
+                            {article.title}
+                        </span>
+                    )}
                     <Chip
                         label={article.status}
                         size="small"

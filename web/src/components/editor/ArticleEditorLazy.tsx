@@ -9,6 +9,7 @@ interface ArticleEditorLazyProps {
     markdown: string;
     onChange: (markdown: string) => void;
     onInsertQuotationClick: () => void;
+    readOnly?: boolean;
 }
 
 export const ArticleEditorLazy = forwardRef<ArticleEditorHandle, ArticleEditorLazyProps>(
