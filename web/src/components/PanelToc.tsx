@@ -103,7 +103,7 @@ function TocItem({
         <li>
             <div
                 className={`flex items-center gap-1 py-1 pr-2 rounded text-sm ${
-                    isActive ? "bg-stone-200 font-medium" : "hover:bg-stone-100"
+                    isActive ? "bg-stone-300 font-medium" : "hover:bg-stone-200"
                 }`}
                 style={{ paddingLeft: `${node.depth * 12 + 4}px` }}
             >

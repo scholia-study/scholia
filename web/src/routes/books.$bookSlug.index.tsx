@@ -28,7 +28,7 @@ function BookPage() {
     const toc = tocData?.data;
 
     return (
-        <div className="flex h-[calc(100vh-3rem)]">
+        <div className="flex h-full bg-stone-50">
             <div className="max-w-3xl mx-auto px-8 py-16 w-full">
                 <Link
                     to="/"

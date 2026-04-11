@@ -17,9 +17,10 @@ function IndexPage() {
     const library = data?.data;
 
     return (
-        <div className="max-w-6xl mx-auto px-6 md:px-8 py-10 md:py-14">
-            <div className="md:flex md:gap-10">
-                <div className="md:flex-1 min-w-0">
+        <div className="min-h-full bg-white flex justify-center">
+            <div className="flex w-full max-w-[88rem]">
+            <div className="flex-1 min-w-0 px-6 md:pl-20 md:pr-8 py-10 md:py-14">
+                <div className="max-w-3xl mx-auto">
                     <h1 className="sr-only">Library</h1>
                     {isLoading && <LibrarySkeleton />}
                     {!isLoading && library && library.authors.length === 0 && (
@@ -37,17 +38,18 @@ function IndexPage() {
                             ))}
                         </div>
                     )}
-                </div>
 
-                <aside className="hidden md:block md:w-80 md:shrink-0">
-                    <div className="md:sticky md:top-6">
+                    <div className="md:hidden mt-10">
                         <AboutPanel stats={library?.stats} />
                     </div>
-                </aside>
+                </div>
             </div>
 
-            <div className="md:hidden mt-10">
-                <AboutPanel stats={library?.stats} />
+            <aside className="hidden md:block md:w-96 md:shrink-0 bg-stone-50">
+                <div className="sticky top-0 h-[calc(100vh-3rem)] overflow-y-auto px-6 pt-14 pb-6">
+                    <AboutPanel stats={library?.stats} />
+                </div>
+            </aside>
             </div>
         </div>
     );
@@ -141,7 +143,7 @@ function WorkCard({ work }: { work: LibraryWork }) {
 
 function AboutPanel({ stats }: { stats: LibraryStats | undefined }) {
     return (
-        <div className="border border-stone-200 rounded-lg p-5 bg-white">
+        <div className="md:border-0 border border-stone-200 md:p-0 p-5 md:bg-transparent bg-stone-100">
             <h2 className="text-base font-semibold text-stone-900 mb-2">
                 A scholarly library
             </h2>
@@ -152,7 +154,7 @@ function AboutPanel({ stats }: { stats: LibraryStats | undefined }) {
                 notes, and citation in your own writing.
             </p>
             {stats && (
-                <p className="text-xs text-stone-400 mt-4 pt-4 border-t border-stone-100">
+                <p className="text-xs text-stone-400 mt-4 pt-4 border-t border-stone-200">
                     {formatStats(stats)}
                 </p>
             )}
