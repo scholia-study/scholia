@@ -15,6 +15,7 @@ import {
     useNavigate,
 } from "@tanstack/react-router";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import {
     getGetUserArticleQueryKey,
     getListUserArticlesQueryKey,
@@ -23,6 +24,7 @@ import {
     usePublishArticle,
     useUpdateArticle,
 } from "../api/articles/articles";
+import { FetchError } from "../api/fetcher";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { TopicResponse } from "../api/model";
 import { useListTopics } from "../api/topics/topics";
@@ -148,8 +150,13 @@ function ArticleEditorPage() {
                 queryClient.invalidateQueries({
                     queryKey: getGetUserArticleQueryKey(currentSlug.current),
                 });
-            } catch {
+            } catch (err) {
                 setSaveStatus("unsaved");
+                const message =
+                    err instanceof FetchError && err.message
+                        ? err.message
+                        : "Failed to save changes.";
+                toast.error(message, { id: "article-save-error" });
             }
         },
         [updateMutation, navigate, queryClient],

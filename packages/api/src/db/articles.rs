@@ -14,6 +14,22 @@ use crate::models::article::{
 const FREE_MAX_TOTAL: i32 = 10;
 const FREE_MAX_PUBLISHED: i32 = 3;
 
+// ── Validation helpers ────────────────────────────────────
+
+/// Reject any input containing emoji or other extended pictographs.
+/// Articles are meant for serious study; emoji are out of scope.
+fn reject_emoji(field: &str, value: &str) -> Result<(), AppError> {
+    static EMOJI_RE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
+    let re = EMOJI_RE
+        .get_or_init(|| Regex::new(r"\p{Extended_Pictographic}").expect("emoji regex"));
+    if re.is_match(value) {
+        return Err(AppError::BadRequest(format!(
+            "Emoji and pictographic characters are not allowed in the article {field}."
+        )));
+    }
+    Ok(())
+}
+
 // ── Row types ─────────────────────────────────────────────
 
 struct ArticleRow {
@@ -468,6 +484,7 @@ pub async fn create_article(
     if title.is_empty() {
         return Err(AppError::BadRequest("Title cannot be empty".into()));
     }
+    reject_emoji("title", title)?;
 
     let base_slug = generate_slug(title);
 
@@ -703,6 +720,7 @@ pub async fn update_article(
         if title.is_empty() {
             return Err(AppError::BadRequest("Title cannot be empty".into()));
         }
+        reject_emoji("title", title)?;
         let new_slug = generate_slug(title);
 
         // Try base slug, then with suffix on collision
@@ -733,6 +751,7 @@ pub async fn update_article(
 
     // Update markdown and re-render HTML
     if let Some(md) = markdown {
+        reject_emoji("article body", md)?;
         let html = render_article_markdown(pool, md).await;
         sqlx::query!(
             r#"UPDATE articles SET markdown = $2, html = $3, updated_at = now()
@@ -752,6 +771,7 @@ pub async fn update_article(
                 "Description must be 250 characters or fewer".into(),
             ));
         }
+        reject_emoji("description", desc)?;
         sqlx::query!(
             r#"UPDATE articles SET description = $2, updated_at = now()
                WHERE id = $1"#,

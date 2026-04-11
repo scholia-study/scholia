@@ -19,6 +19,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import {
     getListUserArticlesQueryKey,
     useArchiveArticle,
@@ -26,6 +27,7 @@ import {
     useListUserArticles,
     usePublishArticle,
 } from "../api/articles/articles";
+import { FetchError } from "../api/fetcher";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { ArticleResponse } from "../api/model";
 import { useArchiveArticleDialog } from "../hooks/useArchiveArticleDialog";
@@ -126,12 +128,27 @@ function ArticlesPage() {
 
     const handleCreate = async () => {
         if (!newTitle.trim()) return;
-        const result = await createMutation.mutateAsync({ data: { title: newTitle.trim() } });
-        setCreateDialogOpen(false);
-        setNewTitle("");
-        queryClient.invalidateQueries({ queryKey: getListUserArticlesQueryKey() });
-        if (result.data?.slug) {
-            navigate({ to: "/user/articles/$slug", params: { slug: result.data.slug } });
+        try {
+            const result = await createMutation.mutateAsync({
+                data: { title: newTitle.trim() },
+            });
+            setCreateDialogOpen(false);
+            setNewTitle("");
+            queryClient.invalidateQueries({
+                queryKey: getListUserArticlesQueryKey(),
+            });
+            if (result.data?.slug) {
+                navigate({
+                    to: "/user/articles/$slug",
+                    params: { slug: result.data.slug },
+                });
+            }
+        } catch (err) {
+            const message =
+                err instanceof FetchError && err.message
+                    ? err.message
+                    : "Failed to create article.";
+            toast.error(message, { id: "article-create-error" });
         }
     };
 
