@@ -19,7 +19,7 @@ function IndexPage() {
     return (
         <div className="min-h-full bg-white flex justify-center">
             <div className="flex w-full max-w-[88rem]">
-            <div className="flex-1 min-w-0 px-6 md:pl-20 md:pr-8 py-10 md:py-14">
+            <div className="flex-1 min-w-0 px-6 md:pl-20 md:pr-8 py-10 md:pt-24 md:pb-14">
                 <div className="max-w-3xl mx-auto">
                     <h1 className="sr-only">Library</h1>
                     {isLoading && <LibrarySkeleton />}
@@ -46,7 +46,7 @@ function IndexPage() {
             </div>
 
             <aside className="hidden md:block md:w-96 md:shrink-0 bg-stone-50">
-                <div className="sticky top-0 h-[calc(100vh-3rem)] overflow-y-auto px-6 pt-14 pb-6">
+                <div className="sticky top-0 h-[calc(100vh-3rem)] overflow-y-auto px-6 pt-24 pb-6">
                     <AboutPanel stats={library?.stats} />
                 </div>
             </aside>
