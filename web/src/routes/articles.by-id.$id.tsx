@@ -12,7 +12,7 @@ function ArticleByIdRedirect() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-white">
+            <div className="min-h-full bg-white">
                 <div className="max-w-3xl mx-auto px-8 py-16">
                     <p className="text-sm text-stone-400">Loading...</p>
                 </div>
@@ -25,7 +25,7 @@ function ArticleByIdRedirect() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-full bg-white">
             <div className="max-w-3xl mx-auto px-8 py-16">
                 <p className="text-sm text-stone-400">Article not found.</p>
             </div>

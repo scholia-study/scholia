@@ -26,8 +26,16 @@ export function Navbar() {
     };
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-4 bg-white/80 backdrop-blur border-b border-stone-200">
-            <Link to="/" className="font-bold text-stone-900 text-sm">
+        <nav className="shrink-0 h-12 flex items-center justify-between px-4 bg-white border-b border-stone-200">
+            <Link
+                to="/"
+                className="flex items-center gap-2 font-bold text-stone-900 text-sm"
+            >
+                <img
+                    src="/scholia_book.webp"
+                    alt=""
+                    className="h-7 w-7 object-contain"
+                />
                 Scholia
             </Link>
 
@@ -60,6 +68,7 @@ export function Navbar() {
                                     anchorEl={anchorEl}
                                     open={Boolean(anchorEl)}
                                     onClose={() => setAnchorEl(null)}
+                                    slots={{ transition: Fade }}
                                     transformOrigin={{
                                         horizontal: "right",
                                         vertical: "top",

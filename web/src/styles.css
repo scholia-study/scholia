@@ -62,11 +62,6 @@
   --font-serif: "Libre Baskerville", serif;
 }
 
-/* Offset sticky toolbar below fixed navbar (h-12) + subnav (h-10) */
-[class*="_toolbarRoot_"] {
-  top: 5.5rem !important;
-}
-
 .sperrdruck {
   font-weight: bold;
 }

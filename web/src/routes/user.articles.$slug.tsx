@@ -226,7 +226,7 @@ function ArticleEditorPage() {
 
     if (!article) {
         return (
-            <div className="min-h-screen bg-white">
+            <div className="min-h-full bg-white">
                 <div className="max-w-4xl mx-auto px-8 py-16">
                     <p className="text-sm text-stone-400">Loading...</p>
                 </div>
@@ -237,7 +237,7 @@ function ArticleEditorPage() {
     const isArchived = article.status === "archived";
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-full bg-white">
             <div className="max-w-4xl mx-auto px-8 py-16">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">

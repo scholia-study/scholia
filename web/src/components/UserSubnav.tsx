@@ -14,7 +14,7 @@ export function UserSubnav() {
     if (!isUserRoute) return null;
 
     return (
-        <nav className="hidden md:flex fixed top-12 left-0 right-0 z-40 h-10 items-center px-4 bg-white/80 backdrop-blur border-b border-stone-200 gap-1">
+        <nav className="hidden md:flex shrink-0 h-10 items-center px-4 bg-white border-b border-stone-200 gap-1">
             {USER_ROUTES.map((route) => (
                 <Link
                     key={route.to}

@@ -4,7 +4,6 @@ import {
     HeadContent,
     Outlet,
     Scripts,
-    useMatches,
 } from "@tanstack/react-router";
 import { Toaster } from "react-hot-toast";
 import { Navbar } from "../components/Navbar";
@@ -34,16 +33,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootComponent() {
-    const matches = useMatches();
-    const isUserRoute = matches.some((m) => m.fullPath.startsWith("/user/"));
-
     return (
         <>
             <Navbar />
             <UserSubnav />
-            <main
-                className={`min-h-screen pt-12 ${isUserRoute ? "md:pt-[5.5rem]" : ""}`}
-            >
+            <main className="flex-1 overflow-y-auto">
                 <Outlet />
             </main>
             <ScrollToTop />
@@ -54,7 +48,7 @@ function RootComponent() {
 
 function NotFound() {
     return (
-        <div className="flex items-center justify-center h-[calc(100vh-3rem)]">
+        <div className="flex items-center justify-center h-full">
             <div className="text-center">
                 <h1 className="text-2xl font-bold text-stone-900 mb-2">
                     Page not found
@@ -73,7 +67,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <head>
                 <HeadContent />
             </head>
-            <body className="min-h-screen bg-stone-50  text-stone-900">
+            <body className="h-screen overflow-hidden flex flex-col bg-stone-50 text-stone-900">
                 {children}
                 <Scripts />
             </body>
