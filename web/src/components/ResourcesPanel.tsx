@@ -5,18 +5,29 @@ import CompareOutlined from "@mui/icons-material/CompareOutlined";
 import EditNoteOutlined from "@mui/icons-material/EditNoteOutlined";
 import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
 import FavoriteOutlined from "@mui/icons-material/FavoriteOutlined";
-import MenuBookOutlined from "@mui/icons-material/MenuBookOutlined";
 import ListOutlined from "@mui/icons-material/ListOutlined";
+import MenuBookOutlined from "@mui/icons-material/MenuBookOutlined";
 import { IconButton } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
-import { useListBooks } from "../api/books/books";
-import type { FootnoteSentenceResponse, NoteResponse, ResourceResponse, SentenceResponse, TocNodeResponse } from "../api/model";
-import { useGetToc } from "../api/toc/toc";
-import { useListResources } from "../api/resources/resources";
-import { getListQuotationsQueryKey, useCreateQuotation, useListQuotations } from "../api/quotations/quotations";
-import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { useListBooks } from "../api/books/books";
+import type {
+    FootnoteSentenceResponse,
+    NoteResponse,
+    ResourceResponse,
+    SentenceResponse,
+    TocNodeResponse,
+} from "../api/model";
+import {
+    getListQuotationsQueryKey,
+    useCreateQuotation,
+    useListQuotations,
+} from "../api/quotations/quotations";
+import { useListResources } from "../api/resources/resources";
+import { useGetToc } from "../api/toc/toc";
 import { useAuth } from "../hooks/useAuth";
 import { useUnsaveQuotation } from "../hooks/useUnsaveQuotation";
 import { CommentaryView, getSentenceRange } from "./CommentaryView";
@@ -26,7 +37,14 @@ import { PanelToc } from "./PanelToc";
 import { ResourceFormModal } from "./ResourceFormModal";
 import { SentenceDetail } from "./SentenceDetail";
 
-type ViewKind = "toc" | "compare" | "verbatim" | "paraphrase" | "allusion" | "sentence" | "notes";
+type ViewKind =
+    | "toc"
+    | "compare"
+    | "verbatim"
+    | "paraphrase"
+    | "allusion"
+    | "sentence"
+    | "notes";
 
 interface ResourcesPanelProps {
     toc: TocNodeResponse[] | undefined;
@@ -35,7 +53,11 @@ interface ResourcesPanelProps {
     onNavigate?: (nodeSlug: string) => void;
     onAddComparisonPanel: (bookSlug: string, nodeSlug: string) => void;
     canAddPanel: boolean;
-    selectedSentence: SentenceResponse | FootnoteSentenceResponse | (SentenceResponse | FootnoteSentenceResponse)[] | undefined;
+    selectedSentence:
+        | SentenceResponse
+        | FootnoteSentenceResponse
+        | (SentenceResponse | FootnoteSentenceResponse)[]
+        | undefined;
     selectedSentenceId: string | undefined;
     onClose: () => void;
     activeView: string | undefined;
@@ -57,7 +79,9 @@ export function ResourcesPanel({
 }: ResourcesPanelProps) {
     const { user } = useAuth();
     const isEditor =
-        user?.roles?.includes("editor") || user?.roles?.includes("admin") || false;
+        user?.roles?.includes("editor") ||
+        user?.roles?.includes("admin") ||
+        false;
 
     // Fetch resource counts for menu badges
     const sentenceRange = useMemo(
@@ -77,7 +101,8 @@ export function ResourcesPanel({
         const all = resourcesData?.data?.resources ?? [];
         return {
             verbatim: all.filter((r) => r.resource_type === "verbatim").length,
-            paraphrase: all.filter((r) => r.resource_type === "paraphrase").length,
+            paraphrase: all.filter((r) => r.resource_type === "paraphrase")
+                .length,
             allusion: all.filter((r) => r.resource_type === "allusion").length,
         };
     }, [resourcesData]);
@@ -137,16 +162,20 @@ export function ResourcesPanel({
                 if (q.sentence_kind !== sentenceRange.kind) return false;
                 const qStart = q.anchor_sentence_start_number;
                 const qEnd = q.anchor_sentence_end_number ?? qStart;
-                return qStart <= sentenceRange.end && qEnd >= sentenceRange.start;
+                return (
+                    qStart <= sentenceRange.end && qEnd >= sentenceRange.start
+                );
             })
             .reduce((sum, q) => sum + q.note_count, 0);
     }, [quotationsData, sentenceRange]);
 
     // Check if current selection has an exact-match saved quotation
     const exactQuotation = useMemo(() => {
-        if (!sentenceRange || !quotationsData?.data?.quotations) return undefined;
+        if (!sentenceRange || !quotationsData?.data?.quotations)
+            return undefined;
         return quotationsData.data.quotations.find((q) => {
-            const startMatch = q.anchor_sentence_start_number === sentenceRange.start;
+            const startMatch =
+                q.anchor_sentence_start_number === sentenceRange.start;
             const endMatch =
                 sentenceRange.start === sentenceRange.end
                     ? q.anchor_sentence_end_number == null ||
@@ -165,7 +194,9 @@ export function ResourcesPanel({
                 toast.success("Quotation saved");
                 if (activeNodeId) {
                     queryClient.invalidateQueries({
-                        queryKey: getListQuotationsQueryKey(bookSlug, { node_id: activeNodeId }),
+                        queryKey: getListQuotationsQueryKey(bookSlug, {
+                            node_id: activeNodeId,
+                        }),
                     });
                 }
             },
@@ -173,7 +204,11 @@ export function ResourcesPanel({
         },
     });
 
-    const { requestUnsave, UnsaveDialog, isPending: unsavePending } = useUnsaveQuotation({
+    const {
+        requestUnsave,
+        UnsaveDialog,
+        isPending: unsavePending,
+    } = useUnsaveQuotation({
         bookSlug,
         activeNodeId,
     });
@@ -187,7 +222,10 @@ export function ResourcesPanel({
                 slug: bookSlug,
                 data: {
                     sentence_start: sentenceRange.start,
-                    sentence_end: sentenceRange.start !== sentenceRange.end ? sentenceRange.end : undefined,
+                    sentence_end:
+                        sentenceRange.start !== sentenceRange.end
+                            ? sentenceRange.end
+                            : undefined,
                     sentence_kind: sentenceRange.kind,
                 },
             });
@@ -196,7 +234,8 @@ export function ResourcesPanel({
 
     // Modal state for note create/edit
     const [noteModalOpen, setNoteModalOpen] = useState(false);
-    const [noteModalQuotationId, setNoteModalQuotationId] = useState<string>("");
+    const [noteModalQuotationId, setNoteModalQuotationId] =
+        useState<string>("");
     const [editingNote, setEditingNote] = useState<NoteResponse | undefined>();
 
     const handleOpenNoteModal = (quotationId: string, note?: NoteResponse) => {
@@ -209,16 +248,21 @@ export function ResourcesPanel({
     const sentenceContextStr = useMemo(() => {
         if (!sentenceRange) return undefined;
         const { start, end } = sentenceRange;
-        const label = start === end ? `Sentence ${start}` : `Sentences ${start}–${end}`;
+        const label =
+            start === end ? `Sentence ${start}` : `Sentences ${start}–${end}`;
         // Try to get a text snippet from selected sentences
         if (!selectedSentence) return label;
-        const sentences = Array.isArray(selectedSentence) ? selectedSentence : [selectedSentence];
+        const sentences = Array.isArray(selectedSentence)
+            ? selectedSentence
+            : [selectedSentence];
         if (sentences.length === 0) return label;
         const firstText = sentences[0].text;
-        const snippet = firstText.length > 60 ? `${firstText.slice(0, 60)}...` : firstText;
+        const snippet =
+            firstText.length > 60 ? `${firstText.slice(0, 60)}...` : firstText;
         if (sentences.length === 1) return `${label}: "${snippet}"`;
         const lastText = sentences[sentences.length - 1].text;
-        const endSnippet = lastText.length > 40 ? `...${lastText.slice(-40)}` : lastText;
+        const endSnippet =
+            lastText.length > 40 ? `...${lastText.slice(-40)}` : lastText;
         return `${label}: "${snippet}" ... "${endSnippet}"`;
     }, [sentenceRange, selectedSentence]);
 
@@ -272,11 +316,7 @@ export function ResourcesPanel({
                                         : "\u00A0"}
                     </div>
                 </div>
-                <IconButton
-                    size="small"
-                    onClick={onClose}
-                    title="Close"
-                >
+                <IconButton size="small" onClick={onClose} title="Close">
                     <CloseOutlined fontSize="small" />
                 </IconButton>
             </div>
@@ -310,41 +350,89 @@ export function ResourcesPanel({
                             onClick={() => onViewChange("verbatim")}
                             label={`Verbatim${commentaryCounts.verbatim ? ` (${commentaryCounts.verbatim})` : ""}`}
                             disabled={!selectedSentence}
-                            icon={<MenuBookOutlined fontSize="small" sx={{ color: "#722f37" }} />}
+                            icon={
+                                <MenuBookOutlined
+                                    fontSize="small"
+                                    sx={{ color: "#722f37" }}
+                                />
+                            }
                         />
                         <MenuButton
                             onClick={() => onViewChange("paraphrase")}
                             label={`Paraphrase${commentaryCounts.paraphrase ? ` (${commentaryCounts.paraphrase})` : ""}`}
                             disabled={!selectedSentence}
-                            icon={<MenuBookOutlined fontSize="small" sx={{ color: "#5c6b8b" }} />}
+                            icon={
+                                <MenuBookOutlined
+                                    fontSize="small"
+                                    sx={{ color: "#5c6b8b" }}
+                                />
+                            }
                         />
                         <MenuButton
                             onClick={() => onViewChange("allusion")}
                             label={`Allusion${commentaryCounts.allusion ? ` (${commentaryCounts.allusion})` : ""}`}
                             disabled={!selectedSentence}
-                            icon={<MenuBookOutlined fontSize="small" sx={{ color: "#5c7a5c" }} />}
+                            icon={
+                                <MenuBookOutlined
+                                    fontSize="small"
+                                    sx={{ color: "#5c7a5c" }}
+                                />
+                            }
                         />
-                        {user && (
+                        <div className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-3 pb-1">
+                            Tools
+                        </div>
+                        {user ? (
                             <>
-                                <div className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-3 pb-1">
-                                    My Notes
-                                </div>
                                 <MenuButton
                                     onClick={() => onViewChange("notes")}
                                     label={`Notes${noteCount ? ` (${noteCount})` : ""}`}
                                     disabled={!selectedSentence}
-                                    icon={<EditNoteOutlined fontSize="small" sx={{ color: "#6b5b73" }} />}
+                                    icon={
+                                        <EditNoteOutlined
+                                            fontSize="small"
+                                            sx={{ color: "#6b5b73" }}
+                                        />
+                                    }
                                 />
                                 <MenuButton
                                     onClick={handleToggleSaveQuotation}
-                                    label={exactQuotation ? "Unsave Quotation" : "Save Quotation"}
-                                    disabled={!selectedSentence || createQuotation.isPending || unsavePending}
-                                    icon={exactQuotation
-                                        ? <FavoriteOutlined fontSize="small" sx={{ color: "#b45264" }} />
-                                        : <FavoriteBorderOutlined fontSize="small" sx={{ color: "#b45264" }} />
+                                    label={
+                                        exactQuotation
+                                            ? "Unsave Quotation"
+                                            : "Save Quotation"
+                                    }
+                                    disabled={
+                                        !selectedSentence ||
+                                        createQuotation.isPending ||
+                                        unsavePending
+                                    }
+                                    icon={
+                                        exactQuotation ? (
+                                            <FavoriteOutlined
+                                                fontSize="small"
+                                                sx={{ color: "#b45264" }}
+                                            />
+                                        ) : (
+                                            <FavoriteBorderOutlined
+                                                fontSize="small"
+                                                sx={{ color: "#b45264" }}
+                                            />
+                                        )
                                     }
                                 />
                             </>
+                        ) : (
+                            <p className="px-3 py-2 text-sm text-stone-400">
+                                <Link
+                                    to="/login"
+                                    className="text-stone-600 underline hover:text-stone-900"
+                                >
+                                    Log in or create an account
+                                </Link>{" "}
+                                to start saving quotations, writig notes and
+                                articles.
+                            </p>
                         )}
                     </nav>
                 </div>
@@ -390,9 +478,7 @@ export function ResourcesPanel({
             {/* Compare Text view */}
             {viewKind === "compare" &&
                 (!compareBookSlug ? (
-                    <BookPickerView
-                        onPickBook={setCompareBookSlug}
-                    />
+                    <BookPickerView onPickBook={setCompareBookSlug} />
                 ) : (
                     <CompareTocView
                         compareBookSlug={compareBookSlug}
@@ -416,7 +502,10 @@ export function ResourcesPanel({
 
             {/* Resource create/edit modal */}
             <ResourceFormModal
-                key={editingResource?.id ?? `${modalDefaults?.type}-${modalDefaults?.start}-${modalDefaults?.end}-${modalDefaults?.kind}`}
+                key={
+                    editingResource?.id ??
+                    `${modalDefaults?.type}-${modalDefaults?.start}-${modalDefaults?.end}-${modalDefaults?.kind}`
+                }
                 open={resourceModalOpen}
                 onClose={() => setResourceModalOpen(false)}
                 bookSlug={bookSlug}

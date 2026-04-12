@@ -139,6 +139,10 @@ export function ReaderLayout({
 }: ReaderLayoutProps) {
     const navigate = useNavigate();
 
+    // Suppress scroll-driven URL updates once a close/navigation is in progress,
+    // preventing observer-fired navigations from racing with the close navigation.
+    const closingRef = useRef(false);
+
     // Assign stable keys to panels that persist across index changes
     const panelKeysRef = useRef<string[]>([]);
     if (panelKeysRef.current.length < panels.length) {
@@ -256,6 +260,9 @@ export function ReaderLayout({
 
     const handleClosePanel = useCallback(
         (panelIndex: number) => {
+            closingRef.current = true;
+            // Reset after navigation settles so scroll updates resume for remaining panels
+            setTimeout(() => { closingRef.current = false; }, 500);
             const newPanels = panels.filter((_, i) => i !== panelIndex);
             const newSelections = new Map<number, string>();
             for (const [idx, id] of selections) {
@@ -451,6 +458,7 @@ export function ReaderLayout({
     /** Replace-navigate for scroll-driven URL updates (no history entry) */
     const handleScrollNavigate = useCallback(
         (panelIndex: number, nodeSlug: string) => {
+            if (closingRef.current) return;
             const newPanels = panels.map((p, i) =>
                 i === panelIndex ? { ...p, nodeSlug } : p,
             );
@@ -597,10 +605,10 @@ export function ReaderLayout({
                     onClose={
                         panels.length > 1
                             ? () => handleClosePanel(idx)
-                            : () =>
-                                  navigate({
-                                      to: "/",
-                                  })
+                            : () => {
+                                  closingRef.current = true;
+                                  navigate({ to: "/" });
+                              }
                     }
                     onScrollNavigate={(nodeSlug) =>
                         handleScrollNavigate(idx, nodeSlug)
