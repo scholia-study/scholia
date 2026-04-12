@@ -4254,6 +4254,9 @@
           "label": {
             "type": "string"
           },
+          "label_html": {
+            "type": "string"
+          },
           "slug": {
             "type": "string"
           },

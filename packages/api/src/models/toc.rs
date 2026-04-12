@@ -8,6 +8,8 @@ pub struct TocNodeResponse {
     pub source_ref: String,
     pub slug: String,
     pub label: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label_html: Option<String>,
     pub depth: i16,
     pub sort_order: i32,
     pub has_content: bool,
@@ -51,6 +53,10 @@ impl utoipa::ToSchema for TocNodeResponse {
                 ObjectBuilder::new().schema_type(SchemaType::new(Type::String)),
             )
             .required("label")
+            .property(
+                "label_html",
+                ObjectBuilder::new().schema_type(SchemaType::new(Type::String)),
+            )
             .property(
                 "depth",
                 ObjectBuilder::new().schema_type(SchemaType::new(Type::Integer)),

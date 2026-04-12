@@ -121,6 +121,7 @@ CREATE TABLE toc_nodes (
     sort_order      INT NOT NULL,
     depth           SMALLINT NOT NULL,
     label           TEXT NOT NULL,
+    label_html      TEXT,
     admin_notes     TEXT,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),

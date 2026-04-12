@@ -32,6 +32,7 @@ pub struct TocNodeData {
     pub sort_order: i32,
     pub depth: i16,
     pub label: String,
+    pub label_html: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub parent_source_ref: Option<String>,
     pub content_blocks: Vec<ContentBlockData>,

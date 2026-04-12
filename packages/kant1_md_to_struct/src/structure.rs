@@ -140,13 +140,17 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
                 })
                 .collect();
 
+            let plain_label = md_to_plain(label);
+            let html_label = md_to_html(label);
+
             TocNodeData {
                 source_ref: format!("{:03}", pf.flat_index + 1),
-                slug: slugify(label),
+                slug: slugify(&plain_label),
                 path,
                 sort_order: pf.flat_index as i32 + 1,
                 depth: depth as i16,
-                label: label.to_string(),
+                label: plain_label,
+                label_html: html_label,
                 parent_source_ref,
                 content_blocks,
             }
@@ -454,5 +458,36 @@ mod tests {
         let marker_map = HashMap::new();
         let result = rewrite_footnote_refs("text[^*] end", 0, &marker_map);
         assert_eq!(result, "text[^*] end");
+    }
+
+    #[test]
+    fn test_label_plain_and_html() {
+        use kant1_md_to_struct::html::{md_to_html, md_to_plain};
+
+        // Plain label — no formatting
+        let label = "Vorrede zur zweiten Auflage";
+        assert_eq!(md_to_plain(label), "Vorrede zur zweiten Auflage");
+        assert_eq!(md_to_html(label), "Vorrede zur zweiten Auflage");
+
+        // Label with italic
+        let label = "Von den _Ideen_ überhaupt";
+        assert_eq!(md_to_plain(label), "Von den Ideen überhaupt");
+        assert_eq!(
+            md_to_html(label),
+            "Von den <span class=\"antiqua\">Ideen</span> überhaupt"
+        );
+
+        // Label with bold
+        let label = "**Einleitung** zur Kritik";
+        assert_eq!(md_to_plain(label), "Einleitung zur Kritik");
+        assert_eq!(md_to_html(label), "<b>Einleitung</b> zur Kritik");
+
+        // Label with Sperrdruck
+        let label = "***Ästhetik*** und Logik";
+        assert_eq!(md_to_plain(label), "Ästhetik und Logik");
+        assert_eq!(
+            md_to_html(label),
+            "<span class=\"sperrdruck\">Ästhetik</span> und Logik"
+        );
     }
 }

@@ -11,6 +11,7 @@ export interface TocNodeResponse {
     has_content: boolean;
     id: string;
     label: string;
+    label_html?: string;
     slug: string;
     sort_order: number;
     source_node_id?: string;

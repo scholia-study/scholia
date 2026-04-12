@@ -220,9 +220,16 @@ pub async fn run(
             None
         };
 
+        // Store label_html only when it differs from plain label (i.e. has formatting)
+        let label_html = if node.label_html != node.label {
+            Some(&node.label_html)
+        } else {
+            None
+        };
+
         let node_id: Uuid = sqlx::query_scalar(
-            "INSERT INTO toc_nodes (book_id, parent_id, source_node_id, source_ref, slug, path, sort_order, depth, label)
-             VALUES ($1, $2, $3, $4, $5, $6::ltree, $7, $8, $9)
+            "INSERT INTO toc_nodes (book_id, parent_id, source_node_id, source_ref, slug, path, sort_order, depth, label, label_html)
+             VALUES ($1, $2, $3, $4, $5, $6::ltree, $7, $8, $9, $10)
              RETURNING id",
         )
         .bind(book_id)
@@ -234,6 +241,7 @@ pub async fn run(
         .bind(node.sort_order)
         .bind(node.depth)
         .bind(&node.label)
+        .bind(label_html)
         .fetch_one(&mut *tx)
         .await?;
 

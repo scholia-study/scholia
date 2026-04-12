@@ -124,13 +124,17 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
                 })
                 .collect();
 
+            let plain_label = md_to_plain(label);
+            let html_label = md_to_html(label);
+
             TocNodeData {
                 source_ref: format!("{:03}", pf.flat_index + 1),
-                slug: slugify(label),
+                slug: slugify(&plain_label),
                 path,
                 sort_order: pf.flat_index as i32 + 1,
                 depth: depth as i16,
-                label: label.to_string(),
+                label: plain_label,
+                label_html: html_label,
                 parent_source_ref,
                 content_blocks,
             }

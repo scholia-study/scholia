@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import parse from "html-react-parser";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { TocNodeResponse } from "../api/model";
 
@@ -131,14 +132,14 @@ function TocItem({
                         }
                         className="flex-1 truncate text-left"
                     >
-                        {node.label}
+                        {node.label_html ? parse(node.label_html) : node.label}
                     </Link>
                 ) : (
                     <span
                         className="flex-1 truncate cursor-pointer"
                         onClick={() => hasChildren && setExpanded(!expanded)}
                     >
-                        {node.label}
+                        {node.label_html ? parse(node.label_html) : node.label}
                     </span>
                 )}
             </div>
