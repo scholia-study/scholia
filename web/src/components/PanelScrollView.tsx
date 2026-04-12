@@ -85,8 +85,13 @@ export const PanelScrollView = forwardRef<
     const waitingForSortOrder =
         initialNodeSlug != null && startSortOrder == null;
 
+    // Load a few nodes before the target so scrolling up doesn't immediately
+    // trigger a backward fetch (which fights with scroll anchoring after TOC jumps).
+    const PREFETCH_BUFFER = 5;
     const initialPageParam: PageCursor | undefined =
-        startSortOrder != null ? { after: startSortOrder - 1 } : undefined;
+        startSortOrder != null
+            ? { after: Math.max(0, startSortOrder - 1 - PREFETCH_BUFFER) }
+            : undefined;
 
     const {
         data,
@@ -445,9 +450,16 @@ const VirtualizedScroll = forwardRef<
         }
     }, [items, nodes.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+    // Track when the last TOC jump settled so we can suppress backward fetching
+    // during the settling period (prevents prepend from fighting with scroll anchoring).
+    const scrollSettledRef = useRef<number>(0);
+
     // Backward infinite scroll trigger
     useEffect(() => {
         if (!items.length) return;
+        // Suppress backward fetching while a TOC jump is pending or just settled
+        if (pendingScrollTarget) return;
+        if (Date.now() - scrollSettledRef.current < 200) return;
         const firstItem = items[0];
         if (
             firstItem.index <= 3 &&
@@ -456,7 +468,7 @@ const VirtualizedScroll = forwardRef<
         ) {
             fetchPreviousPage();
         }
-    }, [items, hasPreviousPage, isFetchingPreviousPage, fetchPreviousPage]);
+    }, [items, hasPreviousPage, isFetchingPreviousPage, fetchPreviousPage, pendingScrollTarget]);
 
     // TOC scroll tracking via IntersectionObserver.
     // Use a stable callback ref so we don't tear down/recreate the observer
@@ -566,6 +578,7 @@ const VirtualizedScroll = forwardRef<
             // before we drop the curtain.
             const timer = setTimeout(() => {
                 setPendingScrollTarget(null);
+                scrollSettledRef.current = Date.now();
             }, 20);
             return () => clearTimeout(timer);
         }
