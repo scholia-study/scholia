@@ -69,7 +69,7 @@ static INITIAL_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b[A-ZÄÖÜ]
 /// Numbered label pattern: detects "1." "2." "12." at the start of text or after whitespace.
 /// These are paragraph numbering markers, not sentence endings.
 static NUMBERED_LABEL_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"(?:^|\s)\d{1,2}\.\s*$").unwrap());
+    LazyLock::new(|| Regex::new(r"^\d{1,2}\.\s*$").unwrap());
 
 /// Split a paragraph into sentences, returning (text, html) pairs.
 ///
@@ -750,5 +750,31 @@ mod tests {
         assert_eq!(result[0].0, "First part:");
         assert_eq!(result[1].0, "Second part.");
         assert_eq!(result[2].0, "Third sentence.");
+    }
+
+    /// Diagnostic test for Kant 009 block 3 sentence parity.
+    /// The EN and DE paragraphs both have 7 sentences visually,
+    /// but the EN splitter produces 6. This test reveals which boundary is missed.
+    #[test]
+    fn test_kant_009_block3_sentence_parity() {
+        // Plain text after md_to_plain processing (no markdown markers)
+        let en_plain = "One might initially indeed think: that the proposition 7+5 = 12 is a merely analytic proposition, which follows from the concept of a sum of seven and five in accordance with the principle of contradiction. But if one considers it more closely, one finds that the concept of the sum of 7 and 5 contains nothing further than the unification of both numbers into a single one, through which it is not at all thought what this single number is that comprehends both. The concept of twelve is by no means already thought merely by my thinking of that unification of seven and five, and I may analyze my concept of such a possible sum for as long as I please, I will still not encounter the twelve in it. One must go beyond these concepts, by taking assistance from the intuition that corresponds to one of the two, such as one\u{2019}s five fingers or (like Segner in his arithmetic) five points, and thus successively add the units of the five given in intuition to the concept of seven. For I take first the number 7, and by taking the fingers of my hand as an intuition to assist with the concept of 5, I now successively add the units, which I previously brought together in order to make up the number 5, to the number 7 by means of that image of mine, and thus see the number 12 arise. That 5 should be added to 7 I have indeed thought in the concept of a sum = 7+5, but not that this sum is equal to the number 12. The arithmetical proposition is therefore always synthetic, of which one becomes all the more clearly aware if one takes somewhat larger numbers, since it then becomes clearly evident that, twist and turn our concepts as we will, we could never find the sum by means of the mere analysis of our concepts, without taking assistance from intuition.";
+
+        let de_plain = "Man sollte anfänglich zwar denken: dass der Satz 7+5 = 12 ein bloß analytischer Satz sei, der aus dem Begriffe einer Summe von Sieben und Fünf nach dem Satze des Widerspruches erfolge. Allein wenn man es näher betrachtet, so findet man, dass der Begriff der Summe von 7 und 5 nichts weiter enthalte, als die Vereinigung beider Zahlen in eine einzige, wodurch ganz und gar nicht gedacht wird, welches diese einzige Zahl sei, die beide zusammenfasst. Der Begriff von Zwölf ist keineswegs dadurch schon gedacht, dass ich mir bloß jene Vereinigung von Sieben und Fünf denke, und ich mag meinen Begriff von einer solchen möglichen Summe noch so lange zergliedern, so werde ich doch darin die Zwölf nicht antreffen. Man muss über diese Begriffe hinausgehen, indem man die Anschauung zu Hilfe nimmt, die einem von beiden korrespondiert, etwa seine fünf Finger oder (wie Segner in seiner Arithmetik) fünf Punkte, und so nach und nach die Einheiten der in der Anschauung gegebenen Fünf zu dem Begriffe der Sieben hinzutut. Denn ich nehme zuerst die Zahl 7, und indem ich für den Begriff der 5 die Finger meiner Hand als Anschauung zu Hilfe nehme, so tue ich die Einheiten, die ich vorher zusammennahm, um die Zahl 5 auszumachen, nun an jenem meinem Bilde nach und nach zur Zahl 7 und sehe so die Zahl 12 entspringen. Dass 5 zu 7 hinzugetan werden sollten, habe ich zwar in dem Begriff einer Summe = 7+5 gedacht, aber nicht, dass diese Summe der Zahl 12 gleich sei. Der arithmetische Satz ist also jederzeit synthetisch, welches man desto deutlicher inne wird, wenn man etwas größere Zahlen nimmt, da es denn klar einleuchtet, dass, wir möchten unsere Begriffe drehen und wenden, wie wir wollen, wir, ohne die Anschauung zu Hilfe zu nehmen, vermittelst der bloßen Zergliederung unserer Begriffe, die Summe niemals finden könnten.";
+
+        let en_sentences = split_sentences_en(en_plain, en_plain);
+        let de_sentences = split_sentences(de_plain, de_plain);
+
+        eprintln!("\n=== EN sentences ({}) ===", en_sentences.len());
+        for (i, (text, _)) in en_sentences.iter().enumerate() {
+            eprintln!("  [{}] {}", i, &text[..text.len().min(120)]);
+        }
+        eprintln!("\n=== DE sentences ({}) ===", de_sentences.len());
+        for (i, (text, _)) in de_sentences.iter().enumerate() {
+            eprintln!("  [{}] {}", i, &text[..text.len().min(120)]);
+        }
+
+        assert_eq!(de_sentences.len(), 7, "DE should have 7 sentences");
+        assert_eq!(en_sentences.len(), 7, "EN should have 7 sentences (currently produces 6 — which boundary is missed?)");
     }
 }
