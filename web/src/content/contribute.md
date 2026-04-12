@@ -1,3 +1,5 @@
+<img src="/images/study.webp" alt="" class="mx-auto w-80 h-56 object-contain mb-8" />
+
 # Contribute
 
 Scholia is built on the conviction that great texts deserve careful, structured attention. Every work in the library has been parsed sentence by sentence, cross-referenced across translations, and enriched with margin references, commentary links, and annotation tools. This is painstaking work, and we need help.

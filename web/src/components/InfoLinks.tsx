@@ -7,6 +7,7 @@ import { Link } from "@tanstack/react-router";
 export const INFO_LINKS = [
     { to: "/about" as const, label: "About" },
     { to: "/contribute" as const, label: "Contribute" },
+    { to: "/licence" as const, label: "Licence" },
     { to: "/terms" as const, label: "Terms" },
     { to: "/privacy" as const, label: "Privacy" },
 ];

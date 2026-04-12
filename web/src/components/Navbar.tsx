@@ -33,7 +33,7 @@ export function Navbar() {
                     className="flex items-center gap-2 font-bold text-stone-900 text-sm"
                 >
                     <img
-                        src="/scholia_book.webp"
+                        src="/images/scholia_book.webp"
                         alt=""
                         className="h-7 w-7 object-contain"
                     />

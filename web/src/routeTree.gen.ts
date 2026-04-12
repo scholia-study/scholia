@@ -15,6 +15,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LicenceRouteImport } from './routes/licence'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ContributeRouteImport } from './routes/contribute'
 import { Route as AboutRouteImport } from './routes/about'
@@ -59,6 +60,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LicenceRoute = LicenceRouteImport.update({
+  id: '/licence',
+  path: '/licence',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/contribute': typeof ContributeRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/licence': typeof LicenceRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/contribute': typeof ContributeRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/licence': typeof LicenceRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/contribute': typeof ContributeRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/licence': typeof LicenceRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contribute'
     | '/forgot-password'
+    | '/licence'
     | '/login'
     | '/privacy'
     | '/register'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contribute'
     | '/forgot-password'
+    | '/licence'
     | '/login'
     | '/privacy'
     | '/register'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contribute'
     | '/forgot-password'
+    | '/licence'
     | '/login'
     | '/privacy'
     | '/register'
@@ -284,6 +296,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ContributeRoute: typeof ContributeRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LicenceRoute: typeof LicenceRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
@@ -345,6 +358,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/licence': {
+      id: '/licence'
+      path: '/licence'
+      fullPath: '/licence'
+      preLoaderRoute: typeof LicenceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -460,6 +480,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ContributeRoute: ContributeRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  LicenceRoute: LicenceRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,

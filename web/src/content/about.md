@@ -1,4 +1,4 @@
-<img src="/scholia_book.webp" alt="" class="mx-auto w-56 h-56 object-contain mb-8" />
+<img src="/images/scholia_book.webp" alt="" class="mx-auto w-56 h-56 object-contain mb-8" />
 
 # About Scholia
 
