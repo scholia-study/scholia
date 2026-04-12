@@ -2273,25 +2273,25 @@
       "ArticleLimitsResponse": {
         "type": "object",
         "required": [
-          "max_total",
-          "max_published",
-          "current_total",
-          "current_published"
+          "max_active",
+          "current_active",
+          "max_archive",
+          "current_archive"
         ],
         "properties": {
-          "current_published": {
+          "current_active": {
             "type": "integer",
             "format": "int64"
           },
-          "current_total": {
+          "current_archive": {
             "type": "integer",
             "format": "int64"
           },
-          "max_published": {
+          "max_active": {
             "type": "integer",
             "format": "int32"
           },
-          "max_total": {
+          "max_archive": {
             "type": "integer",
             "format": "int32"
           }

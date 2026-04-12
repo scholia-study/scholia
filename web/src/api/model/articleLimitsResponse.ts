@@ -6,8 +6,8 @@
  */
 
 export interface ArticleLimitsResponse {
-    current_published: number;
-    current_total: number;
-    max_published: number;
-    max_total: number;
+    current_active: number;
+    current_archive: number;
+    max_active: number;
+    max_archive: number;
 }

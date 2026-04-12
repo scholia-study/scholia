@@ -332,7 +332,7 @@ CREATE INDEX idx_xref_target_block ON cross_references (target_block_id)
 -- Resources attached to text locations: commentary, definitions,
 -- external links, essays, etc.
 --
--- ANCHOR PATTERN (shared by resources, user_notes, chat_conversations):
+-- ANCHOR PATTERN (shared by resources, user_notes):
 --
 -- Every anchored row points to a text location at one of four
 -- granularities:
@@ -415,7 +415,8 @@ CREATE TABLE user_roles (
 CREATE INDEX idx_user_roles_role ON user_roles (role_id);
 
 -- Seed default roles
-INSERT INTO roles (name) VALUES ('admin'), ('editor'), ('user');
+INSERT INTO roles (name) VALUES ('admin'), ('editor'), ('user'),
+    ('scholiast'), ('scholiast_benefactor'), ('scholiast_patron');
 
 -- ============================================================
 -- OAUTH ACCOUNTS
@@ -615,40 +616,3 @@ CREATE TABLE quotation_note_tags (
 
 CREATE INDEX idx_qntags_tag ON quotation_note_tags (tag_id);
 
--- AI chat conversations anchored to text locations.
-CREATE TABLE chat_conversations (
-    id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id                   UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    book_id                   UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
-    anchor_node_id            UUID NOT NULL REFERENCES toc_nodes(id) ON DELETE CASCADE,
-    anchor_block_id           UUID REFERENCES content_blocks(id) ON DELETE CASCADE,
-    anchor_sentence_start_id  UUID REFERENCES sentences(id) ON DELETE CASCADE,
-    anchor_sentence_end_id    UUID REFERENCES sentences(id) ON DELETE CASCADE,
-    title               TEXT,
-    model               TEXT,
-    admin_notes         TEXT,
-    created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
-
-    CONSTRAINT chk_chat_anchor CHECK (
-        anchor_sentence_end_id IS NULL OR anchor_sentence_start_id IS NOT NULL
-    )
-);
-
-CREATE INDEX idx_chats_sentence ON chat_conversations (anchor_sentence_start_id)
-    WHERE anchor_sentence_start_id IS NOT NULL;
-CREATE INDEX idx_chats_node ON chat_conversations (anchor_node_id);
-CREATE INDEX idx_chats_user ON chat_conversations (user_id, updated_at DESC);
-
--- Individual messages within a conversation.
-CREATE TABLE chat_messages (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    conversation_id UUID NOT NULL REFERENCES chat_conversations(id) ON DELETE CASCADE,
-    role            TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
-    content         TEXT NOT NULL,
-    admin_notes     TEXT,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE INDEX idx_messages_conv ON chat_messages (conversation_id, created_at);

@@ -35,12 +35,12 @@ pub async fn create_article(
     user.require_permission(Permission::ArticlesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
-    // Check total limit
-    let (current_total, _) = db::articles::get_user_article_counts(&state.pool, user.id).await?;
-    let (max_total, _) = db::articles::get_article_limits(&user.roles);
-    if current_total >= max_total as i64 {
+    // Check active article limit
+    let (current_active, _) = db::articles::get_user_article_counts(&state.pool, user.id).await?;
+    let (max_active, _) = db::articles::get_article_limits(&user.roles);
+    if current_active >= max_active as i64 {
         return Err(AppError::BadRequest(format!(
-            "Article limit reached ({max_total}). Archive an existing article to create a new one."
+            "Article limit reached ({max_active}). Archive an existing article to create a new one."
         )));
     }
 
@@ -155,18 +155,8 @@ pub async fn publish_article(
     user: AuthUser,
     Path(slug): Path<String>,
 ) -> Result<Json<()>, AppError> {
-    user.require_permission(Permission::ArticlesPublish)
+    user.require_permission(Permission::ArticlesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
-
-    // Check published limit
-    let (_, current_published) =
-        db::articles::get_user_article_counts(&state.pool, user.id).await?;
-    let (_, max_published) = db::articles::get_article_limits(&user.roles);
-    if current_published >= max_published as i64 {
-        return Err(AppError::BadRequest(format!(
-            "Published article limit reached ({max_published}). Archive an existing article first."
-        )));
-    }
 
     db::articles::publish_article(&state.pool, &slug, user.id).await?;
     Ok(Json(()))
@@ -191,6 +181,15 @@ pub async fn archive_article(
 ) -> Result<Json<()>, AppError> {
     user.require_permission(Permission::ArticlesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+
+    // Check archive limit
+    let (_, current_archive) = db::articles::get_user_article_counts(&state.pool, user.id).await?;
+    let (_, max_archive) = db::articles::get_article_limits(&user.roles);
+    if current_archive >= max_archive as i64 {
+        return Err(AppError::BadRequest(format!(
+            "Archive limit reached ({max_archive}). Upgrade your plan to archive more articles."
+        )));
+    }
 
     db::articles::archive_article(&state.pool, &slug, user.id).await?;
     Ok(Json(()))

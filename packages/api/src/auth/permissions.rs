@@ -8,9 +8,9 @@ pub enum Permission {
     NotesCreate,
     NotesEdit,
     NotesDelete,
-    ChatUse,
     ArticlesCreate,
-    ArticlesPublish,
+    ArticlesLimit1000,
+    ArticlesArchiveLimit1000,
     SourcesCreate,
 }
 
@@ -19,7 +19,25 @@ pub enum Role {
     Admin,
     Editor,
     User,
+    Scholiast,
+    ScholiastBenefactor,
+    ScholiastPatron,
 }
+
+/// Base permissions shared by all authenticated users.
+const BASE_PERMISSIONS: &[Permission] = &[
+    Permission::NotesCreate,
+    Permission::NotesEdit,
+    Permission::NotesDelete,
+    Permission::ArticlesCreate,
+    Permission::SourcesCreate,
+];
+
+/// Elevated article limits for paid tiers and staff.
+const ELEVATED_LIMITS: &[Permission] = &[
+    Permission::ArticlesLimit1000,
+    Permission::ArticlesArchiveLimit1000,
+];
 
 impl Role {
     pub fn from_str(s: &str) -> Option<Self> {
@@ -27,6 +45,9 @@ impl Role {
             "admin" => Some(Self::Admin),
             "editor" => Some(Self::Editor),
             "user" => Some(Self::User),
+            "scholiast" => Some(Self::Scholiast),
+            "scholiast_benefactor" => Some(Self::ScholiastBenefactor),
+            "scholiast_patron" => Some(Self::ScholiastPatron),
             _ => None,
         }
     }
@@ -36,43 +57,31 @@ impl Role {
             Self::Admin => "admin",
             Self::Editor => "editor",
             Self::User => "user",
+            Self::Scholiast => "scholiast",
+            Self::ScholiastBenefactor => "scholiast_benefactor",
+            Self::ScholiastPatron => "scholiast_patron",
         }
     }
 
-    pub fn permissions(&self) -> &'static [Permission] {
+    pub fn permissions(&self) -> Vec<Permission> {
+        let mut perms: Vec<Permission> = BASE_PERMISSIONS.to_vec();
         match self {
-            Self::Admin => &[
-                Permission::UsersManage,
-                Permission::BooksManage,
-                Permission::ResourcesManage,
-                Permission::NotesCreate,
-                Permission::NotesEdit,
-                Permission::NotesDelete,
-                Permission::ChatUse,
-                Permission::ArticlesCreate,
-                Permission::ArticlesPublish,
-                Permission::SourcesCreate,
-            ],
-            Self::Editor => &[
-                Permission::ResourcesManage,
-                Permission::NotesCreate,
-                Permission::NotesEdit,
-                Permission::NotesDelete,
-                Permission::ChatUse,
-                Permission::ArticlesCreate,
-                Permission::ArticlesPublish,
-                Permission::SourcesCreate,
-            ],
-            Self::User => &[
-                Permission::NotesCreate,
-                Permission::NotesEdit,
-                Permission::NotesDelete,
-                Permission::ChatUse,
-                Permission::ArticlesCreate,
-                Permission::ArticlesPublish,
-                Permission::SourcesCreate,
-            ],
+            Self::Admin => {
+                perms.push(Permission::UsersManage);
+                perms.push(Permission::BooksManage);
+                perms.push(Permission::ResourcesManage);
+                perms.extend_from_slice(ELEVATED_LIMITS);
+            }
+            Self::Editor => {
+                perms.push(Permission::ResourcesManage);
+                perms.extend_from_slice(ELEVATED_LIMITS);
+            }
+            Self::User => {}
+            Self::Scholiast | Self::ScholiastBenefactor | Self::ScholiastPatron => {
+                perms.extend_from_slice(ELEVATED_LIMITS);
+            }
         }
+        perms
     }
 }
 

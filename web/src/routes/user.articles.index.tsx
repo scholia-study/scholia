@@ -152,8 +152,9 @@ function ArticlesPage() {
         }
     };
 
-    const canCreate = limits ? limits.current_total < limits.max_total : true;
-    const canPublish = limits ? limits.current_published < limits.max_published : true;
+    const canCreate = limits ? limits.current_active < limits.max_active : true;
+    const canArchive = limits ? limits.current_archive < limits.max_archive : true;
+    const showUsage = limits ? limits.max_active <= 50 : false;
 
     return (
         <div className="max-w-3xl mx-auto px-8 py-16">
@@ -173,11 +174,11 @@ function ArticlesPage() {
                         New Article
                     </Button>
                 </div>
-                {limits && (
+                {showUsage && limits && (
                     <div className="text-xs text-stone-400 text-right mt-1">
-                        {limits.current_published}/{limits.max_published} published
+                        {limits.current_active}/{limits.max_active} active
                         {" \u00B7 "}
-                        {limits.current_total}/{limits.max_total} total
+                        {limits.current_archive}/{limits.max_archive} archived
                     </div>
                 )}
             </div>
@@ -226,7 +227,7 @@ function ArticlesPage() {
                     <ArticleRow
                         key={article.id}
                         article={article}
-                        canPublish={canPublish}
+                        canArchive={canArchive}
                         onPublish={publishDialog.openFor}
                         onArchive={archiveDialog.openFor}
                     />
@@ -273,12 +274,12 @@ function ArticlesPage() {
 
 function ArticleRow({
     article,
-    canPublish,
+    canArchive,
     onPublish,
     onArchive,
 }: {
     article: ArticleResponse;
-    canPublish: boolean;
+    canArchive: boolean;
     onPublish: (slug: string) => void;
     onArchive: (slug: string) => void;
 }) {
@@ -344,27 +345,27 @@ function ArticleRow({
                 </Tooltip>
 
                 {article.status === "draft" && (
-                    <Tooltip title={canPublish ? "Publish" : "Publish limit reached"}>
-                        <span>
-                            <IconButton
-                                size="small"
-                                disabled={!canPublish}
-                                onClick={() => onPublish(article.slug)}
-                            >
-                                <PublishOutlined fontSize="small" />
-                            </IconButton>
-                        </span>
+                    <Tooltip title="Publish">
+                        <IconButton
+                            size="small"
+                            onClick={() => onPublish(article.slug)}
+                        >
+                            <PublishOutlined fontSize="small" />
+                        </IconButton>
                     </Tooltip>
                 )}
 
                 {article.status === "published" && (
-                    <Tooltip title="Archive">
-                        <IconButton
-                            size="small"
-                            onClick={() => onArchive(article.slug)}
-                        >
-                            <ArchiveOutlined fontSize="small" />
-                        </IconButton>
+                    <Tooltip title={canArchive ? "Archive" : "Archive limit reached"}>
+                        <span>
+                            <IconButton
+                                size="small"
+                                disabled={!canArchive}
+                                onClick={() => onArchive(article.slug)}
+                            >
+                                <ArchiveOutlined fontSize="small" />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 )}
             </div>

@@ -3,16 +3,20 @@ use sqlx::PgPool;
 use std::collections::HashMap;
 use uuid::Uuid;
 
+use crate::auth::permissions::{resolve_permissions, Permission};
 use crate::error::AppError;
 use crate::models::article::{
     ArticleDetailResponse, ArticleLimitsResponse, ArticleResponse, BatchSentenceResponseItem,
     SentenceData, SourceContext, TopicResponse,
 };
 
-// ── Constants ─────────────────────────────────────────────
-
-const FREE_MAX_TOTAL: i32 = 10;
-const FREE_MAX_PUBLISHED: i32 = 3;
+// ── Tier limits ──────────────────────────────────────────
+// Free tier defaults (applied when user lacks elevated permissions).
+const FREE_ARTICLES_ACTIVE: i32 = 5;
+const FREE_ARTICLES_ARCHIVE: i32 = 10;
+// Paid / staff tier (granted by ArticlesLimit1000 / ArticlesArchiveLimit1000).
+const PAID_ARTICLES_ACTIVE: i32 = 1000;
+const PAID_ARTICLES_ARCHIVE: i32 = 1000;
 
 // ── Validation helpers ────────────────────────────────────
 
@@ -72,8 +76,8 @@ struct ArticleTopicRow {
 }
 
 struct CountRow {
-    total: Option<i64>,
-    published: Option<i64>,
+    active: Option<i64>,
+    archived: Option<i64>,
 }
 
 // ── Helpers ───────────────────────────────────────────────
@@ -834,12 +838,13 @@ pub async fn archive_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result
     Ok(())
 }
 
+/// Returns (current_active, current_archived) counts.
 pub async fn get_user_article_counts(pool: &PgPool, user_id: Uuid) -> Result<(i64, i64), AppError> {
     let row = sqlx::query_as!(
         CountRow,
         r#"SELECT
-               COUNT(*) FILTER (WHERE status != 'archived') AS "total?",
-               COUNT(*) FILTER (WHERE status = 'published') AS "published?"
+               COUNT(*) FILTER (WHERE status != 'archived') AS "active?",
+               COUNT(*) FILTER (WHERE status = 'archived')  AS "archived?"
            FROM articles
            WHERE user_id = $1"#,
         user_id,
@@ -847,13 +852,23 @@ pub async fn get_user_article_counts(pool: &PgPool, user_id: Uuid) -> Result<(i6
     .fetch_one(pool)
     .await?;
 
-    Ok((row.total.unwrap_or(0), row.published.unwrap_or(0)))
+    Ok((row.active.unwrap_or(0), row.archived.unwrap_or(0)))
 }
 
-pub fn get_article_limits(_roles: &[String]) -> (i32, i32) {
-    // For now, all users get free tier limits.
-    // When subscriber role is added, check roles and return higher limits.
-    (FREE_MAX_TOTAL, FREE_MAX_PUBLISHED)
+/// Derive article limits from the user's resolved permissions.
+pub fn get_article_limits(roles: &[String]) -> (i32, i32) {
+    let perms = resolve_permissions(roles);
+    let max_active = if perms.contains(&Permission::ArticlesLimit1000) {
+        PAID_ARTICLES_ACTIVE
+    } else {
+        FREE_ARTICLES_ACTIVE
+    };
+    let max_archive = if perms.contains(&Permission::ArticlesArchiveLimit1000) {
+        PAID_ARTICLES_ARCHIVE
+    } else {
+        FREE_ARTICLES_ARCHIVE
+    };
+    (max_active, max_archive)
 }
 
 pub async fn get_article_limits_response(
@@ -861,13 +876,13 @@ pub async fn get_article_limits_response(
     user_id: Uuid,
     roles: &[String],
 ) -> Result<ArticleLimitsResponse, AppError> {
-    let (current_total, current_published) = get_user_article_counts(pool, user_id).await?;
-    let (max_total, max_published) = get_article_limits(roles);
+    let (current_active, current_archive) = get_user_article_counts(pool, user_id).await?;
+    let (max_active, max_archive) = get_article_limits(roles);
     Ok(ArticleLimitsResponse {
-        max_total,
-        max_published,
-        current_total,
-        current_published,
+        max_active,
+        current_active,
+        max_archive,
+        current_archive,
     })
 }
 

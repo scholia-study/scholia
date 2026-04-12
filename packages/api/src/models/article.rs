@@ -63,10 +63,10 @@ pub struct PublishedArticleListResponse {
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ArticleLimitsResponse {
-    pub max_total: i32,
-    pub max_published: i32,
-    pub current_total: i64,
-    pub current_published: i64,
+    pub max_active: i32,
+    pub current_active: i64,
+    pub max_archive: i32,
+    pub current_archive: i64,
 }
 
 // ── Batch sentence types for quotation card hydration ─────
