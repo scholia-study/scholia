@@ -1,10 +1,11 @@
 // ---------------------------------------------------------------------------
-// Authoritative TOC for Kant's KrV B-edition (Akademie-Ausgabe Band III)
+// Modernized TOC for Kant's KrV B-edition (Akademie-Ausgabe Band III)
 // ---------------------------------------------------------------------------
 //
-// Each entry: (aa_page, depth, label)
-// Derived from the Akademie-Ausgabe Band III table of contents,
-// cross-referenced with scholarly sources.
+// Modernized German orthography (e.g. ß→ss, th→t, C→K/Z where appropriate).
+// Entries 1–14 have been modernized. The remaining entries still use the
+// original orthography from toc.rs and will be updated as modernization
+// progresses.
 
 struct FlatEntry {
     aa_page: u16,
@@ -42,7 +43,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 27,
         depth: 2,
-        label: "I. Von dem Unterschiede der reinen und empirischen Erkenntniß",
+        label: "I. Von dem Unterschiede der reinen und empirischen Erkenntnis",
     },
     FlatEntry {
         aa_page: 28,
@@ -52,17 +53,17 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 30,
         depth: 2,
-        label: "III. Die Philosophie bedarf einer Wissenschaft, welche die Möglichkeit, die Principien und den Umfang aller Erkenntnisse _a priori_ bestimme",
+        label: "III. Die Philosophie bedarf einer Wissenschaft, welche die Möglichkeit, die Prinzipien und den Umfang aller Erkenntnisse _a priori_ bestimme",
     },
     FlatEntry {
         aa_page: 33,
         depth: 2,
-        label: "IV. Von dem Unterschiede analytischer und synthetischer Urtheile",
+        label: "IV. Von dem Unterschiede analytischer und synthetischer Urteile",
     },
     FlatEntry {
         aa_page: 36,
         depth: 2,
-        label: "V. In allen theoretischen Wissenschaften der Vernunft sind synthetische Urtheile _a priori_ als Principien enthalten",
+        label: "V. In allen theoretischen Wissenschaften der Vernunft sind synthetische Urteile _a priori_ als Prinzipien enthalten",
     },
     FlatEntry {
         aa_page: 39,
@@ -72,27 +73,31 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 42,
         depth: 2,
-        label: "VII. Idee und Eintheilung einer besonderen Wissenschaft unter dem Namen einer Kritik der reinen Vernunft",
+        label: "VII. Idee und Einteilung einer besonderen Wissenschaft unter dem Namen einer Kritik der reinen Vernunft",
     },
     // -----------------------------------------------------------------------
-    // I. Transscendentale Elementarlehre
+    // I. Transzendentale Elementarlehre
     // -----------------------------------------------------------------------
     FlatEntry {
         aa_page: 49,
         depth: 1,
-        label: "I. Transscendentale Elementarlehre",
+        label: "I. Transzendentale Elementarlehre",
     },
-    // -- Erster Theil: Transscendentale Ästhetik --
+    // -- Erster Teil: Transzendentale Ästhetik --
     FlatEntry {
         aa_page: 49,
         depth: 2,
-        label: "Erster Theil. Die transscendentale Ästhetik",
+        label: "Erster Teil. Die transzendentale Ästhetik",
     },
     FlatEntry {
         aa_page: 49,
         depth: 3,
         label: "Einleitung",
     },
+    // -----------------------------------------------------------------------
+    // NOT YET MODERNIZED — entries below use original orthography from toc.rs.
+    // These will be updated as modernization of the source texts progresses.
+    // -----------------------------------------------------------------------
     FlatEntry {
         aa_page: 51,
         depth: 3,
@@ -432,7 +437,6 @@ const TOC: &[FlatEntry] = &[
         depth: 6,
         label: "9. Abschnitt. Von dem empirischen Gebrauche des regulativen Princips der Vernunft in Ansehung aller kosmologischen Ideen",
     },
-    // Note: consider changing the depth of the comments after the numbered sections here?
     FlatEntry {
         aa_page: 354,
         depth: 7,
@@ -628,26 +632,21 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_flat_entry_count() {
-        let flat = flat_toc_entries();
-        assert_eq!(flat.len(), TOC.len());
-        assert_eq!(flat[0].3, "Motto");
-        assert_eq!(
-            flat.last().unwrap().3,
-            "Viertes Hauptstück. Die Geschichte der reinen Vernunft"
-        );
-    }
-
-    #[test]
-    fn test_toc_len() {
+    fn test_toc_len_matches_original() {
         assert_eq!(toc_len(), 114);
     }
 
     #[test]
-    fn test_front_matter_entries() {
+    fn test_modernized_labels() {
         let flat = flat_toc_entries();
-        assert_eq!(flat[0], (0, 2, 1, "Motto"));
-        assert_eq!(flat[1], (1, 3, 1, "Zueignung"));
-        assert_eq!(flat[2], (2, 7, 1, "Vorrede zur zweiten Auflage"));
+        // Entry 5 (index 4): original has "Erkenntniß", modernized has "Erkenntnis"
+        assert!(flat[4].3.contains("Erkenntnis"));
+        assert!(!flat[4].3.contains("Erkenntniß"));
+        // Entry 8 (index 7): original has "Urtheile", modernized has "Urteile"
+        assert!(flat[7].3.contains("Urteile"));
+        assert!(!flat[7].3.contains("Urtheile"));
+        // Entry 12 (index 11): original has "Transscendentale", modernized has "Transzendentale"
+        assert!(flat[11].3.contains("Transzendentale"));
+        assert!(!flat[11].3.contains("Transscendentale"));
     }
 }

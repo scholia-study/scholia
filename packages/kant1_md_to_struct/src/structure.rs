@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use common::kant1::filenames::slugify;
-use common::kant1::toc;
+use common::kant1::toc_mod;
 use common::sentences::{
     split_sentences_forced, strip_forced_split_markers, strip_forced_splits,
 };
@@ -102,7 +102,7 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
     }
 
     // === Pass 2: Build toc nodes, filtering out footnote blocks ===
-    let flat_entries = toc::flat_toc_entries();
+    let flat_entries = toc_mod::flat_toc_entries();
     let mut paragraph_counter: i32 = 1;
     let mut sentence_counter: i32 = 1;
 
@@ -438,7 +438,7 @@ mod tests {
 
     #[test]
     fn test_build_path_depth1() {
-        let entries = toc::flat_toc_entries();
+        let entries = toc_mod::flat_toc_entries();
         let path = build_path(&entries, 0, 1);
         assert_eq!(path, "motto");
     }

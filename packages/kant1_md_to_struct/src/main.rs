@@ -8,6 +8,7 @@ use clap::Parser;
 
 use common::kant1::filenames;
 use common::kant1::toc;
+use common::kant1::toc_mod;
 use kant1_md_to_struct::parse::{self, parse_blocks, parse_front_matter};
 use structure::{build_output, ParsedFile};
 
@@ -99,7 +100,8 @@ fn run_extract(modernized_dir_str: &str, reviewed_dir_str: &str, output_file: &s
     let reviewed_dir = Path::new(reviewed_dir_str);
 
     // 1. Get TOC and expected filenames
-    let flat_entries = toc::flat_toc_entries();
+    let flat_entries_reviewed = toc::flat_toc_entries();
+    let flat_entries_modernized = toc_mod::flat_toc_entries();
     let expected_files = filenames::all_filenames();
 
     // 2. Scan both directories
@@ -130,9 +132,9 @@ fn run_extract(modernized_dir_str: &str, reviewed_dir_str: &str, output_file: &s
             );
         }
 
-        let blocks = parse_file(modernized_dir, expected_name, flat_index, &flat_entries);
+        let blocks = parse_file(modernized_dir, expected_name, flat_index, &flat_entries_modernized);
         let original_blocks =
-            parse_file(reviewed_dir, expected_name, flat_index, &flat_entries);
+            parse_file(reviewed_dir, expected_name, flat_index, &flat_entries_reviewed);
 
         if blocks.len() != original_blocks.len() {
             panic!(

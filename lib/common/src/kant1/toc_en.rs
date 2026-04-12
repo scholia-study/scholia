@@ -47,12 +47,12 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 28,
         depth: 2,
-        label: "II. We are in possession of certain a priori cognitions, and even the common understanding is never without them",
+        label: "II. We are in possession of certain _a priori_ cognitions, and even the common understanding is never without them",
     },
     FlatEntry {
-        aa_page: 28,
+        aa_page: 30,
         depth: 2,
-        label: "III. Philosophy stands in need of a science which shall determine the possibility, the principles, and the extent of all a priori cognition",
+        label: "III. Philosophy stands in need of a science which shall determine the possibility, the principles, and the extent of all _a priori_ cognition",
     },
     FlatEntry {
         aa_page: 33,
@@ -62,7 +62,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 36,
         depth: 2,
-        label: "V. In all theoretical sciences of reason synthetic a priori judgments are contained as principles",
+        label: "V. In all theoretical sciences of reason synthetic _a priori_ judgments are contained as principles",
     },
     FlatEntry {
         aa_page: 39,
