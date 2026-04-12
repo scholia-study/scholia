@@ -103,7 +103,7 @@ fn main() {
 
 /// Build MdTocNodes by assigning page elements to flat TOC sections.
 fn build_md_nodes(
-    flat_entries: &[(usize, u16, u16, &str)],
+    flat_entries: &[(usize, u16, u16, &str, Option<&str>)],
     page_elements: &[(u16, Vec<InputElement>, Vec<InputFootnote>)],
 ) -> Vec<MdTocNode> {
     let num_entries = toc::toc_len();
@@ -127,8 +127,8 @@ fn build_md_nodes(
         // Find all TOC entries starting on this page (for heading matching)
         let same_page_entries: Vec<usize> = flat_entries
             .iter()
-            .filter(|(_, p, _, _)| *p == *aa_page)
-            .map(|(i, _, _, _)| *i)
+            .filter(|(_, p, _, _, _)| *p == *aa_page)
+            .map(|(i, _, _, _, _)| *i)
             .collect();
 
         // Base section: the section that "owns" this page
@@ -257,7 +257,7 @@ fn build_md_nodes(
 
     // Build final nodes — only emit sections that have content
     let mut nodes = Vec::new();
-    for &(flat_index, aa_page, depth, label) in flat_entries {
+    for &(flat_index, aa_page, depth, label, _) in flat_entries {
         let blocks = std::mem::take(&mut section_blocks[flat_index]);
         let raw_footnotes = std::mem::take(&mut section_footnotes[flat_index]);
 
@@ -781,9 +781,9 @@ fn flatten_page_elements(pages: &[InputPage]) -> Vec<(u16, Vec<InputElement>, Ve
 
 /// For each element, find the most recent TOC entry (in flat document order)
 /// whose aa_page <= element's aa_page.
-fn find_flat_section(flat_entries: &[(usize, u16, u16, &str)], aa_page: u16) -> usize {
+fn find_flat_section(flat_entries: &[(usize, u16, u16, &str, Option<&str>)], aa_page: u16) -> usize {
     let mut best = 0;
-    for (i, &(_, entry_page, _, _)) in flat_entries.iter().enumerate() {
+    for (i, &(_, entry_page, _, _, _)) in flat_entries.iter().enumerate() {
         if entry_page <= aa_page {
             best = i;
         } else {
@@ -800,7 +800,7 @@ fn find_flat_section(flat_entries: &[(usize, u16, u16, &str)], aa_page: u16) -> 
 /// or check if the heading text starts with the TOC label (or vice versa).
 fn match_heading_to_toc(
     heading_text: &str,
-    flat_entries: &[(usize, u16, u16, &str)],
+    flat_entries: &[(usize, u16, u16, &str, Option<&str>)],
     candidate_indices: &[usize],
 ) -> Option<usize> {
     let h = normalize_for_match(heading_text);
@@ -808,7 +808,7 @@ fn match_heading_to_toc(
         return None;
     }
     for &idx in candidate_indices {
-        let (_, _, _, label) = flat_entries[idx];
+        let (_, _, _, label, _) = flat_entries[idx];
         let l = normalize_for_match(label);
         // Exact match
         if h == l {

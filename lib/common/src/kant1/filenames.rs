@@ -37,7 +37,7 @@ pub fn filename(flat_index: usize, label: &str) -> String {
 pub fn all_filenames() -> Vec<(usize, String)> {
     toc::flat_toc_entries()
         .iter()
-        .map(|&(idx, _, _, label)| (idx, filename(idx, label)))
+        .map(|&(idx, _, _, label, _)| (idx, filename(idx, label)))
         .collect()
 }
 

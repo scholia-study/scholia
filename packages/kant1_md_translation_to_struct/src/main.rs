@@ -50,7 +50,7 @@ fn parse_translation_file(
     dir: &Path,
     filename: &str,
     flat_index: usize,
-    flat_entries: &[(usize, u16, u16, &str)],
+    flat_entries: &[(usize, u16, u16, &str, Option<&str>)],
 ) -> Vec<parse::ParsedBlock> {
     let file_path = dir.join(filename);
     let content = fs::read_to_string(&file_path)
@@ -59,7 +59,7 @@ fn parse_translation_file(
     let (fm, body) = parse_front_matter(&content)
         .unwrap_or_else(|| panic!("No front matter in {}", file_path.display()));
 
-    let (_, aa_page, depth, label) = flat_entries[flat_index];
+    let (_, aa_page, depth, label, _) = flat_entries[flat_index];
 
     if fm.position != flat_index + 1 {
         panic!(
@@ -102,7 +102,7 @@ fn parse_source_file(
     dir: &Path,
     filename: &str,
     flat_index: usize,
-    flat_entries: &[(usize, u16, u16, &str)],
+    flat_entries: &[(usize, u16, u16, &str, Option<&str>)],
 ) -> Vec<parse::ParsedBlock> {
     let file_path = dir.join(filename);
     let content = fs::read_to_string(&file_path)
@@ -111,7 +111,7 @@ fn parse_source_file(
     let (fm, body) = parse_front_matter(&content)
         .unwrap_or_else(|| panic!("No front matter in {}", file_path.display()));
 
-    let (_, aa_page, depth, _label) = flat_entries[flat_index];
+    let (_, aa_page, depth, _label, _) = flat_entries[flat_index];
 
     if fm.position != flat_index + 1 {
         panic!(

@@ -110,7 +110,7 @@ pub fn render_toc(emitted: &[&MdTocNode]) -> String {
     out.push_str("Immanuel Kant — Akademie-Ausgabe Band III (B-Auflage 1787)\n\n");
     out.push_str("---\n\n");
 
-    for &(idx, aa_page, depth, label) in &flat {
+    for &(idx, aa_page, depth, label, _) in &flat {
         let indent = "  ".repeat(depth.saturating_sub(1) as usize);
         if let Some(node) = emitted_set.get(&idx) {
             let fname = filename(node.flat_index, &node.label);

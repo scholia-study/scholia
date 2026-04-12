@@ -101,7 +101,7 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
     let toc_nodes: Vec<TocNodeData> = parsed_files
         .iter()
         .map(|pf| {
-            let (_, _, depth, label) = flat_entries[pf.flat_index];
+            let (_, _, depth, label, slug_override) = flat_entries[pf.flat_index];
             let parent_source_ref = find_parent_source_ref(&flat_entries, pf.flat_index, depth);
             let path = build_path(&flat_entries, pf.flat_index, depth);
 
@@ -129,7 +129,7 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
 
             TocNodeData {
                 source_ref: format!("{:03}", pf.flat_index + 1),
-                slug: slugify(&plain_label),
+                slug: slug_override.map(|s| s.to_string()).unwrap_or_else(|| slugify(&plain_label)),
                 path,
                 sort_order: pf.flat_index as i32 + 1,
                 depth: depth as i16,
@@ -280,7 +280,7 @@ fn build_block(
 
 /// Find parent's source_ref: nearest preceding entry with depth - 1.
 fn find_parent_source_ref(
-    flat_entries: &[(usize, u16, u16, &str)],
+    flat_entries: &[(usize, u16, u16, &str, Option<&str>)],
     current_idx: usize,
     current_depth: u16,
 ) -> Option<String> {
@@ -289,7 +289,7 @@ fn find_parent_source_ref(
     }
     let target_depth = current_depth - 1;
     for i in (0..current_idx).rev() {
-        let (_, _, d, _) = flat_entries[i];
+        let (_, _, d, _, _) = flat_entries[i];
         if d == target_depth {
             return Some(format!("{:03}", i + 1));
         }
@@ -300,13 +300,18 @@ fn find_parent_source_ref(
     None
 }
 
+/// Derive slug from a TOC entry, using override if present.
+fn entry_slug(entry: &(usize, u16, u16, &str, Option<&str>)) -> String {
+    entry.4.map(|s| s.to_string()).unwrap_or_else(|| slugify(&md_to_plain(entry.3)))
+}
+
 /// Build an ltree path from slugs of ancestors.
 fn build_path(
-    flat_entries: &[(usize, u16, u16, &str)],
+    flat_entries: &[(usize, u16, u16, &str, Option<&str>)],
     current_idx: usize,
     current_depth: u16,
 ) -> String {
-    let mut segments = vec![slugify(flat_entries[current_idx].3)];
+    let mut segments = vec![entry_slug(&flat_entries[current_idx])];
     let mut depth = current_depth;
     let mut idx = current_idx;
 
@@ -314,9 +319,9 @@ fn build_path(
         let target = depth - 1;
         let mut found = false;
         for i in (0..idx).rev() {
-            let (_, _, d, label) = flat_entries[i];
+            let (_, _, d, _, _) = flat_entries[i];
             if d == target {
-                segments.push(slugify(label));
+                segments.push(entry_slug(&flat_entries[i]));
                 idx = i;
                 depth = target;
                 found = true;
