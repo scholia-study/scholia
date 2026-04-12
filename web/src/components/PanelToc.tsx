@@ -103,7 +103,7 @@ function TocItem({
     return (
         <li>
             <div
-                className={`flex items-center gap-1 py-1 pr-2 rounded text-sm ${
+                className={`flex items-start gap-1 py-1 pr-2 rounded text-sm ${
                     isActive ? "bg-stone-300 font-medium" : "hover:bg-stone-200"
                 }`}
                 style={{ paddingLeft: `${node.depth * 12 + 4}px` }}
@@ -111,12 +111,12 @@ function TocItem({
                 {hasChildren ? (
                     <button
                         onClick={() => setExpanded(!expanded)}
-                        className="w-4 h-4 flex items-center justify-center text-stone-400 shrink-0"
+                        className="w-4 h-4 mt-0.5 flex items-center justify-center text-stone-400 shrink-0"
                     >
                         {expanded ? "\u25BE" : "\u25B8"}
                     </button>
                 ) : (
-                    <span className="w-4 shrink-0" />
+                    <span className="w-4 mt-0.5 shrink-0" />
                 )}
                 {node.has_content ? (
                     <Link
@@ -130,13 +130,13 @@ function TocItem({
                                   }
                                 : undefined
                         }
-                        className="flex-1 truncate text-left"
+                        className="flex-1 text-left"
                     >
                         {node.label_html ? parse(node.label_html) : node.label}
                     </Link>
                 ) : (
                     <span
-                        className="flex-1 truncate cursor-pointer"
+                        className="flex-1 cursor-pointer"
                         onClick={() => hasChildren && setExpanded(!expanded)}
                     >
                         {node.label_html ? parse(node.label_html) : node.label}
