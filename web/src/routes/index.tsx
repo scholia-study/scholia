@@ -149,8 +149,8 @@ function AboutPanel({ stats }: { stats: LibraryStats | undefined }) {
     const pClasses = "text-sm text-stone-600 leading-relaxed";
     return (
         <div className="md:border-0 border border-stone-200 md:p-0 p-5 md:bg-transparent bg-stone-100">
-            <h2 className="text-base font-semibold text-stone-900 mb-2">
-                A scholarly library
+            <h2 className="text-base font-semibold text-stone-600 mb-2 uppercase">
+                A living library for scholars
             </h2>
             <p className={pClasses}>
                 Scholia is a reading and annotation library for philosophical
