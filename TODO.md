@@ -1,2 +1,2 @@
-- fix: left and right pages margin extraction (B ed on every other page, etc.)
-- manually make the toc as reference point
+- turn off selection on archived articles
+- disallow selecting headings in a title (others?)

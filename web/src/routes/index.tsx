@@ -163,7 +163,7 @@ function AboutPanel({ stats }: { stats: LibraryStats | undefined }) {
                 Inspired by marginal notes that ancient and medieval scholars
                 wrote alongside classical texts, Scholia aims to be a digital
                 sanctuary for careful study, developing original insights, and
-                build collaborative commentary.
+                building collaborative commentary.
             </p>
             {stats && (
                 <p className="text-xs text-stone-400 mt-4 pt-4 border-t border-stone-200">
