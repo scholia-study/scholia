@@ -7,3 +7,14 @@ onlyBuiltDependencies:
   - esbuild
   - "@parcel/watcher"
   - lightningcss
+overrides:
+  axios@>=1.0.0 <1.15.0: '>=1.15.0'
+  brace-expansion@>=2.0.0 <2.0.3: '>=2.0.3'
+  follow-redirects@<=1.15.11: '>=1.16.0'
+  picomatch@<2.3.2: '>=2.3.2'
+  picomatch@>=4.0.0 <4.0.4: '>=4.0.4'
+  srvx@<0.11.13: '>=0.11.13'
+  undici@>=7.0.0 <7.24.0: '>=7.24.0'
+  undici@>=7.17.0 <7.24.0: '>=7.24.0'
+  yaml@>=1.0.0 <1.10.3: '>=1.10.3'
+  yaml@>=2.0.0 <2.8.3: '>=2.8.3'
