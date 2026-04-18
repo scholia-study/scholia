@@ -1,5 +1,5 @@
 -- Scholia: interactive reader schema
--- PostgreSQL 15+, requires ltree extension
+-- PostgreSQL 18+, requires ltree extension
 
 CREATE EXTENSION IF NOT EXISTS ltree;
 

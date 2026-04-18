@@ -1,10 +1,21 @@
+- what happes to published/drafts is a user stops paying/cancel sub? whats published remains published, but can everything be editable? this could be a way for users to "game" the system by "unlocking" slots by only paying once? Perhaps force only editing of the first five active articles? Leave the rest as is?
 - turn off selection on archived articles
+- saving a range quotation wrongly shows "edit" icon
+- bug in custom source first name when missing sort name (happens even with sort name??)
+- make year and publisher required fields in source??
+- referencing user-generated content does not add a bibliographical detail (need to set up structure for this)
+- allow editing of sources and persons (insofar as they are not protected)
 - limit quotations for free tier, add a hard limit for paid tier
 - limit notes for free tier, add a hard limit for paid tier
+- make user menu show on hover?
 - disallow selecting headings in a title (others?)
 - add feedback system
 - add payment solution (stripe, async stripe crate)
 - add "submit for review" for user articles to editors to receive editorial feedback/quality approval
+- fix bug when in reader clicking on "My quotations" does not exit the reader
+- my notes need min-width
+- need filter on tags for quotation in editor
+- add constraints to all user inputs!
 
 ### MAYBE
 
