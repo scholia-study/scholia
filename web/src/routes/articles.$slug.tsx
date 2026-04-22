@@ -155,6 +155,7 @@ function PublishedArticlePage() {
                         html={article.html}
                         articleId={article.id}
                         replaceEmbed={replaceEmbed}
+                        disabled={article.status === "archived"}
                     />
                 </div>
             </div>

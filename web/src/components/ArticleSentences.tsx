@@ -36,12 +36,14 @@ interface ArticleSentencesProps {
     html: string;
     articleId: string;
     replaceEmbed?: (domNode: Element) => JSX.Element | undefined;
+    disabled?: boolean;
 }
 
 export function ArticleSentences({
     html,
     articleId,
     replaceEmbed,
+    disabled = false,
 }: ArticleSentencesProps) {
     const { isAuthenticated } = useAuth();
     const createMutation = useCreateArticleQuotation();
@@ -220,6 +222,8 @@ export function ArticleSentences({
                 return replaceEmbed?.(domNode) ?? undefined;
             }
 
+            if (disabled) return undefined;
+
             if (tag === "p" || tag === "blockquote") {
                 const textParts: string[] = [];
                 const extractText = (node: DOMNode) => {
@@ -285,7 +289,7 @@ export function ArticleSentences({
         <>
             {rendered}
             <Popover
-                open={!!popoverAnchor}
+                open={!disabled && !!popoverAnchor}
                 anchorEl={popoverAnchor}
                 onClose={handleClosePopover}
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}

@@ -40,6 +40,14 @@ const PERSON_ROLES = [
     "contributor",
 ] as const;
 
+const REQUIRED_BY_TYPE: Record<string, readonly string[]> = {
+    book: ["title", "publication_year", "publisher", "author"],
+    chapter: ["title", "parent_source_id", "page_start"],
+    article: ["title", "journal_name", "publication_year", "page_start"],
+    journal: ["title", "publication_year", "publisher"],
+    web: ["title", "url"],
+};
+
 export function SourceFormModal({
     open,
     onClose,
@@ -162,6 +170,9 @@ export function SourceFormModal({
         onClose();
     };
 
+    const isRequired = (field: string) =>
+        REQUIRED_BY_TYPE[sourceType]?.includes(field) ?? false;
+
     const handleSubmit = () => {
         if (!title.trim()) {
             toast.error("Title is required");
@@ -171,6 +182,40 @@ export function SourceFormModal({
         const yearNum = publicationYear
             ? Number.parseInt(publicationYear, 10)
             : undefined;
+        const hasValidYear = yearNum !== undefined && !Number.isNaN(yearNum);
+
+        if (isRequired("publication_year") && !hasValidYear) {
+            toast.error("Year is required");
+            return;
+        }
+        if (isRequired("publisher") && !publisher.trim()) {
+            toast.error("Publisher is required");
+            return;
+        }
+        if (isRequired("journal_name") && !journalName.trim()) {
+            toast.error("Journal name is required");
+            return;
+        }
+        if (isRequired("url") && !url.trim()) {
+            toast.error("URL is required");
+            return;
+        }
+        if (isRequired("page_start") && !pageStart.trim()) {
+            toast.error("Page start is required");
+            return;
+        }
+        if (isRequired("parent_source_id") && !parentSourceId) {
+            toast.error("Parent book is required");
+            return;
+        }
+        if (
+            isRequired("author") &&
+            !persons.some((p) => p.role === "author")
+        ) {
+            toast.error("At least one author is required");
+            return;
+        }
+
         const isbnArr = isbn.trim()
             ? isbn.split(",").map((s) => s.trim())
             : undefined;
@@ -274,6 +319,7 @@ export function SourceFormModal({
                             size="small"
                             type="number"
                             sx={{ flex: 1 }}
+                            required={isRequired("publication_year")}
                         />
                         <TextField
                             label="Publisher"
@@ -281,6 +327,7 @@ export function SourceFormModal({
                             onChange={(e) => setPublisher(e.target.value)}
                             size="small"
                             sx={{ flex: 2 }}
+                            required={isRequired("publisher")}
                         />
                     </div>
 
@@ -307,6 +354,7 @@ export function SourceFormModal({
                             value={journalName}
                             onChange={(e) => setJournalName(e.target.value)}
                             size="small"
+                            required={isRequired("journal_name")}
                         />
                     )}
 
@@ -331,6 +379,7 @@ export function SourceFormModal({
                             onChange={(e) => setUrl(e.target.value)}
                             size="small"
                             sx={{ flex: 1 }}
+                            required={isRequired("url")}
                         />
                     </div>
 
@@ -343,6 +392,7 @@ export function SourceFormModal({
                                 size="small"
                                 type="number"
                                 sx={{ flex: 1 }}
+                                required={isRequired("page_start")}
                             />
                             <TextField
                                 label="Page End"
@@ -366,6 +416,7 @@ export function SourceFormModal({
                                 }}
                                 size="small"
                                 fullWidth
+                                required={isRequired("parent_source_id")}
                                 helperText={
                                     parentSourceId
                                         ? "Parent selected"
@@ -404,7 +455,16 @@ export function SourceFormModal({
                     <div className="border-t border-stone-200 pt-2 mt-1">
                         <div className="text-sm text-stone-600 mb-2 font-medium">
                             Contributors
+                            {isRequired("author") && (
+                                <span className="text-red-500 ml-0.5">*</span>
+                            )}
                         </div>
+                        {isRequired("author") &&
+                            !persons.some((p) => p.role === "author") && (
+                                <div className="text-xs text-stone-500 mb-2">
+                                    At least one author is required.
+                                </div>
+                            )}
                         {persons.length > 0 && (
                             <ul className="space-y-1 mb-2">
                                 {persons.map((p) => (
@@ -448,7 +508,7 @@ export function SourceFormModal({
                                 {Array.isArray(personResults?.data) &&
                                     personResults.data.length > 0 &&
                                     personSearch.length >= 3 && (
-                                        <ul className="absolute z-10 w-full border border-stone-200 rounded bg-white mt-0.5 max-h-32 overflow-y-auto shadow-sm">
+                                        <ul className="absolute bottom-full left-0 z-10 w-full border border-stone-200 rounded bg-white mb-0.5 max-h-32 overflow-y-auto shadow-sm">
                                             {personResults.data.map((p) => (
                                                 <li key={p.id}>
                                                     <button
