@@ -10,6 +10,68 @@ use crate::models::resource::{
     SourceResponse, SourceSearchResponse, UpdateSourceRequest,
 };
 use crate::state::AppState;
+use crate::validation::{
+    check_count, check_int_range, check_max_len, MAX_PUBLICATION_YEAR, MAX_SOURCE_DOI,
+    MAX_SOURCE_EDITION, MAX_SOURCE_ISBNS, MAX_SOURCE_ISBN_LEN, MAX_SOURCE_JOURNAL_NAME,
+    MAX_SOURCE_PAGE, MAX_SOURCE_PUBLISHER, MAX_SOURCE_TITLE, MAX_SOURCE_TITLE_DISPLAY,
+    MAX_SOURCE_URL, MAX_SOURCE_VOLUME, MIN_PUBLICATION_YEAR, MIN_SOURCE_PAGE,
+};
+
+fn validate_source_fields(
+    title: Option<&str>,
+    title_display: Option<&str>,
+    publisher: Option<&str>,
+    journal_name: Option<&str>,
+    doi: Option<&str>,
+    edition: Option<&str>,
+    volume: Option<&str>,
+    url: Option<&str>,
+    isbn: Option<&[String]>,
+    publication_year: Option<i16>,
+    page_start: Option<i32>,
+    page_end: Option<i32>,
+) -> Result<(), AppError> {
+    if let Some(t) = title {
+        check_max_len("Title", t, MAX_SOURCE_TITLE)?;
+    }
+    if let Some(t) = title_display {
+        check_max_len("Display title", t, MAX_SOURCE_TITLE_DISPLAY)?;
+    }
+    if let Some(p) = publisher {
+        check_max_len("Publisher", p, MAX_SOURCE_PUBLISHER)?;
+    }
+    if let Some(j) = journal_name {
+        check_max_len("Journal name", j, MAX_SOURCE_JOURNAL_NAME)?;
+    }
+    if let Some(d) = doi {
+        check_max_len("DOI", d, MAX_SOURCE_DOI)?;
+    }
+    if let Some(e) = edition {
+        check_max_len("Edition", e, MAX_SOURCE_EDITION)?;
+    }
+    if let Some(v) = volume {
+        check_max_len("Volume", v, MAX_SOURCE_VOLUME)?;
+    }
+    if let Some(u) = url {
+        check_max_len("URL", u, MAX_SOURCE_URL)?;
+    }
+    if let Some(list) = isbn {
+        check_count("ISBNs", list, MAX_SOURCE_ISBNS)?;
+        for v in list {
+            check_max_len("ISBN", v, MAX_SOURCE_ISBN_LEN)?;
+        }
+    }
+    if let Some(y) = publication_year {
+        check_int_range("Publication year", y, MIN_PUBLICATION_YEAR, MAX_PUBLICATION_YEAR)?;
+    }
+    if let Some(p) = page_start {
+        check_int_range("Page start", p, MIN_SOURCE_PAGE, MAX_SOURCE_PAGE)?;
+    }
+    if let Some(p) = page_end {
+        check_int_range("Page end", p, MIN_SOURCE_PAGE, MAX_SOURCE_PAGE)?;
+    }
+    Ok(())
+}
 
 /// Search sources by title
 #[utoipa::path(
@@ -106,6 +168,21 @@ pub async fn create_source(
         .transpose()
         .map_err(|_| AppError::BadRequest("Invalid translation_of_id".into()))?;
 
+    validate_source_fields(
+        Some(&body.title),
+        body.title_display.as_deref(),
+        body.publisher.as_deref(),
+        body.journal_name.as_deref(),
+        body.doi.as_deref(),
+        body.edition.as_deref(),
+        body.volume.as_deref(),
+        body.url.as_deref(),
+        body.isbn.as_deref(),
+        body.publication_year,
+        body.page_start,
+        body.page_end,
+    )?;
+
     let source = db::sources::create_source(
         &state.pool,
         &body.source_type,
@@ -179,6 +256,21 @@ pub async fn update_source(
         .map(uuid::Uuid::parse_str)
         .transpose()
         .map_err(|_| AppError::BadRequest("Invalid translation_of_id".into()))?;
+
+    validate_source_fields(
+        body.title.as_deref(),
+        body.title_display.as_deref(),
+        body.publisher.as_deref(),
+        body.journal_name.as_deref(),
+        body.doi.as_deref(),
+        body.edition.as_deref(),
+        body.volume.as_deref(),
+        body.url.as_deref(),
+        body.isbn.as_deref(),
+        body.publication_year,
+        body.page_start,
+        body.page_end,
+    )?;
 
     let source = db::sources::update_source(
         &state.pool,

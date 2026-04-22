@@ -9,6 +9,9 @@ use crate::models::article::{
     ArticleDetailResponse, ArticleLimitsResponse, ArticleResponse, BatchSentenceResponseItem,
     SentenceData, SourceContext, TopicResponse,
 };
+use crate::validation::{
+    check_max_len, MAX_ARTICLE_DESCRIPTION, MAX_ARTICLE_MARKDOWN, MAX_ARTICLE_TITLE,
+};
 
 // ── Tier limits ──────────────────────────────────────────
 // Free tier defaults (applied when user lacks elevated permissions).
@@ -488,6 +491,7 @@ pub async fn create_article(
     if title.is_empty() {
         return Err(AppError::BadRequest("Title cannot be empty".into()));
     }
+    check_max_len("Title", title, MAX_ARTICLE_TITLE)?;
     reject_emoji("title", title)?;
 
     let base_slug = generate_slug(title);
@@ -731,6 +735,7 @@ pub async fn update_article(
         if title.is_empty() {
             return Err(AppError::BadRequest("Title cannot be empty".into()));
         }
+        check_max_len("Title", title, MAX_ARTICLE_TITLE)?;
         reject_emoji("title", title)?;
         let new_slug = generate_slug(title);
 
@@ -762,6 +767,7 @@ pub async fn update_article(
 
     // Update markdown and re-render HTML
     if let Some(md) = markdown {
+        check_max_len("Article body", md, MAX_ARTICLE_MARKDOWN)?;
         reject_emoji("article body", md)?;
         let html = render_article_markdown(pool, md).await;
         sqlx::query!(
@@ -777,11 +783,7 @@ pub async fn update_article(
 
     // Update description
     if let Some(desc) = description {
-        if desc.len() > 250 {
-            return Err(AppError::BadRequest(
-                "Description must be 250 characters or fewer".into(),
-            ));
-        }
+        check_max_len("Description", desc, MAX_ARTICLE_DESCRIPTION)?;
         reject_emoji("description", desc)?;
         sqlx::query!(
             r#"UPDATE articles SET description = $2, updated_at = now()

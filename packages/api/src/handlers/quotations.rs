@@ -14,6 +14,18 @@ use crate::models::quotation::{
     QuotationQuery, TagListResponse, UpdateNoteRequest,
 };
 use crate::state::AppState;
+use crate::validation::{
+    check_count, check_max_len, MAX_NOTE_BODY, MAX_NOTE_TAGS, MAX_NOTE_TAG_LEN,
+};
+
+fn validate_note_fields(body: &str, tags: &[String]) -> Result<(), AppError> {
+    check_max_len("Note body", body, MAX_NOTE_BODY)?;
+    check_count("Tags", tags, MAX_NOTE_TAGS)?;
+    for tag in tags {
+        check_max_len("Tag", tag, MAX_NOTE_TAG_LEN)?;
+    }
+    Ok(())
+}
 
 /// List quotations for a node (authenticated user only)
 #[utoipa::path(
@@ -183,6 +195,8 @@ pub async fn create_note(
     let quotation_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid quotation ID".into()))?;
 
+    validate_note_fields(&body.body, &body.tags)?;
+
     // Verify ownership
     let (owner_id, _) = db::quotations::get_quotation_owner(&state.pool, quotation_id).await?;
     if owner_id != user.id {
@@ -225,6 +239,16 @@ pub async fn update_note(
 
     let note_id = uuid::Uuid::parse_str(&note_id_str)
         .map_err(|_| AppError::BadRequest("Invalid note ID".into()))?;
+
+    if let Some(b) = body.body.as_deref() {
+        check_max_len("Note body", b, MAX_NOTE_BODY)?;
+    }
+    if let Some(tags) = body.tags.as_deref() {
+        check_count("Tags", tags, MAX_NOTE_TAGS)?;
+        for tag in tags {
+            check_max_len("Tag", tag, MAX_NOTE_TAG_LEN)?;
+        }
+    }
 
     db::quotations::update_note(
         &state.pool,

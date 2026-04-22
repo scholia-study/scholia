@@ -9,6 +9,50 @@ use crate::models::resource::{
     CreateResourceRequest, ResourceListResponse, ResourceQuery, UpdateResourceRequest,
 };
 use crate::state::AppState;
+use crate::validation::{
+    check_int_range, check_max_len, MAX_RESOURCE_ADMIN_NOTES, MAX_RESOURCE_EDITOR_NOTE,
+    MAX_RESOURCE_QUOTED_TEXT, MAX_RESOURCE_SOURCE_LOCATION, MAX_RESOURCE_SOURCE_PAGE,
+    MIN_RESOURCE_SOURCE_PAGE,
+};
+
+fn validate_resource_fields(
+    quoted_text: Option<&str>,
+    editor_note: Option<&str>,
+    admin_notes: Option<&str>,
+    source_location_freeform: Option<&str>,
+    source_page_start: Option<i32>,
+    source_page_end: Option<i32>,
+) -> Result<(), AppError> {
+    if let Some(q) = quoted_text {
+        check_max_len("Quoted text", q, MAX_RESOURCE_QUOTED_TEXT)?;
+    }
+    if let Some(e) = editor_note {
+        check_max_len("Editor note", e, MAX_RESOURCE_EDITOR_NOTE)?;
+    }
+    if let Some(a) = admin_notes {
+        check_max_len("Admin notes", a, MAX_RESOURCE_ADMIN_NOTES)?;
+    }
+    if let Some(l) = source_location_freeform {
+        check_max_len("Source location", l, MAX_RESOURCE_SOURCE_LOCATION)?;
+    }
+    if let Some(p) = source_page_start {
+        check_int_range(
+            "Source page start",
+            p,
+            MIN_RESOURCE_SOURCE_PAGE,
+            MAX_RESOURCE_SOURCE_PAGE,
+        )?;
+    }
+    if let Some(p) = source_page_end {
+        check_int_range(
+            "Source page end",
+            p,
+            MIN_RESOURCE_SOURCE_PAGE,
+            MAX_RESOURCE_SOURCE_PAGE,
+        )?;
+    }
+    Ok(())
+}
 
 /// List resources for a sentence range (public)
 #[utoipa::path(
@@ -69,6 +113,15 @@ pub async fn create_resource(
         .map(uuid::Uuid::parse_str)
         .transpose()
         .map_err(|_| AppError::BadRequest("Invalid source_id".into()))?;
+
+    validate_resource_fields(
+        body.quoted_text.as_deref(),
+        body.editor_note.as_deref(),
+        body.admin_notes.as_deref(),
+        body.source_location_freeform.as_deref(),
+        body.source_page_start,
+        body.source_page_end,
+    )?;
 
     let _resource_id = db::resources::create_resource(
         &state.pool,
@@ -139,6 +192,15 @@ pub async fn update_resource(
         .map(uuid::Uuid::parse_str)
         .transpose()
         .map_err(|_| AppError::BadRequest("Invalid source_id".into()))?;
+
+    validate_resource_fields(
+        body.quoted_text.as_deref(),
+        body.editor_note.as_deref(),
+        body.admin_notes.as_deref(),
+        body.source_location_freeform.as_deref(),
+        body.source_page_start,
+        body.source_page_end,
+    )?;
 
     db::resources::update_resource(
         &state.pool,

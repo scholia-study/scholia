@@ -16,7 +16,11 @@ use crate::auth::middleware::{invalidate_user_sessions, set_session_user, AuthUs
 use crate::auth::permissions::resolve_permission_names;
 use crate::auth::tokens;
 use crate::email;
+use crate::error::AppError;
 use crate::state::AppState;
+use crate::validation::{
+    check_max_len, MAX_DISPLAY_NAME, MAX_EMAIL, MAX_PASSWORD, MIN_PASSWORD,
+};
 
 // ── Request / response types ────────────────────────────────
 
@@ -110,13 +114,26 @@ pub async fn register(
     if email.is_empty() || !email.contains('@') {
         return (StatusCode::BAD_REQUEST, "Invalid email").into_response();
     }
+    if let Err(e) = check_max_len("Email", &email, MAX_EMAIL) {
+        return e.into_response();
+    }
     if display_name.is_empty() {
         return (StatusCode::BAD_REQUEST, "Display name is required").into_response();
     }
-    if body.password.len() < 8 {
+    if let Err(e) = check_max_len("Display name", &display_name, MAX_DISPLAY_NAME) {
+        return e.into_response();
+    }
+    if body.password.len() < MIN_PASSWORD {
         return (
             StatusCode::BAD_REQUEST,
-            "Password must be at least 8 characters",
+            format!("Password must be at least {MIN_PASSWORD} characters"),
+        )
+            .into_response();
+    }
+    if body.password.len() > MAX_PASSWORD {
+        return (
+            StatusCode::BAD_REQUEST,
+            format!("Password must be {MAX_PASSWORD} characters or fewer"),
         )
             .into_response();
     }
@@ -202,6 +219,16 @@ pub async fn login(
     Json(body): Json<LoginRequest>,
 ) -> Response {
     let email = body.email.trim().to_lowercase();
+
+    if let Err(e) = check_max_len("Email", &email, MAX_EMAIL) {
+        return e.into_response();
+    }
+    if body.password.len() > MAX_PASSWORD {
+        return AppError::BadRequest(format!(
+            "Password must be {MAX_PASSWORD} characters or fewer"
+        ))
+        .into_response();
+    }
 
     let row = match sqlx::query(
         "SELECT id, email, display_name, password_hash, avatar_url, email_verified_at FROM users WHERE email = $1",
@@ -342,6 +369,10 @@ pub async fn forgot_password(
         message: "If an account with that email exists, a reset link has been sent.".to_string(),
     });
 
+    if check_max_len("Email", &email, MAX_EMAIL).is_err() {
+        return response;
+    }
+
     let row = match sqlx::query("SELECT id, email FROM users WHERE email = $1")
         .bind(&email)
         .fetch_optional(&state.pool)
@@ -391,10 +422,17 @@ pub async fn reset_password(
     State(state): State<AppState>,
     Json(body): Json<ResetPasswordRequest>,
 ) -> Response {
-    if body.password.len() < 8 {
+    if body.password.len() < MIN_PASSWORD {
         return (
             StatusCode::BAD_REQUEST,
-            "Password must be at least 8 characters",
+            format!("Password must be at least {MIN_PASSWORD} characters"),
+        )
+            .into_response();
+    }
+    if body.password.len() > MAX_PASSWORD {
+        return (
+            StatusCode::BAD_REQUEST,
+            format!("Password must be {MAX_PASSWORD} characters or fewer"),
         )
             .into_response();
     }
@@ -588,6 +626,9 @@ pub async fn update_profile(
 
     if display_name.is_empty() {
         return (StatusCode::BAD_REQUEST, "Display name is required").into_response();
+    }
+    if let Err(e) = check_max_len("Display name", &display_name, MAX_DISPLAY_NAME) {
+        return e.into_response();
     }
 
     let _ = sqlx::query("UPDATE users SET display_name = $1, updated_at = now() WHERE id = $2")

@@ -10,6 +10,7 @@ use crate::models::article_quotation::{
     CreateArticleQuotationResponse,
 };
 use crate::state::AppState;
+use crate::validation::{check_max_len, MAX_ARTICLE_QUOTATION_HTML, MAX_ARTICLE_QUOTATION_TEXT};
 
 /// Save a quotation from an article (returns existing if duplicate)
 #[utoipa::path(
@@ -33,6 +34,9 @@ pub async fn create_article_quotation(
 
     let article_id = uuid::Uuid::parse_str(&body.article_id)
         .map_err(|_| AppError::BadRequest("Invalid article_id".into()))?;
+
+    check_max_len("Quotation text", &body.text, MAX_ARTICLE_QUOTATION_TEXT)?;
+    check_max_len("Quotation html", &body.html, MAX_ARTICLE_QUOTATION_HTML)?;
 
     let (article_quotation, created) = db::article_quotations::create_article_quotation(
         &state.pool,

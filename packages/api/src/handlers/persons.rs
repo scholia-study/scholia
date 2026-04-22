@@ -7,6 +7,20 @@ use crate::db;
 use crate::error::AppError;
 use crate::models::resource::{CreatePersonRequest, PersonResponse, SearchQuery, UpdatePersonRequest};
 use crate::state::AppState;
+use crate::validation::{check_max_len, MAX_PERSON_NAME, MAX_PERSON_SORT_NAME};
+
+fn validate_person_fields(
+    name: Option<&str>,
+    sort_name: Option<&str>,
+) -> Result<(), AppError> {
+    if let Some(n) = name {
+        check_max_len("Name", n, MAX_PERSON_NAME)?;
+    }
+    if let Some(s) = sort_name {
+        check_max_len("Sort name", s, MAX_PERSON_SORT_NAME)?;
+    }
+    Ok(())
+}
 
 /// Search persons by name
 #[utoipa::path(
@@ -58,6 +72,8 @@ pub async fn create_person(
         return Err(AppError::Forbidden("Insufficient permissions".into()));
     }
 
+    validate_person_fields(Some(&body.name), body.sort_name.as_deref())?;
+
     let person = db::persons::create_person(
         &state.pool,
         &body.name,
@@ -102,6 +118,8 @@ pub async fn update_person(
     {
         return Err(AppError::Forbidden("This person is protected".into()));
     }
+
+    validate_person_fields(body.name.as_deref(), body.sort_name.as_deref())?;
 
     let person = db::persons::update_person(
         &state.pool,

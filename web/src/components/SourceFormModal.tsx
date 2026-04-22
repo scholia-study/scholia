@@ -18,6 +18,7 @@ import type {
     SourcePersonResponse,
     SourceResponse,
 } from "../api/model";
+import { FetchError } from "../api/fetcher";
 import { useSearchPersons } from "../api/persons/persons";
 import {
     useAddSourcePerson,
@@ -25,6 +26,10 @@ import {
     useSearchSources,
 } from "../api/sources/sources";
 import { PersonFormModal } from "./PersonFormModal";
+
+function errorMessage(err: unknown, fallback: string) {
+    return err instanceof FetchError && err.message ? err.message : fallback;
+}
 
 interface SourceFormModalProps {
     open: boolean;
@@ -103,8 +108,8 @@ export function SourceFormModal({
                     resetAndClose();
                 }
             },
-            onError: () => {
-                toast.error("Failed to create source");
+            onError: (err) => {
+                toast.error(errorMessage(err, "Failed to create source"));
             },
         },
     });
@@ -143,8 +148,10 @@ export function SourceFormModal({
                         source,
                     );
                 },
-                onError: () => {
-                    toast.error(`Failed to link person ${p.name}`);
+                onError: (err) => {
+                    toast.error(
+                        errorMessage(err, `Failed to link person ${p.name}`),
+                    );
                 },
             },
         );

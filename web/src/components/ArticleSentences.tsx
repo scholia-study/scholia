@@ -1,6 +1,8 @@
 import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
 import { Popover } from "@mui/material";
 import parse, { type DOMNode, Element, Text } from "html-react-parser";
+import toast from "react-hot-toast";
+import { FetchError } from "../api/fetcher";
 import {
     useCallback,
     useEffect,
@@ -184,8 +186,13 @@ export function ArticleSentences({
             } else {
                 setSaveStatus("duplicate");
             }
-        } catch {
+        } catch (err) {
             setSaveStatus("idle");
+            const message =
+                err instanceof FetchError && err.message
+                    ? err.message
+                    : "Failed to save quotation";
+            toast.error(message);
         }
     }, [getSelectedText, createMutation, articleId]);
 

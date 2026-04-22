@@ -8,6 +8,7 @@ pub mod error;
 pub mod handlers;
 pub mod models;
 pub mod state;
+pub mod validation;
 
 #[derive(OpenApi)]
 #[openapi(
