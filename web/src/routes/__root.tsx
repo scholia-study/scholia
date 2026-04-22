@@ -1,3 +1,4 @@
+import { ThemeProvider } from "@mui/material/styles";
 import type { QueryClient } from "@tanstack/react-query";
 import {
     createRootRouteWithContext,
@@ -13,6 +14,7 @@ import { Navbar } from "../components/Navbar";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { UserSubnav } from "../components/UserSubnav";
 import appCss from "../styles.css?url";
+import { theme } from "../theme";
 
 interface RouterContext {
     queryClient: QueryClient;
@@ -48,7 +50,7 @@ function RootComponent() {
     const showFooter = pathname !== "/" && !isReader;
 
     return (
-        <>
+        <ThemeProvider theme={theme}>
             <Navbar />
             <UserSubnav />
             <InfoSubnav />
@@ -64,7 +66,7 @@ function RootComponent() {
             </main>
             <ScrollToTop />
             <Toaster position="bottom-right" />
-        </>
+        </ThemeProvider>
     );
 }
 
@@ -89,7 +91,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <head>
                 <HeadContent />
             </head>
-            <body className="h-screen overflow-hidden flex flex-col bg-stone-50 text-stone-900">
+            <body className="antialiased h-screen overflow-hidden flex flex-col bg-stone-50 text-stone-900">
                 {children}
                 <Scripts />
             </body>

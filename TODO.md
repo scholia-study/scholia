@@ -1,4 +1,3 @@
-- what happes to published/drafts if a user stops paying/cancel sub? whats published remains published, but can everything be editable? this could be a way for users to "game" the system by "unlocking" slots by only paying once? Perhaps force only editing of the first five active articles? Leave the rest as is?
 - saving a range quotation wrongly shows "edit" icon
 - bug in custom source first name when missing sort name (happens even with sort name??)
 - referencing user-generated content does not add a bibliographical detail (need to set up structure for this)
