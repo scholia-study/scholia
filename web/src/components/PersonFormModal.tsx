@@ -17,6 +17,16 @@ interface PersonFormModalProps {
     onCreated: (person: PersonResponse) => void;
 }
 
+function deriveSortName(fullName: string): string {
+    const trimmed = fullName.trim();
+    if (!trimmed) return "";
+    const parts = trimmed.split(/\s+/);
+    if (parts.length === 1) return trimmed;
+    const surname = parts[parts.length - 1];
+    const rest = parts.slice(0, -1).join(" ");
+    return `${surname}, ${rest}`;
+}
+
 export function PersonFormModal({
     open,
     onClose,
@@ -24,6 +34,7 @@ export function PersonFormModal({
 }: PersonFormModalProps) {
     const [name, setName] = useState("");
     const [sortName, setSortName] = useState("");
+    const [sortNameManual, setSortNameManual] = useState(false);
 
     const createMutation = useCreatePerson({
         mutation: {
@@ -43,7 +54,20 @@ export function PersonFormModal({
     const resetAndClose = () => {
         setName("");
         setSortName("");
+        setSortNameManual(false);
         onClose();
+    };
+
+    const handleNameChange = (value: string) => {
+        setName(value);
+        if (!sortNameManual) {
+            setSortName(deriveSortName(value));
+        }
+    };
+
+    const handleSortNameChange = (value: string) => {
+        setSortName(value);
+        setSortNameManual(true);
     };
 
     const handleSubmit = () => {
@@ -62,11 +86,18 @@ export function PersonFormModal({
     return (
         <Dialog open={open} onClose={resetAndClose} maxWidth="xs" fullWidth>
             <DialogTitle sx={{ fontSize: 16 }}>New Person</DialogTitle>
-            <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: "8px !important" }}>
+            <DialogContent
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    pt: "8px !important",
+                }}
+            >
                 <TextField
                     label="Name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => handleNameChange(e.target.value)}
                     size="small"
                     required
                     autoFocus
@@ -74,10 +105,10 @@ export function PersonFormModal({
                 <TextField
                     label="Sort Name"
                     value={sortName}
-                    onChange={(e) => setSortName(e.target.value)}
+                    onChange={(e) => handleSortNameChange(e.target.value)}
                     size="small"
                     placeholder="e.g. Vaughan, Alden T."
-                    helperText="Optional. Used for bibliography ordering."
+                    helperText="Ensure that the sort name is correct (surname, given names)"
                 />
             </DialogContent>
             <DialogActions>
