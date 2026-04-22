@@ -6,10 +6,14 @@ export function useAuth() {
     });
 
     const user = meData?.data ?? null;
+    const permissions = user?.permissions ?? [];
+    const hasPermission = (name: string) => permissions.includes(name);
 
     return {
         user,
         isLoading,
         isAuthenticated: !!user,
+        permissions,
+        hasPermission,
     };
 }

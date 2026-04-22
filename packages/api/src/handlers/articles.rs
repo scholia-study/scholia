@@ -127,6 +127,7 @@ pub async fn update_article(
         &state.pool,
         &slug,
         user.id,
+        &user.roles,
         body.title.as_deref(),
         body.markdown.as_deref(),
         body.description.as_deref(),
@@ -158,7 +159,7 @@ pub async fn publish_article(
     user.require_permission(Permission::ArticlesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
-    db::articles::publish_article(&state.pool, &slug, user.id).await?;
+    db::articles::publish_article(&state.pool, &slug, user.id, &user.roles).await?;
     Ok(Json(()))
 }
 

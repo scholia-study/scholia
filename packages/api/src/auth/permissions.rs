@@ -14,6 +14,23 @@ pub enum Permission {
     SourcesCreate,
 }
 
+impl Permission {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::UsersManage => "users_manage",
+            Self::BooksManage => "books_manage",
+            Self::ResourcesManage => "resources_manage",
+            Self::NotesCreate => "notes_create",
+            Self::NotesEdit => "notes_edit",
+            Self::NotesDelete => "notes_delete",
+            Self::ArticlesCreate => "articles_create",
+            Self::ArticlesLimit1000 => "articles_limit_1000",
+            Self::ArticlesArchiveLimit1000 => "articles_archive_limit_1000",
+            Self::SourcesCreate => "sources_create",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Role {
     Admin,
@@ -94,4 +111,14 @@ pub fn resolve_permissions(role_names: &[String]) -> HashSet<Permission> {
         }
     }
     perms
+}
+
+/// Resolve all permissions from role names as a sorted list of string names.
+pub fn resolve_permission_names(role_names: &[String]) -> Vec<String> {
+    let mut names: Vec<String> = resolve_permissions(role_names)
+        .into_iter()
+        .map(|p| p.as_str().to_string())
+        .collect();
+    names.sort();
+    names
 }

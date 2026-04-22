@@ -695,6 +695,7 @@ pub async fn update_article(
     pool: &PgPool,
     slug: &str,
     user_id: Uuid,
+    roles: &[String],
     title: Option<&str>,
     markdown: Option<&str>,
     description: Option<&str>,
@@ -717,6 +718,12 @@ pub async fn update_article(
         ));
     }
     let article_id = row.id;
+
+    if !user_can_edit_article(pool, user_id, article_id, roles).await? {
+        return Err(AppError::Forbidden(
+            "Upgrade your account to edit more articles".into(),
+        ));
+    }
 
     // Update title and regenerate slug if title changed
     if let Some(title) = title {
@@ -799,24 +806,45 @@ pub async fn update_article(
     get_user_article_by_slug(pool, &new_slug, user_id).await
 }
 
-pub async fn publish_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result<(), AppError> {
-    let result = sqlx::query!(
+pub async fn publish_article(
+    pool: &PgPool,
+    slug: &str,
+    user_id: Uuid,
+    roles: &[String],
+) -> Result<(), AppError> {
+    let row = sqlx::query!(
+        r#"SELECT id, status AS "status: String" FROM articles
+           WHERE slug = $1 AND user_id = $2"#,
+        slug,
+        user_id,
+    )
+    .fetch_optional(pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound("Article not found".into()))?;
+
+    if row.status != "draft" {
+        return Err(AppError::BadRequest(
+            "Article is not in draft status".into(),
+        ));
+    }
+
+    if !user_can_edit_article(pool, user_id, row.id, roles).await? {
+        return Err(AppError::Forbidden(
+            "Upgrade your account to edit more articles".into(),
+        ));
+    }
+
+    sqlx::query!(
         r#"UPDATE articles
            SET status = 'published',
                published_at = COALESCE(published_at, now()),
                updated_at = now()
-           WHERE slug = $1 AND user_id = $2 AND status = 'draft'"#,
-        slug,
-        user_id,
+           WHERE id = $1"#,
+        row.id,
     )
     .execute(pool)
     .await?;
 
-    if result.rows_affected() == 0 {
-        return Err(AppError::NotFound(
-            "Article not found or not in draft status".into(),
-        ));
-    }
     Ok(())
 }
 
@@ -836,6 +864,43 @@ pub async fn archive_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result
         ));
     }
     Ok(())
+}
+
+/// Returns the IDs of the N oldest non-archived articles for a user,
+/// ordered by `created_at ASC`. Used to determine which articles remain
+/// editable for users without elevated article-limit permissions.
+pub async fn list_oldest_active_article_ids(
+    pool: &PgPool,
+    user_id: Uuid,
+    limit: i32,
+) -> Result<Vec<Uuid>, AppError> {
+    let rows = sqlx::query_scalar!(
+        r#"SELECT id FROM articles
+           WHERE user_id = $1 AND status != 'archived'
+           ORDER BY created_at ASC
+           LIMIT $2"#,
+        user_id,
+        limit as i64,
+    )
+    .fetch_all(pool)
+    .await?;
+    Ok(rows)
+}
+
+/// Returns true if the user may edit the given article given their roles.
+/// Users with ArticlesLimit1000 may edit any non-archived article they own;
+/// otherwise only their oldest FREE_ARTICLES_ACTIVE active articles are editable.
+pub async fn user_can_edit_article(
+    pool: &PgPool,
+    user_id: Uuid,
+    article_id: Uuid,
+    roles: &[String],
+) -> Result<bool, AppError> {
+    if resolve_permissions(roles).contains(&Permission::ArticlesLimit1000) {
+        return Ok(true);
+    }
+    let editable = list_oldest_active_article_ids(pool, user_id, FREE_ARTICLES_ACTIVE).await?;
+    Ok(editable.contains(&article_id))
 }
 
 /// Returns (current_active, current_archived) counts.

@@ -31,6 +31,7 @@ import { FetchError } from "../api/fetcher";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { ArticleResponse } from "../api/model";
 import { useArchiveArticleDialog } from "../hooks/useArchiveArticleDialog";
+import { useAuth } from "../hooks/useAuth";
 import { usePublishArticleDialog } from "../hooks/usePublishArticleDialog";
 
 export const Route = createFileRoute("/user/articles/")({
@@ -67,9 +68,31 @@ function ArticlesPage() {
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [newTitle, setNewTitle] = useState("");
 
+    const { hasPermission } = useAuth();
+    const hasUnlimitedArticles = hasPermission("articles_limit_1000");
+
     const { data: articlesData, isLoading } = useListUserArticles({});
     const articles = articlesData?.data?.articles ?? [];
     const limits = articlesData?.data?.limits;
+
+    const editableIds = useMemo(() => {
+        if (hasUnlimitedArticles) return null;
+        const cap = limits?.max_active ?? 5;
+        const oldestActive = articles
+            .filter((a) => a.status !== "archived")
+            .slice()
+            .sort(
+                (a, b) =>
+                    new Date(a.created_at).getTime() -
+                    new Date(b.created_at).getTime(),
+            )
+            .slice(0, cap)
+            .map((a) => a.id);
+        return new Set(oldestActive);
+    }, [articles, limits, hasUnlimitedArticles]);
+
+    const isEditable = (id: string) =>
+        editableIds === null || editableIds.has(id);
 
     const counts = useMemo(() => {
         const c: Record<string, number> = {
@@ -228,6 +251,7 @@ function ArticlesPage() {
                         key={article.id}
                         article={article}
                         canArchive={canArchive}
+                        canEdit={isEditable(article.id)}
                         onPublish={publishDialog.openFor}
                         onArchive={archiveDialog.openFor}
                     />
@@ -275,11 +299,13 @@ function ArticlesPage() {
 function ArticleRow({
     article,
     canArchive,
+    canEdit,
     onPublish,
     onArchive,
 }: {
     article: ArticleResponse;
     canArchive: boolean;
+    canEdit: boolean;
     onPublish: (slug: string) => void;
     onArchive: (slug: string) => void;
 }) {
@@ -336,22 +362,50 @@ function ArticleRow({
             </div>
 
             <div className="flex items-center gap-0.5 shrink-0">
-                <Tooltip title="Edit">
-                    <Link to="/user/articles/$slug" params={{ slug: article.slug }}>
-                        <IconButton size="small">
-                            <EditOutlined fontSize="small" />
-                        </IconButton>
-                    </Link>
-                </Tooltip>
+                {canEdit ? (
+                    <Tooltip title="Edit">
+                        <Link
+                            to="/user/articles/$slug"
+                            params={{ slug: article.slug }}
+                        >
+                            <IconButton size="small">
+                                <EditOutlined fontSize="small" />
+                            </IconButton>
+                        </Link>
+                    </Tooltip>
+                ) : (
+                    <Tooltip
+                        title={
+                            article.status === "archived"
+                                ? "Archived articles cannot be edited"
+                                : "Upgrade your account to edit more articles"
+                        }
+                    >
+                        <span>
+                            <IconButton size="small" disabled>
+                                <EditOutlined fontSize="small" />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                )}
 
                 {article.status === "draft" && (
-                    <Tooltip title="Publish">
-                        <IconButton
-                            size="small"
-                            onClick={() => onPublish(article.slug)}
-                        >
-                            <PublishOutlined fontSize="small" />
-                        </IconButton>
+                    <Tooltip
+                        title={
+                            canEdit
+                                ? "Publish"
+                                : "Upgrade your account to edit more articles"
+                        }
+                    >
+                        <span>
+                            <IconButton
+                                size="small"
+                                disabled={!canEdit}
+                                onClick={() => onPublish(article.slug)}
+                            >
+                                <PublishOutlined fontSize="small" />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 )}
 

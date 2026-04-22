@@ -13,6 +13,7 @@ use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::auth::middleware::{invalidate_user_sessions, set_session_user, AuthUser};
+use crate::auth::permissions::resolve_permission_names;
 use crate::auth::tokens;
 use crate::email;
 use crate::state::AppState;
@@ -55,6 +56,7 @@ pub struct AuthResponse {
     pub display_name: String,
     pub avatar_url: Option<String>,
     pub roles: Vec<String>,
+    pub permissions: Vec<String>,
 }
 
 #[derive(Serialize, ToSchema)]
@@ -255,12 +257,15 @@ pub async fn login(
     .await
     .unwrap_or_default();
 
+    let permissions = resolve_permission_names(&roles);
+
     Json(AuthResponse {
         id: user_id.to_string(),
         email: user_email,
         display_name: user_display_name,
         avatar_url,
         roles,
+        permissions,
     })
     .into_response()
 }
@@ -305,12 +310,14 @@ pub async fn logout(
     tag = "auth"
 )]
 pub async fn me(user: AuthUser) -> Json<AuthResponse> {
+    let permissions = resolve_permission_names(&user.roles);
     Json(AuthResponse {
         id: user.id.to_string(),
         email: user.email,
         display_name: user.display_name,
         avatar_url: user.avatar_url,
         roles: user.roles,
+        permissions,
     })
 }
 

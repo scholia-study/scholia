@@ -14,13 +14,14 @@ import {
     redirect,
     useNavigate,
 } from "@tanstack/react-router";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
     getGetUserArticleQueryKey,
     getListUserArticlesQueryKey,
     useGetUserArticle,
     useArchiveArticle,
+    useListUserArticles,
     usePublishArticle,
     useUpdateArticle,
 } from "../api/articles/articles";
@@ -37,6 +38,7 @@ import {
     type QuotationPickerResult,
 } from "../components/editor/QuotationPickerModal";
 import { useArchiveArticleDialog } from "../hooks/useArchiveArticleDialog";
+import { useAuth } from "../hooks/useAuth";
 import { usePublishArticleDialog } from "../hooks/usePublishArticleDialog";
 
 const MemoizedEditor = memo(
@@ -88,6 +90,35 @@ function ArticleEditorPage() {
 
     const { data: topicsData } = useListTopics();
     const allTopics = topicsData?.data?.topics ?? [];
+
+    const { hasPermission } = useAuth();
+    const hasUnlimitedArticles = hasPermission("articles_limit_1000");
+    const { data: userArticlesData } = useListUserArticles(
+        {},
+        { query: { enabled: !hasUnlimitedArticles } },
+    );
+    const editableIds = useMemo(() => {
+        if (hasUnlimitedArticles) return null;
+        const list = userArticlesData?.data?.articles ?? [];
+        const cap = userArticlesData?.data?.limits?.max_active ?? 5;
+        return new Set(
+            list
+                .filter((a) => a.status !== "archived")
+                .slice()
+                .sort(
+                    (a, b) =>
+                        new Date(a.created_at).getTime() -
+                        new Date(b.created_at).getTime(),
+                )
+                .slice(0, cap)
+                .map((a) => a.id),
+        );
+    }, [hasUnlimitedArticles, userArticlesData]);
+    const isOverQuota =
+        !!article &&
+        article.status !== "archived" &&
+        editableIds !== null &&
+        !editableIds.has(article.id);
 
     const updateMutation = useUpdateArticle();
     const publishMutation = usePublishArticle();
@@ -240,6 +271,7 @@ function ArticleEditorPage() {
     }
 
     const isArchived = article.status === "archived";
+    const isReadOnly = isArchived || isOverQuota;
 
     return (
         <div className="flex-1 bg-white">
@@ -276,7 +308,7 @@ function ArticleEditorPage() {
                                 onClick={() =>
                                     publishDialog.openFor(currentSlug.current)
                                 }
-                                disabled={publishMutation.isPending}
+                                disabled={isReadOnly || publishMutation.isPending}
                                 sx={{ textTransform: "none" }}
                             >
                                 Publish
@@ -316,7 +348,7 @@ function ArticleEditorPage() {
                                 save({ title, markdown, description })
                             }
                             disabled={
-                                isArchived ||
+                                isReadOnly ||
                                 saveStatus === "saved" ||
                                 saveStatus === "saving"
                             }
@@ -335,6 +367,13 @@ function ArticleEditorPage() {
                     </div>
                 )}
 
+                {isOverQuota && (
+                    <div className="mb-4 px-3 py-2 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800">
+                        Upgrade your account to edit this article. Your current
+                        plan only allows editing your oldest active articles.
+                    </div>
+                )}
+
                 {/* Title */}
                 <TextField
                     fullWidth
@@ -346,7 +385,7 @@ function ArticleEditorPage() {
                         setSaveStatus("unsaved");
                     }}
                     onBlur={handleTitleBlur}
-                    disabled={isArchived}
+                    disabled={isReadOnly}
                     slotProps={{
                         input: {
                             sx: {
@@ -373,7 +412,7 @@ function ArticleEditorPage() {
                         }
                     }}
                     onBlur={handleDescriptionBlur}
-                    disabled={isArchived}
+                    disabled={isReadOnly}
                     multiline
                     maxRows={3}
                     helperText={
@@ -409,7 +448,7 @@ function ArticleEditorPage() {
                     getOptionLabel={(option) => option.name}
                     value={selectedTopics}
                     onChange={handleTopicsChange}
-                    disabled={isArchived}
+                    disabled={isReadOnly}
                     isOptionEqualToValue={(option, value) =>
                         option.id === value.id
                     }
@@ -452,7 +491,7 @@ function ArticleEditorPage() {
                     markdown={article.markdown}
                     onChange={handleMarkdownChange}
                     onInsertQuotationClick={openPicker}
-                    readOnly={isArchived}
+                    readOnly={isReadOnly}
                 />
 
                 <QuotationPickerModal

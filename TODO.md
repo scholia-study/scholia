@@ -18,3 +18,6 @@
 ### MAYBE
 
 - add "commentary, paraphrase, allusion submission to editors for review and approval" 
+
+### TO TEST
+- paid to free tier, check over-quota items are no longer editable
