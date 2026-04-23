@@ -78,6 +78,7 @@ pub async fn create_person(
         &state.pool,
         &body.name,
         body.sort_name.as_deref(),
+        user.id,
     )
     .await?;
 
@@ -104,19 +105,18 @@ pub async fn update_person(
     Path(id): Path<String>,
     Json(body): Json<UpdatePersonRequest>,
 ) -> Result<Json<PersonResponse>, AppError> {
-    if !user.has_permission(Permission::ResourcesManage)
-        && !user.has_permission(Permission::SourcesCreate)
-    {
-        return Err(AppError::Forbidden("Insufficient permissions".into()));
-    }
-
     let person_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid person ID".into()))?;
 
-    if db::sources::is_person_protected(&state.pool, person_id).await?
-        && !user.has_permission(Permission::ResourcesManage)
-    {
+    let current = db::persons::get_person(&state.pool, person_id).await?;
+    let is_editor = user.has_permission(Permission::ResourcesManage);
+    if current.protected && !is_editor {
         return Err(AppError::Forbidden("This person is protected".into()));
+    }
+    if !is_editor && current.created_by != user.id.to_string() {
+        return Err(AppError::Forbidden(
+            "You can only edit persons you created".into(),
+        ));
     }
 
     validate_person_fields(body.name.as_deref(), body.sort_name.as_deref())?;

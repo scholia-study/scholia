@@ -65,6 +65,8 @@ pub struct SourceResponse {
     pub page_end: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub translation_of_id: Option<String>,
+    pub created_by: String,
+    pub protected: bool,
     pub persons: Vec<SourcePersonResponse>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent: Option<Box<ParentSourceResponse>>,
@@ -90,6 +92,8 @@ pub struct SourcePersonResponse {
     pub sort_name: Option<String>,
     pub role: String,
     pub position: i16,
+    pub created_by: String,
+    pub protected: bool,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -98,6 +102,8 @@ pub struct PersonResponse {
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sort_name: Option<String>,
+    pub created_by: String,
+    pub protected: bool,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -107,6 +113,8 @@ pub struct SourceSearchResponse {
     pub title: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publication_year: Option<i16>,
+    pub created_by: String,
+    pub protected: bool,
     pub persons: Vec<SourcePersonResponse>,
 }
 
@@ -128,6 +136,28 @@ fn default_body() -> String {
 pub struct SearchQuery {
     #[serde(default)]
     pub q: String,
+}
+
+#[derive(Debug, Deserialize, IntoParams)]
+pub struct SourceBrowseQuery {
+    #[serde(default)]
+    pub q: Option<String>,
+    #[serde(default)]
+    pub source_type: Option<String>,
+    #[serde(default)]
+    pub created_by_me: Option<bool>,
+    #[serde(default)]
+    pub protected: Option<bool>,
+    #[serde(default)]
+    pub page: Option<i32>,
+    #[serde(default)]
+    pub per_page: Option<i32>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct SourceBrowseResponse {
+    pub sources: Vec<SourceSearchResponse>,
+    pub total: i64,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
@@ -201,6 +231,7 @@ pub struct UpdateSourceRequest {
     pub page_end: Option<i32>,
     pub parent_source_id: Option<String>,
     pub translation_of_id: Option<String>,
+    pub protected: Option<bool>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
@@ -224,6 +255,43 @@ pub struct LinkSourcePersonRequest {
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ReferenceCheckResponse {
+    /// Total count across all categories.
+    pub total: i64,
+    pub resources: ReferencedResources,
+    pub child_sources: ReferencedChildSources,
+    pub articles: ReferencedArticles,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReferencedResources {
     pub count: i64,
-    pub resource_ids: Vec<String>,
+    pub ids: Vec<String>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReferencedChildSources {
+    pub count: i64,
+    pub items: Vec<ReferencedChildSource>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReferencedChildSource {
+    pub id: String,
+    pub title: String,
+    pub relation: String, // "parent" | "translation"
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReferencedArticles {
+    pub count: i64,
+    pub items: Vec<ReferencedArticle>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReferencedArticle {
+    pub id: String,
+    pub title: String,
+    pub slug: String,
+    pub status: String, // "draft" | "published" | "archived"
+    pub is_mine: bool,
 }

@@ -4,8 +4,14 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ReferencedArticles } from "./referencedArticles";
+import type { ReferencedChildSources } from "./referencedChildSources";
+import type { ReferencedResources } from "./referencedResources";
 
 export interface ReferenceCheckResponse {
-    count: number;
-    resource_ids: string[];
+    articles: ReferencedArticles;
+    child_sources: ReferencedChildSources;
+    resources: ReferencedResources;
+    /** Total count across all categories. */
+    total: number;
 }

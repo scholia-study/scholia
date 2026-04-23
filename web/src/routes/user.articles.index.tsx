@@ -180,7 +180,7 @@ function ArticlesPage() {
     const showUsage = limits ? limits.max_active <= 50 : false;
 
     return (
-        <div className="max-w-3xl mx-auto px-8 py-16">
+        <div className="w-full max-w-3xl mx-auto px-8 py-16">
             <div className="mb-6">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold text-stone-900">

@@ -6,8 +6,10 @@
  */
 
 export interface PersonResponse {
+    created_by: string;
     id: string;
     name: string;
+    protected: boolean;
     /** @nullable */
     sort_name?: string | null;
 }

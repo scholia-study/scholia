@@ -8,6 +8,7 @@ import type { ParentSourceResponse } from "./parentSourceResponse";
 import type { SourcePersonResponse } from "./sourcePersonResponse";
 
 export interface SourceResponse {
+    created_by: string;
     /** @nullable */
     doi?: string | null;
     /** @nullable */
@@ -23,6 +24,7 @@ export interface SourceResponse {
     page_start?: number | null;
     parent?: null | ParentSourceResponse;
     persons: SourcePersonResponse[];
+    protected: boolean;
     /** @nullable */
     publication_year?: number | null;
     /** @nullable */

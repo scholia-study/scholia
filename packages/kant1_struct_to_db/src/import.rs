@@ -23,6 +23,10 @@ pub async fn run(
     let pool = PgPool::connect(&db_url).await?;
     let mut tx = pool.begin().await?;
 
+    // System user owns all seed-imported persons/sources; see db/001_schema.sql.
+    let system_user_id: Uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000001")
+        .expect("valid system user UUID");
+
     let is_translation = source_book_slug.is_some();
 
     // 0. Look up source book (translation mode only)
@@ -43,8 +47,8 @@ pub async fn run(
 
     // 1a. Upsert person (author)
     let person_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO persons (name, sort_name, protected)
-         VALUES ($1, $2, true)
+        "INSERT INTO persons (name, sort_name, protected, created_by)
+         VALUES ($1, $2, true, $3)
          ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
          RETURNING id",
     )
@@ -58,6 +62,7 @@ pub async fn run(
             None
         }
     })
+    .bind(system_user_id)
     .fetch_one(&mut *tx)
     .await?;
     eprintln!("Person {:?} ({})", output.book.author, person_id);
@@ -65,14 +70,15 @@ pub async fn run(
     // 1b. Insert bibliographic source
     let publication_year: Option<i16> = output.book.source_date.parse::<i16>().ok();
     let bib_source_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO sources (source_type, title, publication_year, publisher, translation_of_id, protected)
-         VALUES ('book', $1, $2, $3, $4, true)
+        "INSERT INTO sources (source_type, title, publication_year, publisher, translation_of_id, protected, created_by)
+         VALUES ('book', $1, $2, $3, $4, true, $5)
          RETURNING id",
     )
     .bind(&output.book.title)
     .bind(publication_year)
     .bind(&output.book.source)
     .bind(translation_of_id)
+    .bind(system_user_id)
     .fetch_one(&mut *tx)
     .await?;
     eprintln!("Source {:?} ({})", output.book.title, bib_source_id);

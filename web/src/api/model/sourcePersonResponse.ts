@@ -6,9 +6,11 @@
  */
 
 export interface SourcePersonResponse {
+    created_by: string;
     name: string;
     person_id: string;
     position: number;
+    protected: boolean;
     role: string;
     /** @nullable */
     sort_name?: string | null;

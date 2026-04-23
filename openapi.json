@@ -1452,7 +1452,143 @@
         }
       }
     },
+    "/api/sources/browse": {
+      "get": {
+        "tags": [
+          "sources"
+        ],
+        "summary": "Browse sources (paginated, with filters)",
+        "operationId": "browse_sources",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "source_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "created_by_me",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "protected",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated sources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceBrowseResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Insufficient permissions"
+          }
+        }
+      }
+    },
     "/api/sources/{id}": {
+      "get": {
+        "tags": [
+          "sources"
+        ],
+        "summary": "Get a source by ID",
+        "operationId": "get_source",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Source ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "description": "Source not found"
+          }
+        }
+      },
       "put": {
         "tags": [
           "sources"
@@ -1490,6 +1626,41 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "description": "Source not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "sources"
+        ],
+        "summary": "Delete a source. Blocks when any references exist (resources, child\nsources, or article citations). Creator-only for non-editors.",
+        "operationId": "delete_source",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Source ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source deleted"
+          },
+          "400": {
+            "description": "Source has active references"
           },
           "401": {
             "description": "Not authenticated"
@@ -3544,14 +3715,22 @@
         "type": "object",
         "required": [
           "id",
-          "name"
+          "name",
+          "created_by",
+          "protected"
         ],
         "properties": {
+          "created_by": {
+            "type": "string"
+          },
           "id": {
             "type": "string"
           },
           "name": {
             "type": "string"
+          },
+          "protected": {
+            "type": "boolean"
           },
           "sort_name": {
             "type": [
@@ -3754,15 +3933,124 @@
       "ReferenceCheckResponse": {
         "type": "object",
         "required": [
+          "total",
+          "resources",
+          "child_sources",
+          "articles"
+        ],
+        "properties": {
+          "articles": {
+            "$ref": "#/components/schemas/ReferencedArticles"
+          },
+          "child_sources": {
+            "$ref": "#/components/schemas/ReferencedChildSources"
+          },
+          "resources": {
+            "$ref": "#/components/schemas/ReferencedResources"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Total count across all categories."
+          }
+        }
+      },
+      "ReferencedArticle": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "status",
+          "is_mine"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "is_mine": {
+            "type": "boolean"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "ReferencedArticles": {
+        "type": "object",
+        "required": [
           "count",
-          "resource_ids"
+          "items"
         ],
         "properties": {
           "count": {
             "type": "integer",
             "format": "int64"
           },
-          "resource_ids": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReferencedArticle"
+            }
+          }
+        }
+      },
+      "ReferencedChildSource": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "relation"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "relation": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "ReferencedChildSources": {
+        "type": "object",
+        "required": [
+          "count",
+          "items"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReferencedChildSource"
+            }
+          }
+        }
+      },
+      "ReferencedResources": {
+        "type": "object",
+        "required": [
+          "count",
+          "ids"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ids": {
             "type": "array",
             "items": {
               "type": "string"
@@ -4001,6 +4289,25 @@
           }
         }
       },
+      "SourceBrowseResponse": {
+        "type": "object",
+        "required": [
+          "sources",
+          "total"
+        ],
+        "properties": {
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SourceSearchResponse"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "SourceContext": {
         "type": "object",
         "required": [
@@ -4030,9 +4337,14 @@
           "person_id",
           "name",
           "role",
-          "position"
+          "position",
+          "created_by",
+          "protected"
         ],
         "properties": {
+          "created_by": {
+            "type": "string"
+          },
           "name": {
             "type": "string"
           },
@@ -4042,6 +4354,9 @@
           "position": {
             "type": "integer",
             "format": "int32"
+          },
+          "protected": {
+            "type": "boolean"
           },
           "role": {
             "type": "string"
@@ -4060,9 +4375,14 @@
           "id",
           "source_type",
           "title",
+          "created_by",
+          "protected",
           "persons"
         ],
         "properties": {
+          "created_by": {
+            "type": "string"
+          },
           "doi": {
             "type": [
               "string",
@@ -4123,6 +4443,9 @@
               "$ref": "#/components/schemas/SourcePersonResponse"
             }
           },
+          "protected": {
+            "type": "boolean"
+          },
           "publication_year": {
             "type": [
               "integer",
@@ -4174,9 +4497,14 @@
           "id",
           "source_type",
           "title",
+          "created_by",
+          "protected",
           "persons"
         ],
         "properties": {
+          "created_by": {
+            "type": "string"
+          },
           "id": {
             "type": "string"
           },
@@ -4185,6 +4513,9 @@
             "items": {
               "$ref": "#/components/schemas/SourcePersonResponse"
             }
+          },
+          "protected": {
+            "type": "boolean"
           },
           "publication_year": {
             "type": [
@@ -4659,6 +4990,12 @@
           "parent_source_id": {
             "type": [
               "string",
+              "null"
+            ]
+          },
+          "protected": {
+            "type": [
+              "boolean",
               "null"
             ]
           },

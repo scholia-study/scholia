@@ -34,10 +34,10 @@ export function Navbar() {
                 >
                     <img
                         src="/images/scholia_book.webp"
-                        alt=""
-                        className="h-7 w-7 object-contain"
+                        alt="Scholia"
+                        className="h-7 w-7 shrink-0 object-contain"
                     />
-                    Scholia
+                    <span className="hidden min-[400px]:inline">Scholia</span>
                 </Link>
                 <div className="flex items-center gap-1">
                     <Link
@@ -152,6 +152,16 @@ export function Navbar() {
                                     >
                                         <Typography variant="body2">
                                             My Articles
+                                        </Typography>
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null);
+                                            navigate({ to: "/user/sources" });
+                                        }}
+                                    >
+                                        <Typography variant="body2">
+                                            Sources
                                         </Typography>
                                     </MenuItem>
                                     <Divider />

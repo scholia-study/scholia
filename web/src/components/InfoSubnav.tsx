@@ -12,15 +12,15 @@ export function InfoSubnav() {
     if (!isInfoRoute) return null;
 
     return (
-        <nav className="hidden md:flex shrink-0 h-10 items-center px-4 bg-white border-b border-stone-200 gap-1">
+        <nav className="flex flex-wrap shrink-0 min-h-10 items-center px-2 md:px-4 py-1 md:py-0 bg-white border-b border-stone-200 gap-0.5 md:gap-1">
             {INFO_LINKS.map((route) => (
                 <Link
                     key={route.to}
                     to={route.to}
-                    className="text-sm px-3 py-1 rounded transition-colors text-stone-500 hover:text-stone-900 hover:bg-stone-100"
+                    className="text-xs md:text-sm px-2 md:px-3 py-1 rounded transition-colors text-stone-500 hover:text-stone-900 hover:bg-stone-100 whitespace-nowrap"
                     activeProps={{
                         className:
-                            "text-sm px-3 py-1 rounded transition-colors text-stone-900 bg-stone-100 font-medium",
+                            "text-xs md:text-sm px-2 md:px-3 py-1 rounded transition-colors text-stone-900 bg-stone-100 font-medium whitespace-nowrap",
                     }}
                 >
                     {route.label}

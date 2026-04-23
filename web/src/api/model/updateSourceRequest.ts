@@ -21,6 +21,8 @@ export interface UpdateSourceRequest {
     /** @nullable */
     parent_source_id?: string | null;
     /** @nullable */
+    protected?: boolean | null;
+    /** @nullable */
     publication_year?: number | null;
     /** @nullable */
     publisher?: string | null;

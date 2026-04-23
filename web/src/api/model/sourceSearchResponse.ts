@@ -7,8 +7,10 @@
 import type { SourcePersonResponse } from "./sourcePersonResponse";
 
 export interface SourceSearchResponse {
+    created_by: string;
     id: string;
     persons: SourcePersonResponse[];
+    protected: boolean;
     /** @nullable */
     publication_year?: number | null;
     source_type: string;

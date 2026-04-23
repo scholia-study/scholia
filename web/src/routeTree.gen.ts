@@ -26,8 +26,10 @@ import { Route as UserQuotationsRouteImport } from './routes/user.quotations'
 import { Route as UserProfileRouteImport } from './routes/user.profile'
 import { Route as UserNotesRouteImport } from './routes/user.notes'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
+import { Route as UserSourcesIndexRouteImport } from './routes/user.sources.index'
 import { Route as UserArticlesIndexRouteImport } from './routes/user.articles.index'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
+import { Route as UserSourcesIdRouteImport } from './routes/user.sources.$id'
 import { Route as UserArticlesSlugRouteImport } from './routes/user.articles.$slug'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
 import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
@@ -117,6 +119,11 @@ const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
   path: '/articles/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserSourcesIndexRoute = UserSourcesIndexRouteImport.update({
+  id: '/user/sources/',
+  path: '/user/sources/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UserArticlesIndexRoute = UserArticlesIndexRouteImport.update({
   id: '/user/articles/',
   path: '/user/articles/',
@@ -125,6 +132,11 @@ const UserArticlesIndexRoute = UserArticlesIndexRouteImport.update({
 const BooksBookSlugIndexRoute = BooksBookSlugIndexRouteImport.update({
   id: '/books/$bookSlug/',
   path: '/books/$bookSlug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserSourcesIdRoute = UserSourcesIdRouteImport.update({
+  id: '/user/sources/$id',
+  path: '/user/sources/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UserArticlesSlugRoute = UserArticlesSlugRouteImport.update({
@@ -164,8 +176,10 @@ export interface FileRoutesByFullPath {
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/user/articles/$slug': typeof UserArticlesSlugRoute
+  '/user/sources/$id': typeof UserSourcesIdRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
   '/user/articles/': typeof UserArticlesIndexRoute
+  '/user/sources/': typeof UserSourcesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -188,8 +202,10 @@ export interface FileRoutesByTo {
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/user/articles/$slug': typeof UserArticlesSlugRoute
+  '/user/sources/$id': typeof UserSourcesIdRoute
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
   '/user/articles': typeof UserArticlesIndexRoute
+  '/user/sources': typeof UserSourcesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -213,8 +229,10 @@ export interface FileRoutesById {
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/user/articles/$slug': typeof UserArticlesSlugRoute
+  '/user/sources/$id': typeof UserSourcesIdRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
   '/user/articles/': typeof UserArticlesIndexRoute
+  '/user/sources/': typeof UserSourcesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -239,8 +257,10 @@ export interface FileRouteTypes {
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
     | '/user/articles/$slug'
+    | '/user/sources/$id'
     | '/books/$bookSlug/'
     | '/user/articles/'
+    | '/user/sources/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -263,8 +283,10 @@ export interface FileRouteTypes {
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
     | '/user/articles/$slug'
+    | '/user/sources/$id'
     | '/books/$bookSlug'
     | '/user/articles'
+    | '/user/sources'
   id:
     | '__root__'
     | '/'
@@ -287,8 +309,10 @@ export interface FileRouteTypes {
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
     | '/user/articles/$slug'
+    | '/user/sources/$id'
     | '/books/$bookSlug/'
     | '/user/articles/'
+    | '/user/sources/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -312,8 +336,10 @@ export interface RootRouteChildren {
   ArticlesByIdIdRoute: typeof ArticlesByIdIdRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
   UserArticlesSlugRoute: typeof UserArticlesSlugRoute
+  UserSourcesIdRoute: typeof UserSourcesIdRoute
   BooksBookSlugIndexRoute: typeof BooksBookSlugIndexRoute
   UserArticlesIndexRoute: typeof UserArticlesIndexRoute
+  UserSourcesIndexRoute: typeof UserSourcesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -437,6 +463,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/sources/': {
+      id: '/user/sources/'
+      path: '/user/sources'
+      fullPath: '/user/sources/'
+      preLoaderRoute: typeof UserSourcesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/user/articles/': {
       id: '/user/articles/'
       path: '/user/articles'
@@ -449,6 +482,13 @@ declare module '@tanstack/react-router' {
       path: '/books/$bookSlug'
       fullPath: '/books/$bookSlug/'
       preLoaderRoute: typeof BooksBookSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/sources/$id': {
+      id: '/user/sources/$id'
+      path: '/user/sources/$id'
+      fullPath: '/user/sources/$id'
+      preLoaderRoute: typeof UserSourcesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/user/articles/$slug': {
@@ -496,8 +536,10 @@ const rootRouteChildren: RootRouteChildren = {
   ArticlesByIdIdRoute: ArticlesByIdIdRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
   UserArticlesSlugRoute: UserArticlesSlugRoute,
+  UserSourcesIdRoute: UserSourcesIdRoute,
   BooksBookSlugIndexRoute: BooksBookSlugIndexRoute,
   UserArticlesIndexRoute: UserArticlesIndexRoute,
+  UserSourcesIndexRoute: UserSourcesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

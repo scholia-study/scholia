@@ -42,6 +42,8 @@ struct ResourceRow {
     src_page_end: Option<i32>,
     src_parent_id: Option<Uuid>,
     src_translation_of_id: Option<Uuid>,
+    src_created_by: Option<Uuid>,
+    src_protected: Option<bool>,
 }
 
 // ── Queries ────────────────────────────────────────────────
@@ -79,7 +81,9 @@ pub async fn list_resources(
                   s.page_start AS "src_page_start?",
                   s.page_end AS "src_page_end?",
                   s.parent_source_id AS "src_parent_id?",
-                  s.translation_of_id AS "src_translation_of_id?"
+                  s.translation_of_id AS "src_translation_of_id?",
+                  s.created_by AS "src_created_by?",
+                  s.protected AS "src_protected?"
            FROM resources r
            JOIN sentences ss ON ss.id = r.anchor_sentence_start_id
            LEFT JOIN sentences se ON se.id = r.anchor_sentence_end_id
@@ -175,6 +179,11 @@ pub async fn list_resources(
                     page_start: r.src_page_start,
                     page_end: r.src_page_end,
                     translation_of_id: r.src_translation_of_id.map(|id| id.to_string()),
+                    created_by: r
+                        .src_created_by
+                        .map(|id| id.to_string())
+                        .unwrap_or_default(),
+                    protected: r.src_protected.unwrap_or(false),
                     persons,
                     parent,
                 }

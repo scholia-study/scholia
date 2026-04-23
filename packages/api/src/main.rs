@@ -198,8 +198,12 @@ async fn main() {
             api::handlers::sources::create_source
         ))
         .routes(utoipa_axum::routes!(
+            api::handlers::sources::browse_sources
+        ))
+        .routes(utoipa_axum::routes!(
             api::handlers::sources::get_source,
-            api::handlers::sources::update_source
+            api::handlers::sources::update_source,
+            api::handlers::sources::delete_source
         ))
         .routes(utoipa_axum::routes!(
             api::handlers::sources::add_source_person

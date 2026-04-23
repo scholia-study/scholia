@@ -4,8 +4,9 @@ use uuid::Uuid;
 
 use crate::error::AppError;
 use crate::models::resource::{
-    ParentSourceResponse, SourcePersonResponse, SourceResponse,
-    SourceSearchResponse,
+    ParentSourceResponse, ReferenceCheckResponse, ReferencedArticle, ReferencedArticles,
+    ReferencedChildSource, ReferencedChildSources, ReferencedResources, SourcePersonResponse,
+    SourceResponse, SourceSearchResponse,
 };
 
 // ── Row types ──────────────────────────────────────────────
@@ -27,6 +28,8 @@ struct SourceRow {
     page_end: Option<i32>,
     parent_source_id: Option<Uuid>,
     translation_of_id: Option<Uuid>,
+    created_by: Uuid,
+    protected: bool,
 }
 
 struct SourcePersonRow {
@@ -36,6 +39,8 @@ struct SourcePersonRow {
     sort_name: Option<String>,
     role: String,
     position: i16,
+    person_created_by: Uuid,
+    person_protected: bool,
 }
 
 // ── Queries ────────────────────────────────────────────────
@@ -51,7 +56,8 @@ pub async fn search_sources(
         r#"SELECT DISTINCT s.id, s.source_type::TEXT AS "source_type!", s.title, s.title_display,
                   s.publication_year, s.publisher, s.isbn, s.doi, s.edition, s.volume,
                   s.journal_name, s.url, s.page_start, s.page_end,
-                  s.parent_source_id, s.translation_of_id
+                  s.parent_source_id, s.translation_of_id,
+                  s.created_by AS "created_by!", s.protected
            FROM sources s
            LEFT JOIN source_persons sp ON sp.source_id = s.id
            LEFT JOIN persons p ON p.id = sp.person_id
@@ -75,6 +81,8 @@ pub async fn search_sources(
                 source_type: r.source_type,
                 title: r.title,
                 publication_year: r.publication_year,
+                created_by: r.created_by.to_string(),
+                protected: r.protected,
                 persons: sp,
             }
         })
@@ -86,7 +94,8 @@ pub async fn get_source(pool: &PgPool, source_id: Uuid) -> Result<SourceResponse
         SourceRow,
         r#"SELECT id, source_type::TEXT AS "source_type!", title, title_display, publication_year,
                   publisher, isbn, doi, edition, volume, journal_name, url,
-                  page_start, page_end, parent_source_id, translation_of_id
+                  page_start, page_end, parent_source_id, translation_of_id,
+                  created_by AS "created_by!", protected
            FROM sources
            WHERE id = $1"#,
         source_id,
@@ -157,7 +166,6 @@ pub async fn create_source(
 pub async fn update_source(
     pool: &PgPool,
     source_id: Uuid,
-    source_type: Option<&str>,
     title: Option<&str>,
     title_display: Option<&str>,
     publication_year: Option<i16>,
@@ -172,27 +180,27 @@ pub async fn update_source(
     page_end: Option<i32>,
     parent_source_id: Option<Uuid>,
     translation_of_id: Option<Uuid>,
+    protected: Option<bool>,
 ) -> Result<SourceResponse, AppError> {
     sqlx::query!(
         r#"UPDATE sources
-           SET source_type = COALESCE($2::source_type, source_type),
-               title = COALESCE($3, title),
-               title_display = COALESCE($4, title_display),
-               publication_year = COALESCE($5, publication_year),
-               publisher = COALESCE($6, publisher),
-               isbn = COALESCE($7, isbn),
-               doi = COALESCE($8, doi),
-               edition = COALESCE($9, edition),
-               volume = COALESCE($10, volume),
-               journal_name = COALESCE($11, journal_name),
-               url = COALESCE($12, url),
-               page_start = COALESCE($13, page_start),
-               page_end = COALESCE($14, page_end),
-               parent_source_id = COALESCE($15, parent_source_id),
-               translation_of_id = COALESCE($16, translation_of_id)
+           SET title = COALESCE($2, title),
+               title_display = COALESCE($3, title_display),
+               publication_year = COALESCE($4, publication_year),
+               publisher = COALESCE($5, publisher),
+               isbn = COALESCE($6, isbn),
+               doi = COALESCE($7, doi),
+               edition = COALESCE($8, edition),
+               volume = COALESCE($9, volume),
+               journal_name = COALESCE($10, journal_name),
+               url = COALESCE($11, url),
+               page_start = COALESCE($12, page_start),
+               page_end = COALESCE($13, page_end),
+               parent_source_id = COALESCE($14, parent_source_id),
+               translation_of_id = COALESCE($15, translation_of_id),
+               protected = COALESCE($16, protected)
            WHERE id = $1"#,
         source_id,
-        source_type as _,
         title,
         title_display,
         publication_year,
@@ -207,6 +215,7 @@ pub async fn update_source(
         page_end,
         parent_source_id,
         translation_of_id,
+        protected,
     )
     .execute(pool)
     .await?;
@@ -259,23 +268,180 @@ pub async fn unlink_source_person(
 pub async fn check_source_references(
     pool: &PgPool,
     source_id: Uuid,
-) -> Result<(i64, Vec<String>), AppError> {
-    struct Row {
+    viewing_user: Uuid,
+) -> Result<ReferenceCheckResponse, AppError> {
+    // 1. Resource references (book quotations)
+    struct ResourceRow {
         id: Uuid,
     }
-
-    let rows = sqlx::query_as!(
-        Row,
+    let resource_rows = sqlx::query_as!(
+        ResourceRow,
         r#"SELECT id FROM resources
            WHERE source_id = $1 AND archived_at IS NULL"#,
         source_id,
     )
     .fetch_all(pool)
     .await?;
+    let resources = ReferencedResources {
+        count: resource_rows.len() as i64,
+        ids: resource_rows.into_iter().map(|r| r.id.to_string()).collect(),
+    };
 
-    let count = rows.len() as i64;
-    let ids = rows.into_iter().map(|r| r.id.to_string()).collect();
-    Ok((count, ids))
+    // 2. Child sources (parent_source_id or translation_of_id points here)
+    struct ChildRow {
+        id: Uuid,
+        title: String,
+        relation: String,
+    }
+    let child_rows = sqlx::query_as!(
+        ChildRow,
+        r#"SELECT id, title,
+                  CASE WHEN parent_source_id = $1 THEN 'parent' ELSE 'translation' END
+                  AS "relation!"
+           FROM sources
+           WHERE parent_source_id = $1 OR translation_of_id = $1"#,
+        source_id,
+    )
+    .fetch_all(pool)
+    .await?;
+    let child_sources = ReferencedChildSources {
+        count: child_rows.len() as i64,
+        items: child_rows
+            .into_iter()
+            .map(|r| ReferencedChildSource {
+                id: r.id.to_string(),
+                title: r.title,
+                relation: r.relation,
+            })
+            .collect(),
+    };
+
+    // 3. Article citations — scan markdown for ":cite{...sources="...<uuid>..."...}"
+    // Cheap enough for a delete-time check; uses ILIKE on the source ID substring.
+    struct ArticleRow {
+        id: Uuid,
+        title: String,
+        slug: String,
+        status: String,
+        user_id: Uuid,
+    }
+    let id_str = source_id.to_string();
+    let id_pattern = format!("%{id_str}%");
+    let article_rows = sqlx::query_as!(
+        ArticleRow,
+        r#"SELECT id, title, slug, status::TEXT AS "status!", user_id
+           FROM articles
+           WHERE markdown ILIKE $1"#,
+        id_pattern,
+    )
+    .fetch_all(pool)
+    .await?;
+    let articles = ReferencedArticles {
+        count: article_rows.len() as i64,
+        items: article_rows
+            .into_iter()
+            .map(|r| ReferencedArticle {
+                id: r.id.to_string(),
+                title: r.title,
+                slug: r.slug,
+                status: r.status,
+                is_mine: r.user_id == viewing_user,
+            })
+            .collect(),
+    };
+
+    let total = resources.count + child_sources.count + articles.count;
+    Ok(ReferenceCheckResponse {
+        total,
+        resources,
+        child_sources,
+        articles,
+    })
+}
+
+pub async fn browse_sources(
+    pool: &PgPool,
+    q: Option<&str>,
+    source_type: Option<&str>,
+    created_by: Option<Uuid>,
+    protected: Option<bool>,
+    page: i32,
+    per_page: i32,
+) -> Result<(Vec<SourceSearchResponse>, i64), AppError> {
+    let offset = (page - 1).max(0) as i64 * per_page as i64;
+    let limit = per_page as i64;
+    let pattern = q.map(|s| format!("%{s}%"));
+
+    let total = sqlx::query_scalar!(
+        r#"SELECT COUNT(*) AS "count!"
+           FROM sources s
+           WHERE ($1::TEXT IS NULL OR s.title ILIKE $1)
+             AND ($2::source_type IS NULL OR s.source_type = $2::source_type)
+             AND ($3::UUID IS NULL OR s.created_by = $3)
+             AND ($4::BOOLEAN IS NULL OR s.protected = $4)"#,
+        pattern.as_deref(),
+        source_type as _,
+        created_by,
+        protected,
+    )
+    .fetch_one(pool)
+    .await?;
+
+    let rows = sqlx::query_as!(
+        SourceRow,
+        r#"SELECT s.id, s.source_type::TEXT AS "source_type!", s.title, s.title_display,
+                  s.publication_year, s.publisher, s.isbn, s.doi, s.edition, s.volume,
+                  s.journal_name, s.url, s.page_start, s.page_end,
+                  s.parent_source_id, s.translation_of_id,
+                  s.created_by AS "created_by!", s.protected
+           FROM sources s
+           WHERE ($1::TEXT IS NULL OR s.title ILIKE $1)
+             AND ($2::source_type IS NULL OR s.source_type = $2::source_type)
+             AND ($3::UUID IS NULL OR s.created_by = $3)
+             AND ($4::BOOLEAN IS NULL OR s.protected = $4)
+           ORDER BY s.created_at DESC
+           LIMIT $5 OFFSET $6"#,
+        pattern.as_deref(),
+        source_type as _,
+        created_by,
+        protected,
+        limit,
+        offset,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let source_ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
+    let persons = fetch_source_persons(pool, &source_ids).await?;
+
+    let sources = rows
+        .into_iter()
+        .map(|r| {
+            let sp = persons.get(&r.id).cloned().unwrap_or_default();
+            SourceSearchResponse {
+                id: r.id.to_string(),
+                source_type: r.source_type,
+                title: r.title,
+                publication_year: r.publication_year,
+                created_by: r.created_by.to_string(),
+                protected: r.protected,
+                persons: sp,
+            }
+        })
+        .collect();
+
+    Ok((sources, total))
+}
+
+pub async fn delete_source(pool: &PgPool, source_id: Uuid) -> Result<(), AppError> {
+    let affected = sqlx::query!(r#"DELETE FROM sources WHERE id = $1"#, source_id)
+        .execute(pool)
+        .await?
+        .rows_affected();
+    if affected == 0 {
+        return Err(AppError::NotFound("Source not found".into()));
+    }
+    Ok(())
 }
 
 pub async fn is_source_protected(pool: &PgPool, source_id: Uuid) -> Result<bool, AppError> {
@@ -311,7 +477,8 @@ pub async fn fetch_source_persons(
     let rows = sqlx::query_as!(
         SourcePersonRow,
         r#"SELECT sp.source_id, sp.person_id, p.name, p.sort_name,
-                  sp.role::TEXT AS "role!", sp.position
+                  sp.role::TEXT AS "role!", sp.position,
+                  p.created_by AS "person_created_by!", p.protected AS "person_protected!"
            FROM source_persons sp
            JOIN persons p ON p.id = sp.person_id
            WHERE sp.source_id = ANY($1)
@@ -331,6 +498,8 @@ pub async fn fetch_source_persons(
                 sort_name: r.sort_name,
                 role: r.role,
                 position: r.position,
+                created_by: r.person_created_by.to_string(),
+                protected: r.person_protected,
             });
     }
     Ok(map)
@@ -392,6 +561,8 @@ fn build_source_response(
         page_start: row.page_start,
         page_end: row.page_end,
         translation_of_id: row.translation_of_id.map(|id| id.to_string()),
+        created_by: row.created_by.to_string(),
+        protected: row.protected,
         persons,
         parent,
     }

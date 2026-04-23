@@ -260,6 +260,8 @@ export function SourceFormModal({
                 sort_name: person.sort_name,
                 role: addPersonRole,
                 position: persons.length,
+                created_by: person.created_by,
+                protected: person.protected,
             },
         ]);
         setPersonSearch("");
@@ -493,7 +495,8 @@ export function SourceFormModal({
                                                     p.role,
                                                 )
                                             }
-                                            className="text-red-400 hover:text-red-600 ml-2"
+                                            aria-label={`Remove ${p.name}`}
+                                            className="text-red-400 hover:text-red-600 ml-2 text-lg leading-none px-1"
                                         >
                                             &times;
                                         </button>

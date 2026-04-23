@@ -20,6 +20,16 @@ CREATE TABLE users (
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Seed the system user. Owns all seed/import-created persons and sources.
+-- Login is impossible: no password_hash, and the login handler rejects this email.
+INSERT INTO users (id, display_name, email, email_verified_at)
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
+    'System',
+    'system@scholia.local',
+    now()
+);
+
 -- ============================================================
 -- BIBLIOGRAPHIC TABLES (sources & persons)
 -- ============================================================
@@ -29,6 +39,7 @@ CREATE TABLE persons (
     name        TEXT NOT NULL UNIQUE,
     sort_name   TEXT,
     protected   BOOLEAN NOT NULL DEFAULT false,
+    created_by  UUID NOT NULL REFERENCES users(id),
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -52,7 +63,7 @@ CREATE TABLE sources (
     parent_source_id    UUID REFERENCES sources(id) ON DELETE SET NULL,
     translation_of_id   UUID REFERENCES sources(id) ON DELETE SET NULL,
     protected           BOOLEAN NOT NULL DEFAULT false,
-    created_by          UUID REFERENCES users(id),
+    created_by          UUID NOT NULL REFERENCES users(id),
     created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
 
     CONSTRAINT chk_chapter_has_parent CHECK (

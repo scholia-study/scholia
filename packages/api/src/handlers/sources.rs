@@ -7,7 +7,8 @@ use crate::db;
 use crate::error::AppError;
 use crate::models::resource::{
     CreateSourceRequest, LinkSourcePersonRequest, ReferenceCheckResponse, SearchQuery,
-    SourceResponse, SourceSearchResponse, UpdateSourceRequest,
+    SourceBrowseQuery, SourceBrowseResponse, SourceResponse, SourceSearchResponse,
+    UpdateSourceRequest,
 };
 use crate::state::AppState;
 use crate::validation::{
@@ -16,6 +17,24 @@ use crate::validation::{
     MAX_SOURCE_PAGE, MAX_SOURCE_PUBLISHER, MAX_SOURCE_TITLE, MAX_SOURCE_TITLE_DISPLAY,
     MAX_SOURCE_URL, MAX_SOURCE_VOLUME, MIN_PUBLICATION_YEAR, MIN_SOURCE_PAGE,
 };
+
+async fn guard_source_edit(
+    pool: &sqlx::PgPool,
+    user: &AuthUser,
+    source_id: uuid::Uuid,
+) -> Result<(), AppError> {
+    let current = db::sources::get_source(pool, source_id).await?;
+    let is_editor = user.has_permission(Permission::ResourcesManage);
+    if current.protected && !is_editor {
+        return Err(AppError::Forbidden("This source is protected".into()));
+    }
+    if !is_editor && current.created_by != user.id.to_string() {
+        return Err(AppError::Forbidden(
+            "You can only edit sources you created".into(),
+        ));
+    }
+    Ok(())
+}
 
 fn validate_source_fields(
     title: Option<&str>,
@@ -98,6 +117,60 @@ pub async fn search_sources(
 
     let results = db::sources::search_sources(&state.pool, &params.q).await?;
     Ok(Json(results))
+}
+
+/// Browse sources (paginated, with filters)
+#[utoipa::path(
+    get,
+    path = "/api/sources/browse",
+    params(SourceBrowseQuery),
+    responses(
+        (status = 200, description = "Paginated sources", body = SourceBrowseResponse),
+        (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Insufficient permissions")
+    ),
+    tag = "sources"
+)]
+pub async fn browse_sources(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Query(params): Query<SourceBrowseQuery>,
+) -> Result<Json<SourceBrowseResponse>, AppError> {
+    if !user.has_permission(Permission::ResourcesManage)
+        && !user.has_permission(Permission::SourcesCreate)
+    {
+        return Err(AppError::Forbidden("Insufficient permissions".into()));
+    }
+
+    let page = params.page.unwrap_or(1).max(1);
+    let per_page = params.per_page.unwrap_or(20).clamp(1, 100);
+    let created_by = params.created_by_me.unwrap_or(false).then_some(user.id);
+
+    // Protected filter is editor-only; silently ignore for non-editors.
+    let protected = if user.has_permission(Permission::ResourcesManage) {
+        params.protected
+    } else {
+        None
+    };
+
+    let q_trimmed = params
+        .q
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty());
+
+    let (sources, total) = db::sources::browse_sources(
+        &state.pool,
+        q_trimmed,
+        params.source_type.as_deref(),
+        created_by,
+        protected,
+        page,
+        per_page,
+    )
+    .await?;
+
+    Ok(Json(SourceBrowseResponse { sources, total }))
 }
 
 /// Get a source by ID
@@ -227,20 +300,31 @@ pub async fn update_source(
     Path(id): Path<String>,
     Json(body): Json<UpdateSourceRequest>,
 ) -> Result<Json<SourceResponse>, AppError> {
-    if !user.has_permission(Permission::ResourcesManage)
-        && !user.has_permission(Permission::SourcesCreate)
-    {
-        return Err(AppError::Forbidden("Insufficient permissions".into()));
-    }
-
     let source_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
 
-    // Protected sources require ResourcesManage
-    if db::sources::is_source_protected(&state.pool, source_id).await?
-        && !user.has_permission(Permission::ResourcesManage)
-    {
+    if body.source_type.is_some() {
+        return Err(AppError::BadRequest(
+            "source_type cannot be changed after creation".into(),
+        ));
+    }
+
+    let current = db::sources::get_source(&state.pool, source_id).await?;
+    let is_editor = user.has_permission(Permission::ResourcesManage);
+    let is_creator = current.created_by == user.id.to_string();
+
+    if current.protected && !is_editor {
         return Err(AppError::Forbidden("This source is protected".into()));
+    }
+    if !is_editor && !is_creator {
+        return Err(AppError::Forbidden(
+            "You can only edit sources you created".into(),
+        ));
+    }
+    if body.protected.is_some() && !is_editor {
+        return Err(AppError::Forbidden(
+            "Only editors can change the protected flag".into(),
+        ));
     }
 
     let parent_source_id = body
@@ -275,7 +359,6 @@ pub async fn update_source(
     let source = db::sources::update_source(
         &state.pool,
         source_id,
-        body.source_type.as_deref(),
         body.title.as_deref(),
         body.title_display.as_deref(),
         body.publication_year,
@@ -290,6 +373,7 @@ pub async fn update_source(
         body.page_end,
         parent_source_id,
         translation_of_id,
+        body.protected,
     )
     .await?;
 
@@ -315,20 +399,10 @@ pub async fn add_source_person(
     Path(id): Path<String>,
     Json(body): Json<LinkSourcePersonRequest>,
 ) -> Result<Json<()>, AppError> {
-    if !user.has_permission(Permission::ResourcesManage)
-        && !user.has_permission(Permission::SourcesCreate)
-    {
-        return Err(AppError::Forbidden("Insufficient permissions".into()));
-    }
-
     let source_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
 
-    if db::sources::is_source_protected(&state.pool, source_id).await?
-        && !user.has_permission(Permission::ResourcesManage)
-    {
-        return Err(AppError::Forbidden("This source is protected".into()));
-    }
+    guard_source_edit(&state.pool, &user, source_id).await?;
 
     let person_id = uuid::Uuid::parse_str(&body.person_id)
         .map_err(|_| AppError::BadRequest("Invalid person_id".into()))?;
@@ -366,26 +440,62 @@ pub async fn remove_source_person(
     user: AuthUser,
     Path((id, person_id, role)): Path<(String, String, String)>,
 ) -> Result<Json<()>, AppError> {
-    if !user.has_permission(Permission::ResourcesManage)
-        && !user.has_permission(Permission::SourcesCreate)
-    {
-        return Err(AppError::Forbidden("Insufficient permissions".into()));
-    }
-
     let source_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
 
-    if db::sources::is_source_protected(&state.pool, source_id).await?
-        && !user.has_permission(Permission::ResourcesManage)
-    {
-        return Err(AppError::Forbidden("This source is protected".into()));
-    }
+    guard_source_edit(&state.pool, &user, source_id).await?;
 
     let person_uuid = uuid::Uuid::parse_str(&person_id)
         .map_err(|_| AppError::BadRequest("Invalid person ID".into()))?;
 
     db::sources::unlink_source_person(&state.pool, source_id, person_uuid, &role).await?;
 
+    Ok(Json(()))
+}
+
+/// Delete a source. Blocks when any references exist (resources, child
+/// sources, or article citations). Creator-only for non-editors.
+#[utoipa::path(
+    delete,
+    path = "/api/sources/{id}",
+    params(("id" = String, Path, description = "Source ID")),
+    responses(
+        (status = 200, description = "Source deleted"),
+        (status = 400, description = "Source has active references"),
+        (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Source not found")
+    ),
+    tag = "sources"
+)]
+pub async fn delete_source(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(id): Path<String>,
+) -> Result<Json<()>, AppError> {
+    let source_id = uuid::Uuid::parse_str(&id)
+        .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+
+    let current = db::sources::get_source(&state.pool, source_id).await?;
+    let is_editor = user.has_permission(Permission::ResourcesManage);
+    if current.protected && !is_editor {
+        return Err(AppError::Forbidden("This source is protected".into()));
+    }
+    if !is_editor && current.created_by != user.id.to_string() {
+        return Err(AppError::Forbidden(
+            "You can only delete sources you created".into(),
+        ));
+    }
+
+    let refs = db::sources::check_source_references(&state.pool, source_id, user.id).await?;
+    if refs.total > 0 {
+        return Err(AppError::BadRequest(format!(
+            "Cannot delete: source has {} active reference(s). Remove references first.",
+            refs.total
+        )));
+    }
+
+    db::sources::delete_source(&state.pool, source_id).await?;
     Ok(Json(()))
 }
 
@@ -415,8 +525,8 @@ pub async fn check_source_references(
     let source_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
 
-    let (count, resource_ids) =
-        db::sources::check_source_references(&state.pool, source_id).await?;
+    let response =
+        db::sources::check_source_references(&state.pool, source_id, user.id).await?;
 
-    Ok(Json(ReferenceCheckResponse { count, resource_ids }))
+    Ok(Json(response))
 }

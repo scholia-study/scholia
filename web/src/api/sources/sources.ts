@@ -24,10 +24,12 @@ import type {
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { customFetch } from ".././fetcher";
 import type {
+    BrowseSourcesParams,
     CreateSourceRequest,
     LinkSourcePersonRequest,
     ReferenceCheckResponse,
     SearchSourcesParams,
+    SourceBrowseResponse,
     SourceResponse,
     SourceSearchResponse,
     UpdateSourceRequest,
@@ -485,6 +487,672 @@ export const useCreateSource = <TError = void, TContext = unknown>(
     return useMutation(getCreateSourceMutationOptions(options), queryClient);
 };
 /**
+ * @summary Browse sources (paginated, with filters)
+ */
+export type browseSourcesResponse200 = {
+    data: SourceBrowseResponse;
+    status: 200;
+};
+
+export type browseSourcesResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type browseSourcesResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type browseSourcesResponseSuccess = browseSourcesResponse200 & {
+    headers: Headers;
+};
+export type browseSourcesResponseError = (
+    | browseSourcesResponse401
+    | browseSourcesResponse403
+) & {
+    headers: Headers;
+};
+
+export type browseSourcesResponse =
+    | browseSourcesResponseSuccess
+    | browseSourcesResponseError;
+
+export const getBrowseSourcesUrl = (params?: BrowseSourcesParams) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : value.toString(),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `/api/sources/browse?${stringifiedParams}`
+        : `/api/sources/browse`;
+};
+
+export const browseSources = async (
+    params?: BrowseSourcesParams,
+    options?: RequestInit,
+): Promise<browseSourcesResponse> => {
+    return customFetch<browseSourcesResponse>(getBrowseSourcesUrl(params), {
+        ...options,
+        method: "GET",
+    });
+};
+
+export const getBrowseSourcesQueryKey = (params?: BrowseSourcesParams) => {
+    return [`/api/sources/browse`, ...(params ? [params] : [])] as const;
+};
+
+export const getBrowseSourcesQueryOptions = <
+    TData = Awaited<ReturnType<typeof browseSources>>,
+    TError = void,
+>(
+    params?: BrowseSourcesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof browseSources>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getBrowseSourcesQueryKey(params);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof browseSources>>> = ({
+        signal,
+    }) => browseSources(params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof browseSources>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type BrowseSourcesQueryResult = NonNullable<
+    Awaited<ReturnType<typeof browseSources>>
+>;
+export type BrowseSourcesQueryError = void;
+
+export function useBrowseSources<
+    TData = Awaited<ReturnType<typeof browseSources>>,
+    TError = void,
+>(
+    params: undefined | BrowseSourcesParams,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof browseSources>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof browseSources>>,
+                    TError,
+                    Awaited<ReturnType<typeof browseSources>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useBrowseSources<
+    TData = Awaited<ReturnType<typeof browseSources>>,
+    TError = void,
+>(
+    params?: BrowseSourcesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof browseSources>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof browseSources>>,
+                    TError,
+                    Awaited<ReturnType<typeof browseSources>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useBrowseSources<
+    TData = Awaited<ReturnType<typeof browseSources>>,
+    TError = void,
+>(
+    params?: BrowseSourcesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof browseSources>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Browse sources (paginated, with filters)
+ */
+
+export function useBrowseSources<
+    TData = Awaited<ReturnType<typeof browseSources>>,
+    TError = void,
+>(
+    params?: BrowseSourcesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof browseSources>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getBrowseSourcesQueryOptions(params, options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getBrowseSourcesSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof browseSources>>,
+    TError = void,
+>(
+    params?: BrowseSourcesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof browseSources>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getBrowseSourcesQueryKey(params);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof browseSources>>> = ({
+        signal,
+    }) => browseSources(params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof browseSources>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type BrowseSourcesSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof browseSources>>
+>;
+export type BrowseSourcesSuspenseQueryError = void;
+
+export function useBrowseSourcesSuspense<
+    TData = Awaited<ReturnType<typeof browseSources>>,
+    TError = void,
+>(
+    params: undefined | BrowseSourcesParams,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof browseSources>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useBrowseSourcesSuspense<
+    TData = Awaited<ReturnType<typeof browseSources>>,
+    TError = void,
+>(
+    params?: BrowseSourcesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof browseSources>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useBrowseSourcesSuspense<
+    TData = Awaited<ReturnType<typeof browseSources>>,
+    TError = void,
+>(
+    params?: BrowseSourcesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof browseSources>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Browse sources (paginated, with filters)
+ */
+
+export function useBrowseSourcesSuspense<
+    TData = Awaited<ReturnType<typeof browseSources>>,
+    TError = void,
+>(
+    params?: BrowseSourcesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof browseSources>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getBrowseSourcesSuspenseQueryOptions(params, options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get a source by ID
+ */
+export type getSourceResponse200 = {
+    data: SourceResponse;
+    status: 200;
+};
+
+export type getSourceResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type getSourceResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type getSourceResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type getSourceResponseSuccess = getSourceResponse200 & {
+    headers: Headers;
+};
+export type getSourceResponseError = (
+    | getSourceResponse401
+    | getSourceResponse403
+    | getSourceResponse404
+) & {
+    headers: Headers;
+};
+
+export type getSourceResponse =
+    | getSourceResponseSuccess
+    | getSourceResponseError;
+
+export const getGetSourceUrl = (id: string) => {
+    return `/api/sources/${id}`;
+};
+
+export const getSource = async (
+    id: string,
+    options?: RequestInit,
+): Promise<getSourceResponse> => {
+    return customFetch<getSourceResponse>(getGetSourceUrl(id), {
+        ...options,
+        method: "GET",
+    });
+};
+
+export const getGetSourceQueryKey = (id: string) => {
+    return [`/api/sources/${id}`] as const;
+};
+
+export const getGetSourceQueryOptions = <
+    TData = Awaited<ReturnType<typeof getSource>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getSource>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getGetSourceQueryKey(id);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSource>>> = ({
+        signal,
+    }) => getSource(id, { signal, ...requestOptions });
+
+    return {
+        queryKey,
+        queryFn,
+        enabled: !!id,
+        ...queryOptions,
+    } as UseQueryOptions<
+        Awaited<ReturnType<typeof getSource>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetSourceQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getSource>>
+>;
+export type GetSourceQueryError = void;
+
+export function useGetSource<
+    TData = Awaited<ReturnType<typeof getSource>>,
+    TError = void,
+>(
+    id: string,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getSource>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getSource>>,
+                    TError,
+                    Awaited<ReturnType<typeof getSource>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSource<
+    TData = Awaited<ReturnType<typeof getSource>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getSource>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getSource>>,
+                    TError,
+                    Awaited<ReturnType<typeof getSource>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSource<
+    TData = Awaited<ReturnType<typeof getSource>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getSource>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get a source by ID
+ */
+
+export function useGetSource<
+    TData = Awaited<ReturnType<typeof getSource>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getSource>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetSourceQueryOptions(id, options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getGetSourceSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof getSource>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getSource>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getGetSourceQueryKey(id);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSource>>> = ({
+        signal,
+    }) => getSource(id, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getSource>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetSourceSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getSource>>
+>;
+export type GetSourceSuspenseQueryError = void;
+
+export function useGetSourceSuspense<
+    TData = Awaited<ReturnType<typeof getSource>>,
+    TError = void,
+>(
+    id: string,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getSource>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSourceSuspense<
+    TData = Awaited<ReturnType<typeof getSource>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getSource>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSourceSuspense<
+    TData = Awaited<ReturnType<typeof getSource>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getSource>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get a source by ID
+ */
+
+export function useGetSourceSuspense<
+    TData = Awaited<ReturnType<typeof getSource>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getSource>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetSourceSuspenseQueryOptions(id, options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
  * @summary Update an existing source
  */
 export type updateSourceResponse200 = {
@@ -604,6 +1272,132 @@ export const useUpdateSource = <TError = void, TContext = unknown>(
     TContext
 > => {
     return useMutation(getUpdateSourceMutationOptions(options), queryClient);
+};
+/**
+ * @summary Delete a source. Blocks when any references exist (resources, child
+sources, or article citations). Creator-only for non-editors.
+ */
+export type deleteSourceResponse200 = {
+    data: void;
+    status: 200;
+};
+
+export type deleteSourceResponse400 = {
+    data: void;
+    status: 400;
+};
+
+export type deleteSourceResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type deleteSourceResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type deleteSourceResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type deleteSourceResponseSuccess = deleteSourceResponse200 & {
+    headers: Headers;
+};
+export type deleteSourceResponseError = (
+    | deleteSourceResponse400
+    | deleteSourceResponse401
+    | deleteSourceResponse403
+    | deleteSourceResponse404
+) & {
+    headers: Headers;
+};
+
+export type deleteSourceResponse =
+    | deleteSourceResponseSuccess
+    | deleteSourceResponseError;
+
+export const getDeleteSourceUrl = (id: string) => {
+    return `/api/sources/${id}`;
+};
+
+export const deleteSource = async (
+    id: string,
+    options?: RequestInit,
+): Promise<deleteSourceResponse> => {
+    return customFetch<deleteSourceResponse>(getDeleteSourceUrl(id), {
+        ...options,
+        method: "DELETE",
+    });
+};
+
+export const getDeleteSourceMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof deleteSource>>,
+        TError,
+        { id: string },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof deleteSource>>,
+    TError,
+    { id: string },
+    TContext
+> => {
+    const mutationKey = ["deleteSource"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof deleteSource>>,
+        { id: string }
+    > = (props) => {
+        const { id } = props ?? {};
+
+        return deleteSource(id, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteSourceMutationResult = NonNullable<
+    Awaited<ReturnType<typeof deleteSource>>
+>;
+
+export type DeleteSourceMutationError = void;
+
+/**
+ * @summary Delete a source. Blocks when any references exist (resources, child
+sources, or article citations). Creator-only for non-editors.
+ */
+export const useDeleteSource = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof deleteSource>>,
+            TError,
+            { id: string },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof deleteSource>>,
+    TError,
+    { id: string },
+    TContext
+> => {
+    return useMutation(getDeleteSourceMutationOptions(options), queryClient);
 };
 /**
  * @summary Link a person to a source with a role

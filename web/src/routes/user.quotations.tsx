@@ -117,7 +117,7 @@ function QuotationsPage() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto px-8 py-16">
+        <div className="w-full max-w-3xl mx-auto px-8 py-16">
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-2xl font-bold text-stone-900">
                     My Quotations
