@@ -9,6 +9,13 @@ import { createTheme } from "@mui/material/styles";
 //    instead of translate3d. See mui/material-ui#39064.
 export const theme = createTheme({
     components: {
+        MuiChip: {
+            styleOverrides: {
+                root: {
+                    "& .MuiChip-label:empty": { paddingLeft: 0 },
+                },
+            },
+        },
         MuiTooltip: {
             defaultProps: {
                 TransitionComponent: Fade,
