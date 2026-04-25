@@ -459,6 +459,13 @@ export function ReaderLayout({
     const handleScrollNavigate = useCallback(
         (panelIndex: number, nodeSlug: string) => {
             if (closingRef.current) return;
+            // Layout shifts (e.g. UserSubnav appearing during a pending
+            // navigation away from the reader) can fire the IntersectionObserver
+            // with a different visible slug. If the URL has already moved off
+            // the reader route, don't replace it back.
+            if (!window.location.pathname.startsWith(`/books/${panels[0].bookSlug}/`)) {
+                return;
+            }
             const newPanels = panels.map((p, i) =>
                 i === panelIndex ? { ...p, nodeSlug } : p,
             );
