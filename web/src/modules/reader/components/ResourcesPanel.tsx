@@ -14,6 +14,7 @@ import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { NoteFormModal } from "#/modules/forms/NoteFormModal";
+import { useUnsaveQuotation } from "#/modules/quotation/hooks/useUnsaveQuotation";
 import { useListBooks } from "../../../api/books/books";
 import type {
     FootnoteSentenceResponse,
@@ -30,7 +31,6 @@ import {
 import { useListResources } from "../../../api/resources/resources";
 import { useGetToc } from "../../../api/toc/toc";
 import { useAuth } from "../../../hooks/useAuth";
-import { useUnsaveQuotation } from "../../../hooks/useUnsaveQuotation";
 import { CommentaryView, getSentenceRange } from "./CommentaryView";
 import { NotesView } from "./NotesView";
 import { PanelToc } from "./PanelToc";

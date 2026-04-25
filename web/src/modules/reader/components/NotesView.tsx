@@ -7,6 +7,7 @@ import { Chip, IconButton } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
+import { useUnsaveQuotation } from "#/modules/quotation/hooks/useUnsaveQuotation";
 import type {
     FootnoteSentenceResponse,
     NoteResponse,
@@ -21,7 +22,6 @@ import {
     useListNotes,
     useListQuotations,
 } from "../../../api/quotations/quotations";
-import { useUnsaveQuotation } from "../../../hooks/useUnsaveQuotation";
 import { parseRangeKey } from "../keys";
 import { getSentenceRange } from "./CommentaryView";
 

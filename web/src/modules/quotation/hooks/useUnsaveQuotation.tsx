@@ -14,7 +14,7 @@ import {
     getListAllQuotationsQueryKey,
     getListQuotationsQueryKey,
     useDeleteQuotation,
-} from "../api/quotations/quotations";
+} from "../../../api/quotations/quotations";
 
 interface QuotationLike {
     id: string;
