@@ -1,0 +1,10 @@
+pre-commit:
+  commands:
+    format:
+      priority: 1
+      glob: "*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc}"
+      run: pnpm exec biome format --write {staged_files}
+      stage_fixed: true
+    turbo:
+      priority: 2
+      run: pnpm exec turbo lint ct test

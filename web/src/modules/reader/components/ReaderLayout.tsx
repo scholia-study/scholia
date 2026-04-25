@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useRef } from "react";
-import { createPanel, type Panel } from "./state";
+import { createPanel, type Panel } from "../state";
+import { encode } from "../url";
 import { TextPanel } from "./TextPanel";
-import { encode } from "./url";
 
 interface ReaderLayoutProps {
     panels: Panel[];

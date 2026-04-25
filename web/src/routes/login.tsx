@@ -66,7 +66,8 @@ function LoginPage() {
 
                 {password_reset && (
                     <div className="mb-4 p-3 rounded bg-green-50 text-green-800 text-sm border border-green-200">
-                        Password changed successfully. Log in with your new password.
+                        Password changed successfully. Log in with your new
+                        password.
                     </div>
                 )}
 
@@ -86,10 +87,14 @@ function LoginPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm text-stone-600 mb-1">
+                        <label
+                            htmlFor="login-email"
+                            className="block text-sm text-stone-600 mb-1"
+                        >
                             Email
                         </label>
                         <input
+                            id="login-email"
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -98,10 +103,14 @@ function LoginPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm text-stone-600 mb-1">
+                        <label
+                            htmlFor="login-password"
+                            className="block text-sm text-stone-600 mb-1"
+                        >
                             Password
                         </label>
                         <input
+                            id="login-password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}

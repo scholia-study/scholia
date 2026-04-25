@@ -6,7 +6,6 @@ import {
     type ViewMode,
     VALID_VIEW_LAYOUTS,
     VALID_VIEW_MODES,
-    createPanel,
 } from "./state";
 
 export type ReaderSearch = {
@@ -48,22 +47,46 @@ export type ReaderSearch = {
 };
 
 const SEARCH_KEYS = [
-    "p2", "p3", "p4",
-    "s", "s2", "s3", "s4",
-    "r", "r2", "r3", "r4",
-    "og", "og2", "og3", "og4",
-    "rv", "rv2", "rv3", "rv4",
-    "vm", "vm2", "vm3", "vm4",
-    "vl", "vl2", "vl3", "vl4",
-    "vt", "vt2", "vt3", "vt4",
-    "fs", "fs2", "fs3", "fs4",
+    "p2",
+    "p3",
+    "p4",
+    "s",
+    "s2",
+    "s3",
+    "s4",
+    "r",
+    "r2",
+    "r3",
+    "r4",
+    "og",
+    "og2",
+    "og3",
+    "og4",
+    "rv",
+    "rv2",
+    "rv3",
+    "rv4",
+    "vm",
+    "vm2",
+    "vm3",
+    "vm4",
+    "vl",
+    "vl2",
+    "vl3",
+    "vl4",
+    "vt",
+    "vt2",
+    "vt3",
+    "vt4",
+    "fs",
+    "fs2",
+    "fs3",
+    "fs4",
 ] as const satisfies ReadonlyArray<keyof ReaderSearch>;
 
 /** Coerce a raw search-param record into the typed `ReaderSearch` shape used by
  *  TanStack Router's `validateSearch`. Drops unknown keys; keeps only string values. */
-export function validateSearch(
-    search: Record<string, unknown>,
-): ReaderSearch {
+export function validateSearch(search: Record<string, unknown>): ReaderSearch {
     const out: ReaderSearch = {};
     for (const key of SEARCH_KEYS) {
         const v = search[key];
@@ -109,7 +132,11 @@ function isViewLayout(v: string | undefined): v is ViewLayout {
     return v != null && (VALID_VIEW_LAYOUTS as readonly string[]).includes(v);
 }
 
-function read(search: ReaderSearch, prefix: string, idx: number): string | undefined {
+function read(
+    search: ReaderSearch,
+    prefix: string,
+    idx: number,
+): string | undefined {
     return search[key<keyof ReaderSearch>(prefix, idx)];
 }
 
@@ -143,7 +170,8 @@ export function decode(url: ReaderURL): ReaderState {
                 ? viewLayoutRaw
                 : undefined;
 
-        const companionSlug = viewMode === "st" ? read(search, "vt", i) : undefined;
+        const companionSlug =
+            viewMode === "st" ? read(search, "vt", i) : undefined;
 
         return {
             bookSlug: s.bookSlug,
@@ -198,6 +226,3 @@ export function encode(state: ReaderState): ReaderURL {
         search,
     };
 }
-
-export { createPanel, MAX_PANELS };
-export type { Panel, ReaderState };

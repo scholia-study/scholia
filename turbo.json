@@ -7,6 +7,9 @@
         "lint": {
             "dependsOn": []
         },
+        "test": {
+            "dependsOn": []
+        },
         "openapi": {
             "outputs": ["../../openapi.json"]
         },

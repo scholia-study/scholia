@@ -13,27 +13,27 @@ import { Link } from "@tanstack/react-router";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { useListBooks } from "../../api/books/books";
+import { useListBooks } from "../../../api/books/books";
 import type {
     FootnoteSentenceResponse,
     NoteResponse,
     ResourceResponse,
     SentenceResponse,
     TocNodeResponse,
-} from "../../api/model";
+} from "../../../api/model";
 import {
     getListQuotationsQueryKey,
     useCreateQuotation,
     useListQuotations,
-} from "../../api/quotations/quotations";
-import { useListResources } from "../../api/resources/resources";
-import { useGetToc } from "../../api/toc/toc";
-import { useAuth } from "../../hooks/useAuth";
-import { useUnsaveQuotation } from "../../hooks/useUnsaveQuotation";
+} from "../../../api/quotations/quotations";
+import { useListResources } from "../../../api/resources/resources";
+import { useGetToc } from "../../../api/toc/toc";
+import { useAuth } from "../../../hooks/useAuth";
+import { useUnsaveQuotation } from "../../../hooks/useUnsaveQuotation";
 import { CommentaryView, getSentenceRange } from "./CommentaryView";
-import { NoteFormModal } from "../../components/NoteFormModal";
+import { NoteFormModal } from "../../../components/NoteFormModal";
 import { NotesView } from "./NotesView";
-import { PanelToc } from "../../components/PanelToc";
+import { PanelToc } from "../../../components/PanelToc";
 import { ResourceFormModal } from "./ResourceFormModal";
 import { SentenceDetail } from "./SentenceDetail";
 

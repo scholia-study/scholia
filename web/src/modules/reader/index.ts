@@ -1,4 +1,4 @@
-export { ReaderLayout } from "./ReaderLayout";
+export { ReaderLayout } from "./components/ReaderLayout";
 export { decode, encode, validateSearch, type ReaderSearch } from "./url";
 export {
     createPanel,

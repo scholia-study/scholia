@@ -80,10 +80,14 @@ function ResetPasswordPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm text-stone-600 mb-1">
+                        <label
+                            htmlFor="reset-new-password"
+                            className="block text-sm text-stone-600 mb-1"
+                        >
                             New password
                         </label>
                         <input
+                            id="reset-new-password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -96,10 +100,14 @@ function ResetPasswordPage() {
                         </p>
                     </div>
                     <div>
-                        <label className="block text-sm text-stone-600 mb-1">
+                        <label
+                            htmlFor="reset-confirm-password"
+                            className="block text-sm text-stone-600 mb-1"
+                        >
                             Confirm password
                         </label>
                         <input
+                            id="reset-confirm-password"
                             type="password"
                             value={confirm}
                             onChange={(e) => setConfirm(e.target.value)}

@@ -2,7 +2,7 @@ import ExpandLessOutlined from "@mui/icons-material/ExpandLessOutlined";
 import ExpandMoreOutlined from "@mui/icons-material/ExpandMoreOutlined";
 import StarOutlined from "@mui/icons-material/StarOutlined";
 import { useState } from "react";
-import type { ResourceResponse } from "../../api/model";
+import type { ResourceResponse } from "../../../api/model";
 
 interface CommentaryEntryProps {
     resource: ResourceResponse;
@@ -24,18 +24,16 @@ export function CommentaryEntry({
     const firstAuthor = source?.persons?.find((p) => p.role === "author");
     const authorName = firstAuthor?.name ?? source?.persons?.[0]?.name;
     const year = source?.publication_year;
-    const citation = [
-        authorName,
-        year ? `(${year})` : null,
-    ]
+    const citation = [authorName, year ? `(${year})` : null]
         .filter(Boolean)
         .join(" ");
 
     const pageRef = resource.source_page_start
-        ? resource.source_page_end && resource.source_page_end !== resource.source_page_start
+        ? resource.source_page_end &&
+          resource.source_page_end !== resource.source_page_start
             ? `pp. ${resource.source_page_start}\u2013${resource.source_page_end}`
             : `p. ${resource.source_page_start}`
-        : resource.source_location_freeform ?? null;
+        : (resource.source_location_freeform ?? null);
 
     return (
         <div className="border border-stone-200 rounded text-sm">
@@ -119,7 +117,9 @@ export function CommentaryEntry({
                                 <Field label="Contributors">
                                     <ul className="text-xs text-stone-700 space-y-0.5">
                                         {source.persons.map((p) => (
-                                            <li key={`${p.person_id}-${p.role}`}>
+                                            <li
+                                                key={`${p.person_id}-${p.role}`}
+                                            >
                                                 {p.name}
                                                 <span className="text-stone-400 ml-1">
                                                     ({p.role})
@@ -173,8 +173,8 @@ export function CommentaryEntry({
                         <p className="text-stone-700 text-xs">
                             {resource.anchor_sentence_end_number != null
                                 ? `${resource.anchor_sentence_start_number}\u2013${resource.anchor_sentence_end_number}`
-                                : resource.anchor_sentence_start_number}
-                            {" "}({resource.sentence_kind})
+                                : resource.anchor_sentence_start_number}{" "}
+                            ({resource.sentence_kind})
                         </p>
                     </Field>
 

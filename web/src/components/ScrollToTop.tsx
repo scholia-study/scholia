@@ -32,6 +32,7 @@ export function ScrollToTop() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
             >
+                <title>Scroll to top</title>
                 <path d="m18 15-6-6-6 6" />
             </svg>
         </button>

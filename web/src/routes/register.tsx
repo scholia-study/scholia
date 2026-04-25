@@ -75,10 +75,14 @@ function RegisterPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm text-stone-600 mb-1">
+                        <label
+                            htmlFor="register-display-name"
+                            className="block text-sm text-stone-600 mb-1"
+                        >
                             Display name
                         </label>
                         <input
+                            id="register-display-name"
                             type="text"
                             value={displayName}
                             onChange={(e) => setDisplayName(e.target.value)}
@@ -87,10 +91,14 @@ function RegisterPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm text-stone-600 mb-1">
+                        <label
+                            htmlFor="register-email"
+                            className="block text-sm text-stone-600 mb-1"
+                        >
                             Email
                         </label>
                         <input
+                            id="register-email"
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -99,10 +107,14 @@ function RegisterPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm text-stone-600 mb-1">
+                        <label
+                            htmlFor="register-password"
+                            className="block text-sm text-stone-600 mb-1"
+                        >
                             Password
                         </label>
                         <input
+                            id="register-password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}

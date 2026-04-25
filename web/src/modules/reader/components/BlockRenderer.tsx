@@ -3,60 +3,17 @@ import parse, { Element } from "html-react-parser";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
     ContentBlockResponse,
-    FootnoteSentenceResponse,
     PageMarkerResponse,
     SentenceResponse,
-} from "../../api/model";
+} from "../../../api/model";
+import { sentenceKey, sentenceMatchesKey } from "../keys";
+import {
+    useFootnoteActions,
+    useFootnoteAnchor,
+    useSentenceSelection,
+} from "../context/selection";
+import { useQuotationContext } from "../context/Quotations";
 import { FootnotePopover } from "./FootnotePopover";
-import { useFootnoteSelection } from "./FootnoteSelectionContext";
-import { useQuotationContext } from "./QuotationContext";
-import { useSentenceSelection } from "./SentenceSelectionContext";
-
-/** URL-friendly key for a sentence: sentence_number if available, otherwise ID. */
-export function sentenceKey(s: SentenceResponse): string {
-    return s.sentence_number != null ? String(s.sentence_number) : s.id;
-}
-
-/** Parse a range key like "12-21" into [start, end] or null. */
-export function parseRangeKey(key: string): [number, number] | null {
-    const dashIdx = key.indexOf("-");
-    if (dashIdx <= 0) return null;
-    const start = Number(key.slice(0, dashIdx));
-    const end = Number(key.slice(dashIdx + 1));
-    if (isNaN(start) || isNaN(end)) return null;
-    return [start, end];
-}
-
-/** Check if a sentence matches a URL key (sentence_number, ID, or range like "12-21"). */
-export function sentenceMatchesKey(
-    s: SentenceResponse,
-    key: string | undefined | null,
-): boolean {
-    if (!key) return false;
-    const range = parseRangeKey(key);
-    if (range && s.sentence_number != null) {
-        return s.sentence_number >= range[0] && s.sentence_number <= range[1];
-    }
-    return s.id === key || (s.sentence_number != null && String(s.sentence_number) === key);
-}
-
-/** URL-friendly key for a footnote sentence: sentence_number if available, otherwise ID. */
-export function footnoteSentenceKey(s: FootnoteSentenceResponse): string {
-    return s.sentence_number != null ? String(s.sentence_number) : s.id;
-}
-
-/** Check if a footnote sentence matches a URL key (sentence_number, ID, or range like "5-8"). */
-export function footnoteSentenceMatchesKey(
-    s: FootnoteSentenceResponse,
-    key: string | undefined | null,
-): boolean {
-    if (!key) return false;
-    const range = parseRangeKey(key);
-    if (range && s.sentence_number != null) {
-        return s.sentence_number >= range[0] && s.sentence_number <= range[1];
-    }
-    return s.id === key || (s.sentence_number != null && String(s.sentence_number) === key);
-}
 
 export interface MarginSettings {
     enabledSystems: Set<string>;
@@ -79,14 +36,16 @@ function MarginNotes({
             }`}
             style={{ lineHeight: "inherit" }}
         >
-            {[...markers].sort((a, b) => a.system_slug.localeCompare(b.system_slug)).map((pm, i) => (
-                <span
-                    key={`${pm.system_slug}-${pm.ref_value}-${i}`}
-                    title={`${pm.system_slug}: ${pm.ref_value}`}
-                >
-                    {pm.ref_value}
-                </span>
-            ))}
+            {[...markers]
+                .sort((a, b) => a.system_slug.localeCompare(b.system_slug))
+                .map((pm, i) => (
+                    <span
+                        key={`${pm.system_slug}-${pm.ref_value}-${i}`}
+                        title={`${pm.system_slug}: ${pm.ref_value}`}
+                    >
+                        {pm.ref_value}
+                    </span>
+                ))}
         </span>
     );
 }
@@ -102,18 +61,16 @@ function FootnoteSup({
     showOriginal?: boolean;
     onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
 }) {
-    const { selectedFootnoteSentenceId, onSelectFootnoteSentence, onClearFootnoteSentence } =
-        useFootnoteSelection();
+    const { clear: clearFootnoteSelection } = useFootnoteActions();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const supRef = useRef<HTMLElement>(null);
 
-    const footnote = sentence.footnotes?.find((fn) => fn.number === footnoteNumber);
+    const footnote = sentence.footnotes?.find(
+        (fn) => fn.number === footnoteNumber,
+    );
 
     // Auto-open popover if a footnote sentence from this footnote is selected
-    const shouldAutoOpen = useMemo(() => {
-        if (!selectedFootnoteSentenceId || !footnote) return false;
-        return footnote.sentences.some((s) => footnoteSentenceMatchesKey(s, selectedFootnoteSentenceId));
-    }, [selectedFootnoteSentenceId, footnote]);
+    const shouldAutoOpen = useFootnoteAnchor(footnote ? [footnote] : undefined);
 
     useEffect(() => {
         if (shouldAutoOpen && !anchorEl && supRef.current) {
@@ -126,20 +83,20 @@ function FootnoteSup({
             e.stopPropagation();
             if (anchorEl) {
                 setAnchorEl(null);
-                onClearFootnoteSentence();
+                clearFootnoteSelection();
             } else {
                 setAnchorEl(e.currentTarget);
                 // Ensure the main sentence is selected too
                 onSelectSentence(sentence, false);
             }
         },
-        [anchorEl, onClearFootnoteSentence, onSelectSentence, sentence],
+        [anchorEl, clearFootnoteSelection, onSelectSentence, sentence],
     );
 
     const handleClose = useCallback(() => {
         setAnchorEl(null);
-        onClearFootnoteSentence();
-    }, [onClearFootnoteSentence]);
+        clearFootnoteSelection();
+    }, [clearFootnoteSelection]);
 
     // Dismiss if anchor unmounts (virtualization)
     useEffect(() => {
@@ -147,19 +104,12 @@ function FootnoteSup({
         const check = () => {
             if (!anchorEl.isConnected) {
                 setAnchorEl(null);
-                onClearFootnoteSentence();
+                clearFootnoteSelection();
             }
         };
         const id = setInterval(check, 500);
         return () => clearInterval(id);
-    }, [anchorEl, onClearFootnoteSentence]);
-
-    const handleSelectFootnoteSentence = useCallback(
-        (fsSentence: FootnoteSentenceResponse, shiftKey: boolean) => {
-            onSelectFootnoteSentence(fsSentence, shiftKey);
-        },
-        [onSelectFootnoteSentence],
-    );
+    }, [anchorEl, clearFootnoteSelection]);
 
     return (
         <>
@@ -176,8 +126,6 @@ function FootnoteSup({
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
-                    selectedFootnoteSentenceId={selectedFootnoteSentenceId}
-                    onSelectFootnoteSentence={handleSelectFootnoteSentence}
                     showOriginal={showOriginal}
                 />
             )}
@@ -199,16 +147,8 @@ export function Sentence({
     marginSettings?: MarginSettings;
 }) {
     const { isCorrespondent } = useSentenceSelection(sentence);
-    const { selectedFootnoteSentenceId } = useFootnoteSelection();
+    const isFootnoteAnchor = useFootnoteAnchor(sentence.footnotes);
     const { showBookmarks, isSentenceSaved } = useQuotationContext();
-
-    // Check if this sentence is the anchor for a selected footnote sentence
-    const isFootnoteAnchor = useMemo(() => {
-        if (!selectedFootnoteSentenceId || !sentence.footnotes) return false;
-        return sentence.footnotes.some((fn) =>
-            fn.sentences.some((s) => footnoteSentenceMatchesKey(s, selectedFootnoteSentenceId)),
-        );
-    }, [selectedFootnoteSentenceId, sentence.footnotes]);
 
     let leftMarkers: PageMarkerResponse[] | undefined;
     let rightMarkers: PageMarkerResponse[] | undefined;
@@ -242,7 +182,10 @@ export function Sentence({
           : "hover:bg-stone-200";
 
     const parsedHtml = useMemo(() => {
-        const html = showOriginal && sentence.original_html ? sentence.original_html : sentence.html;
+        const html =
+            showOriginal && sentence.original_html
+                ? sentence.original_html
+                : sentence.html;
         return parse(html, {
             replace: (domNode) => {
                 if (domNode instanceof Element && domNode.name === "sup") {
@@ -268,7 +211,10 @@ export function Sentence({
         });
     }, [showOriginal, sentence, onSelect]);
 
-    const isSaved = showBookmarks && sentence.sentence_number != null && isSentenceSaved(sentence.sentence_number);
+    const isSaved =
+        showBookmarks &&
+        sentence.sentence_number != null &&
+        isSentenceSaved(sentence.sentence_number);
 
     return (
         <>
@@ -335,7 +281,13 @@ function HeadingSentence({
             {rightMarkers && (
                 <MarginNotes markers={rightMarkers} side="right" />
             )}
-            <span>{parse(showOriginal && sentence.original_html ? sentence.original_html : sentence.html)}</span>{" "}
+            <span>
+                {parse(
+                    showOriginal && sentence.original_html
+                        ? sentence.original_html
+                        : sentence.html,
+                )}
+            </span>{" "}
         </>
     );
 }
@@ -353,7 +305,8 @@ export function Block({
     onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
     marginSettings?: MarginSettings;
 }) {
-    const blockHtml = showOriginal && block.original_html ? block.original_html : block.html;
+    const blockHtml =
+        showOriginal && block.original_html ? block.original_html : block.html;
 
     switch (block.block_type) {
         case "heading":
@@ -378,7 +331,10 @@ export function Block({
                         <Sentence
                             key={s.id}
                             sentence={s}
-                            isSelected={sentenceMatchesKey(s, selectedSentenceId)}
+                            isSelected={sentenceMatchesKey(
+                                s,
+                                selectedSentenceId,
+                            )}
                             showOriginal={showOriginal}
                             onSelect={onSelectSentence}
                             marginSettings={marginSettings}
@@ -393,7 +349,10 @@ export function Block({
                         <Sentence
                             key={s.id}
                             sentence={s}
-                            isSelected={sentenceMatchesKey(s, selectedSentenceId)}
+                            isSelected={sentenceMatchesKey(
+                                s,
+                                selectedSentenceId,
+                            )}
                             showOriginal={showOriginal}
                             onSelect={onSelectSentence}
                             marginSettings={marginSettings}

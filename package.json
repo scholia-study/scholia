@@ -4,6 +4,7 @@
     "packageManager": "pnpm@10.31.0",
     "scripts": {
         "ready": "pnpm run db:reset && pnpm run extract && pnpm run db:import",
+        "prepare": "lefthook install",
         "db:reset": "./db_reset.sh",
         "extract": "cargo run -p hegel-wdl",
         "db:import": "cargo run -p db-import -- assets/wdl.json",
@@ -13,6 +14,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "2.4.5",
+        "lefthook": "^2.1.6",
         "turbo": "^2.9.6"
     }
 }

@@ -12,7 +12,7 @@ import type {
     NoteResponse,
     QuotationResponse,
     SentenceResponse,
-} from "../../api/model";
+} from "../../../api/model";
 import {
     getListNotesQueryKey,
     getListQuotationsQueryKey,
@@ -20,9 +20,9 @@ import {
     useDeleteNote,
     useListNotes,
     useListQuotations,
-} from "../../api/quotations/quotations";
-import { useUnsaveQuotation } from "../../hooks/useUnsaveQuotation";
-import { parseRangeKey } from "./BlockRenderer";
+} from "../../../api/quotations/quotations";
+import { useUnsaveQuotation } from "../../../hooks/useUnsaveQuotation";
+import { parseRangeKey } from "../keys";
 import { getSentenceRange } from "./CommentaryView";
 
 interface NotesViewProps {
@@ -80,8 +80,7 @@ export function NotesView({
     const exactQuotation = useMemo(() => {
         if (!range || !quotationsData?.data?.quotations) return undefined;
         return quotationsData.data.quotations.find((q) => {
-            const startMatch =
-                q.anchor_sentence_start_number === range.start;
+            const startMatch = q.anchor_sentence_start_number === range.start;
             const endMatch =
                 range.start === range.end
                     ? q.anchor_sentence_end_number == null ||
@@ -130,8 +129,7 @@ export function NotesView({
             slug: bookSlug,
             data: {
                 sentence_start: range.start,
-                sentence_end:
-                    range.start !== range.end ? range.end : undefined,
+                sentence_end: range.start !== range.end ? range.end : undefined,
                 sentence_kind: range.kind,
             },
         });
@@ -286,10 +284,7 @@ function QuotationNotesGroup({
     onOpenNoteModal: (quotationId: string, note?: NoteResponse) => void;
 }) {
     const queryClient = useQueryClient();
-    const { data: notesData, isLoading } = useListNotes(
-        bookSlug,
-        quotation.id,
-    );
+    const { data: notesData, isLoading } = useListNotes(bookSlug, quotation.id);
     const notes = notesData?.data?.notes ?? [];
 
     const deleteNoteMutation = useDeleteNote({

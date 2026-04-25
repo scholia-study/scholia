@@ -8,12 +8,12 @@ import type {
     FootnoteSentenceResponse,
     ResourceResponse,
     SentenceResponse,
-} from "../../api/model";
+} from "../../../api/model";
 import {
     getListResourcesQueryKey,
     useDeleteResource,
     useListResources,
-} from "../../api/resources/resources";
+} from "../../../api/resources/resources";
 import { CommentaryEntry } from "./CommentaryEntry";
 
 type ResourceType = "verbatim" | "paraphrase" | "allusion";
@@ -27,7 +27,12 @@ interface CommentaryViewProps {
         | (SentenceResponse | FootnoteSentenceResponse)[]
         | undefined;
     isEditor: boolean;
-    onAdd: (type: ResourceType, start: number, end: number | undefined, kind: string) => void;
+    onAdd: (
+        type: ResourceType,
+        start: number,
+        end: number | undefined,
+        kind: string,
+    ) => void;
     onEdit: (resource: ResourceResponse) => void;
 }
 
@@ -76,7 +81,11 @@ export function CommentaryView({
 
     const { data, isLoading } = useListResources(
         bookSlug,
-        { start: range?.start ?? 0, end: range?.end ?? 0, kind: range?.kind ?? "body" },
+        {
+            start: range?.start ?? 0,
+            end: range?.end ?? 0,
+            kind: range?.kind ?? "body",
+        },
         { query: { enabled: !!range } },
     );
 
@@ -132,7 +141,8 @@ export function CommentaryView({
         return (
             <div className="flex-1 overflow-y-auto p-4">
                 <p className="text-sm text-stone-400">
-                    Select a sentence to view {TYPE_LABELS[resourceType].toLowerCase()}.
+                    Select a sentence to view{" "}
+                    {TYPE_LABELS[resourceType].toLowerCase()}.
                 </p>
             </div>
         );
@@ -160,7 +170,9 @@ export function CommentaryView({
                     onClick={() => setFeaturedOnly(!featuredOnly)}
                     title={featuredOnly ? "Show all" : "Show featured only"}
                     sx={{
-                        color: featuredOnly ? "rgb(202 138 4)" : "rgb(168 162 158)",
+                        color: featuredOnly
+                            ? "rgb(202 138 4)"
+                            : "rgb(168 162 158)",
                     }}
                 >
                     <StarOutlined fontSize="small" />
@@ -172,7 +184,9 @@ export function CommentaryView({
                             onAdd(
                                 resourceType,
                                 range.start,
-                                range.start !== range.end ? range.end : undefined,
+                                range.start !== range.end
+                                    ? range.end
+                                    : undefined,
                                 range.kind,
                             )
                         }

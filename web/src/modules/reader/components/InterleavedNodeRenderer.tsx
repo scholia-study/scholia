@@ -2,9 +2,10 @@ import type {
     ContentBlockResponse,
     NodeDetail,
     SentenceResponse,
-} from "../../api/model";
+} from "../../../api/model";
+import { sentenceMatchesKey } from "../keys";
 import type { MarginSettings } from "./BlockRenderer";
-import { Block, Sentence, sentenceMatchesKey } from "./BlockRenderer";
+import { Block, Sentence } from "./BlockRenderer";
 
 type ViewLayout = "sp" | "ss" | "bpl" | "bpr" | "bsl" | "bsr";
 
@@ -54,7 +55,10 @@ function alignBlocks(
 
         let companion: ContentBlockResponse | undefined;
 
-        if (block.block_type === "paragraph" || block.block_type === "footnote") {
+        if (
+            block.block_type === "paragraph" ||
+            block.block_type === "footnote"
+        ) {
             if (block.paragraph_number != null) {
                 companion = companionByParagraph.get(block.paragraph_number);
             }
@@ -130,10 +134,17 @@ function alignSentences(
         // In a merge, a companion sentence has start_id and end_id pointing to different primary sentences
         const mergePrimary = [ps];
         for (const cs of companions) {
-            if (cs.source_sentence_end_id && cs.source_sentence_end_id !== cs.source_sentence_start_id) {
+            if (
+                cs.source_sentence_end_id &&
+                cs.source_sentence_end_id !== cs.source_sentence_start_id
+            ) {
                 // Find all primary sentences in the range
-                const startIdx = primarySentences.findIndex((s) => s.id === cs.source_sentence_start_id);
-                const endIdx = primarySentences.findIndex((s) => s.id === cs.source_sentence_end_id);
+                const startIdx = primarySentences.findIndex(
+                    (s) => s.id === cs.source_sentence_start_id,
+                );
+                const endIdx = primarySentences.findIndex(
+                    (s) => s.id === cs.source_sentence_end_id,
+                );
                 if (startIdx >= 0 && endIdx >= 0) {
                     mergePrimary.length = 0;
                     for (let i = startIdx; i <= endIdx; i++) {
@@ -199,13 +210,21 @@ function StackedParagraphs({
         <>
             {aligned.map((item, i) => {
                 if (item.type === "separator") {
-                    return <hr key={`sep-${i}`} className="my-8 border-stone-200" />;
+                    return (
+                        <hr
+                            key={`sep-${i}`}
+                            className="my-8 border-stone-200"
+                        />
+                    );
                 }
                 return (
                     <div key={`aligned-${i}`}>
                         {item.primary && (
                             <div className="border-l-2 border-blue-300 pl-3 mb-1">
-                                <TextLabel label={primaryLabel} color="#93c5fd" />
+                                <TextLabel
+                                    label={primaryLabel}
+                                    color="#93c5fd"
+                                />
                                 <Block
                                     block={item.primary}
                                     selectedSentenceId={selectedSentenceId}
@@ -217,7 +236,10 @@ function StackedParagraphs({
                         )}
                         {item.companion && (
                             <div className="border-l-2 border-amber-300 pl-3 mb-4">
-                                <TextLabel label={companionLabel} color="#fcd34d" />
+                                <TextLabel
+                                    label={companionLabel}
+                                    color="#fcd34d"
+                                />
                                 <Block
                                     block={item.companion}
                                     selectedSentenceId={selectedSentenceId}
@@ -255,7 +277,12 @@ function StackedSentences({
         <>
             {aligned.map((item, i) => {
                 if (item.type === "separator") {
-                    return <hr key={`sep-${i}`} className="my-8 border-stone-200" />;
+                    return (
+                        <hr
+                            key={`sep-${i}`}
+                            className="my-8 border-stone-200"
+                        />
+                    );
                 }
 
                 if (item.type === "heading") {
@@ -299,12 +326,20 @@ function StackedSentences({
                             <div key={gi} className="mb-2">
                                 {group.primary.length > 0 && (
                                     <p className="relative border-l-2 border-blue-300 pl-3 leading-relaxed text-stone-700">
-                                        {gi === 0 && <TextLabel label={primaryLabel} color="#93c5fd" />}{" "}
+                                        {gi === 0 && (
+                                            <TextLabel
+                                                label={primaryLabel}
+                                                color="#93c5fd"
+                                            />
+                                        )}{" "}
                                         {group.primary.map((s) => (
                                             <Sentence
                                                 key={s.id}
                                                 sentence={s}
-                                                isSelected={sentenceMatchesKey(s, selectedSentenceId)}
+                                                isSelected={sentenceMatchesKey(
+                                                    s,
+                                                    selectedSentenceId,
+                                                )}
                                                 showOriginal={showOriginal}
                                                 onSelect={onSelectSentence}
                                                 marginSettings={marginSettings}
@@ -314,12 +349,20 @@ function StackedSentences({
                                 )}
                                 {group.companion.length > 0 && (
                                     <p className="relative border-l-2 border-amber-300 pl-3 leading-relaxed text-stone-700">
-                                        {gi === 0 && <TextLabel label={companionLabel} color="#fcd34d" />}{" "}
+                                        {gi === 0 && (
+                                            <TextLabel
+                                                label={companionLabel}
+                                                color="#fcd34d"
+                                            />
+                                        )}{" "}
                                         {group.companion.map((s) => (
                                             <Sentence
                                                 key={s.id}
                                                 sentence={s}
-                                                isSelected={sentenceMatchesKey(s, selectedSentenceId)}
+                                                isSelected={sentenceMatchesKey(
+                                                    s,
+                                                    selectedSentenceId,
+                                                )}
                                                 showOriginal={showOriginal}
                                                 onSelect={onSelectSentence}
                                                 marginSettings={marginSettings}
@@ -346,7 +389,10 @@ function forceMarginSide(
     for (const slug of Object.keys(settings.systemSides)) {
         forcedSides[slug] = side;
     }
-    return { enabledSystems: settings.enabledSystems, systemSides: forcedSides };
+    return {
+        enabledSystems: settings.enabledSystems,
+        systemSides: forcedSides,
+    };
 }
 
 // --- Side-by-side renderers ---
@@ -385,17 +431,29 @@ function SideBySideParagraphs({
             </div>
             {aligned.map((item, i) => {
                 if (item.type === "separator") {
-                    return <hr key={`sep-${i}`} className="my-8 border-stone-200 col-span-2" />;
+                    return (
+                        <hr
+                            key={`sep-${i}`}
+                            className="my-8 border-stone-200 col-span-2"
+                        />
+                    );
                 }
 
                 const leftBlock = primaryLeft ? item.primary : item.companion;
                 const rightBlock = primaryLeft ? item.companion : item.primary;
                 // Primary gets margins forced to outer edge, companion gets none
-                const leftMargins = primaryLeft ? forceMarginSide(marginSettings, "left") : undefined;
-                const rightMargins = primaryLeft ? undefined : forceMarginSide(marginSettings, "right");
+                const leftMargins = primaryLeft
+                    ? forceMarginSide(marginSettings, "left")
+                    : undefined;
+                const rightMargins = primaryLeft
+                    ? undefined
+                    : forceMarginSide(marginSettings, "right");
 
                 return (
-                    <div key={`aligned-${i}`} className="grid grid-cols-2 gap-4">
+                    <div
+                        key={`aligned-${i}`}
+                        className="grid grid-cols-2 gap-4"
+                    >
                         <div>
                             {leftBlock && (
                                 <Block
@@ -459,14 +517,26 @@ function SideBySideSentences({
             </div>
             {aligned.map((item, i) => {
                 if (item.type === "separator") {
-                    return <hr key={`sep-${i}`} className="my-8 border-stone-200" />;
+                    return (
+                        <hr
+                            key={`sep-${i}`}
+                            className="my-8 border-stone-200"
+                        />
+                    );
                 }
 
                 if (item.type === "heading") {
-                    const leftBlock = primaryLeft ? item.primary : item.companion;
-                    const rightBlock = primaryLeft ? item.companion : item.primary;
+                    const leftBlock = primaryLeft
+                        ? item.primary
+                        : item.companion;
+                    const rightBlock = primaryLeft
+                        ? item.companion
+                        : item.primary;
                     return (
-                        <div key={`aligned-${i}`} className="grid grid-cols-2 gap-4">
+                        <div
+                            key={`aligned-${i}`}
+                            className="grid grid-cols-2 gap-4"
+                        >
                             <div>
                                 {leftBlock && (
                                     <Block
@@ -496,22 +566,36 @@ function SideBySideSentences({
                     item.companion?.sentences ?? [],
                 );
 
-                const leftMargins = primaryLeft ? forceMarginSide(marginSettings, "left") : undefined;
-                const rightMargins = primaryLeft ? undefined : forceMarginSide(marginSettings, "right");
+                const leftMargins = primaryLeft
+                    ? forceMarginSide(marginSettings, "left")
+                    : undefined;
+                const rightMargins = primaryLeft
+                    ? undefined
+                    : forceMarginSide(marginSettings, "right");
 
                 return (
                     <div key={`aligned-${i}`} className="mb-4">
                         {groups.map((group, gi) => {
-                            const leftSentences = primaryLeft ? group.primary : group.companion;
-                            const rightSentences = primaryLeft ? group.companion : group.primary;
+                            const leftSentences = primaryLeft
+                                ? group.primary
+                                : group.companion;
+                            const rightSentences = primaryLeft
+                                ? group.companion
+                                : group.primary;
                             return (
-                                <div key={gi} className="grid grid-cols-2 gap-4 mb-1">
+                                <div
+                                    key={gi}
+                                    className="grid grid-cols-2 gap-4 mb-1"
+                                >
                                     <p className="relative leading-relaxed text-stone-700">
                                         {leftSentences.map((s) => (
                                             <Sentence
                                                 key={s.id}
                                                 sentence={s}
-                                                isSelected={sentenceMatchesKey(s, selectedSentenceId)}
+                                                isSelected={sentenceMatchesKey(
+                                                    s,
+                                                    selectedSentenceId,
+                                                )}
                                                 showOriginal={showOriginal}
                                                 onSelect={onSelectSentence}
                                                 marginSettings={leftMargins}
@@ -523,7 +607,10 @@ function SideBySideSentences({
                                             <Sentence
                                                 key={s.id}
                                                 sentence={s}
-                                                isSelected={sentenceMatchesKey(s, selectedSentenceId)}
+                                                isSelected={sentenceMatchesKey(
+                                                    s,
+                                                    selectedSentenceId,
+                                                )}
                                                 showOriginal={showOriginal}
                                                 onSelect={onSelectSentence}
                                                 marginSettings={rightMargins}
@@ -559,7 +646,8 @@ export function InterleavedNodeRenderer({
     );
 
     const isStacked = viewLayout === "sp" || viewLayout === "ss";
-    const isSentenceLevel = viewLayout === "ss" || viewLayout === "bsl" || viewLayout === "bsr";
+    const isSentenceLevel =
+        viewLayout === "ss" || viewLayout === "bsl" || viewLayout === "bsr";
     const primaryLeft = viewLayout === "bpl" || viewLayout === "bsl";
 
     if (isStacked) {

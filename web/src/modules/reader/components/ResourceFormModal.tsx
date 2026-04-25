@@ -14,16 +14,16 @@ import {
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
 import toast from "react-hot-toast";
-import type { ResourceResponse, SourceResponse } from "../../api/model";
+import type { ResourceResponse, SourceResponse } from "../../../api/model";
 import {
     getListResourcesQueryKey,
     useCreateResource,
     useUpdateResource,
-} from "../../api/resources/resources";
-import { useSearchSources } from "../../api/sources/sources";
-import { SourceFormModal } from "../../components/SourceFormModal";
+} from "../../../api/resources/resources";
+import { useSearchSources } from "../../../api/sources/sources";
+import { SourceFormModal } from "../../../components/SourceFormModal";
 
 const RESOURCE_TYPES = ["verbatim", "paraphrase", "allusion"] as const;
 const VERBATIM_KINDS = ["entirety", "fragmentary"] as const;
@@ -63,19 +63,27 @@ export function ResourceFormModal({
         isEdit ? (initialData.verbatim_kind ?? "entirety") : "entirety",
     );
     const [sentenceStart, setSentenceStart] = useState(
-        String(isEdit ? initialData.anchor_sentence_start_number : (defaultSentenceStart ?? "")),
+        String(
+            isEdit
+                ? initialData.anchor_sentence_start_number
+                : (defaultSentenceStart ?? ""),
+        ),
     );
     const [sentenceEnd, setSentenceEnd] = useState(
         isEdit && initialData.anchor_sentence_end_number != null
             ? String(initialData.anchor_sentence_end_number)
-            : defaultSentenceEnd != null ? String(defaultSentenceEnd) : "",
+            : defaultSentenceEnd != null
+              ? String(defaultSentenceEnd)
+              : "",
     );
     const [sentenceKind, setSentenceKind] = useState(
         isEdit ? initialData.sentence_kind : (defaultSentenceKind ?? "body"),
     );
 
     // Source
-    const [sourceId, setSourceId] = useState(isEdit ? (initialData.source?.id ?? "") : "");
+    const [sourceId, setSourceId] = useState(
+        isEdit ? (initialData.source?.id ?? "") : "",
+    );
     const [sourceLabel, setSourceLabel] = useState(
         isEdit ? (initialData.source?.title ?? "") : "",
     );
@@ -105,10 +113,18 @@ export function ResourceFormModal({
     );
 
     // Content
-    const [quotedText, setQuotedText] = useState(isEdit ? (initialData.quoted_text ?? "") : "");
-    const [editorNote, setEditorNote] = useState(isEdit ? (initialData.editor_note ?? "") : "");
-    const [isFeatured, setIsFeatured] = useState(isEdit ? initialData.is_featured : false);
-    const [adminNotes, setAdminNotes] = useState(isEdit ? (initialData.admin_notes ?? "") : "");
+    const [quotedText, setQuotedText] = useState(
+        isEdit ? (initialData.quoted_text ?? "") : "",
+    );
+    const [editorNote, setEditorNote] = useState(
+        isEdit ? (initialData.editor_note ?? "") : "",
+    );
+    const [isFeatured, setIsFeatured] = useState(
+        isEdit ? initialData.is_featured : false,
+    );
+    const [adminNotes, setAdminNotes] = useState(
+        isEdit ? (initialData.admin_notes ?? "") : "",
+    );
 
     // Source creation modal
     const [sourceModalOpen, setSourceModalOpen] = useState(false);
@@ -165,20 +181,24 @@ export function ResourceFormModal({
 
         const payload = {
             resource_type: resourceType,
-            verbatim_kind: resourceType === "verbatim" ? verbatimKind : undefined,
+            verbatim_kind:
+                resourceType === "verbatim" ? verbatimKind : undefined,
             sentence_start: start,
             sentence_end: end,
             sentence_kind: sentenceKind,
             source_id: sourceId || undefined,
-            source_page_start: !useFreeformLocation && sourcePageStart
-                ? Number.parseInt(sourcePageStart, 10)
-                : undefined,
-            source_page_end: !useFreeformLocation && sourcePageEnd
-                ? Number.parseInt(sourcePageEnd, 10)
-                : undefined,
-            source_location_freeform: useFreeformLocation && sourceLocationFreeform.trim()
-                ? sourceLocationFreeform.trim()
-                : undefined,
+            source_page_start:
+                !useFreeformLocation && sourcePageStart
+                    ? Number.parseInt(sourcePageStart, 10)
+                    : undefined,
+            source_page_end:
+                !useFreeformLocation && sourcePageEnd
+                    ? Number.parseInt(sourcePageEnd, 10)
+                    : undefined,
+            source_location_freeform:
+                useFreeformLocation && sourceLocationFreeform.trim()
+                    ? sourceLocationFreeform.trim()
+                    : undefined,
             quoted_text: quotedText.trim() || undefined,
             editor_note: editorNote.trim() || undefined,
             is_featured: isFeatured,
@@ -226,7 +246,9 @@ export function ResourceFormModal({
                             <InputLabel>Type</InputLabel>
                             <Select
                                 value={resourceType}
-                                onChange={(e) => setResourceType(e.target.value)}
+                                onChange={(e) =>
+                                    setResourceType(e.target.value)
+                                }
                                 label="Type"
                             >
                                 {RESOURCE_TYPES.map((t) => (
@@ -249,7 +271,8 @@ export function ResourceFormModal({
                                 >
                                     {VERBATIM_KINDS.map((k) => (
                                         <MenuItem key={k} value={k}>
-                                            {k.charAt(0).toUpperCase() + k.slice(1)}
+                                            {k.charAt(0).toUpperCase() +
+                                                k.slice(1)}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -263,7 +286,9 @@ export function ResourceFormModal({
                             <TextField
                                 label="Sentence Start"
                                 value={sentenceStart}
-                                onChange={(e) => setSentenceStart(e.target.value)}
+                                onChange={(e) =>
+                                    setSentenceStart(e.target.value)
+                                }
                                 size="small"
                                 type="number"
                                 required
@@ -288,7 +313,9 @@ export function ResourceFormModal({
                                     label="Kind"
                                 >
                                     <MenuItem value="body">Body</MenuItem>
-                                    <MenuItem value="footnote">Footnote</MenuItem>
+                                    <MenuItem value="footnote">
+                                        Footnote
+                                    </MenuItem>
                                 </Select>
                             </FormControl>
                         </div>
@@ -335,9 +362,7 @@ export function ResourceFormModal({
                                     <Button
                                         size="small"
                                         variant="outlined"
-                                        onClick={() =>
-                                            setSourceModalOpen(true)
-                                        }
+                                        onClick={() => setSourceModalOpen(true)}
                                         sx={{ whiteSpace: "nowrap" }}
                                     >
                                         New
@@ -510,8 +535,7 @@ export function ResourceFormModal({
                         variant="contained"
                         size="small"
                         disabled={
-                            createMutation.isPending ||
-                            updateMutation.isPending
+                            createMutation.isPending || updateMutation.isPending
                         }
                     >
                         {isEdit ? "Update" : "Create"}

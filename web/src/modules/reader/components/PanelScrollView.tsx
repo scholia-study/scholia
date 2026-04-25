@@ -1,5 +1,9 @@
 import type { InfiniteData } from "@tanstack/react-query";
-import { useInfiniteQuery, useQuery, keepPreviousData } from "@tanstack/react-query";
+import {
+    useInfiniteQuery,
+    useQuery,
+    keepPreviousData,
+} from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
     forwardRef,
@@ -12,8 +16,11 @@ import {
     useState,
 } from "react";
 import { Paper } from "@mui/material";
-import type { NodeDetail, SentenceResponse } from "../../api/model";
-import { getNodePage, type getNodePageResponse } from "../../api/nodes/nodes";
+import type { NodeDetail, SentenceResponse } from "../../../api/model";
+import {
+    getNodePage,
+    type getNodePageResponse,
+} from "../../../api/nodes/nodes";
 import type { MarginSettings } from "./BlockRenderer";
 import { Block } from "./BlockRenderer";
 import { InterleavedNodeRenderer } from "./InterleavedNodeRenderer";
@@ -111,9 +118,16 @@ export const PanelScrollView = forwardRef<
         PageCursor | undefined
     >({
         enabled: !waitingForSortOrder,
-        queryKey: ["node-page-bidir", bookSlug, String(startSortOrder), showOriginal ? "og" : ""],
+        queryKey: [
+            "node-page-bidir",
+            bookSlug,
+            String(startSortOrder),
+            showOriginal ? "og" : "",
+        ],
         queryFn: async ({ pageParam, signal }) => {
-            const base = showOriginal ? { limit: 20, original: true } : { limit: 20 };
+            const base = showOriginal
+                ? { limit: 20, original: true }
+                : { limit: 20 };
             const params = pageParam
                 ? "after" in pageParam
                     ? { ...base, after: pageParam.after }
@@ -179,11 +193,15 @@ export const PanelScrollView = forwardRef<
     // and we fetch the source by node_ids. Otherwise, primary is a source and we fetch
     // the translation by source_nodes.
     const companionFetchParams = useMemo(() => {
-        if (viewMode !== "st" || !companionSlug || nodes.length === 0) return null;
+        if (viewMode !== "st" || !companionSlug || nodes.length === 0)
+            return null;
         const primaryIsTranslation = nodes.some((n) => n.source_node_id);
         if (primaryIsTranslation) {
             // Primary's source_node_id values point to the companion (source) nodes
-            const ids = nodes.map((n) => n.source_node_id).filter(Boolean).join(",");
+            const ids = nodes
+                .map((n) => n.source_node_id)
+                .filter(Boolean)
+                .join(",");
             return ids ? { key: "node_ids" as const, ids } : null;
         }
         // Primary is source — companion's source_node_id points to primary
@@ -193,12 +211,19 @@ export const PanelScrollView = forwardRef<
 
     const { data: companionData } = useQuery({
         enabled: !!companionFetchParams,
-        queryKey: ["companion-nodes", companionSlug, companionFetchParams?.key, companionFetchParams?.ids, showOriginal ? "og" : ""],
+        queryKey: [
+            "companion-nodes",
+            companionSlug,
+            companionFetchParams?.key,
+            companionFetchParams?.ids,
+            showOriginal ? "og" : "",
+        ],
         queryFn: async ({ signal }) => {
             const base = showOriginal ? { original: true } : {};
-            const params = companionFetchParams!.key === "node_ids"
-                ? { ...base, node_ids: companionFetchParams!.ids }
-                : { ...base, source_nodes: companionFetchParams!.ids };
+            const params =
+                companionFetchParams!.key === "node_ids"
+                    ? { ...base, node_ids: companionFetchParams!.ids }
+                    : { ...base, source_nodes: companionFetchParams!.ids };
             return getNodePage(companionSlug!, params, { signal });
         },
         placeholderData: keepPreviousData,
@@ -362,7 +387,11 @@ const VirtualizedScroll = forwardRef<
         marginSettings && marginSettings.enabledSystems.size > 0;
 
     const isInterleaved = viewMode === "st";
-    const isSideBySide = viewLayout === "bpl" || viewLayout === "bpr" || viewLayout === "bsl" || viewLayout === "bsr";
+    const isSideBySide =
+        viewLayout === "bpl" ||
+        viewLayout === "bpr" ||
+        viewLayout === "bsl" ||
+        viewLayout === "bsr";
 
     const virtualizer = useVirtualizer({
         count: nodes.length,
@@ -468,7 +497,13 @@ const VirtualizedScroll = forwardRef<
         ) {
             fetchPreviousPage();
         }
-    }, [items, hasPreviousPage, isFetchingPreviousPage, fetchPreviousPage, pendingScrollTarget]);
+    }, [
+        items,
+        hasPreviousPage,
+        isFetchingPreviousPage,
+        fetchPreviousPage,
+        pendingScrollTarget,
+    ]);
 
     // TOC scroll tracking via IntersectionObserver.
     // Use a stable callback ref so we don't tear down/recreate the observer
@@ -538,7 +573,9 @@ const VirtualizedScroll = forwardRef<
                         }
                     }
                 }
-                return result.sort((a, b) => a.sentence_number! - b.sentence_number!);
+                return result.sort(
+                    (a, b) => a.sentence_number! - b.sentence_number!,
+                );
             },
             scrollToNode(nodeSlug: string, sortOrder?: number) {
                 const index = nodes.findIndex((n) => n.slug === nodeSlug);
@@ -622,7 +659,7 @@ const VirtualizedScroll = forwardRef<
                 el.scrollIntoView({ block: "center" });
             });
         }
-    }, [pendingScrollTarget, items, nodes, onSelectSentence]);
+    }, [pendingScrollTarget, nodes, onSelectSentence]);
 
     return (
         <Paper
@@ -668,13 +705,27 @@ const VirtualizedScroll = forwardRef<
                                         <InterleavedNodeRenderer
                                             primaryNode={node}
                                             companionNode={companion}
-                                            viewLayout={(viewLayout ?? "sp") as "sp" | "ss" | "bpl" | "bpr" | "bsl" | "bsr"}
-                                            selectedSentenceId={selectedSentenceId ?? null}
+                                            viewLayout={
+                                                (viewLayout ?? "sp") as
+                                                    | "sp"
+                                                    | "ss"
+                                                    | "bpl"
+                                                    | "bpr"
+                                                    | "bsl"
+                                                    | "bsr"
+                                            }
+                                            selectedSentenceId={
+                                                selectedSentenceId ?? null
+                                            }
                                             showOriginal={showOriginal}
                                             onSelectSentence={onSelectSentence}
                                             marginSettings={marginSettings}
-                                            primaryLabel={primaryLabel ?? "Source"}
-                                            companionLabel={companionLabel ?? "Translation"}
+                                            primaryLabel={
+                                                primaryLabel ?? "Source"
+                                            }
+                                            companionLabel={
+                                                companionLabel ?? "Translation"
+                                            }
                                         />
                                     ) : (
                                         node.blocks.map((block) => (
@@ -685,7 +736,9 @@ const VirtualizedScroll = forwardRef<
                                                     selectedSentenceId ?? null
                                                 }
                                                 showOriginal={showOriginal}
-                                                onSelectSentence={onSelectSentence}
+                                                onSelectSentence={
+                                                    onSelectSentence
+                                                }
                                                 marginSettings={marginSettings}
                                             />
                                         ))
