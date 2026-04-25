@@ -246,7 +246,7 @@ function SourceRow({
                             icon={<LockOutlined sx={{ fontSize: 12 }} />}
                             label="Protected"
                             size="small"
-                            color="warning"
+                            color="default"
                             sx={{ fontSize: "0.65rem", height: 20 }}
                         />
                     )}
