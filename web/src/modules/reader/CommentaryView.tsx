@@ -8,12 +8,12 @@ import type {
     FootnoteSentenceResponse,
     ResourceResponse,
     SentenceResponse,
-} from "../api/model";
+} from "../../api/model";
 import {
     getListResourcesQueryKey,
     useDeleteResource,
     useListResources,
-} from "../api/resources/resources";
+} from "../../api/resources/resources";
 import { CommentaryEntry } from "./CommentaryEntry";
 
 type ResourceType = "verbatim" | "paraphrase" | "allusion";

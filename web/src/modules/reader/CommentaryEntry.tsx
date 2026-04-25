@@ -2,7 +2,7 @@ import ExpandLessOutlined from "@mui/icons-material/ExpandLessOutlined";
 import ExpandMoreOutlined from "@mui/icons-material/ExpandMoreOutlined";
 import StarOutlined from "@mui/icons-material/StarOutlined";
 import { useState } from "react";
-import type { ResourceResponse } from "../api/model";
+import type { ResourceResponse } from "../../api/model";
 
 interface CommentaryEntryProps {
     resource: ResourceResponse;

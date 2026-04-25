@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { SentenceResponse } from "../api/model";
+import type { SentenceResponse } from "../../api/model";
 import { parseRangeKey, sentenceMatchesKey } from "./BlockRenderer";
 
 interface SentenceSelectionState {

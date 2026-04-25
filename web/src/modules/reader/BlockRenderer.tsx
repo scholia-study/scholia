@@ -6,7 +6,7 @@ import type {
     FootnoteSentenceResponse,
     PageMarkerResponse,
     SentenceResponse,
-} from "../api/model";
+} from "../../api/model";
 import { FootnotePopover } from "./FootnotePopover";
 import { useFootnoteSelection } from "./FootnoteSelectionContext";
 import { useQuotationContext } from "./QuotationContext";

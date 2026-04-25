@@ -12,7 +12,7 @@ import type {
     NoteResponse,
     QuotationResponse,
     SentenceResponse,
-} from "../api/model";
+} from "../../api/model";
 import {
     getListNotesQueryKey,
     getListQuotationsQueryKey,
@@ -20,8 +20,8 @@ import {
     useDeleteNote,
     useListNotes,
     useListQuotations,
-} from "../api/quotations/quotations";
-import { useUnsaveQuotation } from "../hooks/useUnsaveQuotation";
+} from "../../api/quotations/quotations";
+import { useUnsaveQuotation } from "../../hooks/useUnsaveQuotation";
 import { parseRangeKey } from "./BlockRenderer";
 import { getSentenceRange } from "./CommentaryView";
 

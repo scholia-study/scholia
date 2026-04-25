@@ -2,7 +2,7 @@ import type {
     ContentBlockResponse,
     NodeDetail,
     SentenceResponse,
-} from "../api/model";
+} from "../../api/model";
 import type { MarginSettings } from "./BlockRenderer";
 import { Block, Sentence, sentenceMatchesKey } from "./BlockRenderer";
 

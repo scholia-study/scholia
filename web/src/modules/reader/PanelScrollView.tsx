@@ -12,8 +12,8 @@ import {
     useState,
 } from "react";
 import { Paper } from "@mui/material";
-import type { NodeDetail, SentenceResponse } from "../api/model";
-import { getNodePage, type getNodePageResponse } from "../api/nodes/nodes";
+import type { NodeDetail, SentenceResponse } from "../../api/model";
+import { getNodePage, type getNodePageResponse } from "../../api/nodes/nodes";
 import type { MarginSettings } from "./BlockRenderer";
 import { Block } from "./BlockRenderer";
 import { InterleavedNodeRenderer } from "./InterleavedNodeRenderer";

@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { FootnoteSentenceResponse } from "../api/model";
+import type { FootnoteSentenceResponse } from "../../api/model";
 
 interface FootnoteSelectionState {
     selectedFootnoteSentenceId: string | undefined;

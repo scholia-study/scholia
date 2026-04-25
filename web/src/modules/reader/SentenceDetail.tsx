@@ -1,4 +1,4 @@
-import type { FootnoteSentenceResponse, SentenceResponse } from "../api/model";
+import type { FootnoteSentenceResponse, SentenceResponse } from "../../api/model";
 
 interface SentenceDetailProps {
     sentence: SentenceResponse | FootnoteSentenceResponse | (SentenceResponse | FootnoteSentenceResponse)[];

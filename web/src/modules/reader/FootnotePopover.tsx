@@ -1,6 +1,6 @@
 import { Popover } from "@mui/material";
 import parse from "html-react-parser";
-import type { FootnoteResponse, FootnoteSentenceResponse } from "../api/model";
+import type { FootnoteResponse, FootnoteSentenceResponse } from "../../api/model";
 import { footnoteSentenceMatchesKey } from "./BlockRenderer";
 
 interface FootnotePopoverProps {

@@ -18,15 +18,15 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { useGetBook } from "../api/books/books";
+import { useGetBook } from "../../api/books/books";
 import type {
     FootnoteSentenceResponse,
     SentenceResponse,
     TocNodeResponse,
-} from "../api/model";
-import { useListQuotations } from "../api/quotations/quotations";
-import { getGetTocQueryOptions, useGetToc } from "../api/toc/toc";
-import { useAuth } from "../hooks/useAuth";
+} from "../../api/model";
+import { useListQuotations } from "../../api/quotations/quotations";
+import { getGetTocQueryOptions, useGetToc } from "../../api/toc/toc";
+import { useAuth } from "../../hooks/useAuth";
 import {
     footnoteSentenceKey,
     footnoteSentenceMatchesKey,

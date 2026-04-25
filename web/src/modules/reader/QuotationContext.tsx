@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo } from "react";
-import type { QuotationResponse } from "../api/model";
+import type { QuotationResponse } from "../../api/model";
 
 interface QuotationContextValue {
     quotations: QuotationResponse[];
