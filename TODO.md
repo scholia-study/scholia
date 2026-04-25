@@ -20,6 +20,9 @@
 ## MAYBE
 - add "commentary, paraphrase, allusion submission to editors for review and approval" 
 
+## NICE-TO-HAVES / FUTURE
+- closing the reader entirely should go back to where the user was previous instead of the root page
+
 ## DOCS
 - update READMEs
 
