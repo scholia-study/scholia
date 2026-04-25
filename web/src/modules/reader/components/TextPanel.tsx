@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import toast from "react-hot-toast";
 import { useGetBook } from "../../../api/books/books";
 import type {
     FootnoteSentenceResponse,
@@ -30,12 +29,21 @@ import { useAuth } from "../../../hooks/useAuth";
 import { QuotationProvider } from "../context/Quotations";
 import { SelectionProvider } from "../context/selection";
 import {
+    type SelectionMode,
+    useRangeSelection,
+} from "../hooks/useRangeSelection";
+import {
     footnoteSentenceKey,
     footnoteSentenceMatchesKey,
     parseRangeKey,
     sentenceKey,
     sentenceMatchesKey,
 } from "../keys";
+import type { Panel } from "../state";
+
+const getSentenceNumber = (s: { sentence_number?: number | null }) =>
+    s.sentence_number;
+
 import type { MarginSettings } from "./BlockRenderer";
 import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";
@@ -65,17 +73,8 @@ function findNodeInToc(
 }
 
 interface TextPanelProps {
+    panel: Panel;
     panelIndex: number;
-    bookSlug: string;
-    nodeSlug: string | undefined;
-    resourcesOpen: boolean;
-    resourceView: string | undefined;
-    selectedSentenceId: string | undefined;
-    showOriginal: boolean;
-    viewMode: string | undefined;
-    viewLayout: string | undefined;
-    companionSlug: string | undefined;
-    footnoteSentenceId: string | undefined;
     onSelectSentence: (sentenceId: string) => void;
     onSelectFootnoteSentence: (id: string | undefined) => void;
     onToggleOriginal: () => void;
@@ -94,16 +93,7 @@ interface TextPanelProps {
 }
 
 export function TextPanel({
-    bookSlug,
-    nodeSlug,
-    resourcesOpen,
-    resourceView,
-    selectedSentenceId,
-    showOriginal,
-    viewMode,
-    viewLayout,
-    companionSlug,
-    footnoteSentenceId,
+    panel,
     onSelectSentence,
     onSelectFootnoteSentence,
     onToggleOriginal,
@@ -116,6 +106,18 @@ export function TextPanel({
     onAddComparisonPanel,
     canAddPanel,
 }: TextPanelProps) {
+    const {
+        bookSlug,
+        nodeSlug,
+        resourcesOpen,
+        resourceView,
+        selectedSentenceId,
+        showOriginal,
+        viewMode,
+        viewLayout,
+        companionSlug,
+        footnoteSentenceId,
+    } = panel;
     const [visibleSlug, setVisibleSlug] = useState<string | undefined>(
         nodeSlug,
     );
@@ -260,49 +262,25 @@ export function TextPanel({
         sentenceMatchesKey(selectedSentence, selectedSentenceId);
     const availableSystems = Object.keys(marginSettings.systemSides);
 
-    const MAX_RANGE_SENTENCES = 10;
-    const anchorSentenceRef = useRef<SentenceResponse | null>(null);
-
-    const handleSelectSentence = useCallback(
-        (sentence: SentenceResponse, shiftKey: boolean) => {
-            if (
-                shiftKey &&
-                anchorSentenceRef.current &&
-                anchorSentenceRef.current.sentence_number != null &&
-                sentence.sentence_number != null
-            ) {
-                const anchorNum = anchorSentenceRef.current.sentence_number;
-                const targetNum = sentence.sentence_number;
-                const start = Math.min(anchorNum, targetNum);
-                const end = Math.max(anchorNum, targetNum);
-                if (end - start + 1 > MAX_RANGE_SENTENCES) {
-                    toast.error(
-                        `Range selection is limited to ${MAX_RANGE_SENTENCES} sentences`,
-                    );
-                    return;
-                }
-                if (start === end) {
-                    // Same sentence — single select
-                    setSelectedSentence(sentence);
-                    onSelectSentence(sentenceKey(sentence));
-                } else {
-                    setSelectedSentence(sentence);
-                    onSelectSentence(`${start}-${end}`);
-                }
-            } else {
-                // Regular click — set new anchor
-                anchorSentenceRef.current = sentence;
-                setSelectedSentence(sentence);
-                // Only notify parent if the selection actually changed
-                // (avoids toggle-off when re-selecting from scroll-to-sentence on initial load)
-                const key = sentenceKey(sentence);
-                if (key !== selectedSentenceId) {
-                    onSelectSentence(key);
-                }
+    const onMainSelect = useCallback(
+        (key: string, sentence: SentenceResponse, mode: SelectionMode) => {
+            setSelectedSentence(sentence);
+            // Anchor branch (regular click) guards against re-emit on initial
+            // scroll-to-sentence — re-selecting the same key would otherwise
+            // round-trip to ReaderLayout and deselect. Range branch is
+            // explicit user intent and always emits.
+            if (mode === "range" || key !== selectedSentenceId) {
+                onSelectSentence(key);
             }
         },
         [onSelectSentence, selectedSentenceId],
     );
+    const { select: handleSelectSentence } =
+        useRangeSelection<SentenceResponse>({
+            keyOf: sentenceKey,
+            sentenceNumberOf: getSentenceNumber,
+            onSelect: onMainSelect,
+        });
 
     // Collect sentences for range display in ResourcesPanel
     const [selectedSentences, setSelectedSentences] = useState<
@@ -325,46 +303,21 @@ export function TextPanel({
         }
     }, [rangeKey?.[0], rangeKey?.[1]]);
 
-    const anchorFootnoteSentenceRef = useRef<FootnoteSentenceResponse | null>(
-        null,
-    );
-
-    const handleSelectFootnoteSentence = useCallback(
-        (sentence: FootnoteSentenceResponse, shiftKey: boolean) => {
-            if (
-                shiftKey &&
-                anchorFootnoteSentenceRef.current &&
-                anchorFootnoteSentenceRef.current.sentence_number != null &&
-                sentence.sentence_number != null
-            ) {
-                const anchorNum =
-                    anchorFootnoteSentenceRef.current.sentence_number;
-                const targetNum = sentence.sentence_number;
-                const start = Math.min(anchorNum, targetNum);
-                const end = Math.max(anchorNum, targetNum);
-                if (end - start + 1 > MAX_RANGE_SENTENCES) {
-                    toast.error(
-                        `Range selection is limited to ${MAX_RANGE_SENTENCES} sentences`,
-                    );
-                    return;
-                }
-                if (start === end) {
-                    onSelectFootnoteSentence(footnoteSentenceKey(sentence));
-                } else {
-                    onSelectFootnoteSentence(`${start}-${end}`);
-                }
-            } else {
-                anchorFootnoteSentenceRef.current = sentence;
-                onSelectFootnoteSentence(footnoteSentenceKey(sentence));
-            }
-        },
+    const onFnSelect = useCallback(
+        (key: string) => onSelectFootnoteSentence(key),
         [onSelectFootnoteSentence],
     );
+    const { select: handleSelectFootnoteSentence, clear: clearFootnoteAnchor } =
+        useRangeSelection<FootnoteSentenceResponse>({
+            keyOf: footnoteSentenceKey,
+            sentenceNumberOf: getSentenceNumber,
+            onSelect: onFnSelect,
+        });
 
     const handleClearFootnoteSentence = useCallback(() => {
-        anchorFootnoteSentenceRef.current = null;
+        clearFootnoteAnchor();
         onSelectFootnoteSentence(undefined);
-    }, [onSelectFootnoteSentence]);
+    }, [clearFootnoteAnchor, onSelectFootnoteSentence]);
 
     const selectionCtx = useMemo(
         () => ({

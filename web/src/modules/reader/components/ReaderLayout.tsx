@@ -301,17 +301,8 @@ export function ReaderLayout({ panels }: ReaderLayoutProps) {
             {panels.map((panel, idx) => (
                 <TextPanel
                     key={panelKeysRef.current[idx] ?? `text-${idx}`}
+                    panel={panel}
                     panelIndex={idx}
-                    bookSlug={panel.bookSlug}
-                    nodeSlug={panel.nodeSlug}
-                    resourcesOpen={panel.resourcesOpen}
-                    resourceView={panel.resourceView}
-                    selectedSentenceId={panel.selectedSentenceId}
-                    showOriginal={panel.showOriginal}
-                    viewMode={panel.viewMode}
-                    viewLayout={panel.viewLayout}
-                    companionSlug={panel.companionSlug}
-                    footnoteSentenceId={panel.footnoteSentenceId}
                     onSelectSentence={(sentenceId) =>
                         handleSelectSentence(idx, sentenceId)
                     }
