@@ -22,8 +22,8 @@ import {
 } from "@mdxeditor/editor";
 import { Popover } from "@mui/material";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import { ArticleQuotationCard } from "../ArticleQuotationCard";
-import { QuotationCard } from "../QuotationCard";
+import { ArticleQuotationCard } from "../quotation/ArticleQuotationCard";
+import { QuotationCard } from "../quotation/QuotationCard";
 import { type CitationEntry, CitationPopover } from "./CitationPopover";
 import type { QuotationPickerResult } from "./QuotationPickerModal";
 

@@ -12,19 +12,19 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { FetchError } from "../api/fetcher";
+import { FetchError } from "../../api/fetcher";
 import type {
     PersonResponse,
     SourcePersonResponse,
     SourceResponse,
-} from "../api/model";
-import { useSearchPersons } from "../api/persons/persons";
+} from "../../api/model";
+import { useSearchPersons } from "../../api/persons/persons";
 import {
     useAddSourcePerson,
     useCreateSource,
     useSearchSources,
-} from "../api/sources/sources";
-import { useDebouncedValue } from "../hooks/useDebouncedValue";
+} from "../../api/sources/sources";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { PersonFormModal } from "./PersonFormModal";
 
 function errorMessage(err: unknown, fallback: string) {

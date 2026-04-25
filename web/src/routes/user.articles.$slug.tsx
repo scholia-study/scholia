@@ -24,17 +24,17 @@ import { getGetProfileQueryOptions } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import type { TopicResponse } from "../api/model";
 import { useListTopics } from "../api/topics/topics";
-import {
-    ArticleEditorLazy as ArticleEditor,
-    type ArticleEditorHandle,
-} from "../components/editor/ArticleEditorLazy";
-import {
-    QuotationPickerModal,
-    type QuotationPickerResult,
-} from "../components/editor/QuotationPickerModal";
 import { useArchiveArticleDialog } from "../hooks/useArchiveArticleDialog";
 import { useAuth } from "../hooks/useAuth";
 import { usePublishArticleDialog } from "../hooks/usePublishArticleDialog";
+import {
+    ArticleEditorLazy as ArticleEditor,
+    type ArticleEditorHandle,
+} from "../modules/editor/ArticleEditorLazy";
+import {
+    QuotationPickerModal,
+    type QuotationPickerResult,
+} from "../modules/editor/QuotationPickerModal";
 
 const MemoizedEditor = memo(
     ({

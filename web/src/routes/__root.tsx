@@ -8,11 +8,11 @@ import {
     useLocation,
 } from "@tanstack/react-router";
 import { Toaster } from "react-hot-toast";
-import { Footer } from "../components/Footer";
-import { InfoSubnav } from "../components/InfoSubnav";
-import { Navbar } from "../components/Navbar";
-import { ScrollToTop } from "../components/ScrollToTop";
-import { UserSubnav } from "../components/UserSubnav";
+import { Navbar } from "#/modules/ui/Navbar";
+import { Footer } from "../modules/ui/Footer";
+import { InfoSubnav } from "../modules/ui/InfoSubnav";
+import { ScrollToTop } from "../modules/ui/ScrollToTop";
+import { UserSubnav } from "../modules/ui/UserSubnav";
 import appCss from "../styles.css?url";
 import { theme } from "../theme";
 

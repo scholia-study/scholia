@@ -25,9 +25,9 @@ import {
     getBrowseSourcesQueryKey,
     useBrowseSources,
 } from "../api/sources/sources";
-import { SourceFormModal } from "../components/SourceFormModal";
 import { useAuth } from "../hooks/useAuth";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
+import { SourceFormModal } from "../modules/forms/SourceFormModal";
 
 export const Route = createFileRoute("/user/sources/")({
     beforeLoad: async ({ context }) => {

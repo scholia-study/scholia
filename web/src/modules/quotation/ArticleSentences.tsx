@@ -12,9 +12,9 @@ import {
     useState,
 } from "react";
 import toast from "react-hot-toast";
-import { useCreateArticleQuotation } from "../api/article-quotations/article-quotations";
-import { FetchError } from "../api/fetcher";
-import { useAuth } from "../hooks/useAuth";
+import { useCreateArticleQuotation } from "../../api/article-quotations/article-quotations";
+import { FetchError } from "../../api/fetcher";
+import { useAuth } from "../../hooks/useAuth";
 
 interface SegmentedSentence {
     key: string;

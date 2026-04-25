@@ -13,6 +13,7 @@ import { Link } from "@tanstack/react-router";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { NoteFormModal } from "#/modules/forms/NoteFormModal";
 import { useListBooks } from "../../../api/books/books";
 import type {
     FootnoteSentenceResponse,
@@ -28,12 +29,11 @@ import {
 } from "../../../api/quotations/quotations";
 import { useListResources } from "../../../api/resources/resources";
 import { useGetToc } from "../../../api/toc/toc";
-import { NoteFormModal } from "../../../components/NoteFormModal";
-import { PanelToc } from "../../../components/PanelToc";
 import { useAuth } from "../../../hooks/useAuth";
 import { useUnsaveQuotation } from "../../../hooks/useUnsaveQuotation";
 import { CommentaryView, getSentenceRange } from "./CommentaryView";
 import { NotesView } from "./NotesView";
+import { PanelToc } from "./PanelToc";
 import { ResourceFormModal } from "./ResourceFormModal";
 import { SentenceDetail } from "./SentenceDetail";
 

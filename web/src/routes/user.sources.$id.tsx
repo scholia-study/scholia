@@ -26,6 +26,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { PersonFormModal } from "#/modules/forms/PersonFormModal";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import type {
@@ -46,7 +47,6 @@ import {
     useRemoveSourcePerson,
     useUpdateSource,
 } from "../api/sources/sources";
-import { PersonFormModal } from "../components/PersonFormModal";
 import { useAuth } from "../hooks/useAuth";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 

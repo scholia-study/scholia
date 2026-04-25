@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { NoteFormModal } from "#/modules/forms/NoteFormModal";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { NoteWithContextResponse } from "../api/model";
 import {
@@ -21,7 +22,6 @@ import {
     useDeleteNote,
     useListAllNotes,
 } from "../api/quotations/quotations";
-import { NoteFormModal } from "../components/NoteFormModal";
 
 export const Route = createFileRoute("/user/notes")({
     beforeLoad: async ({ context }) => {

@@ -22,8 +22,8 @@ import {
     useUpdateResource,
 } from "../../../api/resources/resources";
 import { useSearchSources } from "../../../api/sources/sources";
-import { SourceFormModal } from "../../../components/SourceFormModal";
 import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
+import { SourceFormModal } from "../../forms/SourceFormModal";
 
 const RESOURCE_TYPES = ["verbatim", "paraphrase", "allusion"] as const;
 const VERBATIM_KINDS = ["entirety", "fragmentary"] as const;

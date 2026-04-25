@@ -1,6 +1,6 @@
 import { Paper, Skeleton } from "@mui/material";
 import parse from "html-react-parser";
-import { useGetArticleQuotation } from "../api/article-quotations/article-quotations";
+import { useGetArticleQuotation } from "../../api/article-quotations/article-quotations";
 
 export interface ArticleQuotationCardProps {
     id: string;

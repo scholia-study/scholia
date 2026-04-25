@@ -8,9 +8,9 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { FetchError } from "../api/fetcher";
-import type { PersonResponse } from "../api/model";
-import { useCreatePerson } from "../api/persons/persons";
+import { FetchError } from "../../api/fetcher";
+import type { PersonResponse } from "../../api/model";
+import { useCreatePerson } from "../../api/persons/persons";
 
 interface PersonFormModalProps {
     open: boolean;

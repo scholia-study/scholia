@@ -1,3 +1,4 @@
+export { PanelToc } from "./components/PanelToc";
 export { ReaderLayout } from "./components/ReaderLayout";
 export {
     createPanel,

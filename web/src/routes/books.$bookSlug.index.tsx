@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { getGetBookQueryOptions, useGetBookSuspense } from "../api/books/books";
 import { getGetTocQueryOptions, useGetTocSuspense } from "../api/toc/toc";
-import { PanelToc } from "../components/PanelToc";
+import { PanelToc } from "../modules/reader/components/PanelToc";
 
 export const Route = createFileRoute("/books/$bookSlug/")({
     loader: async ({ context, params }) => {

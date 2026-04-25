@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import parse from "html-react-parser";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { TocNodeResponse } from "../api/model";
+import type { TocNodeResponse } from "../../../api/model";
 
 function findAncestorPath(
     nodes: TocNodeResponse[],

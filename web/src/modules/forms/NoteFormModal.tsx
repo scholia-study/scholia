@@ -11,14 +11,14 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import type { NoteResponse } from "../api/model";
+import type { NoteResponse } from "#/api/model";
 import {
     getListNotesQueryKey,
     getListQuotationsQueryKey,
     useCreateNote,
     useUpdateNote,
-} from "../api/quotations/quotations";
-import { useListTags } from "../api/tags/tags";
+} from "../../api/quotations/quotations";
+import { useListTags } from "../../api/tags/tags";
 
 interface NoteFormModalProps {
     open: boolean;

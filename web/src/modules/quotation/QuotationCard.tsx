@@ -2,7 +2,7 @@ import { Paper, Skeleton } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import parse from "html-react-parser";
-import { batchSentences } from "../api/sentences/sentences";
+import { batchSentences } from "../../api/sentences/sentences";
 
 export interface QuotationCardProps {
     book: string;

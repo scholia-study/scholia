@@ -7,7 +7,7 @@ import type {
     LibraryVersion,
     LibraryWork,
 } from "../api/model";
-import { InfoLinks } from "../components/InfoLinks";
+import { InfoLinks } from "../modules/ui/InfoLinks";
 
 export const Route = createFileRoute("/")({
     component: IndexPage,
