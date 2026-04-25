@@ -17,14 +17,14 @@ import {
     Tooltip,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { getGetProfileQueryOptions } from "../api/auth/auth";
+import type { SourceResponse, SourceSearchResponse } from "../api/model";
 import {
     getBrowseSourcesQueryKey,
     useBrowseSources,
 } from "../api/sources/sources";
-import { getGetProfileQueryOptions } from "../api/auth/auth";
-import type { SourceResponse, SourceSearchResponse } from "../api/model";
 import { SourceFormModal } from "../components/SourceFormModal";
 import { useAuth } from "../hooks/useAuth";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
@@ -156,9 +156,7 @@ function SourcesListPage() {
                 )}
             </div>
 
-            {isLoading && (
-                <p className="text-sm text-stone-400">Loading...</p>
-            )}
+            {isLoading && <p className="text-sm text-stone-400">Loading...</p>}
 
             {!isLoading && sources.length === 0 && (
                 <p className="text-sm text-stone-400">No sources found.</p>
@@ -205,12 +203,15 @@ function SourceRow({
     isEditor: boolean;
 }) {
     const isOwner = !!userId && source.created_by === userId;
-    const canEdit = isEditor ? !source.protected || isEditor : isOwner && !source.protected;
-    const tooltip = source.protected && !isEditor
-        ? "This source is curated by editors and cannot be edited."
-        : !canEdit
-          ? "You can only edit sources you created."
-          : "Edit";
+    const canEdit = isEditor
+        ? !source.protected || isEditor
+        : isOwner && !source.protected;
+    const tooltip =
+        source.protected && !isEditor
+            ? "This source is curated by editors and cannot be edited."
+            : !canEdit
+              ? "You can only edit sources you created."
+              : "Edit";
 
     const authors = source.persons
         .filter((p) => p.role === "author")

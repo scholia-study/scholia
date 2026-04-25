@@ -2,10 +2,10 @@ import {
     MAX_PANELS,
     type Panel,
     type ReaderState,
-    type ViewLayout,
-    type ViewMode,
     VALID_VIEW_LAYOUTS,
     VALID_VIEW_MODES,
+    type ViewLayout,
+    type ViewMode,
 } from "./state";
 
 export type ReaderSearch = {

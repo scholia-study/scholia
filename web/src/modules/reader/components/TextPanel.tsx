@@ -27,6 +27,8 @@ import type {
 import { useListQuotations } from "../../../api/quotations/quotations";
 import { getGetTocQueryOptions, useGetToc } from "../../../api/toc/toc";
 import { useAuth } from "../../../hooks/useAuth";
+import { QuotationProvider } from "../context/Quotations";
+import { SelectionProvider } from "../context/selection";
 import {
     footnoteSentenceKey,
     footnoteSentenceMatchesKey,
@@ -34,8 +36,6 @@ import {
     sentenceKey,
     sentenceMatchesKey,
 } from "../keys";
-import { QuotationProvider } from "../context/Quotations";
-import { SelectionProvider } from "../context/selection";
 import type { MarginSettings } from "./BlockRenderer";
 import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";

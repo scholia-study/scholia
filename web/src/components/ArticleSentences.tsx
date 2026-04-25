@@ -1,19 +1,19 @@
 import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
 import { Popover } from "@mui/material";
+import { Link } from "@tanstack/react-router";
 import parse, { type DOMNode, Element, Text } from "html-react-parser";
-import toast from "react-hot-toast";
-import { FetchError } from "../api/fetcher";
 import {
+    type JSX,
+    type MouseEvent,
     useCallback,
     useEffect,
     useMemo,
     useRef,
     useState,
-    type MouseEvent,
-    type JSX,
 } from "react";
-import { Link } from "@tanstack/react-router";
+import toast from "react-hot-toast";
 import { useCreateArticleQuotation } from "../api/article-quotations/article-quotations";
+import { FetchError } from "../api/fetcher";
 import { useAuth } from "../hooks/useAuth";
 
 interface SegmentedSentence {
@@ -55,7 +55,9 @@ export function ArticleSentences({
         end: string | null;
     } | null>(null);
     const anchorRef = useRef<string | null>(null);
-    const [popoverAnchor, setPopoverAnchor] = useState<HTMLElement | null>(null);
+    const [popoverAnchor, setPopoverAnchor] = useState<HTMLElement | null>(
+        null,
+    );
     const [saveStatus, setSaveStatus] = useState<
         "idle" | "saving" | "saved" | "duplicate"
     >("idle");
@@ -181,7 +183,11 @@ export function ArticleSentences({
                     html: selectedHtml,
                 },
             });
-            if (result.data && "created" in result.data && result.data.created) {
+            if (
+                result.data &&
+                "created" in result.data &&
+                result.data.created
+            ) {
                 setSaveStatus("saved");
             } else {
                 setSaveStatus("duplicate");
@@ -269,9 +275,7 @@ export function ArticleSentences({
                                     onMouseDown={(e) => {
                                         if (e.shiftKey) e.preventDefault();
                                     }}
-                                    onClick={(e) =>
-                                        handleSentenceClick(key, e)
-                                    }
+                                    onClick={(e) => handleSentenceClick(key, e)}
                                     className={`cursor-pointer transition-colors rounded-sm ${
                                         selected
                                             ? "bg-amber-200"
@@ -319,7 +323,9 @@ export function ArticleSentences({
                                     onClick={handleSave}
                                     className="w-full flex items-center justify-center gap-1.5 text-sm px-3 py-1.5 bg-amber-700 text-white rounded hover:bg-amber-800 transition-colors"
                                 >
-                                    <FavoriteBorderOutlined sx={{ fontSize: 16 }} />
+                                    <FavoriteBorderOutlined
+                                        sx={{ fontSize: 16 }}
+                                    />
                                     Save quotation
                                 </button>
                             )}

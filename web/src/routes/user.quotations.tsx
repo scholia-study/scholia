@@ -15,7 +15,7 @@ import {
     Tooltip,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import parse from "html-react-parser";
 import { useMemo, useState } from "react";
 import {
@@ -43,10 +43,7 @@ export const Route = createFileRoute("/user/quotations")({
     component: QuotationsPage,
 });
 
-type BookQuotation = Extract<
-    UnifiedQuotationResponse,
-    { source_type: "book" }
->;
+type BookQuotation = Extract<UnifiedQuotationResponse, { source_type: "book" }>;
 type ArticleQuotation = Extract<
     UnifiedQuotationResponse,
     { source_type: "article" }
@@ -61,8 +58,9 @@ function sentenceLabel(q: BookQuotation): string {
 
 function QuotationsPage() {
     const [sourceFilter, setSourceFilter] = useState<string>("");
-    const [selectedArticleQuotation, setSelectedArticleQuotation] =
-        useState<string | null>(null);
+    const [selectedArticleQuotation, setSelectedArticleQuotation] = useState<
+        string | null
+    >(null);
 
     const { data: allQuotationsData, isLoading } = useListAllQuotations({});
     const allQuotations = allQuotationsData?.data?.quotations ?? [];
@@ -144,9 +142,7 @@ function QuotationsPage() {
                 </FormControl>
             </div>
 
-            {isLoading && (
-                <p className="text-sm text-stone-400">Loading...</p>
-            )}
+            {isLoading && <p className="text-sm text-stone-400">Loading...</p>}
 
             {!isLoading && filtered.length === 0 && (
                 <p className="text-sm text-stone-400">
@@ -166,12 +162,8 @@ function QuotationsPage() {
                         <ArticleQuotationRow
                             key={q.id}
                             q={q}
-                            onViewFull={() =>
-                                setSelectedArticleQuotation(q.id)
-                            }
-                            onDelete={() =>
-                                handleDeleteArticleQuotation(q.id)
-                            }
+                            onViewFull={() => setSelectedArticleQuotation(q.id)}
+                            onDelete={() => handleDeleteArticleQuotation(q.id)}
                         />
                     ),
                 )}

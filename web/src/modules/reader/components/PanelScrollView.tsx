@@ -1,8 +1,9 @@
+import { Paper } from "@mui/material";
 import type { InfiniteData } from "@tanstack/react-query";
 import {
+    keepPreviousData,
     useInfiniteQuery,
     useQuery,
-    keepPreviousData,
 } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
@@ -15,7 +16,6 @@ import {
     useRef,
     useState,
 } from "react";
-import { Paper } from "@mui/material";
 import type { NodeDetail, SentenceResponse } from "../../../api/model";
 import {
     getNodePage,

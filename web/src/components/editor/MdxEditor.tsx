@@ -24,7 +24,7 @@ import { Popover } from "@mui/material";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { ArticleQuotationCard } from "../ArticleQuotationCard";
 import { QuotationCard } from "../QuotationCard";
-import { CitationPopover, type CitationEntry } from "./CitationPopover";
+import { type CitationEntry, CitationPopover } from "./CitationPopover";
 import type { QuotationPickerResult } from "./QuotationPickerModal";
 
 // ── Quotation directive descriptor ────────────────────────
@@ -296,7 +296,9 @@ function CitationDirectiveEditor({
     const attrs = mdastNode.attributes ?? {};
     const sourcesStr = (attrs.sources as string) ?? "";
     const label = (attrs.label as string) ?? "";
-    const sourceNames = ((attrs.sourceNames as string) ?? "").split("|").filter(Boolean);
+    const sourceNames = ((attrs.sourceNames as string) ?? "")
+        .split("|")
+        .filter(Boolean);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const entries = parseCiteSources(sourcesStr);
@@ -361,13 +363,21 @@ function CitationDirectiveEditor({
  * We extract the author last name and year from it.
  */
 function buildCitationLabel(
-    entries: { sourceId: string; sourceLabel: string; pages: string; year?: string; authorLastName?: string }[],
+    entries: {
+        sourceId: string;
+        sourceLabel: string;
+        pages: string;
+        year?: string;
+        authorLastName?: string;
+    }[],
 ): string {
     return entries
         .map((e) => {
             const author = e.authorLastName ?? "Unknown";
             const year = e.year ?? "n.d.";
-            return e.pages ? `${author} ${year}, ${e.pages}` : `${author} ${year}`;
+            return e.pages
+                ? `${author} ${year}, ${e.pages}`
+                : `${author} ${year}`;
         })
         .join("; ");
 }
@@ -398,7 +408,9 @@ function InsertQuotationButton({ onClick }: { onClick: () => void }) {
 
 function InsertCitationButton({
     onClick,
-}: { onClick: (e: React.MouseEvent<HTMLButtonElement>) => void }) {
+}: {
+    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}) {
     return (
         <button
             type="button"
@@ -415,9 +427,7 @@ function InsertCitationButton({
 
 export interface ArticleEditorHandle {
     insertQuotation: (result: QuotationPickerResult) => void;
-    insertCitation: (
-        entries: { sourceId: string; pages: string }[],
-    ) => void;
+    insertCitation: (entries: { sourceId: string; pages: string }[]) => void;
 }
 
 interface ArticleEditorProps {
@@ -478,9 +488,7 @@ export const ArticleEditor = forwardRef<
         setCiteAnchorEl(null);
         if (!editorRef.current) return;
         const sourcesValue = entries
-            .map((e) =>
-                e.pages ? `${e.sourceId}:${e.pages}` : e.sourceId,
-            )
+            .map((e) => (e.pages ? `${e.sourceId}:${e.pages}` : e.sourceId))
             .join(",");
         const label = buildCitationLabel(entries);
         const names = entries.map((e) => e.sourceLabel).join("|");
@@ -511,8 +519,7 @@ export const ArticleEditor = forwardRef<
                     }),
                     diffSourcePlugin({
                         diffMarkdown:
-                            markdown ??
-                            "No differences to show. Ignore this.",
+                            markdown ?? "No differences to show. Ignore this.",
                         readOnlyDiff: true,
                         viewMode: "rich-text",
                     }),

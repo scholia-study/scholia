@@ -11,7 +11,7 @@ import {
     TextField,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
@@ -168,8 +168,12 @@ function NotesPage() {
                             key={name}
                             label={`${name} (${count})`}
                             size="small"
-                            variant={selectedTags.has(name) ? "filled" : "outlined"}
-                            color={selectedTags.has(name) ? "primary" : "default"}
+                            variant={
+                                selectedTags.has(name) ? "filled" : "outlined"
+                            }
+                            color={
+                                selectedTags.has(name) ? "primary" : "default"
+                            }
                             onClick={() => toggleTag(name)}
                             sx={{ cursor: "pointer" }}
                         />
@@ -177,9 +181,7 @@ function NotesPage() {
                 </div>
             )}
 
-            {isLoading && (
-                <p className="text-sm text-stone-400">Loading...</p>
-            )}
+            {isLoading && <p className="text-sm text-stone-400">Loading...</p>}
 
             {!isLoading && notes.length === 0 && (
                 <p className="text-sm text-stone-400">No notes yet.</p>
@@ -303,7 +305,16 @@ function NoteItem({
                         <span className="ml-auto">{dateStr}</span>
                     </div>
                 </Link>
-                <div className="note-actions" style={{ opacity: 0, transition: "opacity 0.15s", display: "flex", gap: 2, flexShrink: 0 }}>
+                <div
+                    className="note-actions"
+                    style={{
+                        opacity: 0,
+                        transition: "opacity 0.15s",
+                        display: "flex",
+                        gap: 2,
+                        flexShrink: 0,
+                    }}
+                >
                     <IconButton
                         size="small"
                         onClick={onEdit}

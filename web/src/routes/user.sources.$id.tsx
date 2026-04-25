@@ -19,8 +19,8 @@ import {
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-    Link,
     createFileRoute,
+    Link,
     redirect,
     useNavigate,
 } from "@tanstack/react-router";
@@ -34,13 +34,10 @@ import type {
     SourcePersonResponse,
     SourceResponse,
 } from "../api/model";
+import { useSearchPersons, useUpdatePerson } from "../api/persons/persons";
 import {
-    useSearchPersons,
-    useUpdatePerson,
-} from "../api/persons/persons";
-import {
-    getCheckSourceReferencesQueryKey,
     getBrowseSourcesQueryKey,
+    getCheckSourceReferencesQueryKey,
     getGetSourceQueryKey,
     useAddSourcePerson,
     useCheckSourceReferences,
@@ -140,7 +137,9 @@ function DetailContent({
     onChanged: () => void;
 }) {
     const [title, setTitle] = useState(source.title);
-    const [titleDisplay, setTitleDisplay] = useState(source.title_display ?? "");
+    const [titleDisplay, setTitleDisplay] = useState(
+        source.title_display ?? "",
+    );
     const [publicationYear, setPublicationYear] = useState(
         source.publication_year != null ? String(source.publication_year) : "",
     );
@@ -163,7 +162,9 @@ function DetailContent({
         setTitle(source.title);
         setTitleDisplay(source.title_display ?? "");
         setPublicationYear(
-            source.publication_year != null ? String(source.publication_year) : "",
+            source.publication_year != null
+                ? String(source.publication_year)
+                : "",
         );
         setPublisher(source.publisher ?? "");
         setIsbn((source.isbn ?? []).join(", "));
@@ -172,7 +173,9 @@ function DetailContent({
         setVolume(source.volume ?? "");
         setJournalName(source.journal_name ?? "");
         setUrl(source.url ?? "");
-        setPageStart(source.page_start != null ? String(source.page_start) : "");
+        setPageStart(
+            source.page_start != null ? String(source.page_start) : "",
+        );
         setPageEnd(source.page_end != null ? String(source.page_end) : "");
         setProtectedFlag(source.protected);
     }, [source]);
@@ -185,7 +188,10 @@ function DetailContent({
             ? Number.parseInt(publicationYear, 10)
             : undefined;
         const isbnArr = isbn.trim()
-            ? isbn.split(",").map((s) => s.trim()).filter(Boolean)
+            ? isbn
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
             : undefined;
 
         try {
@@ -195,7 +201,9 @@ function DetailContent({
                     title: title.trim() || undefined,
                     title_display: titleDisplay.trim() || undefined,
                     publication_year:
-                        yearNum != null && !Number.isNaN(yearNum) ? yearNum : undefined,
+                        yearNum != null && !Number.isNaN(yearNum)
+                            ? yearNum
+                            : undefined,
                     publisher: publisher.trim() || undefined,
                     isbn: isbnArr,
                     doi: doi.trim() || undefined,
@@ -206,7 +214,9 @@ function DetailContent({
                     page_start: pageStart
                         ? Number.parseInt(pageStart, 10)
                         : undefined,
-                    page_end: pageEnd ? Number.parseInt(pageEnd, 10) : undefined,
+                    page_end: pageEnd
+                        ? Number.parseInt(pageEnd, 10)
+                        : undefined,
                     protected: isEditor ? protectedFlag : undefined,
                 },
             });
@@ -242,7 +252,8 @@ function DetailContent({
         ? `Cannot delete: ${refTotal} reference(s)`
         : "";
 
-    const typeConditional = (types: string[]) => types.includes(source.source_type);
+    const typeConditional = (types: string[]) =>
+        types.includes(source.source_type);
 
     return (
         <div className="max-w-3xl mx-auto px-8 py-16">
@@ -276,7 +287,11 @@ function DetailContent({
                         color="error"
                         startIcon={<DeleteOutlined />}
                         onClick={handleDelete}
-                        disabled={!canEdit || deleteBlocked || deleteMutation.isPending}
+                        disabled={
+                            !canEdit ||
+                            deleteBlocked ||
+                            deleteMutation.isPending
+                        }
                         title={deleteTooltip}
                         sx={{ textTransform: "none" }}
                     >
@@ -313,7 +328,11 @@ function DetailContent({
                             size="small"
                         />
                     }
-                    label={<span className="text-sm">Protected (editor-curated)</span>}
+                    label={
+                        <span className="text-sm">
+                            Protected (editor-curated)
+                        </span>
+                    }
                     sx={{ mb: 2 }}
                 />
             )}
@@ -550,7 +569,9 @@ function ContributorsBlock({
                                     ) : (
                                         <span>{p.name}</span>
                                     )}{" "}
-                                    <span className="text-stone-400">({p.role})</span>
+                                    <span className="text-stone-400">
+                                        ({p.role})
+                                    </span>
                                 </span>
                                 {canEdit && (
                                     <button
@@ -590,7 +611,9 @@ function ContributorsBlock({
                                                 className="w-full text-left px-2 py-1 text-xs hover:bg-stone-50"
                                             >
                                                 {p.name}
-                                                {p.sort_name ? ` (${p.sort_name})` : ""}
+                                                {p.sort_name
+                                                    ? ` (${p.sort_name})`
+                                                    : ""}
                                             </button>
                                         </li>
                                     ))}
@@ -730,7 +753,11 @@ function PersonEditModal({
     );
 }
 
-function ReferencesPanel({ refs }: { refs: ReferenceCheckResponse | undefined }) {
+function ReferencesPanel({
+    refs,
+}: {
+    refs: ReferenceCheckResponse | undefined;
+}) {
     const total = refs?.total ?? 0;
     return (
         <div className="border-t border-stone-200 pt-4 mt-4">
@@ -744,33 +771,35 @@ function ReferencesPanel({ refs }: { refs: ReferenceCheckResponse | undefined })
             ) : (
                 <div className="text-xs text-stone-600 space-y-2">
                     <div>
-                        Referenced in {refs?.resources.count ?? 0} resource(s),
-                        {" "}
-                        {refs?.child_sources.count ?? 0} child source(s),
-                        {" "}
+                        Referenced in {refs?.resources.count ?? 0} resource(s),{" "}
+                        {refs?.child_sources.count ?? 0} child source(s),{" "}
                         {refs?.articles.count ?? 0} article(s).
                     </div>
-                    {refs?.child_sources.items && refs.child_sources.items.length > 0 && (
-                        <div>
-                            <div className="font-medium text-stone-500 mb-1">
-                                Child sources
+                    {refs?.child_sources.items &&
+                        refs.child_sources.items.length > 0 && (
+                            <div>
+                                <div className="font-medium text-stone-500 mb-1">
+                                    Child sources
+                                </div>
+                                <ul className="space-y-0.5">
+                                    {refs.child_sources.items.map((c) => (
+                                        <li key={c.id}>
+                                            <Link
+                                                to="/user/sources/$id"
+                                                params={{ id: c.id }}
+                                                className="text-amber-700 hover:underline"
+                                            >
+                                                {c.title}
+                                            </Link>
+                                            <span className="text-stone-400">
+                                                {" "}
+                                                ({c.relation})
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                            <ul className="space-y-0.5">
-                                {refs.child_sources.items.map((c) => (
-                                    <li key={c.id}>
-                                        <Link
-                                            to="/user/sources/$id"
-                                            params={{ id: c.id }}
-                                            className="text-amber-700 hover:underline"
-                                        >
-                                            {c.title}
-                                        </Link>
-                                        <span className="text-stone-400"> ({c.relation})</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
+                        )}
                     {refs?.articles.items && refs.articles.items.length > 0 && (
                         <div>
                             <div className="font-medium text-stone-500 mb-1">

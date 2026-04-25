@@ -1,8 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-    getGetBookQueryOptions,
-    useGetBookSuspense,
-} from "../api/books/books";
+import { getGetBookQueryOptions, useGetBookSuspense } from "../api/books/books";
 import { getGetTocQueryOptions, useGetTocSuspense } from "../api/toc/toc";
 import { PanelToc } from "../components/PanelToc";
 

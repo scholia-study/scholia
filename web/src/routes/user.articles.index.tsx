@@ -17,7 +17,12 @@ import {
     Tooltip,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import {
+    createFileRoute,
+    Link,
+    redirect,
+    useNavigate,
+} from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -27,8 +32,8 @@ import {
     useListUserArticles,
     usePublishArticle,
 } from "../api/articles/articles";
-import { FetchError } from "../api/fetcher";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
+import { FetchError } from "../api/fetcher";
 import type { ArticleResponse } from "../api/model";
 import { useArchiveArticleDialog } from "../hooks/useArchiveArticleDialog";
 import { useAuth } from "../hooks/useAuth";
@@ -176,7 +181,9 @@ function ArticlesPage() {
     };
 
     const canCreate = limits ? limits.current_active < limits.max_active : true;
-    const canArchive = limits ? limits.current_archive < limits.max_archive : true;
+    const canArchive = limits
+        ? limits.current_archive < limits.max_archive
+        : true;
     const showUsage = limits ? limits.max_active <= 50 : false;
 
     return (
@@ -217,7 +224,8 @@ function ArticlesPage() {
                             ? "All"
                             : tab.charAt(0).toUpperCase() + tab.slice(1);
                     const count = counts[tab] ?? 0;
-                    const label = count > 0 ? `${baseLabel} (${count})` : baseLabel;
+                    const label =
+                        count > 0 ? `${baseLabel} (${count})` : baseLabel;
                     return (
                         <Tab
                             key={tab}
@@ -233,9 +241,7 @@ function ArticlesPage() {
                 })}
             </Tabs>
 
-            {isLoading && (
-                <p className="text-sm text-stone-400">Loading...</p>
-            )}
+            {isLoading && <p className="text-sm text-stone-400">Loading...</p>}
 
             {!isLoading && filtered.length === 0 && (
                 <p className="text-sm text-stone-400">
@@ -279,7 +285,9 @@ function ArticlesPage() {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={() => setCreateDialogOpen(false)}>
+                        Cancel
+                    </Button>
                     <Button
                         onClick={handleCreate}
                         variant="contained"
@@ -352,11 +360,14 @@ function ArticleRow({
                         </span>
                     ))}
                     <span className="text-[10px] text-stone-300">
-                        {new Date(article.updated_at).toLocaleDateString(undefined, {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                        })}
+                        {new Date(article.updated_at).toLocaleDateString(
+                            undefined,
+                            {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                            },
+                        )}
                     </span>
                 </div>
             </div>
@@ -410,7 +421,9 @@ function ArticleRow({
                 )}
 
                 {article.status === "published" && (
-                    <Tooltip title={canArchive ? "Archive" : "Archive limit reached"}>
+                    <Tooltip
+                        title={canArchive ? "Archive" : "Archive limit reached"}
+                    >
                         <span>
                             <IconButton
                                 size="small"

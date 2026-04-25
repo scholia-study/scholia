@@ -14,7 +14,6 @@ import {
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
 import toast from "react-hot-toast";
 import type { ResourceResponse, SourceResponse } from "../../../api/model";
 import {
@@ -24,6 +23,7 @@ import {
 } from "../../../api/resources/resources";
 import { useSearchSources } from "../../../api/sources/sources";
 import { SourceFormModal } from "../../../components/SourceFormModal";
+import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
 
 const RESOURCE_TYPES = ["verbatim", "paraphrase", "allusion"] as const;
 const VERBATIM_KINDS = ["entirety", "fragmentary"] as const;

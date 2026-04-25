@@ -11,20 +11,20 @@ import {
     TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import toast from "react-hot-toast";
+import { FetchError } from "../api/fetcher";
 import type {
     PersonResponse,
     SourcePersonResponse,
     SourceResponse,
 } from "../api/model";
-import { FetchError } from "../api/fetcher";
 import { useSearchPersons } from "../api/persons/persons";
 import {
     useAddSourcePerson,
     useCreateSource,
     useSearchSources,
 } from "../api/sources/sources";
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { PersonFormModal } from "./PersonFormModal";
 
 function errorMessage(err: unknown, fallback: string) {
@@ -38,12 +38,7 @@ interface SourceFormModalProps {
 }
 
 const SOURCE_TYPES = ["book", "article", "chapter", "journal", "web"] as const;
-const PERSON_ROLES = [
-    "author",
-    "editor",
-    "translator",
-    "contributor",
-] as const;
+const PERSON_ROLES = ["author", "editor", "translator", "contributor"] as const;
 
 const REQUIRED_BY_TYPE: Record<string, readonly string[]> = {
     book: ["title", "publication_year", "publisher", "author"],
@@ -215,10 +210,7 @@ export function SourceFormModal({
             toast.error("Parent book is required");
             return;
         }
-        if (
-            isRequired("author") &&
-            !persons.some((p) => p.role === "author")
-        ) {
+        if (isRequired("author") && !persons.some((p) => p.role === "author")) {
             toast.error("At least one author is required");
             return;
         }
@@ -231,7 +223,8 @@ export function SourceFormModal({
             data: {
                 source_type: sourceType,
                 title: title.trim(),
-                publication_year: yearNum && !Number.isNaN(yearNum) ? yearNum : undefined,
+                publication_year:
+                    yearNum && !Number.isNaN(yearNum) ? yearNum : undefined,
                 publisher: publisher.trim() || undefined,
                 isbn: isbnArr,
                 doi: doi.trim() || undefined,
@@ -239,7 +232,9 @@ export function SourceFormModal({
                 volume: volume.trim() || undefined,
                 journal_name: journalName.trim() || undefined,
                 url: url.trim() || undefined,
-                page_start: pageStart ? Number.parseInt(pageStart, 10) : undefined,
+                page_start: pageStart
+                    ? Number.parseInt(pageStart, 10)
+                    : undefined,
                 page_end: pageEnd ? Number.parseInt(pageEnd, 10) : undefined,
                 parent_source_id: parentSourceId || undefined,
             },
@@ -282,12 +277,7 @@ export function SourceFormModal({
 
     return (
         <>
-            <Dialog
-                open={open}
-                onClose={resetAndClose}
-                maxWidth="sm"
-                fullWidth
-            >
+            <Dialog open={open} onClose={resetAndClose} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ fontSize: 16 }}>New Source</DialogTitle>
                 <DialogContent
                     sx={{

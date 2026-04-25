@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import { createPanel, type Panel, type ReaderState } from "./state";
 import { decode, encode, type ReaderSearch, validateSearch } from "./url";
 
-function panel(bookSlug: string, nodeSlug?: string, overrides: Partial<Panel> = {}): Panel {
+function panel(
+    bookSlug: string,
+    nodeSlug?: string,
+    overrides: Partial<Panel> = {},
+): Panel {
     return { ...createPanel(bookSlug, nodeSlug), ...overrides };
 }
 
@@ -64,7 +68,10 @@ describe("decode → encode round-trip", () => {
             state: {
                 panels: [
                     panel("a", "n1", { showOriginal: true }),
-                    panel("b", "n2", { resourcesOpen: true, resourceView: "notes" }),
+                    panel("b", "n2", {
+                        resourcesOpen: true,
+                        resourceView: "notes",
+                    }),
                     panel("c", "n3", {
                         viewMode: "st",
                         viewLayout: "ss",

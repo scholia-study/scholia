@@ -21,7 +21,13 @@ function ArticleByIdRedirect() {
     }
 
     if (article) {
-        return <Navigate to="/articles/$slug" params={{ slug: article.slug }} replace />;
+        return (
+            <Navigate
+                to="/articles/$slug"
+                params={{ slug: article.slug }}
+                replace
+            />
+        );
     }
 
     return (

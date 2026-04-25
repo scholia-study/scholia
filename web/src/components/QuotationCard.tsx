@@ -83,10 +83,11 @@ export function QuotationCard({
 
     // Build sentence HTML blocks
     const translationHtml = item.sentences.map((s) => s.html).join(" ");
-    const sourceHtml = item.sentences
-        .map((s) => s.original_html)
-        .filter(Boolean)
-        .join(" ") || null;
+    const sourceHtml =
+        item.sentences
+            .map((s) => s.original_html)
+            .filter(Boolean)
+            .join(" ") || null;
 
     const sentenceKey =
         end && end !== start ? `${start}-${end}` : String(start);
@@ -203,9 +204,7 @@ export function QuotationCard({
                     )}
                     {showTranslation &&
                         mode === "source+translation" &&
-                        sourceHtml && (
-                            <hr className="my-2 border-stone-200" />
-                        )}
+                        sourceHtml && <hr className="my-2 border-stone-200" />}
                     {showTranslation && (
                         <>
                             <div

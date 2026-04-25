@@ -28,12 +28,12 @@ import {
 } from "../../../api/quotations/quotations";
 import { useListResources } from "../../../api/resources/resources";
 import { useGetToc } from "../../../api/toc/toc";
+import { NoteFormModal } from "../../../components/NoteFormModal";
+import { PanelToc } from "../../../components/PanelToc";
 import { useAuth } from "../../../hooks/useAuth";
 import { useUnsaveQuotation } from "../../../hooks/useUnsaveQuotation";
 import { CommentaryView, getSentenceRange } from "./CommentaryView";
-import { NoteFormModal } from "../../../components/NoteFormModal";
 import { NotesView } from "./NotesView";
-import { PanelToc } from "../../../components/PanelToc";
 import { ResourceFormModal } from "./ResourceFormModal";
 import { SentenceDetail } from "./SentenceDetail";
 

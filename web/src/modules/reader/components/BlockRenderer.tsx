@@ -6,13 +6,13 @@ import type {
     PageMarkerResponse,
     SentenceResponse,
 } from "../../../api/model";
-import { sentenceKey, sentenceMatchesKey } from "../keys";
+import { useQuotationContext } from "../context/Quotations";
 import {
     useFootnoteActions,
     useFootnoteAnchor,
     useSentenceSelection,
 } from "../context/selection";
-import { useQuotationContext } from "../context/Quotations";
+import { sentenceKey, sentenceMatchesKey } from "../keys";
 import { FootnotePopover } from "./FootnotePopover";
 
 export interface MarginSettings {

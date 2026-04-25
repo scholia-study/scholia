@@ -40,9 +40,7 @@ function CitationEntryRow({
     const [showResults, setShowResults] = useState(false);
 
     const selectSource = (source: SourceSearchResponse) => {
-        const personNames = source.persons
-            ?.map((p) => p.name)
-            .join(", ");
+        const personNames = source.persons?.map((p) => p.name).join(", ");
         const label = personNames
             ? `${personNames} — ${source.title}`
             : source.title;
@@ -116,9 +114,7 @@ function CitationEntryRow({
                                             <button
                                                 type="button"
                                                 className="w-full text-left px-2 py-1 text-xs hover:bg-stone-100"
-                                                onClick={() =>
-                                                    selectSource(s)
-                                                }
+                                                onClick={() => selectSource(s)}
                                             >
                                                 <span className="font-medium">
                                                     {s.title}
@@ -284,9 +280,7 @@ export function CitationPopover({
                     onClose={() => setSourceModalOpen(false)}
                     onCreated={(source) => {
                         setSourceModalOpen(false);
-                        const emptyIdx = entries.findIndex(
-                            (e) => !e.sourceId,
-                        );
+                        const emptyIdx = entries.findIndex((e) => !e.sourceId);
                         const personNames = source.persons
                             ?.map((p) => p.name)
                             .join(", ");
@@ -300,7 +294,8 @@ export function CitationPopover({
                                 ? `${lastNameParts[lastNameParts.length - 1]} et al.`
                                 : source.persons && source.persons.length === 2
                                   ? `${lastNameParts[lastNameParts.length - 1]} and ${source.persons[1].name.split(/\s+/).pop()}`
-                                  : lastNameParts[lastNameParts.length - 1] || "Unknown";
+                                  : lastNameParts[lastNameParts.length - 1] ||
+                                    "Unknown";
                         const year = source.publication_year
                             ? String(source.publication_year)
                             : "n.d.";

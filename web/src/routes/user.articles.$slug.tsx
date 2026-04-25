@@ -1,12 +1,7 @@
+import ArchiveOutlined from "@mui/icons-material/ArchiveOutlined";
 import PublishOutlined from "@mui/icons-material/PublishOutlined";
 import SaveOutlined from "@mui/icons-material/SaveOutlined";
-import ArchiveOutlined from "@mui/icons-material/ArchiveOutlined";
-import {
-    Autocomplete,
-    Button,
-    Chip,
-    TextField,
-} from "@mui/material";
+import { Autocomplete, Button, Chip, TextField } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import {
     createFileRoute,
@@ -19,14 +14,14 @@ import toast from "react-hot-toast";
 import {
     getGetUserArticleQueryKey,
     getListUserArticlesQueryKey,
-    useGetUserArticle,
     useArchiveArticle,
+    useGetUserArticle,
     useListUserArticles,
     usePublishArticle,
     useUpdateArticle,
 } from "../api/articles/articles";
-import { FetchError } from "../api/fetcher";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
+import { FetchError } from "../api/fetcher";
 import type { TopicResponse } from "../api/model";
 import { useListTopics } from "../api/topics/topics";
 import {
@@ -308,7 +303,9 @@ function ArticleEditorPage() {
                                 onClick={() =>
                                     publishDialog.openFor(currentSlug.current)
                                 }
-                                disabled={isReadOnly || publishMutation.isPending}
+                                disabled={
+                                    isReadOnly || publishMutation.isPending
+                                }
                                 sx={{ textTransform: "none" }}
                             >
                                 Publish
@@ -361,8 +358,8 @@ function ArticleEditorPage() {
 
                 {isArchived && (
                     <div className="mb-4 px-3 py-2 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800">
-                        This article is archived and is now read-only. It
-                        stays accessible via its direct link for historical
+                        This article is archived and is now read-only. It stays
+                        accessible via its direct link for historical
                         references, but can no longer be edited.
                     </div>
                 )}

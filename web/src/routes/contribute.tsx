@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CONTACT_EMAIL } from "../constants";
 import { StaticMDRenderer } from "../components/StaticMDRenderer";
+import { CONTACT_EMAIL } from "../constants";
 import contributeMd from "../content/contribute.md?raw";
 
 export const Route = createFileRoute("/contribute")({

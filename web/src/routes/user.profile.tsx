@@ -92,12 +92,21 @@ function ProfilePage() {
                 </div>
                 <div className="flex flex-wrap gap-1.5 mt-3">
                     {profile.roles.map((role) => (
-                        <Chip key={role} label={role} size="small" color="primary" variant="outlined" />
+                        <Chip
+                            key={role}
+                            label={role}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                        />
                     ))}
                 </div>
             </div>
 
-            <form onSubmit={handleSave} className="space-y-4 mb-8 flex flex-col">
+            <form
+                onSubmit={handleSave}
+                className="space-y-4 mb-8 flex flex-col"
+            >
                 <TextField
                     label="Display name"
                     value={displayName}
