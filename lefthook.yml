@@ -7,4 +7,4 @@ pre-commit:
       stage_fixed: true
     turbo:
       priority: 2
-      run: pnpm exec turbo lint ct test check:modules
+      run: pnpm run validate

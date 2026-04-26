@@ -3,6 +3,7 @@
     "private": true,
     "packageManager": "pnpm@10.31.0",
     "scripts": {
+        "validate": "pnpm exec turbo lint ct test check:modules",
         "check": "pnpm exec biome check --write .",
         "ready": "pnpm run db:reset && pnpm run extract && pnpm run db:import",
         "prepare": "lefthook install",
