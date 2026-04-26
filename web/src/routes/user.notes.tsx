@@ -14,7 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { NoteFormModal } from "#/modules/forms/NoteFormModal";
+import { NoteFormModal } from "#/modules/forms";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { NoteWithContextResponse } from "../api/model";
 import {

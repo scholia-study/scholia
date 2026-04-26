@@ -18,7 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import parse from "html-react-parser";
 import { useMemo, useState } from "react";
-import { useUnsaveQuotation } from "#/modules/quotation/hooks/useUnsaveQuotation";
+import { useUnsaveQuotation } from "#/modules/quotation";
 import {
     getListArticleQuotationsQueryKey,
     useDeleteArticleQuotation,

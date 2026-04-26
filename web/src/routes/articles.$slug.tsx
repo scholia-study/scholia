@@ -2,9 +2,11 @@ import { Chip } from "@mui/material";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { Element } from "html-react-parser";
 import { useGetPublishedArticle } from "../api/articles/articles";
-import { ArticleQuotationCard } from "../modules/quotation/ArticleQuotationCard";
-import { ArticleSentences } from "../modules/quotation/ArticleSentences";
-import { QuotationCard } from "../modules/quotation/QuotationCard";
+import {
+    ArticleQuotationCard,
+    ArticleSentences,
+    QuotationCard,
+} from "../modules/quotation";
 
 export const Route = createFileRoute("/articles/$slug")({
     component: PublishedArticlePage,

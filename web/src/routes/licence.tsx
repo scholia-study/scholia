@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CONTACT_EMAIL } from "../constants";
 import licenceMd from "../content/licence.md?raw";
-import { StaticMDRenderer } from "../modules/ui/StaticMDRenderer";
+import { StaticMDRenderer } from "../modules/ui";
 
 export const Route = createFileRoute("/licence")({
     component: LicencePage,

@@ -30,11 +30,9 @@ import { usePublishArticleDialog } from "../hooks/usePublishArticleDialog";
 import {
     ArticleEditorLazy as ArticleEditor,
     type ArticleEditorHandle,
-} from "../modules/editor/ArticleEditorLazy";
-import {
     QuotationPickerModal,
     type QuotationPickerResult,
-} from "../modules/editor/QuotationPickerModal";
+} from "../modules/editor";
 
 const MemoizedEditor = memo(
     ({

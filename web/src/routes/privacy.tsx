@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import privacyMd from "../content/privacy.md?raw";
-import { StaticMDRenderer } from "../modules/ui/StaticMDRenderer";
+import { StaticMDRenderer } from "../modules/ui";
 
 export const Route = createFileRoute("/privacy")({
     component: PrivacyPage,

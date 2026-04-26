@@ -26,7 +26,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { PersonFormModal } from "#/modules/forms/PersonFormModal";
+import { PersonFormModal } from "#/modules/forms";
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import type {

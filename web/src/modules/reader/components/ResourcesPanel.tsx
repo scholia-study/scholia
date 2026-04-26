@@ -13,8 +13,8 @@ import { Link } from "@tanstack/react-router";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { NoteFormModal } from "#/modules/forms/NoteFormModal";
-import { useUnsaveQuotation } from "#/modules/quotation/hooks/useUnsaveQuotation";
+import { NoteFormModal } from "#/modules/forms";
+import { useUnsaveQuotation } from "#/modules/quotation";
 import { useListBooks } from "../../../api/books/books";
 import type {
     FootnoteSentenceResponse,

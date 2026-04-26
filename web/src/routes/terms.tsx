@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import termsMd from "../content/terms.md?raw";
-import { StaticMDRenderer } from "../modules/ui/StaticMDRenderer";
+import { StaticMDRenderer } from "../modules/ui";
 
 export const Route = createFileRoute("/terms")({
     component: TermsPage,

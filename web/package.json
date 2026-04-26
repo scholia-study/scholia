@@ -14,6 +14,7 @@
         "format": "biome format",
         "lint": "biome lint",
         "check": "biome check",
+        "check:modules": "node scripts/check-module-imports.mjs",
         "generate-api": "orval",
         "codegen": "orval && pnpx @biomejs/biome check --write ./src/api"
     },

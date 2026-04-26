@@ -7,7 +7,7 @@ import { Chip, IconButton } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
-import { useUnsaveQuotation } from "#/modules/quotation/hooks/useUnsaveQuotation";
+import { useUnsaveQuotation } from "#/modules/quotation";
 import type {
     FootnoteSentenceResponse,
     NoteResponse,
