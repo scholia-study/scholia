@@ -23,7 +23,7 @@ import {
 } from "../../../api/resources/resources";
 import { useSearchSources } from "../../../api/sources/sources";
 import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
-import { SourceFormModal } from "../../forms";
+import { SourceFormModal } from "../../source";
 
 const RESOURCE_TYPES = ["verbatim", "paraphrase", "allusion"] as const;
 const VERBATIM_KINDS = ["entirety", "fragmentary"] as const;

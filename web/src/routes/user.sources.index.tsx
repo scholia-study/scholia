@@ -27,7 +27,7 @@ import {
 } from "../api/sources/sources";
 import { useAuth } from "../hooks/useAuth";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
-import { SourceFormModal } from "../modules/forms";
+import { SourceFormModal } from "../modules/source";
 
 export const Route = createFileRoute("/user/sources/")({
     beforeLoad: async ({ context }) => {

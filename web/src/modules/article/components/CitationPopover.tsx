@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { SourceSearchResponse } from "../../../api/model";
 import { useSearchSources } from "../../../api/sources/sources";
 import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
-import { SourceFormModal } from "../../forms";
+import { SourceFormModal } from "../../source";
 
 export interface CitationEntry {
     sourceId: string;
