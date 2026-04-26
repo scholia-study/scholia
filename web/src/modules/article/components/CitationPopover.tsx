@@ -1,9 +1,9 @@
 import { Button, Popover, TextField } from "@mui/material";
 import { useState } from "react";
-import type { SourceSearchResponse } from "../../api/model";
-import { useSearchSources } from "../../api/sources/sources";
-import { useDebouncedValue } from "../../hooks/useDebouncedValue";
-import { SourceFormModal } from "../forms";
+import type { SourceSearchResponse } from "../../../api/model";
+import { useSearchSources } from "../../../api/sources/sources";
+import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
+import { SourceFormModal } from "../../forms";
 
 export interface CitationEntry {
     sourceId: string;

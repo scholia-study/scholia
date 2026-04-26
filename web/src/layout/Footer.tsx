@@ -1,4 +1,4 @@
-import { InfoLinks } from "./InfoLinks";
+import { InfoLinks } from "../components/InfoLinks";
 
 export function Footer() {
     return (

@@ -1,5 +1,5 @@
 import { Link, useMatches } from "@tanstack/react-router";
-import { INFO_LINKS } from "./InfoLinks";
+import { INFO_LINKS } from "../components/InfoLinks";
 
 const INFO_PATHS = INFO_LINKS.map((r) => r.to);
 

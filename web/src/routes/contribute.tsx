@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { StaticMDRenderer } from "../components/StaticMDRenderer";
 import { CONTACT_EMAIL } from "../constants";
 import contributeMd from "../content/contribute.md?raw";
-import { StaticMDRenderer } from "../modules/ui";
 
 export const Route = createFileRoute("/contribute")({
     component: ContributePage,

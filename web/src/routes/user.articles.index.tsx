@@ -35,9 +35,11 @@ import {
 import { getGetProfileQueryOptions } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import type { ArticleResponse } from "../api/model";
-import { useArchiveArticleDialog } from "../hooks/useArchiveArticleDialog";
 import { useAuth } from "../hooks/useAuth";
-import { usePublishArticleDialog } from "../hooks/usePublishArticleDialog";
+import {
+    useArchiveArticleDialog,
+    usePublishArticleDialog,
+} from "../modules/article";
 
 export const Route = createFileRoute("/user/articles/")({
     beforeLoad: async ({ context }) => {

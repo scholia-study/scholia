@@ -9,8 +9,8 @@ import Typography from "@mui/material/Typography";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { getMeQueryKey, useLogout } from "../../api/auth/auth";
-import { useAuth } from "../../hooks/useAuth";
+import { getMeQueryKey, useLogout } from "../api/auth/auth";
+import { useAuth } from "../hooks/useAuth";
 
 export function Navbar() {
     const navigate = useNavigate();

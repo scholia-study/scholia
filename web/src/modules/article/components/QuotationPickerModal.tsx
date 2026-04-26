@@ -16,8 +16,8 @@ import {
     TextField,
 } from "@mui/material";
 import { useMemo, useState } from "react";
-import type { UnifiedQuotationResponse } from "../../api/model";
-import { useListAllQuotations } from "../../api/quotations/quotations";
+import type { UnifiedQuotationResponse } from "../../../api/model";
+import { useListAllQuotations } from "../../../api/quotations/quotations";
 
 export type QuotationPickerResult =
     | {

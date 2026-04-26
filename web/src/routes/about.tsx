@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { StaticMDRenderer } from "../components/StaticMDRenderer";
 import aboutMd from "../content/about.md?raw";
-import { StaticMDRenderer } from "../modules/ui";
 
 export const Route = createFileRoute("/about")({
     component: AboutPage,
