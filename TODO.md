@@ -1,5 +1,4 @@
 ## BUGS
-- unable to save footnote sentence as quotation
 - saving a range quotation wrongly shows "edit" icon
 
 ## FEATURES
