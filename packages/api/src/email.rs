@@ -1,5 +1,5 @@
-use resend_rs::types::CreateEmailBaseOptions;
 use resend_rs::Resend;
+use resend_rs::types::CreateEmailBaseOptions;
 
 use crate::config::AppConfig;
 
@@ -9,10 +9,7 @@ pub async fn send_verification_email(
     token: &str,
 ) -> Result<(), String> {
     let resend = Resend::new(&config.resend_api_key);
-    let link = format!(
-        "{}/auth/verify-email?token={}",
-        config.backend_url, token
-    );
+    let link = format!("{}/auth/verify-email?token={}", config.backend_url, token);
 
     let html = format!(
         r#"<h2>Verify your email</h2>
@@ -22,8 +19,8 @@ pub async fn send_verification_email(
 <p>If you didn't create an account, you can ignore this email.</p>"#
     );
 
-    let email = CreateEmailBaseOptions::new(&config.from_email, [to], "Verify your email")
-        .with_html(&html);
+    let email =
+        CreateEmailBaseOptions::new(&config.from_email, [to], "Verify your email").with_html(&html);
 
     resend
         .emails
@@ -40,10 +37,7 @@ pub async fn send_password_reset_email(
     token: &str,
 ) -> Result<(), String> {
     let resend = Resend::new(&config.resend_api_key);
-    let link = format!(
-        "{}/reset-password?token={}",
-        config.frontend_url, token
-    );
+    let link = format!("{}/reset-password?token={}", config.frontend_url, token);
 
     let html = format!(
         r#"<h2>Reset your password</h2>

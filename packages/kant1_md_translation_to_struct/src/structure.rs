@@ -8,14 +8,13 @@ use common::sentences::{
 use regex::Regex;
 use std::sync::LazyLock;
 
-use kant1_md_to_struct::html::{md_to_html, md_to_plain, FOOTNOTE_REF_RE};
+use kant1_md_to_struct::html::{FOOTNOTE_REF_RE, md_to_html, md_to_plain};
 use kant1_md_to_struct::model::*;
 use kant1_md_to_struct::parse::{MarkerKind, ParsedBlock, ParsedBlockType, RawMarker};
 use kant1_md_to_struct::roman::roman_to_int;
 
 /// Regex to find `<sup>NUMBER</sup>` in rendered HTML.
-static SUP_NUMBER_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"<sup>(\d+)</sup>").unwrap());
+static SUP_NUMBER_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<sup>(\d+)</sup>").unwrap());
 
 /// Intermediate per-file parsed data (translation only, no original layer).
 pub struct ParsedFile {
@@ -129,7 +128,9 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
 
             TocNodeData {
                 source_ref: format!("{:03}", pf.flat_index + 1),
-                slug: slug_override.map(|s| s.to_string()).unwrap_or_else(|| slugify(&plain_label)),
+                slug: slug_override
+                    .map(|s| s.to_string())
+                    .unwrap_or_else(|| slugify(&plain_label)),
                 path,
                 sort_order: pf.flat_index as i32 + 1,
                 depth: depth as i16,
@@ -302,7 +303,10 @@ fn find_parent_source_ref(
 
 /// Derive slug from a TOC entry, using override if present.
 fn entry_slug(entry: &(usize, u16, u16, &str, Option<&str>)) -> String {
-    entry.4.map(|s| s.to_string()).unwrap_or_else(|| slugify(&md_to_plain(entry.3)))
+    entry
+        .4
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| slugify(&md_to_plain(entry.3)))
 }
 
 /// Build an ltree path from slugs of ancestors.

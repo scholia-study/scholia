@@ -77,11 +77,7 @@ pub fn parse_front_matter(content: &str) -> Option<(FrontMatter, &str)> {
         } else if let Some(val) = line.strip_prefix("label:") {
             let val = val.trim();
             // Strip surrounding quotes
-            label = Some(
-                val.trim_matches('"')
-                    .replace("\\\"", "\"")
-                    .to_string(),
-            );
+            label = Some(val.trim_matches('"').replace("\\\"", "\"").to_string());
         } else if let Some(val) = line.strip_prefix("depth:") {
             depth = val.trim().parse().ok();
         } else if let Some(val) = line.strip_prefix("aa_page:") {
@@ -293,7 +289,9 @@ mod tests {
         assert_eq!(blocks[1].text, "First paragraph.");
         assert_eq!(blocks[2].block_type, ParsedBlockType::Paragraph);
         assert_eq!(blocks[2].text, "Second paragraph.");
-        assert!(matches!(&blocks[3].block_type, ParsedBlockType::Footnote { marker } if marker == "*"));
+        assert!(
+            matches!(&blocks[3].block_type, ParsedBlockType::Footnote { marker } if marker == "*")
+        );
     }
 
     #[test]

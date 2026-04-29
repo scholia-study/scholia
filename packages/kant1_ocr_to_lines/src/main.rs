@@ -69,11 +69,7 @@ fn main() {
             .to_string_lossy();
 
         // Output uses same basename as input
-        let out_path = format!(
-            "{}/{}",
-            args.output_dir,
-            filename
-        );
+        let out_path = format!("{}/{}", args.output_dir, filename);
 
         eprint!("  [{page_num}/{end_idx}] {filename}... ");
 
@@ -187,8 +183,7 @@ struct NormalizedVertex {
 // ---------------------------------------------------------------------------
 
 static DIGIT_1_2_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d{1,2}$").unwrap());
-static LINE_NUM_START_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^(\d{1,2})\s+").unwrap());
+static LINE_NUM_START_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^(\d{1,2})\s+").unwrap());
 static LINE_NUM_END_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\s+(\d{1,2})\s*$").unwrap());
 

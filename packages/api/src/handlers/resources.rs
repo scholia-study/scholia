@@ -10,9 +10,9 @@ use crate::models::resource::{
 };
 use crate::state::AppState;
 use crate::validation::{
-    check_int_range, check_max_len, MAX_RESOURCE_ADMIN_NOTES, MAX_RESOURCE_EDITOR_NOTE,
-    MAX_RESOURCE_QUOTED_TEXT, MAX_RESOURCE_SOURCE_LOCATION, MAX_RESOURCE_SOURCE_PAGE,
-    MIN_RESOURCE_SOURCE_PAGE,
+    MAX_RESOURCE_ADMIN_NOTES, MAX_RESOURCE_EDITOR_NOTE, MAX_RESOURCE_QUOTED_TEXT,
+    MAX_RESOURCE_SOURCE_LOCATION, MAX_RESOURCE_SOURCE_PAGE, MIN_RESOURCE_SOURCE_PAGE,
+    check_int_range, check_max_len,
 };
 
 fn validate_resource_fields(

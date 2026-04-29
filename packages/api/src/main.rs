@@ -120,9 +120,7 @@ async fn main() {
             api::handlers::quotations::update_note,
             api::handlers::quotations::delete_note
         ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::quotations::list_tags
-        ))
+        .routes(utoipa_axum::routes!(api::handlers::quotations::list_tags))
         .routes(utoipa_axum::routes!(
             api::handlers::quotations::list_all_quotations
         ))
@@ -163,7 +161,9 @@ async fn main() {
         .routes(utoipa_axum::routes!(api::handlers::toc::get_toc))
         .routes(utoipa_axum::routes!(api::handlers::nodes::get_node))
         .routes(utoipa_axum::routes!(api::handlers::page::get_node_page))
-        .routes(utoipa_axum::routes!(api::handlers::resources::list_resources))
+        .routes(utoipa_axum::routes!(
+            api::handlers::resources::list_resources
+        ))
         // Public article endpoints
         .routes(utoipa_axum::routes!(
             api::handlers::articles::list_published_articles
@@ -174,9 +174,7 @@ async fn main() {
         .routes(utoipa_axum::routes!(
             api::handlers::articles::get_article_by_id
         ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::list_topics
-        ))
+        .routes(utoipa_axum::routes!(api::handlers::articles::list_topics))
         .routes(utoipa_axum::routes!(
             api::handlers::articles::batch_sentences
         ))
@@ -197,9 +195,7 @@ async fn main() {
             api::handlers::sources::search_sources,
             api::handlers::sources::create_source
         ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::sources::browse_sources
-        ))
+        .routes(utoipa_axum::routes!(api::handlers::sources::browse_sources))
         .routes(utoipa_axum::routes!(
             api::handlers::sources::get_source,
             api::handlers::sources::update_source,
@@ -218,9 +214,7 @@ async fn main() {
             api::handlers::persons::search_persons,
             api::handlers::persons::create_person
         ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::persons::update_person
-        ));
+        .routes(utoipa_axum::routes!(api::handlers::persons::update_person));
 
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
         .merge(auth_router)

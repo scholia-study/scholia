@@ -128,10 +128,7 @@ pub async fn get_article_quotation(
     Ok(article_quotation_from_row(row))
 }
 
-pub async fn get_article_quotation_owner(
-    pool: &PgPool,
-    id: Uuid,
-) -> Result<Uuid, AppError> {
+pub async fn get_article_quotation_owner(pool: &PgPool, id: Uuid) -> Result<Uuid, AppError> {
     sqlx::query_scalar!(
         r#"SELECT user_id FROM article_quotations WHERE id = $1"#,
         id,

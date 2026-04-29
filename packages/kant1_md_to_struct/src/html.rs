@@ -6,16 +6,14 @@ pub static FOOTNOTE_REF_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\[\^([^\]]+)\]").unwrap());
 
 // Emphasis: _text_ — simple pattern, no lookaround needed in these files
-static EMPHASIS_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"_([^_]+)_").unwrap());
+static EMPHASIS_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"_([^_]+)_").unwrap());
 
 // Sperrdruck: ***text***
 static SPERRDRUCK_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\*\*\*([^*]+)\*\*\*").unwrap());
 
 // Bold: **text**
-static BOLD_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"\*\*([^*]+)\*\*").unwrap());
+static BOLD_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\*\*([^*]+)\*\*").unwrap());
 
 /// Strip markdown formatting markers, returning plain text.
 ///
@@ -66,10 +64,7 @@ mod tests {
 
     #[test]
     fn test_bold() {
-        assert_eq!(
-            md_to_html("**bold** hier"),
-            "<b>bold</b> hier"
-        );
+        assert_eq!(md_to_html("**bold** hier"), "<b>bold</b> hier");
     }
 
     #[test]
@@ -90,10 +85,7 @@ mod tests {
     #[test]
     fn test_footnote_ref_before_bold() {
         // [^**] should be a footnote ref, not bold
-        assert_eq!(
-            md_to_html("text[^**] more"),
-            "text<sup>**</sup> more"
-        );
+        assert_eq!(md_to_html("text[^**] more"), "text<sup>**</sup> more");
     }
 
     #[test]
@@ -128,7 +120,10 @@ mod tests {
 
     #[test]
     fn test_plain_strips_footnote_refs() {
-        assert_eq!(md_to_plain("end.[^5] Next sentence."), "end. Next sentence.");
+        assert_eq!(
+            md_to_plain("end.[^5] Next sentence."),
+            "end. Next sentence."
+        );
         assert_eq!(md_to_plain("text[^1] more"), "text more");
         assert_eq!(md_to_plain("[^*]"), "");
     }

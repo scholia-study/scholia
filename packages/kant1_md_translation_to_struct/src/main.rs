@@ -11,8 +11,8 @@ use common::kant1::filenames_en;
 use common::kant1::toc_en;
 use common::sentences::{split_sentences, split_sentences_en};
 use kant1_md_to_struct::html::{md_to_html, md_to_plain};
-use kant1_md_to_struct::parse::{self, parse_blocks, parse_front_matter, ParsedBlockType};
-use structure::{build_output, ParsedFile};
+use kant1_md_to_struct::parse::{self, ParsedBlockType, parse_blocks, parse_front_matter};
+use structure::{ParsedFile, build_output};
 
 #[derive(Parser)]
 #[command(about = "Parse English translation of Kant KrV into DB-ready JSON structures")]
@@ -26,7 +26,10 @@ struct Cli {
     source_dir: String,
 
     /// Output file (- for stdout)
-    #[arg(long, default_value = "assets/kant1_md_translation_to_struct/output.json")]
+    #[arg(
+        long,
+        default_value = "assets/kant1_md_translation_to_struct/output.json"
+    )]
     output_file: String,
 }
 
@@ -184,8 +187,7 @@ fn run_extract(translation_dir_str: &str, source_dir_str: &str, output_file: &st
         // Parse both files
         let en_blocks =
             parse_translation_file(translation_dir, en_filename, flat_index, &en_flat_entries);
-        let de_blocks =
-            parse_source_file(source_dir, de_filename, flat_index, &de_flat_entries);
+        let de_blocks = parse_source_file(source_dir, de_filename, flat_index, &de_flat_entries);
 
         // Validate content block counts match (excluding footnotes)
         let en_content_count = content_block_count(&en_blocks);
@@ -207,8 +209,10 @@ fn run_extract(translation_dir_str: &str, source_dir_str: &str, output_file: &st
             .filter(|b| !matches!(&b.block_type, ParsedBlockType::Footnote { .. }))
             .collect();
 
-        for (block_pos, (en_block, de_block)) in
-            en_content_blocks.iter().zip(de_content_blocks.iter()).enumerate()
+        for (block_pos, (en_block, de_block)) in en_content_blocks
+            .iter()
+            .zip(de_content_blocks.iter())
+            .enumerate()
         {
             let en_plain = md_to_plain(&en_block.text);
             let en_html = md_to_html(&en_block.text);
@@ -309,7 +313,10 @@ fn run_extract(translation_dir_str: &str, source_dir_str: &str, output_file: &st
 
     eprintln!();
     eprintln!("=== Output summary ===");
-    eprintln!("  book:           {} ({})", output.book.title, output.book.language);
+    eprintln!(
+        "  book:           {} ({})",
+        output.book.title, output.book.language
+    );
     eprintln!("  toc_nodes:      {}", output.toc_nodes.len());
     for node in &output.toc_nodes {
         eprintln!(

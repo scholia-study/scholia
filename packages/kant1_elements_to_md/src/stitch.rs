@@ -60,9 +60,7 @@ pub fn stitch_lines(lines: &[InputLine]) -> (String, Vec<BPageAnchor>) {
 /// join with the first word of the next page's first element.
 ///
 /// Returns a list of (page_idx, joined_word) for logging purposes.
-pub fn stitch_across_pages(
-    pages: &mut [crate::model::InputPage],
-) -> Vec<(usize, String)> {
+pub fn stitch_across_pages(pages: &mut [crate::model::InputPage]) -> Vec<(usize, String)> {
     let mut joins = Vec::new();
 
     for i in 0..pages.len().saturating_sub(1) {
@@ -78,17 +76,10 @@ pub fn stitch_across_pages(
         }
 
         // Get the first word from the next page's first element's first line
-        let first_word = match pages[i + 1]
-            .elements
-            .first()
-            .and_then(|e| e.lines.first())
-        {
+        let first_word = match pages[i + 1].elements.first().and_then(|e| e.lines.first()) {
             Some(line) => {
                 let text = line.text.trim();
-                text.split_whitespace()
-                    .next()
-                    .unwrap_or("")
-                    .to_string()
+                text.split_whitespace().next().unwrap_or("").to_string()
             }
             None => continue,
         };
@@ -156,10 +147,7 @@ mod tests {
 
     #[test]
     fn test_simple_stitch() {
-        let lines = vec![
-            line("Erste Zeile", None),
-            line("zweite Zeile.", None),
-        ];
+        let lines = vec![line("Erste Zeile", None), line("zweite Zeile.", None)];
         let (text, anchors) = stitch_lines(&lines);
         assert_eq!(text, "Erste Zeile zweite Zeile.");
         assert!(anchors.is_empty());
@@ -167,10 +155,7 @@ mod tests {
 
     #[test]
     fn test_hyphen_stitch() {
-        let lines = vec![
-            line("anthropolo-", None),
-            line("gische Bedeutung.", None),
-        ];
+        let lines = vec![line("anthropolo-", None), line("gische Bedeutung.", None)];
         let (text, anchors) = stitch_lines(&lines);
         assert_eq!(text, "anthropologische Bedeutung.");
         assert!(anchors.is_empty());

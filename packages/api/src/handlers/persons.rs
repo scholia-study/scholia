@@ -5,14 +5,13 @@ use crate::auth::middleware::AuthUser;
 use crate::auth::permissions::Permission;
 use crate::db;
 use crate::error::AppError;
-use crate::models::resource::{CreatePersonRequest, PersonResponse, SearchQuery, UpdatePersonRequest};
+use crate::models::resource::{
+    CreatePersonRequest, PersonResponse, SearchQuery, UpdatePersonRequest,
+};
 use crate::state::AppState;
-use crate::validation::{check_max_len, MAX_PERSON_NAME, MAX_PERSON_SORT_NAME};
+use crate::validation::{MAX_PERSON_NAME, MAX_PERSON_SORT_NAME, check_max_len};
 
-fn validate_person_fields(
-    name: Option<&str>,
-    sort_name: Option<&str>,
-) -> Result<(), AppError> {
+fn validate_person_fields(name: Option<&str>, sort_name: Option<&str>) -> Result<(), AppError> {
     if let Some(n) = name {
         check_max_len("Name", n, MAX_PERSON_NAME)?;
     }
@@ -74,13 +73,9 @@ pub async fn create_person(
 
     validate_person_fields(Some(&body.name), body.sort_name.as_deref())?;
 
-    let person = db::persons::create_person(
-        &state.pool,
-        &body.name,
-        body.sort_name.as_deref(),
-        user.id,
-    )
-    .await?;
+    let person =
+        db::persons::create_person(&state.pool, &body.name, body.sort_name.as_deref(), user.id)
+            .await?;
 
     Ok(Json(person))
 }
@@ -105,8 +100,8 @@ pub async fn update_person(
     Path(id): Path<String>,
     Json(body): Json<UpdatePersonRequest>,
 ) -> Result<Json<PersonResponse>, AppError> {
-    let person_id = uuid::Uuid::parse_str(&id)
-        .map_err(|_| AppError::BadRequest("Invalid person ID".into()))?;
+    let person_id =
+        uuid::Uuid::parse_str(&id).map_err(|_| AppError::BadRequest("Invalid person ID".into()))?;
 
     let current = db::persons::get_person(&state.pool, person_id).await?;
     let is_editor = user.has_permission(Permission::ResourcesManage);

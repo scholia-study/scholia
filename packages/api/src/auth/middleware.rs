@@ -54,13 +54,12 @@ pub async fn set_session_user(
 /// Delete all sessions for a user from both user_sessions and tower_sessions.
 pub async fn invalidate_user_sessions(pool: &PgPool, user_id: Uuid) {
     // Get all session IDs for this user
-    let session_ids: Vec<String> = sqlx::query_scalar(
-        "SELECT session_id FROM user_sessions WHERE user_id = $1",
-    )
-    .bind(user_id)
-    .fetch_all(pool)
-    .await
-    .unwrap_or_default();
+    let session_ids: Vec<String> =
+        sqlx::query_scalar("SELECT session_id FROM user_sessions WHERE user_id = $1")
+            .bind(user_id)
+            .fetch_all(pool)
+            .await
+            .unwrap_or_default();
 
     if !session_ids.is_empty() {
         // Delete from tower_sessions store
@@ -121,11 +120,8 @@ impl FromRequestParts<AppState> for AuthUser {
             .and_then(|s| Uuid::parse_str(&s).ok())
             .ok_or(StatusCode::UNAUTHORIZED)?;
 
-        let session_created_at: Option<i64> = session
-            .get(SESSION_CREATED_AT_KEY)
-            .await
-            .ok()
-            .flatten();
+        let session_created_at: Option<i64> =
+            session.get(SESSION_CREATED_AT_KEY).await.ok().flatten();
 
         let user = load_auth_user(&state.pool, user_id, session_created_at)
             .await

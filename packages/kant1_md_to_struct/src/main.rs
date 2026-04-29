@@ -10,7 +10,7 @@ use common::kant1::filenames;
 use common::kant1::toc;
 use common::kant1::toc_mod;
 use kant1_md_to_struct::parse::{self, parse_blocks, parse_front_matter};
-use structure::{build_output, ParsedFile};
+use structure::{ParsedFile, build_output};
 
 #[derive(Parser)]
 #[command(about = "Parse reviewed Kant KrV markdown into DB-ready JSON structures")]
@@ -116,7 +116,10 @@ fn run_extract(modernized_dir_str: &str, reviewed_dir_str: &str, output_file: &s
         let in_reviewed = reviewed_entries.contains(expected_name);
 
         if !in_modernized && !in_reviewed {
-            eprintln!("info: skipping {} (file not found in either dir)", expected_name);
+            eprintln!(
+                "info: skipping {} (file not found in either dir)",
+                expected_name
+            );
             continue;
         }
         if !in_modernized {
@@ -132,9 +135,18 @@ fn run_extract(modernized_dir_str: &str, reviewed_dir_str: &str, output_file: &s
             );
         }
 
-        let blocks = parse_file(modernized_dir, expected_name, flat_index, &flat_entries_modernized);
-        let original_blocks =
-            parse_file(reviewed_dir, expected_name, flat_index, &flat_entries_reviewed);
+        let blocks = parse_file(
+            modernized_dir,
+            expected_name,
+            flat_index,
+            &flat_entries_modernized,
+        );
+        let original_blocks = parse_file(
+            reviewed_dir,
+            expected_name,
+            flat_index,
+            &flat_entries_reviewed,
+        );
 
         if blocks.len() != original_blocks.len() {
             panic!(

@@ -142,7 +142,11 @@ pub async fn create_quotation(
     let start_sent = resolve_sentence(pool, book_id, sentence_start, sentence_kind).await?;
 
     let end_sent_id = if let Some(end_num) = sentence_end {
-        Some(resolve_sentence(pool, book_id, end_num, sentence_kind).await?.id)
+        Some(
+            resolve_sentence(pool, book_id, end_num, sentence_kind)
+                .await?
+                .id,
+        )
     } else {
         None
     };
@@ -246,10 +250,7 @@ pub async fn get_quotation_owner(
 
 // ── Note queries ───────────────────────────────────────────
 
-pub async fn list_notes(
-    pool: &PgPool,
-    quotation_id: Uuid,
-) -> Result<Vec<NoteResponse>, AppError> {
+pub async fn list_notes(pool: &PgPool, quotation_id: Uuid) -> Result<Vec<NoteResponse>, AppError> {
     let notes = sqlx::query_as!(
         NoteRow,
         r#"SELECT id, body, created_at, updated_at
@@ -281,13 +282,10 @@ pub async fn list_notes(
 
     let mut tags_map: HashMap<Uuid, Vec<TagResponse>> = HashMap::new();
     for tr in tag_rows {
-        tags_map
-            .entry(tr.note_id)
-            .or_default()
-            .push(TagResponse {
-                id: tr.tag_id.to_string(),
-                name: tr.tag_name,
-            });
+        tags_map.entry(tr.note_id).or_default().push(TagResponse {
+            id: tr.tag_id.to_string(),
+            name: tr.tag_name,
+        });
     }
 
     Ok(notes
@@ -387,11 +385,7 @@ pub async fn update_note(
     Ok(())
 }
 
-pub async fn delete_note(
-    pool: &PgPool,
-    note_id: Uuid,
-    user_id: Uuid,
-) -> Result<(), AppError> {
+pub async fn delete_note(pool: &PgPool, note_id: Uuid, user_id: Uuid) -> Result<(), AppError> {
     let result = sqlx::query!(
         r#"DELETE FROM quotation_notes
            WHERE id = $1
@@ -411,10 +405,7 @@ pub async fn delete_note(
 
 // ── Tag queries ────────────────────────────────────────────
 
-pub async fn list_tags(
-    pool: &PgPool,
-    user_id: Uuid,
-) -> Result<Vec<TagResponse>, AppError> {
+pub async fn list_tags(pool: &PgPool, user_id: Uuid) -> Result<Vec<TagResponse>, AppError> {
     struct Row {
         id: Uuid,
         name: String,
@@ -588,13 +579,10 @@ pub async fn list_all_notes(
 
     let mut tags_map: HashMap<Uuid, Vec<TagResponse>> = HashMap::new();
     for tr in tag_rows {
-        tags_map
-            .entry(tr.note_id)
-            .or_default()
-            .push(TagResponse {
-                id: tr.tag_id.to_string(),
-                name: tr.tag_name,
-            });
+        tags_map.entry(tr.note_id).or_default().push(TagResponse {
+            id: tr.tag_id.to_string(),
+            name: tr.tag_name,
+        });
     }
 
     Ok(rows

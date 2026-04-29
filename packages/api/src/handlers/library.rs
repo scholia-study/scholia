@@ -15,9 +15,7 @@ use crate::state::AppState;
     ),
     tag = "books"
 )]
-pub async fn get_library(
-    State(state): State<AppState>,
-) -> Result<Json<LibraryResponse>, AppError> {
+pub async fn get_library(State(state): State<AppState>) -> Result<Json<LibraryResponse>, AppError> {
     let library = db::library::get_library(&state.pool).await?;
     Ok(Json(library))
 }

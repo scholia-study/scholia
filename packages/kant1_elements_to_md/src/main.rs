@@ -10,14 +10,16 @@ use std::path::Path;
 use clap::Parser;
 
 use model::*;
-use stitch::{stitch_lines, BPageAnchor};
+use stitch::{BPageAnchor, stitch_lines};
 
 // ---------------------------------------------------------------------------
 // CLI
 // ---------------------------------------------------------------------------
 
 #[derive(Parser)]
-#[command(about = "Build per-section markdown files from per-page element data and authoritative TOC")]
+#[command(
+    about = "Build per-section markdown files from per-page element data and authoritative TOC"
+)]
 struct Args {
     /// Directory containing per-page element JSON
     #[arg(long, default_value = "assets/kant1_lines_to_elements")]
@@ -67,7 +69,10 @@ fn main() {
     let page_elements = flatten_page_elements(&pages);
     eprintln!(
         "Flattened {} elements from {} content pages.",
-        page_elements.iter().map(|(_, elems, _)| elems.len()).sum::<usize>(),
+        page_elements
+            .iter()
+            .map(|(_, elems, _)| elems.len())
+            .sum::<usize>(),
         page_elements.len()
     );
 
@@ -110,7 +115,8 @@ fn build_md_nodes(
 
     // Per-section accumulators
     let mut section_blocks: Vec<Vec<MdBlock>> = (0..num_entries).map(|_| Vec::new()).collect();
-    let mut section_footnotes: Vec<Vec<(String, String)>> = (0..num_entries).map(|_| Vec::new()).collect();
+    let mut section_footnotes: Vec<Vec<(String, String)>> =
+        (0..num_entries).map(|_| Vec::new()).collect();
 
     // Footnote marker dedup state per section:
     // star_count: how many star-based footnotes we've seen so far
@@ -180,9 +186,8 @@ fn build_md_nodes(
         // previous section (carry-over), not to this page's base_section.
         // We only apply this when the page has headings — if there are
         // no headings at all, all content belongs to base_section.
-        let use_carry_over = page_has_headings
-            && prev_section_idx < base_section
-            && !same_page_entries.is_empty();
+        let use_carry_over =
+            page_has_headings && prev_section_idx < base_section && !same_page_entries.is_empty();
 
         let mut seen_heading_on_page = false;
         if use_carry_over {
@@ -642,9 +647,7 @@ fn fixup_cross_page_footnote_32_34(pages: &mut [InputPage]) {
             .b_page_refs
             .contains(&"XLI".to_string())
         {
-            pages[i33].elements[0]
-                .b_page_refs
-                .push("XLI".to_string());
+            pages[i33].elements[0].b_page_refs.push("XLI".to_string());
         }
     }
 
@@ -675,9 +678,7 @@ fn fixup_cross_page_footnote_32_34(pages: &mut [InputPage]) {
             .b_page_refs
             .contains(&"XLII".to_string())
         {
-            pages[i34].elements[0]
-                .b_page_refs
-                .push("XLII".to_string());
+            pages[i34].elements[0].b_page_refs.push("XLII".to_string());
         }
     }
 
@@ -781,7 +782,10 @@ fn flatten_page_elements(pages: &[InputPage]) -> Vec<(u16, Vec<InputElement>, Ve
 
 /// For each element, find the most recent TOC entry (in flat document order)
 /// whose aa_page <= element's aa_page.
-fn find_flat_section(flat_entries: &[(usize, u16, u16, &str, Option<&str>)], aa_page: u16) -> usize {
+fn find_flat_section(
+    flat_entries: &[(usize, u16, u16, &str, Option<&str>)],
+    aa_page: u16,
+) -> usize {
     let mut best = 0;
     for (i, &(_, entry_page, _, _, _)) in flat_entries.iter().enumerate() {
         if entry_page <= aa_page {

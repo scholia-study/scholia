@@ -15,7 +15,7 @@ use crate::models::quotation::{
 };
 use crate::state::AppState;
 use crate::validation::{
-    check_count, check_max_len, MAX_NOTE_BODY, MAX_NOTE_TAGS, MAX_NOTE_TAG_LEN,
+    MAX_NOTE_BODY, MAX_NOTE_TAG_LEN, MAX_NOTE_TAGS, check_count, check_max_len,
 };
 
 fn validate_note_fields(body: &str, tags: &[String]) -> Result<(), AppError> {
@@ -337,22 +337,16 @@ pub async fn list_all_quotations(
 
     let mut quotations: Vec<UnifiedQuotationResponse> = Vec::new();
 
-    let include_books = params
-        .source_type
-        .as_deref()
-        .map_or(true, |t| t == "book");
+    let include_books = params.source_type.as_deref().map_or(true, |t| t == "book");
     let include_articles = params
         .source_type
         .as_deref()
         .map_or(true, |t| t == "article");
 
     if include_books {
-        let book_quotations = db::quotations::list_all_quotations(
-            &state.pool,
-            user.id,
-            params.book_slug.as_deref(),
-        )
-        .await?;
+        let book_quotations =
+            db::quotations::list_all_quotations(&state.pool, user.id, params.book_slug.as_deref())
+                .await?;
 
         for q in book_quotations {
             quotations.push(UnifiedQuotationResponse::Book {
@@ -386,7 +380,8 @@ pub async fn list_all_quotations(
                 author_display_name: q.author_display_name,
                 text_snippet: truncate_snippet(&q.text, 80),
                 note_count: q.note_count.unwrap_or(0),
-                created_at: q.created_at
+                created_at: q
+                    .created_at
                     .format(&time::format_description::well_known::Rfc3339)
                     .unwrap_or_default(),
             });
@@ -440,12 +435,8 @@ pub async fn list_all_notes(
     user.require_permission(Permission::NotesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
-    let notes = db::quotations::list_all_notes(
-        &state.pool,
-        user.id,
-        params.book_slug.as_deref(),
-    )
-    .await?;
+    let notes =
+        db::quotations::list_all_notes(&state.pool, user.id, params.book_slug.as_deref()).await?;
 
     Ok(Json(NoteWithContextListResponse { notes }))
 }

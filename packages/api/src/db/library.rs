@@ -51,15 +51,11 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
     )
     .fetch_all(pool)
     .await?;
-    let sources: HashMap<Uuid, SourceRow> =
-        source_rows.into_iter().map(|s| (s.id, s)).collect();
+    let sources: HashMap<Uuid, SourceRow> = source_rows.into_iter().map(|s| (s.id, s)).collect();
 
-    let book_rows = sqlx::query_as!(
-        BookRow,
-        r#"SELECT slug, language, source_id FROM books"#,
-    )
-    .fetch_all(pool)
-    .await?;
+    let book_rows = sqlx::query_as!(BookRow, r#"SELECT slug, language, source_id FROM books"#,)
+        .fetch_all(pool)
+        .await?;
 
     let source_ids: Vec<Uuid> = sources.keys().copied().collect();
     let sp_rows = sqlx::query_as!(
@@ -99,8 +95,7 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
     }
 
     // Assemble works grouped under their primary author.
-    let mut works_by_author: HashMap<Uuid, (PrimaryAuthor, Vec<LibraryWork>)> =
-        HashMap::new();
+    let mut works_by_author: HashMap<Uuid, (PrimaryAuthor, Vec<LibraryWork>)> = HashMap::new();
 
     for (work_id, mut book_versions) in versions_by_work {
         let Some(root_source) = sources.get(&work_id) else {
@@ -111,14 +106,13 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
         // fall back to role='editor' when the work has no author at all.
         let authors_of_root = authors_by_source.get(&work_id);
         let editors_of_root = editors_by_source.get(&work_id);
-        let (primary_list, is_editor_fallback): (&Vec<PersonRow>, bool) =
-            match authors_of_root {
-                Some(list) if !list.is_empty() => (list, false),
-                _ => match editors_of_root {
-                    Some(list) if !list.is_empty() => (list, true),
-                    _ => continue, // no author, no editor — drop silently
-                },
-            };
+        let (primary_list, is_editor_fallback): (&Vec<PersonRow>, bool) = match authors_of_root {
+            Some(list) if !list.is_empty() => (list, false),
+            _ => match editors_of_root {
+                Some(list) if !list.is_empty() => (list, true),
+                _ => continue, // no author, no editor — drop silently
+            },
+        };
 
         let primary = &primary_list[0];
         let primary_author = PrimaryAuthor {

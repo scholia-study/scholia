@@ -284,7 +284,10 @@ pub async fn check_source_references(
     .await?;
     let resources = ReferencedResources {
         count: resource_rows.len() as i64,
-        ids: resource_rows.into_iter().map(|r| r.id.to_string()).collect(),
+        ids: resource_rows
+            .into_iter()
+            .map(|r| r.id.to_string())
+            .collect(),
     };
 
     // 2. Child sources (parent_source_id or translation_of_id points here)
@@ -445,25 +448,21 @@ pub async fn delete_source(pool: &PgPool, source_id: Uuid) -> Result<(), AppErro
 }
 
 pub async fn is_source_protected(pool: &PgPool, source_id: Uuid) -> Result<bool, AppError> {
-    let protected = sqlx::query_scalar!(
-        r#"SELECT protected FROM sources WHERE id = $1"#,
-        source_id,
-    )
-    .fetch_optional(pool)
-    .await?
-    .ok_or_else(|| AppError::NotFound("Source not found".into()))?;
+    let protected =
+        sqlx::query_scalar!(r#"SELECT protected FROM sources WHERE id = $1"#, source_id,)
+            .fetch_optional(pool)
+            .await?
+            .ok_or_else(|| AppError::NotFound("Source not found".into()))?;
 
     Ok(protected)
 }
 
 pub async fn is_person_protected(pool: &PgPool, person_id: Uuid) -> Result<bool, AppError> {
-    let protected = sqlx::query_scalar!(
-        r#"SELECT protected FROM persons WHERE id = $1"#,
-        person_id,
-    )
-    .fetch_optional(pool)
-    .await?
-    .ok_or_else(|| AppError::NotFound("Person not found".into()))?;
+    let protected =
+        sqlx::query_scalar!(r#"SELECT protected FROM persons WHERE id = $1"#, person_id,)
+            .fetch_optional(pool)
+            .await?
+            .ok_or_else(|| AppError::NotFound("Person not found".into()))?;
 
     Ok(protected)
 }

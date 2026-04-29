@@ -204,7 +204,10 @@ pub async fn list_resources(
                 source_location_freeform: r.source_location_freeform,
                 is_featured: r.is_featured,
                 admin_notes: r.admin_notes,
-                created_at: r.created_at.format(&time::format_description::well_known::Rfc3339).unwrap_or_default(),
+                created_at: r
+                    .created_at
+                    .format(&time::format_description::well_known::Rfc3339)
+                    .unwrap_or_default(),
             }
         })
         .collect())

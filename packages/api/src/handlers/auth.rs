@@ -1,10 +1,10 @@
+use argon2::password_hash::SaltString;
+use argon2::password_hash::rand_core::OsRng;
+use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use axum::Json;
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Redirect, Response};
-use argon2::password_hash::rand_core::OsRng;
-use argon2::password_hash::SaltString;
-use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
 use time::{Duration, OffsetDateTime};
@@ -12,15 +12,13 @@ use tower_sessions::Session;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::auth::middleware::{invalidate_user_sessions, set_session_user, AuthUser};
+use crate::auth::middleware::{AuthUser, invalidate_user_sessions, set_session_user};
 use crate::auth::permissions::resolve_permission_names;
 use crate::auth::tokens;
 use crate::email;
 use crate::error::AppError;
 use crate::state::AppState;
-use crate::validation::{
-    check_max_len, MAX_DISPLAY_NAME, MAX_EMAIL, MAX_PASSWORD, MIN_PASSWORD,
-};
+use crate::validation::{MAX_DISPLAY_NAME, MAX_EMAIL, MAX_PASSWORD, MIN_PASSWORD, check_max_len};
 
 // ── Request / response types ────────────────────────────────
 
@@ -272,7 +270,10 @@ pub async fn login(
     }
 
     // Create session
-    if set_session_user(&session, &state.pool, user_id).await.is_err() {
+    if set_session_user(&session, &state.pool, user_id)
+        .await
+        .is_err()
+    {
         return StatusCode::INTERNAL_SERVER_ERROR.into_response();
     }
 
@@ -306,10 +307,7 @@ pub async fn login(
     ),
     tag = "auth"
 )]
-pub async fn logout(
-    State(state): State<AppState>,
-    session: Session,
-) -> Json<MessageResponse> {
+pub async fn logout(State(state): State<AppState>, session: Session) -> Json<MessageResponse> {
     let session_id = session.id().map(|id| id.to_string());
     let _ = session.flush().await;
 
@@ -527,10 +525,11 @@ pub async fn verify_email(
     let user_id: Uuid = token_row.get("user_id");
 
     // Mark email as verified
-    let _ = sqlx::query("UPDATE users SET email_verified_at = now(), updated_at = now() WHERE id = $1")
-        .bind(user_id)
-        .execute(&state.pool)
-        .await;
+    let _ =
+        sqlx::query("UPDATE users SET email_verified_at = now(), updated_at = now() WHERE id = $1")
+            .bind(user_id)
+            .execute(&state.pool)
+            .await;
 
     // Mark token as used
     let _ = sqlx::query("UPDATE email_verification_tokens SET used_at = now() WHERE id = $1")
@@ -558,17 +557,13 @@ pub async fn verify_email(
     ),
     tag = "auth"
 )]
-pub async fn get_profile(
-    State(state): State<AppState>,
-    user: AuthUser,
-) -> Json<ProfileResponse> {
-    let row = sqlx::query(
-        "SELECT password_hash IS NOT NULL as has_password FROM users WHERE id = $1",
-    )
-    .bind(user.id)
-    .fetch_one(&state.pool)
-    .await
-    .unwrap();
+pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<ProfileResponse> {
+    let row =
+        sqlx::query("SELECT password_hash IS NOT NULL as has_password FROM users WHERE id = $1")
+            .bind(user.id)
+            .fetch_one(&state.pool)
+            .await
+            .unwrap();
 
     let has_password: bool = row.get("has_password");
 
@@ -580,11 +575,12 @@ pub async fn get_profile(
     .await
     .unwrap_or_default();
 
-    let provider_rows = sqlx::query("SELECT provider, email FROM user_oauth_accounts WHERE user_id = $1")
-        .bind(user.id)
-        .fetch_all(&state.pool)
-        .await
-        .unwrap_or_default();
+    let provider_rows =
+        sqlx::query("SELECT provider, email FROM user_oauth_accounts WHERE user_id = $1")
+            .bind(user.id)
+            .fetch_all(&state.pool)
+            .await
+            .unwrap_or_default();
 
     let providers = provider_rows
         .iter()

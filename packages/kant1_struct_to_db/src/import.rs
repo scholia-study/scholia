@@ -24,8 +24,8 @@ pub async fn run(
     let mut tx = pool.begin().await?;
 
     // System user owns all seed-imported persons/sources; see db/001_schema.sql.
-    let system_user_id: Uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000001")
-        .expect("valid system user UUID");
+    let system_user_id: Uuid =
+        Uuid::parse_str("00000000-0000-0000-0000-000000000001").expect("valid system user UUID");
 
     let is_translation = source_book_slug.is_some();
 
@@ -37,7 +37,10 @@ pub async fn run(
                 .fetch_optional(&mut *tx)
                 .await?;
         let (book_id, src_id) = row.ok_or_else(|| format!("Source book not found: {slug}"))?;
-        eprintln!("Source book {:?} (book={}, source={})", slug, book_id, src_id);
+        eprintln!(
+            "Source book {:?} (book={}, source={})",
+            slug, book_id, src_id
+        );
         Some((book_id, src_id))
     } else {
         None
@@ -57,7 +60,11 @@ pub async fn run(
         // Auto-generate sort_name: "Immanuel Kant" → "Kant, Immanuel"
         let parts: Vec<&str> = output.book.author.split_whitespace().collect();
         if parts.len() >= 2 {
-            Some(format!("{}, {}", parts.last().unwrap(), parts[..parts.len() - 1].join(" ")))
+            Some(format!(
+                "{}, {}",
+                parts.last().unwrap(),
+                parts[..parts.len() - 1].join(" ")
+            ))
         } else {
             None
         }
@@ -112,17 +119,19 @@ pub async fn run(
     let mut system_ids: HashMap<String, Uuid> = HashMap::new();
 
     if let Some(source_id) = source_book_id {
-        let rows: Vec<(Uuid, String)> = sqlx::query_as(
-            "SELECT id, slug FROM reference_systems WHERE book_id = $1",
-        )
-        .bind(source_id)
-        .fetch_all(&mut *tx)
-        .await?;
+        let rows: Vec<(Uuid, String)> =
+            sqlx::query_as("SELECT id, slug FROM reference_systems WHERE book_id = $1")
+                .bind(source_id)
+                .fetch_all(&mut *tx)
+                .await?;
 
         for (id, slug) in rows {
             system_ids.insert(slug, id);
         }
-        eprintln!("Reusing {} reference systems from source book", system_ids.len());
+        eprintln!(
+            "Reusing {} reference systems from source book",
+            system_ids.len()
+        );
     } else {
         for sys in &output.reference_systems {
             let sys_id: Uuid = sqlx::query_scalar(
@@ -153,12 +162,11 @@ pub async fn run(
     let mut source_fn_sentence_counts: HashMap<i32, i16> = HashMap::new();
 
     if let Some(source_id) = source_book_id {
-        let node_rows: Vec<(Uuid, String)> = sqlx::query_as(
-            "SELECT id, source_ref FROM toc_nodes WHERE book_id = $1",
-        )
-        .bind(source_id)
-        .fetch_all(&mut *tx)
-        .await?;
+        let node_rows: Vec<(Uuid, String)> =
+            sqlx::query_as("SELECT id, source_ref FROM toc_nodes WHERE book_id = $1")
+                .bind(source_id)
+                .fetch_all(&mut *tx)
+                .await?;
 
         for (id, source_ref) in node_rows {
             source_node_map.insert(source_ref, id);

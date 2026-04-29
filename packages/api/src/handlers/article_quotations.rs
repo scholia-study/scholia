@@ -10,7 +10,7 @@ use crate::models::article_quotation::{
     CreateArticleQuotationResponse,
 };
 use crate::state::AppState;
-use crate::validation::{check_max_len, MAX_ARTICLE_QUOTATION_HTML, MAX_ARTICLE_QUOTATION_TEXT};
+use crate::validation::{MAX_ARTICLE_QUOTATION_HTML, MAX_ARTICLE_QUOTATION_TEXT, check_max_len};
 
 /// Save a quotation from an article (returns existing if duplicate)
 #[utoipa::path(
@@ -73,9 +73,7 @@ pub async fn list_article_quotations(
     let article_quotations =
         db::article_quotations::list_article_quotations(&state.pool, user.id).await?;
 
-    Ok(Json(ArticleQuotationListResponse {
-        article_quotations,
-    }))
+    Ok(Json(ArticleQuotationListResponse { article_quotations }))
 }
 
 /// Get a single article quotation (for directive hydration)

@@ -3,14 +3,14 @@ use sqlx::PgPool;
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::auth::permissions::{resolve_permissions, Permission};
+use crate::auth::permissions::{Permission, resolve_permissions};
 use crate::error::AppError;
 use crate::models::article::{
     ArticleDetailResponse, ArticleLimitsResponse, ArticleResponse, BatchSentenceResponseItem,
     SentenceData, SourceContext, TopicResponse,
 };
 use crate::validation::{
-    check_max_len, MAX_ARTICLE_DESCRIPTION, MAX_ARTICLE_MARKDOWN, MAX_ARTICLE_TITLE,
+    MAX_ARTICLE_DESCRIPTION, MAX_ARTICLE_MARKDOWN, MAX_ARTICLE_TITLE, check_max_len,
 };
 
 // ── Tier limits ──────────────────────────────────────────
@@ -27,8 +27,8 @@ const PAID_ARTICLES_ARCHIVE: i32 = 1000;
 /// Articles are meant for serious study; emoji are out of scope.
 fn reject_emoji(field: &str, value: &str) -> Result<(), AppError> {
     static EMOJI_RE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
-    let re = EMOJI_RE
-        .get_or_init(|| Regex::new(r"\p{Extended_Pictographic}").expect("emoji regex"));
+    let re =
+        EMOJI_RE.get_or_init(|| Regex::new(r"\p{Extended_Pictographic}").expect("emoji regex"));
     if re.is_match(value) {
         return Err(AppError::BadRequest(format!(
             "Emoji and pictographic characters are not allowed in the article {field}."
@@ -175,8 +175,7 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
     // so accept both forms.
     let article_q_re =
         Regex::new(r#"::article-quotation\{([^}]+)\}"#).expect("Invalid article-quotation regex");
-    let id_shorthand_re =
-        Regex::new(r#"#([^\s}]+)"#).expect("Invalid id shorthand regex");
+    let id_shorthand_re = Regex::new(r#"#([^\s}]+)"#).expect("Invalid id shorthand regex");
     let mut article_q_placeholder_map: Vec<String> = Vec::new();
     let processed = article_q_re.replace_all(&processed, |caps: &regex::Captures| {
         let attrs_str = &caps[1];
@@ -192,8 +191,7 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
         if !data_attrs.contains("data-article-quotation-id=") {
             if let Some(id_cap) = id_shorthand_re.captures(attrs_str) {
                 let val = &id_cap[1];
-                data_attrs
-                    .push_str(&format!(r#" data-article-quotation-id="{val}""#));
+                data_attrs.push_str(&format!(r#" data-article-quotation-id="{val}""#));
             }
         }
 
@@ -202,7 +200,8 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
     });
 
     // Pre-process: extract :cite{sources="..."} directives
-    let cite_re = Regex::new(r#":cite\{[^}]*?sources="([^"]+)"[^}]*?\}"#).expect("Invalid cite regex");
+    let cite_re =
+        Regex::new(r#":cite\{[^}]*?sources="([^"]+)"[^}]*?\}"#).expect("Invalid cite regex");
 
     // Collect all citation entries: Vec<(placeholder_index, Vec<(source_id, pages)>)>
     let mut citation_map: Vec<Vec<(String, String)>> = Vec::new();
@@ -274,8 +273,7 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
     // Post-process: replace article quotation placeholder comments with actual divs
     for (idx, data_attrs) in article_q_placeholder_map.iter().enumerate() {
         let placeholder = format!("<!--ARTICLE_QUOTATION_PLACEHOLDER_{idx}-->");
-        let replacement =
-            format!(r#"<div class="article-quotation-embed"{data_attrs}></div>"#);
+        let replacement = format!(r#"<div class="article-quotation-embed"{data_attrs}></div>"#);
         html_output = html_output.replace(&placeholder, &replacement);
     }
 
@@ -310,7 +308,9 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
         let mut bib_entries: Vec<String> = bibliography_sources
             .iter()
             .filter_map(|id| {
-                source_data.get(id).map(|data| format_bibliography_entry(data))
+                source_data
+                    .get(id)
+                    .map(|data| format_bibliography_entry(data))
             })
             .collect();
         bib_entries.sort();
@@ -329,7 +329,7 @@ struct CitationSourceData {
     title: String,
     publication_year: Option<i16>,
     publisher: Option<String>,
-    authors: Vec<String>,         // sorted by position
+    authors: Vec<String>, // sorted by position
     author_sort_names: Vec<String>,
 }
 
@@ -357,13 +357,16 @@ async fn fetch_citation_data(
     .unwrap_or_default();
 
     for s in &sources {
-        map.insert(s.id, CitationSourceData {
-            title: s.title.clone(),
-            publication_year: s.publication_year,
-            publisher: s.publisher.clone(),
-            authors: Vec::new(),
-            author_sort_names: Vec::new(),
-        });
+        map.insert(
+            s.id,
+            CitationSourceData {
+                title: s.title.clone(),
+                publication_year: s.publication_year,
+                publisher: s.publisher.clone(),
+                authors: Vec::new(),
+                author_sort_names: Vec::new(),
+            },
+        );
     }
 
     struct PersonRow {
@@ -388,12 +391,14 @@ async fn fetch_citation_data(
     for p in persons {
         if let Some(data) = map.get_mut(&p.source_id) {
             data.authors.push(p.name.clone());
-            data.author_sort_names.push(
-                p.sort_name.unwrap_or_else(|| {
-                    // Derive last name from full name
-                    p.name.split_whitespace().last().unwrap_or(&p.name).to_string()
-                }),
-            );
+            data.author_sort_names.push(p.sort_name.unwrap_or_else(|| {
+                // Derive last name from full name
+                p.name
+                    .split_whitespace()
+                    .last()
+                    .unwrap_or(&p.name)
+                    .to_string()
+            }));
         }
     }
 
@@ -415,7 +420,11 @@ fn format_inline_citation(
                 Some(d) if d.authors.is_empty() => "Unknown".to_string(),
                 Some(d) if d.authors.len() == 1 => last_name(&d.authors[0]),
                 Some(d) if d.authors.len() == 2 => {
-                    format!("{} and {}", last_name(&d.authors[0]), last_name(&d.authors[1]))
+                    format!(
+                        "{} and {}",
+                        last_name(&d.authors[0]),
+                        last_name(&d.authors[1])
+                    )
                 }
                 Some(d) => format!("{} et al.", last_name(&d.authors[0])),
                 None => "Unknown".to_string(),
@@ -452,7 +461,11 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
         if rest.len() == 1 {
             format!("{first}, and {}", rest[0])
         } else {
-            format!("{first}, {}, and {}", rest[..rest.len() - 1].join(", "), rest.last().unwrap())
+            format!(
+                "{first}, {}, and {}",
+                rest[..rest.len() - 1].join(", "),
+                rest.last().unwrap()
+            )
         }
     };
 
@@ -578,10 +591,7 @@ pub async fn get_published_article_by_slug(
     Ok(article_detail_response(row, topics))
 }
 
-pub async fn get_article_by_id(
-    pool: &PgPool,
-    id: Uuid,
-) -> Result<ArticleDetailResponse, AppError> {
+pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailResponse, AppError> {
     let row = sqlx::query_as!(
         ArticleRow,
         r#"SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,

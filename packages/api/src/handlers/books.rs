@@ -15,9 +15,7 @@ use crate::state::AppState;
     ),
     tag = "books"
 )]
-pub async fn list_books(
-    State(state): State<AppState>,
-) -> Result<Json<Vec<BookSummary>>, AppError> {
+pub async fn list_books(State(state): State<AppState>) -> Result<Json<Vec<BookSummary>>, AppError> {
     let books = db::books::list_books(&state.pool).await?;
     Ok(Json(books))
 }

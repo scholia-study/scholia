@@ -47,19 +47,34 @@ mod tests {
 
     #[test]
     fn test_slugify() {
-        assert_eq!(slugify("Vorrede zur zweiten Auflage"), "vorrede_zur_zweiten_auflage");
+        assert_eq!(
+            slugify("Vorrede zur zweiten Auflage"),
+            "vorrede_zur_zweiten_auflage"
+        );
         assert_eq!(slugify("Motto"), "motto");
         assert_eq!(slugify("§1"), "1");
-        assert_eq!(slugify("I. Transscendentale Elementarlehre"), "i_transscendentale_elementarlehre");
-        assert_eq!(slugify("Die transscendentale Ästhetik"), "die_transscendentale_aesthetik");
-        assert_eq!(slugify("1. Hauptstück. Von dem Schematismus"), "1_hauptstueck_von_dem_schematismus");
+        assert_eq!(
+            slugify("I. Transscendentale Elementarlehre"),
+            "i_transscendentale_elementarlehre"
+        );
+        assert_eq!(
+            slugify("Die transscendentale Ästhetik"),
+            "die_transscendentale_aesthetik"
+        );
+        assert_eq!(
+            slugify("1. Hauptstück. Von dem Schematismus"),
+            "1_hauptstueck_von_dem_schematismus"
+        );
         assert_eq!(slugify("Grundsätze"), "grundsaetze");
     }
 
     #[test]
     fn test_filename() {
         assert_eq!(filename(0, "Motto"), "001_motto.md");
-        assert_eq!(filename(2, "Vorrede zur zweiten Auflage"), "003_vorrede_zur_zweiten_auflage.md");
+        assert_eq!(
+            filename(2, "Vorrede zur zweiten Auflage"),
+            "003_vorrede_zur_zweiten_auflage.md"
+        );
     }
 
     #[test]
@@ -67,6 +82,9 @@ mod tests {
         let fnames = all_filenames();
         assert_eq!(fnames.len(), 114);
         assert_eq!(fnames[0], (0, "001_motto.md".to_string()));
-        assert_eq!(fnames[2], (2, "003_vorrede_zur_zweiten_auflage.md".to_string()));
+        assert_eq!(
+            fnames[2],
+            (2, "003_vorrede_zur_zweiten_auflage.md".to_string())
+        );
     }
 }

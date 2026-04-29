@@ -34,10 +34,28 @@ static SPLIT_RE: LazyLock<Regex> = LazyLock::new(|| {
 /// - Multi-word abbreviations: checked by looking at a window around the split point
 static SINGLE_ABBREVS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
     vec![
-        "bzw.", "usf.", "usw.", "vgl.", "sog.", "evtl.", "bes.", "Anm.", "Bd.", "Kap.", "Nr.",
-        "St.", "Dr.", "Fr.", "Hr.", "Prof.",
+        "bzw.",
+        "usf.",
+        "usw.",
+        "vgl.",
+        "sog.",
+        "evtl.",
+        "bes.",
+        "Anm.",
+        "Bd.",
+        "Kap.",
+        "Nr.",
+        "St.",
+        "Dr.",
+        "Fr.",
+        "Hr.",
+        "Prof.",
         // Honorific/title abbreviations common in older German texts
-        "Sr.", "Ew.", "Königl.", "Hochfürstl.", "Hochgräfl.",
+        "Sr.",
+        "Ew.",
+        "Königl.",
+        "Hochfürstl.",
+        "Hochgräfl.",
     ]
 });
 
@@ -86,11 +104,7 @@ pub fn split_sentences(text: &str, html: &str) -> Vec<(String, String)> {
 ///
 /// `forced` contains byte offsets in `text` where sentence boundaries should be inserted
 /// regardless of punctuation.
-pub fn split_sentences_forced(
-    text: &str,
-    html: &str,
-    forced: &[usize],
-) -> Vec<(String, String)> {
+pub fn split_sentences_forced(text: &str, html: &str, forced: &[usize]) -> Vec<(String, String)> {
     if text.is_empty() {
         return vec![];
     }
@@ -299,9 +313,10 @@ fn track_tags_in_segment(segment: &str, open_tags: &mut Vec<String>) {
             if matches!(tag_name, "i" | "b" | "sup" | "sub" | "span") {
                 if is_closing {
                     // Remove the last matching open tag (match by tag name prefix)
-                    if let Some(pos) = open_tags.iter().rposition(|t| {
-                        t == tag_name || t.starts_with(&format!("{tag_name} "))
-                    }) {
+                    if let Some(pos) = open_tags
+                        .iter()
+                        .rposition(|t| t == tag_name || t.starts_with(&format!("{tag_name} ")))
+                    {
                         open_tags.remove(pos);
                     }
                 } else {
@@ -332,9 +347,9 @@ fn tag_name_of(full_tag: &str) -> &str {
 /// English single-word abbreviations that should NOT trigger a sentence split.
 static SINGLE_ABBREVS_EN: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
     vec![
-        "Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Rev.", "St.", "Jr.", "Sr.",
-        "vs.", "Vol.", "No.", "Gen.", "Gov.", "Sgt.", "Corp.", "Inc.", "Ltd.",
-        "Jan.", "Feb.", "Mar.", "Apr.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec.",
+        "Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Rev.", "St.", "Jr.", "Sr.", "vs.", "Vol.", "No.",
+        "Gen.", "Gov.", "Sgt.", "Corp.", "Inc.", "Ltd.", "Jan.", "Feb.", "Mar.", "Apr.", "Aug.",
+        "Sept.", "Oct.", "Nov.", "Dec.",
     ]
 });
 
@@ -368,11 +383,8 @@ pub fn split_sentences_en_forced(
         return vec![];
     }
 
-    let mut split_positions = find_text_split_positions_with(
-        text,
-        &SINGLE_ABBREVS_EN,
-        &MULTI_ABBREV_RE_EN,
-    );
+    let mut split_positions =
+        find_text_split_positions_with(text, &SINGLE_ABBREVS_EN, &MULTI_ABBREV_RE_EN);
     split_positions.extend_from_slice(forced);
     split_positions.sort_unstable();
     split_positions.dedup();
@@ -417,7 +429,9 @@ fn find_text_split_positions_with(
 
         // Check single-word abbreviations
         let trimmed = preceding.trim_end();
-        let is_single = single_abbrevs.iter().any(|abbrev| trimmed.ends_with(abbrev));
+        let is_single = single_abbrevs
+            .iter()
+            .any(|abbrev| trimmed.ends_with(abbrev));
         if is_single {
             continue;
         }
@@ -599,14 +613,8 @@ mod tests {
         let html = "<span class=\"antiqua\">Erster Satz. Zweiter Satz.</span>";
         let result = split_sentences(text, html);
         assert_eq!(result.len(), 2);
-        assert_eq!(
-            result[0].1,
-            "<span class=\"antiqua\">Erster Satz.</span>"
-        );
-        assert_eq!(
-            result[1].1,
-            "<span class=\"antiqua\">Zweiter Satz.</span>"
-        );
+        assert_eq!(result[0].1, "<span class=\"antiqua\">Erster Satz.</span>");
+        assert_eq!(result[1].1, "<span class=\"antiqua\">Zweiter Satz.</span>");
     }
 
     #[test]
@@ -679,10 +687,7 @@ mod tests {
             result[0].0,
             "proof of the objective reality of outer intuition p. 275."
         );
-        assert_eq!(
-            result[1].0,
-            "However innocent idealism may be."
-        );
+        assert_eq!(result[1].0, "However innocent idealism may be.");
     }
 
     #[test]
@@ -739,7 +744,10 @@ mod tests {
         let result = split_sentences_en_forced(text, html, &[20]); // split before the quote
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].0, "altered as follows:");
-        assert_eq!(result[1].0, "\"This permanent, however, cannot be an intuition in me.\"");
+        assert_eq!(
+            result[1].0,
+            "\"This permanent, however, cannot be an intuition in me.\""
+        );
     }
 
     #[test]
@@ -775,6 +783,10 @@ mod tests {
         }
 
         assert_eq!(de_sentences.len(), 7, "DE should have 7 sentences");
-        assert_eq!(en_sentences.len(), 7, "EN should have 7 sentences (currently produces 6 — which boundary is missed?)");
+        assert_eq!(
+            en_sentences.len(),
+            7,
+            "EN should have 7 sentences (currently produces 6 — which boundary is missed?)"
+        );
     }
 }

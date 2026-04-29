@@ -2,19 +2,16 @@ use std::collections::HashMap;
 
 use common::kant1::filenames::slugify;
 use common::kant1::toc_mod;
-use common::sentences::{
-    split_sentences_forced, strip_forced_split_markers, strip_forced_splits,
-};
+use common::sentences::{split_sentences_forced, strip_forced_split_markers, strip_forced_splits};
 use regex::Regex;
 use std::sync::LazyLock;
 
-use kant1_md_to_struct::html::{md_to_html, md_to_plain, FOOTNOTE_REF_RE};
+use kant1_md_to_struct::html::{FOOTNOTE_REF_RE, md_to_html, md_to_plain};
 use kant1_md_to_struct::model::*;
 use kant1_md_to_struct::parse::{MarkerKind, ParsedBlock, ParsedBlockType, RawMarker};
 
 /// Regex to find `<sup>NUMBER</sup>` in rendered HTML (only footnote refs produce these).
-static SUP_NUMBER_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"<sup>(\d+)</sup>").unwrap());
+static SUP_NUMBER_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<sup>(\d+)</sup>").unwrap());
 
 /// Intermediate per-file parsed data.
 pub struct ParsedFile {
@@ -145,7 +142,9 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
 
             TocNodeData {
                 source_ref: format!("{:03}", pf.flat_index + 1),
-                slug: slug_override.map(|s| s.to_string()).unwrap_or_else(|| slugify(&plain_label)),
+                slug: slug_override
+                    .map(|s| s.to_string())
+                    .unwrap_or_else(|| slugify(&plain_label)),
                 path,
                 sort_order: pf.flat_index as i32 + 1,
                 depth: depth as i16,
@@ -242,13 +241,15 @@ fn build_block(
                 let content = footnote_content.get(key)?;
 
                 // Sentence-split the footnote body
-                let (fn_plain, fn_forced) = strip_forced_splits(&md_to_plain(&content.modernized_text));
+                let (fn_plain, fn_forced) =
+                    strip_forced_splits(&md_to_plain(&content.modernized_text));
                 let fn_html = strip_forced_split_markers(&md_to_html(&content.modernized_text));
                 let fn_pairs = split_sentences_forced(&fn_plain, &fn_html, &fn_forced);
 
                 let (fn_orig_plain, _) = strip_forced_splits(&md_to_plain(&content.original_text));
                 let fn_orig_html = strip_forced_split_markers(&md_to_html(&content.original_text));
-                let fn_orig_pairs = split_sentences_forced(&fn_orig_plain, &fn_orig_html, &fn_forced);
+                let fn_orig_pairs =
+                    split_sentences_forced(&fn_orig_plain, &fn_orig_html, &fn_forced);
 
                 let fn_sentences: Vec<FootnoteSentenceData> = fn_pairs
                     .iter()
@@ -347,7 +348,10 @@ fn find_parent_source_ref(
 
 /// Derive slug from a TOC entry, using override if present.
 fn entry_slug(entry: &(usize, u16, u16, &str, Option<&str>)) -> String {
-    entry.4.map(|s| s.to_string()).unwrap_or_else(|| slugify(&md_to_plain(entry.3)))
+    entry
+        .4
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| slugify(&md_to_plain(entry.3)))
 }
 
 /// Build an ltree path from slugs of ancestors.

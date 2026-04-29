@@ -51,10 +51,7 @@ pub fn render_md(node: &MdTocNode) -> String {
 
 /// Insert `{{ ref }}` B-page markers into text at b_page_anchor char offsets.
 /// Inserts right-to-left to preserve earlier offsets.
-fn insert_b_page_markers(
-    text: &str,
-    anchors: &[crate::stitch::BPageAnchor],
-) -> String {
+fn insert_b_page_markers(text: &str, anchors: &[crate::stitch::BPageAnchor]) -> String {
     if anchors.is_empty() {
         return text.to_string();
     }
@@ -100,10 +97,8 @@ fn maybe_prepend_aa_page(text: String, aa_page: u16, prev: &mut Option<u16>) -> 
 pub fn render_toc(emitted: &[&MdTocNode]) -> String {
     let flat = toc::flat_toc_entries();
     // Build a set of flat_indices that have emitted files
-    let emitted_set: std::collections::HashMap<usize, &MdTocNode> = emitted
-        .iter()
-        .map(|n| (n.flat_index, *n))
-        .collect();
+    let emitted_set: std::collections::HashMap<usize, &MdTocNode> =
+        emitted.iter().map(|n| (n.flat_index, *n)).collect();
 
     let mut out = String::new();
     out.push_str("# Kritik der reinen Vernunft\n\n");
@@ -114,7 +109,10 @@ pub fn render_toc(emitted: &[&MdTocNode]) -> String {
         let indent = "  ".repeat(depth.saturating_sub(1) as usize);
         if let Some(node) = emitted_set.get(&idx) {
             let fname = filename(node.flat_index, &node.label);
-            out.push_str(&format!("{}- [{}]({}) — AA {}\n", indent, label, fname, aa_page));
+            out.push_str(&format!(
+                "{}- [{}]({}) — AA {}\n",
+                indent, label, fname, aa_page
+            ));
         } else {
             out.push_str(&format!("{}- {} — AA {}\n", indent, label, aa_page));
         }
@@ -131,19 +129,34 @@ mod tests {
 
     #[test]
     fn test_slugify() {
-        assert_eq!(slugify("Vorrede zur zweiten Auflage"), "vorrede_zur_zweiten_auflage");
+        assert_eq!(
+            slugify("Vorrede zur zweiten Auflage"),
+            "vorrede_zur_zweiten_auflage"
+        );
         assert_eq!(slugify("Motto"), "motto");
         assert_eq!(slugify("§1"), "1");
-        assert_eq!(slugify("I. Transscendentale Elementarlehre"), "i_transscendentale_elementarlehre");
-        assert_eq!(slugify("Die transscendentale Ästhetik"), "die_transscendentale_aesthetik");
-        assert_eq!(slugify("1. Hauptstück. Von dem Schematismus"), "1_hauptstueck_von_dem_schematismus");
+        assert_eq!(
+            slugify("I. Transscendentale Elementarlehre"),
+            "i_transscendentale_elementarlehre"
+        );
+        assert_eq!(
+            slugify("Die transscendentale Ästhetik"),
+            "die_transscendentale_aesthetik"
+        );
+        assert_eq!(
+            slugify("1. Hauptstück. Von dem Schematismus"),
+            "1_hauptstueck_von_dem_schematismus"
+        );
         assert_eq!(slugify("Grundsätze"), "grundsaetze");
     }
 
     #[test]
     fn test_filename() {
         assert_eq!(filename(0, "Motto"), "001_motto.md");
-        assert_eq!(filename(2, "Vorrede zur zweiten Auflage"), "003_vorrede_zur_zweiten_auflage.md");
+        assert_eq!(
+            filename(2, "Vorrede zur zweiten Auflage"),
+            "003_vorrede_zur_zweiten_auflage.md"
+        );
     }
 
     #[test]
@@ -158,7 +171,10 @@ mod tests {
                     block_type: MdBlockType::Heading,
                     text: "BACO DE VERULAMIO.".to_string(),
                     aa_page: 2,
-                    b_page_anchors: vec![BPageAnchor { b_page: "II".to_string(), char_offset: 0 }],
+                    b_page_anchors: vec![BPageAnchor {
+                        b_page: "II".to_string(),
+                        char_offset: 0,
+                    }],
                 },
                 MdBlock {
                     block_type: MdBlockType::Paragraph,
@@ -167,12 +183,10 @@ mod tests {
                     b_page_anchors: vec![],
                 },
             ],
-            footnotes: vec![
-                MdFootnote {
-                    marker: "1".to_string(),
-                    text: "Das Motto ist dem Titel entnommen.".to_string(),
-                },
-            ],
+            footnotes: vec![MdFootnote {
+                marker: "1".to_string(),
+                text: "Das Motto ist dem Titel entnommen.".to_string(),
+            }],
         };
         let md = render_md(&node);
         assert!(md.contains("---\nposition: 1\n"));
@@ -184,9 +198,10 @@ mod tests {
 
     #[test]
     fn test_b_page_marker_insertion() {
-        let anchors = vec![
-            BPageAnchor { b_page: "XIV".to_string(), char_offset: 16 },
-        ];
+        let anchors = vec![BPageAnchor {
+            b_page: "XIV".to_string(),
+            char_offset: 16,
+        }];
         let result = insert_b_page_markers("Erster Teil des Satzes hier.", &anchors);
         assert_eq!(result, "Erster Teil des {{ XIV }} Satzes hier.");
     }

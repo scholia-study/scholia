@@ -12,10 +12,10 @@ use crate::models::resource::{
 };
 use crate::state::AppState;
 use crate::validation::{
-    check_count, check_int_range, check_max_len, MAX_PUBLICATION_YEAR, MAX_SOURCE_DOI,
-    MAX_SOURCE_EDITION, MAX_SOURCE_ISBNS, MAX_SOURCE_ISBN_LEN, MAX_SOURCE_JOURNAL_NAME,
-    MAX_SOURCE_PAGE, MAX_SOURCE_PUBLISHER, MAX_SOURCE_TITLE, MAX_SOURCE_TITLE_DISPLAY,
-    MAX_SOURCE_URL, MAX_SOURCE_VOLUME, MIN_PUBLICATION_YEAR, MIN_SOURCE_PAGE,
+    MAX_PUBLICATION_YEAR, MAX_SOURCE_DOI, MAX_SOURCE_EDITION, MAX_SOURCE_ISBN_LEN,
+    MAX_SOURCE_ISBNS, MAX_SOURCE_JOURNAL_NAME, MAX_SOURCE_PAGE, MAX_SOURCE_PUBLISHER,
+    MAX_SOURCE_TITLE, MAX_SOURCE_TITLE_DISPLAY, MAX_SOURCE_URL, MAX_SOURCE_VOLUME,
+    MIN_PUBLICATION_YEAR, MIN_SOURCE_PAGE, check_count, check_int_range, check_max_len,
 };
 
 async fn guard_source_edit(
@@ -81,7 +81,12 @@ fn validate_source_fields(
         }
     }
     if let Some(y) = publication_year {
-        check_int_range("Publication year", y, MIN_PUBLICATION_YEAR, MAX_PUBLICATION_YEAR)?;
+        check_int_range(
+            "Publication year",
+            y,
+            MIN_PUBLICATION_YEAR,
+            MAX_PUBLICATION_YEAR,
+        )?;
     }
     if let Some(p) = page_start {
         check_int_range("Page start", p, MIN_SOURCE_PAGE, MAX_SOURCE_PAGE)?;
@@ -153,11 +158,7 @@ pub async fn browse_sources(
         None
     };
 
-    let q_trimmed = params
-        .q
-        .as_deref()
-        .map(str::trim)
-        .filter(|s| !s.is_empty());
+    let q_trimmed = params.q.as_deref().map(str::trim).filter(|s| !s.is_empty());
 
     let (sources, total) = db::sources::browse_sources(
         &state.pool,
@@ -197,8 +198,8 @@ pub async fn get_source(
         return Err(AppError::Forbidden("Insufficient permissions".into()));
     }
 
-    let source_id = uuid::Uuid::parse_str(&id)
-        .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+    let source_id =
+        uuid::Uuid::parse_str(&id).map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
 
     let source = db::sources::get_source(&state.pool, source_id).await?;
     Ok(Json(source))
@@ -300,8 +301,8 @@ pub async fn update_source(
     Path(id): Path<String>,
     Json(body): Json<UpdateSourceRequest>,
 ) -> Result<Json<SourceResponse>, AppError> {
-    let source_id = uuid::Uuid::parse_str(&id)
-        .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+    let source_id =
+        uuid::Uuid::parse_str(&id).map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
 
     if body.source_type.is_some() {
         return Err(AppError::BadRequest(
@@ -399,8 +400,8 @@ pub async fn add_source_person(
     Path(id): Path<String>,
     Json(body): Json<LinkSourcePersonRequest>,
 ) -> Result<Json<()>, AppError> {
-    let source_id = uuid::Uuid::parse_str(&id)
-        .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+    let source_id =
+        uuid::Uuid::parse_str(&id).map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
 
     guard_source_edit(&state.pool, &user, source_id).await?;
 
@@ -440,8 +441,8 @@ pub async fn remove_source_person(
     user: AuthUser,
     Path((id, person_id, role)): Path<(String, String, String)>,
 ) -> Result<Json<()>, AppError> {
-    let source_id = uuid::Uuid::parse_str(&id)
-        .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+    let source_id =
+        uuid::Uuid::parse_str(&id).map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
 
     guard_source_edit(&state.pool, &user, source_id).await?;
 
@@ -473,8 +474,8 @@ pub async fn delete_source(
     user: AuthUser,
     Path(id): Path<String>,
 ) -> Result<Json<()>, AppError> {
-    let source_id = uuid::Uuid::parse_str(&id)
-        .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+    let source_id =
+        uuid::Uuid::parse_str(&id).map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
 
     let current = db::sources::get_source(&state.pool, source_id).await?;
     let is_editor = user.has_permission(Permission::ResourcesManage);
@@ -522,11 +523,10 @@ pub async fn check_source_references(
         return Err(AppError::Forbidden("Insufficient permissions".into()));
     }
 
-    let source_id = uuid::Uuid::parse_str(&id)
-        .map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
+    let source_id =
+        uuid::Uuid::parse_str(&id).map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
 
-    let response =
-        db::sources::check_source_references(&state.pool, source_id, user.id).await?;
+    let response = db::sources::check_source_references(&state.pool, source_id, user.id).await?;
 
     Ok(Json(response))
 }
