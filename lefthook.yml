@@ -5,6 +5,11 @@ pre-commit:
       glob: "*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc}"
       run: pnpm exec biome check --write {staged_files}
       stage_fixed: true
+    cargo-fmt:
+      priority: 1
+      glob: "*.rs"
+      run: cargo fmt --all
+      stage_fixed: true
     turbo:
       priority: 2
       run: pnpm run validate
