@@ -63,6 +63,10 @@ pub struct QuotationWithContextResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub anchor_sentence_end_number: Option<i32>,
     pub sentence_kind: String,
+    /// For footnote-kind anchors: the body sentence number the footnote is
+    /// attached to. None for body-kind anchors.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub anchor_main_sentence_number: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub start_text_snippet: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -89,6 +93,10 @@ pub struct NoteWithContextResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub anchor_sentence_end_number: Option<i32>,
     pub sentence_kind: String,
+    /// For footnote-kind anchors: the body sentence number the footnote is
+    /// attached to. None for body-kind anchors.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub anchor_main_sentence_number: Option<i32>,
     pub quotation_id: String,
     pub created_at: String,
     pub updated_at: String,

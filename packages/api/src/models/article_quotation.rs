@@ -52,6 +52,10 @@ pub enum UnifiedQuotationResponse {
         #[serde(skip_serializing_if = "Option::is_none")]
         anchor_sentence_end_number: Option<i32>,
         sentence_kind: String,
+        /// For footnote-kind anchors: the body sentence number the footnote
+        /// is attached to. None for body-kind anchors.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        anchor_main_sentence_number: Option<i32>,
         #[serde(skip_serializing_if = "Option::is_none")]
         start_text_snippet: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]

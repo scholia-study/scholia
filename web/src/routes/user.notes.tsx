@@ -38,8 +38,34 @@ export const Route = createFileRoute("/user/notes")({
 function sentenceLabel(n: NoteWithContextResponse): string {
     const start = n.anchor_sentence_start_number;
     const end = n.anchor_sentence_end_number;
-    if (end == null || end === start) return `Sentence ${start}`;
-    return `Sentences ${start}–${end}`;
+    const isFootnote = n.sentence_kind === "footnote";
+    const single = isFootnote ? "Footnote sentence" : "Sentence";
+    const plural = isFootnote ? "Footnote sentences" : "Sentences";
+    if (end == null || end === start) return `${single} ${start}`;
+    return `${plural} ${start}–${end}`;
+}
+
+function noteLinkSearch(n: NoteWithContextResponse): {
+    s: string;
+    fs?: string;
+    r: string;
+    rv: string;
+} {
+    const startStr = String(n.anchor_sentence_start_number);
+    const rangeStr =
+        n.anchor_sentence_end_number &&
+        n.anchor_sentence_end_number !== n.anchor_sentence_start_number
+            ? `${n.anchor_sentence_start_number}-${n.anchor_sentence_end_number}`
+            : startStr;
+    if (n.sentence_kind === "footnote" && n.anchor_main_sentence_number) {
+        return {
+            s: String(n.anchor_main_sentence_number),
+            fs: rangeStr,
+            r: "1",
+            rv: "notes",
+        };
+    }
+    return { s: rangeStr, r: "1", rv: "notes" };
 }
 
 function NotesPage() {
@@ -263,16 +289,7 @@ function NoteItem({
                         bookSlug: note.book_slug,
                         nodeSlug: note.node_slug,
                     }}
-                    search={{
-                        s:
-                            note.anchor_sentence_end_number &&
-                            note.anchor_sentence_end_number !==
-                                note.anchor_sentence_start_number
-                                ? `${note.anchor_sentence_start_number}-${note.anchor_sentence_end_number}`
-                                : String(note.anchor_sentence_start_number),
-                        r: "1",
-                        rv: "notes",
-                    }}
+                    search={noteLinkSearch(note)}
                     className="flex-1 min-w-0"
                 >
                     <p className="text-sm text-stone-700 whitespace-pre-wrap break-words line-clamp-3">

@@ -1,5 +1,7 @@
-import { Popover } from "@mui/material";
+import CloseOutlined from "@mui/icons-material/CloseOutlined";
+import { IconButton, Paper, Popper } from "@mui/material";
 import parse from "html-react-parser";
+import { useEffect } from "react";
 import type { FootnoteResponse } from "../../../api/model";
 import { useFootnoteActions, useFootnoteSelection } from "../context/selection";
 
@@ -19,35 +21,49 @@ export function FootnotePopover({
     showOriginal,
 }: FootnotePopoverProps) {
     const { select } = useFootnoteActions();
+
+    useEffect(() => {
+        if (!open) return;
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose();
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [open, onClose]);
+
     return (
-        <Popover
+        <Popper
             open={open}
             anchorEl={anchorEl}
-            onClose={onClose}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-            transformOrigin={{ vertical: "top", horizontal: "center" }}
-            slotProps={{
-                paper: {
-                    sx: { maxWidth: 480, boxShadow: 3 },
-                },
-            }}
+            placement="bottom"
+            sx={{ zIndex: 1300 }}
+            modifiers={[{ name: "offset", options: { offset: [0, 4] } }]}
         >
-            <div className="px-3 py-2 border-b border-stone-200">
-                <span className="text-xs font-medium text-stone-500">
-                    Footnote {footnote.number}
-                </span>
-            </div>
-            <div className="px-3 py-2 max-h-[40vh] overflow-y-auto leading-relaxed text-sm text-stone-700">
-                {footnote.sentences.map((sentence) => (
-                    <FootnoteSentenceSpan
-                        key={sentence.id}
-                        sentence={sentence}
-                        showOriginal={showOriginal}
-                        onSelect={select}
-                    />
-                ))}
-            </div>
-        </Popover>
+            <Paper sx={{ maxWidth: 480, boxShadow: 3 }}>
+                <div className="flex items-center justify-between px-3 py-2 border-b border-stone-200">
+                    <span className="text-xs font-medium text-stone-500">
+                        Footnote {footnote.number}
+                    </span>
+                    <IconButton
+                        size="small"
+                        onClick={onClose}
+                        title="Close (Esc)"
+                    >
+                        <CloseOutlined fontSize="small" />
+                    </IconButton>
+                </div>
+                <div className="px-3 py-2 max-h-[40vh] overflow-y-auto leading-relaxed text-sm text-stone-700">
+                    {footnote.sentences.map((sentence) => (
+                        <FootnoteSentenceSpan
+                            key={sentence.id}
+                            sentence={sentence}
+                            showOriginal={showOriginal}
+                            onSelect={select}
+                        />
+                    ))}
+                </div>
+            </Paper>
+        </Popper>
     );
 }
 

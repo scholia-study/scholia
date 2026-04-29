@@ -448,6 +448,7 @@ struct QuotationWithContextRow {
     start_number: Option<i32>,
     end_number: Option<i32>,
     sentence_kind: String,
+    main_number: Option<i32>,
     start_text: Option<String>,
     end_text: Option<String>,
     note_count: Option<i64>,
@@ -469,6 +470,7 @@ pub async fn list_all_quotations(
                   ss.sentence_number AS "start_number?",
                   se.sentence_number AS "end_number?",
                   q.sentence_kind::TEXT AS "sentence_kind!",
+                  ms.sentence_number AS "main_number?",
                   ss.text AS "start_text?",
                   se.text AS "end_text?",
                   COUNT(qn.id) AS "note_count?",
@@ -479,10 +481,12 @@ pub async fn list_all_quotations(
            JOIN toc_nodes n ON n.id = q.anchor_node_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
+           LEFT JOIN footnotes fn ON fn.id = ss.footnote_id
+           LEFT JOIN sentences ms ON ms.id = fn.anchor_sentence_id
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.user_id = $1
              AND ($2::TEXT IS NULL OR b.slug = $2)
-           GROUP BY q.id, b.slug, s.title_display, s.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text
+           GROUP BY q.id, b.slug, s.title_display, s.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text, ms.sentence_number
            ORDER BY q.created_at DESC"#,
         user_id,
         book_slug,
@@ -504,6 +508,7 @@ pub async fn list_all_quotations(
                 anchor_sentence_start_number: r.start_number.unwrap_or(0),
                 anchor_sentence_end_number: r.end_number,
                 sentence_kind: r.sentence_kind,
+                anchor_main_sentence_number: r.main_number,
                 start_text_snippet: start_snippet,
                 end_text_snippet: end_snippet,
                 note_count: r.note_count.unwrap_or(0),
@@ -524,6 +529,7 @@ struct NoteWithContextRow {
     start_number: Option<i32>,
     end_number: Option<i32>,
     sentence_kind: String,
+    main_number: Option<i32>,
     created_at: time::OffsetDateTime,
     updated_at: time::OffsetDateTime,
 }
@@ -543,6 +549,7 @@ pub async fn list_all_notes(
                   ss.sentence_number AS "start_number?",
                   se.sentence_number AS "end_number?",
                   q.sentence_kind::TEXT AS "sentence_kind!",
+                  ms.sentence_number AS "main_number?",
                   qn.created_at, qn.updated_at
            FROM quotation_notes qn
            JOIN quotations q ON q.id = qn.quotation_id
@@ -551,6 +558,8 @@ pub async fn list_all_notes(
            JOIN toc_nodes n ON n.id = q.anchor_node_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
+           LEFT JOIN footnotes fn ON fn.id = ss.footnote_id
+           LEFT JOIN sentences ms ON ms.id = fn.anchor_sentence_id
            WHERE q.user_id = $1
              AND ($2::TEXT IS NULL OR b.slug = $2)
            ORDER BY qn.created_at DESC"#,
@@ -601,6 +610,7 @@ pub async fn list_all_notes(
             anchor_sentence_start_number: r.start_number.unwrap_or(0),
             anchor_sentence_end_number: r.end_number,
             sentence_kind: r.sentence_kind,
+            anchor_main_sentence_number: r.main_number,
             quotation_id: r.quotation_id.to_string(),
             created_at: fmt_time(r.created_at),
             updated_at: fmt_time(r.updated_at),

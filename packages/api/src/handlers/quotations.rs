@@ -364,6 +364,7 @@ pub async fn list_all_quotations(
                 anchor_sentence_start_number: q.anchor_sentence_start_number,
                 anchor_sentence_end_number: q.anchor_sentence_end_number,
                 sentence_kind: q.sentence_kind,
+                anchor_main_sentence_number: q.anchor_main_sentence_number,
                 start_text_snippet: q.start_text_snippet,
                 end_text_snippet: q.end_text_snippet,
                 note_count: q.note_count,

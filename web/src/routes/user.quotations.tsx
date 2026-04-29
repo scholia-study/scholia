@@ -52,8 +52,34 @@ type ArticleQuotation = Extract<
 function sentenceLabel(q: BookQuotation): string {
     const start = q.anchor_sentence_start_number;
     const end = q.anchor_sentence_end_number;
-    if (end == null || end === start) return `Sentence ${start}`;
-    return `Sentences ${start}\u2013${end}`;
+    const isFootnote = q.sentence_kind === "footnote";
+    const single = isFootnote ? "Footnote sentence" : "Sentence";
+    const plural = isFootnote ? "Footnote sentences" : "Sentences";
+    if (end == null || end === start) return `${single} ${start}`;
+    return `${plural} ${start}\u2013${end}`;
+}
+
+function quotationLinkSearch(q: BookQuotation): {
+    s: string;
+    fs?: string;
+    r: string;
+    rv: string;
+} {
+    const startStr = String(q.anchor_sentence_start_number);
+    const rangeStr =
+        q.anchor_sentence_end_number &&
+        q.anchor_sentence_end_number !== q.anchor_sentence_start_number
+            ? `${q.anchor_sentence_start_number}-${q.anchor_sentence_end_number}`
+            : startStr;
+    if (q.sentence_kind === "footnote" && q.anchor_main_sentence_number) {
+        return {
+            s: String(q.anchor_main_sentence_number),
+            fs: rangeStr,
+            r: "1",
+            rv: "notes",
+        };
+    }
+    return { s: rangeStr, r: "1", rv: "notes" };
 }
 
 function QuotationsPage() {
@@ -213,16 +239,7 @@ function BookQuotationRow({
                     bookSlug: q.book_slug,
                     nodeSlug: q.node_slug,
                 }}
-                search={{
-                    s:
-                        q.anchor_sentence_end_number &&
-                        q.anchor_sentence_end_number !==
-                            q.anchor_sentence_start_number
-                            ? `${q.anchor_sentence_start_number}-${q.anchor_sentence_end_number}`
-                            : String(q.anchor_sentence_start_number),
-                    r: "1",
-                    rv: "notes",
-                }}
+                search={quotationLinkSearch(q)}
                 className="flex-1 min-w-0"
             >
                 <div className="text-xs text-stone-400 mb-1">

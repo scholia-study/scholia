@@ -6,6 +6,12 @@
  */
 
 export interface QuotationWithContextResponse {
+    /**
+     * For footnote-kind anchors: the body sentence number the footnote is
+  attached to. None for body-kind anchors.
+     * @nullable
+     */
+    anchor_main_sentence_number?: number | null;
     /** @nullable */
     anchor_sentence_end_number?: number | null;
     anchor_sentence_start_number: number;

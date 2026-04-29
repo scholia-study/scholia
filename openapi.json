@@ -3183,6 +3183,11 @@
                     "updated_at"
                 ],
                 "properties": {
+                    "anchor_main_sentence_number": {
+                        "type": ["integer", "null"],
+                        "format": "int32",
+                        "description": "For footnote-kind anchors: the body sentence number the footnote is\nattached to. None for body-kind anchors."
+                    },
                     "anchor_sentence_end_number": {
                         "type": ["integer", "null"],
                         "format": "int32"
@@ -3425,6 +3430,11 @@
                     "created_at"
                 ],
                 "properties": {
+                    "anchor_main_sentence_number": {
+                        "type": ["integer", "null"],
+                        "format": "int32",
+                        "description": "For footnote-kind anchors: the body sentence number the footnote is\nattached to. None for body-kind anchors."
+                    },
                     "anchor_sentence_end_number": {
                         "type": ["integer", "null"],
                         "format": "int32"
@@ -4067,6 +4077,11 @@
                             "source_type"
                         ],
                         "properties": {
+                            "anchor_main_sentence_number": {
+                                "type": ["integer", "null"],
+                                "format": "int32",
+                                "description": "For footnote-kind anchors: the body sentence number the footnote\nis attached to. None for body-kind anchors."
+                            },
                             "anchor_sentence_end_number": {
                                 "type": ["integer", "null"],
                                 "format": "int32"

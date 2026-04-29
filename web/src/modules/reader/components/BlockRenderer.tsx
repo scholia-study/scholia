@@ -64,6 +64,10 @@ function FootnoteSup({
     const { clear: clearFootnoteSelection } = useFootnoteActions();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const supRef = useRef<HTMLElement>(null);
+    // Suppresses the auto-open effect during the render cycle where local
+    // anchorEl has cleared but the route-state footnote selection hasn't
+    // propagated yet. Resets once shouldAutoOpen settles to false.
+    const suppressAutoOpenRef = useRef(false);
 
     const footnote = sentence.footnotes?.find(
         (fn) => fn.number === footnoteNumber,
@@ -73,7 +77,12 @@ function FootnoteSup({
     const shouldAutoOpen = useFootnoteAnchor(footnote ? [footnote] : undefined);
 
     useEffect(() => {
-        if (shouldAutoOpen && !anchorEl && supRef.current) {
+        if (!shouldAutoOpen) {
+            suppressAutoOpenRef.current = false;
+            return;
+        }
+        if (suppressAutoOpenRef.current) return;
+        if (!anchorEl && supRef.current) {
             setAnchorEl(supRef.current);
         }
     }, [shouldAutoOpen, anchorEl]);
@@ -82,9 +91,11 @@ function FootnoteSup({
         (e: React.MouseEvent<HTMLElement>) => {
             e.stopPropagation();
             if (anchorEl) {
+                suppressAutoOpenRef.current = true;
                 setAnchorEl(null);
                 clearFootnoteSelection();
             } else {
+                suppressAutoOpenRef.current = false;
                 setAnchorEl(e.currentTarget);
                 // Ensure the main sentence is selected too
                 onSelectSentence(sentence, false);
@@ -94,6 +105,7 @@ function FootnoteSup({
     );
 
     const handleClose = useCallback(() => {
+        suppressAutoOpenRef.current = true;
         setAnchorEl(null);
         clearFootnoteSelection();
     }, [clearFootnoteSelection]);
@@ -103,6 +115,7 @@ function FootnoteSup({
         if (!anchorEl) return;
         const check = () => {
             if (!anchorEl.isConnected) {
+                suppressAutoOpenRef.current = true;
                 setAnchorEl(null);
                 clearFootnoteSelection();
             }
