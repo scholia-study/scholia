@@ -134,6 +134,8 @@ pub mod validation;
         models::quotation::QuotationWithContextListResponse,
         models::quotation::NoteWithContextResponse,
         models::quotation::NoteWithContextListResponse,
+        models::quotation::QuotationLimitsResponse,
+        models::quotation::NoteLimitsResponse,
         models::article::TopicResponse,
         models::article::TopicListResponse,
         models::article::ArticleResponse,

@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
 import { useUnsaveQuotation } from "#/modules/quotation";
+import { FetchError } from "../../../api/fetcher";
 import type {
     FootnoteSentenceResponse,
     NoteResponse,
@@ -114,7 +115,13 @@ export function NotesView({
                     });
                 }
             },
-            onError: () => toast.error("Failed to save quotation"),
+            onError: (err: unknown) => {
+                const message =
+                    err instanceof FetchError && err.message
+                        ? err.message
+                        : "Failed to save quotation";
+                toast.error(message);
+            },
         },
     });
 

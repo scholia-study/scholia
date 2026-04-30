@@ -3118,6 +3118,20 @@
                     }
                 }
             },
+            "NoteLimitsResponse": {
+                "type": "object",
+                "required": ["max", "current"],
+                "properties": {
+                    "current": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "max": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
             "NoteListResponse": {
                 "type": "object",
                 "required": ["notes"],
@@ -3156,8 +3170,11 @@
             },
             "NoteWithContextListResponse": {
                 "type": "object",
-                "required": ["notes"],
+                "required": ["notes", "limits"],
                 "properties": {
+                    "limits": {
+                        "$ref": "#/components/schemas/NoteLimitsResponse"
+                    },
                     "notes": {
                         "type": "array",
                         "items": {
@@ -3356,6 +3373,20 @@
                     "total": {
                         "type": "integer",
                         "format": "int64"
+                    }
+                }
+            },
+            "QuotationLimitsResponse": {
+                "type": "object",
+                "required": ["max", "current"],
+                "properties": {
+                    "current": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "max": {
+                        "type": "integer",
+                        "format": "int32"
                     }
                 }
             },
@@ -4050,8 +4081,11 @@
             },
             "UnifiedQuotationListResponse": {
                 "type": "object",
-                "required": ["quotations"],
+                "required": ["quotations", "limits"],
                 "properties": {
+                    "limits": {
+                        "$ref": "#/components/schemas/QuotationLimitsResponse"
+                    },
                     "quotations": {
                         "type": "array",
                         "items": {

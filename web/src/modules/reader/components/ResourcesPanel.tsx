@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { NoteFormModal, useUnsaveQuotation } from "#/modules/quotation";
 import { useListBooks } from "../../../api/books/books";
+import { FetchError } from "../../../api/fetcher";
 import type {
     FootnoteSentenceResponse,
     NoteResponse,
@@ -199,7 +200,13 @@ export function ResourcesPanel({
                     });
                 }
             },
-            onError: () => toast.error("Failed to save quotation"),
+            onError: (err: unknown) => {
+                const message =
+                    err instanceof FetchError && err.message
+                        ? err.message
+                        : "Failed to save quotation";
+                toast.error(message);
+            },
         },
     });
 

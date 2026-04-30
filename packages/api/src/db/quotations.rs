@@ -2,11 +2,20 @@ use sqlx::PgPool;
 use std::collections::HashMap;
 use uuid::Uuid;
 
+use crate::auth::permissions::{Permission, resolve_permissions};
 use crate::error::AppError;
 use crate::models::quotation::{
-    NoteResponse, NoteWithContextResponse, QuotationResponse, QuotationWithContextResponse,
-    TagResponse,
+    NoteLimitsResponse, NoteResponse, NoteWithContextResponse, QuotationLimitsResponse,
+    QuotationResponse, QuotationWithContextResponse, TagResponse,
 };
+
+// ── Tier limits ──────────────────────────────────────────
+// Free tier: 50 quotations / 50 notes. Paid / staff: 10 000 of each
+// (a hard cap to prevent abuse, not a usage target).
+const FREE_QUOTATIONS: i32 = 50;
+const FREE_NOTES: i32 = 50;
+const PAID_QUOTATIONS: i32 = 10_000;
+const PAID_NOTES: i32 = 10_000;
 
 // ── Row types ──────────────────────────────────────────────
 
@@ -426,6 +435,75 @@ pub async fn list_tags(pool: &PgPool, user_id: Uuid) -> Result<Vec<TagResponse>,
             name: r.name,
         })
         .collect())
+}
+
+// ── Tier limit queries ─────────────────────────────────────
+
+/// Total quotations for a user across both books and articles.
+pub async fn get_user_quotation_count(pool: &PgPool, user_id: Uuid) -> Result<i64, AppError> {
+    let count = sqlx::query_scalar!(
+        r#"SELECT
+               (SELECT COUNT(*) FROM quotations WHERE user_id = $1)
+             + (SELECT COUNT(*) FROM article_quotations WHERE user_id = $1)
+               AS "count!""#,
+        user_id,
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(count)
+}
+
+/// Total notes for a user across all quotations they own.
+pub async fn get_user_note_count(pool: &PgPool, user_id: Uuid) -> Result<i64, AppError> {
+    let count = sqlx::query_scalar!(
+        r#"SELECT COUNT(*) AS "count!"
+           FROM quotation_notes qn
+           LEFT JOIN quotations q ON q.id = qn.quotation_id
+           LEFT JOIN article_quotations aq ON aq.id = qn.article_quotation_id
+           WHERE q.user_id = $1 OR aq.user_id = $1"#,
+        user_id,
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(count)
+}
+
+pub fn get_quotation_limit(roles: &[String]) -> i32 {
+    if resolve_permissions(roles).contains(&Permission::QuotationsLimit10000) {
+        PAID_QUOTATIONS
+    } else {
+        FREE_QUOTATIONS
+    }
+}
+
+pub fn get_note_limit(roles: &[String]) -> i32 {
+    if resolve_permissions(roles).contains(&Permission::NotesLimit10000) {
+        PAID_NOTES
+    } else {
+        FREE_NOTES
+    }
+}
+
+pub async fn get_quotation_limits_response(
+    pool: &PgPool,
+    user_id: Uuid,
+    roles: &[String],
+) -> Result<QuotationLimitsResponse, AppError> {
+    Ok(QuotationLimitsResponse {
+        max: get_quotation_limit(roles),
+        current: get_user_quotation_count(pool, user_id).await?,
+    })
+}
+
+pub async fn get_note_limits_response(
+    pool: &PgPool,
+    user_id: Uuid,
+    roles: &[String],
+) -> Result<NoteLimitsResponse, AppError> {
+    Ok(NoteLimitsResponse {
+        max: get_note_limit(roles),
+        current: get_user_note_count(pool, user_id).await?,
+    })
 }
 
 // ── Global listing queries ─────────────────────────────────

@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
+use crate::models::quotation::QuotationLimitsResponse;
+
 // ── Response types ─────────────────────────────────────────
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -79,6 +81,7 @@ pub enum UnifiedQuotationResponse {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct UnifiedQuotationListResponse {
     pub quotations: Vec<UnifiedQuotationResponse>,
+    pub limits: QuotationLimitsResponse,
 }
 
 #[derive(Debug, Deserialize, IntoParams)]

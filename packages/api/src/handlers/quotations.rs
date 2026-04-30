@@ -83,6 +83,14 @@ pub async fn create_quotation(
     user.require_permission(Permission::NotesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
+    let current = db::quotations::get_user_quotation_count(&state.pool, user.id).await?;
+    let max = db::quotations::get_quotation_limit(&user.roles);
+    if current >= max as i64 {
+        return Err(AppError::BadRequest(format!(
+            "Quotation limit reached ({max}). Upgrade your plan to save more quotations."
+        )));
+    }
+
     let book_id = db::books::get_book_id_by_slug(&state.pool, &slug).await?;
 
     let (quotation, created) = db::quotations::create_quotation(
@@ -196,6 +204,14 @@ pub async fn create_note(
         .map_err(|_| AppError::BadRequest("Invalid quotation ID".into()))?;
 
     validate_note_fields(&body.body, &body.tags)?;
+
+    let current = db::quotations::get_user_note_count(&state.pool, user.id).await?;
+    let max = db::quotations::get_note_limit(&user.roles);
+    if current >= max as i64 {
+        return Err(AppError::BadRequest(format!(
+            "Note limit reached ({max}). Upgrade your plan to save more notes."
+        )));
+    }
 
     // Verify ownership
     let (owner_id, _) = db::quotations::get_quotation_owner(&state.pool, quotation_id).await?;
@@ -401,7 +417,10 @@ pub async fn list_all_quotations(
         b_time.cmp(a_time)
     });
 
-    Ok(Json(UnifiedQuotationListResponse { quotations }))
+    let limits =
+        db::quotations::get_quotation_limits_response(&state.pool, user.id, &user.roles).await?;
+
+    Ok(Json(UnifiedQuotationListResponse { quotations, limits }))
 }
 
 fn truncate_snippet(text: &str, max_len: usize) -> String {
@@ -438,5 +457,8 @@ pub async fn list_all_notes(
     let notes =
         db::quotations::list_all_notes(&state.pool, user.id, params.book_slug.as_deref()).await?;
 
-    Ok(Json(NoteWithContextListResponse { notes }))
+    let limits =
+        db::quotations::get_note_limits_response(&state.pool, user.id, &user.roles).await?;
+
+    Ok(Json(NoteWithContextListResponse { notes, limits }))
 }

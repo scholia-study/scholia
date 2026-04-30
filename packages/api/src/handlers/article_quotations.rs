@@ -32,6 +32,14 @@ pub async fn create_article_quotation(
     user.require_permission(Permission::NotesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
+    let current = db::quotations::get_user_quotation_count(&state.pool, user.id).await?;
+    let max = db::quotations::get_quotation_limit(&user.roles);
+    if current >= max as i64 {
+        return Err(AppError::BadRequest(format!(
+            "Quotation limit reached ({max}). Upgrade your plan to save more quotations."
+        )));
+    }
+
     let article_id = uuid::Uuid::parse_str(&body.article_id)
         .map_err(|_| AppError::BadRequest("Invalid article_id".into()))?;
 

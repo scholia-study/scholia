@@ -78,6 +78,8 @@ function NotesPage() {
 
     const { data: allNotesData, isLoading } = useListAllNotes({});
     const allNotes = allNotesData?.data?.notes ?? [];
+    const limits = allNotesData?.data?.limits;
+    const showUsage = limits ? limits.max <= 50 : false;
 
     const availableBooks = useMemo(() => {
         const map = new Map<string, string>();
@@ -160,7 +162,7 @@ function NotesPage() {
 
     return (
         <div className="w-full max-w-3xl mx-auto px-8 py-16">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-1">
                 <h1 className="text-2xl font-bold text-stone-900">My Notes</h1>
                 <FormControl size="small" sx={{ minWidth: 200 }}>
                     <InputLabel>Filter by book</InputLabel>
@@ -178,6 +180,12 @@ function NotesPage() {
                     </Select>
                 </FormControl>
             </div>
+            {showUsage && limits && (
+                <div className="text-xs text-stone-400 text-right mb-3">
+                    {limits.current}/{limits.max} saved
+                </div>
+            )}
+            {!showUsage && <div className="mb-3" />}
             <div className="mb-4">
                 <TextField
                     size="small"

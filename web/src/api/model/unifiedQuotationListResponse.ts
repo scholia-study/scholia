@@ -4,8 +4,10 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { QuotationLimitsResponse } from "./quotationLimitsResponse";
 import type { UnifiedQuotationResponse } from "./unifiedQuotationResponse";
 
 export interface UnifiedQuotationListResponse {
+    limits: QuotationLimitsResponse;
     quotations: UnifiedQuotationResponse[];
 }

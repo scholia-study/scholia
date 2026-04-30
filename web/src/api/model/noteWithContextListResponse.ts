@@ -4,8 +4,10 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { NoteLimitsResponse } from "./noteLimitsResponse";
 import type { NoteWithContextResponse } from "./noteWithContextResponse";
 
 export interface NoteWithContextListResponse {
+    limits: NoteLimitsResponse;
     notes: NoteWithContextResponse[];
 }

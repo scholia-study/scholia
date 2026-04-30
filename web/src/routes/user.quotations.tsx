@@ -90,6 +90,8 @@ function QuotationsPage() {
 
     const { data: allQuotationsData, isLoading } = useListAllQuotations({});
     const allQuotations = allQuotationsData?.data?.quotations ?? [];
+    const limits = allQuotationsData?.data?.limits;
+    const showUsage = limits ? limits.max <= 50 : false;
 
     const bookQuotations = useMemo(
         () =>
@@ -142,7 +144,7 @@ function QuotationsPage() {
 
     return (
         <div className="w-full max-w-3xl mx-auto px-8 py-16">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-2">
                 <h1 className="text-2xl font-bold text-stone-900">
                     My Quotations
                 </h1>
@@ -167,6 +169,12 @@ function QuotationsPage() {
                     </Select>
                 </FormControl>
             </div>
+            {showUsage && limits && (
+                <div className="text-xs text-stone-400 text-right mb-6">
+                    {limits.current}/{limits.max} saved
+                </div>
+            )}
+            {!showUsage && <div className="mb-6" />}
 
             {isLoading && <p className="text-sm text-stone-400">Loading...</p>}
 

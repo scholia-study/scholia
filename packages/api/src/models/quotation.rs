@@ -20,6 +20,18 @@ pub struct QuotationListResponse {
 }
 
 #[derive(Debug, Serialize, ToSchema)]
+pub struct QuotationLimitsResponse {
+    pub max: i32,
+    pub current: i64,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct NoteLimitsResponse {
+    pub max: i32,
+    pub current: i64,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
 pub struct CreateQuotationResponse {
     pub quotation: QuotationResponse,
     pub created: bool,
@@ -105,6 +117,7 @@ pub struct NoteWithContextResponse {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct NoteWithContextListResponse {
     pub notes: Vec<NoteWithContextResponse>,
+    pub limits: NoteLimitsResponse,
 }
 
 #[derive(Debug, Deserialize, IntoParams)]

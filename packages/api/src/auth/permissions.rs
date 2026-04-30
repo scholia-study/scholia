@@ -11,6 +11,8 @@ pub enum Permission {
     ArticlesCreate,
     ArticlesLimit1000,
     ArticlesArchiveLimit1000,
+    QuotationsLimit10000,
+    NotesLimit10000,
     SourcesCreate,
 }
 
@@ -26,6 +28,8 @@ impl Permission {
             Self::ArticlesCreate => "articles_create",
             Self::ArticlesLimit1000 => "articles_limit_1000",
             Self::ArticlesArchiveLimit1000 => "articles_archive_limit_1000",
+            Self::QuotationsLimit10000 => "quotations_limit_10000",
+            Self::NotesLimit10000 => "notes_limit_10000",
             Self::SourcesCreate => "sources_create",
         }
     }
@@ -50,10 +54,12 @@ const BASE_PERMISSIONS: &[Permission] = &[
     Permission::SourcesCreate,
 ];
 
-/// Elevated article limits for paid tiers and staff.
+/// Elevated limits for paid tiers and staff.
 const ELEVATED_LIMITS: &[Permission] = &[
     Permission::ArticlesLimit1000,
     Permission::ArticlesArchiveLimit1000,
+    Permission::QuotationsLimit10000,
+    Permission::NotesLimit10000,
 ];
 
 impl Role {

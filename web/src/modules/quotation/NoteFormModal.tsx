@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import type { NoteResponse } from "#/api/model";
+import { FetchError } from "../../api/fetcher";
 import {
     getListNotesQueryKey,
     getListQuotationsQueryKey,
@@ -68,7 +69,13 @@ export function NoteFormModal({
                 }
                 onClose();
             },
-            onError: () => toast.error("Failed to create note"),
+            onError: (err: unknown) => {
+                const message =
+                    err instanceof FetchError && err.message
+                        ? err.message
+                        : "Failed to create note";
+                toast.error(message);
+            },
         },
     });
 
@@ -81,7 +88,13 @@ export function NoteFormModal({
                 });
                 onClose();
             },
-            onError: () => toast.error("Failed to update note"),
+            onError: (err: unknown) => {
+                const message =
+                    err instanceof FetchError && err.message
+                        ? err.message
+                        : "Failed to update note";
+                toast.error(message);
+            },
         },
     });
 
