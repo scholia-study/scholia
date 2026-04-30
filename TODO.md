@@ -4,6 +4,7 @@
 ## 🌿 FEATURES
 - add payment solution (stripe, async stripe crate)
 - add "submit for review" for user articles to editors to receive editorial feedback/quality approval
+- caching layer on backend API
 
 ## 🪡 PATCH
 - need filter on tags for quotation in editor
