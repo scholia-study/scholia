@@ -15,4 +15,9 @@ export interface ProfileResponse {
     id: string;
     providers: LinkedProvider[];
     roles: string[];
+    /**
+     * Bibliography sort key, "Last, First" form. Auto-derived at signup.
+     * @nullable
+     */
+    sort_name?: string | null;
 }

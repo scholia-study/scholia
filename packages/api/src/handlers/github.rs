@@ -11,6 +11,7 @@ use tower_sessions::Session;
 use uuid::Uuid;
 
 use crate::auth::middleware::set_session_user;
+use crate::auth::sort_name::derive_sort_name;
 use crate::state::AppState;
 
 const GITHUB_AUTH_URL: &str = "https://github.com/login/oauth/authorize";
@@ -230,11 +231,13 @@ pub async fn github_callback(
             id
         } else {
             // Create new user (GitHub-verified email)
+            let sort_name = derive_sort_name(&display_name);
             match sqlx::query_scalar::<_, Uuid>(
-                "INSERT INTO users (email, display_name, avatar_url, email_verified_at) VALUES ($1, $2, $3, now()) RETURNING id",
+                "INSERT INTO users (email, display_name, sort_name, avatar_url, email_verified_at) VALUES ($1, $2, $3, $4, now()) RETURNING id",
             )
             .bind(&email)
             .bind(&display_name)
+            .bind(&sort_name)
             .bind(avatar_url)
             .fetch_one(&state.pool)
             .await

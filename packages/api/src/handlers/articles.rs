@@ -125,6 +125,7 @@ pub async fn update_article(
 
     let article = db::articles::update_article(
         &state.pool,
+        &state.config.frontend_url,
         &slug,
         user.id,
         &user.roles,

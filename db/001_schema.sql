@@ -10,6 +10,9 @@ CREATE EXTENSION IF NOT EXISTS ltree;
 CREATE TABLE users (
     id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     display_name      TEXT NOT NULL,
+    -- Bibliography sort key, "Last, First" form. Auto-derived from
+    -- display_name at signup; user-editable thereafter.
+    sort_name         TEXT,
     email             TEXT NOT NULL UNIQUE,
     password_hash         TEXT,
     avatar_url            TEXT,
@@ -581,6 +584,12 @@ CREATE TABLE article_quotations (
     article_id            UUID REFERENCES articles(id) ON DELETE SET NULL,
     article_title         TEXT NOT NULL,
     author_display_name   TEXT NOT NULL,
+    -- Snapshot of source author's bibliography sort key at save-time.
+    -- Frozen with the rest of the snapshot (see chk_note_owner above).
+    author_sort_name      TEXT,
+    -- Snapshot of source article's published_at at save-time. Used for the
+    -- year in bibliography entries; survives source-article deletion.
+    source_published_at   TIMESTAMPTZ,
     text                  TEXT NOT NULL,
     html                  TEXT NOT NULL,
     created_at            TIMESTAMPTZ NOT NULL DEFAULT now()

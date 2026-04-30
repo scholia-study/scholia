@@ -3357,6 +3357,10 @@
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "sort_name": {
+                        "type": ["string", "null"],
+                        "description": "Bibliography sort key, \"Last, First\" form. Auto-derived at signup."
                     }
                 }
             },
@@ -4254,6 +4258,10 @@
                 "properties": {
                     "display_name": {
                         "type": "string"
+                    },
+                    "sort_name": {
+                        "type": ["string", "null"],
+                        "description": "Optional. Whitespace-only or empty resets to the auto-derived form."
                     }
                 }
             },

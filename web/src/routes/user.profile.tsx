@@ -38,6 +38,7 @@ function ProfilePage() {
     const profile = profileData.data;
 
     const [displayName, setDisplayName] = useState(profile.display_name);
+    const [sortName, setSortName] = useState(profile.sort_name ?? "");
 
     const updateMutation = useUpdateProfile();
     const passwordChangeMutation = useRequestPasswordChange();
@@ -46,7 +47,7 @@ function ProfilePage() {
         e.preventDefault();
         try {
             await updateMutation.mutateAsync({
-                data: { display_name: displayName },
+                data: { display_name: displayName, sort_name: sortName },
             });
             toast.success("Profile updated.");
             queryClient.invalidateQueries({ queryKey: getMeQueryKey() });
@@ -58,6 +59,10 @@ function ProfilePage() {
             }
         }
     };
+
+    const dirty =
+        displayName.trim() !== profile.display_name ||
+        sortName.trim() !== (profile.sort_name ?? "");
 
     const handlePasswordChange = async () => {
         try {
@@ -115,13 +120,19 @@ function ProfilePage() {
                     size="small"
                     required
                 />
+                <TextField
+                    label="Sort name"
+                    value={sortName}
+                    onChange={(e) => setSortName(e.target.value)}
+                    fullWidth
+                    size="small"
+                    placeholder="Niklas, Filip"
+                    helperText="Used in bibliographies. Leave blank to auto-derive from display name."
+                />
                 <Button
                     type="submit"
                     variant="contained"
-                    disabled={
-                        updateMutation.isPending ||
-                        displayName.trim() === profile.display_name
-                    }
+                    disabled={updateMutation.isPending || !dirty}
                     sx={{
                         alignSelf: "flex-end",
                         mt: 2,

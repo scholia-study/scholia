@@ -14,6 +14,7 @@ use uuid::Uuid;
 
 use crate::auth::middleware::{AuthUser, invalidate_user_sessions, set_session_user};
 use crate::auth::permissions::resolve_permission_names;
+use crate::auth::sort_name::derive_sort_name;
 use crate::auth::tokens;
 use crate::email;
 use crate::error::AppError;
@@ -71,6 +72,8 @@ pub struct ProfileResponse {
     pub id: String,
     pub email: String,
     pub display_name: String,
+    /// Bibliography sort key, "Last, First" form. Auto-derived at signup.
+    pub sort_name: Option<String>,
     pub avatar_url: Option<String>,
     pub has_password: bool,
     pub roles: Vec<String>,
@@ -86,6 +89,9 @@ pub struct LinkedProvider {
 #[derive(Deserialize, ToSchema)]
 pub struct UpdateProfileRequest {
     pub display_name: String,
+    /// Optional. Whitespace-only or empty resets to the auto-derived form.
+    #[serde(default)]
+    pub sort_name: Option<String>,
 }
 
 // ── Handlers ────────────────────────────────────────────────
@@ -144,11 +150,13 @@ pub async fn register(
     };
 
     // Insert user
+    let sort_name = derive_sort_name(&display_name);
     let user_id: Uuid = match sqlx::query_scalar(
-        "INSERT INTO users (email, display_name, password_hash) VALUES ($1, $2, $3) RETURNING id",
+        "INSERT INTO users (email, display_name, sort_name, password_hash) VALUES ($1, $2, $3, $4) RETURNING id",
     )
     .bind(&email)
     .bind(&display_name)
+    .bind(&sort_name)
     .bind(&password_hash)
     .fetch_one(&state.pool)
     .await
@@ -558,14 +566,16 @@ pub async fn verify_email(
     tag = "auth"
 )]
 pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<ProfileResponse> {
-    let row =
-        sqlx::query("SELECT password_hash IS NOT NULL as has_password FROM users WHERE id = $1")
-            .bind(user.id)
-            .fetch_one(&state.pool)
-            .await
-            .unwrap();
+    let row = sqlx::query(
+        "SELECT password_hash IS NOT NULL as has_password, sort_name FROM users WHERE id = $1",
+    )
+    .bind(user.id)
+    .fetch_one(&state.pool)
+    .await
+    .unwrap();
 
     let has_password: bool = row.get("has_password");
+    let sort_name: Option<String> = row.get("sort_name");
 
     let roles: Vec<String> = sqlx::query_scalar(
         "SELECT r.name FROM user_roles ur JOIN roles r ON r.id = ur.role_id WHERE ur.user_id = $1 ORDER BY r.name",
@@ -594,6 +604,7 @@ pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<
         id: user.id.to_string(),
         email: user.email,
         display_name: user.display_name,
+        sort_name,
         avatar_url: user.avatar_url,
         has_password,
         roles,
@@ -627,11 +638,24 @@ pub async fn update_profile(
         return e.into_response();
     }
 
-    let _ = sqlx::query("UPDATE users SET display_name = $1, updated_at = now() WHERE id = $2")
-        .bind(&display_name)
-        .bind(user.id)
-        .execute(&state.pool)
-        .await;
+    // Empty / whitespace-only sort_name resets to the auto-derived form so
+    // users can fall back to the default without having to know what it is.
+    let sort_name = match body.sort_name.as_deref().map(str::trim) {
+        None | Some("") => derive_sort_name(&display_name),
+        Some(s) => s.to_string(),
+    };
+    if let Err(e) = check_max_len("Sort name", &sort_name, MAX_DISPLAY_NAME) {
+        return e.into_response();
+    }
+
+    let _ = sqlx::query(
+        "UPDATE users SET display_name = $1, sort_name = $2, updated_at = now() WHERE id = $3",
+    )
+    .bind(&display_name)
+    .bind(&sort_name)
+    .bind(user.id)
+    .execute(&state.pool)
+    .await;
 
     Json(MessageResponse {
         message: "Profile updated.".to_string(),

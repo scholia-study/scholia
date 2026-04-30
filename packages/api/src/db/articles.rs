@@ -127,7 +127,11 @@ fn article_detail_response(r: ArticleRow, topics: Vec<TopicResponse>) -> Article
 }
 
 /// Render article markdown to HTML, converting quotation directives to placeholder divs.
-pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
+///
+/// `frontend_url` is the public base URL of the site (e.g.
+/// "https://scholia.app"); used to build retrieval URLs for user-article
+/// bibliography entries.
+pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown: &str) -> String {
     // Pre-process: extract ::quotation{...} directives and replace with placeholders
     let directive_re = Regex::new(r#"::quotation\{([^}]+)\}"#).expect("Invalid directive regex");
 
@@ -176,7 +180,9 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
     let article_q_re =
         Regex::new(r#"::article-quotation\{([^}]+)\}"#).expect("Invalid article-quotation regex");
     let id_shorthand_re = Regex::new(r#"#([^\s}]+)"#).expect("Invalid id shorthand regex");
+    let id_attr_re = Regex::new(r#"id="([^"]+)""#).expect("Invalid id attr regex");
     let mut article_q_placeholder_map: Vec<String> = Vec::new();
+    let mut article_quotation_ids: Vec<Uuid> = Vec::new();
     let processed = article_q_re.replace_all(&processed, |caps: &regex::Captures| {
         let attrs_str = &caps[1];
         let idx = article_q_placeholder_map.len();
@@ -192,6 +198,24 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
             if let Some(id_cap) = id_shorthand_re.captures(attrs_str) {
                 let val = &id_cap[1];
                 data_attrs.push_str(&format!(r#" data-article-quotation-id="{val}""#));
+            }
+        }
+
+        // Collect the quotation id for the bibliography. Accept both the
+        // `#xxx` shorthand and the `id="xxx"` long form.
+        let id_str = id_attr_re
+            .captures(attrs_str)
+            .map(|c| c[1].to_string())
+            .or_else(|| {
+                id_shorthand_re
+                    .captures(attrs_str)
+                    .map(|c| c[1].to_string())
+            });
+        if let Some(s) = id_str {
+            if let Ok(uuid) = Uuid::parse_str(&s) {
+                if !article_quotation_ids.contains(&uuid) {
+                    article_quotation_ids.push(uuid);
+                }
             }
         }
 
@@ -258,6 +282,13 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
         HashMap::new()
     };
 
+    // Batch fetch article-quotation snapshot data (for user-article bib entries)
+    let article_quotation_data = if !article_quotation_ids.is_empty() {
+        fetch_article_quotation_citation_data(pool, &article_quotation_ids).await
+    } else {
+        HashMap::new()
+    };
+
     // Run pulldown-cmark on the cleaned markdown
     let parser = pulldown_cmark::Parser::new(&processed);
     let mut html_output = String::new();
@@ -301,20 +332,29 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
         }
     }
 
-    // Append bibliography if any citations exist
-    if !bibliography_sources.is_empty() {
+    // Build the unified bibliography list. Two heterogeneous entry types —
+    // book/source citations and user-article snapshot citations — are
+    // collected as a tagged enum so each can be formatted in its own style.
+    let mut bib_entries: Vec<BibEntry> = Vec::new();
+    for id in &bibliography_sources {
+        if let Some(data) = source_data.get(id) {
+            bib_entries.push(BibEntry::Source(data.clone()));
+        }
+    }
+    for id in &article_quotation_ids {
+        if let Some(data) = article_quotation_data.get(id) {
+            bib_entries.push(BibEntry::Article(data.clone()));
+        }
+    }
+
+    if !bib_entries.is_empty() {
         html_output.push_str("\n<section class=\"bibliography\">\n<h2>Bibliography</h2>\n<ul style=\"list-style:none;padding:0;margin:0\">\n");
-        // Sort bibliography by author last name
-        let mut bib_entries: Vec<String> = bibliography_sources
+        let mut rendered: Vec<(String, String)> = bib_entries
             .iter()
-            .filter_map(|id| {
-                source_data
-                    .get(id)
-                    .map(|data| format_bibliography_entry(data))
-            })
+            .map(|e| (e.sort_key(), e.render(frontend_url)))
             .collect();
-        bib_entries.sort();
-        for entry in bib_entries {
+        rendered.sort_by(|a, b| a.0.cmp(&b.0));
+        for (_key, entry) in rendered {
             html_output.push_str(&format!("<li style=\"margin:0.25em 0\">{entry}</li>\n"));
         }
         html_output.push_str("</ul>\n</section>\n");
@@ -325,12 +365,57 @@ pub async fn render_article_markdown(pool: &PgPool, markdown: &str) -> String {
 
 // ── Citation helpers ─────────────────────────────────────
 
+#[derive(Clone)]
 struct CitationSourceData {
     title: String,
     publication_year: Option<i16>,
     publisher: Option<String>,
     authors: Vec<String>, // sorted by position
     author_sort_names: Vec<String>,
+}
+
+/// Snapshot of a user article, used to build a bibliography entry.
+/// All fields are read from the `article_quotations` snapshot row except
+/// `article_id`, which determines whether we render a retrieval URL.
+#[derive(Clone)]
+struct ArticleCitationData {
+    article_id: Option<Uuid>,
+    article_title: String,
+    author_display_name: String,
+    author_sort_name: Option<String>,
+    publication_year: Option<i32>,
+}
+
+/// A single bibliography entry. Books and citations from `sources` flow
+/// through `Source`; quotations from user-generated articles flow through
+/// `Article`.
+enum BibEntry {
+    Source(CitationSourceData),
+    Article(ArticleCitationData),
+}
+
+impl BibEntry {
+    fn sort_key(&self) -> String {
+        match self {
+            BibEntry::Source(d) => d
+                .author_sort_names
+                .first()
+                .cloned()
+                .unwrap_or_else(|| "Unknown".to_string()),
+            BibEntry::Article(d) => d
+                .author_sort_name
+                .clone()
+                .filter(|s| !s.is_empty())
+                .unwrap_or_else(|| last_name(&d.author_display_name)),
+        }
+    }
+
+    fn render(&self, frontend_url: &str) -> String {
+        match self {
+            BibEntry::Source(d) => format_bibliography_entry(d),
+            BibEntry::Article(d) => format_article_bibliography_entry(d, frontend_url),
+        }
+    }
 }
 
 async fn fetch_citation_data(
@@ -491,6 +576,92 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
 /// Extract last name from a full name
 fn last_name(name: &str) -> String {
     name.split_whitespace().last().unwrap_or(name).to_string()
+}
+
+/// Batch fetch snapshot data for the given article-quotation ids. Reads
+/// only the snapshot fields (`article_title`, `author_display_name`,
+/// `author_sort_name`, `source_published_at`) so deleted source articles
+/// still resolve.
+async fn fetch_article_quotation_citation_data(
+    pool: &PgPool,
+    ids: &[Uuid],
+) -> HashMap<Uuid, ArticleCitationData> {
+    struct Row {
+        id: Uuid,
+        article_id: Option<Uuid>,
+        article_title: String,
+        author_display_name: String,
+        author_sort_name: Option<String>,
+        source_published_at: Option<time::OffsetDateTime>,
+    }
+    let rows: Vec<Row> = sqlx::query_as!(
+        Row,
+        r#"SELECT id, article_id, article_title,
+                  author_display_name, author_sort_name,
+                  source_published_at
+           FROM article_quotations
+           WHERE id = ANY($1)"#,
+        ids,
+    )
+    .fetch_all(pool)
+    .await
+    .unwrap_or_default();
+
+    rows.into_iter()
+        .map(|r| {
+            (
+                r.id,
+                ArticleCitationData {
+                    article_id: r.article_id,
+                    article_title: r.article_title,
+                    author_display_name: r.author_display_name,
+                    author_sort_name: r.author_sort_name,
+                    publication_year: r.source_published_at.map(|t| t.year()),
+                },
+            )
+        })
+        .collect()
+}
+
+/// Chicago author-date entry for a user-generated article. Uses quoted
+/// title (not italics) and appends the platform name + retrieval URL when
+/// the source article still exists; deleted articles get a "(no longer
+/// available)" suffix and no URL.
+///
+/// Example, surviving article:
+///   Niklas, Filip. 2026. "On Footnotes." Scholia. https://scholia.app/articles/by-id/abc-123.
+///
+/// Example, deleted article:
+///   Niklas, Filip. 2026. "On Footnotes." Scholia (no longer available).
+fn format_article_bibliography_entry(data: &ArticleCitationData, frontend_url: &str) -> String {
+    let author_part = if let Some(s) = data.author_sort_name.as_deref().filter(|s| !s.is_empty()) {
+        s.to_string()
+    } else {
+        // Fall back to display_name flipped on whitespace, mirroring the
+        // book-side fallback.
+        let dn = &data.author_display_name;
+        let tokens: Vec<&str> = dn.split_whitespace().collect();
+        match tokens.as_slice() {
+            [] => "Unknown".to_string(),
+            [single] => (*single).to_string(),
+            [rest @ .., last] => format!("{last}, {}", rest.join(" ")),
+        }
+    };
+
+    let year = data
+        .publication_year
+        .map(|y| y.to_string())
+        .unwrap_or_else(|| "n.d.".to_string());
+
+    let title = &data.article_title;
+    let trimmed_url = frontend_url.trim_end_matches('/');
+
+    match data.article_id {
+        Some(id) => format!(
+            r#"{author_part}. {year}. "{title}." Scholia. {trimmed_url}/articles/by-id/{id}."#
+        ),
+        None => format!(r#"{author_part}. {year}. "{title}." Scholia (no longer available)."#),
+    }
 }
 
 // ── Article queries ───────────────────────────────────────
@@ -707,6 +878,7 @@ pub async fn list_published_articles(
 
 pub async fn update_article(
     pool: &PgPool,
+    frontend_url: &str,
     slug: &str,
     user_id: Uuid,
     roles: &[String],
@@ -779,7 +951,7 @@ pub async fn update_article(
     if let Some(md) = markdown {
         check_max_len("Article body", md, MAX_ARTICLE_MARKDOWN)?;
         reject_emoji("article body", md)?;
-        let html = render_article_markdown(pool, md).await;
+        let html = render_article_markdown(pool, frontend_url, md).await;
         sqlx::query!(
             r#"UPDATE articles SET markdown = $2, html = $3, updated_at = now()
                WHERE id = $1"#,

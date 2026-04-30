@@ -7,4 +7,9 @@
 
 export interface UpdateProfileRequest {
     display_name: string;
+    /**
+     * Optional. Whitespace-only or empty resets to the auto-derived form.
+     * @nullable
+     */
+    sort_name?: string | null;
 }

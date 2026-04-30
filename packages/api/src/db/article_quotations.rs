@@ -62,14 +62,22 @@ pub async fn create_article_quotation(
         return Ok((article_quotation_from_row(row), false));
     }
 
-    // Fetch article metadata for snapshot
+    // Fetch article metadata for snapshot. We freeze title, author display
+    // name, author sort name, and the article's published_at — these are
+    // the fields the bibliography renderer needs and that may drift on the
+    // source side after the quotation is saved.
     struct ArticleMeta {
         title: String,
         author_display_name: String,
+        author_sort_name: Option<String>,
+        published_at: Option<time::OffsetDateTime>,
     }
     let meta = sqlx::query_as!(
         ArticleMeta,
-        r#"SELECT a.title, u.display_name AS "author_display_name!"
+        r#"SELECT a.title,
+                  u.display_name AS "author_display_name!",
+                  u.sort_name    AS "author_sort_name?",
+                  a.published_at
            FROM articles a
            JOIN users u ON u.id = a.user_id
            WHERE a.id = $1 AND a.status IN ('published', 'archived')"#,
@@ -80,13 +88,19 @@ pub async fn create_article_quotation(
     .map_err(|_| AppError::NotFound("Article not found or not published".into()))?;
 
     let new_id = sqlx::query_scalar!(
-        r#"INSERT INTO article_quotations (user_id, article_id, article_title, author_display_name, text, html)
-           VALUES ($1, $2, $3, $4, $5, $6)
+        r#"INSERT INTO article_quotations (
+               user_id, article_id, article_title,
+               author_display_name, author_sort_name,
+               source_published_at, text, html
+           )
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
            RETURNING id"#,
         user_id,
         article_id,
         meta.title,
         meta.author_display_name,
+        meta.author_sort_name,
+        meta.published_at,
         text,
         html,
     )
