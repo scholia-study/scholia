@@ -8,3 +8,4 @@ pub mod page;
 pub mod quotation;
 pub mod resource;
 pub mod toc;
+pub mod user;

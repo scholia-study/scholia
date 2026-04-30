@@ -23,7 +23,15 @@ pub struct ArticleResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     pub status: String,
+    pub author_user_id: String,
     pub author_display_name: String,
+    /// Current handle of the author. Use `/users/<handle>` for the
+    /// canonical link, or `/users/by-id/<author_user_id>` for a
+    /// rename-durable link.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub author_handle: Option<String>,
+    /// Public-facing role chips for the author (`editor`, paid tiers).
+    pub author_public_roles: Vec<String>,
     pub topics: Vec<TopicResponse>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub published_at: Option<String>,
@@ -41,7 +49,11 @@ pub struct ArticleDetailResponse {
     pub markdown: String,
     pub html: String,
     pub status: String,
+    pub author_user_id: String,
     pub author_display_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub author_handle: Option<String>,
+    pub author_public_roles: Vec<String>,
     pub topics: Vec<TopicResponse>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub published_at: Option<String>,

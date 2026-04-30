@@ -12,10 +12,12 @@ use tower_sessions::Session;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
+use crate::auth::handle::{HANDLE_RENAME_COOLDOWN_DAYS, derive_handle, validate_handle};
 use crate::auth::middleware::{AuthUser, invalidate_user_sessions, set_session_user};
-use crate::auth::permissions::resolve_permission_names;
+use crate::auth::permissions::{Permission, resolve_permission_names};
 use crate::auth::sort_name::derive_sort_name;
 use crate::auth::tokens;
+use crate::db;
 use crate::email;
 use crate::error::AppError;
 use crate::state::AppState;
@@ -74,6 +76,15 @@ pub struct ProfileResponse {
     pub display_name: String,
     /// Bibliography sort key, "Last, First" form. Auto-derived at signup.
     pub sort_name: Option<String>,
+    /// Public URL identifier (`/users/<handle>`).
+    pub handle: Option<String>,
+    /// RFC3339 timestamp of the most recent handle change. Used by the
+    /// frontend to compute remaining cooldown days.
+    pub handle_changed_at: Option<String>,
+    pub bio: Option<String>,
+    pub title: Option<String>,
+    pub location: Option<String>,
+    pub website_url: Option<String>,
     pub avatar_url: Option<String>,
     pub has_password: bool,
     pub roles: Vec<String>,
@@ -92,6 +103,19 @@ pub struct UpdateProfileRequest {
     /// Optional. Whitespace-only or empty resets to the auto-derived form.
     #[serde(default)]
     pub sort_name: Option<String>,
+    /// Optional. If present and different from current, attempts a rename
+    /// — subject to charset, reservation, and 30-day cooldown rules.
+    #[serde(default)]
+    pub handle: Option<String>,
+    /// Profile-page fields. Empty string clears.
+    #[serde(default)]
+    pub bio: Option<String>,
+    #[serde(default)]
+    pub title: Option<String>,
+    #[serde(default)]
+    pub location: Option<String>,
+    #[serde(default)]
+    pub website_url: Option<String>,
 }
 
 // ── Handlers ────────────────────────────────────────────────
@@ -151,12 +175,18 @@ pub async fn register(
 
     // Insert user
     let sort_name = derive_sort_name(&display_name);
+    let derived = derive_handle(&display_name);
+    let handle = match db::users::claim_unique_handle(&state.pool, &derived).await {
+        Ok(h) => h,
+        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+    };
     let user_id: Uuid = match sqlx::query_scalar(
-        "INSERT INTO users (email, display_name, sort_name, password_hash) VALUES ($1, $2, $3, $4) RETURNING id",
+        "INSERT INTO users (email, display_name, sort_name, handle, password_hash) VALUES ($1, $2, $3, $4, $5) RETURNING id",
     )
     .bind(&email)
     .bind(&display_name)
     .bind(&sort_name)
+    .bind(&handle)
     .bind(&password_hash)
     .fetch_one(&state.pool)
     .await
@@ -567,7 +597,10 @@ pub async fn verify_email(
 )]
 pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<ProfileResponse> {
     let row = sqlx::query(
-        "SELECT password_hash IS NOT NULL as has_password, sort_name FROM users WHERE id = $1",
+        "SELECT password_hash IS NOT NULL AS has_password,
+                sort_name, handle, handle_changed_at,
+                bio, title, location, website_url
+         FROM users WHERE id = $1",
     )
     .bind(user.id)
     .fetch_one(&state.pool)
@@ -576,6 +609,16 @@ pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<
 
     let has_password: bool = row.get("has_password");
     let sort_name: Option<String> = row.get("sort_name");
+    let handle: Option<String> = row.get("handle");
+    let handle_changed_at_raw: Option<time::OffsetDateTime> = row.get("handle_changed_at");
+    let handle_changed_at = handle_changed_at_raw.and_then(|t| {
+        t.format(&time::format_description::well_known::Rfc3339)
+            .ok()
+    });
+    let bio: Option<String> = row.get("bio");
+    let title: Option<String> = row.get("title");
+    let location: Option<String> = row.get("location");
+    let website_url: Option<String> = row.get("website_url");
 
     let roles: Vec<String> = sqlx::query_scalar(
         "SELECT r.name FROM user_roles ur JOIN roles r ON r.id = ur.role_id WHERE ur.user_id = $1 ORDER BY r.name",
@@ -605,6 +648,12 @@ pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<
         email: user.email,
         display_name: user.display_name,
         sort_name,
+        handle,
+        handle_changed_at,
+        bio,
+        title,
+        location,
+        website_url,
         avatar_url: user.avatar_url,
         has_password,
         roles,
@@ -648,11 +697,128 @@ pub async fn update_profile(
         return e.into_response();
     }
 
+    // Profile-page fields. Empty string clears (-> NULL).
+    let to_opt = |s: &Option<String>| -> Option<String> {
+        s.as_deref()
+            .map(str::trim)
+            .filter(|s| !s.is_empty())
+            .map(str::to_string)
+    };
+    let bio = to_opt(&body.bio);
+    let title = to_opt(&body.title);
+    let location = to_opt(&body.location);
+    let website_url = to_opt(&body.website_url);
+
+    if let Some(b) = &bio {
+        if let Err(e) = check_max_len("Bio", b, crate::validation::MAX_PROFILE_BIO) {
+            return e.into_response();
+        }
+    }
+    if let Some(t) = &title {
+        if let Err(e) = check_max_len("Title", t, crate::validation::MAX_PROFILE_TITLE) {
+            return e.into_response();
+        }
+    }
+    if let Some(l) = &location {
+        if let Err(e) = check_max_len("Location", l, crate::validation::MAX_PROFILE_LOCATION) {
+            return e.into_response();
+        }
+    }
+    if let Some(w) = &website_url {
+        if let Err(e) = check_max_len("Website URL", w, crate::validation::MAX_PROFILE_WEBSITE_URL)
+        {
+            return e.into_response();
+        }
+    }
+
+    // Handle rename — only attempt if the request actually includes a
+    // `handle` field that differs from the current value.
+    let new_handle = body.handle.as_deref().map(str::trim);
+    if let Some(requested) = new_handle {
+        // Look up current handle + last-changed timestamp.
+        let row = match sqlx::query("SELECT handle, handle_changed_at FROM users WHERE id = $1")
+            .bind(user.id)
+            .fetch_one(&state.pool)
+            .await
+        {
+            Ok(r) => r,
+            Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+        };
+        let current_handle: Option<String> = row.get("handle");
+        let last_changed: Option<time::OffsetDateTime> = row.get("handle_changed_at");
+
+        if Some(requested) != current_handle.as_deref() {
+            if let Err(e) = validate_handle(requested) {
+                return e.into_response();
+            }
+
+            // Cooldown — admins bypass.
+            let is_admin = user.permissions.contains(&Permission::AdminPanel);
+            if !is_admin {
+                if let Some(last) = last_changed {
+                    let elapsed = time::OffsetDateTime::now_utc() - last;
+                    let cooldown = time::Duration::days(HANDLE_RENAME_COOLDOWN_DAYS);
+                    if elapsed < cooldown {
+                        let remaining = cooldown - elapsed;
+                        let days_left = remaining.whole_days() + 1;
+                        return (
+                            StatusCode::BAD_REQUEST,
+                            format!(
+                                "Handle can be changed once every {HANDLE_RENAME_COOLDOWN_DAYS} days. Try again in {days_left} day(s)."
+                            ),
+                        )
+                            .into_response();
+                    }
+                }
+            }
+
+            // Recycle prevention.
+            let taken =
+                match db::users::is_handle_taken_by_other(&state.pool, requested, Some(user.id))
+                    .await
+                {
+                    Ok(t) => t,
+                    Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+                };
+            if taken {
+                return (StatusCode::CONFLICT, "Handle is already taken").into_response();
+            }
+
+            // Stash old handle in released_handles so it stays reserved
+            // for this user even after rename.
+            if let Some(old) = current_handle.as_deref() {
+                if let Err(_) = db::users::record_released_handle(&state.pool, user.id, old).await {
+                    return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+                }
+            }
+
+            if sqlx::query(
+                "UPDATE users SET handle = $1, handle_changed_at = now(), updated_at = now() WHERE id = $2",
+            )
+            .bind(requested)
+            .bind(user.id)
+            .execute(&state.pool)
+            .await
+            .is_err()
+            {
+                return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+            }
+        }
+    }
+
     let _ = sqlx::query(
-        "UPDATE users SET display_name = $1, sort_name = $2, updated_at = now() WHERE id = $3",
+        "UPDATE users
+         SET display_name = $1, sort_name = $2,
+             bio = $3, title = $4, location = $5, website_url = $6,
+             updated_at = now()
+         WHERE id = $7",
     )
     .bind(&display_name)
     .bind(&sort_name)
+    .bind(&bio)
+    .bind(&title)
+    .bind(&location)
+    .bind(&website_url)
     .bind(user.id)
     .execute(&state.pool)
     .await;

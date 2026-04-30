@@ -23,9 +23,11 @@ import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BooksIndexRouteImport } from './routes/books.index'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
+import { Route as UsersHandleRouteImport } from './routes/users.$handle'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 import { Route as AuthAdminRouteImport } from './routes/_auth._admin'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
+import { Route as UsersByIdIdRouteImport } from './routes/users.by-id.$id'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
 import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
 import { Route as AuthUserQuotationsRouteImport } from './routes/_auth.user.quotations'
@@ -107,6 +109,11 @@ const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
   path: '/articles/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UsersHandleRoute = UsersHandleRouteImport.update({
+  id: '/users/$handle',
+  path: '/users/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
   id: '/articles/$slug',
   path: '/articles/$slug',
@@ -119,6 +126,11 @@ const AuthAdminRoute = AuthAdminRouteImport.update({
 const BooksBookSlugIndexRoute = BooksBookSlugIndexRouteImport.update({
   id: '/books/$bookSlug/',
   path: '/books/$bookSlug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersByIdIdRoute = UsersByIdIdRouteImport.update({
+  id: '/users/by-id/$id',
+  path: '/users/by-id/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BooksBookSlugNodeSlugRoute = BooksBookSlugNodeSlugRouteImport.update({
@@ -192,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/users/$handle': typeof UsersHandleRoute
   '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
   '/user/notes': typeof AuthUserNotesRoute
@@ -199,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
+  '/users/by-id/$id': typeof UsersByIdIdRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
   '/user/articles/$slug': typeof AuthUserArticlesSlugRoute
   '/user/sources/$id': typeof AuthUserSourcesIdRoute
@@ -220,6 +234,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/users/$handle': typeof UsersHandleRoute
   '/articles': typeof ArticlesIndexRoute
   '/books': typeof BooksIndexRoute
   '/user/notes': typeof AuthUserNotesRoute
@@ -227,6 +242,7 @@ export interface FileRoutesByTo {
   '/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
+  '/users/by-id/$id': typeof UsersByIdIdRoute
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
   '/user/articles/$slug': typeof AuthUserArticlesSlugRoute
   '/user/sources/$id': typeof AuthUserSourcesIdRoute
@@ -251,6 +267,7 @@ export interface FileRoutesById {
   '/verify-email': typeof VerifyEmailRoute
   '/_auth/_admin': typeof AuthAdminRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/users/$handle': typeof UsersHandleRoute
   '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
   '/_auth/user/notes': typeof AuthUserNotesRoute
@@ -258,6 +275,7 @@ export interface FileRoutesById {
   '/_auth/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
+  '/users/by-id/$id': typeof UsersByIdIdRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
   '/_auth/user/articles/$slug': typeof AuthUserArticlesSlugRoute
   '/_auth/user/sources/$id': typeof AuthUserSourcesIdRoute
@@ -281,6 +299,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/articles/$slug'
+    | '/users/$handle'
     | '/articles/'
     | '/books/'
     | '/user/notes'
@@ -288,6 +307,7 @@ export interface FileRouteTypes {
     | '/user/quotations'
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
+    | '/users/by-id/$id'
     | '/books/$bookSlug/'
     | '/user/articles/$slug'
     | '/user/sources/$id'
@@ -309,6 +329,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/articles/$slug'
+    | '/users/$handle'
     | '/articles'
     | '/books'
     | '/user/notes'
@@ -316,6 +337,7 @@ export interface FileRouteTypes {
     | '/user/quotations'
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
+    | '/users/by-id/$id'
     | '/books/$bookSlug'
     | '/user/articles/$slug'
     | '/user/sources/$id'
@@ -339,6 +361,7 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/_auth/_admin'
     | '/articles/$slug'
+    | '/users/$handle'
     | '/articles/'
     | '/books/'
     | '/_auth/user/notes'
@@ -346,6 +369,7 @@ export interface FileRouteTypes {
     | '/_auth/user/quotations'
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
+    | '/users/by-id/$id'
     | '/books/$bookSlug/'
     | '/_auth/user/articles/$slug'
     | '/_auth/user/sources/$id'
@@ -369,10 +393,12 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
+  UsersHandleRoute: typeof UsersHandleRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
   BooksIndexRoute: typeof BooksIndexRoute
   ArticlesByIdIdRoute: typeof ArticlesByIdIdRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
+  UsersByIdIdRoute: typeof UsersByIdIdRoute
   BooksBookSlugIndexRoute: typeof BooksBookSlugIndexRoute
 }
 
@@ -476,6 +502,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/users/$handle': {
+      id: '/users/$handle'
+      path: '/users/$handle'
+      fullPath: '/users/$handle'
+      preLoaderRoute: typeof UsersHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/articles/$slug': {
       id: '/articles/$slug'
       path: '/articles/$slug'
@@ -495,6 +528,13 @@ declare module '@tanstack/react-router' {
       path: '/books/$bookSlug'
       fullPath: '/books/$bookSlug/'
       preLoaderRoute: typeof BooksBookSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/by-id/$id': {
+      id: '/users/by-id/$id'
+      path: '/users/by-id/$id'
+      fullPath: '/users/by-id/$id'
+      preLoaderRoute: typeof UsersByIdIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/books/$bookSlug/$nodeSlug': {
@@ -629,10 +669,12 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,
+  UsersHandleRoute: UsersHandleRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
   BooksIndexRoute: BooksIndexRoute,
   ArticlesByIdIdRoute: ArticlesByIdIdRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
+  UsersByIdIdRoute: UsersByIdIdRoute,
   BooksBookSlugIndexRoute: BooksBookSlugIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -2056,6 +2056,104 @@
                 }
             }
         },
+        "/api/users/by-id/{id}": {
+            "get": {
+                "tags": ["users"],
+                "summary": "Resolve a user UUID to the user's *current* handle. Frontend uses\nthis to redirect from durable URLs (`/users/by-id/<uuid>`) to the\ncanonical handle URL.",
+                "operationId": "get_handle_by_id",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Current handle",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserHandleResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid UUID"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            }
+        },
+        "/api/users/{handle}": {
+            "get": {
+                "tags": ["users"],
+                "summary": "Public profile by handle.",
+                "operationId": "get_public_profile",
+                "parameters": [
+                    {
+                        "name": "handle",
+                        "in": "path",
+                        "description": "User handle",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "topic_slug",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicProfileResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid handle"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            }
+        },
         "/auth/forgot-password": {
             "post": {
                 "tags": ["auth"],
@@ -2384,13 +2482,27 @@
                     "markdown",
                     "html",
                     "status",
+                    "author_user_id",
                     "author_display_name",
+                    "author_public_roles",
                     "topics",
                     "created_at",
                     "updated_at"
                 ],
                 "properties": {
                     "author_display_name": {
+                        "type": "string"
+                    },
+                    "author_handle": {
+                        "type": ["string", "null"]
+                    },
+                    "author_public_roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "author_user_id": {
                         "type": "string"
                     },
                     "created_at": {
@@ -2531,13 +2643,29 @@
                     "title",
                     "slug",
                     "status",
+                    "author_user_id",
                     "author_display_name",
+                    "author_public_roles",
                     "topics",
                     "created_at",
                     "updated_at"
                 ],
                 "properties": {
                     "author_display_name": {
+                        "type": "string"
+                    },
+                    "author_handle": {
+                        "type": ["string", "null"],
+                        "description": "Current handle of the author. Use `/users/<handle>` for the\ncanonical link, or `/users/by-id/<author_user_id>` for a\nrename-durable link."
+                    },
+                    "author_public_roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Public-facing role chips for the author (`editor`, paid tiers)."
+                    },
+                    "author_user_id": {
                         "type": "string"
                     },
                     "created_at": {
@@ -3654,17 +3782,31 @@
                     "avatar_url": {
                         "type": ["string", "null"]
                     },
+                    "bio": {
+                        "type": ["string", "null"]
+                    },
                     "display_name": {
                         "type": "string"
                     },
                     "email": {
                         "type": "string"
                     },
+                    "handle": {
+                        "type": ["string", "null"],
+                        "description": "Public URL identifier (`/users/<handle>`)."
+                    },
+                    "handle_changed_at": {
+                        "type": ["string", "null"],
+                        "description": "RFC3339 timestamp of the most recent handle change. Used by the\nfrontend to compute remaining cooldown days."
+                    },
                     "has_password": {
                         "type": "boolean"
                     },
                     "id": {
                         "type": "string"
+                    },
+                    "location": {
+                        "type": ["string", "null"]
                     },
                     "providers": {
                         "type": "array",
@@ -3681,6 +3823,73 @@
                     "sort_name": {
                         "type": ["string", "null"],
                         "description": "Bibliography sort key, \"Last, First\" form. Auto-derived at signup."
+                    },
+                    "title": {
+                        "type": ["string", "null"]
+                    },
+                    "website_url": {
+                        "type": ["string", "null"]
+                    }
+                }
+            },
+            "PublicProfileResponse": {
+                "type": "object",
+                "description": "Public-facing user profile, returned by `GET /api/users/{handle}`.\nDistinct from `ProfileResponse` (the self-edit shape under\n`GET /auth/profile`) because it strips email and operational fields.",
+                "required": [
+                    "id",
+                    "handle",
+                    "display_name",
+                    "public_roles",
+                    "created_at",
+                    "articles",
+                    "article_total"
+                ],
+                "properties": {
+                    "article_total": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "articles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ArticleResponse"
+                        },
+                        "description": "First page of the user's published articles, newest first."
+                    },
+                    "avatar_url": {
+                        "type": ["string", "null"]
+                    },
+                    "bio": {
+                        "type": ["string", "null"]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "description": "Member-since timestamp (RFC3339)."
+                    },
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "handle": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": ["string", "null"]
+                    },
+                    "public_roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Roles to render as chips: filtered server-side to public-facing\nroles only (excludes `admin` and the default `user`)."
+                    },
+                    "title": {
+                        "type": ["string", "null"]
+                    },
+                    "website_url": {
+                        "type": ["string", "null"]
                     }
                 }
             },
@@ -4595,12 +4804,29 @@
                 "type": "object",
                 "required": ["display_name"],
                 "properties": {
+                    "bio": {
+                        "type": ["string", "null"],
+                        "description": "Profile-page fields. Empty string clears."
+                    },
                     "display_name": {
                         "type": "string"
+                    },
+                    "handle": {
+                        "type": ["string", "null"],
+                        "description": "Optional. If present and different from current, attempts a rename\n— subject to charset, reservation, and 30-day cooldown rules."
+                    },
+                    "location": {
+                        "type": ["string", "null"]
                     },
                     "sort_name": {
                         "type": ["string", "null"],
                         "description": "Optional. Whitespace-only or empty resets to the auto-derived form."
+                    },
+                    "title": {
+                        "type": ["string", "null"]
+                    },
+                    "website_url": {
+                        "type": ["string", "null"]
                     }
                 }
             },
@@ -4708,6 +4934,15 @@
                     },
                     "volume": {
                         "type": ["string", "null"]
+                    }
+                }
+            },
+            "UserHandleResponse": {
+                "type": "object",
+                "required": ["handle"],
+                "properties": {
+                    "handle": {
+                        "type": "string"
                     }
                 }
             }

@@ -77,6 +77,8 @@ pub mod validation;
         handlers::feedback::list_feedback,
         handlers::feedback::get_feedback,
         handlers::feedback::update_feedback,
+        handlers::users::get_public_profile,
+        handlers::users::get_handle_by_id,
     ),
     components(schemas(
         models::book::BookSummary,
@@ -167,6 +169,8 @@ pub mod validation;
         models::feedback::FeedbackListResponse,
         models::feedback::CreateFeedbackRequest,
         models::feedback::UpdateFeedbackRequest,
+        models::user::PublicProfileResponse,
+        models::user::UserHandleResponse,
     ))
 )]
 pub struct ApiDoc;

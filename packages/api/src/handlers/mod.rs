@@ -12,3 +12,4 @@ pub mod quotations;
 pub mod resources;
 pub mod sources;
 pub mod toc;
+pub mod users;

@@ -192,7 +192,12 @@ async fn main() {
         ))
         .routes(utoipa_axum::routes!(
             api::handlers::article_quotations::get_article_quotation
-        ));
+        ))
+        // Public user profiles + by-id redirect resolver.
+        .routes(utoipa_axum::routes!(
+            api::handlers::users::get_public_profile
+        ))
+        .routes(utoipa_axum::routes!(api::handlers::users::get_handle_by_id));
 
     // Editor routes (auth checked in each handler)
     let editor_router = OpenApiRouter::new()

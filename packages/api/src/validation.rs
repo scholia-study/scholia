@@ -56,6 +56,12 @@ pub const MAX_DISPLAY_NAME: usize = 100;
 pub const MIN_PASSWORD: usize = 8;
 pub const MAX_PASSWORD: usize = 128;
 
+// Profile
+pub const MAX_PROFILE_BIO: usize = 500;
+pub const MAX_PROFILE_TITLE: usize = 100;
+pub const MAX_PROFILE_LOCATION: usize = 100;
+pub const MAX_PROFILE_WEBSITE_URL: usize = 250;
+
 // Feedback
 pub const MIN_FEEDBACK_BODY: usize = 5;
 pub const MAX_FEEDBACK_BODY: usize = 5_000;

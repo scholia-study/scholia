@@ -47,7 +47,9 @@ struct ArticleRow {
     markdown: String,
     html: String,
     status: String,
+    author_user_id: Uuid,
     author_display_name: String,
+    author_handle: Option<String>,
     published_at: Option<time::OffsetDateTime>,
     created_at: time::OffsetDateTime,
     updated_at: time::OffsetDateTime,
@@ -59,7 +61,9 @@ struct ArticleSummaryRow {
     slug: String,
     description: Option<String>,
     status: String,
+    author_user_id: Uuid,
     author_display_name: String,
+    author_handle: Option<String>,
     published_at: Option<time::OffsetDateTime>,
     created_at: time::OffsetDateTime,
     updated_at: time::OffsetDateTime,
@@ -94,14 +98,32 @@ fn generate_slug(title: &str) -> String {
     slug::slugify(title)
 }
 
-fn article_response(r: ArticleSummaryRow, topics: Vec<TopicResponse>) -> ArticleResponse {
+/// Convenience for the single-author case. List endpoints batch via
+/// `db::users::list_public_roles_for` directly; this just wraps that
+/// call for one user.
+async fn author_public_roles(pool: &PgPool, user_id: Uuid) -> Vec<String> {
+    crate::db::users::list_public_roles_for(pool, &[user_id])
+        .await
+        .ok()
+        .and_then(|m| m.get(&user_id).cloned())
+        .unwrap_or_default()
+}
+
+fn article_response(
+    r: ArticleSummaryRow,
+    topics: Vec<TopicResponse>,
+    public_roles: Vec<String>,
+) -> ArticleResponse {
     ArticleResponse {
         id: r.id.to_string(),
         title: r.title,
         slug: r.slug,
         description: r.description,
         status: r.status,
+        author_user_id: r.author_user_id.to_string(),
         author_display_name: r.author_display_name,
+        author_handle: r.author_handle,
+        author_public_roles: public_roles,
         topics,
         published_at: r.published_at.map(fmt_time),
         created_at: fmt_time(r.created_at),
@@ -109,7 +131,11 @@ fn article_response(r: ArticleSummaryRow, topics: Vec<TopicResponse>) -> Article
     }
 }
 
-fn article_detail_response(r: ArticleRow, topics: Vec<TopicResponse>) -> ArticleDetailResponse {
+fn article_detail_response(
+    r: ArticleRow,
+    topics: Vec<TopicResponse>,
+    public_roles: Vec<String>,
+) -> ArticleDetailResponse {
     ArticleDetailResponse {
         id: r.id.to_string(),
         title: r.title,
@@ -118,7 +144,10 @@ fn article_detail_response(r: ArticleRow, topics: Vec<TopicResponse>) -> Article
         markdown: r.markdown,
         html: r.html,
         status: r.status,
+        author_user_id: r.author_user_id.to_string(),
         author_display_name: r.author_display_name,
+        author_handle: r.author_handle,
+        author_public_roles: public_roles,
         topics,
         published_at: r.published_at.map(fmt_time),
         created_at: fmt_time(r.created_at),
@@ -691,7 +720,9 @@ pub async fn create_article(
                RETURNING
                    id, title, slug, description, markdown, html,
                    status::TEXT AS "status!",
+                   $1 AS "author_user_id!",
                    (SELECT display_name FROM users WHERE id = $1) AS "author_display_name!",
+                   (SELECT handle FROM users WHERE id = $1) AS "author_handle?",
                    published_at, created_at, updated_at"#,
             user_id,
             title,
@@ -711,7 +742,8 @@ pub async fn create_article(
         }
     };
 
-    Ok(article_detail_response(row, vec![]))
+    let public_roles = author_public_roles(pool, row.author_user_id).await;
+    Ok(article_detail_response(row, vec![], public_roles))
 }
 
 pub async fn get_user_article_by_slug(
@@ -723,7 +755,9 @@ pub async fn get_user_article_by_slug(
         ArticleRow,
         r#"SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,
                   a.status::TEXT AS "status!",
+                  u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
+                  u.handle AS "author_handle?",
                   a.published_at, a.created_at, a.updated_at
            FROM articles a
            JOIN users u ON u.id = a.user_id
@@ -736,7 +770,8 @@ pub async fn get_user_article_by_slug(
     .map_err(|_| AppError::NotFound("Article not found".into()))?;
 
     let topics = load_article_topics(pool, row.id).await?;
-    Ok(article_detail_response(row, topics))
+    let public_roles = author_public_roles(pool, row.author_user_id).await;
+    Ok(article_detail_response(row, topics, public_roles))
 }
 
 pub async fn get_published_article_by_slug(
@@ -747,7 +782,9 @@ pub async fn get_published_article_by_slug(
         ArticleRow,
         r#"SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,
                   a.status::TEXT AS "status!",
+                  u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
+                  u.handle AS "author_handle?",
                   a.published_at, a.created_at, a.updated_at
            FROM articles a
            JOIN users u ON u.id = a.user_id
@@ -759,7 +796,8 @@ pub async fn get_published_article_by_slug(
     .map_err(|_| AppError::NotFound("Article not found".into()))?;
 
     let topics = load_article_topics(pool, row.id).await?;
-    Ok(article_detail_response(row, topics))
+    let public_roles = author_public_roles(pool, row.author_user_id).await;
+    Ok(article_detail_response(row, topics, public_roles))
 }
 
 pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailResponse, AppError> {
@@ -767,7 +805,9 @@ pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailR
         ArticleRow,
         r#"SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,
                   a.status::TEXT AS "status!",
+                  u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
+                  u.handle AS "author_handle?",
                   a.published_at, a.created_at, a.updated_at
            FROM articles a
            JOIN users u ON u.id = a.user_id
@@ -779,7 +819,8 @@ pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailR
     .map_err(|_| AppError::NotFound("Article not found".into()))?;
 
     let topics = load_article_topics(pool, row.id).await?;
-    Ok(article_detail_response(row, topics))
+    let public_roles = author_public_roles(pool, row.author_user_id).await;
+    Ok(article_detail_response(row, topics, public_roles))
 }
 
 pub async fn list_user_articles(
@@ -791,7 +832,9 @@ pub async fn list_user_articles(
         ArticleSummaryRow,
         r#"SELECT a.id, a.title, a.slug, a.description,
                   a.status::TEXT AS "status!",
+                  u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
+                  u.handle AS "author_handle?",
                   a.published_at, a.created_at, a.updated_at
            FROM articles a
            JOIN users u ON u.id = a.user_id
@@ -806,12 +849,21 @@ pub async fn list_user_articles(
 
     let article_ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
     let topics_map = load_articles_topics(pool, &article_ids).await?;
+    let author_ids: Vec<Uuid> = rows.iter().map(|r| r.author_user_id).collect();
+    let roles_map = crate::db::users::list_public_roles_for(pool, &author_ids)
+        .await
+        .unwrap_or_default();
 
     Ok(rows
         .into_iter()
         .map(|r| {
             let id = r.id;
-            article_response(r, topics_map.get(&id).cloned().unwrap_or_default())
+            let author_id = r.author_user_id;
+            article_response(
+                r,
+                topics_map.get(&id).cloned().unwrap_or_default(),
+                roles_map.get(&author_id).cloned().unwrap_or_default(),
+            )
         })
         .collect())
 }
@@ -843,7 +895,9 @@ pub async fn list_published_articles(
         ArticleSummaryRow,
         r#"SELECT a.id, a.title, a.slug, a.description,
                   a.status::TEXT AS "status!",
+                  u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
+                  u.handle AS "author_handle?",
                   a.published_at, a.created_at, a.updated_at
            FROM articles a
            JOIN users u ON u.id = a.user_id
@@ -864,12 +918,80 @@ pub async fn list_published_articles(
 
     let article_ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
     let topics_map = load_articles_topics(pool, &article_ids).await?;
+    let author_ids: Vec<Uuid> = rows.iter().map(|r| r.author_user_id).collect();
+    let roles_map = crate::db::users::list_public_roles_for(pool, &author_ids)
+        .await
+        .unwrap_or_default();
 
     let articles = rows
         .into_iter()
         .map(|r| {
             let id = r.id;
-            article_response(r, topics_map.get(&id).cloned().unwrap_or_default())
+            let author_id = r.author_user_id;
+            article_response(
+                r,
+                topics_map.get(&id).cloned().unwrap_or_default(),
+                roles_map.get(&author_id).cloned().unwrap_or_default(),
+            )
+        })
+        .collect();
+
+    Ok((articles, total))
+}
+
+/// Published articles by a single author, newest first. Used by the
+/// public profile page.
+pub async fn list_published_articles_by_author(
+    pool: &PgPool,
+    author_id: Uuid,
+    page: i32,
+    per_page: i32,
+) -> Result<(Vec<ArticleResponse>, i64), AppError> {
+    let offset = (page - 1).max(0) as i64 * per_page as i64;
+    let limit = per_page as i64;
+
+    let total = sqlx::query_scalar!(
+        r#"SELECT COUNT(*) AS "count!"
+           FROM articles
+           WHERE user_id = $1 AND status = 'published'"#,
+        author_id,
+    )
+    .fetch_one(pool)
+    .await?;
+
+    let rows = sqlx::query_as!(
+        ArticleSummaryRow,
+        r#"SELECT a.id, a.title, a.slug, a.description,
+                  a.status::TEXT AS "status!",
+                  u.id AS "author_user_id!",
+                  u.display_name AS "author_display_name!",
+                  u.handle AS "author_handle?",
+                  a.published_at, a.created_at, a.updated_at
+           FROM articles a
+           JOIN users u ON u.id = a.user_id
+           WHERE a.user_id = $1 AND a.status = 'published'
+           ORDER BY a.published_at DESC NULLS LAST
+           LIMIT $2 OFFSET $3"#,
+        author_id,
+        limit,
+        offset,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let article_ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
+    let topics_map = load_articles_topics(pool, &article_ids).await?;
+    let public_roles = author_public_roles(pool, author_id).await;
+
+    let articles = rows
+        .into_iter()
+        .map(|r| {
+            let id = r.id;
+            article_response(
+                r,
+                topics_map.get(&id).cloned().unwrap_or_default(),
+                public_roles.clone(),
+            )
         })
         .collect();
 

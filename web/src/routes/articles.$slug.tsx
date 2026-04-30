@@ -7,6 +7,7 @@ import {
     ArticleSentences,
     QuotationCard,
 } from "../modules/quotation";
+import { MemberChips } from "../modules/user";
 
 export const Route = createFileRoute("/articles/$slug")({
     component: PublishedArticlePage,
@@ -94,8 +95,25 @@ function PublishedArticlePage() {
                             {article.description}
                         </p>
                     )}
-                    <div className="flex items-center gap-2 text-sm text-stone-400">
-                        <span>{article.author_display_name}</span>
+                    <div className="flex items-center gap-2 text-sm text-stone-400 flex-wrap">
+                        {article.author_handle ? (
+                            <Link
+                                to="/users/$handle"
+                                params={{ handle: article.author_handle }}
+                                className="text-stone-600 hover:underline no-underline"
+                            >
+                                {article.author_display_name}
+                            </Link>
+                        ) : (
+                            <Link
+                                to="/users/by-id/$id"
+                                params={{ id: article.author_user_id }}
+                                className="text-stone-600 hover:underline no-underline"
+                            >
+                                {article.author_display_name}
+                            </Link>
+                        )}
+                        <MemberChips roles={article.author_public_roles} />
                         {article.published_at && (
                             <>
                                 <span>&middot;</span>

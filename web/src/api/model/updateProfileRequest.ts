@@ -6,10 +6,27 @@
  */
 
 export interface UpdateProfileRequest {
+    /**
+     * Profile-page fields. Empty string clears.
+     * @nullable
+     */
+    bio?: string | null;
     display_name: string;
+    /**
+     * Optional. If present and different from current, attempts a rename
+  — subject to charset, reservation, and 30-day cooldown rules.
+     * @nullable
+     */
+    handle?: string | null;
+    /** @nullable */
+    location?: string | null;
     /**
      * Optional. Whitespace-only or empty resets to the auto-derived form.
      * @nullable
      */
     sort_name?: string | null;
+    /** @nullable */
+    title?: string | null;
+    /** @nullable */
+    website_url?: string | null;
 }

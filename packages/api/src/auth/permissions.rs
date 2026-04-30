@@ -122,6 +122,26 @@ pub fn resolve_permissions(role_names: &[String]) -> HashSet<Permission> {
     perms
 }
 
+/// Roles that should appear as public chips on profile pages and
+/// article bylines. Excludes `admin` (operational only) and `user`
+/// (default role; would show for everyone).
+const PUBLIC_ROLES: &[&str] = &[
+    "editor",
+    "scholiast",
+    "scholiast_benefactor",
+    "scholiast_patron",
+];
+
+/// Filter a role list to those that should render as public chips.
+/// Returned in a stable order matching `PUBLIC_ROLES`.
+pub fn filter_public_roles(roles: &[String]) -> Vec<String> {
+    PUBLIC_ROLES
+        .iter()
+        .filter(|r| roles.iter().any(|owned| owned == *r))
+        .map(|s| (*s).to_string())
+        .collect()
+}
+
 /// Resolve all permissions from role names as a sorted list of string names.
 pub fn resolve_permission_names(role_names: &[String]) -> Vec<String> {
     let mut names: Vec<String> = resolve_permissions(role_names)

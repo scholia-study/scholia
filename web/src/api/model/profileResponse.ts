@@ -9,10 +9,25 @@ import type { LinkedProvider } from "./linkedProvider";
 export interface ProfileResponse {
     /** @nullable */
     avatar_url?: string | null;
+    /** @nullable */
+    bio?: string | null;
     display_name: string;
     email: string;
+    /**
+     * Public URL identifier (`/users/<handle>`).
+     * @nullable
+     */
+    handle?: string | null;
+    /**
+     * RFC3339 timestamp of the most recent handle change. Used by the
+  frontend to compute remaining cooldown days.
+     * @nullable
+     */
+    handle_changed_at?: string | null;
     has_password: boolean;
     id: string;
+    /** @nullable */
+    location?: string | null;
     providers: LinkedProvider[];
     roles: string[];
     /**
@@ -20,4 +35,8 @@ export interface ProfileResponse {
      * @nullable
      */
     sort_name?: string | null;
+    /** @nullable */
+    title?: string | null;
+    /** @nullable */
+    website_url?: string | null;
 }

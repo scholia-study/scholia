@@ -8,6 +8,10 @@ import type { TopicResponse } from "./topicResponse";
 
 export interface ArticleDetailResponse {
     author_display_name: string;
+    /** @nullable */
+    author_handle?: string | null;
+    author_public_roles: string[];
+    author_user_id: string;
     created_at: string;
     /** @nullable */
     description?: string | null;

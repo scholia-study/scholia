@@ -10,8 +10,10 @@ use serde::Deserialize;
 use tower_sessions::Session;
 use uuid::Uuid;
 
+use crate::auth::handle::derive_handle;
 use crate::auth::middleware::set_session_user;
 use crate::auth::sort_name::derive_sort_name;
+use crate::db;
 use crate::state::AppState;
 
 const GITHUB_AUTH_URL: &str = "https://github.com/login/oauth/authorize";
@@ -232,12 +234,18 @@ pub async fn github_callback(
         } else {
             // Create new user (GitHub-verified email)
             let sort_name = derive_sort_name(&display_name);
+            let derived = derive_handle(&display_name);
+            let handle = match db::users::claim_unique_handle(&state.pool, &derived).await {
+                Ok(h) => h,
+                Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+            };
             match sqlx::query_scalar::<_, Uuid>(
-                "INSERT INTO users (email, display_name, sort_name, avatar_url, email_verified_at) VALUES ($1, $2, $3, $4, now()) RETURNING id",
+                "INSERT INTO users (email, display_name, sort_name, handle, avatar_url, email_verified_at) VALUES ($1, $2, $3, $4, $5, now()) RETURNING id",
             )
             .bind(&email)
             .bind(&display_name)
             .bind(&sort_name)
+            .bind(&handle)
             .bind(avatar_url)
             .fetch_one(&state.pool)
             .await

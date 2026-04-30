@@ -8,6 +8,16 @@ import type { TopicResponse } from "./topicResponse";
 
 export interface ArticleResponse {
     author_display_name: string;
+    /**
+     * Current handle of the author. Use `/users/<handle>` for the
+  canonical link, or `/users/by-id/<author_user_id>` for a
+  rename-durable link.
+     * @nullable
+     */
+    author_handle?: string | null;
+    /** Public-facing role chips for the author (`editor`, paid tiers). */
+    author_public_roles: string[];
+    author_user_id: string;
     created_at: string;
     /** @nullable */
     description?: string | null;

@@ -2,10 +2,7 @@
 - saving a range quotation wrongly shows "edit" icon
 
 ## 🌿 FEATURES
-- add feedback system
 - add payment solution (stripe, async stripe crate)
-- public user profile page?
-- special tags (e.g. paying users) to display on a public profile
 - add "submit for review" for user articles to editors to receive editorial feedback/quality approval
 
 ## 🪡 PATCH
@@ -31,3 +28,6 @@
 - limit quotations for free tier, add a hard limit for paid tier
 - limit notes for free tier, add a hard limit for paid tier
 - referencing user-generated content does not add a bibliographical detail
+- test feedback system
+- test public user profile page?
+    - test special tags (e.g. paying users) to display on a public profile

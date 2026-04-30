@@ -13,6 +13,18 @@ CREATE TABLE users (
     -- Bibliography sort key, "Last, First" form. Auto-derived from
     -- display_name at signup; user-editable thereafter.
     sort_name         TEXT,
+    -- Public URL identifier. UNIQUE; auto-derived at signup; user-editable
+    -- with a 30-day cooldown enforced in the handler. Charset is
+    -- [a-z0-9-], 1–40 chars, no leading/trailing hyphen.
+    handle            TEXT UNIQUE,
+    -- Set whenever `handle` is updated. NULL means "never renamed";
+    -- the cooldown check treats NULL as "no cooldown applies".
+    handle_changed_at TIMESTAMPTZ,
+    -- Profile page fields. All optional; rendered on /users/<handle>.
+    bio               TEXT,
+    title             TEXT,
+    location          TEXT,
+    website_url       TEXT,
     email             TEXT NOT NULL UNIQUE,
     password_hash         TEXT,
     avatar_url            TEXT,
@@ -23,12 +35,25 @@ CREATE TABLE users (
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Permanent record of every handle ever held by a user. Used to prevent
+-- handle recycling: a handle that was ever in `users.handle` (and later
+-- changed) is reserved for that user forever — others cannot claim it,
+-- but the original owner can rename back to it.
+CREATE TABLE released_handles (
+    handle      TEXT PRIMARY KEY,
+    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    released_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_released_handles_user ON released_handles (user_id);
+
 -- Seed the system user. Owns all seed/import-created persons and sources.
 -- Login is impossible: no password_hash, and the login handler rejects this email.
-INSERT INTO users (id, display_name, email, email_verified_at)
+INSERT INTO users (id, display_name, handle, email, email_verified_at)
 VALUES (
     '00000000-0000-0000-0000-000000000001',
     'System',
+    'system',
     'system@scholia.local',
     now()
 );

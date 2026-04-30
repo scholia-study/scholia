@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useListPublishedArticles } from "../api/articles/articles";
 import { useListTopics } from "../api/topics/topics";
+import { MemberChips } from "../modules/user";
 
 export const Route = createFileRoute("/articles/")({
     component: ArticlesListingPage,
@@ -99,8 +100,11 @@ function ArticlesListingPage() {
                                     {article.description}
                                 </p>
                             )}
-                            <div className="flex items-center gap-2 text-xs text-stone-400">
+                            <div className="flex items-center gap-2 text-xs text-stone-400 flex-wrap">
                                 <span>{article.author_display_name}</span>
+                                <MemberChips
+                                    roles={article.author_public_roles}
+                                />
                                 {article.published_at && (
                                     <>
                                         <span>&middot;</span>

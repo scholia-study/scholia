@@ -18,6 +18,16 @@ export const Route = createFileRoute("/_auth/user/profile")({
     component: ProfilePage,
 });
 
+const HANDLE_COOLDOWN_DAYS = 30;
+
+function daysUntilHandleEditable(handleChangedAt: string | null | undefined) {
+    if (!handleChangedAt) return 0;
+    const last = new Date(handleChangedAt).getTime();
+    if (Number.isNaN(last)) return 0;
+    const elapsedDays = (Date.now() - last) / 86_400_000;
+    return Math.max(0, Math.ceil(HANDLE_COOLDOWN_DAYS - elapsedDays));
+}
+
 function ProfilePage() {
     const queryClient = useQueryClient();
     const { data: profileData } = useGetProfileSuspense();
@@ -30,6 +40,16 @@ function ProfilePage() {
 
     const [displayName, setDisplayName] = useState(profile.display_name);
     const [sortName, setSortName] = useState(profile.sort_name ?? "");
+    const [handle, setHandle] = useState(profile.handle ?? "");
+    const [bio, setBio] = useState(profile.bio ?? "");
+    const [title, setTitle] = useState(profile.title ?? "");
+    const [location, setLocation] = useState(profile.location ?? "");
+    const [websiteUrl, setWebsiteUrl] = useState(profile.website_url ?? "");
+
+    const handleCooldownDays = daysUntilHandleEditable(
+        profile.handle_changed_at,
+    );
+    const handleLocked = handleCooldownDays > 0;
 
     const updateMutation = useUpdateProfile();
     const passwordChangeMutation = useRequestPasswordChange();
@@ -38,7 +58,15 @@ function ProfilePage() {
         e.preventDefault();
         try {
             await updateMutation.mutateAsync({
-                data: { display_name: displayName, sort_name: sortName },
+                data: {
+                    display_name: displayName,
+                    sort_name: sortName,
+                    handle,
+                    bio,
+                    title,
+                    location,
+                    website_url: websiteUrl,
+                },
             });
             toast.success("Profile updated.");
             queryClient.invalidateQueries({ queryKey: getMeQueryKey() });
@@ -53,7 +81,12 @@ function ProfilePage() {
 
     const dirty =
         displayName.trim() !== profile.display_name ||
-        sortName.trim() !== (profile.sort_name ?? "");
+        sortName.trim() !== (profile.sort_name ?? "") ||
+        handle.trim() !== (profile.handle ?? "") ||
+        bio !== (profile.bio ?? "") ||
+        title !== (profile.title ?? "") ||
+        location !== (profile.location ?? "") ||
+        websiteUrl !== (profile.website_url ?? "");
 
     const handlePasswordChange = async () => {
         try {
@@ -119,6 +152,55 @@ function ProfilePage() {
                     size="small"
                     placeholder="Niklas, Filip"
                     helperText="Used in bibliographies. Leave blank to auto-derive from display name."
+                />
+                <TextField
+                    label="Handle"
+                    value={handle}
+                    onChange={(e) => setHandle(e.target.value)}
+                    fullWidth
+                    size="small"
+                    disabled={handleLocked}
+                    placeholder="filip-niklas"
+                    helperText={
+                        handleLocked
+                            ? `Public URL identifier. Locked for ${handleCooldownDays} more day(s) since the last change.`
+                            : "Public URL identifier — your profile lives at /users/<handle>. Lowercase, digits, and hyphens. Once changed, locked for 30 days."
+                    }
+                />
+                <TextField
+                    label="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    fullWidth
+                    size="small"
+                    placeholder="e.g. Independent scholar"
+                />
+                <TextField
+                    label="Location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    fullWidth
+                    size="small"
+                    placeholder="e.g. Oslo, Norway"
+                />
+                <TextField
+                    label="Website"
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    fullWidth
+                    size="small"
+                    placeholder="https://example.com"
+                />
+                <TextField
+                    label="Bio"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    fullWidth
+                    size="small"
+                    multiline
+                    minRows={3}
+                    maxRows={10}
+                    helperText={`${bio.length}/500`}
                 />
                 <Button
                     type="submit"
