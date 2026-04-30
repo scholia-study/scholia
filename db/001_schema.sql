@@ -637,3 +637,43 @@ CREATE TABLE quotation_note_tags (
 
 CREATE INDEX idx_qntags_tag ON quotation_note_tags (tag_id);
 
+-- ============================================================
+-- FEEDBACK
+-- ============================================================
+
+-- Free transitions (any → any). Default 'todo' on submission;
+-- admins flip to 'in_progress' / 'done' / 'cancelled' from the dashboard.
+CREATE TYPE feedback_status AS ENUM ('todo', 'in_progress', 'done', 'cancelled');
+
+-- User-submitted feedback (bug reports, suggestions, questions).
+-- user_id is nullable so feedback survives user deletion (we render
+-- "User deleted" in the admin UI). admin_notes is a single editable
+-- scratchpad — not a thread; if we later want a comment trail, add a
+-- separate feedback_comments table.
+CREATE TABLE feedback (
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id       UUID REFERENCES users(id) ON DELETE SET NULL,
+    body          TEXT NOT NULL,
+    -- Captured at submit time. Full URL with query string; useful when
+    -- the bug depends on filter/route parameters.
+    url           TEXT,
+    user_agent    TEXT,
+    viewport_w    INT,
+    viewport_h    INT,
+    status        feedback_status NOT NULL DEFAULT 'todo',
+    admin_notes   TEXT,
+    -- Last admin to edit status / notes. Nullable until first triage.
+    handled_by    UUID REFERENCES users(id) ON DELETE SET NULL,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Dashboard default sort.
+CREATE INDEX idx_feedback_created_at ON feedback (created_at DESC);
+-- Status-filtered list ("active" = todo + in_progress) is the default
+-- admin view; index status + created_at to keep that query cheap.
+CREATE INDEX idx_feedback_status_created_at ON feedback (status, created_at DESC);
+-- Rate-limit lookup: "submissions by this user in the last 24h".
+CREATE INDEX idx_feedback_user_created_at ON feedback (user_id, created_at DESC)
+    WHERE user_id IS NOT NULL;
+

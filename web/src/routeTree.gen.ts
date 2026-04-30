@@ -29,10 +29,12 @@ import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 import { Route as UserSourcesIndexRouteImport } from './routes/user.sources.index'
 import { Route as UserArticlesIndexRouteImport } from './routes/user.articles.index'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
+import { Route as AdminFeedbackIndexRouteImport } from './routes/admin.feedback.index'
 import { Route as UserSourcesIdRouteImport } from './routes/user.sources.$id'
 import { Route as UserArticlesSlugRouteImport } from './routes/user.articles.$slug'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
 import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
+import { Route as AdminFeedbackIdRouteImport } from './routes/admin.feedback.$id'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -134,6 +136,11 @@ const BooksBookSlugIndexRoute = BooksBookSlugIndexRouteImport.update({
   path: '/books/$bookSlug/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFeedbackIndexRoute = AdminFeedbackIndexRouteImport.update({
+  id: '/admin/feedback/',
+  path: '/admin/feedback/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UserSourcesIdRoute = UserSourcesIdRouteImport.update({
   id: '/user/sources/$id',
   path: '/user/sources/$id',
@@ -152,6 +159,11 @@ const BooksBookSlugNodeSlugRoute = BooksBookSlugNodeSlugRouteImport.update({
 const ArticlesByIdIdRoute = ArticlesByIdIdRouteImport.update({
   id: '/articles/by-id/$id',
   path: '/articles/by-id/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminFeedbackIdRoute = AdminFeedbackIdRouteImport.update({
+  id: '/admin/feedback/$id',
+  path: '/admin/feedback/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -173,10 +185,12 @@ export interface FileRoutesByFullPath {
   '/user/quotations': typeof UserQuotationsRoute
   '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
+  '/admin/feedback/$id': typeof AdminFeedbackIdRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/user/articles/$slug': typeof UserArticlesSlugRoute
   '/user/sources/$id': typeof UserSourcesIdRoute
+  '/admin/feedback/': typeof AdminFeedbackIndexRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
   '/user/articles/': typeof UserArticlesIndexRoute
   '/user/sources/': typeof UserSourcesIndexRoute
@@ -199,10 +213,12 @@ export interface FileRoutesByTo {
   '/user/quotations': typeof UserQuotationsRoute
   '/articles': typeof ArticlesIndexRoute
   '/books': typeof BooksIndexRoute
+  '/admin/feedback/$id': typeof AdminFeedbackIdRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/user/articles/$slug': typeof UserArticlesSlugRoute
   '/user/sources/$id': typeof UserSourcesIdRoute
+  '/admin/feedback': typeof AdminFeedbackIndexRoute
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
   '/user/articles': typeof UserArticlesIndexRoute
   '/user/sources': typeof UserSourcesIndexRoute
@@ -226,10 +242,12 @@ export interface FileRoutesById {
   '/user/quotations': typeof UserQuotationsRoute
   '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
+  '/admin/feedback/$id': typeof AdminFeedbackIdRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/user/articles/$slug': typeof UserArticlesSlugRoute
   '/user/sources/$id': typeof UserSourcesIdRoute
+  '/admin/feedback/': typeof AdminFeedbackIndexRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
   '/user/articles/': typeof UserArticlesIndexRoute
   '/user/sources/': typeof UserSourcesIndexRoute
@@ -254,10 +272,12 @@ export interface FileRouteTypes {
     | '/user/quotations'
     | '/articles/'
     | '/books/'
+    | '/admin/feedback/$id'
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
     | '/user/articles/$slug'
     | '/user/sources/$id'
+    | '/admin/feedback/'
     | '/books/$bookSlug/'
     | '/user/articles/'
     | '/user/sources/'
@@ -280,10 +300,12 @@ export interface FileRouteTypes {
     | '/user/quotations'
     | '/articles'
     | '/books'
+    | '/admin/feedback/$id'
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
     | '/user/articles/$slug'
     | '/user/sources/$id'
+    | '/admin/feedback'
     | '/books/$bookSlug'
     | '/user/articles'
     | '/user/sources'
@@ -306,10 +328,12 @@ export interface FileRouteTypes {
     | '/user/quotations'
     | '/articles/'
     | '/books/'
+    | '/admin/feedback/$id'
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
     | '/user/articles/$slug'
     | '/user/sources/$id'
+    | '/admin/feedback/'
     | '/books/$bookSlug/'
     | '/user/articles/'
     | '/user/sources/'
@@ -333,10 +357,12 @@ export interface RootRouteChildren {
   UserQuotationsRoute: typeof UserQuotationsRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
   BooksIndexRoute: typeof BooksIndexRoute
+  AdminFeedbackIdRoute: typeof AdminFeedbackIdRoute
   ArticlesByIdIdRoute: typeof ArticlesByIdIdRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
   UserArticlesSlugRoute: typeof UserArticlesSlugRoute
   UserSourcesIdRoute: typeof UserSourcesIdRoute
+  AdminFeedbackIndexRoute: typeof AdminFeedbackIndexRoute
   BooksBookSlugIndexRoute: typeof BooksBookSlugIndexRoute
   UserArticlesIndexRoute: typeof UserArticlesIndexRoute
   UserSourcesIndexRoute: typeof UserSourcesIndexRoute
@@ -484,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BooksBookSlugIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/feedback/': {
+      id: '/admin/feedback/'
+      path: '/admin/feedback'
+      fullPath: '/admin/feedback/'
+      preLoaderRoute: typeof AdminFeedbackIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/user/sources/$id': {
       id: '/user/sources/$id'
       path: '/user/sources/$id'
@@ -512,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesByIdIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/feedback/$id': {
+      id: '/admin/feedback/$id'
+      path: '/admin/feedback/$id'
+      fullPath: '/admin/feedback/$id'
+      preLoaderRoute: typeof AdminFeedbackIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -533,10 +573,12 @@ const rootRouteChildren: RootRouteChildren = {
   UserQuotationsRoute: UserQuotationsRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
   BooksIndexRoute: BooksIndexRoute,
+  AdminFeedbackIdRoute: AdminFeedbackIdRoute,
   ArticlesByIdIdRoute: ArticlesByIdIdRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
   UserArticlesSlugRoute: UserArticlesSlugRoute,
   UserSourcesIdRoute: UserSourcesIdRoute,
+  AdminFeedbackIndexRoute: AdminFeedbackIndexRoute,
   BooksBookSlugIndexRoute: BooksBookSlugIndexRoute,
   UserArticlesIndexRoute: UserArticlesIndexRoute,
   UserSourcesIndexRoute: UserSourcesIndexRoute,

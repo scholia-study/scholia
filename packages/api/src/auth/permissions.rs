@@ -5,6 +5,7 @@ pub enum Permission {
     UsersManage,
     BooksManage,
     ResourcesManage,
+    AdminPanel,
     NotesCreate,
     NotesEdit,
     NotesDelete,
@@ -22,6 +23,7 @@ impl Permission {
             Self::UsersManage => "users_manage",
             Self::BooksManage => "books_manage",
             Self::ResourcesManage => "resources_manage",
+            Self::AdminPanel => "admin_panel",
             Self::NotesCreate => "notes_create",
             Self::NotesEdit => "notes_edit",
             Self::NotesDelete => "notes_delete",
@@ -93,6 +95,7 @@ impl Role {
                 perms.push(Permission::UsersManage);
                 perms.push(Permission::BooksManage);
                 perms.push(Permission::ResourcesManage);
+                perms.push(Permission::AdminPanel);
                 perms.extend_from_slice(ELEVATED_LIMITS);
             }
             Self::Editor => {

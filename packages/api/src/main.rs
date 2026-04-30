@@ -151,6 +151,18 @@ async fn main() {
         ))
         .routes(utoipa_axum::routes!(
             api::handlers::article_quotations::delete_article_quotation
+        ))
+        // Feedback (user-submit). Admin endpoints live in admin_router.
+        .routes(utoipa_axum::routes!(
+            api::handlers::feedback::create_feedback
+        ));
+
+    // Admin routes — gated per-handler via Permission::AdminPanel.
+    let admin_router = OpenApiRouter::new()
+        .routes(utoipa_axum::routes!(api::handlers::feedback::list_feedback))
+        .routes(utoipa_axum::routes!(
+            api::handlers::feedback::get_feedback,
+            api::handlers::feedback::update_feedback
         ));
 
     // Public routes (no rate limiting)
@@ -221,6 +233,7 @@ async fn main() {
         .merge(user_router)
         .merge(public_router)
         .merge(editor_router)
+        .merge(admin_router)
         .split_for_parts();
 
     let app = router

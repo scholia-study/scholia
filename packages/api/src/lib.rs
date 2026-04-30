@@ -73,6 +73,10 @@ pub mod validation;
         handlers::article_quotations::list_article_quotations,
         handlers::article_quotations::get_article_quotation,
         handlers::article_quotations::delete_article_quotation,
+        handlers::feedback::create_feedback,
+        handlers::feedback::list_feedback,
+        handlers::feedback::get_feedback,
+        handlers::feedback::update_feedback,
     ),
     components(schemas(
         models::book::BookSummary,
@@ -156,6 +160,13 @@ pub mod validation;
         models::article_quotation::CreateArticleQuotationResponse,
         models::article_quotation::UnifiedQuotationResponse,
         models::article_quotation::UnifiedQuotationListResponse,
+        models::feedback::FeedbackStatus,
+        models::feedback::FeedbackSubmitter,
+        models::feedback::FeedbackHandler,
+        models::feedback::FeedbackResponse,
+        models::feedback::FeedbackListResponse,
+        models::feedback::CreateFeedbackRequest,
+        models::feedback::UpdateFeedbackRequest,
     ))
 )]
 pub struct ApiDoc;

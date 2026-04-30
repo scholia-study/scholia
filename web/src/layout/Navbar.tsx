@@ -11,13 +11,15 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { getMeQueryKey, useLogout } from "../api/auth/auth";
 import { useAuth } from "../hooks/useAuth";
+import { useFeedback } from "../modules/feedback";
 
 export function Navbar() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const { user, isLoading } = useAuth();
+    const { user, isLoading, hasPermission } = useAuth();
     const logoutMutation = useLogout();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const { openModal: openFeedbackModal } = useFeedback();
 
     const handleLogout = async () => {
         setAnchorEl(null);
@@ -164,6 +166,31 @@ export function Navbar() {
                                             Sources
                                         </Typography>
                                     </MenuItem>
+                                    <Divider />
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null);
+                                            openFeedbackModal();
+                                        }}
+                                    >
+                                        <Typography variant="body2">
+                                            Send feedback
+                                        </Typography>
+                                    </MenuItem>
+                                    {hasPermission("admin_panel") && (
+                                        <MenuItem
+                                            onClick={() => {
+                                                setAnchorEl(null);
+                                                navigate({
+                                                    to: "/admin/feedback",
+                                                });
+                                            }}
+                                        >
+                                            <Typography variant="body2">
+                                                Admin: Feedback
+                                            </Typography>
+                                        </MenuItem>
+                                    )}
                                     <Divider />
                                     <MenuItem
                                         onClick={() => {

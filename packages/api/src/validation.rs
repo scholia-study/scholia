@@ -56,6 +56,15 @@ pub const MAX_DISPLAY_NAME: usize = 100;
 pub const MIN_PASSWORD: usize = 8;
 pub const MAX_PASSWORD: usize = 128;
 
+// Feedback
+pub const MIN_FEEDBACK_BODY: usize = 5;
+pub const MAX_FEEDBACK_BODY: usize = 5_000;
+pub const MAX_FEEDBACK_URL: usize = 2_048;
+pub const MAX_FEEDBACK_USER_AGENT: usize = 500;
+pub const MAX_FEEDBACK_ADMIN_NOTES: usize = 5_000;
+/// Per-user submissions allowed in any rolling 24h window.
+pub const MAX_FEEDBACK_PER_DAY: i64 = 20;
+
 // ── Helpers ──────────────────────────────────────────────
 
 /// Reject a string longer than `max` Unicode scalar values.

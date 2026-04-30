@@ -13,6 +13,7 @@ import { InfoSubnav } from "../layout/InfoSubnav";
 import { Navbar } from "../layout/Navbar";
 import { ScrollToTop } from "../layout/ScrollToTop";
 import { UserSubnav } from "../layout/UserSubnav";
+import { FeedbackModal, FeedbackProvider } from "../modules/feedback";
 import appCss from "../styles.css?url";
 import { theme } from "../theme";
 
@@ -51,21 +52,24 @@ function RootComponent() {
 
     return (
         <ThemeProvider theme={theme}>
-            <Navbar />
-            <UserSubnav />
-            <InfoSubnav />
-            <main className="flex-1 overflow-y-auto">
-                <div
-                    className={`${isReader ? "h-full" : "min-h-full"} flex flex-col`}
-                >
-                    <div className="flex-1 min-h-0 flex flex-col">
-                        <Outlet />
+            <FeedbackProvider>
+                <Navbar />
+                <UserSubnav />
+                <InfoSubnav />
+                <main className="flex-1 overflow-y-auto">
+                    <div
+                        className={`${isReader ? "h-full" : "min-h-full"} flex flex-col`}
+                    >
+                        <div className="flex-1 min-h-0 flex flex-col">
+                            <Outlet />
+                        </div>
+                        {showFooter && <Footer />}
                     </div>
-                    {showFooter && <Footer />}
-                </div>
-            </main>
-            <ScrollToTop />
-            <Toaster position="bottom-right" />
+                </main>
+                <ScrollToTop />
+                <FeedbackModal />
+                <Toaster position="bottom-right" />
+            </FeedbackProvider>
         </ThemeProvider>
     );
 }
