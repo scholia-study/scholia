@@ -11,11 +11,10 @@ import {
     TextField,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { NoteFormModal } from "#/modules/quotation";
-import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { NoteWithContextResponse } from "../api/model";
 import {
     getListAllNotesQueryKey,
@@ -23,15 +22,7 @@ import {
     useListAllNotes,
 } from "../api/quotations/quotations";
 
-export const Route = createFileRoute("/user/notes")({
-    beforeLoad: async ({ context }) => {
-        const data = await context.queryClient.fetchQuery(
-            getGetProfileQueryOptions(),
-        );
-        if (!data?.data) {
-            throw redirect({ to: "/login" });
-        }
-    },
+export const Route = createFileRoute("/_auth/user/notes")({
     component: NotesPage,
 });
 

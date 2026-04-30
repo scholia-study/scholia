@@ -7,7 +7,6 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import {
-    getGetProfileQueryOptions,
     getMeQueryKey,
     useGetProfileSuspense,
     useRequestPasswordChange,
@@ -15,15 +14,7 @@ import {
 } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 
-export const Route = createFileRoute("/user/profile")({
-    beforeLoad: async ({ context }) => {
-        const data = await context.queryClient.fetchQuery(
-            getGetProfileQueryOptions(),
-        );
-        if (!data?.data) {
-            throw redirect({ to: "/login" });
-        }
-    },
+export const Route = createFileRoute("/_auth/user/profile")({
     component: ProfilePage,
 });
 

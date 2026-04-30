@@ -17,9 +17,8 @@ import {
     Tooltip,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { SourceResponse, SourceSearchResponse } from "../api/model";
 import {
     getBrowseSourcesQueryKey,
@@ -29,15 +28,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { SourceFormModal } from "../modules/source";
 
-export const Route = createFileRoute("/user/sources/")({
-    beforeLoad: async ({ context }) => {
-        const data = await context.queryClient.fetchQuery(
-            getGetProfileQueryOptions(),
-        );
-        if (!data?.data) {
-            throw redirect({ to: "/login" });
-        }
-    },
+export const Route = createFileRoute("/_auth/user/sources/")({
     component: SourcesListPage,
 });
 

@@ -19,22 +19,24 @@ import { Route as LicenceRouteImport } from './routes/licence'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ContributeRouteImport } from './routes/contribute'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BooksIndexRouteImport } from './routes/books.index'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
-import { Route as UserQuotationsRouteImport } from './routes/user.quotations'
-import { Route as UserProfileRouteImport } from './routes/user.profile'
-import { Route as UserNotesRouteImport } from './routes/user.notes'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
-import { Route as UserSourcesIndexRouteImport } from './routes/user.sources.index'
-import { Route as UserArticlesIndexRouteImport } from './routes/user.articles.index'
+import { Route as AuthAdminRouteImport } from './routes/_auth._admin'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
-import { Route as AdminFeedbackIndexRouteImport } from './routes/admin.feedback.index'
-import { Route as UserSourcesIdRouteImport } from './routes/user.sources.$id'
-import { Route as UserArticlesSlugRouteImport } from './routes/user.articles.$slug'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
 import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
-import { Route as AdminFeedbackIdRouteImport } from './routes/admin.feedback.$id'
+import { Route as AuthUserQuotationsRouteImport } from './routes/_auth.user.quotations'
+import { Route as AuthUserProfileRouteImport } from './routes/_auth.user.profile'
+import { Route as AuthUserNotesRouteImport } from './routes/_auth.user.notes'
+import { Route as AuthUserSourcesIndexRouteImport } from './routes/_auth.user.sources.index'
+import { Route as AuthUserArticlesIndexRouteImport } from './routes/_auth.user.articles.index'
+import { Route as AuthUserSourcesIdRouteImport } from './routes/_auth.user.sources.$id'
+import { Route as AuthUserArticlesSlugRouteImport } from './routes/_auth.user.articles.$slug'
+import { Route as AuthAdminAdminFeedbackIndexRouteImport } from './routes/_auth._admin.admin.feedback.index'
+import { Route as AuthAdminAdminFeedbackIdRouteImport } from './routes/_auth._admin.admin.feedback.$id'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -86,6 +88,10 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -101,54 +107,18 @@ const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
   path: '/articles/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UserQuotationsRoute = UserQuotationsRouteImport.update({
-  id: '/user/quotations',
-  path: '/user/quotations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserProfileRoute = UserProfileRouteImport.update({
-  id: '/user/profile',
-  path: '/user/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserNotesRoute = UserNotesRouteImport.update({
-  id: '/user/notes',
-  path: '/user/notes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
   id: '/articles/$slug',
   path: '/articles/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UserSourcesIndexRoute = UserSourcesIndexRouteImport.update({
-  id: '/user/sources/',
-  path: '/user/sources/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserArticlesIndexRoute = UserArticlesIndexRouteImport.update({
-  id: '/user/articles/',
-  path: '/user/articles/',
-  getParentRoute: () => rootRouteImport,
+const AuthAdminRoute = AuthAdminRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => AuthRoute,
 } as any)
 const BooksBookSlugIndexRoute = BooksBookSlugIndexRouteImport.update({
   id: '/books/$bookSlug/',
   path: '/books/$bookSlug/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminFeedbackIndexRoute = AdminFeedbackIndexRouteImport.update({
-  id: '/admin/feedback/',
-  path: '/admin/feedback/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserSourcesIdRoute = UserSourcesIdRouteImport.update({
-  id: '/user/sources/$id',
-  path: '/user/sources/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserArticlesSlugRoute = UserArticlesSlugRouteImport.update({
-  id: '/user/articles/$slug',
-  path: '/user/articles/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BooksBookSlugNodeSlugRoute = BooksBookSlugNodeSlugRouteImport.update({
@@ -161,11 +131,53 @@ const ArticlesByIdIdRoute = ArticlesByIdIdRouteImport.update({
   path: '/articles/by-id/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminFeedbackIdRoute = AdminFeedbackIdRouteImport.update({
-  id: '/admin/feedback/$id',
-  path: '/admin/feedback/$id',
-  getParentRoute: () => rootRouteImport,
+const AuthUserQuotationsRoute = AuthUserQuotationsRouteImport.update({
+  id: '/user/quotations',
+  path: '/user/quotations',
+  getParentRoute: () => AuthRoute,
 } as any)
+const AuthUserProfileRoute = AuthUserProfileRouteImport.update({
+  id: '/user/profile',
+  path: '/user/profile',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthUserNotesRoute = AuthUserNotesRouteImport.update({
+  id: '/user/notes',
+  path: '/user/notes',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthUserSourcesIndexRoute = AuthUserSourcesIndexRouteImport.update({
+  id: '/user/sources/',
+  path: '/user/sources/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthUserArticlesIndexRoute = AuthUserArticlesIndexRouteImport.update({
+  id: '/user/articles/',
+  path: '/user/articles/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthUserSourcesIdRoute = AuthUserSourcesIdRouteImport.update({
+  id: '/user/sources/$id',
+  path: '/user/sources/$id',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthUserArticlesSlugRoute = AuthUserArticlesSlugRouteImport.update({
+  id: '/user/articles/$slug',
+  path: '/user/articles/$slug',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthAdminAdminFeedbackIndexRoute =
+  AuthAdminAdminFeedbackIndexRouteImport.update({
+    id: '/admin/feedback/',
+    path: '/admin/feedback/',
+    getParentRoute: () => AuthAdminRoute,
+  } as any)
+const AuthAdminAdminFeedbackIdRoute =
+  AuthAdminAdminFeedbackIdRouteImport.update({
+    id: '/admin/feedback/$id',
+    path: '/admin/feedback/$id',
+    getParentRoute: () => AuthAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -180,20 +192,20 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
-  '/user/notes': typeof UserNotesRoute
-  '/user/profile': typeof UserProfileRoute
-  '/user/quotations': typeof UserQuotationsRoute
   '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
-  '/admin/feedback/$id': typeof AdminFeedbackIdRoute
+  '/user/notes': typeof AuthUserNotesRoute
+  '/user/profile': typeof AuthUserProfileRoute
+  '/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
-  '/user/articles/$slug': typeof UserArticlesSlugRoute
-  '/user/sources/$id': typeof UserSourcesIdRoute
-  '/admin/feedback/': typeof AdminFeedbackIndexRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
-  '/user/articles/': typeof UserArticlesIndexRoute
-  '/user/sources/': typeof UserSourcesIndexRoute
+  '/user/articles/$slug': typeof AuthUserArticlesSlugRoute
+  '/user/sources/$id': typeof AuthUserSourcesIdRoute
+  '/user/articles/': typeof AuthUserArticlesIndexRoute
+  '/user/sources/': typeof AuthUserSourcesIndexRoute
+  '/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
+  '/admin/feedback/': typeof AuthAdminAdminFeedbackIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -208,24 +220,25 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
-  '/user/notes': typeof UserNotesRoute
-  '/user/profile': typeof UserProfileRoute
-  '/user/quotations': typeof UserQuotationsRoute
   '/articles': typeof ArticlesIndexRoute
   '/books': typeof BooksIndexRoute
-  '/admin/feedback/$id': typeof AdminFeedbackIdRoute
+  '/user/notes': typeof AuthUserNotesRoute
+  '/user/profile': typeof AuthUserProfileRoute
+  '/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
-  '/user/articles/$slug': typeof UserArticlesSlugRoute
-  '/user/sources/$id': typeof UserSourcesIdRoute
-  '/admin/feedback': typeof AdminFeedbackIndexRoute
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
-  '/user/articles': typeof UserArticlesIndexRoute
-  '/user/sources': typeof UserSourcesIndexRoute
+  '/user/articles/$slug': typeof AuthUserArticlesSlugRoute
+  '/user/sources/$id': typeof AuthUserSourcesIdRoute
+  '/user/articles': typeof AuthUserArticlesIndexRoute
+  '/user/sources': typeof AuthUserSourcesIndexRoute
+  '/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
+  '/admin/feedback': typeof AuthAdminAdminFeedbackIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteWithChildren
   '/about': typeof AboutRoute
   '/contribute': typeof ContributeRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -236,21 +249,22 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/_auth/_admin': typeof AuthAdminRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
-  '/user/notes': typeof UserNotesRoute
-  '/user/profile': typeof UserProfileRoute
-  '/user/quotations': typeof UserQuotationsRoute
   '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
-  '/admin/feedback/$id': typeof AdminFeedbackIdRoute
+  '/_auth/user/notes': typeof AuthUserNotesRoute
+  '/_auth/user/profile': typeof AuthUserProfileRoute
+  '/_auth/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
-  '/user/articles/$slug': typeof UserArticlesSlugRoute
-  '/user/sources/$id': typeof UserSourcesIdRoute
-  '/admin/feedback/': typeof AdminFeedbackIndexRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
-  '/user/articles/': typeof UserArticlesIndexRoute
-  '/user/sources/': typeof UserSourcesIndexRoute
+  '/_auth/user/articles/$slug': typeof AuthUserArticlesSlugRoute
+  '/_auth/user/sources/$id': typeof AuthUserSourcesIdRoute
+  '/_auth/user/articles/': typeof AuthUserArticlesIndexRoute
+  '/_auth/user/sources/': typeof AuthUserSourcesIndexRoute
+  '/_auth/_admin/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
+  '/_auth/_admin/admin/feedback/': typeof AuthAdminAdminFeedbackIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -267,20 +281,20 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/articles/$slug'
+    | '/articles/'
+    | '/books/'
     | '/user/notes'
     | '/user/profile'
     | '/user/quotations'
-    | '/articles/'
-    | '/books/'
-    | '/admin/feedback/$id'
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
+    | '/books/$bookSlug/'
     | '/user/articles/$slug'
     | '/user/sources/$id'
-    | '/admin/feedback/'
-    | '/books/$bookSlug/'
     | '/user/articles/'
     | '/user/sources/'
+    | '/admin/feedback/$id'
+    | '/admin/feedback/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -295,23 +309,24 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/articles/$slug'
+    | '/articles'
+    | '/books'
     | '/user/notes'
     | '/user/profile'
     | '/user/quotations'
-    | '/articles'
-    | '/books'
-    | '/admin/feedback/$id'
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
+    | '/books/$bookSlug'
     | '/user/articles/$slug'
     | '/user/sources/$id'
-    | '/admin/feedback'
-    | '/books/$bookSlug'
     | '/user/articles'
     | '/user/sources'
+    | '/admin/feedback/$id'
+    | '/admin/feedback'
   id:
     | '__root__'
     | '/'
+    | '/_auth'
     | '/about'
     | '/contribute'
     | '/forgot-password'
@@ -322,25 +337,27 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/terms'
     | '/verify-email'
+    | '/_auth/_admin'
     | '/articles/$slug'
-    | '/user/notes'
-    | '/user/profile'
-    | '/user/quotations'
     | '/articles/'
     | '/books/'
-    | '/admin/feedback/$id'
+    | '/_auth/user/notes'
+    | '/_auth/user/profile'
+    | '/_auth/user/quotations'
     | '/articles/by-id/$id'
     | '/books/$bookSlug/$nodeSlug'
-    | '/user/articles/$slug'
-    | '/user/sources/$id'
-    | '/admin/feedback/'
     | '/books/$bookSlug/'
-    | '/user/articles/'
-    | '/user/sources/'
+    | '/_auth/user/articles/$slug'
+    | '/_auth/user/sources/$id'
+    | '/_auth/user/articles/'
+    | '/_auth/user/sources/'
+    | '/_auth/_admin/admin/feedback/$id'
+    | '/_auth/_admin/admin/feedback/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
   AboutRoute: typeof AboutRoute
   ContributeRoute: typeof ContributeRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -352,20 +369,11 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
-  UserNotesRoute: typeof UserNotesRoute
-  UserProfileRoute: typeof UserProfileRoute
-  UserQuotationsRoute: typeof UserQuotationsRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
   BooksIndexRoute: typeof BooksIndexRoute
-  AdminFeedbackIdRoute: typeof AdminFeedbackIdRoute
   ArticlesByIdIdRoute: typeof ArticlesByIdIdRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
-  UserArticlesSlugRoute: typeof UserArticlesSlugRoute
-  UserSourcesIdRoute: typeof UserSourcesIdRoute
-  AdminFeedbackIndexRoute: typeof AdminFeedbackIndexRoute
   BooksBookSlugIndexRoute: typeof BooksBookSlugIndexRoute
-  UserArticlesIndexRoute: typeof UserArticlesIndexRoute
-  UserSourcesIndexRoute: typeof UserSourcesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -440,6 +448,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -461,27 +476,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/user/quotations': {
-      id: '/user/quotations'
-      path: '/user/quotations'
-      fullPath: '/user/quotations'
-      preLoaderRoute: typeof UserQuotationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/user/profile': {
-      id: '/user/profile'
-      path: '/user/profile'
-      fullPath: '/user/profile'
-      preLoaderRoute: typeof UserProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/user/notes': {
-      id: '/user/notes'
-      path: '/user/notes'
-      fullPath: '/user/notes'
-      preLoaderRoute: typeof UserNotesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/articles/$slug': {
       id: '/articles/$slug'
       path: '/articles/$slug'
@@ -489,46 +483,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/user/sources/': {
-      id: '/user/sources/'
-      path: '/user/sources'
-      fullPath: '/user/sources/'
-      preLoaderRoute: typeof UserSourcesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/user/articles/': {
-      id: '/user/articles/'
-      path: '/user/articles'
-      fullPath: '/user/articles/'
-      preLoaderRoute: typeof UserArticlesIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_auth/_admin': {
+      id: '/_auth/_admin'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthAdminRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/books/$bookSlug/': {
       id: '/books/$bookSlug/'
       path: '/books/$bookSlug'
       fullPath: '/books/$bookSlug/'
       preLoaderRoute: typeof BooksBookSlugIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/feedback/': {
-      id: '/admin/feedback/'
-      path: '/admin/feedback'
-      fullPath: '/admin/feedback/'
-      preLoaderRoute: typeof AdminFeedbackIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/user/sources/$id': {
-      id: '/user/sources/$id'
-      path: '/user/sources/$id'
-      fullPath: '/user/sources/$id'
-      preLoaderRoute: typeof UserSourcesIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/user/articles/$slug': {
-      id: '/user/articles/$slug'
-      path: '/user/articles/$slug'
-      fullPath: '/user/articles/$slug'
-      preLoaderRoute: typeof UserArticlesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/books/$bookSlug/$nodeSlug': {
@@ -545,18 +511,113 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesByIdIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/feedback/$id': {
-      id: '/admin/feedback/$id'
+    '/_auth/user/quotations': {
+      id: '/_auth/user/quotations'
+      path: '/user/quotations'
+      fullPath: '/user/quotations'
+      preLoaderRoute: typeof AuthUserQuotationsRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/user/profile': {
+      id: '/_auth/user/profile'
+      path: '/user/profile'
+      fullPath: '/user/profile'
+      preLoaderRoute: typeof AuthUserProfileRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/user/notes': {
+      id: '/_auth/user/notes'
+      path: '/user/notes'
+      fullPath: '/user/notes'
+      preLoaderRoute: typeof AuthUserNotesRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/user/sources/': {
+      id: '/_auth/user/sources/'
+      path: '/user/sources'
+      fullPath: '/user/sources/'
+      preLoaderRoute: typeof AuthUserSourcesIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/user/articles/': {
+      id: '/_auth/user/articles/'
+      path: '/user/articles'
+      fullPath: '/user/articles/'
+      preLoaderRoute: typeof AuthUserArticlesIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/user/sources/$id': {
+      id: '/_auth/user/sources/$id'
+      path: '/user/sources/$id'
+      fullPath: '/user/sources/$id'
+      preLoaderRoute: typeof AuthUserSourcesIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/user/articles/$slug': {
+      id: '/_auth/user/articles/$slug'
+      path: '/user/articles/$slug'
+      fullPath: '/user/articles/$slug'
+      preLoaderRoute: typeof AuthUserArticlesSlugRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/_admin/admin/feedback/': {
+      id: '/_auth/_admin/admin/feedback/'
+      path: '/admin/feedback'
+      fullPath: '/admin/feedback/'
+      preLoaderRoute: typeof AuthAdminAdminFeedbackIndexRouteImport
+      parentRoute: typeof AuthAdminRoute
+    }
+    '/_auth/_admin/admin/feedback/$id': {
+      id: '/_auth/_admin/admin/feedback/$id'
       path: '/admin/feedback/$id'
       fullPath: '/admin/feedback/$id'
-      preLoaderRoute: typeof AdminFeedbackIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthAdminAdminFeedbackIdRouteImport
+      parentRoute: typeof AuthAdminRoute
     }
   }
 }
 
+interface AuthAdminRouteChildren {
+  AuthAdminAdminFeedbackIdRoute: typeof AuthAdminAdminFeedbackIdRoute
+  AuthAdminAdminFeedbackIndexRoute: typeof AuthAdminAdminFeedbackIndexRoute
+}
+
+const AuthAdminRouteChildren: AuthAdminRouteChildren = {
+  AuthAdminAdminFeedbackIdRoute: AuthAdminAdminFeedbackIdRoute,
+  AuthAdminAdminFeedbackIndexRoute: AuthAdminAdminFeedbackIndexRoute,
+}
+
+const AuthAdminRouteWithChildren = AuthAdminRoute._addFileChildren(
+  AuthAdminRouteChildren,
+)
+
+interface AuthRouteChildren {
+  AuthAdminRoute: typeof AuthAdminRouteWithChildren
+  AuthUserNotesRoute: typeof AuthUserNotesRoute
+  AuthUserProfileRoute: typeof AuthUserProfileRoute
+  AuthUserQuotationsRoute: typeof AuthUserQuotationsRoute
+  AuthUserArticlesSlugRoute: typeof AuthUserArticlesSlugRoute
+  AuthUserSourcesIdRoute: typeof AuthUserSourcesIdRoute
+  AuthUserArticlesIndexRoute: typeof AuthUserArticlesIndexRoute
+  AuthUserSourcesIndexRoute: typeof AuthUserSourcesIndexRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthAdminRoute: AuthAdminRouteWithChildren,
+  AuthUserNotesRoute: AuthUserNotesRoute,
+  AuthUserProfileRoute: AuthUserProfileRoute,
+  AuthUserQuotationsRoute: AuthUserQuotationsRoute,
+  AuthUserArticlesSlugRoute: AuthUserArticlesSlugRoute,
+  AuthUserSourcesIdRoute: AuthUserSourcesIdRoute,
+  AuthUserArticlesIndexRoute: AuthUserArticlesIndexRoute,
+  AuthUserSourcesIndexRoute: AuthUserSourcesIndexRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
   AboutRoute: AboutRoute,
   ContributeRoute: ContributeRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
@@ -568,20 +629,11 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,
-  UserNotesRoute: UserNotesRoute,
-  UserProfileRoute: UserProfileRoute,
-  UserQuotationsRoute: UserQuotationsRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
   BooksIndexRoute: BooksIndexRoute,
-  AdminFeedbackIdRoute: AdminFeedbackIdRoute,
   ArticlesByIdIdRoute: ArticlesByIdIdRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
-  UserArticlesSlugRoute: UserArticlesSlugRoute,
-  UserSourcesIdRoute: UserSourcesIdRoute,
-  AdminFeedbackIndexRoute: AdminFeedbackIndexRoute,
   BooksBookSlugIndexRoute: BooksBookSlugIndexRoute,
-  UserArticlesIndexRoute: UserArticlesIndexRoute,
-  UserSourcesIndexRoute: UserSourcesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -8,10 +8,9 @@ import {
     Typography,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { getGetProfileQueryOptions, getMeQueryOptions } from "../api/auth/auth";
 import {
     getGetFeedbackQueryKey,
     getListFeedbackQueryKey,
@@ -21,19 +20,7 @@ import {
 import { FetchError } from "../api/fetcher";
 import type { FeedbackStatus } from "../api/model";
 
-export const Route = createFileRoute("/admin/feedback/$id")({
-    beforeLoad: async ({ context }) => {
-        const profile = await context.queryClient.fetchQuery(
-            getGetProfileQueryOptions(),
-        );
-        if (!profile?.data) {
-            throw redirect({ to: "/login" });
-        }
-        const me = await context.queryClient.fetchQuery(getMeQueryOptions());
-        if (!me?.data?.permissions?.includes("admin_panel")) {
-            throw redirect({ to: "/" });
-        }
-    },
+export const Route = createFileRoute("/_auth/_admin/admin/feedback/$id")({
     component: FeedbackDetail,
 });
 

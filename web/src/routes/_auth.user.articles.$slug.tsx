@@ -3,12 +3,7 @@ import PublishOutlined from "@mui/icons-material/PublishOutlined";
 import SaveOutlined from "@mui/icons-material/SaveOutlined";
 import { Autocomplete, Button, Chip, TextField } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-    createFileRoute,
-    Link,
-    redirect,
-    useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -20,7 +15,6 @@ import {
     usePublishArticle,
     useUpdateArticle,
 } from "../api/articles/articles";
-import { getGetProfileQueryOptions } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import type { TopicResponse } from "../api/model";
 import { useListTopics } from "../api/topics/topics";
@@ -61,15 +55,7 @@ const MemoizedEditor = memo(
 );
 MemoizedEditor.displayName = "MemoizedEditor";
 
-export const Route = createFileRoute("/user/articles/$slug")({
-    beforeLoad: async ({ context }) => {
-        const data = await context.queryClient.fetchQuery(
-            getGetProfileQueryOptions(),
-        );
-        if (!data?.data) {
-            throw redirect({ to: "/login" });
-        }
-    },
+export const Route = createFileRoute("/_auth/user/articles/$slug")({
     component: ArticleEditorPage,
 });
 

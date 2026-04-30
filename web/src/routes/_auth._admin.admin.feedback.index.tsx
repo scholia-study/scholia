@@ -1,7 +1,6 @@
 import { Chip, Pagination, Paper, Tab, Tabs, Typography } from "@mui/material";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { getGetProfileQueryOptions, getMeQueryOptions } from "../api/auth/auth";
 import { useListFeedback } from "../api/feedback/feedback";
 import type { FeedbackResponse, FeedbackStatus } from "../api/model";
 
@@ -15,20 +14,7 @@ const FILTERS = [
 ] as const;
 type Filter = (typeof FILTERS)[number];
 
-export const Route = createFileRoute("/admin/feedback/")({
-    beforeLoad: async ({ context }) => {
-        const profile = await context.queryClient.fetchQuery(
-            getGetProfileQueryOptions(),
-        );
-        if (!profile?.data) {
-            throw redirect({ to: "/login" });
-        }
-        const me = await context.queryClient.fetchQuery(getMeQueryOptions());
-        if (!me?.data?.permissions?.includes("admin_panel")) {
-            // Don't signal that the route exists.
-            throw redirect({ to: "/" });
-        }
-    },
+export const Route = createFileRoute("/_auth/_admin/admin/feedback/")({
     component: FeedbackDashboard,
 });
 

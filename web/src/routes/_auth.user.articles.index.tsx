@@ -17,12 +17,7 @@ import {
     Tooltip,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-    createFileRoute,
-    Link,
-    redirect,
-    useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -32,7 +27,6 @@ import {
     useListUserArticles,
     usePublishArticle,
 } from "../api/articles/articles";
-import { getGetProfileQueryOptions } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import type { ArticleResponse } from "../api/model";
 import { useAuth } from "../hooks/useAuth";
@@ -41,15 +35,7 @@ import {
     usePublishArticleDialog,
 } from "../modules/article";
 
-export const Route = createFileRoute("/user/articles/")({
-    beforeLoad: async ({ context }) => {
-        const data = await context.queryClient.fetchQuery(
-            getGetProfileQueryOptions(),
-        );
-        if (!data?.data) {
-            throw redirect({ to: "/login" });
-        }
-    },
+export const Route = createFileRoute("/_auth/user/articles/")({
     component: ArticlesPage,
 });
 

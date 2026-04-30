@@ -15,7 +15,7 @@ import {
     Tooltip,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import parse from "html-react-parser";
 import { useMemo, useState } from "react";
 import { useUnsaveQuotation } from "#/modules/quotation";
@@ -24,22 +24,13 @@ import {
     useDeleteArticleQuotation,
     useGetArticleQuotation,
 } from "../api/article-quotations/article-quotations";
-import { getGetProfileQueryOptions } from "../api/auth/auth";
 import type { UnifiedQuotationResponse } from "../api/model";
 import {
     getListAllQuotationsQueryKey,
     useListAllQuotations,
 } from "../api/quotations/quotations";
 
-export const Route = createFileRoute("/user/quotations")({
-    beforeLoad: async ({ context }) => {
-        const data = await context.queryClient.fetchQuery(
-            getGetProfileQueryOptions(),
-        );
-        if (!data?.data) {
-            throw redirect({ to: "/login" });
-        }
-    },
+export const Route = createFileRoute("/_auth/user/quotations")({
     component: QuotationsPage,
 });
 

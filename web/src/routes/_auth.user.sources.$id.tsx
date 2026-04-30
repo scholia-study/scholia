@@ -18,16 +18,10 @@ import {
     TextField,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-    createFileRoute,
-    Link,
-    redirect,
-    useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { PersonFormModal } from "#/modules/source";
-import { getGetProfileQueryOptions } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import type {
     PersonResponse,
@@ -50,15 +44,7 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 
-export const Route = createFileRoute("/user/sources/$id")({
-    beforeLoad: async ({ context }) => {
-        const data = await context.queryClient.fetchQuery(
-            getGetProfileQueryOptions(),
-        );
-        if (!data?.data) {
-            throw redirect({ to: "/login" });
-        }
-    },
+export const Route = createFileRoute("/_auth/user/sources/$id")({
     component: SourceDetailPage,
 });
 
