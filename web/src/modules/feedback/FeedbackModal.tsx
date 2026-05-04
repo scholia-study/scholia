@@ -49,7 +49,7 @@ export function FeedbackModal() {
                             : undefined,
                 },
             });
-            toast.success("Thanks — we got it.");
+            toast.success("Thanks, we got it!");
             clearDraft();
             closeModal();
         } catch (err: unknown) {

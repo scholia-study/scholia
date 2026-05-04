@@ -45,6 +45,11 @@ pub enum Role {
     Scholiast,
     ScholiastBenefactor,
     ScholiastPatron,
+    /// Comp tier: granted manually by admins (e.g. as a thank-you to
+    /// contributors). Same elevated limits as the paid tiers. Stripe
+    /// webhook role-sync never touches this role, so a user keeps
+    /// honorary access independent of any subscription state.
+    Honorary,
 }
 
 /// Base permissions shared by all authenticated users.
@@ -73,6 +78,7 @@ impl Role {
             "scholiast" => Some(Self::Scholiast),
             "scholiast_benefactor" => Some(Self::ScholiastBenefactor),
             "scholiast_patron" => Some(Self::ScholiastPatron),
+            "honorary" => Some(Self::Honorary),
             _ => None,
         }
     }
@@ -85,6 +91,7 @@ impl Role {
             Self::Scholiast => "scholiast",
             Self::ScholiastBenefactor => "scholiast_benefactor",
             Self::ScholiastPatron => "scholiast_patron",
+            Self::Honorary => "honorary",
         }
     }
 
@@ -104,6 +111,9 @@ impl Role {
             }
             Self::User => {}
             Self::Scholiast | Self::ScholiastBenefactor | Self::ScholiastPatron => {
+                perms.extend_from_slice(ELEVATED_LIMITS);
+            }
+            Self::Honorary => {
                 perms.extend_from_slice(ELEVATED_LIMITS);
             }
         }

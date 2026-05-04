@@ -21,9 +21,12 @@ import { Route as ContributeRouteImport } from './routes/contribute'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MembershipIndexRouteImport } from './routes/membership.index'
 import { Route as BooksIndexRouteImport } from './routes/books.index'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as UsersHandleRouteImport } from './routes/users.$handle'
+import { Route as MembershipWelcomeRouteImport } from './routes/membership.welcome'
+import { Route as MembershipCheckoutRouteImport } from './routes/membership.checkout'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 import { Route as AuthAdminRouteImport } from './routes/_auth._admin'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
@@ -99,6 +102,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MembershipIndexRoute = MembershipIndexRouteImport.update({
+  id: '/membership/',
+  path: '/membership/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BooksIndexRoute = BooksIndexRouteImport.update({
   id: '/books/',
   path: '/books/',
@@ -113,6 +121,16 @@ const UsersHandleRoute = UsersHandleRouteImport.update({
   id: '/users/$handle',
   path: '/users/$handle',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MembershipWelcomeRoute = MembershipWelcomeRouteImport.update({
+  id: '/membership/welcome',
+  path: '/membership/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembershipCheckoutRoute = MembershipCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => MembershipRoute,
 } as any)
 const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
   id: '/articles/$slug',
@@ -204,9 +222,12 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/membership/checkout': typeof MembershipCheckoutRoute
+  '/membership/welcome': typeof MembershipWelcomeRoute
   '/users/$handle': typeof UsersHandleRoute
   '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
+  '/membership/': typeof MembershipIndexRoute
   '/user/notes': typeof AuthUserNotesRoute
   '/user/profile': typeof AuthUserProfileRoute
   '/user/quotations': typeof AuthUserQuotationsRoute
@@ -234,9 +255,12 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/membership/checkout': typeof MembershipCheckoutRoute
+  '/membership/welcome': typeof MembershipWelcomeRoute
   '/users/$handle': typeof UsersHandleRoute
   '/articles': typeof ArticlesIndexRoute
   '/books': typeof BooksIndexRoute
+  '/membership': typeof MembershipIndexRoute
   '/user/notes': typeof AuthUserNotesRoute
   '/user/profile': typeof AuthUserProfileRoute
   '/user/quotations': typeof AuthUserQuotationsRoute
@@ -267,9 +291,12 @@ export interface FileRoutesById {
   '/verify-email': typeof VerifyEmailRoute
   '/_auth/_admin': typeof AuthAdminRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/membership/checkout': typeof MembershipCheckoutRoute
+  '/membership/welcome': typeof MembershipWelcomeRoute
   '/users/$handle': typeof UsersHandleRoute
   '/articles/': typeof ArticlesIndexRoute
   '/books/': typeof BooksIndexRoute
+  '/membership/': typeof MembershipIndexRoute
   '/_auth/user/notes': typeof AuthUserNotesRoute
   '/_auth/user/profile': typeof AuthUserProfileRoute
   '/_auth/user/quotations': typeof AuthUserQuotationsRoute
@@ -299,9 +326,12 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/articles/$slug'
+    | '/membership/checkout'
+    | '/membership/welcome'
     | '/users/$handle'
     | '/articles/'
     | '/books/'
+    | '/membership/'
     | '/user/notes'
     | '/user/profile'
     | '/user/quotations'
@@ -329,9 +359,12 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/articles/$slug'
+    | '/membership/checkout'
+    | '/membership/welcome'
     | '/users/$handle'
     | '/articles'
     | '/books'
+    | '/membership'
     | '/user/notes'
     | '/user/profile'
     | '/user/quotations'
@@ -361,9 +394,12 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/_auth/_admin'
     | '/articles/$slug'
+    | '/membership/checkout'
+    | '/membership/welcome'
     | '/users/$handle'
     | '/articles/'
     | '/books/'
+    | '/membership/'
     | '/_auth/user/notes'
     | '/_auth/user/profile'
     | '/_auth/user/quotations'
@@ -393,9 +429,11 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
+  MembershipWelcomeRoute: typeof MembershipWelcomeRoute
   UsersHandleRoute: typeof UsersHandleRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
   BooksIndexRoute: typeof BooksIndexRoute
+  MembershipIndexRoute: typeof MembershipIndexRoute
   ArticlesByIdIdRoute: typeof ArticlesByIdIdRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
   UsersByIdIdRoute: typeof UsersByIdIdRoute
@@ -488,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/membership/': {
+      id: '/membership/'
+      path: '/membership'
+      fullPath: '/membership/'
+      preLoaderRoute: typeof MembershipIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/books/': {
       id: '/books/'
       path: '/books'
@@ -508,6 +553,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/users/$handle'
       preLoaderRoute: typeof UsersHandleRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/membership/welcome': {
+      id: '/membership/welcome'
+      path: '/membership/welcome'
+      fullPath: '/membership/welcome'
+      preLoaderRoute: typeof MembershipWelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/membership/checkout': {
+      id: '/membership/checkout'
+      path: '/checkout'
+      fullPath: '/membership/checkout'
+      preLoaderRoute: typeof MembershipCheckoutRouteImport
+      parentRoute: typeof MembershipRoute
     }
     '/articles/$slug': {
       id: '/articles/$slug'
@@ -669,9 +728,11 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,
+  MembershipWelcomeRoute: MembershipWelcomeRoute,
   UsersHandleRoute: UsersHandleRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
   BooksIndexRoute: BooksIndexRoute,
+  MembershipIndexRoute: MembershipIndexRoute,
   ArticlesByIdIdRoute: ArticlesByIdIdRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
   UsersByIdIdRoute: UsersByIdIdRoute,

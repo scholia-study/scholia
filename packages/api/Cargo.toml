@@ -32,3 +32,13 @@ reqwest = { version = "0.12", features = ["json"] }
 pulldown-cmark = "0.12"
 slug = "0.1"
 regex = "1"
+
+# Stripe (async-stripe v1.0.0-rc.5 — split into per-resource subcrates).
+# Default TLS backend is hyper-tls (matches existing reqwest setup).
+async-stripe = { version = "=1.0.0-rc.5", features = ["uuid"] }
+async-stripe-types = "=1.0.0-rc.5"
+async-stripe-shared = "=1.0.0-rc.5"
+async-stripe-core = { version = "=1.0.0-rc.5", features = ["customer"] }
+async-stripe-billing = { version = "=1.0.0-rc.5", features = ["subscription", "billing_portal_session"] }
+async-stripe-checkout = { version = "=1.0.0-rc.5", features = ["checkout_session"] }
+async-stripe-webhook = { version = "=1.0.0-rc.5", features = ["async-stripe-billing"] }

@@ -2469,6 +2469,72 @@
                     }
                 }
             }
+        },
+        "/billing/checkout": {
+            "post": {
+                "tags": ["billing"],
+                "summary": "Create a Stripe Embedded Checkout Session for the given tier.\nLazily creates the user's Stripe customer on first call.",
+                "operationId": "create_checkout_session",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCheckoutRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Checkout session created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateCheckoutResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid tier"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "500": {
+                        "description": "Stripe API error"
+                    }
+                }
+            }
+        },
+        "/billing/portal": {
+            "post": {
+                "tags": ["billing"],
+                "summary": "Create a Stripe Customer Portal session and return the redirect URL.\nRequires the user to already have a `stripe_customer_id` (i.e. has\ninitiated at least one checkout). 404 otherwise.",
+                "operationId": "create_portal_session",
+                "responses": {
+                    "200": {
+                        "description": "Portal session created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PortalSessionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "User has no Stripe customer yet"
+                    },
+                    "500": {
+                        "description": "Stripe API error"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -2963,6 +3029,26 @@
                 "properties": {
                     "title": {
                         "type": "string"
+                    }
+                }
+            },
+            "CreateCheckoutRequest": {
+                "type": "object",
+                "required": ["tier"],
+                "properties": {
+                    "tier": {
+                        "type": "string",
+                        "description": "Tier slug: \"base\" | \"mid\" | \"high\"."
+                    }
+                }
+            },
+            "CreateCheckoutResponse": {
+                "type": "object",
+                "required": ["client_secret"],
+                "properties": {
+                    "client_secret": {
+                        "type": "string",
+                        "description": "Pass to the Stripe Embedded Checkout React component."
                     }
                 }
             },
@@ -3765,6 +3851,16 @@
                     },
                     "sort_name": {
                         "type": ["string", "null"]
+                    }
+                }
+            },
+            "PortalSessionResponse": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "Stripe-hosted Customer Portal URL; redirect the browser here."
                     }
                 }
             },

@@ -2,9 +2,6 @@
 - saving a range quotation wrongly shows "edit" icon
 
 ## 🌿 FEATURES
-- add payment solution (stripe, async stripe crate)
-    -  A nice extra: also boot-verify each ID exists at Stripe by calling stripe.prices.retrieve(id) once at startup — catches "you copy-pasted a test-mode ID into prod" before
-  any user hits it. Optional, but a small init_stripe(&config).await? in main.rs saves real pain. Up to you whether to include.
 - add "submit for review" for user articles to editors to receive editorial feedback/quality approval
 - caching layer on backend API
 
@@ -17,6 +14,7 @@
 
 ## 🤔 MAYBE
 - add "commentary, paraphrase, allusion submission to editors for review and approval" 
+- how-to-cite-this article, ready with .bib formatting and options
 
 ## ✨ NICE-TO-HAVES / FUTURE
 - closing the reader entirely should go back to where the user was previous instead of the root page
@@ -34,3 +32,4 @@
 - test feedback system
 - test public user profile page?
 - test special tags (e.g. paying users) to display on a public profile
+- stripe payment integration (partially locally tested)

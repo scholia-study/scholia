@@ -79,6 +79,8 @@ pub mod validation;
         handlers::feedback::update_feedback,
         handlers::users::get_public_profile,
         handlers::users::get_handle_by_id,
+        handlers::billing::create_checkout_session,
+        handlers::billing::create_portal_session,
     ),
     components(schemas(
         models::book::BookSummary,
@@ -171,6 +173,9 @@ pub mod validation;
         models::feedback::UpdateFeedbackRequest,
         models::user::PublicProfileResponse,
         models::user::UserHandleResponse,
+        handlers::billing::CreateCheckoutRequest,
+        handlers::billing::CreateCheckoutResponse,
+        handlers::billing::PortalSessionResponse,
     ))
 )]
 pub struct ApiDoc;

@@ -6,4 +6,5 @@ use crate::config::AppConfig;
 pub struct AppState {
     pub pool: PgPool,
     pub config: AppConfig,
+    pub stripe: stripe::Client,
 }

@@ -1,3 +1,4 @@
+export { ArticleCard } from "./components/ArticleCard";
 export {
     type ArticleEditorHandle,
     ArticleEditorLazy,

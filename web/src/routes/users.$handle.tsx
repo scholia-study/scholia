@@ -1,7 +1,7 @@
 import Avatar from "@mui/material/Avatar";
-import Paper from "@mui/material/Paper";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useGetPublicProfile } from "../api/users/users";
+import { ArticleCard } from "../modules/article";
 import { MemberChips } from "../modules/user";
 
 export const Route = createFileRoute("/users/$handle")({
@@ -110,47 +110,13 @@ function PublicProfilePage() {
                         No published articles yet.
                     </p>
                 ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                         {profile.articles.map((a) => (
-                            <Link
+                            <ArticleCard
                                 key={a.id}
-                                to="/articles/$slug"
-                                params={{ slug: a.slug }}
-                                style={{
-                                    textDecoration: "none",
-                                    color: "inherit",
-                                }}
-                            >
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        border: "1px solid rgb(214 211 209)",
-                                        p: 1.5,
-                                        transition: "box-shadow 0.15s",
-                                        "&:hover": { boxShadow: 3 },
-                                    }}
-                                >
-                                    <p className="text-sm font-medium text-stone-900">
-                                        {a.title}
-                                    </p>
-                                    {a.description && (
-                                        <p className="text-xs text-stone-500 mt-0.5 line-clamp-2">
-                                            {a.description}
-                                        </p>
-                                    )}
-                                    {a.published_at && (
-                                        <p className="text-[10px] text-stone-400 mt-1">
-                                            {new Date(
-                                                a.published_at,
-                                            ).toLocaleDateString(undefined, {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric",
-                                            })}
-                                        </p>
-                                    )}
-                                </Paper>
-                            </Link>
+                                article={a}
+                                showAuthor={false}
+                            />
                         ))}
                     </div>
                 )}

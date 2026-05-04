@@ -7,7 +7,6 @@ import {
     ArticleSentences,
     QuotationCard,
 } from "../modules/quotation";
-import { MemberChips } from "../modules/user";
 
 export const Route = createFileRoute("/articles/$slug")({
     component: PublishedArticlePage,
@@ -113,7 +112,6 @@ function PublishedArticlePage() {
                                 {article.author_display_name}
                             </Link>
                         )}
-                        <MemberChips roles={article.author_public_roles} />
                         {article.published_at && (
                             <>
                                 <span>&middot;</span>

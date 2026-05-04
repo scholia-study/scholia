@@ -1,6 +1,7 @@
 pub mod article_quotations;
 pub mod articles;
 pub mod auth;
+pub mod billing;
 pub mod books;
 pub mod feedback;
 pub mod github;

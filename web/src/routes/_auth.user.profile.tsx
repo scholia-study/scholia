@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -99,7 +99,18 @@ function ProfilePage() {
 
     return (
         <div className="max-w-md mx-auto px-8 py-16">
-            <h1 className="text-2xl font-bold text-stone-900 mb-8">Profile</h1>
+            <div className="flex items-baseline justify-between mb-8">
+                <h1 className="text-2xl font-bold text-stone-900">Profile</h1>
+                {profile.handle ? (
+                    <Link
+                        to="/users/$handle"
+                        params={{ handle: profile.handle }}
+                        className="text-sm text-stone-500 hover:text-stone-900 underline"
+                    >
+                        View public →
+                    </Link>
+                ) : null}
+            </div>
 
             <div className="mb-8">
                 <div className="flex items-center gap-4">
@@ -132,10 +143,7 @@ function ProfilePage() {
                 </div>
             </div>
 
-            <form
-                onSubmit={handleSave}
-                className="space-y-4 mb-8 flex flex-col"
-            >
+            <form onSubmit={handleSave} className="flex flex-col gap-3 mb-8">
                 <TextField
                     label="Display name"
                     value={displayName}

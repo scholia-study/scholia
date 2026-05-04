@@ -170,6 +170,16 @@ export function Navbar() {
                                     <MenuItem
                                         onClick={() => {
                                             setAnchorEl(null);
+                                            navigate({ to: "/membership" });
+                                        }}
+                                    >
+                                        <Typography variant="body2">
+                                            Membership
+                                        </Typography>
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null);
                                             openFeedbackModal();
                                         }}
                                     >

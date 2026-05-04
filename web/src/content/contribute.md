@@ -24,7 +24,7 @@ Whether you are a professional academic, a graduate student, or a serious indepe
 - **Philologists and classicists** — help with transcription accuracy, orthographic questions, and critical apparatus.
 - **Translators** — contribute new translations or help align existing ones sentence by sentence.
 - **Scholars of philosophy, theology, and literature** — identify intertextual references, write commentary, and review resource links.
-- **Developers** — the platform is open to contributions on the tooling and infrastructure side as well.
+- **Software developers and engineers** — the platform is open to contributions on the tooling and infrastructure side as well.
 
 ## Get in touch
 

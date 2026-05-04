@@ -20,10 +20,19 @@ use utoipa_swagger_ui::SwaggerUi;
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().ok();
+    // Default filter silences two noisy modules from async-stripe that
+    // emit WARN spans whenever Stripe's API version drifts ahead of the
+    // SDK codegen. The spans include the entire raw event payload as
+    // context, so each warn dumps a wall of text. Subscription events
+    // still parse correctly; the warnings are informational. Override
+    // via RUST_LOG=stripe_webhook=warn if you need to investigate.
     tracing_subscriber::fmt()
         .with_env_filter(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "info".parse().unwrap()),
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                "info,stripe_webhook=error,stripe_shared::api_version=error"
+                    .parse()
+                    .unwrap()
+            }),
         )
         .init();
 
@@ -78,9 +87,12 @@ async fn main() {
     );
     let rate_limit_layer = GovernorLayer::new(governor_config);
 
+    let stripe_client = stripe::Client::new(config.stripe_api_key.clone());
+
     let app_state = AppState {
         pool: pool.clone(),
         config,
+        stripe: stripe_client,
     };
 
     // Auth routes (rate limited)
@@ -155,6 +167,15 @@ async fn main() {
         // Feedback (user-submit). Admin endpoints live in admin_router.
         .routes(utoipa_axum::routes!(
             api::handlers::feedback::create_feedback
+        ))
+        // Billing — Stripe Embedded Checkout + Customer Portal.
+        // Webhook intentionally lives outside this router (public,
+        // signature-verified, no session/CORS).
+        .routes(utoipa_axum::routes!(
+            api::handlers::billing::create_checkout_session
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::billing::create_portal_session
         ));
 
     // Admin routes — gated per-handler via Permission::AdminPanel.
@@ -241,10 +262,18 @@ async fn main() {
         .merge(admin_router)
         .split_for_parts();
 
+    // Stripe webhook lives on a separate router so it bypasses
+    // session + CORS layers. Stripe-signature header is the only auth.
+    let webhook_router = axum::Router::new().route(
+        "/webhooks/stripe",
+        axum::routing::post(api::handlers::billing::stripe_webhook),
+    );
+
     let app = router
         .merge(SwaggerUi::new("/swagger-ui").url("/api/openapi.json", api))
         .layer(session_layer)
         .layer(cors)
+        .merge(webhook_router)
         .with_state(app_state);
 
     let addr = "0.0.0.0:4000";

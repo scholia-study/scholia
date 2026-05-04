@@ -30,6 +30,10 @@ CREATE TABLE users (
     avatar_url            TEXT,
     email_verified_at     TIMESTAMPTZ,
     sessions_invalidated_at TIMESTAMPTZ,
+    -- Stripe customer ID. NULL until the user initiates their first
+    -- checkout (lazy creation). Once set, never cleared — same customer
+    -- is reused for all future subscriptions, refunds, etc.
+    stripe_customer_id    TEXT UNIQUE,
     admin_notes       TEXT,
     created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -454,9 +458,14 @@ CREATE TABLE user_roles (
 
 CREATE INDEX idx_user_roles_role ON user_roles (role_id);
 
--- Seed default roles
+-- Seed default roles. `honorary` is a comp-tier role granted manually
+-- by admins (e.g. as a thank-you to contributors); it grants the same
+-- elevated limits as the paid tiers but is never touched by Stripe
+-- webhook role-sync, so a user can be honorary without a subscription
+-- and won't lose the role if their (separate) paid sub lapses.
 INSERT INTO roles (name) VALUES ('admin'), ('editor'), ('user'),
-    ('scholiast'), ('scholiast_benefactor'), ('scholiast_patron');
+    ('scholiast'), ('scholiast_benefactor'), ('scholiast_patron'),
+    ('honorary');
 
 -- ============================================================
 -- OAUTH ACCOUNTS
@@ -701,4 +710,51 @@ CREATE INDEX idx_feedback_status_created_at ON feedback (status, created_at DESC
 -- Rate-limit lookup: "submissions by this user in the last 24h".
 CREATE INDEX idx_feedback_user_created_at ON feedback (user_id, created_at DESC)
     WHERE user_id IS NOT NULL;
+
+-- ============================================================
+-- BILLING (Stripe subscriptions)
+-- ============================================================
+
+-- Mirror of the user's current Stripe subscription. One row per
+-- Stripe Subscription object; old canceled rows are kept for history.
+-- The webhook handler is the only writer (refetches from Stripe API
+-- before each upsert to defeat out-of-order delivery).
+--
+-- `tier` mirrors which Price the sub is on; mapped from the price ID
+-- via env-var configuration (STRIPE_PRICE_BASE / _MID / _HIGH).
+-- Backend currently treats all tiers identically (binary "active or
+-- not"); the tier name only drives the public profile chip.
+CREATE TABLE subscriptions (
+    id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id                 UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    stripe_subscription_id  TEXT NOT NULL UNIQUE,
+    stripe_price_id         TEXT NOT NULL,
+    -- 'base' | 'mid' | 'high' — derived from price ID at write time.
+    tier                    TEXT NOT NULL,
+    -- Mirrors Stripe: 'active', 'trialing', 'past_due', 'canceled',
+    -- 'unpaid', 'incomplete', 'incomplete_expired', 'paused'.
+    status                  TEXT NOT NULL,
+    current_period_end      TIMESTAMPTZ NOT NULL,
+    cancel_at_period_end    BOOLEAN NOT NULL DEFAULT false,
+    created_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_subscriptions_user ON subscriptions (user_id);
+
+-- Enforce: a user can have at most one "live" sub at any time.
+-- Live = anything that grants access (active/trialing) or is in the
+-- recoverable-failure window (past_due). Canceled/unpaid rows don't
+-- count, so a user can re-subscribe freely after cancellation.
+CREATE UNIQUE INDEX idx_subscriptions_user_live
+    ON subscriptions (user_id)
+    WHERE status IN ('active', 'trialing', 'past_due');
+
+-- Webhook idempotency: every Stripe event ID we've already processed.
+-- INSERT ... ON CONFLICT DO NOTHING is the dedup gate. Grows
+-- unbounded for v1; revisit retention policy at >100k rows.
+CREATE TABLE stripe_processed_events (
+    event_id     TEXT PRIMARY KEY,
+    processed_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 
