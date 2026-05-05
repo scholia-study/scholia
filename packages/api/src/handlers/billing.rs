@@ -46,7 +46,7 @@ pub struct PortalSessionResponse {
 /// Lazily creates the user's Stripe customer on first call.
 #[utoipa::path(
     post,
-    path = "/billing/checkout",
+    path = "/api/billing/checkout",
     request_body = CreateCheckoutRequest,
     responses(
         (status = 200, description = "Checkout session created", body = CreateCheckoutResponse),
@@ -75,7 +75,7 @@ pub async fn create_checkout_session(
 
     // Stripe Embedded Checkout's `redirect_on_completion` defaults to
     // `always` — after success, Stripe pushes the user to `return_url`.
-    // The dedicated welcome page handles polling /auth/me until the
+    // The dedicated welcome page handles polling /api/auth/me until the
     // webhook lands the new role, then renders a thank-you state.
     let return_url = format!("{}/membership/welcome", state.config.frontend_url);
 
@@ -121,7 +121,7 @@ pub async fn create_checkout_session(
 /// initiated at least one checkout). 404 otherwise.
 #[utoipa::path(
     post,
-    path = "/billing/portal",
+    path = "/api/billing/portal",
     responses(
         (status = 200, description = "Portal session created", body = PortalSessionResponse),
         (status = 401, description = "Not authenticated"),

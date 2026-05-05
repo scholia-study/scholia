@@ -1,6 +1,6 @@
 /**
  * Patronage tiers — single source of truth for the frontend. The
- * `slug` is the API contract (sent to POST /billing/checkout, mapped
+ * `slug` is the API contract (sent to POST /api/billing/checkout, mapped
  * server-side to a Stripe Price ID via STRIPE_PRICE_BASE/_MID/_HIGH).
  * The `role` matches what `permissions.rs::Role::as_str()` returns
  * and what the webhook inserts into `user_roles`.

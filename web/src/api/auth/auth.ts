@@ -53,7 +53,7 @@ export type forgotPasswordResponseSuccess = forgotPasswordResponse200 & {
 export type forgotPasswordResponse = forgotPasswordResponseSuccess;
 
 export const getForgotPasswordUrl = () => {
-    return `/auth/forgot-password`;
+    return `/api/auth/forgot-password`;
 };
 
 export const forgotPassword = async (
@@ -148,7 +148,7 @@ export type githubLoginResponseError = githubLoginResponse302 & {
 export type githubLoginResponse = githubLoginResponseError;
 
 export const getGithubLoginUrl = () => {
-    return `/auth/github`;
+    return `/api/auth/github`;
 };
 
 export const githubLogin = async (
@@ -161,7 +161,7 @@ export const githubLogin = async (
 };
 
 export const getGithubLoginQueryKey = () => {
-    return [`/auth/github`] as const;
+    return [`/api/auth/github`] as const;
 };
 
 export const getGithubLoginQueryOptions = <
@@ -444,8 +444,8 @@ export const getGithubCallbackUrl = (params: GithubCallbackParams) => {
     const stringifiedParams = normalizedParams.toString();
 
     return stringifiedParams.length > 0
-        ? `/auth/github/callback?${stringifiedParams}`
-        : `/auth/github/callback`;
+        ? `/api/auth/github/callback?${stringifiedParams}`
+        : `/api/auth/github/callback`;
 };
 
 export const githubCallback = async (
@@ -459,7 +459,7 @@ export const githubCallback = async (
 };
 
 export const getGithubCallbackQueryKey = (params?: GithubCallbackParams) => {
-    return [`/auth/github/callback`, ...(params ? [params] : [])] as const;
+    return [`/api/auth/github/callback`, ...(params ? [params] : [])] as const;
 };
 
 export const getGithubCallbackQueryOptions = <
@@ -762,7 +762,7 @@ export type loginResponseError = (loginResponse401 | loginResponse403) & {
 export type loginResponse = loginResponseSuccess | loginResponseError;
 
 export const getLoginUrl = () => {
-    return `/auth/login`;
+    return `/api/auth/login`;
 };
 
 export const login = async (
@@ -858,7 +858,7 @@ export type logoutResponseSuccess = logoutResponse200 & {
 export type logoutResponse = logoutResponseSuccess;
 
 export const getLogoutUrl = () => {
-    return `/auth/logout`;
+    return `/api/auth/logout`;
 };
 
 export const logout = async (
@@ -957,7 +957,7 @@ export type meResponseError = meResponse401 & {
 export type meResponse = meResponseSuccess | meResponseError;
 
 export const getMeUrl = () => {
-    return `/auth/me`;
+    return `/api/auth/me`;
 };
 
 export const me = async (options?: RequestInit): Promise<meResponse> => {
@@ -968,7 +968,7 @@ export const me = async (options?: RequestInit): Promise<meResponse> => {
 };
 
 export const getMeQueryKey = () => {
-    return [`/auth/me`] as const;
+    return [`/api/auth/me`] as const;
 };
 
 export const getMeQueryOptions = <
@@ -1212,7 +1212,7 @@ export type getProfileResponse =
     | getProfileResponseError;
 
 export const getGetProfileUrl = () => {
-    return `/auth/profile`;
+    return `/api/auth/profile`;
 };
 
 export const getProfile = async (
@@ -1225,7 +1225,7 @@ export const getProfile = async (
 };
 
 export const getGetProfileQueryKey = () => {
-    return [`/auth/profile`] as const;
+    return [`/api/auth/profile`] as const;
 };
 
 export const getGetProfileQueryOptions = <
@@ -1513,7 +1513,7 @@ export type updateProfileResponse =
     | updateProfileResponseError;
 
 export const getUpdateProfileUrl = () => {
-    return `/auth/profile`;
+    return `/api/auth/profile`;
 };
 
 export const updateProfile = async (
@@ -1625,7 +1625,7 @@ export type registerResponseError = (
 export type registerResponse = registerResponseSuccess | registerResponseError;
 
 export const getRegisterUrl = () => {
-    return `/auth/register`;
+    return `/api/auth/register`;
 };
 
 export const register = async (
@@ -1733,7 +1733,7 @@ export type requestPasswordChangeResponse =
     | requestPasswordChangeResponseError;
 
 export const getRequestPasswordChangeUrl = () => {
-    return `/auth/request-password-change`;
+    return `/api/auth/request-password-change`;
 };
 
 export const requestPasswordChange = async (
@@ -1840,7 +1840,7 @@ export type resetPasswordResponse =
     | resetPasswordResponseError;
 
 export const getResetPasswordUrl = () => {
-    return `/auth/reset-password`;
+    return `/api/auth/reset-password`;
 };
 
 export const resetPassword = async (
@@ -1949,8 +1949,8 @@ export const getVerifyEmailUrl = (params: VerifyEmailParams) => {
     const stringifiedParams = normalizedParams.toString();
 
     return stringifiedParams.length > 0
-        ? `/auth/verify-email?${stringifiedParams}`
-        : `/auth/verify-email`;
+        ? `/api/auth/verify-email?${stringifiedParams}`
+        : `/api/auth/verify-email`;
 };
 
 export const verifyEmail = async (
@@ -1964,7 +1964,7 @@ export const verifyEmail = async (
 };
 
 export const getVerifyEmailQueryKey = (params?: VerifyEmailParams) => {
-    return [`/auth/verify-email`, ...(params ? [params] : [])] as const;
+    return [`/api/auth/verify-email`, ...(params ? [params] : [])] as const;
 };
 
 export const getVerifyEmailQueryOptions = <

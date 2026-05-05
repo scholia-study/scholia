@@ -20,7 +20,7 @@ interface CheckoutPageProps {
  * provider exactly once with stable options so we never trigger
  * Stripe's "you cannot change the onComplete option after setting it"
  * warning. On completion, navigates back to /membership with an
- * `activating` flag so MembershipPage can poll /auth/me until the
+ * `activating` flag so MembershipPage can poll /api/auth/me until the
  * webhook lands the new role.
  */
 export function CheckoutPage({ tier }: CheckoutPageProps) {

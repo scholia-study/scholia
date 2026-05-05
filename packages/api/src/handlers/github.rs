@@ -70,7 +70,7 @@ fn build_oauth_client(state: &AppState) -> OAuthClient {
 /// Redirect to GitHub OAuth
 #[utoipa::path(
     get,
-    path = "/auth/github",
+    path = "/api/auth/github",
     responses(
         (status = 302, description = "Redirect to GitHub")
     ),
@@ -98,7 +98,7 @@ pub async fn github_login(State(state): State<AppState>, session: Session) -> Re
 /// Handle GitHub OAuth callback
 #[utoipa::path(
     get,
-    path = "/auth/github/callback",
+    path = "/api/auth/github/callback",
     params(
         ("code" = String, Query, description = "Authorization code"),
         ("state" = String, Query, description = "CSRF state"),

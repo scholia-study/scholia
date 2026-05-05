@@ -5,7 +5,7 @@ use crate::models::article::ArticleResponse;
 
 /// Public-facing user profile, returned by `GET /api/users/{handle}`.
 /// Distinct from `ProfileResponse` (the self-edit shape under
-/// `GET /auth/profile`) because it strips email and operational fields.
+/// `GET /api/auth/profile`) because it strips email and operational fields.
 #[derive(Debug, Serialize, ToSchema)]
 pub struct PublicProfileResponse {
     pub id: String,

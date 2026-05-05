@@ -123,7 +123,7 @@ pub struct UpdateProfileRequest {
 /// Register a new user with email and password
 #[utoipa::path(
     post,
-    path = "/auth/register",
+    path = "/api/auth/register",
     request_body = RegisterRequest,
     responses(
         (status = 201, description = "User created", body = MessageResponse),
@@ -240,7 +240,7 @@ pub async fn register(
 /// Log in with email and password
 #[utoipa::path(
     post,
-    path = "/auth/login",
+    path = "/api/auth/login",
     request_body = LoginRequest,
     responses(
         (status = 200, description = "Logged in", body = AuthResponse),
@@ -339,7 +339,7 @@ pub async fn login(
 /// Log out (destroy session)
 #[utoipa::path(
     post,
-    path = "/auth/logout",
+    path = "/api/auth/logout",
     responses(
         (status = 200, description = "Logged out", body = MessageResponse)
     ),
@@ -365,7 +365,7 @@ pub async fn logout(State(state): State<AppState>, session: Session) -> Json<Mes
 /// Get current authenticated user
 #[utoipa::path(
     get,
-    path = "/auth/me",
+    path = "/api/auth/me",
     responses(
         (status = 200, description = "Current user", body = AuthResponse),
         (status = 401, description = "Not authenticated")
@@ -387,7 +387,7 @@ pub async fn me(user: AuthUser) -> Json<AuthResponse> {
 /// Request a password reset email
 #[utoipa::path(
     post,
-    path = "/auth/forgot-password",
+    path = "/api/auth/forgot-password",
     request_body = ForgotPasswordRequest,
     responses(
         (status = 200, description = "If the email exists, a reset link was sent", body = MessageResponse)
@@ -446,7 +446,7 @@ pub async fn forgot_password(
 /// Reset password using a token
 #[utoipa::path(
     post,
-    path = "/auth/reset-password",
+    path = "/api/auth/reset-password",
     request_body = ResetPasswordRequest,
     responses(
         (status = 200, description = "Password reset", body = MessageResponse),
@@ -526,7 +526,7 @@ pub async fn reset_password(
 /// Verify email using a token
 #[utoipa::path(
     get,
-    path = "/auth/verify-email",
+    path = "/api/auth/verify-email",
     params(("token" = String, Query, description = "Verification token")),
     responses(
         (status = 302, description = "Redirects to frontend"),
@@ -588,7 +588,7 @@ pub async fn verify_email(
 /// Get current user's profile with linked providers
 #[utoipa::path(
     get,
-    path = "/auth/profile",
+    path = "/api/auth/profile",
     responses(
         (status = 200, description = "User profile", body = ProfileResponse),
         (status = 401, description = "Not authenticated")
@@ -664,7 +664,7 @@ pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<
 /// Update display name
 #[utoipa::path(
     put,
-    path = "/auth/profile",
+    path = "/api/auth/profile",
     request_body = UpdateProfileRequest,
     responses(
         (status = 200, description = "Profile updated", body = MessageResponse),
@@ -832,7 +832,7 @@ pub async fn update_profile(
 /// Request a password change email (for authenticated users)
 #[utoipa::path(
     post,
-    path = "/auth/request-password-change",
+    path = "/api/auth/request-password-change",
     responses(
         (status = 200, description = "Password change email sent", body = MessageResponse),
         (status = 401, description = "Not authenticated")

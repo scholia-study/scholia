@@ -20,7 +20,7 @@ type Status = "pending" | "success" | "timeout";
 
 /**
  * Post-checkout landing page. Stripe redirects here via `return_url`
- * after a successful subscription; we then poll /auth/me until the
+ * after a successful subscription; we then poll /api/auth/me until the
  * webhook lands the new role (~few seconds typically). Three states:
  *   - pending: spinner while polling
  *   - success: thank-you + perks + onward links

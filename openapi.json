@@ -412,6 +412,388 @@
                 }
             }
         },
+        "/api/auth/forgot-password": {
+            "post": {
+                "tags": ["auth"],
+                "summary": "Request a password reset email",
+                "operationId": "forgot_password",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ForgotPasswordRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "If the email exists, a reset link was sent",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/github": {
+            "get": {
+                "tags": ["auth"],
+                "summary": "Redirect to GitHub OAuth",
+                "operationId": "github_login",
+                "responses": {
+                    "302": {
+                        "description": "Redirect to GitHub"
+                    }
+                }
+            }
+        },
+        "/api/auth/github/callback": {
+            "get": {
+                "tags": ["auth"],
+                "summary": "Handle GitHub OAuth callback",
+                "operationId": "github_callback",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "Authorization code",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "query",
+                        "description": "CSRF state",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Redirect to frontend"
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": ["auth"],
+                "summary": "Log in with email and password",
+                "operationId": "login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    },
+                    "403": {
+                        "description": "Email not verified"
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": ["auth"],
+                "summary": "Log out (destroy session)",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Logged out",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/me": {
+            "get": {
+                "tags": ["auth"],
+                "summary": "Get current authenticated user",
+                "operationId": "me",
+                "responses": {
+                    "200": {
+                        "description": "Current user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    }
+                }
+            }
+        },
+        "/api/auth/profile": {
+            "get": {
+                "tags": ["auth"],
+                "summary": "Get current user's profile with linked providers",
+                "operationId": "get_profile",
+                "responses": {
+                    "200": {
+                        "description": "User profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProfileResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["auth"],
+                "summary": "Update display name",
+                "operationId": "update_profile",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProfileRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    }
+                }
+            }
+        },
+        "/api/auth/register": {
+            "post": {
+                "tags": ["auth"],
+                "summary": "Register a new user with email and password",
+                "operationId": "register",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "409": {
+                        "description": "Email already exists"
+                    }
+                }
+            }
+        },
+        "/api/auth/request-password-change": {
+            "post": {
+                "tags": ["auth"],
+                "summary": "Request a password change email (for authenticated users)",
+                "operationId": "request_password_change",
+                "responses": {
+                    "200": {
+                        "description": "Password change email sent",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    }
+                }
+            }
+        },
+        "/api/auth/reset-password": {
+            "post": {
+                "tags": ["auth"],
+                "summary": "Reset password using a token",
+                "operationId": "reset_password",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResetPasswordRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or expired token"
+                    }
+                }
+            }
+        },
+        "/api/auth/verify-email": {
+            "get": {
+                "tags": ["auth"],
+                "summary": "Verify email using a token",
+                "operationId": "verify_email",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "Verification token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Redirects to frontend"
+                    }
+                }
+            }
+        },
+        "/api/billing/checkout": {
+            "post": {
+                "tags": ["billing"],
+                "summary": "Create a Stripe Embedded Checkout Session for the given tier.\nLazily creates the user's Stripe customer on first call.",
+                "operationId": "create_checkout_session",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCheckoutRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Checkout session created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateCheckoutResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid tier"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "500": {
+                        "description": "Stripe API error"
+                    }
+                }
+            }
+        },
+        "/api/billing/portal": {
+            "post": {
+                "tags": ["billing"],
+                "summary": "Create a Stripe Customer Portal session and return the redirect URL.\nRequires the user to already have a `stripe_customer_id` (i.e. has\ninitiated at least one checkout). 404 otherwise.",
+                "operationId": "create_portal_session",
+                "responses": {
+                    "200": {
+                        "description": "Portal session created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PortalSessionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "User has no Stripe customer yet"
+                    },
+                    "500": {
+                        "description": "Stripe API error"
+                    }
+                }
+            }
+        },
         "/api/books": {
             "get": {
                 "tags": ["books"],
@@ -2153,388 +2535,6 @@
                     }
                 }
             }
-        },
-        "/auth/forgot-password": {
-            "post": {
-                "tags": ["auth"],
-                "summary": "Request a password reset email",
-                "operationId": "forgot_password",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ForgotPasswordRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "If the email exists, a reset link was sent",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MessageResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/github": {
-            "get": {
-                "tags": ["auth"],
-                "summary": "Redirect to GitHub OAuth",
-                "operationId": "github_login",
-                "responses": {
-                    "302": {
-                        "description": "Redirect to GitHub"
-                    }
-                }
-            }
-        },
-        "/auth/github/callback": {
-            "get": {
-                "tags": ["auth"],
-                "summary": "Handle GitHub OAuth callback",
-                "operationId": "github_callback",
-                "parameters": [
-                    {
-                        "name": "code",
-                        "in": "query",
-                        "description": "Authorization code",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "state",
-                        "in": "query",
-                        "description": "CSRF state",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "302": {
-                        "description": "Redirect to frontend"
-                    }
-                }
-            }
-        },
-        "/auth/login": {
-            "post": {
-                "tags": ["auth"],
-                "summary": "Log in with email and password",
-                "operationId": "login",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/LoginRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Logged in",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid credentials"
-                    },
-                    "403": {
-                        "description": "Email not verified"
-                    }
-                }
-            }
-        },
-        "/auth/logout": {
-            "post": {
-                "tags": ["auth"],
-                "summary": "Log out (destroy session)",
-                "operationId": "logout",
-                "responses": {
-                    "200": {
-                        "description": "Logged out",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MessageResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/me": {
-            "get": {
-                "tags": ["auth"],
-                "summary": "Get current authenticated user",
-                "operationId": "me",
-                "responses": {
-                    "200": {
-                        "description": "Current user",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                }
-            }
-        },
-        "/auth/profile": {
-            "get": {
-                "tags": ["auth"],
-                "summary": "Get current user's profile with linked providers",
-                "operationId": "get_profile",
-                "responses": {
-                    "200": {
-                        "description": "User profile",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ProfileResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                }
-            },
-            "put": {
-                "tags": ["auth"],
-                "summary": "Update display name",
-                "operationId": "update_profile",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UpdateProfileRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Profile updated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MessageResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                }
-            }
-        },
-        "/auth/register": {
-            "post": {
-                "tags": ["auth"],
-                "summary": "Register a new user with email and password",
-                "operationId": "register",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RegisterRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "201": {
-                        "description": "User created",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MessageResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "409": {
-                        "description": "Email already exists"
-                    }
-                }
-            }
-        },
-        "/auth/request-password-change": {
-            "post": {
-                "tags": ["auth"],
-                "summary": "Request a password change email (for authenticated users)",
-                "operationId": "request_password_change",
-                "responses": {
-                    "200": {
-                        "description": "Password change email sent",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MessageResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                }
-            }
-        },
-        "/auth/reset-password": {
-            "post": {
-                "tags": ["auth"],
-                "summary": "Reset password using a token",
-                "operationId": "reset_password",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ResetPasswordRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Password reset",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MessageResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid or expired token"
-                    }
-                }
-            }
-        },
-        "/auth/verify-email": {
-            "get": {
-                "tags": ["auth"],
-                "summary": "Verify email using a token",
-                "operationId": "verify_email",
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "query",
-                        "description": "Verification token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "302": {
-                        "description": "Redirects to frontend"
-                    }
-                }
-            }
-        },
-        "/billing/checkout": {
-            "post": {
-                "tags": ["billing"],
-                "summary": "Create a Stripe Embedded Checkout Session for the given tier.\nLazily creates the user's Stripe customer on first call.",
-                "operationId": "create_checkout_session",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateCheckoutRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Checkout session created",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CreateCheckoutResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid tier"
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
-                    "500": {
-                        "description": "Stripe API error"
-                    }
-                }
-            }
-        },
-        "/billing/portal": {
-            "post": {
-                "tags": ["billing"],
-                "summary": "Create a Stripe Customer Portal session and return the redirect URL.\nRequires the user to already have a `stripe_customer_id` (i.e. has\ninitiated at least one checkout). 404 otherwise.",
-                "operationId": "create_portal_session",
-                "responses": {
-                    "200": {
-                        "description": "Portal session created",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PortalSessionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
-                    "404": {
-                        "description": "User has no Stripe customer yet"
-                    },
-                    "500": {
-                        "description": "Stripe API error"
-                    }
-                }
-            }
         }
     },
     "components": {
@@ -3930,7 +3930,7 @@
             },
             "PublicProfileResponse": {
                 "type": "object",
-                "description": "Public-facing user profile, returned by `GET /api/users/{handle}`.\nDistinct from `ProfileResponse` (the self-edit shape under\n`GET /auth/profile`) because it strips email and operational fields.",
+                "description": "Public-facing user profile, returned by `GET /api/users/{handle}`.\nDistinct from `ProfileResponse` (the self-edit shape under\n`GET /api/auth/profile`) because it strips email and operational fields.",
                 "required": [
                     "id",
                     "handle",

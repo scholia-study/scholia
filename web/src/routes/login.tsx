@@ -129,7 +129,7 @@ function LoginPage() {
 
                 <div className="mt-4">
                     <a
-                        href="http://localhost:4000/auth/github"
+                        href="http://localhost:4000/api/auth/github"
                         className="block w-full py-2 text-center rounded border border-stone-300 bg-white hover:bg-stone-50 transition-colors text-stone-800"
                     >
                         Sign in with GitHub

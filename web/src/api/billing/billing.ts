@@ -62,7 +62,7 @@ export type createCheckoutSessionResponse =
     | createCheckoutSessionResponseError;
 
 export const getCreateCheckoutSessionUrl = () => {
-    return `/billing/checkout`;
+    return `/api/billing/checkout`;
 };
 
 export const createCheckoutSession = async (
@@ -195,7 +195,7 @@ export type createPortalSessionResponse =
     | createPortalSessionResponseError;
 
 export const getCreatePortalSessionUrl = () => {
-    return `/billing/portal`;
+    return `/api/billing/portal`;
 };
 
 export const createPortalSession = async (

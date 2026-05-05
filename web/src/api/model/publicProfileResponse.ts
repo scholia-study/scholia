@@ -9,7 +9,7 @@ import type { ArticleResponse } from "./articleResponse";
 /**
  * Public-facing user profile, returned by `GET /api/users/{handle}`.
 Distinct from `ProfileResponse` (the self-edit shape under
-`GET /auth/profile`) because it strips email and operational fields.
+`GET /api/auth/profile`) because it strips email and operational fields.
  */
 export interface PublicProfileResponse {
     article_total: number;

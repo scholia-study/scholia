@@ -9,7 +9,10 @@ pub async fn send_verification_email(
     token: &str,
 ) -> Result<(), String> {
     let resend = Resend::new(&config.resend_api_key);
-    let link = format!("{}/auth/verify-email?token={}", config.backend_url, token);
+    let link = format!(
+        "{}/api/auth/verify-email?token={}",
+        config.backend_url, token
+    );
 
     let html = format!(
         r#"<h2>Verify your email</h2>

@@ -52,8 +52,8 @@ container image works across all environments.
 
 **Migrates two existing variables:**
 
-- `import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY` → `window.__SCHOLIA_CONFIG__.stripePublishableKey`
-- Hardcoded `BASE_URL = "http://localhost:4000"` in `fetcher.ts` → `window.__SCHOLIA_CONFIG__.apiBaseUrl`
+- `import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY` → `window.__SCHOLIA_WEB_CONFIG__.stripePublishableKey`
+- Hardcoded `BASE_URL = "http://localhost:4000"` in `fetcher.ts` → `window.__SCHOLIA_WEB_CONFIG__.apiBaseUrl`
 
 ### 0.3 Migrations bootstrap (sqlx)
 

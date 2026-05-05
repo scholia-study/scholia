@@ -265,7 +265,7 @@ async fn main() {
     // Stripe webhook lives on a separate router so it bypasses
     // session + CORS layers. Stripe-signature header is the only auth.
     let webhook_router = axum::Router::new().route(
-        "/webhooks/stripe",
+        "/api/webhooks/stripe",
         axum::routing::post(api::handlers::billing::stripe_webhook),
     );
 
