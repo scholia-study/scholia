@@ -32,6 +32,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
             { title: "Scholia" },
         ],
         links: [{ rel: "stylesheet", href: appCss }],
+        scripts: [{ src: "/config.js" }],
     }),
     shellComponent: RootDocument,
     component: RootComponent,

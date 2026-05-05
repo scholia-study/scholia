@@ -27,33 +27,46 @@ Touches:
 - `openapi.json` regenerates → run `pnpm codegen` to refresh frontend client
 - Frontend `fetcher.ts` BASE_URL no longer hardcoded (see 0.2)
 
-### 0.2 Runtime config injection
+### 0.2 Runtime config injection (profile-registry model)
 
 Replace build-time Vite env vars with runtime injection so a single
 container image works across all environments.
 
-**Pattern:**
+**Pattern — all profiles in TypeScript, only the active profile is injected:**
 
-- `web/public/config.js.template` — committed source with placeholders
+- `web/src/config.ts` — profile registry: a typed map keyed by profile
+  name (`local`, `dev`, `prod`) holding all environment-specific values
+  (`API_BASE_URL`, `STRIPE_PUBLISHABLE_KEY`, …). The active profile is
+  read from `window.__ENV__.APP_PROFILE` and selects the matching entry.
+- `web/public/config.js.template` — single-line nginx envsubst source:
   ```js
-  window.__SCHOLIA_CONFIG__ = {
-      stripePublishableKey: "${STRIPE_PUBLISHABLE_KEY}",
-      apiBaseUrl: "${API_BASE_URL}",
-      environment: "${ENVIRONMENT}",
-  };
+  window.__ENV__ = { APP_PROFILE: "${APP_PROFILE}" };
   ```
 - nginx Docker entrypoint script in `/docker-entrypoint.d/` runs `envsubst`
   at pod startup, writing the rendered file to `/usr/share/nginx/html/config.js`
-- `index.html` loads `<script src="/config.js"></script>` before the app bundle
-- Frontend code reads `window.__SCHOLIA_CONFIG__.stripePublishableKey` etc.
-- For local `pnpm dev`: a hand-edited `web/public/config.js` exists with the
-  dev publishable key (it's public anyway). nginx overwrites this file at
-  startup in cluster pods.
+- The TanStack Start root route (`__root.tsx`) declares
+  `head.scripts: [{ src: "/config.js" }]` so `<script src="/config.js">`
+  is emitted in `<head>` before the app bundle and runs synchronously.
+- `web/public/config.js` — committed no-op stub for local `pnpm dev`.
+  Sets nothing → app falls back to the `"local"` profile. nginx overwrites
+  this file at startup in cluster pods.
 
-**Migrates two existing variables:**
+**Why this shape over per-key envsubst:**
 
-- `import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY` → `window.__SCHOLIA_WEB_CONFIG__.stripePublishableKey`
-- Hardcoded `BASE_URL = "http://localhost:4000"` in `fetcher.ts` → `window.__SCHOLIA_WEB_CONFIG__.apiBaseUrl`
+- Settings live in TypeScript next to the rest of the code; no parallel
+  `.env` / template duplication
+- Type safety on profile names (`Profile = "local" | "dev" | "prod"`)
+- One injected variable (`APP_PROFILE`) instead of N
+- Adding a new profile is a code change, reviewed in PRs
+
+**Sensitive-data rule:** the registry ships to the browser. Only public
+values belong here (Stripe publishable keys, API base URL, analytics
+IDs). Secret keys stay server-side.
+
+**Migrates two existing values:**
+
+- `import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY` → `config.STRIPE_PUBLISHABLE_KEY`
+- Hardcoded `BASE_URL = "http://localhost:4000"` in `fetcher.ts` → `config.API_BASE_URL`
 
 ### 0.3 Migrations bootstrap (sqlx)
 

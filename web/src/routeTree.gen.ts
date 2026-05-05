@@ -128,9 +128,9 @@ const MembershipWelcomeRoute = MembershipWelcomeRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const MembershipCheckoutRoute = MembershipCheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => MembershipRoute,
+  id: '/membership/checkout',
+  path: '/membership/checkout',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
   id: '/articles/$slug',
@@ -429,6 +429,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
+  MembershipCheckoutRoute: typeof MembershipCheckoutRoute
   MembershipWelcomeRoute: typeof MembershipWelcomeRoute
   UsersHandleRoute: typeof UsersHandleRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
@@ -563,10 +564,10 @@ declare module '@tanstack/react-router' {
     }
     '/membership/checkout': {
       id: '/membership/checkout'
-      path: '/checkout'
+      path: '/membership/checkout'
       fullPath: '/membership/checkout'
       preLoaderRoute: typeof MembershipCheckoutRouteImport
-      parentRoute: typeof MembershipRoute
+      parentRoute: typeof rootRouteImport
     }
     '/articles/$slug': {
       id: '/articles/$slug'
@@ -728,6 +729,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,
+  MembershipCheckoutRoute: MembershipCheckoutRoute,
   MembershipWelcomeRoute: MembershipWelcomeRoute,
   UsersHandleRoute: UsersHandleRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,

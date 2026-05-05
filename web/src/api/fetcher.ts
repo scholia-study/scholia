@@ -1,10 +1,12 @@
-const BASE_URL = "http://localhost:4000";
+import config from "../config";
 
 export const customFetch = async <T>(
     url: string,
     options?: RequestInit,
 ): Promise<T> => {
-    const fullUrl = url.startsWith("http") ? url : `${BASE_URL}${url}`;
+    const fullUrl = url.startsWith("http")
+        ? url
+        : `${config.API_BASE_URL}${url}`;
 
     const res = await fetch(fullUrl, {
         ...options,
