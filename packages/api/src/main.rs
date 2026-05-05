@@ -270,7 +270,7 @@ async fn main() {
     );
 
     let app = router
-        .merge(SwaggerUi::new("/swagger-ui").url("/api/openapi.json", api))
+        .merge(SwaggerUi::new("/api/docs").url("/api/openapi.json", api))
         .layer(session_layer)
         .layer(cors)
         .merge(webhook_router)
