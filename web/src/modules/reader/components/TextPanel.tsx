@@ -72,6 +72,32 @@ function findNodeInToc(
     return undefined;
 }
 
+/**
+ * For Bible-shape books, the chapter label by itself ("Chapter 1") is
+ * ambiguous — it could be Genesis 1 or John 1. Walk up the TOC and, if
+ * the parent is a bibliographic anchor (`source_id` set, e.g. the
+ * "Genesis" or "John" node), return "Genesis Chapter 1". For non-Bible
+ * books the chapter label is already unambiguous; return null and the
+ * caller falls back to just the node label.
+ */
+function findBookPrefixedLabel(
+    nodes: TocNodeResponse[],
+    slug: string,
+    parent?: TocNodeResponse,
+): string | null {
+    for (const node of nodes) {
+        if (node.slug === slug) {
+            if (parent?.source_id) {
+                return `${parent.label} ${node.label}`;
+            }
+            return null;
+        }
+        const found = findBookPrefixedLabel(node.children, slug, node);
+        if (found) return found;
+    }
+    return null;
+}
+
 interface TextPanelProps {
     panel: Panel;
     panelIndex: number;
@@ -233,13 +259,16 @@ export function TextPanel({
     }, []);
 
     const activeNodeSlug = visibleSlug;
-    const activeNodeLabel = useMemo(
-        () =>
-            activeNodeSlug && toc
-                ? findNodeInToc(toc, activeNodeSlug)?.label
-                : undefined,
-        [activeNodeSlug, toc],
-    );
+    const activeNodeLabel = useMemo(() => {
+        if (!activeNodeSlug || !toc) return undefined;
+        // Bible-shape: prepend the book name ("John Chapter 1") so the
+        // header bar isn't ambiguously "Chapter 1" between Genesis
+        // and John. For other books the chapter/section label is
+        // already self-identifying.
+        const prefixed = findBookPrefixedLabel(toc, activeNodeSlug);
+        if (prefixed) return prefixed;
+        return findNodeInToc(toc, activeNodeSlug)?.label;
+    }, [activeNodeSlug, toc]);
     const initialSortOrder = useMemo(
         () =>
             nodeSlug && toc
