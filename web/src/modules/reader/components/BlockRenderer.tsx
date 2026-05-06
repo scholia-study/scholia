@@ -386,10 +386,16 @@ export function Block({
         });
     }, [block.sentences]);
 
+    // Block elements use padding (not margin) for vertical spacing —
+    // Virtuoso measures item heights via ResizeObserver's `contentRect`,
+    // which excludes margins. Padding stays inside the box and is
+    // always counted, so item heights stay accurate even when an inner
+    // wrapper drops its margin-containment in some future refactor.
+    // (See virtuoso troubleshooting §2.)
     switch (block.block_type) {
         case "heading":
             return (
-                <h2 className="relative text-2xl font-bold mt-8 mb-6 text-stone-900">
+                <h2 className="relative text-2xl font-bold pt-8 pb-6 text-stone-900">
                     {block.sentences.length > 0
                         ? block.sentences.map((s) => (
                               <HeadingSentence
@@ -404,7 +410,7 @@ export function Block({
             );
         case "paragraph":
             return (
-                <p className="relative mb-4 leading-relaxed text-stone-700">
+                <p className="relative pb-4 leading-relaxed text-stone-700">
                     {block.sentences.map((s, i) => (
                         <Sentence
                             key={s.id}
@@ -424,7 +430,7 @@ export function Block({
             );
         case "footnote":
             return (
-                <div className="relative mb-4 ml-8 text-sm text-stone-500 italic border-l-2 border-stone-200 pl-4">
+                <div className="relative pb-4 ml-8 text-sm text-stone-500 italic border-l-2 border-stone-200 pl-4">
                     {block.sentences.map((s, i) => (
                         <Sentence
                             key={s.id}
@@ -443,8 +449,15 @@ export function Block({
                 </div>
             );
         case "separator":
-            return <hr className="my-8 border-stone-200" />;
+            // Wrap the <hr> in a div with padding so the spacing is
+            // padding-based — `<hr>` has special box behavior and
+            // doesn't pad reliably on its own.
+            return (
+                <div className="py-8">
+                    <hr className="border-stone-200" />
+                </div>
+            );
         default:
-            return <div className="mb-4">{parse(blockHtml)}</div>;
+            return <div className="pb-4">{parse(blockHtml)}</div>;
     }
 }
