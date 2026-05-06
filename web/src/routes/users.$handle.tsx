@@ -15,7 +15,7 @@ function PublicProfilePage() {
 
     if (isLoading) {
         return (
-            <div className="max-w-3xl mx-auto px-8 py-16">
+            <div className="w-full max-w-3xl mx-auto px-8 py-16">
                 <p className="text-sm text-stone-400">Loading…</p>
             </div>
         );
@@ -23,7 +23,7 @@ function PublicProfilePage() {
 
     if (isError || !profile) {
         return (
-            <div className="max-w-3xl mx-auto px-8 py-16">
+            <div className="w-full max-w-3xl mx-auto px-8 py-16">
                 <h1 className="text-2xl font-bold text-stone-900 mb-2">
                     User not found
                 </h1>
@@ -41,7 +41,7 @@ function PublicProfilePage() {
     );
 
     return (
-        <div className="max-w-3xl mx-auto px-8 py-16">
+        <div className="w-full max-w-3xl mx-auto px-8 py-16">
             <header className="mb-8">
                 <div className="flex items-start gap-4">
                     <Avatar
