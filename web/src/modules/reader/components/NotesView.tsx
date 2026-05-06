@@ -7,7 +7,10 @@ import { Chip, IconButton } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
-import { useUnsaveQuotation } from "#/modules/quotation";
+import {
+    invalidateAllNodeQuotations,
+    useUnsaveQuotation,
+} from "#/modules/quotation";
 import { FetchError } from "../../../api/fetcher";
 import type {
     FootnoteSentenceResponse,
@@ -17,7 +20,6 @@ import type {
 } from "../../../api/model";
 import {
     getListNotesQueryKey,
-    getListQuotationsQueryKey,
     useCreateQuotation,
     useDeleteNote,
     useListNotes,
@@ -107,13 +109,7 @@ export function NotesView({
         mutation: {
             onSuccess: () => {
                 toast.success("Quotation saved");
-                if (activeNodeId) {
-                    queryClient.invalidateQueries({
-                        queryKey: getListQuotationsQueryKey(bookSlug, {
-                            node_id: activeNodeId,
-                        }),
-                    });
-                }
+                invalidateAllNodeQuotations(queryClient);
             },
             onError: (err: unknown) => {
                 const message =
@@ -127,7 +123,6 @@ export function NotesView({
 
     const { requestUnsave, UnsaveDialog } = useUnsaveQuotation({
         bookSlug,
-        activeNodeId,
     });
 
     const handleSaveQuotation = () => {
@@ -247,7 +242,6 @@ export function NotesView({
                         key={q.id}
                         quotation={q}
                         bookSlug={bookSlug}
-                        activeNodeId={activeNodeId}
                         isExact={q.id === exactQuotation?.id}
                         showLabel={overlappingQuotations.length > 1}
                         onOpenNoteModal={onOpenNoteModal}
@@ -262,7 +256,6 @@ export function NotesView({
                             key={exactQuotation.id}
                             quotation={exactQuotation}
                             bookSlug={bookSlug}
-                            activeNodeId={activeNodeId}
                             isExact
                             showLabel={overlappingQuotations.length > 0}
                             onOpenNoteModal={onOpenNoteModal}
@@ -278,14 +271,12 @@ export function NotesView({
 function QuotationNotesGroup({
     quotation,
     bookSlug,
-    activeNodeId,
     isExact,
     showLabel,
     onOpenNoteModal,
 }: {
     quotation: QuotationResponse;
     bookSlug: string;
-    activeNodeId: string | undefined;
     isExact: boolean;
     showLabel: boolean;
     onOpenNoteModal: (quotationId: string, note?: NoteResponse) => void;
@@ -301,13 +292,7 @@ function QuotationNotesGroup({
                 queryClient.invalidateQueries({
                     queryKey: getListNotesQueryKey(bookSlug, quotation.id),
                 });
-                if (activeNodeId) {
-                    queryClient.invalidateQueries({
-                        queryKey: getListQuotationsQueryKey(bookSlug, {
-                            node_id: activeNodeId,
-                        }),
-                    });
-                }
+                invalidateAllNodeQuotations(queryClient);
             },
             onError: () => toast.error("Failed to delete note"),
         },

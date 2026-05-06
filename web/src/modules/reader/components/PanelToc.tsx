@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import parse from "html-react-parser";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { TocNodeResponse } from "../../../api/model";
 
 function findAncestorPath(
@@ -34,6 +34,39 @@ interface PanelTocProps {
 }
 
 export function PanelToc({
+    toc,
+    bookSlug,
+    activeNodeSlug,
+    onNavigate,
+}: PanelTocProps) {
+    // Bible-shape: top-level nodes are bibliographic anchors (source_id
+    // set on each — e.g. Genesis, John inside a Bible). Switch to the
+    // 2-level pill UI from PLAN_BIG_BOOKS.md Q4. Heuristic stays scoped
+    // to the obvious indicator so future compilations behave the same
+    // automatically.
+    const isBibleShape = toc.length > 0 && toc.every((n) => n.source_id);
+    if (isBibleShape) {
+        return (
+            <BibleShapeToc
+                toc={toc}
+                bookSlug={bookSlug}
+                activeNodeSlug={activeNodeSlug}
+                onNavigate={onNavigate}
+            />
+        );
+    }
+
+    return (
+        <DefaultToc
+            toc={toc}
+            bookSlug={bookSlug}
+            activeNodeSlug={activeNodeSlug}
+            onNavigate={onNavigate}
+        />
+    );
+}
+
+function DefaultToc({
     toc,
     bookSlug,
     activeNodeSlug,
@@ -75,6 +108,157 @@ export function PanelToc({
             </ul>
         </nav>
     );
+}
+
+/**
+ * Two-level pill TOC for Bible-shape books, sidebar variant. Book pills
+ * change the *visible* book locally — they do NOT navigate. Only chapter
+ * pills navigate. The selected book starts at whichever book contains the
+ * active node so the sidebar matches the reader on first paint.
+ */
+function BibleShapeToc({
+    toc,
+    bookSlug,
+    activeNodeSlug,
+    onNavigate,
+}: PanelTocProps) {
+    const containingBook = useMemo(() => {
+        if (!activeNodeSlug) return toc[0];
+        for (const book of toc) {
+            if (book.slug === activeNodeSlug) return book;
+            if (book.children.some((c) => c.slug === activeNodeSlug))
+                return book;
+        }
+        return toc[0];
+    }, [toc, activeNodeSlug]);
+
+    const [selectedBookSlug, setSelectedBookSlug] = useState(
+        containingBook?.slug,
+    );
+
+    // If the user navigates the reader to a different book externally
+    // (e.g. clicks a chapter from elsewhere), follow the read position.
+    // We only track the book identity, not the chapter — the active
+    // chapter highlight is driven by `activeNodeSlug` directly.
+    const containingBookSlug = containingBook?.slug;
+    useEffect(() => {
+        if (containingBookSlug && containingBookSlug !== selectedBookSlug) {
+            setSelectedBookSlug(containingBookSlug);
+        }
+    }, [containingBookSlug, selectedBookSlug]);
+
+    const visibleBook = useMemo(
+        () => toc.find((b) => b.slug === selectedBookSlug) ?? toc[0],
+        [toc, selectedBookSlug],
+    );
+
+    return (
+        <nav className="p-3 overflow-y-auto flex-1 space-y-4">
+            <div className="flex flex-wrap gap-1.5">
+                {toc.map((book) => (
+                    <button
+                        type="button"
+                        key={book.slug}
+                        onClick={() => setSelectedBookSlug(book.slug)}
+                        className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                            visibleBook?.slug === book.slug
+                                ? "border-stone-800 text-stone-900 bg-stone-100"
+                                : "border-stone-300 text-stone-600 hover:border-stone-500 hover:text-stone-900"
+                        }`}
+                    >
+                        {book.label}
+                    </button>
+                ))}
+            </div>
+            {visibleBook && visibleBook.children.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                    {visibleBook.children.map((child) => (
+                        <Link
+                            key={child.slug}
+                            to="/books/$bookSlug/$nodeSlug"
+                            params={{ bookSlug, nodeSlug: child.slug }}
+                            onClick={
+                                onNavigate
+                                    ? (e: React.MouseEvent) => {
+                                          e.preventDefault();
+                                          onNavigate(child.slug);
+                                      }
+                                    : undefined
+                            }
+                            className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                                child.slug === activeNodeSlug
+                                    ? "border-stone-800 text-stone-900 bg-stone-100"
+                                    : "border-stone-300 text-stone-600 hover:border-stone-500 hover:text-stone-900"
+                            }`}
+                        >
+                            {chapterPillLabel(child.label)}
+                        </Link>
+                    ))}
+                </div>
+            )}
+        </nav>
+    );
+}
+
+/**
+ * Full TOC page variant for Bible-shape books: every book listed
+ * vertically with its chapter pills inline. Book sections carry
+ * `id={book.slug}` so URL fragments (`/books/kjv-bible#john`) scroll
+ * straight to the book. Used on the book TOC route.
+ */
+export function BibleShapeFullToc({
+    toc,
+    bookSlug,
+    initialAnchor,
+}: {
+    toc: TocNodeResponse[];
+    bookSlug: string;
+    /**
+     * Optional URL fragment (without the leading `#`) — when supplied,
+     * scrolls that book's section into view on first mount. Drives the
+     * "library book pill → /books/<slug>#genesis" shortcut.
+     */
+    initialAnchor?: string;
+}) {
+    useLayoutEffect(() => {
+        if (!initialAnchor) return;
+        const el = document.getElementById(initialAnchor);
+        if (el) el.scrollIntoView({ block: "start" });
+    }, [initialAnchor]);
+
+    return (
+        <div className="space-y-8">
+            {toc.map((book) => (
+                <section key={book.slug} id={book.slug}>
+                    <h2 className="text-xl font-semibold text-stone-900 mb-3">
+                        {book.label}
+                    </h2>
+                    {book.children.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                            {book.children.map((child) => (
+                                <Link
+                                    key={child.slug}
+                                    to="/books/$bookSlug/$nodeSlug"
+                                    params={{
+                                        bookSlug,
+                                        nodeSlug: child.slug,
+                                    }}
+                                    className="text-xs px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500 hover:text-stone-900 transition-colors"
+                                >
+                                    {chapterPillLabel(child.label)}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            ))}
+        </div>
+    );
+}
+
+function chapterPillLabel(label: string): string {
+    const m = label.match(/^Chapter\s+(\d+)$/i);
+    return m ? m[1] : label;
 }
 
 function TocItem({

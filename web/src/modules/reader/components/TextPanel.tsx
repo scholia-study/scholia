@@ -178,6 +178,12 @@ export function TextPanel({
     const isTranslation = !!bookDetail?.source_book_slug;
     const hasTranslations = (bookDetail?.translations?.length ?? 0) > 0;
     const hasRelationship = isTranslation || hasTranslations;
+    // Bible-shape: no hosted source language and no children, but
+    // sibling translations exist (peers under the same translation root).
+    // Triggers the flat translation picker in the view-mode menu
+    // instead of the Kant-style Source/Translation/Both menu.
+    const siblingTranslations = bookDetail?.sibling_translations ?? [];
+    const isBibleShape = !hasRelationship && siblingTranslations.length > 0;
 
     const queryClient = useQueryClient();
 
@@ -704,6 +710,162 @@ export function TextPanel({
                                               ]
                                             : []),
                                         <Divider key="vm-bottom-divider" />,
+                                    ]}
+                                    {isBibleShape && [
+                                        <Typography
+                                            key="bs-label"
+                                            variant="overline"
+                                            sx={{
+                                                px: 2,
+                                                color: "text.secondary",
+                                            }}
+                                        >
+                                            Translation
+                                        </Typography>,
+                                        // Active translation (radio-checked)
+                                        <MenuItem
+                                            key={`bs-self-${bookSlug}`}
+                                            onClick={() => setMenuAnchor(null)}
+                                            sx={{ py: 0.5, px: 2 }}
+                                        >
+                                            <Radio
+                                                size="small"
+                                                checked={
+                                                    !viewMode ||
+                                                    viewMode !== "st"
+                                                }
+                                                tabIndex={-1}
+                                                sx={{ p: 0.5, mr: 1 }}
+                                            />
+                                            <ListItemText
+                                                primary={
+                                                    bookDetail?.publisher ??
+                                                    bookTitle
+                                                }
+                                            />
+                                        </MenuItem>,
+                                        // Sibling translations: navigate the
+                                        // panel to the equivalent node in that
+                                        // translation. Q9 selection-carry
+                                        // happens via the URL preserving
+                                        // selectedSentenceId; the equivalent
+                                        // sentence resolves on the other side
+                                        // (P6 wires that explicitly).
+                                        ...siblingTranslations.map((s) => (
+                                            <MenuItem
+                                                key={`bs-sibling-${s.slug}`}
+                                                onClick={async () => {
+                                                    const targetSlug =
+                                                        await resolveCompanionNodeSlug(
+                                                            s.slug,
+                                                        );
+                                                    onViewModeChange(
+                                                        "t",
+                                                        s.slug,
+                                                        targetSlug,
+                                                    );
+                                                    setMenuAnchor(null);
+                                                }}
+                                                sx={{ py: 0.5, px: 2 }}
+                                            >
+                                                <Radio
+                                                    size="small"
+                                                    checked={false}
+                                                    tabIndex={-1}
+                                                    sx={{ p: 0.5, mr: 1 }}
+                                                />
+                                                <ListItemText
+                                                    primary={s.title}
+                                                />
+                                            </MenuItem>
+                                        )),
+                                        <Divider key="bs-divider-sxs" />,
+                                        <MenuItem
+                                            key="bs-side-by-side"
+                                            disabled={
+                                                siblingTranslations.length === 0
+                                            }
+                                            onClick={() => {
+                                                const companion =
+                                                    siblingTranslations[0]
+                                                        ?.slug;
+                                                if (companion) {
+                                                    onViewModeChange(
+                                                        "st",
+                                                        companion,
+                                                    );
+                                                }
+                                                setMenuAnchor(null);
+                                            }}
+                                            sx={{ py: 0.5, px: 2 }}
+                                        >
+                                            <Radio
+                                                size="small"
+                                                checked={viewMode === "st"}
+                                                tabIndex={-1}
+                                                sx={{ p: 0.5, mr: 1 }}
+                                            />
+                                            <ListItemText primary="Side-by-side" />
+                                        </MenuItem>,
+                                        // Companion picker visible only when
+                                        // there are 2+ siblings (3-way Bible
+                                        // setup) and side-by-side is on.
+                                        ...(viewMode === "st" &&
+                                        siblingTranslations.length > 1
+                                            ? [
+                                                  <MenuItem
+                                                      key="bs-picker"
+                                                      disableRipple
+                                                      sx={{
+                                                          py: 0.5,
+                                                          px: 2,
+                                                          "&:hover": {
+                                                              backgroundColor:
+                                                                  "transparent",
+                                                          },
+                                                      }}
+                                                  >
+                                                      <Select
+                                                          size="small"
+                                                          value={
+                                                              companionSlug ??
+                                                              ""
+                                                          }
+                                                          onChange={(e) => {
+                                                              onViewModeChange(
+                                                                  "st",
+                                                                  e.target
+                                                                      .value,
+                                                              );
+                                                              setMenuAnchor(
+                                                                  null,
+                                                              );
+                                                          }}
+                                                          fullWidth
+                                                          sx={{
+                                                              fontSize:
+                                                                  "0.875rem",
+                                                          }}
+                                                      >
+                                                          {siblingTranslations.map(
+                                                              (s) => (
+                                                                  <MenuItem
+                                                                      key={
+                                                                          s.slug
+                                                                      }
+                                                                      value={
+                                                                          s.slug
+                                                                      }
+                                                                  >
+                                                                      {s.title}
+                                                                  </MenuItem>
+                                                              ),
+                                                          )}
+                                                      </Select>
+                                                  </MenuItem>,
+                                              ]
+                                            : []),
+                                        <Divider key="bs-bottom-divider" />,
                                     ]}
                                     <MenuItem
                                         disableRipple

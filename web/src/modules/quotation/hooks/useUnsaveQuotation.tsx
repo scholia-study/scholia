@@ -12,25 +12,23 @@ import toast from "react-hot-toast";
 import {
     getListAllNotesQueryKey,
     getListAllQuotationsQueryKey,
-    getListQuotationsQueryKey,
     useDeleteQuotation,
 } from "../../../api/quotations/quotations";
+import { invalidateAllNodeQuotations } from "./invalidateQuotations";
 
 interface QuotationLike {
     id: string;
     note_count: number;
-    book_slug?: string;
+    book_slug?: string | null;
 }
 
 interface UseUnsaveQuotationOptions {
     bookSlug?: string;
-    activeNodeId?: string;
     onSuccess?: () => void;
 }
 
 export function useUnsaveQuotation({
     bookSlug,
-    activeNodeId,
     onSuccess,
 }: UseUnsaveQuotationOptions) {
     const queryClient = useQueryClient();
@@ -41,13 +39,7 @@ export function useUnsaveQuotation({
         mutation: {
             onSuccess: () => {
                 toast.success("Quotation removed");
-                if (activeNodeId && bookSlug) {
-                    queryClient.invalidateQueries({
-                        queryKey: getListQuotationsQueryKey(bookSlug, {
-                            node_id: activeNodeId,
-                        }),
-                    });
-                }
+                invalidateAllNodeQuotations(queryClient);
                 queryClient.invalidateQueries({
                     queryKey: getListAllQuotationsQueryKey(),
                 });

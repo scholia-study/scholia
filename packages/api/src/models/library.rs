@@ -31,6 +31,24 @@ pub struct LibraryGroup {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub primary_slug: Option<String>,
     pub books: Vec<LibraryWork>,
+    /// "Bible-shape" navigation: when this group is a compilation that is
+    /// available in multiple translations, the frontend renders the
+    /// compilation's child works (e.g. Genesis, John) as primary book
+    /// pills here, and the multiple translations collapse into a single
+    /// subtle translation chooser. Empty for regular author groups and
+    /// for compilations available in a single translation.
+    pub book_pills: Vec<BookPill>,
+}
+
+/// One entry in a Bible-shape group's primary pill row.
+/// `node_slug` is the toc-node slug (translation-invariant by import
+/// guard) — the frontend composes the URL as
+/// `/books/<active-translation>/<node_slug>`.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct BookPill {
+    pub node_slug: String,
+    pub label: String,
+    pub sort_order: i32,
 }
 
 #[derive(Debug, Serialize, ToSchema)]

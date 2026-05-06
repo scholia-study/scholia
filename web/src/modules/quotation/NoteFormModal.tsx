@@ -15,11 +15,11 @@ import type { NoteResponse } from "#/api/model";
 import { FetchError } from "../../api/fetcher";
 import {
     getListNotesQueryKey,
-    getListQuotationsQueryKey,
     useCreateNote,
     useUpdateNote,
 } from "../../api/quotations/quotations";
 import { useListTags } from "../../api/tags/tags";
+import { invalidateAllNodeQuotations } from "./hooks/invalidateQuotations";
 
 interface NoteFormModalProps {
     open: boolean;
@@ -29,7 +29,6 @@ interface NoteFormModalProps {
     mode: "create" | "edit";
     initialData?: NoteResponse;
     sentenceContext?: string;
-    activeNodeId?: string;
 }
 
 export function NoteFormModal({
@@ -40,7 +39,6 @@ export function NoteFormModal({
     mode,
     initialData,
     sentenceContext,
-    activeNodeId,
 }: NoteFormModalProps) {
     const queryClient = useQueryClient();
 
@@ -60,13 +58,7 @@ export function NoteFormModal({
                 queryClient.invalidateQueries({
                     queryKey: getListNotesQueryKey(bookSlug, quotationId),
                 });
-                if (activeNodeId) {
-                    queryClient.invalidateQueries({
-                        queryKey: getListQuotationsQueryKey(bookSlug, {
-                            node_id: activeNodeId,
-                        }),
-                    });
-                }
+                invalidateAllNodeQuotations(queryClient);
                 onClose();
             },
             onError: (err: unknown) => {

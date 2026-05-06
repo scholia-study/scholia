@@ -91,6 +91,46 @@ pub async fn get_book_by_slug(pool: &PgPool, slug: &str) -> Result<BookDetail, A
         })
         .collect();
 
+    // Sibling translations — peers under the same translation root,
+    // excluding self. Used by Bible-shape books (no hosted source
+    // language) so the reader can offer a flat translation picker.
+    // Resolves the root via COALESCE so the query works whether the
+    // current book is a translation (root = our translation_of_id) or
+    // is itself a root with siblings (root = our id; rare in practice).
+    let sibling_rows = sqlx::query_as!(
+        TranslationRow,
+        r#"WITH me AS (
+               SELECT COALESCE(s.translation_of_id, s.id) AS root_id
+               FROM books b
+               JOIN sources s ON s.id = b.source_id
+               WHERE b.id = $1
+           )
+           SELECT b.id, b.slug, b.language,
+                  COALESCE(s.title_display, s.title) AS "title!",
+                  STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author
+           FROM books b
+           JOIN sources s ON s.id = b.source_id
+           LEFT JOIN source_persons sp ON sp.source_id = s.id AND sp.role = 'author'
+           LEFT JOIN persons p ON p.id = sp.person_id
+           WHERE COALESCE(s.translation_of_id, s.id) = (SELECT root_id FROM me)
+             AND b.id != $1
+           GROUP BY b.id, b.slug, b.language, s.title_display, s.title
+           ORDER BY COALESCE(s.title_display, s.title)"#,
+        Uuid::parse_str(&detail.id).expect("detail.id is a valid UUID"),
+    )
+    .fetch_all(pool)
+    .await?;
+    detail.sibling_translations = sibling_rows
+        .into_iter()
+        .map(|r| BookSummary {
+            id: r.id.to_string(),
+            slug: r.slug,
+            title: r.title,
+            author: r.author.unwrap_or_default(),
+            language: r.language,
+        })
+        .collect();
+
     Ok(detail)
 }
 
@@ -138,6 +178,7 @@ impl BookRow {
             publisher: self.publisher,
             source_book_slug: self.source_book_slug,
             translations: vec![],
+            sibling_translations: vec![],
         }
     }
 }

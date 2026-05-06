@@ -17,6 +17,7 @@ export * from "./batchSentenceResponseItem";
 export * from "./batchSentencesRequest";
 export * from "./batchSentencesResponse";
 export * from "./bookDetail";
+export * from "./bookPill";
 export * from "./bookSummary";
 export * from "./browseSourcesParams";
 export * from "./contentBlockResponse";

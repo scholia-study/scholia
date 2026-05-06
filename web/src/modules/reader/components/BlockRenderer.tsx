@@ -152,12 +152,31 @@ export function Sentence({
     showOriginal,
     onSelect,
     marginSettings,
+    nodeSourceRef,
+    displayPageMarkers,
 }: {
     sentence: SentenceResponse;
     isSelected: boolean;
     showOriginal?: boolean;
     onSelect: (sentence: SentenceResponse, shiftKey: boolean) => void;
     marginSettings?: MarginSettings;
+    /**
+     * `source_ref` of the parent toc_node — required for verse-key
+     * marker projection. The QuotationContext combines it with each
+     * page marker's `ref_value` to build the cross-translation lookup
+     * key. Optional because not all sentence renderings (e.g. inline
+     * footnote previews) sit inside a chapter context.
+     */
+    nodeSourceRef?: string;
+    /**
+     * Margin markers to render for this sentence. When omitted, falls
+     * back to `sentence.page_markers`. Block uses this prop to drop
+     * markers whose ref_value duplicates the previous sentence's for
+     * the same system — Bible verses now segment to multiple
+     * sentences sharing a verse marker, and rendering each one stacks
+     * verse numbers on top of one another in the margin.
+     */
+    displayPageMarkers?: PageMarkerResponse[];
 }) {
     const { isCorrespondent } = useSentenceSelection(sentence);
     const isFootnoteAnchor = useFootnoteAnchor(sentence.footnotes);
@@ -165,22 +184,34 @@ export function Sentence({
 
     let leftMarkers: PageMarkerResponse[] | undefined;
     let rightMarkers: PageMarkerResponse[] | undefined;
+    let inlineMarkers: PageMarkerResponse[] | undefined;
 
-    if (
-        marginSettings &&
-        marginSettings.enabledSystems.size > 0 &&
-        sentence.page_markers.length > 0
-    ) {
-        for (const pm of sentence.page_markers) {
-            if (!marginSettings.enabledSystems.has(pm.system_slug)) continue;
-            const side = marginSettings.systemSides[pm.system_slug] ?? "right";
-            if (side === "left") {
-                if (!leftMarkers) leftMarkers = [];
-                leftMarkers.push(pm);
-            } else {
-                if (!rightMarkers) rightMarkers = [];
-                rightMarkers.push(pm);
-            }
+    const markersForRender = displayPageMarkers ?? sentence.page_markers;
+    // Verse-style markers (Bible) render inline as a tiny superscript
+    // before the sentence text. Margin positioning would stack different
+    // verses on the same line of wrapped text on top of each other (e.g.
+    // 1:2 and 1:3 both end up at the same y). Page-style markers (Kant
+    // pagination) keep the existing margin layout governed by
+    // marginSettings. The "verse" detection is by system slug for now —
+    // ref_type is on `reference_systems` in the schema but not yet
+    // surfaced through PageMarkerResponse; revisit if a second inline
+    // system shows up.
+    for (const pm of markersForRender) {
+        if (pm.system_slug === "verse") {
+            if (!inlineMarkers) inlineMarkers = [];
+            inlineMarkers.push(pm);
+            continue;
+        }
+        if (!marginSettings || marginSettings.enabledSystems.size === 0)
+            continue;
+        if (!marginSettings.enabledSystems.has(pm.system_slug)) continue;
+        const side = marginSettings.systemSides[pm.system_slug] ?? "right";
+        if (side === "left") {
+            if (!leftMarkers) leftMarkers = [];
+            leftMarkers.push(pm);
+        } else {
+            if (!rightMarkers) rightMarkers = [];
+            rightMarkers.push(pm);
         }
     }
 
@@ -226,8 +257,11 @@ export function Sentence({
 
     const isSaved =
         showBookmarks &&
-        sentence.sentence_number != null &&
-        isSentenceSaved(sentence.sentence_number);
+        isSentenceSaved(
+            sentence.sentence_number,
+            nodeSourceRef,
+            sentence.page_markers,
+        );
 
     return (
         <>
@@ -252,6 +286,15 @@ export function Sentence({
                 onClick={(e) => onSelect(sentence, e.shiftKey)}
                 className={`cursor-pointer transition-colors rounded-sm ${highlightClass}`}
             >
+                {inlineMarkers?.map((pm, i) => (
+                    <sup
+                        key={`${pm.system_slug}-${pm.ref_value}-${i}`}
+                        className="text-[0.65em] text-stone-400 mr-0.5 select-none"
+                        title={pm.ref_value}
+                    >
+                        {pm.ref_value}
+                    </sup>
+                ))}
                 {parsedHtml}
             </span>{" "}
         </>
@@ -311,15 +354,37 @@ export function Block({
     showOriginal,
     onSelectSentence,
     marginSettings,
+    nodeSourceRef,
 }: {
     block: ContentBlockResponse;
     selectedSentenceId: string | null;
     showOriginal?: boolean;
     onSelectSentence: (sentence: SentenceResponse, shiftKey: boolean) => void;
     marginSettings?: MarginSettings;
+    /** Forwarded to `Sentence` for verse-key marker projection. */
+    nodeSourceRef?: string;
 }) {
     const blockHtml =
         showOriginal && block.original_html ? block.original_html : block.html;
+
+    // Per-sentence display-marker lists: drop a page_marker whose
+    // ref_value matches the previous sentence's for the same system.
+    // Bible verses now segment to multiple sentences sharing a verse
+    // marker; without dedup the verse number stacks at the same y in
+    // the margin and blurs into itself. Computed once per render.
+    const sentenceDisplayMarkers = useMemo(() => {
+        const lastRefBySystem = new Map<string, string>();
+        return block.sentences.map((s) => {
+            const result: PageMarkerResponse[] = [];
+            for (const m of s.page_markers) {
+                if (lastRefBySystem.get(m.system_slug) !== m.ref_value) {
+                    result.push(m);
+                    lastRefBySystem.set(m.system_slug, m.ref_value);
+                }
+            }
+            return result;
+        });
+    }, [block.sentences]);
 
     switch (block.block_type) {
         case "heading":
@@ -340,7 +405,7 @@ export function Block({
         case "paragraph":
             return (
                 <p className="relative mb-4 leading-relaxed text-stone-700">
-                    {block.sentences.map((s) => (
+                    {block.sentences.map((s, i) => (
                         <Sentence
                             key={s.id}
                             sentence={s}
@@ -351,6 +416,8 @@ export function Block({
                             showOriginal={showOriginal}
                             onSelect={onSelectSentence}
                             marginSettings={marginSettings}
+                            nodeSourceRef={nodeSourceRef}
+                            displayPageMarkers={sentenceDisplayMarkers[i]}
                         />
                     ))}
                 </p>
@@ -358,7 +425,7 @@ export function Block({
         case "footnote":
             return (
                 <div className="relative mb-4 ml-8 text-sm text-stone-500 italic border-l-2 border-stone-200 pl-4">
-                    {block.sentences.map((s) => (
+                    {block.sentences.map((s, i) => (
                         <Sentence
                             key={s.id}
                             sentence={s}
@@ -369,6 +436,8 @@ export function Block({
                             showOriginal={showOriginal}
                             onSelect={onSelectSentence}
                             marginSettings={marginSettings}
+                            nodeSourceRef={nodeSourceRef}
+                            displayPageMarkers={sentenceDisplayMarkers[i]}
                         />
                     ))}
                 </div>

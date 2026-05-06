@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGetLibrary } from "../api/books/books";
 import type {
     LibraryGroup,
@@ -66,6 +66,14 @@ function GroupSection({ group }: { group: LibraryGroup }) {
     const accent = accentColorFor(group.primary_label, group.id);
     const isSelf = group.primary_kind === "self";
     const isSingleton = isSelf && group.books.length === 0;
+    // Bible-shape: one compilation work in many translations.
+    // Pills become the primary navigation, translation collapses to a
+    // single subtle chooser (PLAN_BIG_BOOKS.md Q1/Q2/Q5).
+    const isBibleShape = group.book_pills.length > 0;
+
+    if (isBibleShape) {
+        return <BibleShapeGroup group={group} accent={accent} />;
+    }
 
     return (
         <section>
@@ -94,10 +102,134 @@ function GroupSection({ group }: { group: LibraryGroup }) {
             {!isSingleton && (
                 <div className="space-y-5">
                     {group.books.map((work) => (
-                        <WorkCard key={work.work_id} work={work} />
+                        <WorkCard
+                            key={work.work_id}
+                            work={work}
+                            hideTitle={
+                                isSelf && work.title === group.primary_label
+                            }
+                        />
                     ))}
                 </div>
             )}
+        </section>
+    );
+}
+
+/** Storage key holding the user's preferred translation per Bible-shape group. */
+function bibleTranslationStorageKey(groupId: string): string {
+    return `bible-translation:${groupId}`;
+}
+
+/**
+ * Reads the persisted translation slug from localStorage on mount only.
+ * Initial state matches the SSR default to avoid hydration mismatch;
+ * the real value is applied after hydration via useEffect.
+ */
+function useBibleTranslation(
+    groupId: string,
+    versions: LibraryVersion[],
+): [string, (slug: string) => void] {
+    const fallback = useMemo(
+        () =>
+            // WEB is the v1 default (PLAN_BIG_BOOKS.md Q2). The publisher
+            // field carries the short label; we ship "WEB" / "KJV" today.
+            versions.find((v) => v.publisher === "WEB")?.book_slug ??
+            versions[0]?.book_slug ??
+            "",
+        [versions],
+    );
+    const [slug, setSlug] = useState(fallback);
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        try {
+            const stored = window.localStorage.getItem(
+                bibleTranslationStorageKey(groupId),
+            );
+            if (stored && versions.some((v) => v.book_slug === stored)) {
+                setSlug(stored);
+            }
+        } catch {
+            // localStorage may throw under privacy modes; just fall back.
+        }
+    }, [groupId, versions]);
+
+    const setAndPersist = useCallback(
+        (next: string) => {
+            setSlug(next);
+            try {
+                window.localStorage.setItem(
+                    bibleTranslationStorageKey(groupId),
+                    next,
+                );
+            } catch {
+                // ignore
+            }
+        },
+        [groupId],
+    );
+
+    return [slug, setAndPersist];
+}
+
+function BibleShapeGroup({
+    group,
+    accent,
+}: {
+    group: LibraryGroup;
+    accent: string;
+}) {
+    // Versions live on the (single) work for Bible-shape groups; the
+    // group is guaranteed to have one work by the backend's pill-eligibility
+    // rule, so we read versions off it. Empty fallback keeps types happy.
+    const versions = group.books[0]?.versions ?? [];
+    const [activeSlug, setActiveSlug] = useBibleTranslation(group.id, versions);
+
+    return (
+        <section>
+            <div className="flex items-baseline justify-between gap-4 pb-2">
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-700">
+                    {group.primary_label}
+                </h2>
+                <div className="text-xs text-stone-400 flex flex-wrap gap-x-2">
+                    {versions.map((v) => {
+                        const isActive = v.book_slug === activeSlug;
+                        const label = v.publisher ?? v.language.toUpperCase();
+                        return (
+                            <button
+                                type="button"
+                                key={v.book_slug}
+                                onClick={() => setActiveSlug(v.book_slug)}
+                                className={
+                                    isActive
+                                        ? "text-stone-700 underline underline-offset-2"
+                                        : "hover:text-stone-700"
+                                }
+                            >
+                                {label}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+            <div
+                className="h-0.5 rounded-full mb-4"
+                style={{ backgroundColor: accent }}
+            />
+            <div className="flex flex-wrap gap-1.5">
+                {group.book_pills.map((p) => (
+                    <Link
+                        key={p.node_slug}
+                        to="/books/$bookSlug"
+                        params={{ bookSlug: activeSlug }}
+                        hash={p.node_slug}
+                        className="text-xs px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500 hover:text-stone-900 transition-colors"
+                    >
+                        {p.label}
+                    </Link>
+                ))}
+            </div>
         </section>
     );
 }
@@ -128,7 +260,18 @@ function accentColorFor(label: string, id: string): string {
     return ACCENT_PALETTE[Math.abs(hash) % ACCENT_PALETTE.length];
 }
 
-function WorkCard({ work }: { work: LibraryWork }) {
+function WorkCard({
+    work,
+    hideTitle = false,
+}: {
+    work: LibraryWork;
+    /**
+     * Suppress title and metadata. Used for SelfNamed groups where the
+     * group heading already shows the work's title (e.g. "The Bible").
+     * The version pills are then the only useful row.
+     */
+    hideTitle?: boolean;
+}) {
     const versionLabels = useMemo(
         () => labelVersions(work.versions),
         [work.versions],
@@ -136,19 +279,25 @@ function WorkCard({ work }: { work: LibraryWork }) {
 
     return (
         <article>
-            <h3 className="text-base font-medium text-stone-900 font-serif">
-                {work.title}
-            </h3>
-            <p className="text-xs text-stone-400 mt-0.5">
-                {work.publication_year ?? "Undated"}
-                {work.co_authors.length > 0 && (
-                    <> · with {work.co_authors.join(", ")}</>
-                )}
-                {work.editor_names && work.editor_names.length > 0 && (
-                    <> · edited by {work.editor_names.join(", ")}</>
-                )}
-            </p>
-            <div className="flex flex-wrap gap-1.5 mt-2">
+            {!hideTitle && (
+                <>
+                    <h3 className="text-base font-medium text-stone-900 font-serif">
+                        {work.title}
+                    </h3>
+                    <p className="text-xs text-stone-400 mt-0.5">
+                        {work.publication_year ?? "Undated"}
+                        {work.co_authors.length > 0 && (
+                            <> · with {work.co_authors.join(", ")}</>
+                        )}
+                        {work.editor_names && work.editor_names.length > 0 && (
+                            <> · edited by {work.editor_names.join(", ")}</>
+                        )}
+                    </p>
+                </>
+            )}
+            <div
+                className={`flex flex-wrap gap-1.5 ${hideTitle ? "" : "mt-2"}`}
+            >
                 {work.versions.map((v, i) => (
                     <VersionPill
                         key={`${v.book_slug}::${v.node_slug ?? ""}`}
@@ -247,15 +396,20 @@ function labelVersions(versions: LibraryVersion[]): string[] {
     for (const v of versions) {
         counts.set(v.language, (counts.get(v.language) ?? 0) + 1);
     }
+    // When every version shares the language, the language code carries no
+    // information; the publisher / translator alone is the useful pill.
+    // (e.g. KJV vs WEB — both English, "EN · KJV" would be noise.)
+    const allSameLanguage = counts.size === 1;
     return versions.map((v) => {
         const code = v.language.toUpperCase();
         const ambiguous = (counts.get(v.language) ?? 0) > 1;
         if (!ambiguous) return code;
+        const prefix = allSameLanguage ? "" : `${code} · `;
         if (v.translator_names.length > 0) {
-            return `${code} · ${v.translator_names.map(lastName).join(" & ")}`;
+            return `${prefix}${v.translator_names.map(lastName).join(" & ")}`;
         }
-        if (v.publisher) return `${code} · ${v.publisher}`;
-        if (v.publication_year) return `${code} · ${v.publication_year}`;
+        if (v.publisher) return `${prefix}${v.publisher}`;
+        if (v.publication_year) return `${prefix}${v.publication_year}`;
         return code;
     });
 }

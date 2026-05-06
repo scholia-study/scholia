@@ -12,6 +12,35 @@ pub struct QuotationResponse {
     pub sentence_kind: String,
     pub note_count: i64,
     pub created_at: String,
+    /// Slug of the book this quotation lives in. Used to render the
+    /// translation badge ("KJV"/"WEB" — see `translation_label`) and
+    /// to differentiate cross-translation peer quotations from
+    /// own-book ones in the reader. Optional for backward-compat
+    /// across endpoints that haven't been wired yet; populated by
+    /// `list_quotations_for_node`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub book_slug: Option<String>,
+    /// Short display label for the translation badge — derived from
+    /// the source's `publisher` field (which the Bible importer sets
+    /// to "KJV"/"WEB"). Falls back to the book title when absent.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub translation_label: Option<String>,
+    /// `toc_nodes.source_ref` of the anchor — translation-invariant
+    /// (e.g. `"genesis:5"`). Used as the chapter-grouping key for
+    /// verse-level visual marker projection.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub anchor_source_ref: Option<String>,
+    /// Verse `ref_value` of the start anchor sentence (e.g. `"5:1"`).
+    /// Populated when the book has a `verse` reference system; null
+    /// for books without verse-style markers (Kant). Together with
+    /// `anchor_source_ref` this is the cross-translation marker key.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub anchor_verse_start: Option<String>,
+    /// Verse `ref_value` of the end anchor sentence (only when the
+    /// quotation spans multiple verses; otherwise null and the
+    /// quotation is treated as covering a single verse).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub anchor_verse_end: Option<String>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -68,6 +97,12 @@ pub struct TagListResponse {
 pub struct QuotationWithContextResponse {
     pub id: String,
     pub book_slug: String,
+    /// Compact translation badge — the source's `publisher` when short
+    /// (e.g. "KJV"/"WEB" for Bible) or the language code (e.g. "DE"/"EN"
+    /// for Kant). Used in My Quotations / reader badge UI to show
+    /// which translation a quotation belongs to.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub translation_label: Option<String>,
     /// Title of the cited bibliographic work (Shape 3): the effective
     /// source resolved for the quotation's anchor — either the per-book
     /// child source within a compilation (e.g. "Genesis") or the hosted
@@ -107,6 +142,9 @@ pub struct NoteWithContextResponse {
     pub body: String,
     pub tags: Vec<TagResponse>,
     pub book_slug: String,
+    /// See `QuotationWithContextResponse::translation_label`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub translation_label: Option<String>,
     /// See `QuotationWithContextResponse::book_title`.
     pub book_title: String,
     /// See `QuotationWithContextResponse::parent_compilation_title`.

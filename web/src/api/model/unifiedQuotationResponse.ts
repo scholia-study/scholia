@@ -29,6 +29,11 @@ export type UnifiedQuotationResponse =
           source_type: "book";
           /** @nullable */
           start_text_snippet?: string | null;
+          /**
+           * See `QuotationWithContextResponse::translation_label`.
+           * @nullable
+           */
+          translation_label?: string | null;
       }
     | {
           /** @nullable */

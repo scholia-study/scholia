@@ -28,6 +28,22 @@ struct QuotationRow {
     created_at: time::OffsetDateTime,
 }
 
+/// Extended row for `list_quotations_for_node` — same columns as
+/// `QuotationRow` plus enrichment for badges and verse-marker projection.
+struct QuotationRowEx {
+    id: Uuid,
+    start_number: Option<i32>,
+    end_number: Option<i32>,
+    sentence_kind: String,
+    note_count: Option<i64>,
+    created_at: time::OffsetDateTime,
+    book_slug: Option<String>,
+    translation_label: Option<String>,
+    anchor_source_ref: Option<String>,
+    anchor_verse_start: Option<String>,
+    anchor_verse_end: Option<String>,
+}
+
 struct SentenceLookup {
     id: Uuid,
     node_id: Uuid,
@@ -66,6 +82,27 @@ fn quotation_from_row(r: QuotationRow) -> QuotationResponse {
         sentence_kind: r.sentence_kind,
         note_count: r.note_count.unwrap_or(0),
         created_at: fmt_time(r.created_at),
+        book_slug: None,
+        translation_label: None,
+        anchor_source_ref: None,
+        anchor_verse_start: None,
+        anchor_verse_end: None,
+    }
+}
+
+fn quotation_from_row_ex(r: QuotationRowEx) -> QuotationResponse {
+    QuotationResponse {
+        id: r.id.to_string(),
+        anchor_sentence_start_number: r.start_number.unwrap_or(0),
+        anchor_sentence_end_number: r.end_number,
+        sentence_kind: r.sentence_kind,
+        note_count: r.note_count.unwrap_or(0),
+        created_at: fmt_time(r.created_at),
+        book_slug: r.book_slug,
+        translation_label: r.translation_label,
+        anchor_source_ref: r.anchor_source_ref,
+        anchor_verse_start: r.anchor_verse_start,
+        anchor_verse_end: r.anchor_verse_end,
     }
 }
 
@@ -113,31 +150,86 @@ pub async fn list_quotations_for_node(
     book_id: Uuid,
     node_id: Uuid,
 ) -> Result<Vec<QuotationResponse>, AppError> {
+    // Returns own-book quotations PLUS peer-translation quotations whose
+    // anchor toc-node shares this node's `source_ref` and whose book
+    // shares the translation root. The frontend uses peer entries for
+    // visual-marker projection only — saved quotations themselves stay
+    // locked to their translation (PLAN_BIG_BOOKS.md Q7).
+    //
+    // Each row carries:
+    //   - `book_slug` and `translation_label` — for the source badge
+    //   - `anchor_source_ref` + `anchor_verse_start` / `_end` — for
+    //     cross-translation marker matching by verse identity. The
+    //     verse fields are populated only when the book has a `verse`
+    //     reference system; books without it (Kant) leave them null
+    //     and projection falls back to sentence_number matching, which
+    //     is safe within a single book.
+    //
+    // book_id is retained in the signature for future per-book scopes
+    // but is unused here — the source-of-truth is the node id, which
+    // determines the translation family via toc_nodes/sources joins.
+    let _ = book_id;
     let rows = sqlx::query_as!(
-        QuotationRow,
-        r#"SELECT q.id,
+        QuotationRowEx,
+        r#"WITH target AS (
+               SELECT tn.source_ref,
+                      COALESCE(s.translation_of_id, s.id) AS work_root
+               FROM toc_nodes tn
+               JOIN books b ON b.id = tn.book_id
+               JOIN sources s ON s.id = b.source_id
+               WHERE tn.id = $2
+           )
+           SELECT q.id,
                   ss.sentence_number AS "start_number?",
                   se.sentence_number AS "end_number?",
                   q.sentence_kind::TEXT AS "sentence_kind!",
                   COUNT(qn.id) AS "note_count?",
-                  q.created_at
+                  q.created_at,
+                  qb.slug AS "book_slug?",
+                  -- Compact translation badge: prefer the source's
+                  -- `publisher` when it's short (e.g. "KJV", "WEB"),
+                  -- otherwise fall back to the language code. Kant DE
+                  -- thus shows "DE"; Bible KJV shows "KJV".
+                  CASE
+                      WHEN qs.publisher IS NOT NULL AND char_length(qs.publisher) <= 6
+                          THEN qs.publisher
+                      ELSE UPPER(qb.language)
+                  END AS "translation_label?",
+                  qtn.source_ref AS "anchor_source_ref?",
+                  (
+                      SELECT pm.ref_value
+                      FROM page_markers pm
+                      JOIN reference_systems rs ON rs.id = pm.system_id
+                      WHERE pm.sentence_id = ss.id AND rs.slug = 'verse'
+                      LIMIT 1
+                  ) AS "anchor_verse_start?",
+                  (
+                      SELECT pm.ref_value
+                      FROM page_markers pm
+                      JOIN reference_systems rs ON rs.id = pm.system_id
+                      WHERE pm.sentence_id = se.id AND rs.slug = 'verse'
+                      LIMIT 1
+                  ) AS "anchor_verse_end?"
            FROM quotations q
+           JOIN toc_nodes qtn ON qtn.id = q.anchor_node_id
+           JOIN books qb ON qb.id = qtn.book_id
+           JOIN sources qs ON qs.id = qb.source_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.user_id = $1
-             AND q.book_id = $2
-             AND q.anchor_node_id = $3
-           GROUP BY q.id, ss.sentence_number, se.sentence_number
+             AND qtn.source_ref = (SELECT source_ref FROM target)
+             AND COALESCE(qs.translation_of_id, qs.id) = (SELECT work_root FROM target)
+           GROUP BY q.id, ss.id, se.id, ss.sentence_number, se.sentence_number,
+                    qb.slug, qb.language, qs.publisher, qtn.source_ref
            ORDER BY ss.sentence_number"#,
         user_id,
-        book_id,
         node_id,
     )
     .fetch_all(pool)
     .await?;
 
-    Ok(rows.into_iter().map(quotation_from_row).collect())
+    Ok(rows.into_iter().map(quotation_from_row_ex).collect())
 }
 
 pub async fn create_quotation(
@@ -519,6 +611,7 @@ struct QuotationWithContextRow {
     id: Uuid,
     book_slug: String,
     book_title: String,
+    translation_label: Option<String>,
     parent_compilation_title: Option<String>,
     node_label: String,
     node_slug: String,
@@ -547,6 +640,11 @@ pub async fn list_all_quotations(
         r#"SELECT q.id,
                   b.slug AS "book_slug!",
                   COALESCE(s.title_display, s.title) AS "book_title!",
+                  CASE
+                      WHEN bs.publisher IS NOT NULL AND char_length(bs.publisher) <= 6
+                          THEN bs.publisher
+                      ELSE UPPER(b.language)
+                  END AS "translation_label?",
                   COALESCE(parent.title_display, parent.title) AS "parent_compilation_title?",
                   n.label AS "node_label!",
                   n.slug AS "node_slug!",
@@ -560,6 +658,10 @@ pub async fn list_all_quotations(
                   q.created_at
            FROM quotations q
            JOIN books b ON b.id = q.book_id
+           -- The book's own root source (carries language + publisher
+           -- of the translation itself), distinct from `s` which is the
+           -- effective citation source resolved per quotation.
+           JOIN sources bs ON bs.id = b.source_id
            JOIN sources s ON s.id = q.source_id
            LEFT JOIN sources parent ON parent.id = s.parent_source_id
            JOIN toc_nodes n ON n.id = q.anchor_node_id
@@ -570,7 +672,7 @@ pub async fn list_all_quotations(
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.user_id = $1
              AND ($2::TEXT IS NULL OR b.slug = $2)
-           GROUP BY q.id, b.slug, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text, ms.sentence_number
+           GROUP BY q.id, b.slug, b.language, bs.publisher, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text, ms.sentence_number
            ORDER BY q.created_at DESC"#,
         user_id,
         book_slug,
@@ -586,6 +688,7 @@ pub async fn list_all_quotations(
             QuotationWithContextResponse {
                 id: r.id.to_string(),
                 book_slug: r.book_slug,
+                translation_label: r.translation_label,
                 book_title: r.book_title,
                 parent_compilation_title: r.parent_compilation_title,
                 node_label: r.node_label,
@@ -608,6 +711,7 @@ struct NoteWithContextRow {
     body: String,
     quotation_id: Uuid,
     book_slug: String,
+    translation_label: Option<String>,
     book_title: String,
     parent_compilation_title: Option<String>,
     node_label: String,
@@ -631,6 +735,11 @@ pub async fn list_all_notes(
         NoteWithContextRow,
         r#"SELECT qn.id, qn.body, qn.quotation_id AS "quotation_id!",
                   b.slug AS "book_slug!",
+                  CASE
+                      WHEN bs.publisher IS NOT NULL AND char_length(bs.publisher) <= 6
+                          THEN bs.publisher
+                      ELSE UPPER(b.language)
+                  END AS "translation_label?",
                   COALESCE(s.title_display, s.title) AS "book_title!",
                   COALESCE(parent.title_display, parent.title) AS "parent_compilation_title?",
                   n.label AS "node_label!",
@@ -643,6 +752,7 @@ pub async fn list_all_notes(
            FROM quotation_notes qn
            JOIN quotations q ON q.id = qn.quotation_id
            JOIN books b ON b.id = q.book_id
+           JOIN sources bs ON bs.id = b.source_id
            JOIN sources s ON s.id = q.source_id
            LEFT JOIN sources parent ON parent.id = s.parent_source_id
            JOIN toc_nodes n ON n.id = q.anchor_node_id
@@ -691,6 +801,7 @@ pub async fn list_all_notes(
             body: r.body,
             tags: tags_map.remove(&r.id).unwrap_or_default(),
             book_slug: r.book_slug,
+            translation_label: r.translation_label,
             book_title: r.book_title,
             parent_compilation_title: r.parent_compilation_title,
             node_label: r.node_label,

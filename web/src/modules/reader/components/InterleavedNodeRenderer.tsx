@@ -106,6 +106,54 @@ function alignSentences(
         return companionSentences.map((s) => ({ primary: [], companion: [s] }));
     }
 
+    // Two alignment modes (PLAN_BIG_BOOKS.md):
+    //
+    // 1. **sentence-link**: companion sentences carry
+    //    `source_sentence_start_id` pointing at primary sentence ids.
+    //    Used by Kant — every English sentence is explicitly linked to
+    //    its German source. This is the most precise mode.
+    //
+    // 2. **marker**: neither side has sentence-id linkage but both
+    //    carry the same kind of reference-system markers (e.g.
+    //    `verse` for the Bible). Group both sides by `ref_value`,
+    //    pair groups. KJV Gen 5:1 (2 sentences) maps to WEB Gen 5:1
+    //    (1 sentence) and they render together.
+    //
+    // Detection runs in priority order: prefer sentence-link if any
+    // companion sentence has it; otherwise try marker; otherwise
+    // fall back to a degenerate "every primary alone, companion
+    // appended after".
+    const hasSentenceLink = companionSentences.some(
+        (cs) => cs.source_sentence_start_id,
+    );
+    if (hasSentenceLink) {
+        return alignBySentenceLink(primarySentences, companionSentences);
+    }
+
+    const sharedSystem = pickSharedMarkerSystem(
+        primarySentences,
+        companionSentences,
+    );
+    if (sharedSystem) {
+        return alignByMarker(
+            primarySentences,
+            companionSentences,
+            sharedSystem,
+        );
+    }
+
+    // Fallback: no alignment hints. Show primary as-is, companion
+    // dumped at the end. Better than crashing or interleaving wrong.
+    return [
+        ...primarySentences.map((s) => ({ primary: [s], companion: [] })),
+        { primary: [], companion: companionSentences },
+    ];
+}
+
+function alignBySentenceLink(
+    primarySentences: SentenceResponse[],
+    companionSentences: SentenceResponse[],
+): AlignedSentenceGroup[] {
     // Build mapping from primary sentence ID -> companion sentences that reference it
     const companionBySource = new Map<string, SentenceResponse[]>();
     const unmatchedCompanion: SentenceResponse[] = [];
@@ -172,6 +220,86 @@ function alignSentences(
     }
 
     return groups;
+}
+
+/**
+ * Find a reference-system slug that's present on at least one sentence
+ * in BOTH primary and companion. Bible-shape books share the `verse`
+ * system; auto-detection avoids hard-coding "Bible".
+ */
+function pickSharedMarkerSystem(
+    primary: SentenceResponse[],
+    companion: SentenceResponse[],
+): string | null {
+    const primarySystems = new Set<string>();
+    for (const s of primary) {
+        for (const m of s.page_markers) primarySystems.add(m.system_slug);
+    }
+    if (primarySystems.size === 0) return null;
+    for (const s of companion) {
+        for (const m of s.page_markers) {
+            if (primarySystems.has(m.system_slug)) return m.system_slug;
+        }
+    }
+    return null;
+}
+
+/**
+ * Group sentences on each side by their first marker `ref_value` for
+ * the chosen reference system, then pair groups by ref_value. Verse 5:1
+ * on the primary side gets all primary sentences with marker "5:1"; the
+ * companion column gets all companion sentences with marker "5:1".
+ *
+ * Sentences without a marker for the chosen system stick with the most
+ * recent group (so a stray non-verse line in the middle of a chapter
+ * doesn't get lost). Companion ref_values not present in primary get
+ * their own primary-empty groups appended in encountered order.
+ */
+function alignByMarker(
+    primary: SentenceResponse[],
+    companion: SentenceResponse[],
+    systemSlug: string,
+): AlignedSentenceGroup[] {
+    const refValueOf = (s: SentenceResponse): string | null => {
+        for (const m of s.page_markers) {
+            if (m.system_slug === systemSlug) return m.ref_value;
+        }
+        return null;
+    };
+
+    const order: string[] = [];
+    const primaryByRef = new Map<string, SentenceResponse[]>();
+    let currentRef: string | null = null;
+    for (const s of primary) {
+        const direct = refValueOf(s);
+        const verseRef: string | null = direct ?? currentRef;
+        if (!verseRef) continue; // primary preamble before any marker — skip
+        currentRef = verseRef;
+        if (!primaryByRef.has(verseRef)) {
+            primaryByRef.set(verseRef, []);
+            order.push(verseRef);
+        }
+        primaryByRef.get(verseRef)!.push(s);
+    }
+
+    const companionByRef = new Map<string, SentenceResponse[]>();
+    currentRef = null;
+    for (const s of companion) {
+        const direct = refValueOf(s);
+        const verseRef: string | null = direct ?? currentRef;
+        if (!verseRef) continue;
+        currentRef = verseRef;
+        if (!companionByRef.has(verseRef)) {
+            companionByRef.set(verseRef, []);
+            if (!primaryByRef.has(verseRef)) order.push(verseRef);
+        }
+        companionByRef.get(verseRef)!.push(s);
+    }
+
+    return order.map((verseRef) => ({
+        primary: primaryByRef.get(verseRef) ?? [],
+        companion: companionByRef.get(verseRef) ?? [],
+    }));
 }
 
 // --- Label component ---

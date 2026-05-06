@@ -13,7 +13,11 @@ import { Link } from "@tanstack/react-router";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { NoteFormModal, useUnsaveQuotation } from "#/modules/quotation";
+import {
+    invalidateAllNodeQuotations,
+    NoteFormModal,
+    useUnsaveQuotation,
+} from "#/modules/quotation";
 import { useListBooks } from "../../../api/books/books";
 import { FetchError } from "../../../api/fetcher";
 import type {
@@ -24,7 +28,6 @@ import type {
     TocNodeResponse,
 } from "../../../api/model";
 import {
-    getListQuotationsQueryKey,
     useCreateQuotation,
     useListQuotations,
 } from "../../../api/quotations/quotations";
@@ -192,13 +195,11 @@ export function ResourcesPanel({
         mutation: {
             onSuccess: () => {
                 toast.success("Quotation saved");
-                if (activeNodeId) {
-                    queryClient.invalidateQueries({
-                        queryKey: getListQuotationsQueryKey(bookSlug, {
-                            node_id: activeNodeId,
-                        }),
-                    });
-                }
+                // Verse-level marker projection (PLAN_BIG_BOOKS.md Q7)
+                // means a save in WEB also affects KJV's marker render.
+                // Wider-than-current-book invalidation prevents the
+                // "had to hard refresh to see the marker" bug.
+                invalidateAllNodeQuotations(queryClient);
             },
             onError: (err: unknown) => {
                 const message =
@@ -216,7 +217,6 @@ export function ResourcesPanel({
         isPending: unsavePending,
     } = useUnsaveQuotation({
         bookSlug,
-        activeNodeId,
     });
 
     const handleToggleSaveQuotation = () => {
@@ -535,7 +535,6 @@ export function ResourcesPanel({
                     mode={editingNote ? "edit" : "create"}
                     initialData={editingNote}
                     sentenceContext={sentenceContextStr}
-                    activeNodeId={activeNodeId}
                 />
             )}
 

@@ -47,6 +47,9 @@ pub enum UnifiedQuotationResponse {
     Book {
         id: String,
         book_slug: String,
+        /// See `QuotationWithContextResponse::translation_label`.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        translation_label: Option<String>,
         book_title: String,
         node_label: String,
         node_slug: String,

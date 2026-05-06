@@ -90,6 +90,7 @@ pub mod validation;
         models::library::LibraryWork,
         models::library::LibraryVersion,
         models::library::LibraryStats,
+        models::library::BookPill,
         models::toc::TocNodeResponse,
         models::node::NodeDetail,
         models::node::ContentBlockResponse,

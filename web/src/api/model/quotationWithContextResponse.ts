@@ -38,4 +38,12 @@ export interface QuotationWithContextResponse {
     sentence_kind: string;
     /** @nullable */
     start_text_snippet?: string | null;
+    /**
+     * Compact translation badge — the source's `publisher` when short
+  (e.g. "KJV"/"WEB" for Bible) or the language code (e.g. "DE"/"EN"
+  for Kant). Used in My Quotations / reader badge UI to show
+  which translation a quotation belongs to.
+     * @nullable
+     */
+    translation_label?: string | null;
 }

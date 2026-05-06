@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { TranslationBadge } from "#/components/TranslationBadge";
 import { NoteFormModal } from "#/modules/quotation";
 import type { NoteWithContextResponse } from "../api/model";
 import {
@@ -312,11 +313,15 @@ function NoteItem({
                             ))}
                         </div>
                     )}
-                    <div className="flex items-center mt-2 text-[10px] text-stone-400">
+                    <div className="flex items-center mt-2 text-[10px] text-stone-400 gap-1">
+                        <TranslationBadge
+                            label={note.translation_label}
+                            title={note.book_title}
+                        />
                         <span>{note.book_title}</span>
-                        <span className="mx-1">&middot;</span>
+                        <span>&middot;</span>
                         <span>{note.node_label}</span>
-                        <span className="mx-1">&middot;</span>
+                        <span>&middot;</span>
                         <span>{sentenceLabel(note)}</span>
                         <span className="ml-auto">{dateStr}</span>
                     </div>

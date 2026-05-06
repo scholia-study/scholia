@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::error::AppError;
 use crate::models::library::{
-    LibraryGroup, LibraryResponse, LibraryStats, LibraryVersion, LibraryWork,
+    BookPill, LibraryGroup, LibraryResponse, LibraryStats, LibraryVersion, LibraryWork,
 };
 
 // ── Row types ───────────────────────────────────────────────
@@ -242,11 +242,19 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
                     .push(work);
             }
             GroupKey::SelfNamed(_) => {
-                // The compilation/singleton heading IS the work — we do
-                // *not* push the work itself into its own books list.
-                // Children populate the list in pass 2; singletons stay
-                // empty.
-                self_groups.entry(work_id).or_default();
+                // Default: the compilation/singleton heading IS the work —
+                // children populate the list in pass 2; singletons stay
+                // empty so only the heading link is rendered.
+                //
+                // Exception: when the work has multiple versions (e.g. The
+                // Bible with KJV + WEB translations), the heading alone
+                // can't expose them. Push the work itself so the version
+                // pills become visible. The frontend hides the redundant
+                // title when work.title == group.primary_label.
+                let entry = self_groups.entry(work_id).or_default();
+                if work.versions.len() > 1 {
+                    entry.push(work);
+                }
             }
         }
     }
@@ -313,6 +321,7 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
             sort_name: person.sort_name,
             primary_slug: None,
             books: works,
+            book_pills: Vec::new(),
         });
     }
 
@@ -334,8 +343,17 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
             sort_name: src.title.clone(),
             primary_slug,
             books: works,
+            book_pills: Vec::new(),
         });
     }
+
+    // Populate book_pills for "Bible-shape" groups: a SelfNamed group
+    // whose single work is available in 2+ translations and whose
+    // representative book carries depth=0 toc-anchored child sources
+    // (the compilation pattern). Pills are sourced from the first
+    // version's book under the assumption — guarded at import time —
+    // that all sibling translations agree on depth=0 node slugs.
+    populate_book_pills(pool, &mut groups).await?;
 
     // Sort by sort_name (case-insensitive), then label as tiebreaker.
     groups.sort_by(|a, b| {
@@ -387,6 +405,51 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
             languages: languages_count,
         },
     })
+}
+
+// ── Bible-shape book_pills ──────────────────────────────────
+
+async fn populate_book_pills(pool: &PgPool, groups: &mut [LibraryGroup]) -> Result<(), AppError> {
+    for group in groups.iter_mut() {
+        if group.primary_kind != "self" {
+            continue;
+        }
+        // Exactly one work, with multiple translations of it.
+        let Some(work) = group.books.first() else {
+            continue;
+        };
+        if work.versions.len() < 2 {
+            continue;
+        }
+        // First version is the representative — versions are sorted in
+        // build_work so [0] is the original (or first by language) which
+        // is the most stable reference point.
+        let Some(rep) = work.versions.first() else {
+            continue;
+        };
+        let pills = sqlx::query!(
+            r#"SELECT tn.slug, tn.label, tn.sort_order
+               FROM toc_nodes tn
+               JOIN books b ON b.id = tn.book_id
+               WHERE b.slug = $1 AND tn.depth = 0 AND tn.source_id IS NOT NULL
+               ORDER BY tn.sort_order"#,
+            rep.book_slug,
+        )
+        .fetch_all(pool)
+        .await?;
+        if pills.is_empty() {
+            continue;
+        }
+        group.book_pills = pills
+            .into_iter()
+            .map(|r| BookPill {
+                node_slug: r.slug,
+                label: r.label,
+                sort_order: r.sort_order,
+            })
+            .collect();
+    }
+    Ok(())
 }
 
 // ── Helpers ─────────────────────────────────────────────────

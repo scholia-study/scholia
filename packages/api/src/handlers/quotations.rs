@@ -368,6 +368,7 @@ pub async fn list_all_quotations(
             quotations.push(UnifiedQuotationResponse::Book {
                 id: q.id,
                 book_slug: q.book_slug,
+                translation_label: q.translation_label,
                 book_title: q.book_title,
                 node_label: q.node_label,
                 node_slug: q.node_slug,

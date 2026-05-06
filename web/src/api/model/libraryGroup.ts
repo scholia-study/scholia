@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { BookPill } from "./bookPill";
 import type { LibraryWork } from "./libraryWork";
 
 /**
@@ -14,6 +15,13 @@ authorless top-level works, including compilations like the Bible
 and singletons like Gilgamesh).
  */
 export interface LibraryGroup {
+    /** "Bible-shape" navigation: when this group is a compilation that is
+  available in multiple translations, the frontend renders the
+  compilation's child works (e.g. Genesis, John) as primary book
+  pills here, and the multiple translations collapse into a single
+  subtle translation chooser. Empty for regular author groups and
+  for compilations available in a single translation. */
+    book_pills: BookPill[];
     books: LibraryWork[];
     /** Stable identifier. Person id for `"author"` groups; source id
   for `"self"` groups. UUIDs are globally unique so the id is

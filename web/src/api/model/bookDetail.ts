@@ -14,10 +14,25 @@ export interface BookDetail {
     publication_year?: number | null;
     /** @nullable */
     publisher?: string | null;
+    /** Sibling translations: every other book that shares this book's
+  translation root. Populated when the work has no hosted source
+  language (Bible: KJV book has [WEB]) so the reader's flat
+  translation picker can list peer translations regardless of
+  source/translation polarity. Empty for Kant-style works where
+  `source_book_slug` and `translations` already express the
+  relationship. (PLAN_BIG_BOOKS.md Q6) */
+    sibling_translations: BookSummary[];
     slug: string;
-    /** @nullable */
+    /**
+     * The hosted source-language book this book translates from
+  (Kant EN → Kant DE). Absent when there is no hosted source —
+  e.g. Bible translations from Hebrew/Greek that we don't host.
+     * @nullable
+     */
     source_book_slug?: string | null;
     source_id: string;
     title: string;
+    /** Books translated from THIS book. Populated for source-language
+  books (Kant DE → [Kant EN]); empty for translation leaves. */
     translations: BookSummary[];
 }

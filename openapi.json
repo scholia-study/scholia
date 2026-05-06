@@ -2898,7 +2898,8 @@
                     "author",
                     "language",
                     "source_id",
-                    "translations"
+                    "translations",
+                    "sibling_translations"
                 ],
                 "properties": {
                     "author": {
@@ -2917,11 +2918,19 @@
                     "publisher": {
                         "type": ["string", "null"]
                     },
+                    "sibling_translations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BookSummary"
+                        },
+                        "description": "Sibling translations: every other book that shares this book's\ntranslation root. Populated when the work has no hosted source\nlanguage (Bible: KJV book has [WEB]) so the reader's flat\ntranslation picker can list peer translations regardless of\nsource/translation polarity. Empty for Kant-style works where\n`source_book_slug` and `translations` already express the\nrelationship. (PLAN_BIG_BOOKS.md Q6)"
+                    },
                     "slug": {
                         "type": "string"
                     },
                     "source_book_slug": {
-                        "type": ["string", "null"]
+                        "type": ["string", "null"],
+                        "description": "The hosted source-language book this book translates from\n(Kant EN → Kant DE). Absent when there is no hosted source —\ne.g. Bible translations from Hebrew/Greek that we don't host."
                     },
                     "source_id": {
                         "type": "string"
@@ -2933,7 +2942,25 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/BookSummary"
-                        }
+                        },
+                        "description": "Books translated from THIS book. Populated for source-language\nbooks (Kant DE → [Kant EN]); empty for translation leaves."
+                    }
+                }
+            },
+            "BookPill": {
+                "type": "object",
+                "description": "One entry in a Bible-shape group's primary pill row.\n`node_slug` is the toc-node slug (translation-invariant by import\nguard) — the frontend composes the URL as\n`/books/<active-translation>/<node_slug>`.",
+                "required": ["node_slug", "label", "sort_order"],
+                "properties": {
+                    "label": {
+                        "type": "string"
+                    },
+                    "node_slug": {
+                        "type": "string"
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "format": "int32"
                     }
                 }
             },
@@ -3429,9 +3456,17 @@
                     "primary_kind",
                     "primary_label",
                     "sort_name",
-                    "books"
+                    "books",
+                    "book_pills"
                 ],
                 "properties": {
+                    "book_pills": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BookPill"
+                        },
+                        "description": "\"Bible-shape\" navigation: when this group is a compilation that is\navailable in multiple translations, the frontend renders the\ncompilation's child works (e.g. Genesis, John) as primary book\npills here, and the multiple translations collapse into a single\nsubtle translation chooser. Empty for regular author groups and\nfor compilations available in a single translation."
+                    },
                     "books": {
                         "type": "array",
                         "items": {
@@ -3805,6 +3840,10 @@
                             "$ref": "#/components/schemas/TagResponse"
                         }
                     },
+                    "translation_label": {
+                        "type": ["string", "null"],
+                        "description": "See `QuotationWithContextResponse::translation_label`."
+                    },
                     "updated_at": {
                         "type": "string"
                     }
@@ -4074,6 +4113,22 @@
                         "type": "integer",
                         "format": "int32"
                     },
+                    "anchor_source_ref": {
+                        "type": ["string", "null"],
+                        "description": "`toc_nodes.source_ref` of the anchor — translation-invariant\n(e.g. `\"genesis:5\"`). Used as the chapter-grouping key for\nverse-level visual marker projection."
+                    },
+                    "anchor_verse_end": {
+                        "type": ["string", "null"],
+                        "description": "Verse `ref_value` of the end anchor sentence (only when the\nquotation spans multiple verses; otherwise null and the\nquotation is treated as covering a single verse)."
+                    },
+                    "anchor_verse_start": {
+                        "type": ["string", "null"],
+                        "description": "Verse `ref_value` of the start anchor sentence (e.g. `\"5:1\"`).\nPopulated when the book has a `verse` reference system; null\nfor books without verse-style markers (Kant). Together with\n`anchor_source_ref` this is the cross-translation marker key."
+                    },
+                    "book_slug": {
+                        "type": ["string", "null"],
+                        "description": "Slug of the book this quotation lives in. Used to render the\ntranslation badge (\"KJV\"/\"WEB\" — see `translation_label`) and\nto differentiate cross-translation peer quotations from\nown-book ones in the reader. Optional for backward-compat\nacross endpoints that haven't been wired yet; populated by\n`list_quotations_for_node`."
+                    },
                     "created_at": {
                         "type": "string"
                     },
@@ -4086,6 +4141,10 @@
                     },
                     "sentence_kind": {
                         "type": "string"
+                    },
+                    "translation_label": {
+                        "type": ["string", "null"],
+                        "description": "Short display label for the translation badge — derived from\nthe source's `publisher` field (which the Bible importer sets\nto \"KJV\"/\"WEB\"). Falls back to the book title when absent."
                     }
                 }
             },
@@ -4163,6 +4222,10 @@
                     },
                     "start_text_snippet": {
                         "type": ["string", "null"]
+                    },
+                    "translation_label": {
+                        "type": ["string", "null"],
+                        "description": "Compact translation badge — the source's `publisher` when short\n(e.g. \"KJV\"/\"WEB\" for Bible) or the language code (e.g. \"DE\"/\"EN\"\nfor Kant). Used in My Quotations / reader badge UI to show\nwhich translation a quotation belongs to."
                     }
                 }
             },
@@ -4703,6 +4766,9 @@
                     "sort_order": {
                         "type": "integer"
                     },
+                    "source_id": {
+                        "type": "string"
+                    },
                     "source_node_id": {
                         "type": "string"
                     },
@@ -4817,6 +4883,10 @@
                             },
                             "start_text_snippet": {
                                 "type": ["string", "null"]
+                            },
+                            "translation_label": {
+                                "type": ["string", "null"],
+                                "description": "See `QuotationWithContextResponse::translation_label`."
                             }
                         }
                     },

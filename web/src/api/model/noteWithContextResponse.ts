@@ -32,5 +32,10 @@ export interface NoteWithContextResponse {
     quotation_id: string;
     sentence_kind: string;
     tags: TagResponse[];
+    /**
+     * See `QuotationWithContextResponse::translation_label`.
+     * @nullable
+     */
+    translation_label?: string | null;
     updated_at: string;
 }

@@ -9,8 +9,47 @@ export interface QuotationResponse {
     /** @nullable */
     anchor_sentence_end_number?: number | null;
     anchor_sentence_start_number: number;
+    /**
+     * `toc_nodes.source_ref` of the anchor — translation-invariant
+  (e.g. `"genesis:5"`). Used as the chapter-grouping key for
+  verse-level visual marker projection.
+     * @nullable
+     */
+    anchor_source_ref?: string | null;
+    /**
+     * Verse `ref_value` of the end anchor sentence (only when the
+  quotation spans multiple verses; otherwise null and the
+  quotation is treated as covering a single verse).
+     * @nullable
+     */
+    anchor_verse_end?: string | null;
+    /**
+     * Verse `ref_value` of the start anchor sentence (e.g. `"5:1"`).
+  Populated when the book has a `verse` reference system; null
+  for books without verse-style markers (Kant). Together with
+  `anchor_source_ref` this is the cross-translation marker key.
+     * @nullable
+     */
+    anchor_verse_start?: string | null;
+    /**
+     * Slug of the book this quotation lives in. Used to render the
+  translation badge ("KJV"/"WEB" — see `translation_label`) and
+  to differentiate cross-translation peer quotations from
+  own-book ones in the reader. Optional for backward-compat
+  across endpoints that haven't been wired yet; populated by
+  `list_quotations_for_node`.
+     * @nullable
+     */
+    book_slug?: string | null;
     created_at: string;
     id: string;
     note_count: number;
     sentence_kind: string;
+    /**
+     * Short display label for the translation badge — derived from
+  the source's `publisher` field (which the Bible importer sets
+  to "KJV"/"WEB"). Falls back to the book title when absent.
+     * @nullable
+     */
+    translation_label?: string | null;
 }

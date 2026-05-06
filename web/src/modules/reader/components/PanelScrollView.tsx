@@ -11,7 +11,6 @@ import {
     useCallback,
     useEffect,
     useImperativeHandle,
-    useLayoutEffect,
     useMemo,
     useRef,
     useState,
@@ -393,78 +392,36 @@ const VirtualizedScroll = forwardRef<
         viewLayout === "bsl" ||
         viewLayout === "bsr";
 
+    // Wide overscan so prepended items (above the viewport) actually
+    // render — that's what triggers `measureElement` → `resizeItem`,
+    // which is the library's built-in scroll-anchor mechanism. With
+    // `overscan: 3` the prepended items sit outside the render window,
+    // never measure, and the library has no way to know they're bigger
+    // than the estimate. 25 covers a standard 20-item page-fetch with
+    // headroom; total mounted DOM stays well under what the browser
+    // handles smoothly. (See virtual-core/index.js `resizeItem` —
+    // when a measured item's `start` is above the current scroll
+    // offset, the library auto-adjusts `scrollTop` by the size delta.)
     const virtualizer = useVirtualizer({
         count: nodes.length,
         getScrollElement: () => parentRef.current,
-        estimateSize: () => (isInterleaved ? 700 : 400),
-        overscan: 3,
-        // Stable keys so measurement cache survives when backward fetching
-        // prepends nodes and shifts indices.
+        estimateSize: () => 700,
+        overscan: 25,
+        // Stable keys so the measurementsCache survives prepends and
+        // shifted indices map to the same physical item.
         getItemKey: (index) => nodes[index]?.id ?? index,
     });
 
     const items = virtualizer.getVirtualItems();
 
-    // Maintain scroll position when items are prepended
-    const anchorRef = useRef<{ id: string; start: number } | null>(null);
-    const prevTotalSizeRef = useRef<number>(0);
-
-    useLayoutEffect(() => {
-        const parent = parentRef.current;
-        if (!parent || nodes.length === 0 || items.length === 0) return;
-
-        // 1. Do not anchor if we are in the middle of a programmatic TOC jump
-        if (pendingScrollTarget) {
-            anchorRef.current = null;
-            prevTotalSizeRef.current = virtualizer.getTotalSize();
-            return;
-        }
-
-        let scrollDiff = 0;
-        const anchor = anchorRef.current;
-
-        if (anchor) {
-            const renderedAnchor = items.find(
-                (i) => nodes[i.index]?.id === anchor.id,
-            );
-
-            if (renderedAnchor) {
-                // Case A: Dynamic Resize Handling
-                // If an item ABOVE our scroll position is measured and resizes, TanStack Virtual
-                // pushes our anchor down. We track that pixel difference and shift the scrollbar to match.
-                scrollDiff = renderedAnchor.start - anchor.start;
-            } else {
-                // Case B: Prepend Handling
-                // Right after a prepend, TanStack Virtual renders the old scroll offset,
-                // completely missing our anchor. We fall back to the total size difference.
-                const newIndex = nodes.findIndex((n) => n.id === anchor.id);
-                if (newIndex > 0) {
-                    scrollDiff =
-                        virtualizer.getTotalSize() - prevTotalSizeRef.current;
-                }
-            }
-        }
-
-        // Apply the silent correction before the browser paints
-        if (scrollDiff !== 0) {
-            suppressObserver();
-            parent.scrollTop += scrollDiff;
-            if (anchorRef.current) {
-                anchorRef.current.start += scrollDiff; // Instantly update expected start to prevent looping
-            }
-        }
-
-        // Establish the new anchor for the next frame
-        const firstVisibleItem = items[0];
-        if (firstVisibleItem) {
-            anchorRef.current = {
-                id: nodes[firstVisibleItem.index].id,
-                start: firstVisibleItem.start,
-            };
-        }
-
-        prevTotalSizeRef.current = virtualizer.getTotalSize();
-    }, [items, nodes, virtualizer, suppressObserver, pendingScrollTarget]);
+    // Custom scroll-anchor logic was removed. The previous Case A / Case B
+    // / deferred-correction code was double-correcting against the
+    // library's built-in `resizeItem` adjustments — visible as violent
+    // mid-scroll jumps. Tanstack Virtual already handles the prepend
+    // case: when `measureElement` reports a new size for an item above
+    // the current scroll offset, the library shifts `scrollTop` by the
+    // delta. Stable item keys + sufficient overscan are all that's
+    // required.
 
     // Forward infinite scroll trigger
     useEffect(() => {
@@ -483,27 +440,181 @@ const VirtualizedScroll = forwardRef<
     // during the settling period (prevents prepend from fighting with scroll anchoring).
     const scrollSettledRef = useRef<number>(0);
 
-    // Backward infinite scroll trigger
+    // True once the user has scrolled at least once. Prevents the
+    // initial-mount auto-prefetch that would fire because firstItem.index
+    // is 0 right after `scrollToIndex` lands the user. Programmatic
+    // scrolls are filtered via `suppressObserverRef`.
+    const hasUserScrolledRef = useRef(false);
+    useEffect(() => {
+        const parent = parentRef.current;
+        if (!parent) return;
+        const onScroll = () => {
+            if (suppressObserverRef.current) return;
+            hasUserScrolledRef.current = true;
+        };
+        parent.addEventListener("scroll", onScroll, { passive: true });
+        return () => parent.removeEventListener("scroll", onScroll);
+    }, []);
+
+    const lastBackwardFetchAtRef = useRef<number>(0);
+
+    // Pre-prepend bookkeeping — captured at trigger time, consumed
+    // once measurements settle.
+    //
+    // Why we need this: the library's built-in `resizeItem` adjustment
+    // only compensates for the SIZE DELTA between estimate and measured
+    // for items above the scroll offset (virtual-core/index.js:578-598).
+    // It does NOT compensate for the FULL PREPENDED SIZE itself —
+    // there's no API for "items were inserted at the start, please
+    // shift my scroll by their total height." We have to do that
+    // ourselves.
+    //
+    // Anchor strategy: record the CURRENT first-loaded node's id (it
+    // will be at index 0 pre-prepend). After the prepend lands, find
+    // its new index. The virtualizer's `items[newIndex].start` equals
+    // the sum of prepended item sizes — exactly the shift we need —
+    // BUT only if those items have all been measured. If they're still
+    // at estimate sizes the value will be ~`prepended × estimate` and
+    // we'll under-shift (the symptom: jumps to mid-Genesis).
+    //
+    // So we poll `getTotalSize()` after the fetch lands, waiting for
+    // it to stabilize across a few frames — that's the signal that
+    // ResizeObserver has finished firing for every prepended item.
+    // Then we read the anchor's true `items[].start` and apply one
+    // exact shift. (Sefaria does the same thing differently: they
+    // wait for `.basetext.loading` markers to clear before computing.)
+    const pendingPrependRef = useRef<{
+        firstNodeId: string;
+        oldScrollOffsetWithinFirst: number;
+    } | null>(null);
+
+    // Backward infinite-scroll trigger.
     useEffect(() => {
         if (!items.length) return;
-        // Suppress backward fetching while a TOC jump is pending or just settled
         if (pendingScrollTarget) return;
         if (Date.now() - scrollSettledRef.current < 200) return;
+        if (!hasUserScrolledRef.current) return;
+        if (Date.now() - lastBackwardFetchAtRef.current < 1000) return;
+        if (pendingPrependRef.current) return;
         const firstItem = items[0];
         if (
             firstItem.index <= 3 &&
             hasPreviousPage &&
             !isFetchingPreviousPage
         ) {
+            const parent = parentRef.current;
+            const firstNode = nodes[0];
+            if (!parent || !firstNode) return;
+            // Distance from start of `firstNode` (idx 0) to the user's
+            // current scroll position. Preserved across the prepend so
+            // the user's exact viewport content stays put.
+            const oldScrollOffsetWithinFirst = parent.scrollTop;
+            pendingPrependRef.current = {
+                firstNodeId: firstNode.id,
+                oldScrollOffsetWithinFirst,
+            };
+            lastBackwardFetchAtRef.current = Date.now();
             fetchPreviousPage();
         }
     }, [
         items,
+        nodes,
         hasPreviousPage,
         isFetchingPreviousPage,
         fetchPreviousPage,
         pendingScrollTarget,
     ]);
+
+    // Apply the deferred shift once measurements have settled.
+    useEffect(() => {
+        if (!pendingPrependRef.current) return;
+        if (isFetchingPreviousPage) return;
+
+        let raf: number | null = null;
+        let lastSize = -1;
+        let stableFrames = 0;
+        let totalFrames = 0;
+        const STABILITY_THRESHOLD = 3;
+        const MAX_FRAMES = 30; // ~500ms cap; fail-safe
+
+        const tick = () => {
+            totalFrames++;
+            const size = virtualizer.getTotalSize();
+            if (size === lastSize) {
+                stableFrames++;
+            } else {
+                stableFrames = 0;
+                lastSize = size;
+            }
+
+            if (
+                stableFrames >= STABILITY_THRESHOLD ||
+                totalFrames >= MAX_FRAMES
+            ) {
+                const pending = pendingPrependRef.current;
+                const parent = parentRef.current;
+                if (!pending || !parent) {
+                    pendingPrependRef.current = null;
+                    return;
+                }
+                const newIndex = nodes.findIndex(
+                    (n) => n.id === pending.firstNodeId,
+                );
+                if (newIndex < 0) {
+                    pendingPrependRef.current = null;
+                    return;
+                }
+                // Heuristic: was the user actively scrolling upward
+                // *during* the fetch? If their scrollTop has dropped
+                // meaningfully since the trigger fired, they've moved
+                // toward the top of the (then-) loaded content
+                // expecting more above. Snapping them back to where
+                // they triggered the fetch is jarring — they wanted
+                // to keep going up, and the new prepended content is
+                // now sitting at scrollTop ≈ 0, exactly where they
+                // intended to be. Skip the shift in that case.
+                //
+                // If they stayed roughly where they were, they're
+                // mid-read and we DO want to compensate so the prepend
+                // doesn't push their content out of view.
+                const SCROLL_TOLERANCE = 80;
+                const userScrolledUpward =
+                    parent.scrollTop <
+                    pending.oldScrollOffsetWithinFirst - SCROLL_TOLERANCE;
+                if (!userScrolledUpward) {
+                    // virtualizer.items[newIndex].start = sum of all
+                    // prepended items' sizes. After settle, this is real.
+                    const offset = virtualizer.getOffsetForIndex(
+                        newIndex,
+                        "start",
+                    );
+                    if (offset) {
+                        const newStart = offset[0];
+                        // Target scrollTop = position of (former first
+                        // node) + user's prior offset within that node.
+                        // Keeps the exact same content under the user's
+                        // eye when they weren't actively moving.
+                        const target =
+                            newStart + pending.oldScrollOffsetWithinFirst;
+                        const scrollDiff = target - parent.scrollTop;
+                        if (scrollDiff !== 0) {
+                            suppressObserver();
+                            parent.scrollTop = target;
+                        }
+                    }
+                }
+                pendingPrependRef.current = null;
+                return;
+            }
+
+            raf = requestAnimationFrame(tick);
+        };
+
+        raf = requestAnimationFrame(tick);
+        return () => {
+            if (raf !== null) cancelAnimationFrame(raf);
+        };
+    }, [isFetchingPreviousPage, nodes, virtualizer, suppressObserver]);
 
     // TOC scroll tracking via IntersectionObserver.
     // Use a stable callback ref so we don't tear down/recreate the observer
@@ -740,6 +851,7 @@ const VirtualizedScroll = forwardRef<
                                                     onSelectSentence
                                                 }
                                                 marginSettings={marginSettings}
+                                                nodeSourceRef={node.source_ref}
                                             />
                                         ))
                                     )}

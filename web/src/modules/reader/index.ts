@@ -1,4 +1,4 @@
-export { PanelToc } from "./components/PanelToc";
+export { BibleShapeFullToc, PanelToc } from "./components/PanelToc";
 export { ReaderLayout } from "./components/ReaderLayout";
 export {
     createPanel,

@@ -15,6 +15,12 @@ pub struct TocNodeResponse {
     pub has_content: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_node_id: Option<String>,
+    /// Bibliographic anchor: when set, this node IS the toc entry for a
+    /// discrete child work hosted inside the book (e.g. Genesis under a
+    /// Bible). Used by the frontend to render compilation children as
+    /// chapter-pickable pills.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_id: Option<String>,
     pub children: Vec<TocNodeResponse>,
 }
 
@@ -74,6 +80,10 @@ impl utoipa::ToSchema for TocNodeResponse {
             .required("has_content")
             .property(
                 "source_node_id",
+                ObjectBuilder::new().schema_type(SchemaType::new(Type::String)),
+            )
+            .property(
+                "source_id",
                 ObjectBuilder::new().schema_type(SchemaType::new(Type::String)),
             )
             .property(

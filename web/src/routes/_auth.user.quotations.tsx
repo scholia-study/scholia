@@ -18,6 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import parse from "html-react-parser";
 import { useMemo, useState } from "react";
+import { TranslationBadge } from "#/components/TranslationBadge";
 import { useUnsaveQuotation } from "#/modules/quotation";
 import {
     getListArticleQuotationsQueryKey,
@@ -241,9 +242,15 @@ function BookQuotationRow({
                 search={quotationLinkSearch(q)}
                 className="flex-1 min-w-0"
             >
-                <div className="text-xs text-stone-400 mb-1">
-                    {q.book_title} &middot; {q.node_label} &middot;{" "}
-                    {sentenceLabel(q)}
+                <div className="text-xs text-stone-400 mb-1 flex items-center gap-1.5 flex-wrap">
+                    <TranslationBadge
+                        label={q.translation_label}
+                        title={q.book_title}
+                    />
+                    <span>
+                        {q.book_title} &middot; {q.node_label} &middot;{" "}
+                        {sentenceLabel(q)}
+                    </span>
                 </div>
                 {q.start_text_snippet && (
                     <p className="text-sm text-stone-700 truncate">

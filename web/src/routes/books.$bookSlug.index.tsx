@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { getGetBookQueryOptions, useGetBookSuspense } from "../api/books/books";
 import { getGetTocQueryOptions, useGetTocSuspense } from "../api/toc/toc";
-import { PanelToc } from "../modules/reader";
+import { BibleShapeFullToc, PanelToc } from "../modules/reader";
 
 export const Route = createFileRoute("/books/$bookSlug/")({
     loader: async ({ context, params }) => {
@@ -23,6 +23,16 @@ function BookPage() {
     const { data: tocData, isLoading, error } = useGetTocSuspense(bookSlug);
     const book = bookData?.data;
     const toc = tocData?.data;
+    // URL fragment shortcut, e.g. /books/kjv-bible#john — used by the
+    // library book pills to jump straight to a Bible-book section on
+    // this TOC page.
+    const { hash } = useLocation();
+    const initialAnchor = hash ? hash.replace(/^#/, "") : undefined;
+
+    // Same Bible-shape detection as the sidebar PanelToc — top-level
+    // nodes are bibliographic anchors (Genesis, John).
+    const isBibleShape =
+        !!toc && toc.length > 0 && toc.every((n) => n.source_id);
 
     return (
         <div className="flex h-full bg-stone-50">
@@ -42,7 +52,13 @@ function BookPage() {
                         Failed to load table of contents.
                     </p>
                 ) : null}
-                {toc ? (
+                {toc && isBibleShape ? (
+                    <BibleShapeFullToc
+                        toc={toc}
+                        bookSlug={bookSlug}
+                        initialAnchor={initialAnchor}
+                    />
+                ) : toc ? (
                     <PanelToc
                         toc={toc}
                         bookSlug={bookSlug}
