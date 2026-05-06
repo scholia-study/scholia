@@ -44,7 +44,7 @@ export * from "./getNodePageParams";
 export * from "./getNodeParams";
 export * from "./getPublicProfileParams";
 export * from "./githubCallbackParams";
-export * from "./libraryAuthor";
+export * from "./libraryGroup";
 export * from "./libraryResponse";
 export * from "./libraryStats";
 export * from "./libraryVersion";

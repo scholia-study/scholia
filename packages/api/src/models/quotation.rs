@@ -68,7 +68,16 @@ pub struct TagListResponse {
 pub struct QuotationWithContextResponse {
     pub id: String,
     pub book_slug: String,
+    /// Title of the cited bibliographic work (Shape 3): the effective
+    /// source resolved for the quotation's anchor — either the per-book
+    /// child source within a compilation (e.g. "Genesis") or the hosted
+    /// text's root source for non-compilations (e.g. "Critique of Pure
+    /// Reason").
     pub book_title: String,
+    /// When the cited source is a child of a compilation, the compilation's
+    /// display title. Frontend renders as "[book_title] (in: [parent])".
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_compilation_title: Option<String>,
     pub node_label: String,
     pub node_slug: String,
     pub anchor_sentence_start_number: i32,
@@ -98,7 +107,11 @@ pub struct NoteWithContextResponse {
     pub body: String,
     pub tags: Vec<TagResponse>,
     pub book_slug: String,
+    /// See `QuotationWithContextResponse::book_title`.
     pub book_title: String,
+    /// See `QuotationWithContextResponse::parent_compilation_title`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_compilation_title: Option<String>,
     pub node_label: String,
     pub node_slug: String,
     pub anchor_sentence_start_number: i32,

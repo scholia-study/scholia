@@ -86,7 +86,7 @@ pub mod validation;
         models::book::BookSummary,
         models::book::BookDetail,
         models::library::LibraryResponse,
-        models::library::LibraryAuthor,
+        models::library::LibraryGroup,
         models::library::LibraryWork,
         models::library::LibraryVersion,
         models::library::LibraryStats,

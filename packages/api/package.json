@@ -3,6 +3,7 @@
     "private": true,
     "scripts": {
         "dev": "cargo run -p api --bin api",
-        "openapi": "cargo run -p api --bin openapi > ../../openapi.json"
+        "openapi": "cargo run -p api --bin openapi > ../../openapi.json",
+        "test": "cargo test -p api"
     }
 }

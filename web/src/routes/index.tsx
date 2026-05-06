@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useGetLibrary } from "../api/books/books";
 import type {
-    LibraryAuthor,
+    LibraryGroup,
     LibraryStats,
     LibraryVersion,
     LibraryWork,
@@ -25,23 +25,21 @@ function IndexPage() {
                         <h1 className="sr-only">Library</h1>
                         {!isLoading &&
                             library &&
-                            library.authors.length === 0 && (
+                            library.groups.length === 0 && (
                                 <p className="text-sm text-stone-400">
                                     No books in the library yet.
                                 </p>
                             )}
-                        {!isLoading &&
-                            library &&
-                            library.authors.length > 0 && (
-                                <div className="space-y-10">
-                                    {library.authors.map((author) => (
-                                        <AuthorSection
-                                            key={author.id}
-                                            author={author}
-                                        />
-                                    ))}
-                                </div>
-                            )}
+                        {!isLoading && library && library.groups.length > 0 && (
+                            <div className="space-y-10">
+                                {library.groups.map((group) => (
+                                    <GroupSection
+                                        key={group.id}
+                                        group={group}
+                                    />
+                                ))}
+                            </div>
+                        )}
 
                         <div className="md:hidden mt-10">
                             <AboutPanel stats={library?.stats} />
@@ -59,22 +57,47 @@ function IndexPage() {
     );
 }
 
-function AuthorSection({ author }: { author: LibraryAuthor }) {
-    const accent = accentColorFor(author.name, author.id);
+/**
+ * Renders one group: an author with their works, a compilation with its
+ * children, or a singleton authorless work that has no listed children
+ * (the heading itself is the entry).
+ */
+function GroupSection({ group }: { group: LibraryGroup }) {
+    const accent = accentColorFor(group.primary_label, group.id);
+    const isSelf = group.primary_kind === "self";
+    const isSingleton = isSelf && group.books.length === 0;
+
     return (
         <section>
             <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-700 pb-2">
-                {author.name}
+                {isSelf && group.primary_slug ? (
+                    <Link
+                        to="/books/$bookSlug"
+                        params={{
+                            bookSlug: group.primary_slug.replace(
+                                /^\/books\//,
+                                "",
+                            ),
+                        }}
+                        className="hover:underline"
+                    >
+                        {group.primary_label}
+                    </Link>
+                ) : (
+                    group.primary_label
+                )}
             </h2>
             <div
                 className="h-0.5 rounded-full mb-4"
                 style={{ backgroundColor: accent }}
             />
-            <div className="space-y-5">
-                {author.books.map((work) => (
-                    <WorkCard key={work.work_id} work={work} />
-                ))}
-            </div>
+            {!isSingleton && (
+                <div className="space-y-5">
+                    {group.books.map((work) => (
+                        <WorkCard key={work.work_id} work={work} />
+                    ))}
+                </div>
+            )}
         </section>
     );
 }
@@ -90,13 +113,13 @@ const ACCENT_PALETTE = [
     "#be185d", // pink-700
 ];
 
-/** Manual per-author accent overrides, keyed by exact display name. */
+/** Manual per-group accent overrides, keyed by exact display label. */
 const ACCENT_OVERRIDES: Record<string, string> = {
     "Immanuel Kant": "#4169e1", // royal blue
 };
 
-function accentColorFor(name: string, id: string): string {
-    const override = ACCENT_OVERRIDES[name];
+function accentColorFor(label: string, id: string): string {
+    const override = ACCENT_OVERRIDES[label];
     if (override) return override;
     let hash = 0;
     for (let i = 0; i < id.length; i++) {
@@ -127,21 +150,49 @@ function WorkCard({ work }: { work: LibraryWork }) {
             </p>
             <div className="flex flex-wrap gap-1.5 mt-2">
                 {work.versions.map((v, i) => (
-                    <Link
-                        key={v.book_slug}
-                        to="/books/$bookSlug"
-                        params={{ bookSlug: v.book_slug }}
-                        className={`text-xs px-2 py-0.5 rounded border transition-colors ${
-                            v.is_original
-                                ? "border-stone-800 text-stone-900 hover:bg-stone-900 hover:text-white"
-                                : "border-stone-300 text-stone-600 hover:border-stone-500 hover:text-stone-900"
-                        }`}
-                    >
-                        {versionLabels[i]}
-                    </Link>
+                    <VersionPill
+                        key={`${v.book_slug}::${v.node_slug ?? ""}`}
+                        version={v}
+                        label={versionLabels[i] ?? v.language.toUpperCase()}
+                    />
                 ))}
             </div>
         </article>
+    );
+}
+
+function VersionPill({
+    version,
+    label,
+}: {
+    version: LibraryVersion;
+    label: string;
+}) {
+    const className = `text-xs px-2 py-0.5 rounded border transition-colors ${
+        version.is_original
+            ? "border-stone-800 text-stone-900 hover:bg-stone-900 hover:text-white"
+            : "border-stone-300 text-stone-600 hover:border-stone-500 hover:text-stone-900"
+    }`;
+    if (version.node_slug) {
+        // Shape-3 nested anchor: deep-link into the host book at the
+        // toc node slug.
+        return (
+            <a
+                href={`/books/${version.book_slug}/${version.node_slug}`}
+                className={className}
+            >
+                {label}
+            </a>
+        );
+    }
+    return (
+        <Link
+            to="/books/$bookSlug"
+            params={{ bookSlug: version.book_slug }}
+            className={className}
+        >
+            {label}
+        </Link>
     );
 }
 

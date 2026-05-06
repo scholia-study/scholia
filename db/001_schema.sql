@@ -101,8 +101,8 @@ CREATE TABLE sources (
     CONSTRAINT chk_chapter_has_parent CHECK (
         source_type != 'chapter' OR parent_source_id IS NOT NULL
     ),
-    CONSTRAINT chk_no_parent CHECK (
-        source_type NOT IN ('book', 'web') OR parent_source_id IS NULL
+    CONSTRAINT chk_web_no_parent CHECK (
+        source_type != 'web' OR parent_source_id IS NULL
     ),
     UNIQUE (title, source_type, publication_year)
 );
@@ -158,6 +158,12 @@ CREATE TABLE toc_nodes (
     book_id         UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
     parent_id       UUID REFERENCES toc_nodes(id) ON DELETE CASCADE,
     source_node_id  UUID REFERENCES toc_nodes(id) ON DELETE SET NULL,
+    -- Optional bibliographic anchor: when non-null, this node *is* the toc
+    -- entry for a discrete bibliographic work nested inside the hosted text
+    -- (e.g. Genesis as a child source under a King James Bible book).
+    -- NULL for purely structural nodes (chapters, paragraphs); citation
+    -- resolution walks ancestors and falls back to books.source_id.
+    source_id       UUID REFERENCES sources(id) ON DELETE SET NULL,
     source_ref      TEXT NOT NULL,
     slug            TEXT NOT NULL,
     path            LTREE NOT NULL,
@@ -177,6 +183,7 @@ CREATE TABLE toc_nodes (
 CREATE INDEX idx_nodes_path ON toc_nodes USING gist (path);
 CREATE INDEX idx_nodes_parent ON toc_nodes (parent_id);
 CREATE INDEX idx_nodes_book_order ON toc_nodes (book_id, sort_order);
+CREATE INDEX idx_nodes_source ON toc_nodes (source_id) WHERE source_id IS NOT NULL;
 
 -- Content blocks: the actual text units within each section.
 -- Four types: paragraph (body text), heading (section title),
@@ -598,6 +605,11 @@ CREATE TABLE quotations (
     anchor_sentence_start_id  UUID NOT NULL REFERENCES sentences(id) ON DELETE CASCADE,
     anchor_sentence_end_id    UUID REFERENCES sentences(id) ON DELETE CASCADE,
     sentence_kind             sentence_kind NOT NULL DEFAULT 'body',
+    -- Effective bibliographic source for this quotation. Denormalized at
+    -- write-time via citation resolver: nearest non-null toc_nodes.source_id
+    -- walking up from anchor_node_id, falling back to books.source_id.
+    -- Avoids per-row ancestor walks at read-time.
+    source_id                 UUID NOT NULL REFERENCES sources(id),
     created_at                TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

@@ -160,13 +160,19 @@ pub async fn create_quotation(
         None
     };
 
+    // Resolve the effective bibliographic source for this anchor (Shape 3:
+    // a quotation in a compilation cites the per-book child source, not
+    // just the hosted-text root).
+    let effective_source_id =
+        crate::db::citations::resolve_effective_source(pool, book_id, start_sent.node_id).await?;
+
     // Try insert, ON CONFLICT do nothing
     let inserted = sqlx::query_scalar!(
         r#"INSERT INTO quotations (
                user_id, book_id, anchor_node_id,
                anchor_sentence_start_id, anchor_sentence_end_id,
-               sentence_kind
-           ) VALUES ($1, $2, $3, $4, $5, $6::sentence_kind)
+               sentence_kind, source_id
+           ) VALUES ($1, $2, $3, $4, $5, $6::sentence_kind, $7)
            ON CONFLICT (user_id, anchor_sentence_start_id, COALESCE(anchor_sentence_end_id, '00000000-0000-0000-0000-000000000000'))
            DO NOTHING
            RETURNING id"#,
@@ -176,6 +182,7 @@ pub async fn create_quotation(
         start_sent.id,
         end_sent_id,
         sentence_kind as _,
+        effective_source_id,
     )
     .fetch_optional(pool)
     .await?;
@@ -512,6 +519,7 @@ struct QuotationWithContextRow {
     id: Uuid,
     book_slug: String,
     book_title: String,
+    parent_compilation_title: Option<String>,
     node_label: String,
     node_slug: String,
     start_number: Option<i32>,
@@ -529,11 +537,17 @@ pub async fn list_all_quotations(
     user_id: Uuid,
     book_slug: Option<&str>,
 ) -> Result<Vec<QuotationWithContextResponse>, AppError> {
+    // Citation source resolution (Shape 3): join via q.source_id (the
+    // denormalized effective source) rather than b.source_id. For non-
+    // compilations these are identical; for a quotation from Genesis
+    // inside a King James Bible book, q.source_id points at the Genesis
+    // child source and `parent` resolves to the Bible compilation.
     let rows = sqlx::query_as!(
         QuotationWithContextRow,
         r#"SELECT q.id,
                   b.slug AS "book_slug!",
                   COALESCE(s.title_display, s.title) AS "book_title!",
+                  COALESCE(parent.title_display, parent.title) AS "parent_compilation_title?",
                   n.label AS "node_label!",
                   n.slug AS "node_slug!",
                   ss.sentence_number AS "start_number?",
@@ -546,7 +560,8 @@ pub async fn list_all_quotations(
                   q.created_at
            FROM quotations q
            JOIN books b ON b.id = q.book_id
-           JOIN sources s ON s.id = b.source_id
+           JOIN sources s ON s.id = q.source_id
+           LEFT JOIN sources parent ON parent.id = s.parent_source_id
            JOIN toc_nodes n ON n.id = q.anchor_node_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
@@ -555,7 +570,7 @@ pub async fn list_all_quotations(
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.user_id = $1
              AND ($2::TEXT IS NULL OR b.slug = $2)
-           GROUP BY q.id, b.slug, s.title_display, s.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text, ms.sentence_number
+           GROUP BY q.id, b.slug, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text, ms.sentence_number
            ORDER BY q.created_at DESC"#,
         user_id,
         book_slug,
@@ -572,6 +587,7 @@ pub async fn list_all_quotations(
                 id: r.id.to_string(),
                 book_slug: r.book_slug,
                 book_title: r.book_title,
+                parent_compilation_title: r.parent_compilation_title,
                 node_label: r.node_label,
                 node_slug: r.node_slug,
                 anchor_sentence_start_number: r.start_number.unwrap_or(0),
@@ -593,6 +609,7 @@ struct NoteWithContextRow {
     quotation_id: Uuid,
     book_slug: String,
     book_title: String,
+    parent_compilation_title: Option<String>,
     node_label: String,
     node_slug: String,
     start_number: Option<i32>,
@@ -608,11 +625,14 @@ pub async fn list_all_notes(
     user_id: Uuid,
     book_slug: Option<&str>,
 ) -> Result<Vec<NoteWithContextResponse>, AppError> {
+    // Shape 3: cite via q.source_id (effective source) + optional parent
+    // compilation. See list_all_quotations for the rationale.
     let rows = sqlx::query_as!(
         NoteWithContextRow,
         r#"SELECT qn.id, qn.body, qn.quotation_id AS "quotation_id!",
                   b.slug AS "book_slug!",
                   COALESCE(s.title_display, s.title) AS "book_title!",
+                  COALESCE(parent.title_display, parent.title) AS "parent_compilation_title?",
                   n.label AS "node_label!",
                   n.slug AS "node_slug!",
                   ss.sentence_number AS "start_number?",
@@ -623,7 +643,8 @@ pub async fn list_all_notes(
            FROM quotation_notes qn
            JOIN quotations q ON q.id = qn.quotation_id
            JOIN books b ON b.id = q.book_id
-           JOIN sources s ON s.id = b.source_id
+           JOIN sources s ON s.id = q.source_id
+           LEFT JOIN sources parent ON parent.id = s.parent_source_id
            JOIN toc_nodes n ON n.id = q.anchor_node_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
@@ -671,6 +692,7 @@ pub async fn list_all_notes(
             tags: tags_map.remove(&r.id).unwrap_or_default(),
             book_slug: r.book_slug,
             book_title: r.book_title,
+            parent_compilation_title: r.parent_compilation_title,
             node_label: r.node_label,
             node_slug: r.node_slug,
             anchor_sentence_start_number: r.start_number.unwrap_or(0),

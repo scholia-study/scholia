@@ -3421,9 +3421,16 @@
                     }
                 }
             },
-            "LibraryAuthor": {
+            "LibraryGroup": {
                 "type": "object",
-                "required": ["id", "name", "sort_name", "books"],
+                "description": "A library entry as the index renders it: a heading plus a list of\nworks under it. The heading is either an author (`primary_kind =\n\"author\"`) or the work itself (`primary_kind = \"self\"` — used for\nauthorless top-level works, including compilations like the Bible\nand singletons like Gilgamesh).",
+                "required": [
+                    "id",
+                    "primary_kind",
+                    "primary_label",
+                    "sort_name",
+                    "books"
+                ],
                 "properties": {
                     "books": {
                         "type": "array",
@@ -3432,10 +3439,19 @@
                         }
                     },
                     "id": {
+                        "type": "string",
+                        "description": "Stable identifier. Person id for `\"author\"` groups; source id\nfor `\"self\"` groups. UUIDs are globally unique so the id is\nsafe to use as a React key without a kind prefix."
+                    },
+                    "primary_kind": {
+                        "type": "string",
+                        "description": "`\"author\"` — heading is a person; `books` are works by them.\n`\"self\"` — heading IS the work; `books` are its child sources\n(compilation case) or empty (singleton case). Click the\nheading to open the work in the reader."
+                    },
+                    "primary_label": {
                         "type": "string"
                     },
-                    "name": {
-                        "type": "string"
+                    "primary_slug": {
+                        "type": ["string", "null"],
+                        "description": "Reader path for `primary_kind = \"self\"` headings (e.g.\n`/books/king-james-bible`). Absent for author headings until\nper-author pages exist."
                     },
                     "sort_name": {
                         "type": "string"
@@ -3444,12 +3460,12 @@
             },
             "LibraryResponse": {
                 "type": "object",
-                "required": ["authors", "stats"],
+                "required": ["groups", "stats"],
                 "properties": {
-                    "authors": {
+                    "groups": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/LibraryAuthor"
+                            "$ref": "#/components/schemas/LibraryGroup"
                         }
                     },
                     "stats": {
@@ -3492,6 +3508,10 @@
                     },
                     "language": {
                         "type": "string"
+                    },
+                    "node_slug": {
+                        "type": ["string", "null"],
+                        "description": "For nested works (a child source hosted inside a compilation):\nthe toc-node slug to deep-link to. Absent for top-level books."
                     },
                     "publication_year": {
                         "type": ["integer", "null"],
@@ -3754,7 +3774,8 @@
                         "type": "string"
                     },
                     "book_title": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "See `QuotationWithContextResponse::book_title`."
                     },
                     "created_at": {
                         "type": "string"
@@ -3767,6 +3788,10 @@
                     },
                     "node_slug": {
                         "type": "string"
+                    },
+                    "parent_compilation_title": {
+                        "type": ["string", "null"],
+                        "description": "See `QuotationWithContextResponse::parent_compilation_title`."
                     },
                     "quotation_id": {
                         "type": "string"
@@ -4107,7 +4132,8 @@
                         "type": "string"
                     },
                     "book_title": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Title of the cited bibliographic work (Shape 3): the effective\nsource resolved for the quotation's anchor — either the per-book\nchild source within a compilation (e.g. \"Genesis\") or the hosted\ntext's root source for non-compilations (e.g. \"Critique of Pure\nReason\")."
                     },
                     "created_at": {
                         "type": "string"
@@ -4127,6 +4153,10 @@
                     "note_count": {
                         "type": "integer",
                         "format": "int64"
+                    },
+                    "parent_compilation_title": {
+                        "type": ["string", "null"],
+                        "description": "When the cited source is a child of a compilation, the compilation's\ndisplay title. Frontend renders as \"[book_title] (in: [parent])\"."
                     },
                     "sentence_kind": {
                         "type": "string"

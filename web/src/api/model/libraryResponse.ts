@@ -4,10 +4,10 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
-import type { LibraryAuthor } from "./libraryAuthor";
+import type { LibraryGroup } from "./libraryGroup";
 import type { LibraryStats } from "./libraryStats";
 
 export interface LibraryResponse {
-    authors: LibraryAuthor[];
+    groups: LibraryGroup[];
     stats: LibraryStats;
 }

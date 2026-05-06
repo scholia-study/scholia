@@ -16,6 +16,11 @@ export interface QuotationWithContextResponse {
     anchor_sentence_end_number?: number | null;
     anchor_sentence_start_number: number;
     book_slug: string;
+    /** Title of the cited bibliographic work (Shape 3): the effective
+  source resolved for the quotation's anchor — either the per-book
+  child source within a compilation (e.g. "Genesis") or the hosted
+  text's root source for non-compilations (e.g. "Critique of Pure
+  Reason"). */
     book_title: string;
     created_at: string;
     /** @nullable */
@@ -24,6 +29,12 @@ export interface QuotationWithContextResponse {
     node_label: string;
     node_slug: string;
     note_count: number;
+    /**
+     * When the cited source is a child of a compilation, the compilation's
+  display title. Frontend renders as "[book_title] (in: [parent])".
+     * @nullable
+     */
+    parent_compilation_title?: string | null;
     sentence_kind: string;
     /** @nullable */
     start_text_snippet?: string | null;

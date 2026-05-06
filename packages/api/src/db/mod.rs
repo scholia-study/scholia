@@ -1,6 +1,7 @@
 pub mod article_quotations;
 pub mod articles;
 pub mod books;
+pub mod citations;
 pub mod feedback;
 pub mod library;
 pub mod nodes;

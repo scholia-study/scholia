@@ -18,11 +18,17 @@ export interface NoteWithContextResponse {
     anchor_sentence_start_number: number;
     body: string;
     book_slug: string;
+    /** See `QuotationWithContextResponse::book_title`. */
     book_title: string;
     created_at: string;
     id: string;
     node_label: string;
     node_slug: string;
+    /**
+     * See `QuotationWithContextResponse::parent_compilation_title`.
+     * @nullable
+     */
+    parent_compilation_title?: string | null;
     quotation_id: string;
     sentence_kind: string;
     tags: TagResponse[];

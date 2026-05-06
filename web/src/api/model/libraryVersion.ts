@@ -9,6 +9,12 @@ export interface LibraryVersion {
     book_slug: string;
     is_original: boolean;
     language: string;
+    /**
+     * For nested works (a child source hosted inside a compilation):
+  the toc-node slug to deep-link to. Absent for top-level books.
+     * @nullable
+     */
+    node_slug?: string | null;
     /** @nullable */
     publication_year?: number | null;
     /** @nullable */

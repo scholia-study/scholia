@@ -404,10 +404,14 @@ export function SourceFormModal({
                         </div>
                     )}
 
-                    {sourceType === "chapter" && (
+                    {(sourceType === "chapter" || sourceType === "book") && (
                         <div>
                             <TextField
-                                label="Parent Book (search)"
+                                label={
+                                    sourceType === "book"
+                                        ? "Parent Compilation (optional)"
+                                        : "Parent Book (search)"
+                                }
                                 value={parentSearch}
                                 onChange={(e) => {
                                     setParentSearch(e.target.value);
@@ -419,7 +423,9 @@ export function SourceFormModal({
                                 helperText={
                                     parentSourceId
                                         ? "Parent selected"
-                                        : "Type to search for the parent book"
+                                        : sourceType === "book"
+                                          ? "For compilation children only — leave empty for standalone books"
+                                          : "Type to search for the parent book"
                                 }
                             />
                             {Array.isArray(parentResults?.data) &&
