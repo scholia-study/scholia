@@ -185,6 +185,9 @@ function BibleShapeGroup({
     // rule, so we read versions off it. Empty fallback keeps types happy.
     const versions = group.books[0]?.versions ?? [];
     const [activeSlug, setActiveSlug] = useBibleTranslation(group.id, versions);
+    const activeVersion = versions.find((v) => v.book_slug === activeSlug);
+    const activeLabel =
+        activeVersion?.publisher ?? activeVersion?.language.toUpperCase() ?? "";
 
     return (
         <section>
@@ -196,15 +199,22 @@ function BibleShapeGroup({
                     {versions.map((v) => {
                         const isActive = v.book_slug === activeSlug;
                         const label = v.publisher ?? v.language.toUpperCase();
+                        const yearSuffix = v.publication_year
+                            ? ` (${v.publication_year})`
+                            : "";
+                        const tooltip = isActive
+                            ? `Currently reading: ${label}${yearSuffix}`
+                            : `Click to set the Bible version to ${label}${yearSuffix}`;
                         return (
                             <button
                                 type="button"
                                 key={v.book_slug}
                                 onClick={() => setActiveSlug(v.book_slug)}
+                                title={tooltip}
                                 className={
                                     isActive
-                                        ? "text-stone-700 underline underline-offset-2"
-                                        : "hover:text-stone-700"
+                                        ? "cursor-pointer text-stone-700 underline underline-offset-2"
+                                        : "cursor-pointer hover:text-stone-700"
                                 }
                             >
                                 {label}
@@ -224,7 +234,12 @@ function BibleShapeGroup({
                         to="/books/$bookSlug"
                         params={{ bookSlug: activeSlug }}
                         hash={p.node_slug}
-                        className="text-xs px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500 hover:text-stone-900 transition-colors"
+                        title={
+                            activeLabel
+                                ? `Open ${p.label} (${activeLabel})`
+                                : `Open ${p.label}`
+                        }
+                        className="cursor-pointer text-xs px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500 hover:text-stone-900 transition-colors"
                     >
                         {p.label}
                     </Link>
