@@ -173,6 +173,7 @@ pub async fn list_quotations_for_node(
         QuotationRowEx,
         r#"WITH target AS (
                SELECT tn.source_ref,
+                      tn.book_id AS target_book_id,
                       COALESCE(s.translation_of_id, s.id) AS work_root
                FROM toc_nodes tn
                JOIN books b ON b.id = tn.book_id
@@ -220,6 +221,15 @@ pub async fn list_quotations_for_node(
            WHERE q.user_id = $1
              AND qtn.source_ref = (SELECT source_ref FROM target)
              AND COALESCE(qs.translation_of_id, qs.id) = (SELECT work_root FROM target)
+             -- Suppress cross-translation projection rows for chapters
+             -- with verse-count drift between translations (currently
+             -- the Romans doxology in KJV vs WEB). Same-book rows are
+             -- always included; only peer-translation rows are dropped.
+             -- See docs/known-issues/bible-doxology-drift.md.
+             AND NOT (
+                 qtn.source_ref IN ('romans:14', 'romans:16')
+                 AND qb.id <> (SELECT target_book_id FROM target)
+             )
            GROUP BY q.id, ss.id, se.id, ss.sentence_number, se.sentence_number,
                     qb.slug, qb.language, qs.publisher, qtn.source_ref
            ORDER BY ss.sentence_number"#,

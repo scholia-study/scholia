@@ -69,16 +69,341 @@ struct BibleBook {
 }
 
 // Reading order matters — sort_order is assigned monotonically below.
+// Slugs are space-less lowercase to match bible-api.com's normalized
+// book identifiers (so the same string serves as DB slug, filesystem
+// dir, and URL fragment).
 const BIBLE_BOOKS: &[BibleBook] = &[
+    // Old Testament
     BibleBook {
         slug: "genesis",
         label: "Genesis",
         chapters: 50,
     },
     BibleBook {
+        slug: "exodus",
+        label: "Exodus",
+        chapters: 40,
+    },
+    BibleBook {
+        slug: "leviticus",
+        label: "Leviticus",
+        chapters: 27,
+    },
+    BibleBook {
+        slug: "numbers",
+        label: "Numbers",
+        chapters: 36,
+    },
+    BibleBook {
+        slug: "deuteronomy",
+        label: "Deuteronomy",
+        chapters: 34,
+    },
+    BibleBook {
+        slug: "joshua",
+        label: "Joshua",
+        chapters: 24,
+    },
+    BibleBook {
+        slug: "judges",
+        label: "Judges",
+        chapters: 21,
+    },
+    BibleBook {
+        slug: "ruth",
+        label: "Ruth",
+        chapters: 4,
+    },
+    BibleBook {
+        slug: "1samuel",
+        label: "1 Samuel",
+        chapters: 31,
+    },
+    BibleBook {
+        slug: "2samuel",
+        label: "2 Samuel",
+        chapters: 24,
+    },
+    BibleBook {
+        slug: "1kings",
+        label: "1 Kings",
+        chapters: 22,
+    },
+    BibleBook {
+        slug: "2kings",
+        label: "2 Kings",
+        chapters: 25,
+    },
+    BibleBook {
+        slug: "1chronicles",
+        label: "1 Chronicles",
+        chapters: 29,
+    },
+    BibleBook {
+        slug: "2chronicles",
+        label: "2 Chronicles",
+        chapters: 36,
+    },
+    BibleBook {
+        slug: "ezra",
+        label: "Ezra",
+        chapters: 10,
+    },
+    BibleBook {
+        slug: "nehemiah",
+        label: "Nehemiah",
+        chapters: 13,
+    },
+    BibleBook {
+        slug: "esther",
+        label: "Esther",
+        chapters: 10,
+    },
+    BibleBook {
+        slug: "job",
+        label: "Job",
+        chapters: 42,
+    },
+    BibleBook {
+        slug: "psalms",
+        label: "Psalms",
+        chapters: 150,
+    },
+    BibleBook {
+        slug: "proverbs",
+        label: "Proverbs",
+        chapters: 31,
+    },
+    BibleBook {
+        slug: "ecclesiastes",
+        label: "Ecclesiastes",
+        chapters: 12,
+    },
+    BibleBook {
+        slug: "songofsolomon",
+        label: "Song of Solomon",
+        chapters: 8,
+    },
+    BibleBook {
+        slug: "isaiah",
+        label: "Isaiah",
+        chapters: 66,
+    },
+    BibleBook {
+        slug: "jeremiah",
+        label: "Jeremiah",
+        chapters: 52,
+    },
+    BibleBook {
+        slug: "lamentations",
+        label: "Lamentations",
+        chapters: 5,
+    },
+    BibleBook {
+        slug: "ezekiel",
+        label: "Ezekiel",
+        chapters: 48,
+    },
+    BibleBook {
+        slug: "daniel",
+        label: "Daniel",
+        chapters: 12,
+    },
+    BibleBook {
+        slug: "hosea",
+        label: "Hosea",
+        chapters: 14,
+    },
+    BibleBook {
+        slug: "joel",
+        label: "Joel",
+        chapters: 3,
+    },
+    BibleBook {
+        slug: "amos",
+        label: "Amos",
+        chapters: 9,
+    },
+    BibleBook {
+        slug: "obadiah",
+        label: "Obadiah",
+        chapters: 1,
+    },
+    BibleBook {
+        slug: "jonah",
+        label: "Jonah",
+        chapters: 4,
+    },
+    BibleBook {
+        slug: "micah",
+        label: "Micah",
+        chapters: 7,
+    },
+    BibleBook {
+        slug: "nahum",
+        label: "Nahum",
+        chapters: 3,
+    },
+    BibleBook {
+        slug: "habakkuk",
+        label: "Habakkuk",
+        chapters: 3,
+    },
+    BibleBook {
+        slug: "zephaniah",
+        label: "Zephaniah",
+        chapters: 3,
+    },
+    BibleBook {
+        slug: "haggai",
+        label: "Haggai",
+        chapters: 2,
+    },
+    BibleBook {
+        slug: "zechariah",
+        label: "Zechariah",
+        chapters: 14,
+    },
+    BibleBook {
+        slug: "malachi",
+        label: "Malachi",
+        chapters: 4,
+    },
+    // New Testament
+    BibleBook {
+        slug: "matthew",
+        label: "Matthew",
+        chapters: 28,
+    },
+    BibleBook {
+        slug: "mark",
+        label: "Mark",
+        chapters: 16,
+    },
+    BibleBook {
+        slug: "luke",
+        label: "Luke",
+        chapters: 24,
+    },
+    BibleBook {
         slug: "john",
         label: "John",
         chapters: 21,
+    },
+    BibleBook {
+        slug: "acts",
+        label: "Acts",
+        chapters: 28,
+    },
+    BibleBook {
+        slug: "romans",
+        label: "Romans",
+        chapters: 16,
+    },
+    BibleBook {
+        slug: "1corinthians",
+        label: "1 Corinthians",
+        chapters: 16,
+    },
+    BibleBook {
+        slug: "2corinthians",
+        label: "2 Corinthians",
+        chapters: 13,
+    },
+    BibleBook {
+        slug: "galatians",
+        label: "Galatians",
+        chapters: 6,
+    },
+    BibleBook {
+        slug: "ephesians",
+        label: "Ephesians",
+        chapters: 6,
+    },
+    BibleBook {
+        slug: "philippians",
+        label: "Philippians",
+        chapters: 4,
+    },
+    BibleBook {
+        slug: "colossians",
+        label: "Colossians",
+        chapters: 4,
+    },
+    BibleBook {
+        slug: "1thessalonians",
+        label: "1 Thessalonians",
+        chapters: 5,
+    },
+    BibleBook {
+        slug: "2thessalonians",
+        label: "2 Thessalonians",
+        chapters: 3,
+    },
+    BibleBook {
+        slug: "1timothy",
+        label: "1 Timothy",
+        chapters: 6,
+    },
+    BibleBook {
+        slug: "2timothy",
+        label: "2 Timothy",
+        chapters: 4,
+    },
+    BibleBook {
+        slug: "titus",
+        label: "Titus",
+        chapters: 3,
+    },
+    BibleBook {
+        slug: "philemon",
+        label: "Philemon",
+        chapters: 1,
+    },
+    BibleBook {
+        slug: "hebrews",
+        label: "Hebrews",
+        chapters: 13,
+    },
+    BibleBook {
+        slug: "james",
+        label: "James",
+        chapters: 5,
+    },
+    BibleBook {
+        slug: "1peter",
+        label: "1 Peter",
+        chapters: 5,
+    },
+    BibleBook {
+        slug: "2peter",
+        label: "2 Peter",
+        chapters: 3,
+    },
+    BibleBook {
+        slug: "1john",
+        label: "1 John",
+        chapters: 5,
+    },
+    BibleBook {
+        slug: "2john",
+        label: "2 John",
+        chapters: 1,
+    },
+    BibleBook {
+        slug: "3john",
+        label: "3 John",
+        chapters: 1,
+    },
+    BibleBook {
+        slug: "jude",
+        label: "Jude",
+        chapters: 1,
+    },
+    BibleBook {
+        slug: "revelation",
+        label: "Revelation",
+        chapters: 22,
     },
 ];
 
@@ -348,13 +673,17 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .await?;
                 let new_count = chapter.verses.len() as i64;
                 if canonical_count > 0 && canonical_count != new_count {
-                    return Err(format!(
-                        "Verse-count drift on '{}': canonical translation has \
-                         {} verses, this translation has {}. Cross-translation \
-                         alignment requires verse-level parity.",
+                    // Known drift cases (Romans 14 doxology, some Psalm
+                    // titles, 3 John) shouldn't block the entire import.
+                    // Cross-translation visual hints degrade gracefully:
+                    // verses that don't exist in both translations simply
+                    // won't show projection markers.
+                    eprintln!(
+                        "WARN: verse-count drift on '{}': canonical={}, this={} — \
+                         cross-translation hints will not align on this chapter.",
                         chapter_source_ref, canonical_count, new_count
-                    )
-                    .into());
+                    );
+                    totals.parity_warnings += 1;
                 }
             }
 
@@ -461,6 +790,13 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("  content_blocks: {}", totals.blocks);
     eprintln!("  sentences:      {}", totals.sentences);
     eprintln!("  page_markers:   {}", totals.markers);
+    if totals.parity_warnings > 0 {
+        eprintln!(
+            "  parity_warnings:{}  (chapters where verse count differs from \
+             canonical translation; cross-translation hints will not align there)",
+            totals.parity_warnings
+        );
+    }
 
     Ok(())
 }
@@ -471,6 +807,7 @@ struct Totals {
     blocks: u32,
     sentences: u32,
     markers: u32,
+    parity_warnings: u32,
 }
 
 fn clean_verse(s: &str) -> String {

@@ -248,6 +248,7 @@ const ACCENT_PALETTE = [
 /** Manual per-group accent overrides, keyed by exact display label. */
 const ACCENT_OVERRIDES: Record<string, string> = {
     "Immanuel Kant": "#4169e1", // royal blue
+    "The Bible": "#4b0082", // royal purple (indigo)
 };
 
 function accentColorFor(label: string, id: string): string {
