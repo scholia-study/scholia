@@ -770,3 +770,37 @@ CREATE TABLE stripe_processed_events (
     processed_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Cross-translation alignment: maps a translation's local
+-- (source_ref, ref_value) coordinates to the work's canonical
+-- coordinates. Used by quotation projection across translations
+-- when verse/page numbering drifts (e.g. Bible Romans doxology,
+-- Hebrew-superscription Psalms in DARBY).
+--
+-- Three states for a given local coordinate:
+--   1. No row → identity mapping (peer's coords ARE canonical).
+--   2. Row with canonical_* both non-null → coords map elsewhere.
+--   3. Row with canonical_* both null → no canonical equivalent
+--      (translation-only content like DARBY's Hebrew superscriptions).
+--
+-- Translations that match canonical have zero rows here. Row count
+-- is small (~700 rows for the current 5-translation Bible corpus).
+--
+-- system_slug parallels page_markers' reference system (e.g. 'verse',
+-- 'page'); kept as text rather than an FK for the same reason
+-- reference_systems is per-book — the slug is enough to scope.
+CREATE TABLE cross_translation_alignments (
+    book_id              UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    system_slug          TEXT NOT NULL,
+    source_ref           TEXT NOT NULL,
+    local_ref_value      TEXT NOT NULL,
+    canonical_source_ref TEXT,
+    canonical_ref_value  TEXT,
+    PRIMARY KEY (book_id, system_slug, source_ref, local_ref_value),
+    CHECK ((canonical_source_ref IS NULL) = (canonical_ref_value IS NULL))
+);
+
+CREATE INDEX idx_cross_translation_alignments_canonical
+    ON cross_translation_alignments
+       (book_id, system_slug, canonical_source_ref, canonical_ref_value)
+    WHERE canonical_source_ref IS NOT NULL;
+

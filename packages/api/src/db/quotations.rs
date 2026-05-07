@@ -30,6 +30,12 @@ struct QuotationRow {
 
 /// Extended row for `list_quotations_for_node` — same columns as
 /// `QuotationRow` plus enrichment for badges and verse-marker projection.
+///
+/// `anchor_*` fields carry the peer quote's actual stored anchor (used
+/// for badges, source links, "saved in WEB" text). `projected_*` fields
+/// carry the target-local coordinates where the marker should render —
+/// they coincide with `anchor_*` for same-book quotes and resolve via
+/// cross_translation_alignments for cross-translation projection.
 struct QuotationRowEx {
     id: Uuid,
     start_number: Option<i32>,
@@ -42,6 +48,9 @@ struct QuotationRowEx {
     anchor_source_ref: Option<String>,
     anchor_verse_start: Option<String>,
     anchor_verse_end: Option<String>,
+    projected_source_ref: Option<String>,
+    projected_verse_start: Option<String>,
+    projected_verse_end: Option<String>,
 }
 
 struct SentenceLookup {
@@ -87,6 +96,9 @@ fn quotation_from_row(r: QuotationRow) -> QuotationResponse {
         anchor_source_ref: None,
         anchor_verse_start: None,
         anchor_verse_end: None,
+        projected_source_ref: None,
+        projected_verse_start: None,
+        projected_verse_end: None,
     }
 }
 
@@ -103,6 +115,9 @@ fn quotation_from_row_ex(r: QuotationRowEx) -> QuotationResponse {
         anchor_source_ref: r.anchor_source_ref,
         anchor_verse_start: r.anchor_verse_start,
         anchor_verse_end: r.anchor_verse_end,
+        projected_source_ref: r.projected_source_ref,
+        projected_verse_start: r.projected_verse_start,
+        projected_verse_end: r.projected_verse_end,
     }
 }
 
@@ -169,16 +184,60 @@ pub async fn list_quotations_for_node(
     // but is unused here — the source-of-truth is the node id, which
     // determines the translation family via toc_nodes/sources joins.
     let _ = book_id;
+    // Two-stage projection through cross_translation_alignments:
+    //
+    // 1. `target_verses` enumerates the verse markers in the target
+    //    chapter and resolves each to canonical (source_ref, ref_value)
+    //    coordinates. No alignment row → identity mapping. Alignment
+    //    row with non-null canonical → use the row. Alignment row with
+    //    null canonical → translation-only verse (no peer can project
+    //    here).
+    // 2. The peer quote's anchor verse is similarly resolved to canonical
+    //    via the peer's alignment row (or identity). The two canonical
+    //    coordinates are matched, and the matching `target_verses` row's
+    //    `local_ref` becomes the projected verse the marker should land
+    //    on. Same-book quotes always project to their own anchor coords
+    //    (the canonical roundtrip would also resolve correctly, but the
+    //    direct fast path keeps Kant — which has no verse markers — and
+    //    same-translation-different-source-ref edge cases simple).
+    //
+    // Books without a verse reference system (Kant) leave anchor_verse_*
+    // null and the projection match falls back to source_ref equality
+    // for the same-book branch; cross-book quotes only join through the
+    // verse-keyed target_verses CTE, which is empty for non-verse books.
     let rows = sqlx::query_as!(
         QuotationRowEx,
         r#"WITH target AS (
-               SELECT tn.source_ref,
+               SELECT tn.source_ref AS target_source_ref,
                       tn.book_id AS target_book_id,
+                      tn.id AS target_node_id,
                       COALESCE(s.translation_of_id, s.id) AS work_root
                FROM toc_nodes tn
                JOIN books b ON b.id = tn.book_id
                JOIN sources s ON s.id = b.source_id
                WHERE tn.id = $2
+           ),
+           target_verses AS (
+               SELECT DISTINCT
+                   pm.ref_value AS local_ref,
+                   CASE
+                       WHEN va.book_id IS NULL THEN t.target_source_ref
+                       ELSE va.canonical_source_ref
+                   END AS canonical_src,
+                   CASE
+                       WHEN va.book_id IS NULL THEN pm.ref_value
+                       ELSE va.canonical_ref_value
+                   END AS canonical_ref
+               FROM target t
+               JOIN sentences s ON s.node_id = t.target_node_id
+               JOIN page_markers pm ON pm.sentence_id = s.id
+               JOIN reference_systems rs ON rs.id = pm.system_id
+               LEFT JOIN cross_translation_alignments va
+                      ON va.book_id = t.target_book_id
+                     AND va.system_slug = 'verse'
+                     AND va.source_ref = t.target_source_ref
+                     AND va.local_ref_value = pm.ref_value
+               WHERE rs.slug = 'verse'
            )
            SELECT q.id,
                   ss.sentence_number AS "start_number?",
@@ -197,41 +256,95 @@ pub async fn list_quotations_for_node(
                       ELSE UPPER(qb.language)
                   END AS "translation_label?",
                   qtn.source_ref AS "anchor_source_ref?",
-                  (
-                      SELECT pm.ref_value
-                      FROM page_markers pm
-                      JOIN reference_systems rs ON rs.id = pm.system_id
-                      WHERE pm.sentence_id = ss.id AND rs.slug = 'verse'
-                      LIMIT 1
-                  ) AS "anchor_verse_start?",
-                  (
-                      SELECT pm.ref_value
-                      FROM page_markers pm
-                      JOIN reference_systems rs ON rs.id = pm.system_id
-                      WHERE pm.sentence_id = se.id AND rs.slug = 'verse'
-                      LIMIT 1
-                  ) AS "anchor_verse_end?"
+                  pm_start.ref_value AS "anchor_verse_start?",
+                  pm_end.ref_value AS "anchor_verse_end?",
+                  -- Projection coords: target-local for cross-translation,
+                  -- identity for same-book.
+                  CASE
+                      WHEN qb.id = (SELECT target_book_id FROM target)
+                          THEN qtn.source_ref
+                      ELSE (SELECT target_source_ref FROM target)
+                  END AS "projected_source_ref?",
+                  CASE
+                      WHEN qb.id = (SELECT target_book_id FROM target)
+                          THEN pm_start.ref_value
+                      ELSE COALESCE(tv_start.local_ref, tv_end.local_ref)
+                  END AS "projected_verse_start?",
+                  CASE
+                      WHEN qb.id = (SELECT target_book_id FROM target)
+                          THEN pm_end.ref_value
+                      ELSE COALESCE(tv_end.local_ref, tv_start.local_ref)
+                  END AS "projected_verse_end?"
            FROM quotations q
            JOIN toc_nodes qtn ON qtn.id = q.anchor_node_id
            JOIN books qb ON qb.id = qtn.book_id
            JOIN sources qs ON qs.id = qb.source_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
+           -- Peer's verse markers (if the peer book has a 'verse' system)
+           LEFT JOIN page_markers pm_start
+                  ON pm_start.sentence_id = ss.id
+                 AND pm_start.system_id IN (
+                     SELECT id FROM reference_systems
+                     WHERE book_id = qb.id AND slug = 'verse'
+                 )
+           LEFT JOIN page_markers pm_end
+                  ON pm_end.sentence_id = se.id
+                 AND pm_end.system_id IN (
+                     SELECT id FROM reference_systems
+                     WHERE book_id = qb.id AND slug = 'verse'
+                 )
+           -- Peer's alignment row (if any) for start/end verses
+           LEFT JOIN cross_translation_alignments va_start
+                  ON va_start.book_id = qb.id
+                 AND va_start.system_slug = 'verse'
+                 AND va_start.source_ref = qtn.source_ref
+                 AND va_start.local_ref_value = pm_start.ref_value
+           LEFT JOIN cross_translation_alignments va_end
+                  ON va_end.book_id = qb.id
+                 AND va_end.system_slug = 'verse'
+                 AND va_end.source_ref = qtn.source_ref
+                 AND va_end.local_ref_value = pm_end.ref_value
+           -- Match peer's canonical coords to a target verse
+           LEFT JOIN target_verses tv_start
+                  ON tv_start.canonical_src = CASE
+                         WHEN va_start.book_id IS NULL THEN qtn.source_ref
+                         ELSE va_start.canonical_source_ref
+                     END
+                 AND tv_start.canonical_ref = CASE
+                         WHEN va_start.book_id IS NULL THEN pm_start.ref_value
+                         ELSE va_start.canonical_ref_value
+                     END
+           LEFT JOIN target_verses tv_end
+                  ON tv_end.canonical_src = CASE
+                         WHEN va_end.book_id IS NULL THEN qtn.source_ref
+                         ELSE va_end.canonical_source_ref
+                     END
+                 AND tv_end.canonical_ref = CASE
+                         WHEN va_end.book_id IS NULL THEN pm_end.ref_value
+                         ELSE va_end.canonical_ref_value
+                     END
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.user_id = $1
-             AND qtn.source_ref = (SELECT source_ref FROM target)
              AND COALESCE(qs.translation_of_id, qs.id) = (SELECT work_root FROM target)
-             -- Suppress cross-translation projection rows for chapters
-             -- with verse-count drift between translations (currently
-             -- the Romans doxology in KJV vs WEB). Same-book rows are
-             -- always included; only peer-translation rows are dropped.
-             -- See docs/known-issues/bible-doxology-drift.md.
-             AND NOT (
-                 qtn.source_ref IN ('romans:14', 'romans:16')
-                 AND qb.id <> (SELECT target_book_id FROM target)
+             AND (
+                 -- Same-book branch: include all quotes anchored to the
+                 -- target's source_ref. Covers Kant (no verse markers)
+                 -- and Bible same-translation/same-chapter alike.
+                 (qb.id = (SELECT target_book_id FROM target)
+                  AND qtn.source_ref = (SELECT target_source_ref FROM target))
+                 OR
+                 -- Cross-book branch: include peer-translation quotes whose
+                 -- canonical coords project onto any verse in the target
+                 -- chapter. Drift cases (Romans doxology, DARBY Psalms)
+                 -- resolve naturally through the alignment table.
+                 (qb.id <> (SELECT target_book_id FROM target)
+                  AND tv_start.local_ref IS NOT NULL)
              )
            GROUP BY q.id, ss.id, se.id, ss.sentence_number, se.sentence_number,
-                    qb.slug, qb.language, qs.publisher, qtn.source_ref
+                    qb.id, qb.slug, qb.language, qs.publisher, qtn.source_ref,
+                    pm_start.ref_value, pm_end.ref_value,
+                    tv_start.local_ref, tv_end.local_ref
            ORDER BY ss.sentence_number"#,
         user_id,
         node_id,

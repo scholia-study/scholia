@@ -43,8 +43,8 @@ struct TranslationMeta {
 }
 
 const TRANSLATIONS: &[TranslationMeta] = &[
-    // `publisher` doubles as the same-language version-pill label (KJV /
-    // WEB). Both translations are public domain; if a real publisher
+    // `publisher` doubles as the same-language version-pill label.
+    // All five translations are public domain. If a real publisher
     // matters in citations later, restructure with a short_label column.
     TranslationMeta {
         slug: "kjv",
@@ -59,6 +59,27 @@ const TRANSLATIONS: &[TranslationMeta] = &[
         publication_year: 2000,
         book_slug: "web-bible",
         publisher: "WEB",
+    },
+    TranslationMeta {
+        slug: "asv",
+        full_title: "American Standard Version",
+        publication_year: 1901,
+        book_slug: "asv-bible",
+        publisher: "ASV",
+    },
+    TranslationMeta {
+        slug: "bbe",
+        full_title: "Bible in Basic English",
+        publication_year: 1949,
+        book_slug: "bbe-bible",
+        publisher: "BBE",
+    },
+    TranslationMeta {
+        slug: "darby",
+        full_title: "Darby Bible",
+        publication_year: 1890,
+        book_slug: "darby-bible",
+        publisher: "DARBY",
     },
 ];
 
@@ -782,6 +803,15 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
+    let alignment_rows = seed_cross_translation_alignments(
+        &mut tx,
+        translation.slug,
+        book_id,
+        canonical_bible_source_id,
+    )
+    .await?;
+    totals.alignments = alignment_rows;
+
     tx.commit().await?;
 
     eprintln!();
@@ -790,6 +820,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("  content_blocks: {}", totals.blocks);
     eprintln!("  sentences:      {}", totals.sentences);
     eprintln!("  page_markers:   {}", totals.markers);
+    eprintln!("  alignments:     {}", totals.alignments);
     if totals.parity_warnings > 0 {
         eprintln!(
             "  parity_warnings:{}  (chapters where verse count differs from \
@@ -807,7 +838,227 @@ struct Totals {
     blocks: u32,
     sentences: u32,
     markers: u32,
+    alignments: u32,
     parity_warnings: u32,
+}
+
+/// 44 Psalms + 2 Kings 11 — chapters where DARBY treats the Hebrew
+/// superscription as verse 1, shifting every subsequent verse by +1
+/// relative to the KJV/WEB/ASV/BBE convention.
+const DARBY_HEBREW_TITLE_CHAPTERS: &[&str] = &[
+    "psalms:2",
+    "psalms:5",
+    "psalms:6",
+    "psalms:7",
+    "psalms:8",
+    "psalms:17",
+    "psalms:18",
+    "psalms:20",
+    "psalms:21",
+    "psalms:30",
+    "psalms:33",
+    "psalms:35",
+    "psalms:37",
+    "psalms:38",
+    "psalms:40",
+    "psalms:41",
+    "psalms:44",
+    "psalms:45",
+    "psalms:46",
+    "psalms:47",
+    "psalms:48",
+    "psalms:50",
+    "psalms:51",
+    "psalms:52",
+    "psalms:55",
+    "psalms:56",
+    "psalms:57",
+    "psalms:58",
+    "psalms:60",
+    "psalms:62",
+    "psalms:63",
+    "psalms:64",
+    "psalms:66",
+    "psalms:68",
+    "psalms:74",
+    "psalms:75",
+    "psalms:76",
+    "psalms:80",
+    "psalms:83",
+    "psalms:84",
+    "psalms:88",
+    "psalms:91",
+    "psalms:107",
+    "psalms:141",
+    "2kings:11",
+];
+
+/// Seed cross_translation_alignments rows for this translation. Returns
+/// the number of rows inserted. Translations that match canonical (KJV,
+/// ASV, BBE) insert zero rows — identity is the implicit default and
+/// stored only as deviations.
+///
+/// The canonical reference is whichever translation imported first under
+/// the same `translation_of_id` root (KJV in our import order). We look
+/// up its book_id to query canonical verse counts where needed.
+async fn seed_cross_translation_alignments(
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
+    translation_slug: &str,
+    book_id: Uuid,
+    canonical_bible_source_id: Uuid,
+) -> Result<u32, Box<dyn std::error::Error>> {
+    match translation_slug {
+        "kjv" | "asv" | "bbe" => {
+            // Match canonical exactly — no alignment rows needed.
+            Ok(0)
+        }
+        "web" => seed_web_romans_doxology(tx, book_id).await,
+        "darby" => seed_darby_hebrew_titles(tx, book_id, canonical_bible_source_id).await,
+        other => Err(format!(
+            "No alignment rules defined for translation slug '{}'",
+            other
+        )
+        .into()),
+    }
+}
+
+/// WEB places the Romans doxology at the end of chapter 14 instead of
+/// chapter 16 (critical text vs Textus Receptus). Three explicit rows
+/// re-anchor those verses to KJV's canonical Rom 16:25-27.
+async fn seed_web_romans_doxology(
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
+    book_id: Uuid,
+) -> Result<u32, Box<dyn std::error::Error>> {
+    // Verse refs use page_markers' format: "{chapter}:{verse}".
+    let mappings: &[(&str, &str, &str, &str)] = &[
+        ("romans:14", "14:24", "romans:16", "16:25"),
+        ("romans:14", "14:25", "romans:16", "16:26"),
+        ("romans:14", "14:26", "romans:16", "16:27"),
+    ];
+    for (src, local, can_src, can_v) in mappings {
+        sqlx::query(
+            "INSERT INTO cross_translation_alignments
+                 (book_id, system_slug, source_ref, local_ref_value,
+                  canonical_source_ref, canonical_ref_value)
+             VALUES ($1, 'verse', $2, $3, $4, $5)",
+        )
+        .bind(book_id)
+        .bind(src)
+        .bind(local)
+        .bind(can_src)
+        .bind(can_v)
+        .execute(&mut **tx)
+        .await?;
+    }
+    Ok(mappings.len() as u32)
+}
+
+/// DARBY's Hebrew-title chapters: the leading verses ARE the
+/// superscription (translation-only — no canonical equivalent), and
+/// the remaining verses correspond to canonical 1..N by a positive
+/// integer shift. The shift size varies per chapter: most have a
+/// single-verse title (shift = 1), but some (Ps 50, Ps 51) have a
+/// two-verse title (shift = 2). We compute the shift from
+/// (darby_count - canonical_count) per chapter rather than assuming a
+/// constant.
+async fn seed_darby_hebrew_titles(
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
+    book_id: Uuid,
+    canonical_bible_source_id: Uuid,
+) -> Result<u32, Box<dyn std::error::Error>> {
+    let mut total: u32 = 0;
+    for chapter_ref in DARBY_HEBREW_TITLE_CHAPTERS {
+        let canonical_count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(DISTINCT pm.ref_value)
+             FROM page_markers pm
+             JOIN sentences s ON s.id = pm.sentence_id
+             JOIN toc_nodes tn ON tn.id = s.node_id
+             JOIN books b ON b.id = tn.book_id
+             JOIN sources src ON src.id = b.source_id
+             JOIN reference_systems rs ON rs.id = pm.system_id
+             WHERE src.translation_of_id = $1
+               AND src.publisher = 'KJV'
+               AND tn.source_ref = $2
+               AND rs.slug = 'verse'",
+        )
+        .bind(canonical_bible_source_id)
+        .bind(chapter_ref)
+        .fetch_one(&mut **tx)
+        .await?;
+
+        // This translation's own verse count for the same chapter.
+        let local_count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(DISTINCT pm.ref_value)
+             FROM page_markers pm
+             JOIN sentences s ON s.id = pm.sentence_id
+             JOIN toc_nodes tn ON tn.id = s.node_id
+             JOIN reference_systems rs ON rs.id = pm.system_id
+             WHERE tn.book_id = $1
+               AND tn.source_ref = $2
+               AND rs.slug = 'verse'",
+        )
+        .bind(book_id)
+        .bind(chapter_ref)
+        .fetch_one(&mut **tx)
+        .await?;
+
+        if canonical_count == 0 {
+            return Err(format!(
+                "DARBY alignment seed: canonical chapter '{}' has 0 verses; \
+                 import KJV before DARBY",
+                chapter_ref
+            )
+            .into());
+        }
+
+        let shift = local_count - canonical_count;
+        if shift <= 0 {
+            return Err(format!(
+                "DARBY alignment seed: chapter '{}' expected positive shift \
+                 from title verses (canonical={}, local={}), got {}",
+                chapter_ref, canonical_count, local_count, shift
+            )
+            .into());
+        }
+
+        // Extract the chapter number from the source_ref ("psalms:51" -> "51")
+        // for building page_markers-format ref_values ("{ch}:{verse}").
+        let chapter_num = chapter_ref.rsplit(':').next().unwrap_or("");
+
+        // DARBY v1..v{shift} = the title (no canonical).
+        for k in 1..=shift {
+            sqlx::query(
+                "INSERT INTO cross_translation_alignments
+                     (book_id, system_slug, source_ref, local_ref_value,
+                      canonical_source_ref, canonical_ref_value)
+                 VALUES ($1, 'verse', $2, $3, NULL, NULL)",
+            )
+            .bind(book_id)
+            .bind(chapter_ref)
+            .bind(format!("{}:{}", chapter_num, k))
+            .execute(&mut **tx)
+            .await?;
+            total += 1;
+        }
+
+        // DARBY v(M+shift) = canonical v(M) for M in 1..=canonical_count.
+        for m in 1..=canonical_count {
+            sqlx::query(
+                "INSERT INTO cross_translation_alignments
+                     (book_id, system_slug, source_ref, local_ref_value,
+                      canonical_source_ref, canonical_ref_value)
+                 VALUES ($1, 'verse', $2, $3, $2, $4)",
+            )
+            .bind(book_id)
+            .bind(chapter_ref)
+            .bind(format!("{}:{}", chapter_num, m + shift))
+            .bind(format!("{}:{}", chapter_num, m))
+            .execute(&mut **tx)
+            .await?;
+            total += 1;
+        }
+    }
+    Ok(total)
 }
 
 fn clean_verse(s: &str) -> String {

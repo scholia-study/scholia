@@ -4139,6 +4139,18 @@
                         "type": "integer",
                         "format": "int64"
                     },
+                    "projected_source_ref": {
+                        "type": ["string", "null"],
+                        "description": "Target-local source_ref where the projection marker should\nrender. For same-book quotes equals `anchor_source_ref`. For\ncross-translation projection through `cross_translation_alignments`\nthis resolves to the target chapter (e.g. WEB Rom 14:24 quote\nprojects to KJV Rom 16:25 → projected_source_ref = \"romans:16\")."
+                    },
+                    "projected_verse_end": {
+                        "type": ["string", "null"],
+                        "description": "Target-local verse `ref_value` for the end of the projection.\nEquals `projected_verse_start` when only one end of a range\nprojects into the target chapter (e.g. cross-chapter spans)."
+                    },
+                    "projected_verse_start": {
+                        "type": ["string", "null"],
+                        "description": "Target-local verse `ref_value` for the start of the projection.\nFrontend uses `(projected_source_ref, projected_verse_start)`\nas the marker placement key, falling back to `anchor_*` when\nthe projection fields are absent (Kant/no-verse-system books)."
+                    },
                     "sentence_kind": {
                         "type": "string"
                     },

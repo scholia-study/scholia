@@ -32,7 +32,7 @@ BOOKS_ORDERED=(
     "revelation:22"
 )
 
-for translation in kjv web; do
+for translation in kjv web asv bbe darby; do
     for entry in "${BOOKS_ORDERED[@]}"; do
         book="${entry%%:*}"
         chapters="${entry##*:}"
@@ -45,20 +45,37 @@ for translation in kjv web; do
             fi
             url="https://bible-api.com/${book}%20${c}?translation=${translation}"
             echo "fetch ${translation} ${book} ${c}"
-            for attempt in 1 2 3 4 5; do
+            success=0
+            for attempt in 1 2 3 4 5 6 7 8; do
                 if curl -sfL --max-time 30 "$url" -o "$out"; then
+                    success=1
                     break
                 fi
                 rm -f "$out"
-                if [[ $attempt -eq 5 ]]; then
-                    echo "FAILED $url after $attempt attempts"
-                    exit 1
-                fi
-                sleep $((attempt * 2))
+                # Exponential-ish backoff: 2, 4, 6, 8, 15, 30, 60, 120s
+                case $attempt in
+                    1|2|3|4) sleep $((attempt * 2)) ;;
+                    5) sleep 15 ;;
+                    6) sleep 30 ;;
+                    7) sleep 60 ;;
+                    8) sleep 120 ;;
+                esac
             done
-            sleep 0.2
+            if [[ $success -eq 0 ]]; then
+                # Don't abort the whole run; log to a per-run failure file
+                # and keep going. Re-running the script picks up missing
+                # chapters via the existing-file guard above.
+                echo "FAILED $url" >> /tmp/bible_fetch_failures.log
+                fail_count=$((${fail_count:-0} + 1))
+                continue
+            fi
+            sleep 0.3
         done
     done
 done
 
+if [[ -n "${fail_count:-}" && "$fail_count" -gt 0 ]]; then
+    echo "done — $fail_count chapter(s) failed; re-run to retry. See /tmp/bible_fetch_failures.log"
+    exit 2
+fi
 echo "done"

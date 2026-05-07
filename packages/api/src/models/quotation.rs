@@ -41,6 +41,24 @@ pub struct QuotationResponse {
     /// quotation is treated as covering a single verse).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub anchor_verse_end: Option<String>,
+    /// Target-local source_ref where the projection marker should
+    /// render. For same-book quotes equals `anchor_source_ref`. For
+    /// cross-translation projection through `cross_translation_alignments`
+    /// this resolves to the target chapter (e.g. WEB Rom 14:24 quote
+    /// projects to KJV Rom 16:25 → projected_source_ref = "romans:16").
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub projected_source_ref: Option<String>,
+    /// Target-local verse `ref_value` for the start of the projection.
+    /// Frontend uses `(projected_source_ref, projected_verse_start)`
+    /// as the marker placement key, falling back to `anchor_*` when
+    /// the projection fields are absent (Kant/no-verse-system books).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub projected_verse_start: Option<String>,
+    /// Target-local verse `ref_value` for the end of the projection.
+    /// Equals `projected_verse_start` when only one end of a range
+    /// projects into the target chapter (e.g. cross-chapter spans).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub projected_verse_end: Option<String>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]

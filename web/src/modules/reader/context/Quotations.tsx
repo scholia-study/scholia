@@ -8,11 +8,12 @@ interface QuotationContextValue {
      * Whether a sentence carries a saved-quotation marker. Two paths:
      *
      * 1. Verse-key projection (Bible) — saved verses land in a Set
-     *    keyed by `${anchor_source_ref}::${verse_ref_value}`. The
+     *    keyed by `${projected_source_ref}::${verse_ref_value}`. The
      *    sentence's own verse markers are looked up against that set.
-     *    This makes a saved verse light up across translations even
-     *    though the saved quotation row itself is locked to one
-     *    translation (PLAN_BIG_BOOKS.md Q7 — visual hint only).
+     *    The API resolves drift across translations (Romans doxology,
+     *    DARBY Psalm titles) into target-local coords before we get
+     *    here, so the match is direct (PLAN_BIG_BOOKS.md Q7 — visual
+     *    hint only).
      * 2. sentence_number fallback (Kant) — quotations without verse
      *    keys fall back to the existing within-book sentence_number
      *    range match.
@@ -65,15 +66,19 @@ export function QuotationProvider({
 }) {
     const value = useMemo(() => {
         // Build the verse-key set up front (cheap; ~tens of entries).
+        // Use projected_* (target-local coords resolved by the API
+        // through cross_translation_alignments). For older clients or
+        // endpoints that haven't been wired yet, anchor_* is the
+        // fallback — they coincide for non-drifting chapters.
         const savedVerseKeys = new Set<string>();
         for (const q of quotations) {
-            if (!q.anchor_source_ref || !q.anchor_verse_start) continue;
-            const verses = expandVerseRange(
-                q.anchor_verse_start,
-                q.anchor_verse_end ?? null,
-            );
+            const sourceRef = q.projected_source_ref ?? q.anchor_source_ref;
+            const verseStart = q.projected_verse_start ?? q.anchor_verse_start;
+            const verseEnd = q.projected_verse_end ?? q.anchor_verse_end;
+            if (!sourceRef || !verseStart) continue;
+            const verses = expandVerseRange(verseStart, verseEnd ?? null);
             for (const v of verses) {
-                savedVerseKeys.add(`${q.anchor_source_ref}::${v}`);
+                savedVerseKeys.add(`${sourceRef}::${v}`);
             }
         }
         const isSentenceSaved = (
@@ -95,7 +100,10 @@ export function QuotationProvider({
             // 2. sentence_number range match — Kant within-book.
             if (sentenceNumber == null) return false;
             return quotations.some((q) => {
-                if (q.anchor_verse_start) return false; // already covered above
+                // Anchor-verse covers the verse-key path; skip those here.
+                if (q.projected_verse_start ?? q.anchor_verse_start) {
+                    return false;
+                }
                 const start = q.anchor_sentence_start_number;
                 const end = q.anchor_sentence_end_number ?? start;
                 return sentenceNumber >= start && sentenceNumber <= end;

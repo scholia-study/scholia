@@ -44,6 +44,30 @@ export interface QuotationResponse {
     created_at: string;
     id: string;
     note_count: number;
+    /**
+     * Target-local source_ref where the projection marker should
+  render. For same-book quotes equals `anchor_source_ref`. For
+  cross-translation projection through `cross_translation_alignments`
+  this resolves to the target chapter (e.g. WEB Rom 14:24 quote
+  projects to KJV Rom 16:25 → projected_source_ref = "romans:16").
+     * @nullable
+     */
+    projected_source_ref?: string | null;
+    /**
+     * Target-local verse `ref_value` for the end of the projection.
+  Equals `projected_verse_start` when only one end of a range
+  projects into the target chapter (e.g. cross-chapter spans).
+     * @nullable
+     */
+    projected_verse_end?: string | null;
+    /**
+     * Target-local verse `ref_value` for the start of the projection.
+  Frontend uses `(projected_source_ref, projected_verse_start)`
+  as the marker placement key, falling back to `anchor_*` when
+  the projection fields are absent (Kant/no-verse-system books).
+     * @nullable
+     */
+    projected_verse_start?: string | null;
     sentence_kind: string;
     /**
      * Short display label for the translation badge — derived from
