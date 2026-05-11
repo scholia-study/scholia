@@ -319,11 +319,11 @@ fn replace_footnote_refs(text: &str, remap: &HashMap<String, String>) -> String 
         result = result.replace(&search, &replacement);
 
         // Also replace superscript digit variants (e.g. ¹) for marker "1")
-        if let Ok(n) = old_marker.parse::<u32>() {
-            if let Some(superscript) = digit_to_superscript(n) {
-                let super_search = format!("{})", superscript);
-                result = result.replace(&super_search, &replacement);
-            }
+        if let Ok(n) = old_marker.parse::<u32>()
+            && let Some(superscript) = digit_to_superscript(n)
+        {
+            let super_search = format!("{})", superscript);
+            result = result.replace(&super_search, &replacement);
         }
     }
     result
@@ -506,12 +506,12 @@ fn fixup_dedication_body_page(page: &mut InputPage) {
 /// OCR produces 'Vorrede zur zweiten Auflage."' — the trailing ." is a
 /// Fraktur misread. Strip it.
 fn fixup_vorrede_page(page: &mut InputPage) {
-    if let Some(elem) = page.elements.first_mut() {
-        if elem.text.contains("Vorrede zur zweiten Auflage") {
-            elem.text = "Vorrede zur zweiten Auflage".to_string();
-            if let Some(line) = elem.lines.first_mut() {
-                line.text = "Vorrede zur zweiten Auflage".to_string();
-            }
+    if let Some(elem) = page.elements.first_mut()
+        && elem.text.contains("Vorrede zur zweiten Auflage")
+    {
+        elem.text = "Vorrede zur zweiten Auflage".to_string();
+        if let Some(line) = elem.lines.first_mut() {
+            line.text = "Vorrede zur zweiten Auflage".to_string();
         }
     }
 }
@@ -580,11 +580,11 @@ fn fixup_cross_page_footnote_32_34(pages: &mut [InputPage]) {
             footnote_lines.push(l);
         }
         // Fix OCR error on last line: "unmittelbar bes" should be "unmittelbar be-"
-        if let Some(last) = footnote_lines.last_mut() {
-            if last.text.trim_end().ends_with(" bes") {
-                let t = last.text.trim_end().to_string();
-                last.text = format!("{}be-", &t[..t.len() - 3]);
-            }
+        if let Some(last) = footnote_lines.last_mut()
+            && last.text.trim_end().ends_with(" bes")
+        {
+            let t = last.text.trim_end().to_string();
+            last.text = format!("{}be-", &t[..t.len() - 3]);
         }
     }
 

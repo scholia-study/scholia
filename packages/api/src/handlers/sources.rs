@@ -36,51 +36,54 @@ async fn guard_source_edit(
     Ok(())
 }
 
-fn validate_source_fields(
-    title: Option<&str>,
-    title_display: Option<&str>,
-    publisher: Option<&str>,
-    journal_name: Option<&str>,
-    doi: Option<&str>,
-    edition: Option<&str>,
-    volume: Option<&str>,
-    url: Option<&str>,
-    isbn: Option<&[String]>,
+#[derive(Clone, Copy)]
+struct SourceFields<'a> {
+    title: Option<&'a str>,
+    title_display: Option<&'a str>,
+    publisher: Option<&'a str>,
+    journal_name: Option<&'a str>,
+    doi: Option<&'a str>,
+    edition: Option<&'a str>,
+    volume: Option<&'a str>,
+    url: Option<&'a str>,
+    isbn: Option<&'a [String]>,
     publication_year: Option<i16>,
     page_start: Option<i32>,
     page_end: Option<i32>,
-) -> Result<(), AppError> {
-    if let Some(t) = title {
+}
+
+fn validate_source_fields(fields: SourceFields<'_>) -> Result<(), AppError> {
+    if let Some(t) = fields.title {
         check_max_len("Title", t, MAX_SOURCE_TITLE)?;
     }
-    if let Some(t) = title_display {
+    if let Some(t) = fields.title_display {
         check_max_len("Display title", t, MAX_SOURCE_TITLE_DISPLAY)?;
     }
-    if let Some(p) = publisher {
+    if let Some(p) = fields.publisher {
         check_max_len("Publisher", p, MAX_SOURCE_PUBLISHER)?;
     }
-    if let Some(j) = journal_name {
+    if let Some(j) = fields.journal_name {
         check_max_len("Journal name", j, MAX_SOURCE_JOURNAL_NAME)?;
     }
-    if let Some(d) = doi {
+    if let Some(d) = fields.doi {
         check_max_len("DOI", d, MAX_SOURCE_DOI)?;
     }
-    if let Some(e) = edition {
+    if let Some(e) = fields.edition {
         check_max_len("Edition", e, MAX_SOURCE_EDITION)?;
     }
-    if let Some(v) = volume {
+    if let Some(v) = fields.volume {
         check_max_len("Volume", v, MAX_SOURCE_VOLUME)?;
     }
-    if let Some(u) = url {
+    if let Some(u) = fields.url {
         check_max_len("URL", u, MAX_SOURCE_URL)?;
     }
-    if let Some(list) = isbn {
+    if let Some(list) = fields.isbn {
         check_count("ISBNs", list, MAX_SOURCE_ISBNS)?;
         for v in list {
             check_max_len("ISBN", v, MAX_SOURCE_ISBN_LEN)?;
         }
     }
-    if let Some(y) = publication_year {
+    if let Some(y) = fields.publication_year {
         check_int_range(
             "Publication year",
             y,
@@ -88,10 +91,10 @@ fn validate_source_fields(
             MAX_PUBLICATION_YEAR,
         )?;
     }
-    if let Some(p) = page_start {
+    if let Some(p) = fields.page_start {
         check_int_range("Page start", p, MIN_SOURCE_PAGE, MAX_SOURCE_PAGE)?;
     }
-    if let Some(p) = page_end {
+    if let Some(p) = fields.page_end {
         check_int_range("Page end", p, MIN_SOURCE_PAGE, MAX_SOURCE_PAGE)?;
     }
     Ok(())
@@ -242,20 +245,20 @@ pub async fn create_source(
         .transpose()
         .map_err(|_| AppError::BadRequest("Invalid translation_of_id".into()))?;
 
-    validate_source_fields(
-        Some(&body.title),
-        body.title_display.as_deref(),
-        body.publisher.as_deref(),
-        body.journal_name.as_deref(),
-        body.doi.as_deref(),
-        body.edition.as_deref(),
-        body.volume.as_deref(),
-        body.url.as_deref(),
-        body.isbn.as_deref(),
-        body.publication_year,
-        body.page_start,
-        body.page_end,
-    )?;
+    validate_source_fields(SourceFields {
+        title: Some(&body.title),
+        title_display: body.title_display.as_deref(),
+        publisher: body.publisher.as_deref(),
+        journal_name: body.journal_name.as_deref(),
+        doi: body.doi.as_deref(),
+        edition: body.edition.as_deref(),
+        volume: body.volume.as_deref(),
+        url: body.url.as_deref(),
+        isbn: body.isbn.as_deref(),
+        publication_year: body.publication_year,
+        page_start: body.page_start,
+        page_end: body.page_end,
+    })?;
 
     let source = db::sources::create_source(
         &state.pool,
@@ -344,20 +347,20 @@ pub async fn update_source(
         .transpose()
         .map_err(|_| AppError::BadRequest("Invalid translation_of_id".into()))?;
 
-    validate_source_fields(
-        body.title.as_deref(),
-        body.title_display.as_deref(),
-        body.publisher.as_deref(),
-        body.journal_name.as_deref(),
-        body.doi.as_deref(),
-        body.edition.as_deref(),
-        body.volume.as_deref(),
-        body.url.as_deref(),
-        body.isbn.as_deref(),
-        body.publication_year,
-        body.page_start,
-        body.page_end,
-    )?;
+    validate_source_fields(SourceFields {
+        title: body.title.as_deref(),
+        title_display: body.title_display.as_deref(),
+        publisher: body.publisher.as_deref(),
+        journal_name: body.journal_name.as_deref(),
+        doi: body.doi.as_deref(),
+        edition: body.edition.as_deref(),
+        volume: body.volume.as_deref(),
+        url: body.url.as_deref(),
+        isbn: body.isbn.as_deref(),
+        publication_year: body.publication_year,
+        page_start: body.page_start,
+        page_end: body.page_end,
+    })?;
 
     let source = db::sources::update_source(
         &state.pool,

@@ -571,17 +571,17 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         // Q5/Q9 import guard: enforce slug agreement with the canonical
         // translation. We check upfront before inserting anything for
         // this book so the error surfaces with a clean message.
-        if let Some((canonical_slug, _)) = canonical_book_index.get(bb.slug) {
-            if canonical_slug != bb.slug {
-                return Err(format!(
-                    "Slug drift on Bible-book '{}': existing translation \
+        if let Some((canonical_slug, _)) = canonical_book_index.get(bb.slug)
+            && canonical_slug != bb.slug
+        {
+            return Err(format!(
+                "Slug drift on Bible-book '{}': existing translation \
                      uses depth=0 slug '{}' but this importer is using '{}'. \
                      Slugs must match across translations so cross-translation \
                      navigation (Q5/Q9) keeps working.",
-                    bb.slug, canonical_slug, bb.slug
-                )
-                .into());
-            }
+                bb.slug, canonical_slug, bb.slug
+            )
+            .into());
         }
 
         // 3a. Per-Bible-book source so citations like "Gen 1:1" anchor on Genesis,

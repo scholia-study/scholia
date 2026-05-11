@@ -61,7 +61,9 @@ fn main() {
         total, args.start, end_idx
     );
 
-    for i in (args.start - 1)..end_idx.min(total) {
+    let start = args.start.saturating_sub(1);
+    let end = end_idx.min(total);
+    for (i, _) in input_files.iter().enumerate().take(end).skip(start) {
         let page_num = i + 1;
         let filename = Path::new(&input_files[i])
             .file_name()
@@ -314,34 +316,32 @@ fn strip_line_numbers(lines: Vec<OcrLine>, page_num: usize) -> Vec<OcrLine> {
             let stripped = line.text.trim();
 
             // Drop standalone lines that are just a valid line number
-            if DIGIT_1_2_RE.is_match(stripped) {
-                if let Ok(val) = stripped.parse::<i64>() {
-                    if is_valid_line_number(val) {
-                        return None;
-                    }
-                }
+            if DIGIT_1_2_RE.is_match(stripped)
+                && let Ok(val) = stripped.parse::<i64>()
+                && is_valid_line_number(val)
+            {
+                return None;
             }
 
             if line_nums_at_end {
                 // Line number at end of text
-                if let Some(cap) = LINE_NUM_END_RE.captures(&line.text) {
-                    if let Ok(val) = cap[1].parse::<i64>() {
-                        if is_valid_line_number(val) {
-                            line.line_number = Some(val);
-                            let m = cap.get(0).unwrap();
-                            line.text = line.text[..m.start()].to_string();
-                        }
-                    }
+                if let Some(cap) = LINE_NUM_END_RE.captures(&line.text)
+                    && let Ok(val) = cap[1].parse::<i64>()
+                    && is_valid_line_number(val)
+                {
+                    line.line_number = Some(val);
+                    let m = cap.get(0).unwrap();
+                    line.text = line.text[..m.start()].to_string();
                 }
             } else {
                 // Line number at start of text
                 if let Some(m) = LINE_NUM_START_RE.find(&line.text) {
                     let cap = LINE_NUM_START_RE.captures(&line.text).unwrap();
-                    if let Ok(val) = cap[1].parse::<i64>() {
-                        if is_valid_line_number(val) {
-                            line.line_number = Some(val);
-                            line.text = line.text[m.end()..].to_string();
-                        }
+                    if let Ok(val) = cap[1].parse::<i64>()
+                        && is_valid_line_number(val)
+                    {
+                        line.line_number = Some(val);
+                        line.text = line.text[m.end()..].to_string();
                     }
                 }
             }

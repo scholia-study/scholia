@@ -96,7 +96,9 @@ fn main() {
         total, args.start, end_idx
     );
 
-    for i in (args.start - 1)..end_idx.min(total) {
+    let start = args.start.saturating_sub(1);
+    let count = end_idx.min(total).saturating_sub(start);
+    for (i, _) in input_files.iter().enumerate().skip(start).take(count) {
         let page_num = i + 1;
         let out_path = format!("{}/page_{:04}.json", args.output_dir, page_num);
         let filename = Path::new(&input_files[i])
@@ -414,23 +416,25 @@ fn annotate_lines(body_lines: &[OcrLine], page_index: usize) -> Vec<AnnotatedLin
 
             // Spatial detection: if x is well below median, the leading token
             // may be an OCR-garbled Roman numeral B-ref (e.g. "1x" for "IX").
-            if b_page_ref.is_none() && median_x > 0.0 && line.x < median_x - 30.0 {
-                if let Some(space_pos) = text.find(char::is_whitespace) {
-                    let token = &text[..space_pos];
-                    if let Some(roman) = try_ocr_correct_roman(token) {
-                        b_page_ref = Some(roman);
-                        text = text[space_pos..].trim_start().to_string();
-                    }
+            if b_page_ref.is_none()
+                && median_x > 0.0
+                && line.x < median_x - 30.0
+                && let Some(space_pos) = text.find(char::is_whitespace)
+            {
+                let token = &text[..space_pos];
+                if let Some(roman) = try_ocr_correct_roman(token) {
+                    b_page_ref = Some(roman);
+                    text = text[space_pos..].trim_start().to_string();
                 }
             }
 
             // Fallback: Roman B-ref at end (rare on these pages but possible)
-            if b_page_ref.is_none() {
-                if let Some(cap) = B_REF_ROMAN_RE.captures(&text) {
-                    b_page_ref = Some(cap[1].to_string());
-                    let m = cap.get(0).unwrap();
-                    text = text[..m.start()].to_string();
-                }
+            if b_page_ref.is_none()
+                && let Some(cap) = B_REF_ROMAN_RE.captures(&text)
+            {
+                b_page_ref = Some(cap[1].to_string());
+                let m = cap.get(0).unwrap();
+                text = text[..m.start()].to_string();
             }
         } else {
             // Even scan pages: B-refs at END
@@ -471,7 +475,7 @@ fn annotate_lines(body_lines: &[OcrLine], page_index: usize) -> Vec<AnnotatedLin
 fn median(values: &mut [f64]) -> f64 {
     values.sort_by(|a, b| a.partial_cmp(b).unwrap());
     let len = values.len();
-    if len % 2 == 0 {
+    if len.is_multiple_of(2) {
         (values[len / 2 - 1] + values[len / 2]) / 2.0
     } else {
         values[len / 2]
@@ -542,10 +546,10 @@ fn is_heading(text: &str, line_count: usize) -> bool {
     if !first_char.is_uppercase() {
         return false;
     }
-    if let Some(last) = text.trim_end().chars().last() {
-        if matches!(last, ',' | ';' | ':') {
-            return false;
-        }
+    if let Some(last) = text.trim_end().chars().last()
+        && matches!(last, ',' | ';' | ':')
+    {
+        return false;
     }
     true
 }

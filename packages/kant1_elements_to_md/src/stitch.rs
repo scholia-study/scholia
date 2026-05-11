@@ -112,8 +112,8 @@ pub fn stitch_across_pages(pages: &mut [crate::model::InputPage]) -> Vec<(usize,
         let next_line = &mut next_elem.lines[0];
         let trimmed = next_line.text.trim();
         next_line.text = trimmed
-            .splitn(2, char::is_whitespace)
-            .nth(1)
+            .split_once(char::is_whitespace)
+            .map(|x| x.1)
             .unwrap_or("")
             .trim_start()
             .to_string();

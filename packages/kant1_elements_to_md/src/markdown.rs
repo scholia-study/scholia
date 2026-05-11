@@ -1,6 +1,6 @@
 use crate::model::{MdBlockType, MdTocNode};
 use crate::toc;
-pub use common::kant1::filenames::{filename, slugify};
+pub use common::kant1::filenames::filename;
 
 /// Render a complete markdown file for one TOC node.
 pub fn render_md(node: &MdTocNode) -> String {
@@ -120,6 +120,9 @@ pub fn render_toc(emitted: &[&MdTocNode]) -> String {
 
     out
 }
+
+#[cfg(test)]
+pub use common::kant1::filenames::slugify;
 
 #[cfg(test)]
 mod tests {
