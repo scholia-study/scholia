@@ -98,17 +98,14 @@ fn main() {
 
     let start = args.start.saturating_sub(1);
     let count = end_idx.min(total).saturating_sub(start);
-    for (i, _) in input_files.iter().enumerate().skip(start).take(count) {
+    for (i, path) in input_files.iter().enumerate().skip(start).take(count) {
         let page_num = i + 1;
         let out_path = format!("{}/page_{:04}.json", args.output_dir, page_num);
-        let filename = Path::new(&input_files[i])
-            .file_name()
-            .unwrap()
-            .to_string_lossy();
+        let filename = Path::new(path).file_name().unwrap().to_string_lossy();
 
         eprint!("  [{page_num}/{end_idx}] {filename}... ");
 
-        let data = match fs::read_to_string(&input_files[i]) {
+        let data = match fs::read_to_string(path) {
             Ok(d) => d,
             Err(e) => {
                 eprintln!("FAILED: {e}");

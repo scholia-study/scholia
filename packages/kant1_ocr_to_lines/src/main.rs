@@ -63,19 +63,16 @@ fn main() {
 
     let start = args.start.saturating_sub(1);
     let end = end_idx.min(total);
-    for (i, _) in input_files.iter().enumerate().take(end).skip(start) {
+    for (i, path) in input_files.iter().enumerate().take(end).skip(start) {
         let page_num = i + 1;
-        let filename = Path::new(&input_files[i])
-            .file_name()
-            .unwrap()
-            .to_string_lossy();
+        let filename = Path::new(path).file_name().unwrap().to_string_lossy();
 
         // Output uses same basename as input
         let out_path = format!("{}/{}", args.output_dir, filename);
 
         eprint!("  [{page_num}/{end_idx}] {filename}... ");
 
-        let data = match fs::read_to_string(&input_files[i]) {
+        let data = match fs::read_to_string(path) {
             Ok(d) => d,
             Err(e) => {
                 eprintln!("FAILED: {e}");
