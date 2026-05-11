@@ -4,8 +4,9 @@ packages:
   - packages/api
 
 onlyBuiltDependencies:
-  - esbuild
   - "@parcel/watcher"
+  - esbuild
+  - lefthook
   - lightningcss
 overrides:
   axios@>=1.0.0 <1.15.0: '>=1.15.0'
