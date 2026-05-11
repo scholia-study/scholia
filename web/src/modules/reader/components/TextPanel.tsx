@@ -405,12 +405,18 @@ export function TextPanel({
 
     const handleTocNavigate = useCallback(
         (slug: string) => {
-            const sortOrder = toc
-                ? findNodeInToc(toc, slug)?.sort_order
-                : undefined;
-            scrollViewRef.current?.scrollToNode(slug, sortOrder);
+            // Drive navigation through the URL/visibleSlug path (same as
+            // the IntersectionObserver-driven scroll sync). This makes
+            // PanelScrollView's initialNodeSlug-watcher pick the right
+            // strategy: in-window scrollToIndex for short jumps, or a
+            // query restart + scroll for far ones (e.g. Bible cross-book
+            // navigation, where sort_order can differ by 1000+). The
+            // earlier imperative `scrollToNode` shortcut bypassed the
+            // URL update and lost the target on far jumps.
+            setVisibleSlug(slug);
+            onScrollNavigate(slug);
         },
-        [toc],
+        [onScrollNavigate],
     );
 
     // Determine what to show in the resource panel: footnote sentences > range > single sentence

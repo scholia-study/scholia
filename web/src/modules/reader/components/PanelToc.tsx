@@ -138,14 +138,20 @@ function BibleShapeToc({
 
     // If the user navigates the reader to a different book externally
     // (e.g. clicks a chapter from elsewhere), follow the read position.
-    // We only track the book identity, not the chapter — the active
-    // chapter highlight is driven by `activeNodeSlug` directly.
+    // Keyed on `containingBookSlug` actually changing — *not* on
+    // disagreement with `selectedBookSlug` — so when the user clicks a
+    // different book pill the effect doesn't immediately yank them back.
     const containingBookSlug = containingBook?.slug;
+    const lastSyncedContainingBookRef = useRef(containingBookSlug);
     useEffect(() => {
-        if (containingBookSlug && containingBookSlug !== selectedBookSlug) {
+        if (
+            containingBookSlug &&
+            containingBookSlug !== lastSyncedContainingBookRef.current
+        ) {
+            lastSyncedContainingBookRef.current = containingBookSlug;
             setSelectedBookSlug(containingBookSlug);
         }
-    }, [containingBookSlug, selectedBookSlug]);
+    }, [containingBookSlug]);
 
     const visibleBook = useMemo(
         () => toc.find((b) => b.slug === selectedBookSlug) ?? toc[0],
