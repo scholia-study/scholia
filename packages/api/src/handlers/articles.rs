@@ -130,10 +130,12 @@ pub async fn update_article(
         &slug,
         user.id,
         &user.roles,
-        body.title.as_deref(),
-        body.markdown.as_deref(),
-        body.description.as_deref(),
-        body.topic_ids.as_deref(),
+        db::articles::ArticleUpdate {
+            title: body.title.as_deref(),
+            markdown: body.markdown.as_deref(),
+            description: body.description.as_deref(),
+            topic_ids: body.topic_ids.as_deref(),
+        },
     )
     .await?;
 

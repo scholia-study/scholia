@@ -389,10 +389,11 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
     // Self-named singletons have no listed works; pick up languages from
     // the host books row directly.
     for g in &groups {
-        if g.primary_kind == "self" && g.books.is_empty() {
-            if let Some(book) = book_rows.iter().find(|b| b.source_id.to_string() == g.id) {
-                langs.insert(book.language.clone());
-            }
+        if g.primary_kind == "self"
+            && g.books.is_empty()
+            && let Some(book) = book_rows.iter().find(|b| b.source_id.to_string() == g.id)
+        {
+            langs.insert(book.language.clone());
         }
     }
     let languages_count: i64 = langs.len() as i64;
@@ -459,16 +460,18 @@ fn compute_primary_key(
     authors_by_source: &HashMap<Uuid, Vec<PersonRow>>,
     editors_by_source: &HashMap<Uuid, Vec<PersonRow>>,
 ) -> GroupKey {
-    if let Some(list) = authors_by_source.get(&work_id) {
-        if let Some(first) = list.first() {
-            return GroupKey::Author(first.person_id);
-        }
+    if let Some(list) = authors_by_source.get(&work_id)
+        && let Some(first) = list.first()
+    {
+        return GroupKey::Author(first.person_id);
     }
-    if let Some(list) = editors_by_source.get(&work_id) {
-        if let Some(first) = list.first() {
-            return GroupKey::Author(first.person_id);
-        }
+
+    if let Some(list) = editors_by_source.get(&work_id)
+        && let Some(first) = list.first()
+    {
+        return GroupKey::Author(first.person_id);
     }
+
     GroupKey::SelfNamed(work_id)
 }
 
@@ -501,7 +504,7 @@ fn primary_author(
 fn build_work(
     work_id: Uuid,
     root_source: &SourceRow,
-    versions: &mut Vec<VersionInstance>,
+    versions: &mut [VersionInstance],
     sources: &HashMap<Uuid, SourceRow>,
     authors_by_source: &HashMap<Uuid, Vec<PersonRow>>,
     editors_by_source: &HashMap<Uuid, Vec<PersonRow>>,

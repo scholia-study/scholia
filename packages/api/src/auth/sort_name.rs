@@ -6,7 +6,7 @@
 ///   - Single token: returned as-is. ("filip" → "filip")
 ///   - Multi-token:  "{last}, {rest joined by single space}".
 ///     ("Filip Niklas" → "Niklas, Filip";
-///      "Friedrich Wilhelm Joseph Schelling" → "Schelling, Friedrich Wilhelm Joseph")
+///     "Friedrich Wilhelm Joseph Schelling" → "Schelling, Friedrich Wilhelm Joseph")
 ///   - Whitespace is collapsed; no special handling of particles ("von",
 ///     "van der", etc.) — users with those names override manually.
 pub fn derive_sort_name(display_name: &str) -> String {

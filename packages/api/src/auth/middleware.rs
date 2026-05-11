@@ -146,16 +146,14 @@ async fn load_auth_user(
     .flatten()?;
 
     let email_verified_at: Option<OffsetDateTime> = row.get("email_verified_at");
-    if email_verified_at.is_none() {
-        return None;
-    }
+    email_verified_at?;
 
     // Reject sessions created before the last password change
     let sessions_invalidated_at: Option<OffsetDateTime> = row.get("sessions_invalidated_at");
-    if let (Some(changed), Some(created)) = (sessions_invalidated_at, session_created_at) {
-        if created < changed.unix_timestamp() {
-            return None;
-        }
+    if let (Some(changed), Some(created)) = (sessions_invalidated_at, session_created_at)
+        && created < changed.unix_timestamp()
+    {
+        return None;
     }
 
     let role_names: Vec<String> = sqlx::query_scalar(

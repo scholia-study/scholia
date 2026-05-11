@@ -228,11 +228,11 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
             let val = &attr_cap[2];
             data_attrs.push_str(&format!(r#" data-article-quotation-{key}="{val}""#));
         }
-        if !data_attrs.contains("data-article-quotation-id=") {
-            if let Some(id_cap) = id_shorthand_re.captures(attrs_str) {
-                let val = &id_cap[1];
-                data_attrs.push_str(&format!(r#" data-article-quotation-id="{val}""#));
-            }
+        if !data_attrs.contains("data-article-quotation-id=")
+            && let Some(id_cap) = id_shorthand_re.captures(attrs_str)
+        {
+            let val = &id_cap[1];
+            data_attrs.push_str(&format!(r#" data-article-quotation-id="{val}""#));
         }
 
         // Collect the quotation id for the bibliography. Accept both the
@@ -245,12 +245,12 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
                     .captures(attrs_str)
                     .map(|c| c[1].to_string())
             });
-        if let Some(s) = id_str {
-            if let Ok(uuid) = Uuid::parse_str(&s) {
-                if !article_quotation_ids.contains(&uuid) {
-                    article_quotation_ids.push(uuid);
-                }
-            }
+
+        if let Some(s) = id_str
+            && let Ok(uuid) = Uuid::parse_str(&s)
+            && !article_quotation_ids.contains(&uuid)
+        {
+            article_quotation_ids.push(uuid);
         }
 
         article_q_placeholder_map.push(data_attrs);
@@ -302,13 +302,15 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
             if !all_source_ids.contains(&source_id) {
                 all_source_ids.push(source_id);
             }
-            if let Some(orig_id) = translation_of_id {
-                if !all_source_ids.contains(&orig_id) {
-                    all_source_ids.push(orig_id);
-                }
+
+            if let Some(orig_id) = translation_of_id
+                && !all_source_ids.contains(&orig_id)
+            {
+                all_source_ids.push(orig_id);
             }
         }
     }
+
     // Batch fetch source + person data for all citations and quotations
     let source_data = if !all_source_ids.is_empty() {
         fetch_citation_data(pool, &all_source_ids).await
@@ -358,10 +360,10 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
 
         // Track unique sources for bibliography
         for (id_str, _) in entries {
-            if let Ok(uuid) = Uuid::parse_str(id_str) {
-                if !bibliography_sources.contains(&uuid) {
-                    bibliography_sources.push(uuid);
-                }
+            if let Ok(uuid) = Uuid::parse_str(id_str)
+                && !bibliography_sources.contains(&uuid)
+            {
+                bibliography_sources.push(uuid);
             }
         }
     }
@@ -1047,17 +1049,28 @@ pub async fn list_published_articles_by_author(
     Ok((articles, total))
 }
 
+pub struct ArticleUpdate<'a> {
+    pub title: Option<&'a str>,
+    pub markdown: Option<&'a str>,
+    pub description: Option<&'a str>,
+    pub topic_ids: Option<&'a [String]>,
+}
+
 pub async fn update_article(
     pool: &PgPool,
     frontend_url: &str,
     slug: &str,
     user_id: Uuid,
     roles: &[String],
-    title: Option<&str>,
-    markdown: Option<&str>,
-    description: Option<&str>,
-    topic_ids: Option<&[String]>,
+    patch: ArticleUpdate<'_>,
 ) -> Result<ArticleDetailResponse, AppError> {
+    let ArticleUpdate {
+        title,
+        markdown,
+        description,
+        topic_ids,
+    } = patch;
+
     // Fetch article and verify ownership
     let row = sqlx::query!(
         r#"SELECT id, status AS "status: String" FROM articles

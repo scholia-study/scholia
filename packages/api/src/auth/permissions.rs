@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::str::FromStr;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Permission {
@@ -71,20 +72,24 @@ const ELEVATED_LIMITS: &[Permission] = &[
     Permission::NotesLimit10000,
 ];
 
-impl Role {
-    pub fn from_str(s: &str) -> Option<Self> {
+impl FromStr for Role {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "admin" => Some(Self::Admin),
-            "editor" => Some(Self::Editor),
-            "user" => Some(Self::User),
-            "scholiast" => Some(Self::Scholiast),
-            "scholiast_benefactor" => Some(Self::ScholiastBenefactor),
-            "scholiast_patron" => Some(Self::ScholiastPatron),
-            "honorary" => Some(Self::Honorary),
-            _ => None,
+            "admin" => Ok(Self::Admin),
+            "editor" => Ok(Self::Editor),
+            "user" => Ok(Self::User),
+            "scholiast" => Ok(Self::Scholiast),
+            "scholiast_benefactor" => Ok(Self::ScholiastBenefactor),
+            "scholiast_patron" => Ok(Self::ScholiastPatron),
+            "honorary" => Ok(Self::Honorary),
+            _ => Err(()),
         }
     }
+}
 
+impl Role {
     pub fn as_str(&self) -> &'static str {
         match self {
             Self::Admin => "admin",
@@ -129,7 +134,7 @@ impl Role {
 pub fn resolve_permissions(role_names: &[String]) -> HashSet<Permission> {
     let mut perms = HashSet::new();
     for name in role_names {
-        if let Some(role) = Role::from_str(name) {
+        if let Ok(role) = Role::from_str(name) {
             perms.extend(role.permissions());
         }
     }
