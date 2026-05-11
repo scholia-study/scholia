@@ -65,6 +65,8 @@ pub enum UnifiedQuotationResponse {
         start_text_snippet: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
         end_text_snippet: Option<String>,
+        /// See `QuotationWithContextResponse::has_source_view`.
+        has_source_view: bool,
         note_count: i64,
         created_at: String,
     },

@@ -744,6 +744,7 @@ struct QuotationWithContextRow {
     main_number: Option<i32>,
     start_text: Option<String>,
     end_text: Option<String>,
+    has_source_view: Option<bool>,
     note_count: Option<i64>,
     created_at: time::OffsetDateTime,
 }
@@ -777,6 +778,16 @@ pub async fn list_all_quotations(
                   ms.sentence_number AS "main_number?",
                   ss.text AS "start_text?",
                   se.text AS "end_text?",
+                  -- True iff this book is a translation AND the original
+                  -- work is itself a hosted text (has a `books` row).
+                  -- Bible translations point at the canonical "The Bible"
+                  -- bibliographic root, which has no books row → false.
+                  -- Hegel/Kant translations point at the imported original
+                  -- work → true.
+                  EXISTS (
+                      SELECT 1 FROM books orig_b
+                      WHERE orig_b.source_id = bs.translation_of_id
+                  ) AS "has_source_view?",
                   COUNT(qn.id) AS "note_count?",
                   q.created_at
            FROM quotations q
@@ -795,7 +806,7 @@ pub async fn list_all_quotations(
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.user_id = $1
              AND ($2::TEXT IS NULL OR b.slug = $2)
-           GROUP BY q.id, b.slug, b.language, bs.publisher, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text, ms.sentence_number
+           GROUP BY q.id, b.slug, b.language, bs.publisher, bs.translation_of_id, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text, ms.sentence_number
            ORDER BY q.created_at DESC"#,
         user_id,
         book_slug,
@@ -822,6 +833,7 @@ pub async fn list_all_quotations(
                 anchor_main_sentence_number: r.main_number,
                 start_text_snippet: start_snippet,
                 end_text_snippet: end_snippet,
+                has_source_view: r.has_source_view.unwrap_or(false),
                 note_count: r.note_count.unwrap_or(0),
                 created_at: fmt_time(r.created_at),
             }

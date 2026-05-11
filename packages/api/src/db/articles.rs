@@ -369,9 +369,19 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
     // Build the unified bibliography list. Two heterogeneous entry types —
     // book/source citations and user-article snapshot citations — are
     // collected as a tagged enum so each can be formatted in its own style.
+    //
+    // Sources with neither authors nor a publication year are bibliographic
+    // *roots* — abstract groupings like the canonical "The Bible" that the
+    // import structure uses to link translations together. They aren't
+    // independently citable and shouldn't appear as standalone bibliography
+    // entries; we include them in `all_source_ids` upstream only to make
+    // `translation_of_id` walks easier, then filter them out here.
     let mut bib_entries: Vec<BibEntry> = Vec::new();
     for id in &bibliography_sources {
         if let Some(data) = source_data.get(id) {
+            if data.authors.is_empty() && data.publication_year.is_none() {
+                continue;
+            }
             bib_entries.push(BibEntry::Source(data.clone()));
         }
     }
@@ -565,16 +575,44 @@ fn format_inline_citation(
     format!("({})", parts.join("; "))
 }
 
-/// Format a bibliography entry in Chicago author-date style
+/// Format a bibliography entry in Chicago author-date style.
+///
+/// Two structural variants:
+///   - With authors: "Last, First. Year. *Title*. Publisher."
+///   - Anonymous (no authors): "*Title*. Year. Publisher." — Chicago
+///     handles author-less works by leading with the title rather than
+///     printing an "Unknown" placeholder.
+///
+/// `year` may legitimately be "n.d." for undated works; we avoid the
+/// double-period artifact ("n.d..") by treating any year-string ending
+/// in `.` as already terminated.
 fn format_bibliography_entry(data: &CitationSourceData) -> String {
-    // Author(s)
-    let author_part = if data.author_sort_names.is_empty() {
-        "Unknown".to_string()
-    } else if data.author_sort_names.len() == 1 {
-        // "Last, First"
+    let year_token = data
+        .publication_year
+        .map(|y| y.to_string())
+        .unwrap_or_else(|| "n.d.".to_string());
+    let year_terminated = if year_token.ends_with('.') {
+        year_token.clone()
+    } else {
+        format!("{year_token}.")
+    };
+
+    let title = &data.title;
+    let publisher = data.publisher.as_deref().unwrap_or("");
+    let publisher_suffix = if publisher.is_empty() {
+        String::new()
+    } else {
+        format!(" {publisher}.")
+    };
+
+    if data.author_sort_names.is_empty() {
+        // Anonymous: lead with the title.
+        return format!("<em>{title}</em>. {year_terminated}{publisher_suffix}");
+    }
+
+    let author_part = if data.author_sort_names.len() == 1 {
         data.author_sort_names[0].clone()
     } else {
-        // "Last, First, and First Last"
         let first = &data.author_sort_names[0];
         let rest: Vec<&str> = data.authors[1..].iter().map(|s| s.as_str()).collect();
         if rest.len() == 1 {
@@ -588,23 +626,7 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
         }
     };
 
-    // Year
-    let year = data
-        .publication_year
-        .map(|y| y.to_string())
-        .unwrap_or_else(|| "n.d.".to_string());
-
-    // Title (italicized)
-    let title = &data.title;
-
-    // Publisher
-    let publisher = data.publisher.as_deref().unwrap_or("");
-
-    if publisher.is_empty() {
-        format!("{author_part}. {year}. <em>{title}</em>.")
-    } else {
-        format!("{author_part}. {year}. <em>{title}</em>. {publisher}.")
-    }
+    format!("{author_part}. {year_terminated} <em>{title}</em>.{publisher_suffix}")
 }
 
 /// Extract last name from a full name
@@ -1409,6 +1431,7 @@ struct SentenceRow {
     sentence_number: Option<i32>,
     html: String,
     original_html: Option<String>,
+    reference_label: Option<String>,
 }
 
 pub async fn batch_get_sentences(
@@ -1425,14 +1448,18 @@ pub async fn batch_get_sentences(
     struct BookNodeRow {
         book_title: String,
         node_label: String,
+        parent_node_label: Option<String>,
     }
 
     let context = sqlx::query_as!(
         BookNodeRow,
-        r#"SELECT COALESCE(s.title_display, s.title) AS "book_title!", n.label AS "node_label!"
+        r#"SELECT COALESCE(s.title_display, s.title) AS "book_title!",
+                  n.label AS "node_label!",
+                  pn.label AS "parent_node_label?"
            FROM books b
            JOIN sources s ON s.id = b.source_id
            JOIN toc_nodes n ON n.book_id = b.id AND n.slug = $2
+           LEFT JOIN toc_nodes pn ON pn.id = n.parent_id
            WHERE b.slug = $1"#,
         book_slug,
         node_slug,
@@ -1441,12 +1468,23 @@ pub async fn batch_get_sentences(
     .await
     .map_err(|_| AppError::NotFound("Book or node not found".into()))?;
 
+    // Per-sentence verse reference (e.g. "13:2" for bibles). Picks the
+    // first marker from any inline reference_system; for bibles the only
+    // inline system is "verse", so this is unambiguous. Books without
+    // inline reference systems (Hegel/Kant) return NULL and the frontend
+    // falls back to the s. N attribution.
     let rows = if is_body {
         sqlx::query_as!(
             SentenceRow,
             r#"SELECT s.sentence_number AS "sentence_number?",
                       s.html AS "html!",
-                      COALESCE(s.original_html, src.html) AS original_html
+                      COALESCE(s.original_html, src.html) AS original_html,
+                      (SELECT pm.ref_value
+                         FROM page_markers pm
+                         JOIN reference_systems rs ON rs.id = pm.system_id
+                         WHERE pm.sentence_id = s.id AND rs.ref_type = 'inline'
+                         ORDER BY pm.sort_order
+                         LIMIT 1) AS reference_label
                FROM sentences s
                JOIN books b ON b.id = s.book_id
                LEFT JOIN sentences src ON src.id = s.source_sentence_start_id
@@ -1466,7 +1504,13 @@ pub async fn batch_get_sentences(
             SentenceRow,
             r#"SELECT s.sentence_number AS "sentence_number?",
                       s.html AS "html!",
-                      COALESCE(s.original_html, src.html) AS original_html
+                      COALESCE(s.original_html, src.html) AS original_html,
+                      (SELECT pm.ref_value
+                         FROM page_markers pm
+                         JOIN reference_systems rs ON rs.id = pm.system_id
+                         WHERE pm.sentence_id = s.id AND rs.ref_type = 'inline'
+                         ORDER BY pm.sort_order
+                         LIMIT 1) AS reference_label
                FROM sentences s
                JOIN books b ON b.id = s.book_id
                LEFT JOIN sentences src ON src.id = s.source_sentence_start_id
@@ -1522,6 +1566,7 @@ pub async fn batch_get_sentences(
         book_title: context.book_title,
         node_slug: node_slug.to_string(),
         node_label: context.node_label,
+        parent_node_label: context.parent_node_label,
         source: source_context,
         sentences: rows
             .into_iter()
@@ -1529,6 +1574,7 @@ pub async fn batch_get_sentences(
                 sentence_number: r.sentence_number.unwrap_or(0),
                 html: r.html,
                 original_html: r.original_html,
+                reference_label: r.reference_label,
             })
             .collect(),
     })

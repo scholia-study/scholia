@@ -139,6 +139,14 @@ pub struct SentenceData {
     pub html: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub original_html: Option<String>,
+    /// Inline reference marker for this sentence when one applies
+    /// (e.g. Bible verse `"13:2"`). When present, the quotation card
+    /// renders attribution as `Parent ref` (e.g. `Romans 13:2`) rather
+    /// than `Book · Chapter · s. N`. Only the first verse-system
+    /// marker is returned; other reference systems are out of scope
+    /// for this surface.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reference_label: Option<String>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -155,6 +163,13 @@ pub struct BatchSentenceResponseItem {
     pub book_title: String,
     pub node_slug: String,
     pub node_label: String,
+    /// Label of the cited node's parent in the toc tree, when one
+    /// exists. For bibles this is the bible-book ("Romans"); for
+    /// Hegel/Kant it's a chapter title or compilation header. The
+    /// frontend uses this together with `reference_label` to render
+    /// bible-style attributions like "Romans 13:2".
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_node_label: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<SourceContext>,
     pub sentences: Vec<SentenceData>,

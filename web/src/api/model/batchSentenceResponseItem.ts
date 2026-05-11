@@ -12,6 +12,15 @@ export interface BatchSentenceResponseItem {
     book_title: string;
     node_label: string;
     node_slug: string;
+    /**
+     * Label of the cited node's parent in the toc tree, when one
+  exists. For bibles this is the bible-book ("Romans"); for
+  Hegel/Kant it's a chapter title or compilation header. The
+  frontend uses this together with `reference_label` to render
+  bible-style attributions like "Romans 13:2".
+     * @nullable
+     */
+    parent_node_label?: string | null;
     sentences: SentenceData[];
     source?: null | SourceContext;
 }

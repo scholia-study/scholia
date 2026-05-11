@@ -115,6 +115,13 @@ export function QuotationPickerModal({
     const handleConfirm = () => {
         if (!selected) return;
         if (selected.source_type === "book") {
+            // If the cited book has no viewable source (e.g. Bible
+            // translation under the canonical "The Bible" root), force
+            // mode to "translation" regardless of what the picker UI
+            // last held — Source / Both would render empty.
+            const effectiveMode: BookDisplayMode = selected.has_source_view
+                ? mode
+                : "translation";
             onSelect({
                 source_type: "book",
                 book: selected.book_slug,
@@ -122,7 +129,7 @@ export function QuotationPickerModal({
                 start: selected.anchor_sentence_start_number,
                 end: selected.anchor_sentence_end_number ?? undefined,
                 kind: selected.sentence_kind,
-                mode,
+                mode: effectiveMode,
                 layout,
             });
         } else {
@@ -218,85 +225,98 @@ export function QuotationPickerModal({
                     )}
                 </div>
 
-                {selected?.source_type === "book" && (
-                    <div className="border-t border-stone-200 pt-4 flex gap-6">
-                        <FormControl>
-                            <FormLabel sx={{ fontSize: "0.75rem" }}>
-                                Display mode
-                            </FormLabel>
-                            <RadioGroup
-                                value={mode}
-                                onChange={(e) =>
-                                    setMode(e.target.value as BookDisplayMode)
-                                }
-                                row
-                            >
-                                <FormControlLabel
-                                    value="source"
-                                    control={<Radio size="small" />}
-                                    label="Source"
-                                    slotProps={{
-                                        typography: { fontSize: "0.8rem" },
-                                    }}
-                                />
-                                <FormControlLabel
-                                    value="translation"
-                                    control={<Radio size="small" />}
-                                    label="Translation"
-                                    slotProps={{
-                                        typography: { fontSize: "0.8rem" },
-                                    }}
-                                />
-                                <FormControlLabel
-                                    value="source+translation"
-                                    control={<Radio size="small" />}
-                                    label="Both"
-                                    slotProps={{
-                                        typography: { fontSize: "0.8rem" },
-                                    }}
-                                />
-                            </RadioGroup>
-                        </FormControl>
+                {selected?.source_type === "book" &&
+                    selected.has_source_view && (
+                        <div className="border-t border-stone-200 pt-4 flex gap-6">
+                            <FormControl>
+                                <FormLabel sx={{ fontSize: "0.75rem" }}>
+                                    Display mode
+                                </FormLabel>
+                                <RadioGroup
+                                    value={mode}
+                                    onChange={(e) =>
+                                        setMode(
+                                            e.target.value as BookDisplayMode,
+                                        )
+                                    }
+                                    row
+                                >
+                                    <FormControlLabel
+                                        value="source"
+                                        control={<Radio size="small" />}
+                                        label="Source"
+                                        slotProps={{
+                                            typography: { fontSize: "0.8rem" },
+                                        }}
+                                    />
+                                    <FormControlLabel
+                                        value="translation"
+                                        control={<Radio size="small" />}
+                                        label="Translation"
+                                        slotProps={{
+                                            typography: { fontSize: "0.8rem" },
+                                        }}
+                                    />
+                                    <FormControlLabel
+                                        value="source+translation"
+                                        control={<Radio size="small" />}
+                                        label="Both"
+                                        slotProps={{
+                                            typography: { fontSize: "0.8rem" },
+                                        }}
+                                    />
+                                </RadioGroup>
+                            </FormControl>
 
-                        <FormControl>
-                            <FormLabel sx={{ fontSize: "0.75rem" }}>
-                                Layout
-                            </FormLabel>
-                            <RadioGroup
-                                value={layout}
-                                onChange={(e) =>
-                                    setLayout(e.target.value as BookLayout)
-                                }
-                                row
-                            >
-                                <FormControlLabel
-                                    value="stacked"
-                                    control={<Radio size="small" />}
-                                    label="Stacked"
-                                    slotProps={{
-                                        typography: { fontSize: "0.8rem" },
-                                    }}
-                                />
-                                <FormControlLabel
-                                    value="side-by-side-source-left"
-                                    control={<Radio size="small" />}
-                                    label="Side-by-side (source left)"
-                                    slotProps={{
-                                        typography: { fontSize: "0.8rem" },
-                                    }}
-                                />
-                                <FormControlLabel
-                                    value="side-by-side-source-right"
-                                    control={<Radio size="small" />}
-                                    label="Side-by-side (source right)"
-                                    slotProps={{
-                                        typography: { fontSize: "0.8rem" },
-                                    }}
-                                />
-                            </RadioGroup>
-                        </FormControl>
-                    </div>
-                )}
+                            {mode === "source+translation" && (
+                                <FormControl>
+                                    <FormLabel sx={{ fontSize: "0.75rem" }}>
+                                        Layout
+                                    </FormLabel>
+                                    <RadioGroup
+                                        value={layout}
+                                        onChange={(e) =>
+                                            setLayout(
+                                                e.target.value as BookLayout,
+                                            )
+                                        }
+                                        row
+                                    >
+                                        <FormControlLabel
+                                            value="stacked"
+                                            control={<Radio size="small" />}
+                                            label="Stacked"
+                                            slotProps={{
+                                                typography: {
+                                                    fontSize: "0.8rem",
+                                                },
+                                            }}
+                                        />
+                                        <FormControlLabel
+                                            value="side-by-side-source-left"
+                                            control={<Radio size="small" />}
+                                            label="Side-by-side (source left)"
+                                            slotProps={{
+                                                typography: {
+                                                    fontSize: "0.8rem",
+                                                },
+                                            }}
+                                        />
+                                        <FormControlLabel
+                                            value="side-by-side-source-right"
+                                            control={<Radio size="small" />}
+                                            label="Side-by-side (source right)"
+                                            slotProps={{
+                                                typography: {
+                                                    fontSize: "0.8rem",
+                                                },
+                                            }}
+                                        />
+                                    </RadioGroup>
+                                </FormControl>
+                            )}
+                        </div>
+                    )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>Cancel</Button>

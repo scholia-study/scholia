@@ -1,6 +1,6 @@
 ## 🐞 BUGS
 - saving a range quotation wrongly shows "edit" icon
-- citations where source is missing should not display source + both etc.
+- citations menu modal/popover where source is missing should not display source + both etc. e.g. for bible citations, the buttons here are moot.
 - fix bibliography for bibles
 
 ## 🌿 FEATURES

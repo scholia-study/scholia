@@ -145,6 +145,14 @@ pub struct QuotationWithContextResponse {
     pub start_text_snippet: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub end_text_snippet: Option<String>,
+    /// `true` when the cited book is a translation AND the original work
+    /// is also a hosted text (i.e. there's a `books` row for the
+    /// `translation_of_id` source). Used by the quotation embed picker
+    /// to decide whether the "Source" / "Both" display modes are
+    /// meaningful — for translations whose original isn't hosted (e.g.
+    /// Bible translations under the canonical "The Bible" root), only
+    /// "Translation" mode makes sense.
+    pub has_source_view: bool,
     pub note_count: i64,
     pub created_at: String,
 }

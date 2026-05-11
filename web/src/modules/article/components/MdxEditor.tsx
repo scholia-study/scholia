@@ -22,6 +22,7 @@ import {
 } from "@mdxeditor/editor";
 import { Popover } from "@mui/material";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { useGetBook } from "../../../api/books/books";
 import { ArticleQuotationCard, QuotationCard } from "../../quotation";
 import { type CitationEntry, CitationPopover } from "./CitationPopover";
 import type { QuotationPickerResult } from "./QuotationPickerModal";
@@ -44,6 +45,20 @@ function QuotationDirectiveEditor({
 
     const mode = (attrs.mode as QuotationMode) ?? "translation";
     const layout = (attrs.layout as QuotationLayout) ?? "stacked";
+
+    // A book has a viewable source iff its translation_of source is
+    // itself a hosted text — encoded in `source_book_slug`. Bibles
+    // point at the canonical "The Bible" bibliographic root, which
+    // has no books row → no source view possible. Suppress the mode
+    // and layout controls in that case (and force display to
+    // translation-only via the mode coercion below). We only fetch
+    // when the popover is open to avoid book-detail queries for
+    // every quotation embed in the editor.
+    const { data: bookData } = useGetBook(attrs.book ?? "", {
+        query: { enabled: !!attrs.book && !!anchorEl },
+    });
+    const hasSourceView = !!bookData?.data?.source_book_slug;
+    const effectiveMode: QuotationMode = hasSourceView ? mode : "translation";
 
     const updateAttr = (key: string, value: string) => {
         parentEditor.update(() => {
@@ -69,7 +84,7 @@ function QuotationDirectiveEditor({
                 start={Number(attrs.start) || 0}
                 end={attrs.end ? Number(attrs.end) : undefined}
                 kind={attrs.kind ?? "body"}
-                mode={mode}
+                mode={effectiveMode}
                 layout={layout}
             />
             <div className="absolute -top-3 -right-3 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -134,72 +149,85 @@ function QuotationDirectiveEditor({
                 }}
             >
                 <div className="space-y-3 text-xs">
-                    <fieldset>
-                        <legend className="text-stone-400 font-medium mb-1">
-                            Display mode
-                        </legend>
-                        <div className="flex gap-3">
-                            {(
-                                [
-                                    ["source", "Source"],
-                                    ["translation", "Translation"],
-                                    ["source+translation", "Both"],
-                                ] as const
-                            ).map(([value, label]) => (
-                                <label
-                                    key={value}
-                                    className="flex items-center gap-1 cursor-pointer"
-                                >
-                                    <input
-                                        type="radio"
-                                        name="quotation-mode"
-                                        checked={mode === value}
-                                        onChange={() =>
-                                            updateAttr("mode", value)
-                                        }
-                                        className="accent-stone-600"
-                                    />
-                                    {label}
-                                </label>
-                            ))}
-                        </div>
-                    </fieldset>
-                    <fieldset>
-                        <legend className="text-stone-400 font-medium mb-1">
-                            Layout
-                        </legend>
-                        <div className="flex gap-3">
-                            {(
-                                [
-                                    ["stacked", "Stacked"],
-                                    [
-                                        "side-by-side-source-left",
-                                        "Side-by-side (L)",
-                                    ],
-                                    [
-                                        "side-by-side-source-right",
-                                        "Side-by-side (R)",
-                                    ],
-                                ] as const
-                            ).map(([value, label]) => (
-                                <label
-                                    key={value}
-                                    className="flex items-center gap-1 cursor-pointer"
-                                >
-                                    <input
-                                        type="radio"
-                                        name="quotation-layout"
-                                        checked={layout === value}
-                                        onChange={() =>
-                                            updateAttr("layout", value)
-                                        }
-                                        className="accent-stone-600"
-                                    />
-                                    {label}
-                                </label>
-                            ))}
-                        </div>
-                    </fieldset>
+                    {hasSourceView ? (
+                        <>
+                            <fieldset>
+                                <legend className="text-stone-400 font-medium mb-1">
+                                    Display mode
+                                </legend>
+                                <div className="flex gap-3">
+                                    {(
+                                        [
+                                            ["source", "Source"],
+                                            ["translation", "Translation"],
+                                            ["source+translation", "Both"],
+                                        ] as const
+                                    ).map(([value, label]) => (
+                                        <label
+                                            key={value}
+                                            className="flex items-center gap-1 cursor-pointer"
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="quotation-mode"
+                                                checked={mode === value}
+                                                onChange={() =>
+                                                    updateAttr("mode", value)
+                                                }
+                                                className="accent-stone-600"
+                                            />
+                                            {label}
+                                        </label>
+                                    ))}
+                                </div>
+                            </fieldset>
+                            {mode === "source+translation" && (
+                                <fieldset>
+                                    <legend className="text-stone-400 font-medium mb-1">
+                                        Layout
+                                    </legend>
+                                    <div className="flex gap-3">
+                                        {(
+                                            [
+                                                ["stacked", "Stacked"],
+                                                [
+                                                    "side-by-side-source-left",
+                                                    "Side-by-side (L)",
+                                                ],
+                                                [
+                                                    "side-by-side-source-right",
+                                                    "Side-by-side (R)",
+                                                ],
+                                            ] as const
+                                        ).map(([value, label]) => (
+                                            <label
+                                                key={value}
+                                                className="flex items-center gap-1 cursor-pointer"
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="quotation-layout"
+                                                    checked={layout === value}
+                                                    onChange={() =>
+                                                        updateAttr(
+                                                            "layout",
+                                                            value,
+                                                        )
+                                                    }
+                                                    className="accent-stone-600"
+                                                />
+                                                {label}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </fieldset>
+                            )}
+                        </>
+                    ) : (
+                        <p className="text-stone-400 italic">
+                            No source-language view available for this work.
+                        </p>
+                    )}
                 </div>
             </Popover>
         </div>

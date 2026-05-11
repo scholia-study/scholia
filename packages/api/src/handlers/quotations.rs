@@ -378,6 +378,7 @@ pub async fn list_all_quotations(
                 anchor_main_sentence_number: q.anchor_main_sentence_number,
                 start_text_snippet: q.start_text_snippet,
                 end_text_snippet: q.end_text_snippet,
+                has_source_view: q.has_source_view,
                 note_count: q.note_count,
                 created_at: q.created_at,
             });

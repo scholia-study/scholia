@@ -99,6 +99,20 @@ export function QuotationCard({
             ? `${prefix} ${start}\u2013${end}`
             : `${prefix} ${start}`;
 
+    // Reference-style attribution: when the cited sentences carry an
+    // inline reference marker (e.g. Bible verses), present "Parent
+    // <start>[-<end>]" instead of "Book \u00b7 Chapter \u00b7 s. N". The parent
+    // node label is the bible-book ("Romans") and the marker is the
+    // chapter:verse string ("13:2").
+    const firstRef = item.sentences[0]?.reference_label;
+    const lastRef = item.sentences[item.sentences.length - 1]?.reference_label;
+    const useReferenceStyle = !!firstRef && !!item.parent_node_label;
+    const referenceLocation = useReferenceStyle
+        ? lastRef && lastRef !== firstRef
+            ? `${firstRef}\u2013${lastRef}`
+            : firstRef
+        : null;
+
     const srcBook = item.source ?? {
         book_slug: book,
         book_title: item.book_title,
@@ -132,8 +146,17 @@ export function QuotationCard({
                 target="_blank"
                 className="!text-xs !text-stone-400 !no-underline hover:!underline !transition-colors"
             >
-                {item.book_title} &middot; {item.node_label} &middot;{" "}
-                {sentenceLabel}
+                {useReferenceStyle ? (
+                    <>
+                        {item.book_title} &middot; {item.parent_node_label}{" "}
+                        {referenceLocation}
+                    </>
+                ) : (
+                    <>
+                        {item.book_title} &middot; {item.node_label} &middot;{" "}
+                        {sentenceLabel}
+                    </>
+                )}
             </Link>
         </div>
     );

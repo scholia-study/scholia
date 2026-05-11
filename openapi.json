@@ -3005,6 +3005,10 @@
                     "node_slug": {
                         "type": "string"
                     },
+                    "parent_node_label": {
+                        "type": ["string", "null"],
+                        "description": "Label of the cited node's parent in the toc tree, when one\nexists. For bibles this is the bible-book (\"Romans\"); for\nHegel/Kant it's a chapter title or compilation header. The\nfrontend uses this together with `reference_label` to render\nbible-style attributions like \"Romans 13:2\"."
+                    },
                     "sentences": {
                         "type": "array",
                         "items": {
@@ -4371,6 +4375,7 @@
                     "node_slug",
                     "anchor_sentence_start_number",
                     "sentence_kind",
+                    "has_source_view",
                     "note_count",
                     "created_at"
                 ],
@@ -4400,6 +4405,10 @@
                     },
                     "end_text_snippet": {
                         "type": ["string", "null"]
+                    },
+                    "has_source_view": {
+                        "type": "boolean",
+                        "description": "`true` when the cited book is a translation AND the original work\nis also a hosted text (i.e. there's a `books` row for the\n`translation_of_id` source). Used by the quotation embed picker\nto decide whether the \"Source\" / \"Both\" display modes are\nmeaningful — for translations whose original isn't hosted (e.g.\nBible translations under the canonical \"The Bible\" root), only\n\"Translation\" mode makes sense."
                     },
                     "id": {
                         "type": "string"
@@ -4651,6 +4660,10 @@
                     },
                     "original_html": {
                         "type": ["string", "null"]
+                    },
+                    "reference_label": {
+                        "type": ["string", "null"],
+                        "description": "Inline reference marker for this sentence when one applies\n(e.g. Bible verse `\"13:2\"`). When present, the quotation card\nrenders attribution as `Parent ref` (e.g. `Romans 13:2`) rather\nthan `Book · Chapter · s. N`. Only the first verse-system\nmarker is returned; other reference systems are out of scope\nfor this surface."
                     },
                     "sentence_number": {
                         "type": "integer",
@@ -5032,6 +5045,7 @@
                             "node_slug",
                             "anchor_sentence_start_number",
                             "sentence_kind",
+                            "has_source_view",
                             "note_count",
                             "created_at",
                             "source_type"
@@ -5061,6 +5075,10 @@
                             },
                             "end_text_snippet": {
                                 "type": ["string", "null"]
+                            },
+                            "has_source_view": {
+                                "type": "boolean",
+                                "description": "See `QuotationWithContextResponse::has_source_view`."
                             },
                             "id": {
                                 "type": "string"

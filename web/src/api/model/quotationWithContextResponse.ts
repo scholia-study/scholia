@@ -25,6 +25,14 @@ export interface QuotationWithContextResponse {
     created_at: string;
     /** @nullable */
     end_text_snippet?: string | null;
+    /** `true` when the cited book is a translation AND the original work
+  is also a hosted text (i.e. there's a `books` row for the
+  `translation_of_id` source). Used by the quotation embed picker
+  to decide whether the "Source" / "Both" display modes are
+  meaningful — for translations whose original isn't hosted (e.g.
+  Bible translations under the canonical "The Bible" root), only
+  "Translation" mode makes sense. */
+    has_source_view: boolean;
     id: string;
     node_label: string;
     node_slug: string;

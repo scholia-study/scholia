@@ -21,6 +21,8 @@ export type UnifiedQuotationResponse =
           created_at: string;
           /** @nullable */
           end_text_snippet?: string | null;
+          /** See `QuotationWithContextResponse::has_source_view`. */
+          has_source_view: boolean;
           id: string;
           node_label: string;
           node_slug: string;

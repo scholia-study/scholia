@@ -9,5 +9,15 @@ export interface SentenceData {
     html: string;
     /** @nullable */
     original_html?: string | null;
+    /**
+     * Inline reference marker for this sentence when one applies
+  (e.g. Bible verse `"13:2"`). When present, the quotation card
+  renders attribution as `Parent ref` (e.g. `Romans 13:2`) rather
+  than `Book · Chapter · s. N`. Only the first verse-system
+  marker is returned; other reference systems are out of scope
+  for this surface.
+     * @nullable
+     */
+    reference_label?: string | null;
     sentence_number: number;
 }
