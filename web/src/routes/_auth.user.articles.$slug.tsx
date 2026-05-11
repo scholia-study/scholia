@@ -147,6 +147,17 @@ function ArticleEditorPage() {
                     data: updates,
                 });
                 setSaveStatus("saved");
+                // If a markdown edit caused any `revokes_on_edit` labels
+                // to fall off, toast the author so they aren't surprised
+                // by the chip disappearing on the public page.
+                const revoked = result.data?.revoked_labels ?? [];
+                if (revoked.length > 0) {
+                    const names = revoked.map((l) => l.name).join(", ");
+                    toast(
+                        `Editorial approval revoked due to edit: ${names}. Editors will re-evaluate.`,
+                        { duration: 6000 },
+                    );
+                }
                 // If slug changed (title change), navigate to new slug
                 const newSlug = result.data?.slug;
                 if (newSlug && newSlug !== currentSlug.current) {
@@ -354,6 +365,24 @@ function ArticleEditorPage() {
                         plan only allows editing your oldest active articles.
                     </div>
                 )}
+
+                {(() => {
+                    const revokable = article.labels.filter(
+                        (l) => l.revokes_on_edit,
+                    );
+                    if (revokable.length === 0 || isArchived) return null;
+                    const names = revokable
+                        .map((l) => `"${l.name}"`)
+                        .join(", ");
+                    return (
+                        <div className="mb-4 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded text-sm text-emerald-900">
+                            This article carries an editorial label:{" "}
+                            <strong>{names}</strong>. Editing the body will
+                            revoke it; an editor will need to re-review the
+                            article to restore the label.
+                        </div>
+                    );
+                })()}
 
                 {/* Title */}
                 <TextField

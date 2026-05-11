@@ -2,6 +2,8 @@ import { Chip } from "@mui/material";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { Element } from "html-react-parser";
 import { useGetPublishedArticle } from "../api/articles/articles";
+import { useAuth } from "../hooks/useAuth";
+import { EditorialLabelChips, EditorialLabelManager } from "../modules/article";
 import {
     ArticleQuotationCard,
     ArticleSentences,
@@ -60,6 +62,8 @@ function PublishedArticlePage() {
     const { slug } = Route.useParams();
     const { data: articleData, isLoading } = useGetPublishedArticle(slug);
     const article = articleData?.data;
+    const { hasPermission } = useAuth();
+    const canManageLabels = hasPermission("article_labels_manage");
 
     if (isLoading) {
         return (
@@ -89,6 +93,21 @@ function PublishedArticlePage() {
                     <h1 className="text-3xl font-bold text-stone-900 mb-3">
                         {article.title}
                     </h1>
+                    {(article.labels.length > 0 || canManageLabels) &&
+                        article.status === "published" && (
+                            <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                                <EditorialLabelChips
+                                    labels={article.labels}
+                                    clickable={true}
+                                />
+                                {canManageLabels && (
+                                    <EditorialLabelManager
+                                        articleSlug={article.slug}
+                                        appliedLabels={article.labels}
+                                    />
+                                )}
+                            </div>
+                        )}
                     {article.description && (
                         <p className="text-lg text-stone-500 mb-4">
                             {article.description}

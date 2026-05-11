@@ -591,6 +591,39 @@ INSERT INTO topics (name, slug) VALUES
     ('Phenomenology', 'phenomenology'),
     ('German Idealism', 'german-idealism');
 
+-- Editorial labels applied to published articles by editors/admins.
+-- Curated vocabulary (not user-defined) so chips carry shared meaning.
+-- `revokes_on_edit = true` for content-quality labels (e.g. High Quality):
+-- the article-update handler strips these whenever the author edits
+-- markdown, so the chip always reflects content an editor actually saw.
+-- `revokes_on_edit = false` for promotion-style labels (e.g. Featured):
+-- the editorial slot is unaffected by author edits.
+CREATE TABLE editorial_labels (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name            TEXT NOT NULL UNIQUE,
+    slug            TEXT NOT NULL UNIQUE,
+    description     TEXT,
+    revokes_on_edit BOOLEAN NOT NULL DEFAULT false,
+    sort_order      INT NOT NULL DEFAULT 0,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE article_editorial_labels (
+    article_id  UUID NOT NULL REFERENCES articles(id) ON DELETE CASCADE,
+    label_id    UUID NOT NULL REFERENCES editorial_labels(id) ON DELETE CASCADE,
+    applied_by  UUID NOT NULL REFERENCES users(id),
+    applied_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (article_id, label_id)
+);
+
+CREATE INDEX idx_article_editorial_labels_label
+    ON article_editorial_labels (label_id);
+
+-- Seed initial labels. Order: Featured first (more prominent), then High Quality.
+INSERT INTO editorial_labels (name, slug, description, revokes_on_edit, sort_order) VALUES
+    ('Featured', 'featured', 'Editor-promoted article. Survives author edits.', false, 10),
+    ('High Quality', 'high-quality', 'Editorially vetted for content quality. Revoked when the author edits the article.', true, 20);
+
 -- ============================================================
 -- QUOTATIONS & NOTES (user-saved text anchors + commentary)
 -- ============================================================

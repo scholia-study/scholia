@@ -9,6 +9,96 @@
         "version": "0.1.0"
     },
     "paths": {
+        "/api/admin/articles/{slug}/labels": {
+            "post": {
+                "tags": ["articles"],
+                "summary": "Apply an editorial label to a published article. Editor/admin only.",
+                "operationId": "apply_article_label",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Article slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApplyEditorialLabelRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Label applied",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EditorialLabelResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Article not eligible (e.g. not published)"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Article or label not found"
+                    }
+                }
+            }
+        },
+        "/api/admin/articles/{slug}/labels/{label_slug}": {
+            "delete": {
+                "tags": ["articles"],
+                "summary": "Remove an editorial label from an article. Editor/admin only.\nIdempotent — returns 200 even if the label wasn't applied.",
+                "operationId": "remove_article_label",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Article slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "label_slug",
+                        "in": "path",
+                        "description": "Label slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Label removed (or wasn't applied)"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    }
+                }
+            }
+        },
         "/api/admin/feedback": {
             "get": {
                 "tags": ["feedback"],
@@ -272,6 +362,15 @@
                     {
                         "name": "topic_slug",
                         "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
+                        "name": "label_slug",
+                        "in": "query",
+                        "description": "Filter the listing to articles bearing this editorial label slug\n(e.g. `featured`, `high-quality`). Single label per request — no\nAND-ing across labels in v1.",
                         "required": false,
                         "schema": {
                             "type": ["string", "null"]
@@ -1557,6 +1656,25 @@
                 }
             }
         },
+        "/api/editorial-labels": {
+            "get": {
+                "tags": ["articles"],
+                "summary": "List all editorial labels. Public — readers see chip metadata so the\nfrontend can render names/slugs without a separate lookup, and editors\nuse the same endpoint to populate the manage-labels modal.",
+                "operationId": "list_editorial_labels",
+                "responses": {
+                    "200": {
+                        "description": "Editorial labels",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EditorialLabelListResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/feedback": {
             "post": {
                 "tags": ["feedback"],
@@ -2498,6 +2616,15 @@
                         }
                     },
                     {
+                        "name": "label_slug",
+                        "in": "query",
+                        "description": "Filter the listing to articles bearing this editorial label slug\n(e.g. `featured`, `high-quality`). Single label per request — no\nAND-ing across labels in v1.",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
                         "name": "page",
                         "in": "query",
                         "required": false,
@@ -2539,6 +2666,15 @@
     },
     "components": {
         "schemas": {
+            "ApplyEditorialLabelRequest": {
+                "type": "object",
+                "required": ["label_slug"],
+                "properties": {
+                    "label_slug": {
+                        "type": "string"
+                    }
+                }
+            },
             "ArticleDetailResponse": {
                 "type": "object",
                 "required": [
@@ -2552,6 +2688,7 @@
                     "author_display_name",
                     "author_public_roles",
                     "topics",
+                    "labels",
                     "created_at",
                     "updated_at"
                 ],
@@ -2583,11 +2720,24 @@
                     "id": {
                         "type": "string"
                     },
+                    "labels": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EditorialLabelResponse"
+                        }
+                    },
                     "markdown": {
                         "type": "string"
                     },
                     "published_at": {
                         "type": ["string", "null"]
+                    },
+                    "revoked_labels": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EditorialLabelResponse"
+                        },
+                        "description": "Labels whose `revokes_on_edit` flag is `true` and which were\nstripped by the most recent author edit. Empty unless this\nresponse is the result of a markdown update that revoked chips.\nFrontend uses this to toast the author."
                     },
                     "slug": {
                         "type": "string"
@@ -2713,6 +2863,7 @@
                     "author_display_name",
                     "author_public_roles",
                     "topics",
+                    "labels",
                     "created_at",
                     "updated_at"
                 ],
@@ -2742,6 +2893,13 @@
                     },
                     "id": {
                         "type": "string"
+                    },
+                    "labels": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EditorialLabelResponse"
+                        },
+                        "description": "Editor/admin-applied editorial labels. Empty for drafts and for\narticles no editor has chipped. Ordered by `editorial_labels.sort_order`."
                     },
                     "published_at": {
                         "type": ["string", "null"]
@@ -3266,6 +3424,37 @@
                     },
                     "volume": {
                         "type": ["string", "null"]
+                    }
+                }
+            },
+            "EditorialLabelListResponse": {
+                "type": "object",
+                "required": ["labels"],
+                "properties": {
+                    "labels": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EditorialLabelResponse"
+                        }
+                    }
+                }
+            },
+            "EditorialLabelResponse": {
+                "type": "object",
+                "description": "Public-facing editorial label. `applied_by`/`applied_at` are\ndeliberately not exposed — readers don't need to know which editor\nchipped an article or when.\n\n`revokes_on_edit` IS exposed so the article editor can warn authors\nbefore they make changes that would strip the chip; it's a property\nof the label itself, not user-specific or sensitive.",
+                "required": ["id", "name", "slug", "revokes_on_edit"],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "revokes_on_edit": {
+                        "type": "boolean"
+                    },
+                    "slug": {
+                        "type": "string"
                     }
                 }
             },

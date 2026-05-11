@@ -15,6 +15,7 @@ pub enum Permission {
     QuotationsLimit10000,
     NotesLimit10000,
     SourcesCreate,
+    ArticleLabelsManage,
 }
 
 impl Permission {
@@ -33,6 +34,7 @@ impl Permission {
             Self::QuotationsLimit10000 => "quotations_limit_10000",
             Self::NotesLimit10000 => "notes_limit_10000",
             Self::SourcesCreate => "sources_create",
+            Self::ArticleLabelsManage => "article_labels_manage",
         }
     }
 }
@@ -103,10 +105,12 @@ impl Role {
                 perms.push(Permission::BooksManage);
                 perms.push(Permission::ResourcesManage);
                 perms.push(Permission::AdminPanel);
+                perms.push(Permission::ArticleLabelsManage);
                 perms.extend_from_slice(ELEVATED_LIMITS);
             }
             Self::Editor => {
                 perms.push(Permission::ResourcesManage);
+                perms.push(Permission::ArticleLabelsManage);
                 perms.extend_from_slice(ELEVATED_LIMITS);
             }
             Self::User => {}

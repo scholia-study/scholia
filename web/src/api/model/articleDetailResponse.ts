@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { EditorialLabelResponse } from "./editorialLabelResponse";
 import type { TopicResponse } from "./topicResponse";
 
 export interface ArticleDetailResponse {
@@ -17,9 +18,15 @@ export interface ArticleDetailResponse {
     description?: string | null;
     html: string;
     id: string;
+    labels: EditorialLabelResponse[];
     markdown: string;
     /** @nullable */
     published_at?: string | null;
+    /** Labels whose `revokes_on_edit` flag is `true` and which were
+  stripped by the most recent author edit. Empty unless this
+  response is the result of a markdown update that revoked chips.
+  Frontend uses this to toast the author. */
+    revoked_labels?: EditorialLabelResponse[];
     slug: string;
     status: string;
     title: string;

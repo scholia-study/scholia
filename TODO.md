@@ -1,5 +1,7 @@
 ## 🐞 BUGS
 - saving a range quotation wrongly shows "edit" icon
+- citations where source is missing should not display source + both etc.
+- fix bibliography for bibles
 
 ## 🌿 FEATURES
 - add "submit for review" for user articles to editors to receive editorial feedback/quality approval

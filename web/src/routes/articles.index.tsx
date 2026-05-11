@@ -1,20 +1,51 @@
 import { Chip } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useListPublishedArticles } from "../api/articles/articles";
+import {
+    useListEditorialLabels,
+    useListPublishedArticles,
+} from "../api/articles/articles";
 import { useListTopics } from "../api/topics/topics";
 import { ArticleCard } from "../modules/article";
 
+interface ArticlesSearch {
+    topic_slug?: string;
+    label_slug?: string;
+}
+
 export const Route = createFileRoute("/articles/")({
     component: ArticlesListingPage,
+    validateSearch: (search: Record<string, unknown>): ArticlesSearch => ({
+        topic_slug:
+            typeof search.topic_slug === "string"
+                ? search.topic_slug
+                : undefined,
+        label_slug:
+            typeof search.label_slug === "string"
+                ? search.label_slug
+                : undefined,
+    }),
 });
 
 function ArticlesListingPage() {
-    const [topicSlug, setTopicSlug] = useState<string | undefined>(undefined);
+    const search = Route.useSearch();
+    const navigate = Route.useNavigate();
+    const topicSlug = search.topic_slug;
+    const labelSlug = search.label_slug;
     const [page, setPage] = useState(1);
+
+    const setTopicSlug = (next: string | undefined) => {
+        navigate({ search: (s) => ({ ...s, topic_slug: next }) });
+        setPage(1);
+    };
+    const setLabelSlug = (next: string | undefined) => {
+        navigate({ search: (s) => ({ ...s, label_slug: next }) });
+        setPage(1);
+    };
 
     const { data: articlesData, isLoading } = useListPublishedArticles({
         topic_slug: topicSlug,
+        label_slug: labelSlug,
         page,
         per_page: 20,
     });
@@ -24,11 +55,37 @@ function ArticlesListingPage() {
     const { data: topicsData } = useListTopics();
     const topics = topicsData?.data?.topics ?? [];
 
+    const { data: labelsData } = useListEditorialLabels();
+    const labels = labelsData?.data?.labels ?? [];
+
     const totalPages = Math.ceil(total / 20);
 
     return (
         <div className="max-w-3xl mx-auto px-8 py-16">
             <h1 className="text-2xl font-bold text-stone-900 mb-6">Articles</h1>
+
+            {/* Editorial label filters */}
+            {labels.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                    {labels.map((l) => (
+                        <Chip
+                            key={l.id}
+                            label={l.name}
+                            size="small"
+                            color={labelSlug === l.slug ? "primary" : "default"}
+                            variant={
+                                labelSlug === l.slug ? "filled" : "outlined"
+                            }
+                            onClick={() =>
+                                setLabelSlug(
+                                    labelSlug === l.slug ? undefined : l.slug,
+                                )
+                            }
+                            sx={{ fontSize: "0.75rem" }}
+                        />
+                    ))}
+                </div>
+            )}
 
             {/* Topic filters */}
             {topics.length > 0 && (
@@ -37,10 +94,7 @@ function ArticlesListingPage() {
                         label="All"
                         size="small"
                         variant={!topicSlug ? "filled" : "outlined"}
-                        onClick={() => {
-                            setTopicSlug(undefined);
-                            setPage(1);
-                        }}
+                        onClick={() => setTopicSlug(undefined)}
                         sx={{ fontSize: "0.75rem" }}
                     />
                     {topics.map((t) => (
@@ -51,12 +105,11 @@ function ArticlesListingPage() {
                             variant={
                                 topicSlug === t.slug ? "filled" : "outlined"
                             }
-                            onClick={() => {
+                            onClick={() =>
                                 setTopicSlug(
                                     topicSlug === t.slug ? undefined : t.slug,
-                                );
-                                setPage(1);
-                            }}
+                                )
+                            }
                             sx={{ fontSize: "0.75rem" }}
                         />
                     ))}

@@ -24,9 +24,12 @@ import type {
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { customFetch } from ".././fetcher";
 import type {
+    ApplyEditorialLabelRequest,
     ArticleDetailResponse,
     ArticleListResponse,
     CreateArticleRequest,
+    EditorialLabelListResponse,
+    EditorialLabelResponse,
     ListPublishedArticlesParams,
     ListUserArticlesParams,
     PublishedArticleListResponse,
@@ -35,6 +38,264 @@ import type {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+/**
+ * @summary Apply an editorial label to a published article. Editor/admin only.
+ */
+export type applyArticleLabelResponse200 = {
+    data: EditorialLabelResponse;
+    status: 200;
+};
+
+export type applyArticleLabelResponse400 = {
+    data: void;
+    status: 400;
+};
+
+export type applyArticleLabelResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type applyArticleLabelResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type applyArticleLabelResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type applyArticleLabelResponseSuccess = applyArticleLabelResponse200 & {
+    headers: Headers;
+};
+export type applyArticleLabelResponseError = (
+    | applyArticleLabelResponse400
+    | applyArticleLabelResponse401
+    | applyArticleLabelResponse403
+    | applyArticleLabelResponse404
+) & {
+    headers: Headers;
+};
+
+export type applyArticleLabelResponse =
+    | applyArticleLabelResponseSuccess
+    | applyArticleLabelResponseError;
+
+export const getApplyArticleLabelUrl = (slug: string) => {
+    return `/api/admin/articles/${slug}/labels`;
+};
+
+export const applyArticleLabel = async (
+    slug: string,
+    applyEditorialLabelRequest: ApplyEditorialLabelRequest,
+    options?: RequestInit,
+): Promise<applyArticleLabelResponse> => {
+    return customFetch<applyArticleLabelResponse>(
+        getApplyArticleLabelUrl(slug),
+        {
+            ...options,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(applyEditorialLabelRequest),
+        },
+    );
+};
+
+export const getApplyArticleLabelMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof applyArticleLabel>>,
+        TError,
+        { slug: string; data: ApplyEditorialLabelRequest },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof applyArticleLabel>>,
+    TError,
+    { slug: string; data: ApplyEditorialLabelRequest },
+    TContext
+> => {
+    const mutationKey = ["applyArticleLabel"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof applyArticleLabel>>,
+        { slug: string; data: ApplyEditorialLabelRequest }
+    > = (props) => {
+        const { slug, data } = props ?? {};
+
+        return applyArticleLabel(slug, data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type ApplyArticleLabelMutationResult = NonNullable<
+    Awaited<ReturnType<typeof applyArticleLabel>>
+>;
+export type ApplyArticleLabelMutationBody = ApplyEditorialLabelRequest;
+export type ApplyArticleLabelMutationError = void;
+
+/**
+ * @summary Apply an editorial label to a published article. Editor/admin only.
+ */
+export const useApplyArticleLabel = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof applyArticleLabel>>,
+            TError,
+            { slug: string; data: ApplyEditorialLabelRequest },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof applyArticleLabel>>,
+    TError,
+    { slug: string; data: ApplyEditorialLabelRequest },
+    TContext
+> => {
+    return useMutation(
+        getApplyArticleLabelMutationOptions(options),
+        queryClient,
+    );
+};
+/**
+ * @summary Remove an editorial label from an article. Editor/admin only.
+Idempotent — returns 200 even if the label wasn't applied.
+ */
+export type removeArticleLabelResponse200 = {
+    data: void;
+    status: 200;
+};
+
+export type removeArticleLabelResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type removeArticleLabelResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type removeArticleLabelResponseSuccess =
+    removeArticleLabelResponse200 & {
+        headers: Headers;
+    };
+export type removeArticleLabelResponseError = (
+    | removeArticleLabelResponse401
+    | removeArticleLabelResponse403
+) & {
+    headers: Headers;
+};
+
+export type removeArticleLabelResponse =
+    | removeArticleLabelResponseSuccess
+    | removeArticleLabelResponseError;
+
+export const getRemoveArticleLabelUrl = (slug: string, labelSlug: string) => {
+    return `/api/admin/articles/${slug}/labels/${labelSlug}`;
+};
+
+export const removeArticleLabel = async (
+    slug: string,
+    labelSlug: string,
+    options?: RequestInit,
+): Promise<removeArticleLabelResponse> => {
+    return customFetch<removeArticleLabelResponse>(
+        getRemoveArticleLabelUrl(slug, labelSlug),
+        {
+            ...options,
+            method: "DELETE",
+        },
+    );
+};
+
+export const getRemoveArticleLabelMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof removeArticleLabel>>,
+        TError,
+        { slug: string; labelSlug: string },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof removeArticleLabel>>,
+    TError,
+    { slug: string; labelSlug: string },
+    TContext
+> => {
+    const mutationKey = ["removeArticleLabel"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof removeArticleLabel>>,
+        { slug: string; labelSlug: string }
+    > = (props) => {
+        const { slug, labelSlug } = props ?? {};
+
+        return removeArticleLabel(slug, labelSlug, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type RemoveArticleLabelMutationResult = NonNullable<
+    Awaited<ReturnType<typeof removeArticleLabel>>
+>;
+
+export type RemoveArticleLabelMutationError = void;
+
+/**
+ * @summary Remove an editorial label from an article. Editor/admin only.
+Idempotent — returns 200 even if the label wasn't applied.
+ */
+export const useRemoveArticleLabel = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof removeArticleLabel>>,
+            TError,
+            { slug: string; labelSlug: string },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof removeArticleLabel>>,
+    TError,
+    { slug: string; labelSlug: string },
+    TContext
+> => {
+    return useMutation(
+        getRemoveArticleLabelMutationOptions(options),
+        queryClient,
+    );
+};
 /**
  * @summary List published articles
  */
@@ -1123,6 +1384,303 @@ export function useGetPublishedArticleSuspense<
         slug,
         options,
     );
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary List all editorial labels. Public — readers see chip metadata so the
+frontend can render names/slugs without a separate lookup, and editors
+use the same endpoint to populate the manage-labels modal.
+ */
+export type listEditorialLabelsResponse200 = {
+    data: EditorialLabelListResponse;
+    status: 200;
+};
+
+export type listEditorialLabelsResponseSuccess =
+    listEditorialLabelsResponse200 & {
+        headers: Headers;
+    };
+
+export type listEditorialLabelsResponse = listEditorialLabelsResponseSuccess;
+
+export const getListEditorialLabelsUrl = () => {
+    return `/api/editorial-labels`;
+};
+
+export const listEditorialLabels = async (
+    options?: RequestInit,
+): Promise<listEditorialLabelsResponse> => {
+    return customFetch<listEditorialLabelsResponse>(
+        getListEditorialLabelsUrl(),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
+};
+
+export const getListEditorialLabelsQueryKey = () => {
+    return [`/api/editorial-labels`] as const;
+};
+
+export const getListEditorialLabelsQueryOptions = <
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(options?: {
+    query?: Partial<
+        UseQueryOptions<
+            Awaited<ReturnType<typeof listEditorialLabels>>,
+            TError,
+            TData
+        >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getListEditorialLabelsQueryKey();
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listEditorialLabels>>
+    > = ({ signal }) => listEditorialLabels({ signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof listEditorialLabels>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListEditorialLabelsQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listEditorialLabels>>
+>;
+export type ListEditorialLabelsQueryError = unknown;
+
+export function useListEditorialLabels<
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listEditorialLabels>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listEditorialLabels>>,
+                    TError,
+                    Awaited<ReturnType<typeof listEditorialLabels>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListEditorialLabels<
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listEditorialLabels>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listEditorialLabels>>,
+                    TError,
+                    Awaited<ReturnType<typeof listEditorialLabels>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListEditorialLabels<
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listEditorialLabels>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List all editorial labels. Public — readers see chip metadata so the
+frontend can render names/slugs without a separate lookup, and editors
+use the same endpoint to populate the manage-labels modal.
+ */
+
+export function useListEditorialLabels<
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listEditorialLabels>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListEditorialLabelsQueryOptions(options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getListEditorialLabelsSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(options?: {
+    query?: Partial<
+        UseSuspenseQueryOptions<
+            Awaited<ReturnType<typeof listEditorialLabels>>,
+            TError,
+            TData
+        >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getListEditorialLabelsQueryKey();
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listEditorialLabels>>
+    > = ({ signal }) => listEditorialLabels({ signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listEditorialLabels>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListEditorialLabelsSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listEditorialLabels>>
+>;
+export type ListEditorialLabelsSuspenseQueryError = unknown;
+
+export function useListEditorialLabelsSuspense<
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listEditorialLabels>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListEditorialLabelsSuspense<
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listEditorialLabels>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListEditorialLabelsSuspense<
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listEditorialLabels>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List all editorial labels. Public — readers see chip metadata so the
+frontend can render names/slugs without a separate lookup, and editors
+use the same endpoint to populate the manage-labels modal.
+ */
+
+export function useListEditorialLabelsSuspense<
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listEditorialLabels>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListEditorialLabelsSuspenseQueryOptions(options);
 
     const query = useSuspenseQuery(
         queryOptions,

@@ -15,6 +15,31 @@ pub struct TopicListResponse {
     pub topics: Vec<TopicResponse>,
 }
 
+/// Public-facing editorial label. `applied_by`/`applied_at` are
+/// deliberately not exposed — readers don't need to know which editor
+/// chipped an article or when.
+///
+/// `revokes_on_edit` IS exposed so the article editor can warn authors
+/// before they make changes that would strip the chip; it's a property
+/// of the label itself, not user-specific or sensitive.
+#[derive(Debug, Clone, Serialize, ToSchema)]
+pub struct EditorialLabelResponse {
+    pub id: String,
+    pub name: String,
+    pub slug: String,
+    pub revokes_on_edit: bool,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct EditorialLabelListResponse {
+    pub labels: Vec<EditorialLabelResponse>,
+}
+
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct ApplyEditorialLabelRequest {
+    pub label_slug: String,
+}
+
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ArticleResponse {
     pub id: String,
@@ -33,6 +58,9 @@ pub struct ArticleResponse {
     /// Public-facing role chips for the author (`editor`, paid tiers).
     pub author_public_roles: Vec<String>,
     pub topics: Vec<TopicResponse>,
+    /// Editor/admin-applied editorial labels. Empty for drafts and for
+    /// articles no editor has chipped. Ordered by `editorial_labels.sort_order`.
+    pub labels: Vec<EditorialLabelResponse>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub published_at: Option<String>,
     pub created_at: String,
@@ -55,6 +83,13 @@ pub struct ArticleDetailResponse {
     pub author_handle: Option<String>,
     pub author_public_roles: Vec<String>,
     pub topics: Vec<TopicResponse>,
+    pub labels: Vec<EditorialLabelResponse>,
+    /// Labels whose `revokes_on_edit` flag is `true` and which were
+    /// stripped by the most recent author edit. Empty unless this
+    /// response is the result of a markdown update that revoked chips.
+    /// Frontend uses this to toast the author.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub revoked_labels: Vec<EditorialLabelResponse>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub published_at: Option<String>,
     pub created_at: String,
@@ -161,6 +196,11 @@ pub struct ArticleListQuery {
 pub struct PublicArticleListQuery {
     #[serde(default)]
     pub topic_slug: Option<String>,
+    /// Filter the listing to articles bearing this editorial label slug
+    /// (e.g. `featured`, `high-quality`). Single label per request — no
+    /// AND-ing across labels in v1.
+    #[serde(default)]
+    pub label_slug: Option<String>,
     #[serde(default)]
     pub page: Option<i32>,
     #[serde(default)]

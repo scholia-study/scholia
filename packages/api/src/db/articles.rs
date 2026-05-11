@@ -7,7 +7,7 @@ use crate::auth::permissions::{Permission, resolve_permissions};
 use crate::error::AppError;
 use crate::models::article::{
     ArticleDetailResponse, ArticleLimitsResponse, ArticleResponse, BatchSentenceResponseItem,
-    SentenceData, SourceContext, TopicResponse,
+    EditorialLabelResponse, SentenceData, SourceContext, TopicResponse,
 };
 use crate::validation::{
     MAX_ARTICLE_DESCRIPTION, MAX_ARTICLE_MARKDOWN, MAX_ARTICLE_TITLE, check_max_len,
@@ -112,6 +112,7 @@ async fn author_public_roles(pool: &PgPool, user_id: Uuid) -> Vec<String> {
 fn article_response(
     r: ArticleSummaryRow,
     topics: Vec<TopicResponse>,
+    labels: Vec<EditorialLabelResponse>,
     public_roles: Vec<String>,
 ) -> ArticleResponse {
     ArticleResponse {
@@ -125,6 +126,7 @@ fn article_response(
         author_handle: r.author_handle,
         author_public_roles: public_roles,
         topics,
+        labels,
         published_at: r.published_at.map(fmt_time),
         created_at: fmt_time(r.created_at),
         updated_at: fmt_time(r.updated_at),
@@ -134,6 +136,7 @@ fn article_response(
 fn article_detail_response(
     r: ArticleRow,
     topics: Vec<TopicResponse>,
+    labels: Vec<EditorialLabelResponse>,
     public_roles: Vec<String>,
 ) -> ArticleDetailResponse {
     ArticleDetailResponse {
@@ -149,6 +152,8 @@ fn article_detail_response(
         author_handle: r.author_handle,
         author_public_roles: public_roles,
         topics,
+        labels,
+        revoked_labels: Vec::new(),
         published_at: r.published_at.map(fmt_time),
         created_at: fmt_time(r.created_at),
         updated_at: fmt_time(r.updated_at),
@@ -743,7 +748,7 @@ pub async fn create_article(
     };
 
     let public_roles = author_public_roles(pool, row.author_user_id).await;
-    Ok(article_detail_response(row, vec![], public_roles))
+    Ok(article_detail_response(row, vec![], vec![], public_roles))
 }
 
 pub async fn get_user_article_by_slug(
@@ -770,8 +775,9 @@ pub async fn get_user_article_by_slug(
     .map_err(|_| AppError::NotFound("Article not found".into()))?;
 
     let topics = load_article_topics(pool, row.id).await?;
+    let labels = crate::db::editorial_labels::list_for_article(pool, row.id).await?;
     let public_roles = author_public_roles(pool, row.author_user_id).await;
-    Ok(article_detail_response(row, topics, public_roles))
+    Ok(article_detail_response(row, topics, labels, public_roles))
 }
 
 pub async fn get_published_article_by_slug(
@@ -796,8 +802,9 @@ pub async fn get_published_article_by_slug(
     .map_err(|_| AppError::NotFound("Article not found".into()))?;
 
     let topics = load_article_topics(pool, row.id).await?;
+    let labels = crate::db::editorial_labels::list_for_article(pool, row.id).await?;
     let public_roles = author_public_roles(pool, row.author_user_id).await;
-    Ok(article_detail_response(row, topics, public_roles))
+    Ok(article_detail_response(row, topics, labels, public_roles))
 }
 
 pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailResponse, AppError> {
@@ -819,8 +826,9 @@ pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailR
     .map_err(|_| AppError::NotFound("Article not found".into()))?;
 
     let topics = load_article_topics(pool, row.id).await?;
+    let labels = crate::db::editorial_labels::list_for_article(pool, row.id).await?;
     let public_roles = author_public_roles(pool, row.author_user_id).await;
-    Ok(article_detail_response(row, topics, public_roles))
+    Ok(article_detail_response(row, topics, labels, public_roles))
 }
 
 pub async fn list_user_articles(
@@ -849,6 +857,7 @@ pub async fn list_user_articles(
 
     let article_ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
     let topics_map = load_articles_topics(pool, &article_ids).await?;
+    let labels_map = crate::db::editorial_labels::list_for_articles(pool, &article_ids).await?;
     let author_ids: Vec<Uuid> = rows.iter().map(|r| r.author_user_id).collect();
     let roles_map = crate::db::users::list_public_roles_for(pool, &author_ids)
         .await
@@ -862,6 +871,7 @@ pub async fn list_user_articles(
             article_response(
                 r,
                 topics_map.get(&id).cloned().unwrap_or_default(),
+                labels_map.get(&id).cloned().unwrap_or_default(),
                 roles_map.get(&author_id).cloned().unwrap_or_default(),
             )
         })
@@ -871,6 +881,7 @@ pub async fn list_user_articles(
 pub async fn list_published_articles(
     pool: &PgPool,
     topic_slug: Option<&str>,
+    label_slug: Option<&str>,
     page: i32,
     per_page: i32,
 ) -> Result<(Vec<ArticleResponse>, i64), AppError> {
@@ -885,8 +896,14 @@ pub async fn list_published_articles(
                  SELECT 1 FROM article_topics at2
                  JOIN topics t ON t.id = at2.topic_id
                  WHERE at2.article_id = a.id AND t.slug = $1
+             ))
+             AND ($2::TEXT IS NULL OR EXISTS (
+                 SELECT 1 FROM article_editorial_labels ael
+                 JOIN editorial_labels el ON el.id = ael.label_id
+                 WHERE ael.article_id = a.id AND el.slug = $2
              ))"#,
         topic_slug,
+        label_slug,
     )
     .fetch_one(pool)
     .await?;
@@ -907,9 +924,15 @@ pub async fn list_published_articles(
                  JOIN topics t ON t.id = at2.topic_id
                  WHERE at2.article_id = a.id AND t.slug = $1
              ))
+             AND ($2::TEXT IS NULL OR EXISTS (
+                 SELECT 1 FROM article_editorial_labels ael
+                 JOIN editorial_labels el ON el.id = ael.label_id
+                 WHERE ael.article_id = a.id AND el.slug = $2
+             ))
            ORDER BY a.published_at DESC NULLS LAST
-           LIMIT $2 OFFSET $3"#,
+           LIMIT $3 OFFSET $4"#,
         topic_slug,
+        label_slug,
         limit,
         offset,
     )
@@ -918,6 +941,7 @@ pub async fn list_published_articles(
 
     let article_ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
     let topics_map = load_articles_topics(pool, &article_ids).await?;
+    let labels_map = crate::db::editorial_labels::list_for_articles(pool, &article_ids).await?;
     let author_ids: Vec<Uuid> = rows.iter().map(|r| r.author_user_id).collect();
     let roles_map = crate::db::users::list_public_roles_for(pool, &author_ids)
         .await
@@ -931,6 +955,7 @@ pub async fn list_published_articles(
             article_response(
                 r,
                 topics_map.get(&id).cloned().unwrap_or_default(),
+                labels_map.get(&id).cloned().unwrap_or_default(),
                 roles_map.get(&author_id).cloned().unwrap_or_default(),
             )
         })
@@ -981,6 +1006,7 @@ pub async fn list_published_articles_by_author(
 
     let article_ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
     let topics_map = load_articles_topics(pool, &article_ids).await?;
+    let labels_map = crate::db::editorial_labels::list_for_articles(pool, &article_ids).await?;
     let public_roles = author_public_roles(pool, author_id).await;
 
     let articles = rows
@@ -990,6 +1016,7 @@ pub async fn list_published_articles_by_author(
             article_response(
                 r,
                 topics_map.get(&id).cloned().unwrap_or_default(),
+                labels_map.get(&id).cloned().unwrap_or_default(),
                 public_roles.clone(),
             )
         })
@@ -1069,7 +1096,10 @@ pub async fn update_article(
         }
     }
 
-    // Update markdown and re-render HTML
+    // Update markdown and re-render HTML. Edits revoke any applied
+    // labels marked `revokes_on_edit` (e.g. "High Quality") — the chip
+    // must always reflect content an editor actually saw.
+    let mut revoked: Vec<EditorialLabelResponse> = Vec::new();
     if let Some(md) = markdown {
         check_max_len("Article body", md, MAX_ARTICLE_MARKDOWN)?;
         reject_emoji("article body", md)?;
@@ -1083,6 +1113,7 @@ pub async fn update_article(
         )
         .execute(pool)
         .await?;
+        revoked = crate::db::editorial_labels::revoke_on_edit(pool, article_id).await?;
     }
 
     // Update description
@@ -1109,7 +1140,9 @@ pub async fn update_article(
         .fetch_one(pool)
         .await?;
 
-    get_user_article_by_slug(pool, &new_slug, user_id).await
+    let mut response = get_user_article_by_slug(pool, &new_slug, user_id).await?;
+    response.revoked_labels = revoked;
+    Ok(response)
 }
 
 pub async fn publish_article(

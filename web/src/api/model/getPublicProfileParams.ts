@@ -11,6 +11,13 @@ export type GetPublicProfileParams = {
      */
     topic_slug?: string | null;
     /**
+ * Filter the listing to articles bearing this editorial label slug
+(e.g. `featured`, `high-quality`). Single label per request — no
+AND-ing across labels in v1.
+ * @nullable
+ */
+    label_slug?: string | null;
+    /**
      * @nullable
      */
     page?: number | null;

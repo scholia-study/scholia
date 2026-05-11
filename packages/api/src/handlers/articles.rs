@@ -6,8 +6,9 @@ use crate::auth::permissions::Permission;
 use crate::db;
 use crate::error::AppError;
 use crate::models::article::{
-    ArticleDetailResponse, ArticleListQuery, ArticleListResponse, BatchSentencesRequest,
-    BatchSentencesResponse, CreateArticleRequest, PublicArticleListQuery,
+    ApplyEditorialLabelRequest, ArticleDetailResponse, ArticleListQuery, ArticleListResponse,
+    BatchSentencesRequest, BatchSentencesResponse, CreateArticleRequest,
+    EditorialLabelListResponse, EditorialLabelResponse, PublicArticleListQuery,
     PublishedArticleListResponse, TopicListResponse, UpdateArticleRequest,
 };
 use crate::state::AppState;
@@ -219,6 +220,7 @@ pub async fn list_published_articles(
     let (articles, total) = db::articles::list_published_articles(
         &state.pool,
         params.topic_slug.as_deref(),
+        params.label_slug.as_deref(),
         page,
         per_page,
     )
@@ -284,6 +286,81 @@ pub async fn get_article_by_id(
 
     let article = db::articles::get_article_by_id(&state.pool, article_id).await?;
     Ok(Json(article))
+}
+
+// ── Editorial labels ──────────────────────────────────────
+
+/// List all editorial labels. Public — readers see chip metadata so the
+/// frontend can render names/slugs without a separate lookup, and editors
+/// use the same endpoint to populate the manage-labels modal.
+#[utoipa::path(
+    get,
+    path = "/api/editorial-labels",
+    responses(
+        (status = 200, description = "Editorial labels", body = EditorialLabelListResponse)
+    ),
+    tag = "articles"
+)]
+pub async fn list_editorial_labels(
+    State(state): State<AppState>,
+) -> Result<Json<EditorialLabelListResponse>, AppError> {
+    let labels = db::editorial_labels::list_labels(&state.pool).await?;
+    Ok(Json(EditorialLabelListResponse { labels }))
+}
+
+/// Apply an editorial label to a published article. Editor/admin only.
+#[utoipa::path(
+    post,
+    path = "/api/admin/articles/{slug}/labels",
+    params(("slug" = String, Path, description = "Article slug")),
+    request_body = ApplyEditorialLabelRequest,
+    responses(
+        (status = 200, description = "Label applied", body = EditorialLabelResponse),
+        (status = 400, description = "Article not eligible (e.g. not published)"),
+        (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Article or label not found")
+    ),
+    tag = "articles"
+)]
+pub async fn apply_article_label(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(slug): Path<String>,
+    Json(body): Json<ApplyEditorialLabelRequest>,
+) -> Result<Json<EditorialLabelResponse>, AppError> {
+    user.require_permission(Permission::ArticleLabelsManage)
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    let label =
+        db::editorial_labels::apply_label(&state.pool, &slug, &body.label_slug, user.id).await?;
+    Ok(Json(label))
+}
+
+/// Remove an editorial label from an article. Editor/admin only.
+/// Idempotent — returns 200 even if the label wasn't applied.
+#[utoipa::path(
+    delete,
+    path = "/api/admin/articles/{slug}/labels/{label_slug}",
+    params(
+        ("slug" = String, Path, description = "Article slug"),
+        ("label_slug" = String, Path, description = "Label slug")
+    ),
+    responses(
+        (status = 200, description = "Label removed (or wasn't applied)"),
+        (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Insufficient permissions")
+    ),
+    tag = "articles"
+)]
+pub async fn remove_article_label(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path((slug, label_slug)): Path<(String, String)>,
+) -> Result<Json<()>, AppError> {
+    user.require_permission(Permission::ArticleLabelsManage)
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    db::editorial_labels::remove_label(&state.pool, &slug, &label_slug).await?;
+    Ok(Json(()))
 }
 
 // ── Batch sentence endpoint ───────────────────────────────

@@ -5,6 +5,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./applyEditorialLabelRequest";
 export * from "./articleDetailResponse";
 export * from "./articleLimitsResponse";
 export * from "./articleListResponse";
@@ -33,6 +34,8 @@ export * from "./createQuotationRequest";
 export * from "./createQuotationResponse";
 export * from "./createResourceRequest";
 export * from "./createSourceRequest";
+export * from "./editorialLabelListResponse";
+export * from "./editorialLabelResponse";
 export * from "./feedbackHandler";
 export * from "./feedbackListResponse";
 export * from "./feedbackResponse";

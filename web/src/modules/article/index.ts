@@ -3,6 +3,8 @@ export {
     type ArticleEditorHandle,
     ArticleEditorLazy,
 } from "./components/ArticleEditorLazy";
+export { EditorialLabelChips } from "./components/EditorialLabelChips";
+export { EditorialLabelManager } from "./components/EditorialLabelManager";
 export {
     QuotationPickerModal,
     type QuotationPickerResult,

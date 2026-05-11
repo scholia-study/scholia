@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { EditorialLabelResponse } from "./editorialLabelResponse";
 import type { TopicResponse } from "./topicResponse";
 
 export interface ArticleResponse {
@@ -22,6 +23,9 @@ export interface ArticleResponse {
     /** @nullable */
     description?: string | null;
     id: string;
+    /** Editor/admin-applied editorial labels. Empty for drafts and for
+  articles no editor has chipped. Ordered by `editorial_labels.sort_order`. */
+    labels: EditorialLabelResponse[];
     /** @nullable */
     published_at?: string | null;
     slug: string;

@@ -494,19 +494,29 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     .fetch_one(&mut *tx)
     .await?;
 
-    // 1c. Pre-load existing siblings (translations imported earlier) so we
-    //     can guard structural parity (Q5 import guard / parity caveat).
-    //     For each Bible-book this run will insert, we'll cross-check:
-    //       - the depth=0 toc_node slug matches what an earlier translation used
+    // 1c. Pre-load the canonical translation's books so we can guard
+    //     structural parity (Q5 import guard / parity caveat). For each
+    //     Bible-book this run will insert, we'll cross-check:
+    //       - the depth=0 toc_node slug matches the canonical
     //       - per-chapter verse counts match
-    //     If any of these drift, we refuse the import — silent versification
-    //     drift would silently break Q7/Q9 (cross-translation projection).
+    //     If any of these drift, we warn (or refuse, depending on the
+    //     check) — silent versification drift would silently break
+    //     Q7/Q9 (cross-translation projection).
+    //
+    //     The canonical translation is KJV by convention; if KJV hasn't
+    //     been imported yet this returns empty, in which case the parity
+    //     check is a no-op (this translation IS the canonical). We
+    //     filter on publisher='KJV' rather than "first imported" so the
+    //     comparison is stable: re-running the importer in a different
+    //     order won't change what "canonical" means.
     let canonical_books: Vec<(String, String, Uuid)> = sqlx::query_as(
         "SELECT tn.source_ref, tn.slug, tn.id
          FROM toc_nodes tn
          JOIN books b ON b.id = tn.book_id
          JOIN sources s ON s.id = b.source_id
-         WHERE s.translation_of_id = $1 AND tn.depth = 0",
+         WHERE s.translation_of_id = $1
+           AND s.publisher = 'KJV'
+           AND tn.depth = 0",
     )
     .bind(canonical_bible_source_id)
     .fetch_all(&mut *tx)
@@ -693,12 +703,13 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .fetch_one(&mut *tx)
                 .await?;
                 let new_count = chapter.verses.len() as i64;
-                if canonical_count > 0 && canonical_count != new_count {
-                    // Known drift cases (Romans 14 doxology, some Psalm
-                    // titles, 3 John) shouldn't block the entire import.
-                    // Cross-translation visual hints degrade gracefully:
-                    // verses that don't exist in both translations simply
-                    // won't show projection markers.
+                if canonical_count > 0
+                    && canonical_count != new_count
+                    && !is_known_drift(translation.slug, &chapter_source_ref)
+                {
+                    // Unexpected drift: not covered by the alignment
+                    // seeder, so cross-translation hints will silently
+                    // misalign on this chapter. Surface it loudly.
                     eprintln!(
                         "WARN: verse-count drift on '{}': canonical={}, this={} — \
                          cross-translation hints will not align on this chapter.",
@@ -845,6 +856,24 @@ struct Totals {
 /// 44 Psalms + 2 Kings 11 — chapters where DARBY treats the Hebrew
 /// superscription as verse 1, shifting every subsequent verse by +1
 /// relative to the KJV/WEB/ASV/BBE convention.
+/// Chapters where a non-canonical translation differs from KJV by
+/// design, and where `seed_cross_translation_alignments` writes
+/// explicit mappings that let cross-translation projection work
+/// despite the drift. Listing a chapter here suppresses the parity
+/// warning at import — the importer "knows" about the difference.
+///
+/// Keep this list in sync with the seeders below: every chapter that
+/// produces alignment rows for a given translation should be listed
+/// here, and vice versa. A chapter that drifts WITHOUT being listed
+/// here is a real bug we want surfaced loudly.
+fn is_known_drift(translation_slug: &str, chapter_source_ref: &str) -> bool {
+    match translation_slug {
+        "web" => matches!(chapter_source_ref, "romans:14" | "romans:16"),
+        "darby" => DARBY_HEBREW_TITLE_CHAPTERS.contains(&chapter_source_ref),
+        _ => false,
+    }
+}
+
 const DARBY_HEBREW_TITLE_CHAPTERS: &[&str] = &[
     "psalms:2",
     "psalms:5",

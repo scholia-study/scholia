@@ -179,11 +179,20 @@ async fn main() {
         ));
 
     // Admin routes — gated per-handler via Permission::AdminPanel.
+    // Note: the `articles/{slug}/labels` endpoints live here for URL
+    // consistency with other admin routes, but they're gated by
+    // Permission::ArticleLabelsManage, not AdminPanel — editors qualify.
     let admin_router = OpenApiRouter::new()
         .routes(utoipa_axum::routes!(api::handlers::feedback::list_feedback))
         .routes(utoipa_axum::routes!(
             api::handlers::feedback::get_feedback,
             api::handlers::feedback::update_feedback
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::apply_article_label
+        ))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::remove_article_label
         ));
 
     // Public routes (no rate limiting)
@@ -208,6 +217,9 @@ async fn main() {
             api::handlers::articles::get_article_by_id
         ))
         .routes(utoipa_axum::routes!(api::handlers::articles::list_topics))
+        .routes(utoipa_axum::routes!(
+            api::handlers::articles::list_editorial_labels
+        ))
         .routes(utoipa_axum::routes!(
             api::handlers::articles::batch_sentences
         ))

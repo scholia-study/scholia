@@ -1,6 +1,7 @@
 import { Paper } from "@mui/material";
 import { Link } from "@tanstack/react-router";
 import type { ArticleResponse } from "#/api/model";
+import { EditorialLabelChips } from "./EditorialLabelChips";
 
 interface ArticleCardProps {
     article: ArticleResponse;
@@ -64,9 +65,19 @@ export function ArticleCard({ article, showAuthor = true }: ArticleCardProps) {
                     },
                 }}
             >
-                <h2 className="text-lg font-semibold text-stone-900 group-hover:underline mb-1">
-                    {article.title}
-                </h2>
+                <div className="flex items-start gap-2 mb-1 flex-wrap">
+                    <h2 className="text-lg font-semibold text-stone-900 group-hover:underline">
+                        {article.title}
+                    </h2>
+                    {article.labels.length > 0 && (
+                        <div className="mt-0.5">
+                            <EditorialLabelChips
+                                labels={article.labels}
+                                clickable={false}
+                            />
+                        </div>
+                    )}
+                </div>
                 {article.description && (
                     <p className="text-sm text-stone-500 mb-2 line-clamp-2">
                         {article.description}
