@@ -232,9 +232,7 @@ pub async fn stripe_webhook(
 
     // Apply the (possibly fresher) state to our DB. Idempotent —
     // duplicate webhook deliveries land on the same target state.
-    if let Err(e) =
-        apply_subscription(&state.pool, &state.config, &event.id.to_string(), &sub).await
-    {
+    if let Err(e) = apply_subscription(&state.pool, &state.config, event.id.as_ref(), &sub).await {
         tracing::error!("apply_subscription({sub_id}) failed: {e:?}");
         // Return 5xx so Stripe retries. INSERT into stripe_processed_events
         // is part of the same transaction, so a retried event will rerun.
@@ -435,19 +433,17 @@ async fn apply_subscription(
     // Statuses that grant access: active, trialing, past_due (grace).
     let grants_access = matches!(status.as_str(), "active" | "trialing" | "past_due");
 
-    if grants_access {
-        if let Some(role_name) = config.role_for_price_id(&price_id) {
-            sqlx::query(
-                "INSERT INTO user_roles (user_id, role_id)
+    if grants_access && let Some(role_name) = config.role_for_price_id(&price_id) {
+        sqlx::query(
+            "INSERT INTO user_roles (user_id, role_id)
                  SELECT $1, id FROM roles WHERE name = $2
                  ON CONFLICT DO NOTHING",
-            )
-            .bind(user_id)
-            .bind(role_name)
-            .execute(&mut *tx)
-            .await
-            .map_err(AppError::from)?;
-        }
+        )
+        .bind(user_id)
+        .bind(role_name)
+        .execute(&mut *tx)
+        .await
+        .map_err(AppError::from)?;
     }
 
     tx.commit().await.map_err(AppError::from)?;

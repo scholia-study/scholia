@@ -152,7 +152,7 @@ pub async fn github_callback(
         .header("User-Agent", "Scholia")
         .send()
         .await
-        .and_then(|r| Ok(r.error_for_status()?))
+        .and_then(|r| r.error_for_status())
     {
         Ok(resp) => match resp.json().await {
             Ok(u) => u,
@@ -168,7 +168,7 @@ pub async fn github_callback(
         .header("User-Agent", "Scholia")
         .send()
         .await
-        .and_then(|r| Ok(r.error_for_status()?))
+        .and_then(|r| r.error_for_status())
     {
         Ok(resp) => resp.json().await.unwrap_or_default(),
         Err(_) => return error_redirect("oauth_email_fetch_failed"),

@@ -65,7 +65,7 @@ pub async fn get_node_page(
             }));
         }
         let page =
-            db::page::get_nodes_by_source_ids(&pool, &slug, &source_node_ids, include_original)
+            db::page::get_nodes_by_source_ids(pool, &slug, &source_node_ids, include_original)
                 .await?;
         return Ok(Json(page));
     }
@@ -82,13 +82,13 @@ pub async fn get_node_page(
                 has_previous: false,
             }));
         }
-        let page = db::page::get_nodes_by_ids(&pool, &slug, &ids, include_original).await?;
+        let page = db::page::get_nodes_by_ids(pool, &slug, &ids, include_original).await?;
         return Ok(Json(page));
     }
 
     let limit = params.limit.unwrap_or(20).clamp(1, 50);
     let page = db::page::get_node_page(
-        &pool,
+        pool,
         &slug,
         params.after,
         params.before,

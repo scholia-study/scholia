@@ -353,11 +353,8 @@ pub async fn list_all_quotations(
 
     let mut quotations: Vec<UnifiedQuotationResponse> = Vec::new();
 
-    let include_books = params.source_type.as_deref().map_or(true, |t| t == "book");
-    let include_articles = params
-        .source_type
-        .as_deref()
-        .map_or(true, |t| t == "article");
+    let include_books = params.source_type.as_deref().is_none_or(|t| t == "book");
+    let include_articles = params.source_type.as_deref().is_none_or(|t| t == "article");
 
     if include_books {
         let book_quotations =
