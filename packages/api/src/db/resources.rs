@@ -218,40 +218,44 @@ struct SentenceLookup {
     node_id: Uuid,
 }
 
+pub struct ResourceCreate<'a> {
+    pub resource_type: &'a str,
+    pub verbatim_kind: Option<&'a str>,
+    pub sentence_start: i32,
+    pub sentence_end: Option<i32>,
+    pub sentence_kind: &'a str,
+    pub source_id: Option<Uuid>,
+    pub source_page_start: Option<i32>,
+    pub source_page_end: Option<i32>,
+    pub source_location_freeform: Option<&'a str>,
+    pub quoted_text: Option<&'a str>,
+    pub editor_note: Option<&'a str>,
+    pub is_featured: bool,
+    pub admin_notes: Option<&'a str>,
+}
+
 pub async fn create_resource(
     pool: &PgPool,
     book_id: Uuid,
-    resource_type: &str,
-    verbatim_kind: Option<&str>,
-    sentence_start: i32,
-    sentence_end: Option<i32>,
-    sentence_kind: &str,
-    source_id: Option<Uuid>,
-    source_page_start: Option<i32>,
-    source_page_end: Option<i32>,
-    source_location_freeform: Option<&str>,
-    quoted_text: Option<&str>,
-    editor_note: Option<&str>,
-    is_featured: bool,
-    admin_notes: Option<&str>,
+    entry: ResourceCreate<'_>,
 ) -> Result<Uuid, AppError> {
     // Validate range
-    let actual_end = sentence_end.unwrap_or(sentence_start);
-    if actual_end - sentence_start + 1 > 15 {
+    let actual_end = entry.sentence_end.unwrap_or(entry.sentence_start);
+    if actual_end - entry.sentence_start + 1 > 15 {
         return Err(AppError::BadRequest(
             "Sentence range cannot exceed 15 sentences".to_string(),
         ));
     }
 
     // Resolve start sentence
-    let is_body = sentence_kind == "body";
+    let is_body = entry.sentence_kind == "body";
     let start_sent = if is_body {
         sqlx::query_as!(
             SentenceLookup,
             r#"SELECT id, node_id FROM sentences
                WHERE book_id = $1 AND sentence_number = $2 AND block_id IS NOT NULL"#,
             book_id,
-            sentence_start,
+            entry.sentence_start,
         )
         .fetch_one(pool)
         .await
@@ -261,19 +265,20 @@ pub async fn create_resource(
             r#"SELECT id, node_id FROM sentences
                WHERE book_id = $1 AND sentence_number = $2 AND footnote_id IS NOT NULL"#,
             book_id,
-            sentence_start,
+            entry.sentence_start,
         )
         .fetch_one(pool)
         .await
     }
     .map_err(|_| {
         AppError::BadRequest(format!(
-            "Sentence {sentence_start} not found for kind '{sentence_kind}'"
+            "Sentence {} not found for kind '{}'",
+            entry.sentence_start, entry.sentence_kind
         ))
     })?;
 
     // Resolve end sentence (if range)
-    let end_sent_id = if let Some(end_num) = sentence_end {
+    let end_sent_id = if let Some(end_num) = entry.sentence_end {
         let end_sent = if is_body {
             sqlx::query_as!(
                 SentenceLookup,
@@ -297,7 +302,8 @@ pub async fn create_resource(
         }
         .map_err(|_| {
             AppError::BadRequest(format!(
-                "Sentence {end_num} not found for kind '{sentence_kind}'"
+                "Sentence {end_num} not found for kind '{}'",
+                entry.sentence_kind
             ))
         })?;
         Some(end_sent.id)
@@ -319,20 +325,20 @@ pub async fn create_resource(
            )
            RETURNING id"#,
         book_id,
-        resource_type as _,
+        entry.resource_type as _,
         start_sent.node_id,
         start_sent.id,
         end_sent_id,
-        sentence_kind as _,
-        source_id,
-        source_page_start,
-        source_page_end,
-        source_location_freeform,
-        verbatim_kind as _,
-        quoted_text,
-        editor_note,
-        is_featured,
-        admin_notes,
+        entry.sentence_kind as _,
+        entry.source_id,
+        entry.source_page_start,
+        entry.source_page_end,
+        entry.source_location_freeform,
+        entry.verbatim_kind as _,
+        entry.quoted_text,
+        entry.editor_note,
+        entry.is_featured,
+        entry.admin_notes,
     )
     .fetch_one(pool)
     .await?;
@@ -340,34 +346,38 @@ pub async fn create_resource(
     Ok(id)
 }
 
+pub struct ResourceUpdate<'a> {
+    pub resource_type: Option<&'a str>,
+    pub verbatim_kind: Option<&'a str>,
+    pub sentence_start: Option<i32>,
+    pub sentence_end: Option<i32>,
+    pub sentence_kind: Option<&'a str>,
+    pub source_id: Option<Uuid>,
+    pub source_page_start: Option<i32>,
+    pub source_page_end: Option<i32>,
+    pub source_location_freeform: Option<&'a str>,
+    pub quoted_text: Option<&'a str>,
+    pub editor_note: Option<&'a str>,
+    pub is_featured: Option<bool>,
+    pub admin_notes: Option<&'a str>,
+}
+
 pub async fn update_resource(
     pool: &PgPool,
     resource_id: Uuid,
     book_id: Uuid,
-    resource_type: Option<&str>,
-    verbatim_kind: Option<&str>,
-    sentence_start: Option<i32>,
-    sentence_end: Option<i32>,
-    sentence_kind: Option<&str>,
-    source_id: Option<Uuid>,
-    source_page_start: Option<i32>,
-    source_page_end: Option<i32>,
-    source_location_freeform: Option<&str>,
-    quoted_text: Option<&str>,
-    editor_note: Option<&str>,
-    is_featured: Option<bool>,
-    admin_notes: Option<&str>,
+    patch: ResourceUpdate<'_>,
 ) -> Result<(), AppError> {
     // If sentence range is being updated, resolve IDs
-    if let Some(start) = sentence_start {
-        let end = sentence_end.unwrap_or(start);
+    if let Some(start) = patch.sentence_start {
+        let end = patch.sentence_end.unwrap_or(start);
         if end - start + 1 > 15 {
             return Err(AppError::BadRequest(
                 "Sentence range cannot exceed 15 sentences".to_string(),
             ));
         }
 
-        let kind = sentence_kind.unwrap_or("body");
+        let kind = patch.sentence_kind.unwrap_or("body");
         let is_body = kind == "body";
 
         let start_sent = if is_body {
@@ -393,7 +403,7 @@ pub async fn update_resource(
         }
         .map_err(|_| AppError::BadRequest(format!("Sentence {start} not found")))?;
 
-        let end_sent_id = if sentence_end.is_some() {
+        let end_sent_id = if patch.sentence_end.is_some() {
             let end_sent = if is_body {
                 sqlx::query_as!(
                     SentenceLookup,
@@ -433,7 +443,7 @@ pub async fn update_resource(
             start_sent.node_id,
             start_sent.id,
             end_sent_id,
-            sentence_kind as _,
+            patch.sentence_kind as _,
         )
         .execute(pool)
         .await?;
@@ -455,16 +465,16 @@ pub async fn update_resource(
                updated_at = now()
            WHERE id = $1"#,
         resource_id,
-        resource_type as _,
-        verbatim_kind as _,
-        source_id,
-        source_page_start,
-        source_page_end,
-        source_location_freeform,
-        quoted_text,
-        editor_note,
-        is_featured,
-        admin_notes,
+        patch.resource_type as _,
+        patch.verbatim_kind as _,
+        patch.source_id,
+        patch.source_page_start,
+        patch.source_page_end,
+        patch.source_location_freeform,
+        patch.quoted_text,
+        patch.editor_note,
+        patch.is_featured,
+        patch.admin_notes,
     )
     .execute(pool)
     .await?;
