@@ -709,26 +709,28 @@ pub async fn update_profile(
     let location = to_opt(&body.location);
     let website_url = to_opt(&body.website_url);
 
-    if let Some(b) = &bio {
-        if let Err(e) = check_max_len("Bio", b, crate::validation::MAX_PROFILE_BIO) {
-            return e.into_response();
-        }
+    if let Some(b) = &bio
+        && let Err(e) = check_max_len("Bio", b, crate::validation::MAX_PROFILE_BIO)
+    {
+        return e.into_response();
     }
-    if let Some(t) = &title {
-        if let Err(e) = check_max_len("Title", t, crate::validation::MAX_PROFILE_TITLE) {
-            return e.into_response();
-        }
+
+    if let Some(t) = &title
+        && let Err(e) = check_max_len("Title", t, crate::validation::MAX_PROFILE_TITLE)
+    {
+        return e.into_response();
     }
-    if let Some(l) = &location {
-        if let Err(e) = check_max_len("Location", l, crate::validation::MAX_PROFILE_LOCATION) {
-            return e.into_response();
-        }
+
+    if let Some(l) = &location
+        && let Err(e) = check_max_len("Location", l, crate::validation::MAX_PROFILE_LOCATION)
+    {
+        return e.into_response();
     }
-    if let Some(w) = &website_url {
-        if let Err(e) = check_max_len("Website URL", w, crate::validation::MAX_PROFILE_WEBSITE_URL)
-        {
-            return e.into_response();
-        }
+
+    if let Some(w) = &website_url
+        && let Err(e) = check_max_len("Website URL", w, crate::validation::MAX_PROFILE_WEBSITE_URL)
+    {
+        return e.into_response();
     }
 
     // Handle rename — only attempt if the request actually includes a
@@ -754,21 +756,19 @@ pub async fn update_profile(
 
             // Cooldown — admins bypass.
             let is_admin = user.permissions.contains(&Permission::AdminPanel);
-            if !is_admin {
-                if let Some(last) = last_changed {
-                    let elapsed = time::OffsetDateTime::now_utc() - last;
-                    let cooldown = time::Duration::days(HANDLE_RENAME_COOLDOWN_DAYS);
-                    if elapsed < cooldown {
-                        let remaining = cooldown - elapsed;
-                        let days_left = remaining.whole_days() + 1;
-                        return (
+            if !is_admin && let Some(last) = last_changed {
+                let elapsed = time::OffsetDateTime::now_utc() - last;
+                let cooldown = time::Duration::days(HANDLE_RENAME_COOLDOWN_DAYS);
+                if elapsed < cooldown {
+                    let remaining = cooldown - elapsed;
+                    let days_left = remaining.whole_days() + 1;
+                    return (
                             StatusCode::BAD_REQUEST,
                             format!(
                                 "Handle can be changed once every {HANDLE_RENAME_COOLDOWN_DAYS} days. Try again in {days_left} day(s)."
                             ),
                         )
                             .into_response();
-                    }
                 }
             }
 
@@ -786,10 +786,10 @@ pub async fn update_profile(
 
             // Stash old handle in released_handles so it stays reserved
             // for this user even after rename.
-            if let Some(old) = current_handle.as_deref() {
-                if let Err(_) = db::users::record_released_handle(&state.pool, user.id, old).await {
-                    return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-                }
+            if let Some(old) = current_handle.as_deref()
+                && let Err(_) = db::users::record_released_handle(&state.pool, user.id, old).await
+            {
+                return StatusCode::INTERNAL_SERVER_ERROR.into_response();
             }
 
             if sqlx::query(
