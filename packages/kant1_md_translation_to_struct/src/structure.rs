@@ -94,8 +94,15 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
 
     // === Pass 2: Build toc nodes, filtering out footnote blocks ===
     let flat_entries = toc_en::flat_toc_entries_en();
-    let mut paragraph_counter: i32 = 1;
-    let mut sentence_counter: i32 = 1;
+    let mut counters = Counters {
+        paragraph: 1,
+        sentence: 1,
+    };
+    let lookups = Lookups {
+        marker_map: &marker_map,
+        footnote_content: &footnote_content,
+        number_to_key: &number_to_key,
+    };
 
     let toc_nodes: Vec<TocNodeData> = parsed_files
         .iter()
@@ -110,16 +117,7 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
                 .filter(|block| !matches!(&block.block_type, ParsedBlockType::Footnote { .. }))
                 .enumerate()
                 .map(|(block_pos, block)| {
-                    build_block(
-                        block,
-                        block_pos,
-                        pf.flat_index,
-                        &mut paragraph_counter,
-                        &mut sentence_counter,
-                        &marker_map,
-                        &footnote_content,
-                        &number_to_key,
-                    )
+                    build_block(block, block_pos, pf.flat_index, &mut counters, &lookups)
                 })
                 .collect();
 
@@ -149,28 +147,36 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
     }
 }
 
+struct Counters {
+    paragraph: i32,
+    sentence: i32,
+}
+
+struct Lookups<'a> {
+    marker_map: &'a HashMap<(usize, String), i32>,
+    footnote_content: &'a HashMap<(usize, String), FootnoteContent>,
+    number_to_key: &'a HashMap<i32, (usize, String)>,
+}
+
 fn build_block(
     block: &ParsedBlock,
     block_pos: usize,
     flat_index: usize,
-    paragraph_counter: &mut i32,
-    sentence_counter: &mut i32,
-    marker_map: &HashMap<(usize, String), i32>,
-    footnote_content: &HashMap<(usize, String), FootnoteContent>,
-    number_to_key: &HashMap<i32, (usize, String)>,
+    counters: &mut Counters,
+    lookups: &Lookups<'_>,
 ) -> ContentBlockData {
     let (block_type_str, para_num) = match &block.block_type {
         ParsedBlockType::Heading => ("heading", None),
         ParsedBlockType::Paragraph => {
-            let n = *paragraph_counter;
-            *paragraph_counter += 1;
+            let n = counters.paragraph;
+            counters.paragraph += 1;
             ("paragraph", Some(n))
         }
         ParsedBlockType::Footnote { .. } => unreachable!("footnote blocks filtered out"),
     };
 
     // Rewrite footnote refs in raw text before conversion
-    let rewritten_text = rewrite_footnote_refs(&block.text, flat_index, marker_map);
+    let rewritten_text = rewrite_footnote_refs(&block.text, flat_index, lookups.marker_map);
 
     let (block_plain, forced_splits) = strip_forced_splits(&md_to_plain(&rewritten_text));
     let block_html = strip_forced_split_markers(&md_to_html(&rewritten_text));
@@ -187,8 +193,8 @@ fn build_block(
         offset += sent_char_count + 1; // +1 for space between sentences
 
         let sent_num = if block_type_str == "paragraph" {
-            let n = *sentence_counter;
-            *sentence_counter += 1;
+            let n = counters.sentence;
+            counters.sentence += 1;
             Some(n)
         } else {
             None
@@ -199,8 +205,8 @@ fn build_block(
             .captures_iter(sent_html)
             .filter_map(|caps| {
                 let number: i32 = caps[1].parse().ok()?;
-                let key = number_to_key.get(&number)?;
-                let content = footnote_content.get(key)?;
+                let key = lookups.number_to_key.get(&number)?;
+                let content = lookups.footnote_content.get(key)?;
 
                 // Sentence-split the footnote body
                 let (fn_plain, fn_forced) = strip_forced_splits(&md_to_plain(&content.text));
