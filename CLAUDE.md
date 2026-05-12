@@ -78,7 +78,6 @@ PostgreSQL 18+ with `ltree`. Single-file schema, idempotent-via-reset. ~35 table
 
 - `packages/common` — shared parsers (epub, ncx, opf, kant1, sentences, content).
 - `packages/bible_to_db` — `--translation kjv|web|asv|bbe|darby`.
-- `packages/db-import` — generic JSON-struct → DB.
 - `packages/kant1_*` — multi-stage pipeline: OCR → lines → elements → MD → modernized/translated MD → struct → DB. See `README.md` and `assets/kant1_*` directories.
 
 ### Docs

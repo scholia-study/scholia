@@ -10,7 +10,7 @@ OCR images
   → kant1_ocr_to_lines      (raw OCR → lines with coordinates)
   → kant1_lines_to_elements  (lines → paragraphs, headings, footnotes per page)
   → kant1_elements_to_struct (per-page elements → structured book with TOC)  ← this package
-  → db-import / api          (JSON → Postgres → REST)
+  → kant1_struct_to_db / api (JSON → Postgres → REST)
 ```
 
 ## What it does
@@ -26,7 +26,7 @@ OCR images
    last-match lookup: the most recently started section (in document order)
    whose `aa_page ≤` the element's page receives the content.
 5. **Splits paragraphs into sentences** using the German-aware splitter from
-   `lib/common/src/sentences.rs` (handles abbreviations like d. i., z. B., etc.).
+   `packages/common/src/sentences.rs` (handles abbreviations like d. i., z. B., etc.).
 6. **Preserves B-edition page references** (`b_page_ref`) at both the
    content-block and sentence level, anchored by character offset.
 7. **Numbers** paragraphs and sentences with globally sequential counters.
@@ -56,7 +56,7 @@ The flat list is built into a tree at runtime. Five top-level nodes:
 ## Output types
 
 The package defines its own Kant-specific types rather than reusing
-`lib/common/src/model.rs`, because the OCR pipeline has no HTML and needs
+`packages/common/src/model.rs`, because the OCR pipeline has no HTML and needs
 fields like `aa_page` and `b_page_refs` instead of EPUB-specific ones
 (`ncx_id`, `play_order`, `html`).
 
