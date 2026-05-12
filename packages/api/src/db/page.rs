@@ -2,6 +2,7 @@ use sqlx::PgPool;
 use std::collections::HashMap;
 use uuid::Uuid;
 
+use crate::db::facsimile;
 use crate::error::AppError;
 use crate::models::node::{
     ContentBlockResponse, FootnoteResponse, FootnoteSentenceResponse, NodeDetail,
@@ -48,6 +49,7 @@ struct MarkerRow {
     ref_value: String,
     sort_order: i32,
     char_offset: Option<i32>,
+    storage_key: Option<String>,
 }
 
 struct FootnoteRow {
@@ -188,9 +190,13 @@ pub async fn get_node_page(
 
     let markers = sqlx::query_as!(
         MarkerRow,
-        r#"SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset
+        r#"SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset,
+                  fp.storage_key
            FROM page_markers pm
            JOIN reference_systems rs ON rs.id = pm.system_id
+           LEFT JOIN facsimile_pages fp
+               ON fp.reference_system_id = pm.system_id
+               AND fp.ref_value = pm.ref_value
            WHERE pm.sentence_id = ANY(
                SELECT s.id FROM sentences s
                WHERE s.block_id IS NOT NULL AND s.block_id = ANY(
@@ -287,6 +293,7 @@ pub async fn get_node_page(
                 ref_value: m.ref_value,
                 sort_order: m.sort_order,
                 char_offset: m.char_offset,
+                image_url: m.storage_key.as_deref().and_then(facsimile::resolve_url),
             });
     }
 
@@ -448,10 +455,14 @@ async fn assemble_node_page(
 
     let markers = sqlx::query_as!(
         MarkerRow,
-        r#"SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset
+        r#"SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset,
+                  fp.storage_key
            FROM page_markers pm
            JOIN reference_systems rs ON rs.id = pm.system_id
            JOIN sentences s ON s.id = pm.sentence_id
+           LEFT JOIN facsimile_pages fp
+               ON fp.reference_system_id = pm.system_id
+               AND fp.ref_value = pm.ref_value
            WHERE s.node_id = ANY($1)
            ORDER BY pm.sort_order"#,
         &node_ids,
@@ -542,6 +553,7 @@ async fn assemble_node_page(
                 ref_value: m.ref_value,
                 sort_order: m.sort_order,
                 char_offset: m.char_offset,
+                image_url: m.storage_key.as_deref().and_then(facsimile::resolve_url),
             });
     }
 

@@ -4050,6 +4050,9 @@
                         "type": ["integer", "null"],
                         "format": "int32"
                     },
+                    "image_url": {
+                        "type": ["string", "null"]
+                    },
                     "ref_value": {
                         "type": "string"
                     },

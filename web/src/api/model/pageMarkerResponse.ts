@@ -8,6 +8,8 @@
 export interface PageMarkerResponse {
     /** @nullable */
     char_offset?: number | null;
+    /** @nullable */
+    image_url?: string | null;
     ref_value: string;
     sort_order: number;
     system_slug: string;

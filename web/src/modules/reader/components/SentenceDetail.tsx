@@ -75,7 +75,20 @@ function SingleDetail({
                                         key={i}
                                         className="text-stone-800 font-mono text-xs"
                                     >
-                                        {pm.system_slug}: {pm.ref_value}
+                                        {pm.image_url ? (
+                                            <a
+                                                href={pm.image_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-stone-800 hover:underline"
+                                            >
+                                                {pm.system_slug}: {pm.ref_value}
+                                            </a>
+                                        ) : (
+                                            <>
+                                                {pm.system_slug}: {pm.ref_value}
+                                            </>
+                                        )}
                                     </div>
                                 ))}
                             </dd>

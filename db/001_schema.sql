@@ -336,6 +336,31 @@ CREATE INDEX idx_markers_sentence ON page_markers (sentence_id);
 CREATE INDEX idx_markers_system_order ON page_markers (system_id, sort_order);
 CREATE INDEX idx_markers_system_value ON page_markers (system_id, ref_value);
 
+-- Facsimile scans of the page identified by (reference_system, ref_value).
+-- A sentence picks up its image transitively via the page_markers row that
+-- shares (system_id, ref_value) — e.g. AA III page 7's scan is reachable
+-- from every sentence whose markers point at that page.
+--
+-- Convention (not enforced): only one reference system per book carries
+-- facsimiles. For Kant 1 that's the AA Band III system.
+--
+-- storage_key is a logical bucket key (e.g. "aa_iii/007.jpg"). The API
+-- resolves it via FACSIMILE_BUCKET_BASE_URL; until that env var is set,
+-- the API returns image_url=null even when rows exist.
+CREATE TABLE facsimile_pages (
+    id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    reference_system_id   UUID NOT NULL REFERENCES reference_systems(id) ON DELETE CASCADE,
+    ref_value             TEXT NOT NULL,
+    storage_key           TEXT NOT NULL,
+    caption               TEXT,
+    admin_notes           TEXT,
+    created_by            UUID NOT NULL REFERENCES users(id),
+    created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    UNIQUE (reference_system_id, ref_value)
+);
+
 -- Links between two text locations. Separate from resources
 -- because it connects TWO anchors and needs bidirectional queries.
 CREATE TABLE cross_references (

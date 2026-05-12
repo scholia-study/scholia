@@ -52,6 +52,8 @@ pub struct PageMarkerResponse {
     pub ref_value: String,
     pub sort_order: i32,
     pub char_offset: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub image_url: Option<String>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
