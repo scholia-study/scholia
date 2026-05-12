@@ -1,7 +1,6 @@
 packages:
-  - web
-  - web2
-  - packages/api
+  - apps/web
+  - apps/api
 
 onlyBuiltDependencies:
   - "@parcel/watcher"

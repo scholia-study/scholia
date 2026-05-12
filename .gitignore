@@ -1,8 +1,8 @@
 /target
 assets/
 .env
-web/node_modules/
-web/dist/
+apps/web/node_modules/
+apps/web/dist/
 .turbo
 node_modules
 .venv

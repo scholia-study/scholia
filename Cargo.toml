@@ -1,6 +1,6 @@
 [workspace]
 members = [
+    "apps/api",
     "packages/*",
-    "lib/*",
 ]
 resolver = "2"  # Use the new dependency resolver

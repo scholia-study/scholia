@@ -3,7 +3,7 @@ import { defineConfig } from "orval";
 export default defineConfig({
     scholia: {
         input: {
-            target: "../openapi.json",
+            target: "../../openapi.json",
         },
         output: {
             mode: "tags-split",
