@@ -948,6 +948,48 @@
                 }
             }
         },
+        "/api/books/{slug}/about": {
+            "get": {
+                "tags": ["books"],
+                "summary": "Bibliographic info for the \"About this text\" panel. With `?node=`,\nwalks the toc-ancestor chain to surface the constituent work the\nreader is in (e.g. Genesis within KJV); otherwise returns the\nhosted book's source.",
+                "operationId": "get_book_about",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Book slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "node",
+                        "in": "query",
+                        "description": "Active toc node slug for contextual resolution",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bibliographic info for the active text",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AboutThisTextResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book or node not found"
+                    }
+                }
+            }
+        },
         "/api/books/{slug}/nodes": {
             "get": {
                 "tags": ["nodes"],
@@ -2666,6 +2708,35 @@
     },
     "components": {
         "schemas": {
+            "AboutThisTextResponse": {
+                "type": "object",
+                "description": "Resolved bibliographic info for the \"About this text\" panel.\n\nWalks ancestors of the active toc node looking for the deepest\n`toc_nodes.source_id` and falls back to `books.source_id`. For\nBible-shape works this lets the panel show info about the\nconstituent book the reader is in (Genesis, Romans); for plain\nworks (Kant) it always falls back to the hosted book's source.",
+                "required": ["source", "resolved_from"],
+                "properties": {
+                    "about_text": {
+                        "type": ["string", "null"],
+                        "description": "Editor's note for this hosted edition (free-form plain text).\nMirrors `books.about_text` of the hosted book the reader is in\n(NOT walked across toc ancestors)."
+                    },
+                    "resolved_from": {
+                        "type": "string",
+                        "description": "`\"node\"` when an ancestor toc_node supplied a source_id (Bible\nbooks-within-books); `\"book\"` when the resolver fell back to\nthe hosted book's root source."
+                    },
+                    "source": {
+                        "$ref": "#/components/schemas/SourceResponse"
+                    },
+                    "source_book": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/BookSummary",
+                                "description": "Hosted source-language book, when this source is a translation\nand the original is also hosted (Kant EN → Kant DE). Absent for\nBible-shape works whose originals aren't hosted."
+                            }
+                        ]
+                    }
+                }
+            },
             "ApplyEditorialLabelRequest": {
                 "type": "object",
                 "required": ["label_slug"],

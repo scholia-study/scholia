@@ -1,9 +1,10 @@
 use axum::Json;
-use axum::extract::{Path, State};
+use axum::extract::{Path, Query, State};
+use serde::Deserialize;
 
 use crate::db;
 use crate::error::AppError;
-use crate::models::book::{BookDetail, BookSummary};
+use crate::models::book::{AboutThisTextResponse, BookDetail, BookSummary};
 use crate::state::AppState;
 
 /// List all books
@@ -37,4 +38,35 @@ pub async fn get_book(
 ) -> Result<Json<BookDetail>, AppError> {
     let book = db::books::get_book_by_slug(&state.pool, &slug).await?;
     Ok(Json(book))
+}
+
+#[derive(Deserialize)]
+pub struct AboutQuery {
+    pub node: Option<String>,
+}
+
+/// Bibliographic info for the "About this text" panel. With `?node=`,
+/// walks the toc-ancestor chain to surface the constituent work the
+/// reader is in (e.g. Genesis within KJV); otherwise returns the
+/// hosted book's source.
+#[utoipa::path(
+    get,
+    path = "/api/books/{slug}/about",
+    params(
+        ("slug" = String, Path, description = "Book slug"),
+        ("node" = Option<String>, Query, description = "Active toc node slug for contextual resolution")
+    ),
+    responses(
+        (status = 200, description = "Bibliographic info for the active text", body = AboutThisTextResponse),
+        (status = 404, description = "Book or node not found")
+    ),
+    tag = "books"
+)]
+pub async fn get_book_about(
+    State(state): State<AppState>,
+    Path(slug): Path<String>,
+    Query(query): Query<AboutQuery>,
+) -> Result<Json<AboutThisTextResponse>, AppError> {
+    let about = db::books::get_about_this_text(&state.pool, &slug, query.node.as_deref()).await?;
+    Ok(Json(about))
 }

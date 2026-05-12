@@ -136,6 +136,10 @@ CREATE TABLE books (
     source_id       UUID NOT NULL REFERENCES sources(id),
     slug            TEXT NOT NULL UNIQUE,
     language        TEXT NOT NULL,
+    -- Public editorial note surfaced in the "About this text" panel.
+    -- Per hosted edition (Kant EN vs Kant DE can have different notes);
+    -- distinct from `admin_notes`, which is internal.
+    about_text      TEXT,
     admin_notes     TEXT,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()

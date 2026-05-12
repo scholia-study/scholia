@@ -20,7 +20,13 @@ import type {
 } from "@tanstack/react-query";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { customFetch } from ".././fetcher";
-import type { BookDetail, BookSummary, LibraryResponse } from "../model";
+import type {
+    AboutThisTextResponse,
+    BookDetail,
+    BookSummary,
+    GetBookAboutParams,
+    LibraryResponse,
+} from "../model";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -589,6 +595,370 @@ export function useGetBookSuspense<
     queryKey: DataTag<QueryKey, TData, TError>;
 } {
     const queryOptions = getGetBookSuspenseQueryOptions(slug, options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Bibliographic info for the "About this text" panel. With `?node=`,
+walks the toc-ancestor chain to surface the constituent work the
+reader is in (e.g. Genesis within KJV); otherwise returns the
+hosted book's source.
+ */
+export type getBookAboutResponse200 = {
+    data: AboutThisTextResponse;
+    status: 200;
+};
+
+export type getBookAboutResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type getBookAboutResponseSuccess = getBookAboutResponse200 & {
+    headers: Headers;
+};
+export type getBookAboutResponseError = getBookAboutResponse404 & {
+    headers: Headers;
+};
+
+export type getBookAboutResponse =
+    | getBookAboutResponseSuccess
+    | getBookAboutResponseError;
+
+export const getGetBookAboutUrl = (
+    slug: string,
+    params?: GetBookAboutParams,
+) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : value.toString(),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `/api/books/${slug}/about?${stringifiedParams}`
+        : `/api/books/${slug}/about`;
+};
+
+export const getBookAbout = async (
+    slug: string,
+    params?: GetBookAboutParams,
+    options?: RequestInit,
+): Promise<getBookAboutResponse> => {
+    return customFetch<getBookAboutResponse>(getGetBookAboutUrl(slug, params), {
+        ...options,
+        method: "GET",
+    });
+};
+
+export const getGetBookAboutQueryKey = (
+    slug: string,
+    params?: GetBookAboutParams,
+) => {
+    return [`/api/books/${slug}/about`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetBookAboutQueryOptions = <
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params?: GetBookAboutParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getGetBookAboutQueryKey(slug, params);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBookAbout>>> = ({
+        signal,
+    }) => getBookAbout(slug, params, { signal, ...requestOptions });
+
+    return {
+        queryKey,
+        queryFn,
+        enabled: !!slug,
+        ...queryOptions,
+    } as UseQueryOptions<
+        Awaited<ReturnType<typeof getBookAbout>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetBookAboutQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getBookAbout>>
+>;
+export type GetBookAboutQueryError = void;
+
+export function useGetBookAbout<
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params: undefined | GetBookAboutParams,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getBookAbout>>,
+                    TError,
+                    Awaited<ReturnType<typeof getBookAbout>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetBookAbout<
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params?: GetBookAboutParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getBookAbout>>,
+                    TError,
+                    Awaited<ReturnType<typeof getBookAbout>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetBookAbout<
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params?: GetBookAboutParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Bibliographic info for the "About this text" panel. With `?node=`,
+walks the toc-ancestor chain to surface the constituent work the
+reader is in (e.g. Genesis within KJV); otherwise returns the
+hosted book's source.
+ */
+
+export function useGetBookAbout<
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params?: GetBookAboutParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetBookAboutQueryOptions(slug, params, options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getGetBookAboutSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params?: GetBookAboutParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getGetBookAboutQueryKey(slug, params);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBookAbout>>> = ({
+        signal,
+    }) => getBookAbout(slug, params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getBookAbout>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetBookAboutSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getBookAbout>>
+>;
+export type GetBookAboutSuspenseQueryError = void;
+
+export function useGetBookAboutSuspense<
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params: undefined | GetBookAboutParams,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetBookAboutSuspense<
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params?: GetBookAboutParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetBookAboutSuspense<
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params?: GetBookAboutParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Bibliographic info for the "About this text" panel. With `?node=`,
+walks the toc-ancestor chain to surface the constituent work the
+reader is in (e.g. Genesis within KJV); otherwise returns the
+hosted book's source.
+ */
+
+export function useGetBookAboutSuspense<
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params?: GetBookAboutParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetBookAboutSuspenseQueryOptions(
+        slug,
+        params,
+        options,
+    );
 
     const query = useSuspenseQuery(
         queryOptions,

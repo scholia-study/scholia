@@ -16,6 +16,7 @@ pub mod validation;
     paths(
         handlers::books::list_books,
         handlers::books::get_book,
+        handlers::books::get_book_about,
         handlers::library::get_library,
         handlers::toc::get_toc,
         handlers::nodes::get_node,
@@ -88,6 +89,7 @@ pub mod validation;
     components(schemas(
         models::book::BookSummary,
         models::book::BookDetail,
+        models::book::AboutThisTextResponse,
         models::library::LibraryResponse,
         models::library::LibraryGroup,
         models::library::LibraryWork,

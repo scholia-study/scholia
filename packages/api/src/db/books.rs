@@ -1,8 +1,9 @@
 use sqlx::PgPool;
 use uuid::Uuid;
 
+use crate::db::{citations, sources};
 use crate::error::AppError;
-use crate::models::book::{BookDetail, BookSummary};
+use crate::models::book::{AboutThisTextResponse, BookDetail, BookSummary};
 
 pub async fn list_books(pool: &PgPool) -> Result<Vec<BookSummary>, AppError> {
     let rows = sqlx::query_as!(
@@ -132,6 +133,97 @@ pub async fn get_book_by_slug(pool: &PgPool, slug: &str) -> Result<BookDetail, A
         .collect();
 
     Ok(detail)
+}
+
+/// Resolve the bibliographic source for the "About this text" panel.
+///
+/// With `node_slug`, walks the toc-ancestor chain looking for the
+/// deepest non-null `toc_nodes.source_id` (Bible-shape books-within-
+/// books) and falls back to `books.source_id`. Without a node, uses
+/// `books.source_id` directly. Also surfaces the hosted source-
+/// language book when the resolved source is a translation of one.
+pub async fn get_about_this_text(
+    pool: &PgPool,
+    book_slug: &str,
+    node_slug: Option<&str>,
+) -> Result<AboutThisTextResponse, AppError> {
+    let book = sqlx::query!(
+        r#"SELECT id, source_id, about_text FROM books WHERE slug = $1"#,
+        book_slug,
+    )
+    .fetch_optional(pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound(format!("Book not found: {book_slug}")))?;
+
+    let (effective_source_id, resolved_from) = if let Some(slug) = node_slug {
+        let node_id = sqlx::query_scalar!(
+            r#"SELECT id FROM toc_nodes WHERE book_id = $1 AND slug = $2"#,
+            book.id,
+            slug,
+        )
+        .fetch_optional(pool)
+        .await?
+        .ok_or_else(|| AppError::NotFound(format!("Node not found: {slug}")))?;
+
+        let resolved = citations::resolve_effective_source(pool, book.id, node_id).await?;
+        let from = if resolved == book.source_id {
+            "book"
+        } else {
+            "node"
+        };
+        (resolved, from)
+    } else {
+        (book.source_id, "book")
+    };
+
+    let source = sources::get_source(pool, effective_source_id).await?;
+
+    // If this source is a translation and the original is hosted, attach
+    // a BookSummary for the source-language book so the panel can link to it.
+    let source_book = if let Some(translation_of_id_str) = &source.translation_of_id {
+        let translation_of_id = Uuid::parse_str(translation_of_id_str)
+            .map_err(|_| AppError::Internal("invalid translation_of_id".into()))?;
+        sqlx::query_as!(
+            SourceBookRow,
+            r#"SELECT b.id, b.slug, b.language,
+                      COALESCE(s.title_display, s.title) AS "title!",
+                      STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author
+               FROM books b
+               JOIN sources s ON s.id = b.source_id
+               LEFT JOIN source_persons sp ON sp.source_id = s.id AND sp.role = 'author'
+               LEFT JOIN persons p ON p.id = sp.person_id
+               WHERE b.source_id = $1
+               GROUP BY b.id, b.slug, b.language, s.title_display, s.title
+               LIMIT 1"#,
+            translation_of_id,
+        )
+        .fetch_optional(pool)
+        .await?
+        .map(|r| BookSummary {
+            id: r.id.to_string(),
+            slug: r.slug,
+            title: r.title,
+            author: r.author.unwrap_or_default(),
+            language: r.language,
+        })
+    } else {
+        None
+    };
+
+    Ok(AboutThisTextResponse {
+        source,
+        resolved_from: resolved_from.to_string(),
+        source_book,
+        about_text: book.about_text,
+    })
+}
+
+struct SourceBookRow {
+    id: Uuid,
+    slug: String,
+    language: String,
+    title: String,
+    author: Option<String>,
 }
 
 pub async fn get_book_id_by_slug(pool: &PgPool, slug: &str) -> Result<Uuid, AppError> {

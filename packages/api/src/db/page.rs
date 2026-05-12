@@ -191,7 +191,7 @@ pub async fn get_node_page(
     let markers = sqlx::query_as!(
         MarkerRow,
         r#"SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset,
-                  fp.storage_key
+                  fp.storage_key AS "storage_key?"
            FROM page_markers pm
            JOIN reference_systems rs ON rs.id = pm.system_id
            LEFT JOIN facsimile_pages fp
@@ -456,7 +456,7 @@ async fn assemble_node_page(
     let markers = sqlx::query_as!(
         MarkerRow,
         r#"SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset,
-                  fp.storage_key
+                  fp.storage_key AS "storage_key?"
            FROM page_markers pm
            JOIN reference_systems rs ON rs.id = pm.system_id
            JOIN sentences s ON s.id = pm.sentence_id

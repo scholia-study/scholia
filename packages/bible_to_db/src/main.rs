@@ -40,6 +40,7 @@ struct TranslationMeta {
     publication_year: i16,
     book_slug: &'static str,
     publisher: &'static str,
+    about_text: &'static str,
 }
 
 const TRANSLATIONS: &[TranslationMeta] = &[
@@ -52,6 +53,10 @@ const TRANSLATIONS: &[TranslationMeta] = &[
         publication_year: 1611,
         book_slug: "kjv-bible",
         publisher: "KJV",
+        about_text: "The King James Version, first authorized by King James I of England in 1611, \
+                     has shaped four centuries of English-language literature and worship. \
+                     The translation is in public domain. The digital edition on Scholia is \
+                     a community-driven project. Corrections and refinements are welcome.",
     },
     TranslationMeta {
         slug: "web",
@@ -59,6 +64,11 @@ const TRANSLATIONS: &[TranslationMeta] = &[
         publication_year: 2000,
         book_slug: "web-bible",
         publisher: "WEB",
+        about_text: "The World English Bible is a modern English translation released into the \
+                     public domain by Rainbow Missions, based on the 1901 American Standard \
+                     Version with revisions for contemporary readability. The digital edition \
+                     on Scholia is a community-driven project. Corrections and refinements \
+                     are welcome.",
     },
     TranslationMeta {
         slug: "asv",
@@ -66,6 +76,11 @@ const TRANSLATIONS: &[TranslationMeta] = &[
         publication_year: 1901,
         book_slug: "asv-bible",
         publisher: "ASV",
+        about_text: "The American Standard Version, published in 1901, is the American revision \
+                     of the English Revised Version produced by American scholars. It is prized \
+                     for its literal fidelity to the underlying Hebrew and Greek. The \
+                     translation is in public domain. The digital edition on Scholia is a \
+                     community-driven project. Corrections and refinements are welcome.",
     },
     TranslationMeta {
         slug: "bbe",
@@ -73,6 +88,11 @@ const TRANSLATIONS: &[TranslationMeta] = &[
         publication_year: 1949,
         book_slug: "bbe-bible",
         publisher: "BBE",
+        about_text: "The Bible in Basic English, completed in 1949 under the direction of \
+                     S. H. Hooke, uses C. K. Ogden's 1000-word Basic English vocabulary to \
+                     produce a simplified rendering accessible to non-native readers. The \
+                     translation is in public domain. The digital edition on Scholia is a \
+                     community-driven project. Corrections and refinements are welcome.",
     },
     TranslationMeta {
         slug: "darby",
@@ -80,6 +100,11 @@ const TRANSLATIONS: &[TranslationMeta] = &[
         publication_year: 1890,
         book_slug: "darby-bible",
         publisher: "DARBY",
+        about_text: "John Nelson Darby's translation, completed in 1890, is a careful literal \
+                     rendering by the founder of the Plymouth Brethren, aimed at faithful \
+                     reproduction of the underlying Hebrew and Greek texts. The translation \
+                     is in public domain. The digital edition on Scholia is a community-driven \
+                     project. Corrections and refinements are welcome.",
     },
 ];
 
@@ -528,12 +553,13 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         .collect();
 
     let book_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO books (slug, source_id, language)
-         VALUES ($1, $2, 'en')
+        "INSERT INTO books (slug, source_id, language, about_text)
+         VALUES ($1, $2, 'en', $3)
          RETURNING id",
     )
     .bind(translation.book_slug)
     .bind(bible_source_id)
+    .bind(translation.about_text)
     .fetch_one(&mut *tx)
     .await?;
 

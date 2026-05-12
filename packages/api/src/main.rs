@@ -199,6 +199,7 @@ async fn main() {
     let public_router = OpenApiRouter::new()
         .routes(utoipa_axum::routes!(api::handlers::books::list_books))
         .routes(utoipa_axum::routes!(api::handlers::books::get_book))
+        .routes(utoipa_axum::routes!(api::handlers::books::get_book_about))
         .routes(utoipa_axum::routes!(api::handlers::library::get_library))
         .routes(utoipa_axum::routes!(api::handlers::toc::get_toc))
         .routes(utoipa_axum::routes!(api::handlers::nodes::get_node))

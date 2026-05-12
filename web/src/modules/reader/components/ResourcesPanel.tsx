@@ -5,6 +5,7 @@ import CompareOutlined from "@mui/icons-material/CompareOutlined";
 import EditNoteOutlined from "@mui/icons-material/EditNoteOutlined";
 import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
 import FavoriteOutlined from "@mui/icons-material/FavoriteOutlined";
+import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import ListOutlined from "@mui/icons-material/ListOutlined";
 import MenuBookOutlined from "@mui/icons-material/MenuBookOutlined";
 import { IconButton } from "@mui/material";
@@ -34,6 +35,7 @@ import {
 import { useListResources } from "../../../api/resources/resources";
 import { useGetToc } from "../../../api/toc/toc";
 import { useAuth } from "../../../hooks/useAuth";
+import { AboutThisTextView } from "./AboutThisTextView";
 import { CommentaryView, getSentenceRange } from "./CommentaryView";
 import { NotesView } from "./NotesView";
 import { PanelToc } from "./PanelToc";
@@ -41,6 +43,7 @@ import { ResourceFormModal } from "./ResourceFormModal";
 import { SentenceDetail } from "./SentenceDetail";
 
 type ViewKind =
+    | "about"
     | "toc"
     | "compare"
     | "verbatim"
@@ -305,21 +308,23 @@ export function ResourcesPanel({
                         Resources
                     </div>
                     <div className="text-xs text-stone-400 truncate">
-                        {viewKind === "toc"
-                            ? "Table of Contents"
-                            : viewKind === "sentence"
-                              ? "Sentence Details"
-                              : viewKind === "compare"
-                                ? "Compare Text"
-                                : viewKind === "verbatim"
-                                  ? "Verbatim Quotations"
-                                  : viewKind === "paraphrase"
-                                    ? "Paraphrases"
-                                    : viewKind === "allusion"
-                                      ? "Allusions"
-                                      : viewKind === "notes"
-                                        ? "Notes"
-                                        : "\u00A0"}
+                        {viewKind === "about"
+                            ? "About this text"
+                            : viewKind === "toc"
+                              ? "Table of Contents"
+                              : viewKind === "sentence"
+                                ? "Sentence Details"
+                                : viewKind === "compare"
+                                  ? "Compare Text"
+                                  : viewKind === "verbatim"
+                                    ? "Verbatim Quotations"
+                                    : viewKind === "paraphrase"
+                                      ? "Paraphrases"
+                                      : viewKind === "allusion"
+                                        ? "Allusions"
+                                        : viewKind === "notes"
+                                          ? "Notes"
+                                          : "\u00A0"}
                     </div>
                 </div>
                 <IconButton size="small" onClick={onClose} title="Close">
@@ -331,6 +336,11 @@ export function ResourcesPanel({
             {isMenu && (
                 <div className="flex-1 overflow-y-auto">
                     <nav className="p-2 space-y-1">
+                        <MenuButton
+                            onClick={() => onViewChange("about")}
+                            label="About this text"
+                            icon={<InfoOutlined fontSize="small" />}
+                        />
                         <MenuButton
                             onClick={() => onViewChange("toc")}
                             label="Table of Contents"
@@ -442,6 +452,14 @@ export function ResourcesPanel({
                         )}
                     </nav>
                 </div>
+            )}
+
+            {/* About this text view */}
+            {viewKind === "about" && (
+                <AboutThisTextView
+                    bookSlug={bookSlug}
+                    activeNodeSlug={activeNodeSlug}
+                />
             )}
 
             {/* Table of Contents view */}

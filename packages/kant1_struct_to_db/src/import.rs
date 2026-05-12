@@ -102,14 +102,29 @@ pub async fn run(
     .await?;
 
     // 1d. Insert book
+    let about_text: &str = if source_book_id.is_some() {
+        // Translation: English (or other) rendering of the German source.
+        "This English translation of Kant's Kritik der reinen Vernunft is a Scholia community project. \
+         It is prepared from the 1911 Akademie-Ausgabe (Band III) facsimile of the second edition (B), \
+         which serves as the underlying German text on Scholia."
+    } else {
+        // Source-language book: the German B-edition.
+        "This German edition reproduces the text of Kant's Kritik der reinen Vernunft as printed in the \
+         1911 Akademie-Ausgabe (Band III) facsimile of the second edition (B, 1787). Margin markers \
+         refer to AA page numbers; inline B-edition pagination is preserved within the text. \
+         The text itself is in public domain. The digital edition on Scholia is a community-driven \
+         project. Corrections and refinements are welcome."
+    };
+
     let book_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO books (slug, source_id, language)
-         VALUES ($1, $2, $3)
+        "INSERT INTO books (slug, source_id, language, about_text)
+         VALUES ($1, $2, $3, $4)
          RETURNING id",
     )
     .bind(&output.book.slug)
     .bind(bib_source_id)
     .bind(&output.book.language)
+    .bind(about_text)
     .fetch_one(&mut *tx)
     .await?;
 

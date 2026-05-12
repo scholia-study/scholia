@@ -5,6 +5,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./aboutThisTextResponse";
 export * from "./applyEditorialLabelRequest";
 export * from "./articleDetailResponse";
 export * from "./articleLimitsResponse";
@@ -44,6 +45,7 @@ export * from "./feedbackSubmitter";
 export * from "./footnoteResponse";
 export * from "./footnoteSentenceResponse";
 export * from "./forgotPasswordRequest";
+export * from "./getBookAboutParams";
 export * from "./getNodePageParams";
 export * from "./getNodeParams";
 export * from "./getPublicProfileParams";
