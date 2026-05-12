@@ -101,6 +101,18 @@ impl AuthUser {
             Err(StatusCode::FORBIDDEN)
         }
     }
+
+    pub fn has_any_permission(&self, perms: &[Permission]) -> bool {
+        perms.iter().any(|p| self.permissions.contains(p))
+    }
+
+    pub fn require_any_permission(&self, perms: &[Permission]) -> Result<(), StatusCode> {
+        if self.has_any_permission(perms) {
+            Ok(())
+        } else {
+            Err(StatusCode::FORBIDDEN)
+        }
+    }
 }
 
 impl FromRequestParts<AppState> for AuthUser {

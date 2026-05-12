@@ -38,11 +38,8 @@ pub async fn search_persons(
     user: AuthUser,
     Query(params): Query<SearchQuery>,
 ) -> Result<Json<Vec<PersonResponse>>, AppError> {
-    if !user.has_permission(Permission::ResourcesManage)
-        && !user.has_permission(Permission::SourcesCreate)
-    {
-        return Err(AppError::Forbidden("Insufficient permissions".into()));
-    }
+    user.require_any_permission(&[Permission::ResourcesManage, Permission::SourcesCreate])
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
     let results = db::persons::search_persons(&state.pool, &params.q).await?;
     Ok(Json(results))
@@ -65,11 +62,8 @@ pub async fn create_person(
     user: AuthUser,
     Json(body): Json<CreatePersonRequest>,
 ) -> Result<Json<PersonResponse>, AppError> {
-    if !user.has_permission(Permission::ResourcesManage)
-        && !user.has_permission(Permission::SourcesCreate)
-    {
-        return Err(AppError::Forbidden("Insufficient permissions".into()));
-    }
+    user.require_any_permission(&[Permission::ResourcesManage, Permission::SourcesCreate])
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
     validate_person_fields(Some(&body.name), body.sort_name.as_deref())?;
 
