@@ -11,8 +11,10 @@
 ## 🪡 PATCH
 - need filter on tags for quotation in editor
 
-## 🏗️ INFRA
+## 🏗️ INFRA / EXTERNAL SETUP
 - need proper resend setup
+- Auth callback       <domain>/api/auth/github/callback
+- Stripe webhook      <domain>/api/webhooks/stripe
 
 ## 🤔 MAYBE
 - add "commentary, paraphrase, allusion submission to editors for review and approval" 
