@@ -61,33 +61,4 @@ impl AppConfig {
             );
         }
     }
-
-    /// Map a Stripe Price ID back to its internal tier name.
-    /// Returns the role name to assign; `None` for an unknown price
-    /// (e.g. a legacy sub on a removed tier — webhook should log + ack).
-    pub fn role_for_price_id(&self, price_id: &str) -> Option<&'static str> {
-        if price_id == self.stripe_price_base {
-            Some("scholiast")
-        } else if price_id == self.stripe_price_mid {
-            Some("scholiast_benefactor")
-        } else if price_id == self.stripe_price_high {
-            Some("scholiast_patron")
-        } else {
-            None
-        }
-    }
-
-    /// Map a Stripe Price ID to the short tier label stored in
-    /// `subscriptions.tier` ('base' | 'mid' | 'high').
-    pub fn tier_label_for_price_id(&self, price_id: &str) -> Option<&'static str> {
-        if price_id == self.stripe_price_base {
-            Some("base")
-        } else if price_id == self.stripe_price_mid {
-            Some("mid")
-        } else if price_id == self.stripe_price_high {
-            Some("high")
-        } else {
-            None
-        }
-    }
 }

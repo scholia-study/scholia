@@ -20,6 +20,80 @@ use crate::config::AppConfig;
 use crate::error::AppError;
 use crate::state::AppState;
 
+// ── Tier vocabulary ─────────────────────────────────────────
+//
+// `Tier` is the canonical name for the three subscription levels the
+// app sells. Every other representation (the slug accepted on the
+// checkout request, the Stripe Price ID configured in env, the
+// `subscriptions.tier` label stored in DB, the paid role name granted
+// in `user_roles`) is *derived* from this enum, never duplicated. Add
+// a tier → add a variant; the compiler will tell you which match arms
+// need updating.
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Tier {
+    Base,
+    Mid,
+    High,
+}
+
+impl Tier {
+    pub const ALL: &'static [Tier] = &[Tier::Base, Tier::Mid, Tier::High];
+
+    /// Public slug used on the checkout request and stored verbatim in
+    /// `subscriptions.tier`.
+    pub fn slug(self) -> &'static str {
+        match self {
+            Tier::Base => "base",
+            Tier::Mid => "mid",
+            Tier::High => "high",
+        }
+    }
+
+    pub fn from_slug(s: &str) -> Option<Tier> {
+        match s {
+            "base" => Some(Tier::Base),
+            "mid" => Some(Tier::Mid),
+            "high" => Some(Tier::High),
+            _ => None,
+        }
+    }
+
+    pub fn price_id(self, cfg: &AppConfig) -> &str {
+        match self {
+            Tier::Base => &cfg.stripe_price_base,
+            Tier::Mid => &cfg.stripe_price_mid,
+            Tier::High => &cfg.stripe_price_high,
+        }
+    }
+
+    pub fn from_price_id(cfg: &AppConfig, price_id: &str) -> Option<Tier> {
+        Tier::ALL
+            .iter()
+            .find(|t| t.price_id(cfg) == price_id)
+            .copied()
+    }
+
+    /// Paid role granted while a subscription on this tier is access-
+    /// granting. Mirrors the `Role` enum in `auth/permissions.rs`; we
+    /// keep this as a string here because the webhook writes role
+    /// names directly into the `roles.name` column.
+    pub fn paid_role(self) -> &'static str {
+        match self {
+            Tier::Base => "scholiast",
+            Tier::Mid => "scholiast_benefactor",
+            Tier::High => "scholiast_patron",
+        }
+    }
+}
+
+/// Stripe subscription statuses that grant elevated access. Other
+/// statuses (`canceled`, `incomplete`, `unpaid`, …) drop the user back
+/// to the default tier. Centralised so the policy is named once.
+fn grants_access(status: &str) -> bool {
+    matches!(status, "active" | "trialing" | "past_due")
+}
+
 // ── Request / response types ────────────────────────────────
 
 #[derive(Deserialize, ToSchema)]
@@ -61,12 +135,11 @@ pub async fn create_checkout_session(
     user: AuthUser,
     Json(req): Json<CreateCheckoutRequest>,
 ) -> Response {
-    let price_id = match req.tier.as_str() {
-        "base" => state.config.stripe_price_base.clone(),
-        "mid" => state.config.stripe_price_mid.clone(),
-        "high" => state.config.stripe_price_high.clone(),
-        _ => return AppError::BadRequest("invalid tier".into()).into_response(),
+    let tier = match Tier::from_slug(&req.tier) {
+        Some(t) => t,
+        None => return AppError::BadRequest("invalid tier".into()).into_response(),
     };
+    let price_id = tier.price_id(&state.config).to_string();
 
     let customer_id = match get_or_create_stripe_customer(&state, &user).await {
         Ok(id) => id,
@@ -357,17 +430,15 @@ async fn apply_subscription(
     };
     let price_id = item.price.id.to_string();
 
-    let tier_label = match config.tier_label_for_price_id(&price_id) {
-        Some(t) => t,
-        None => {
-            // Unknown price — log and ack. Don't try to assign a role.
-            tracing::warn!(
-                "subscription {} on unknown price {price_id}; treating as inactive",
-                sub.id
-            );
-            "unknown"
-        }
-    };
+    let tier = Tier::from_price_id(config, &price_id);
+    let tier_label = tier.map(Tier::slug).unwrap_or_else(|| {
+        // Unknown price — log and ack. Don't try to assign a role.
+        tracing::warn!(
+            "subscription {} on unknown price {price_id}; treating as inactive",
+            sub.id
+        );
+        "unknown"
+    });
 
     let status = sub.status.as_str().to_string();
     let period_end: i64 = item.current_period_end;
@@ -414,33 +485,37 @@ async fn apply_subscription(
     .await
     .map_err(AppError::from)?;
 
-    // Sync paid roles. Drop all three first, then add the right one
-    // if the sub is access-granting. Touches only paid roles — the
-    // honorary comp role is untouched by design.
+    // Sync paid roles. Drop all paid roles first, then add the right
+    // one if the sub is access-granting. Touches only paid roles —
+    // the honorary comp role is untouched by design.
+    let paid_roles: Vec<String> = Tier::ALL
+        .iter()
+        .map(|t| t.paid_role().to_string())
+        .collect();
     sqlx::query(
         "DELETE FROM user_roles
          WHERE user_id = $1
            AND role_id IN (
              SELECT id FROM roles
-             WHERE name IN ('scholiast', 'scholiast_benefactor', 'scholiast_patron')
+             WHERE name = ANY($2)
            )",
     )
     .bind(user_id)
+    .bind(&paid_roles)
     .execute(&mut *tx)
     .await
     .map_err(AppError::from)?;
 
-    // Statuses that grant access: active, trialing, past_due (grace).
-    let grants_access = matches!(status.as_str(), "active" | "trialing" | "past_due");
-
-    if grants_access && let Some(role_name) = config.role_for_price_id(&price_id) {
+    if grants_access(&status)
+        && let Some(t) = tier
+    {
         sqlx::query(
             "INSERT INTO user_roles (user_id, role_id)
                  SELECT $1, id FROM roles WHERE name = $2
                  ON CONFLICT DO NOTHING",
         )
         .bind(user_id)
-        .bind(role_name)
+        .bind(t.paid_role())
         .execute(&mut *tx)
         .await
         .map_err(AppError::from)?;
