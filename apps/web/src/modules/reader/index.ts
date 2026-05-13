@@ -1,5 +1,6 @@
 export { BibleShapeFullToc, PanelToc } from "./components/PanelToc";
 export { ReaderLayout } from "./components/ReaderLayout";
+export { getNodePageQueryOptions } from "./nodePageQuery";
 export {
     createPanel,
     MAX_PANELS,

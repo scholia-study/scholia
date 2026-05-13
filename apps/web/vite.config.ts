@@ -12,29 +12,10 @@ const config = defineConfig({
         devtools(),
         tailwindcss(),
         tanstackStart({
-            prerender: {
-                enabled: true,
-                crawlLinks: true,
-                autoStaticPathsDiscovery: true,
-                filter: (page) => {
-                    const p = page.path;
-                    if (p.startsWith("/user")) return false;
-                    if (p.startsWith("/admin")) return false;
-                    return true;
-                },
-                // onSuccess: ({ page }) => {
-                //     console.info(`🧼 Rendered ${page.path}`);
-                // },
-            },
-            spa: {
-                enabled: true,
-                prerender: {
-                    enabled: true,
-                    // onSuccess: ({ page }) => {
-                    //     console.info(`🖼️ Rendered ${page.path}!`);
-                    // },
-                },
-            },
+            // SSR runtime mode: no prerender pass, no SPA shell. The build
+            // produces a Nitro Node server (default output: .output/server/
+            // index.mjs) plus client assets. nginx will sit in front of it
+            // and cache the rendered HTML (see PLAN_3_TIER.md).
         }),
         viteReact(),
     ],

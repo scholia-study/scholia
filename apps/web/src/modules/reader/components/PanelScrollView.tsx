@@ -1,5 +1,4 @@
 import { Paper } from "@mui/material";
-import type { InfiniteData } from "@tanstack/react-query";
 import {
     keepPreviousData,
     useInfiniteQuery,
@@ -16,15 +15,11 @@ import {
 } from "react";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import type { NodeDetail, SentenceResponse } from "../../../api/model";
-import {
-    getNodePage,
-    type getNodePageResponse,
-} from "../../../api/nodes/nodes";
+import { getNodePage } from "../../../api/nodes/nodes";
+import { getNodePageQueryOptions } from "../nodePageQuery";
 import type { MarginSettings } from "./BlockRenderer";
 import { Block } from "./BlockRenderer";
 import { InterleavedNodeRenderer } from "./InterleavedNodeRenderer";
-
-type PageCursor = { after: number } | { before: number };
 
 // Virtuoso uses absolute item indices; when prepending we decrement
 // `firstItemIndex` by the number of new items so the library can keep
@@ -91,18 +86,6 @@ export const PanelScrollView = forwardRef<
         }
     }, [initialSortOrder, startSortOrder]);
 
-    // Don't fire the query until we know where to start.
-    const waitingForSortOrder =
-        initialNodeSlug != null && startSortOrder == null;
-
-    // Load a small buffer above the target so the user has somewhere to
-    // scroll up to before any backward fetch fires.
-    const PREFETCH_BUFFER = 5;
-    const initialPageParam: PageCursor | undefined =
-        startSortOrder != null
-            ? { after: Math.max(0, startSortOrder - 1 - PREFETCH_BUFFER) }
-            : undefined;
-
     const {
         data,
         hasNextPage,
@@ -113,47 +96,9 @@ export const PanelScrollView = forwardRef<
         fetchPreviousPage,
         isLoading,
         error,
-    } = useInfiniteQuery<
-        getNodePageResponse,
-        Error,
-        InfiniteData<getNodePageResponse, PageCursor | undefined>,
-        string[],
-        PageCursor | undefined
-    >({
-        enabled: !waitingForSortOrder,
-        queryKey: [
-            "node-page-bidir",
-            bookSlug,
-            String(startSortOrder),
-            showOriginal ? "og" : "",
-        ],
-        queryFn: async ({ pageParam, signal }) => {
-            const base = showOriginal
-                ? { limit: 20, original: true }
-                : { limit: 20 };
-            const params = pageParam
-                ? "after" in pageParam
-                    ? { ...base, after: pageParam.after }
-                    : { ...base, before: pageParam.before }
-                : base;
-            return getNodePage(bookSlug, params, { signal });
-        },
-        initialPageParam,
-        getNextPageParam: (lastPage) => {
-            if (lastPage.status !== 200) return undefined;
-            const page = lastPage.data;
-            if (!page.has_more || page.nodes.length === 0) return undefined;
-            return {
-                after: page.nodes[page.nodes.length - 1].sort_order,
-            };
-        },
-        getPreviousPageParam: (firstPage) => {
-            if (firstPage.status !== 200) return undefined;
-            const page = firstPage.data;
-            if (!page.has_previous || page.nodes.length === 0) return undefined;
-            return { before: page.nodes[0].sort_order };
-        },
-    });
+    } = useInfiniteQuery(
+        getNodePageQueryOptions({ bookSlug, showOriginal, startSortOrder }),
+    );
 
     const nodes = useMemo(
         () =>
