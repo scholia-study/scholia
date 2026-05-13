@@ -17,6 +17,7 @@ use crate::auth::middleware::{AuthUser, invalidate_user_sessions, set_session_us
 use crate::auth::permissions::{Permission, resolve_permission_names};
 use crate::auth::sort_name::derive_sort_name;
 use crate::auth::tokens;
+use crate::cache;
 use crate::db;
 use crate::email;
 use crate::error::AppError;
@@ -822,6 +823,21 @@ pub async fn update_profile(
     .bind(user.id)
     .execute(&state.pool)
     .await;
+
+    // Invalidate the user's public profile pages. The 90-day handle-rename
+    // cooldown means stale entries under a previous handle are rare; if a
+    // rename did just happen, those cached entries fall off via TTL.
+    if let Ok(row) = sqlx::query("SELECT handle FROM users WHERE id = $1")
+        .bind(user.id)
+        .fetch_one(&state.pool)
+        .await
+        && let Some(handle) = row.get::<Option<String>, _>("handle")
+    {
+        cache::invalidate(
+            &state,
+            [format!("/users/{handle}"), format!("/api/users/{handle}")],
+        );
+    }
 
     Json(MessageResponse {
         message: "Profile updated.".to_string(),

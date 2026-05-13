@@ -1,7 +1,5 @@
 ## 🐞 BUGS
 - saving a range quotation wrongly shows "edit" icon
-- citations menu modal/popover where source is missing should not display source + both etc. e.g. for bible citations, the buttons here are moot.
-- fix bibliography for bibles
 
 ## 🌿 FEATURES
 - add "submit for review" for user articles to editors to receive editorial feedback/quality approval
@@ -10,6 +8,13 @@
 
 ## 🪡 PATCH
 - need filter on tags for quotation in editor
+- Verify the production build path end-to-end. pnpm --filter @apps/web build && pnpm --filter @apps/web start should
+  produce a Node SSR server. We've never actually run it through the proxy. Worth a smoke test before assuming k3s will
+  Just Work — particularly because the start script references ./dist/server/server.js and ../client, and I haven't
+  verified those paths match what the current TanStack Start build actually emits.
+- API_BASE_URL on the SSR side in production. Right now fetcher.ts does process.env.API_BASE_URL ??
+  "http://localhost:4000". For k3s, the Node SSR pod needs API_BASE_URL=http://api:4000 (or whatever the Service is named)
+  in its Deployment env. Doesn't affect local at all, but easy to forget when writing manifests.
 
 ## 🏗️ INFRA / EXTERNAL SETUP
 - need proper resend setup

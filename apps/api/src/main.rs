@@ -94,6 +94,7 @@ async fn main() {
         pool: pool.clone(),
         config,
         stripe: stripe_client,
+        purge_client: api::cache::build_client(),
     };
 
     // Auth routes (rate limited)

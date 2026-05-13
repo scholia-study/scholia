@@ -3,6 +3,7 @@ use axum::extract::{Path, Query, State};
 
 use crate::auth::middleware::AuthUser;
 use crate::auth::permissions::Permission;
+use crate::cache;
 use crate::db;
 use crate::error::AppError;
 use crate::models::article::{
@@ -139,6 +140,8 @@ pub async fn update_article(
     )
     .await?;
 
+    cache::invalidate(&state, article_cache_paths(&slug));
+
     Ok(Json(article))
 }
 
@@ -164,6 +167,7 @@ pub async fn publish_article(
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
     db::articles::publish_article(&state.pool, &slug, user.id, &user.roles).await?;
+    cache::invalidate(&state, article_cache_paths(&slug));
     Ok(Json(()))
 }
 
@@ -197,7 +201,20 @@ pub async fn archive_article(
     }
 
     db::articles::archive_article(&state.pool, &slug, user.id).await?;
+    cache::invalidate(&state, article_cache_paths(&slug));
     Ok(Json(()))
+}
+
+/// Cache paths to invalidate when a published article appears, changes,
+/// or is removed. Listings get short-TTL'd already, but PURGEing them
+/// makes the change visible immediately rather than after the TTL.
+fn article_cache_paths(slug: &str) -> Vec<String> {
+    vec![
+        format!("/articles/{slug}"),
+        "/articles".to_string(),
+        format!("/api/articles/{slug}"),
+        "/api/articles".to_string(),
+    ]
 }
 
 // ── Public article endpoints ──────────────────────────────

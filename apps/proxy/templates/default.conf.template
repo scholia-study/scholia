@@ -32,7 +32,6 @@ server {
         proxy_cache api_cache;
         proxy_cache_valid 200 1h;
         proxy_cache_valid 404 1m;
-        proxy_cache_key   $scheme$host$request_uri;
 
         # Don't let Rust's session-refresh Set-Cookie poison the cache,
         # and strip it from the cached response so we don't accidentally
@@ -89,19 +88,25 @@ server {
 # Bound to a NetworkPolicy that only allows api pods to reach :8080.
 # Not exposed publicly via the Ingress.
 #
-# TODO: depends on ngx_cache_purge module — not in stock nginx:alpine.
-# Wire this up when we choose the image strategy (see Dockerfile comment).
+# Path semantics intentionally mirror the public server: /api/* goes to
+# api_cache, everything else to html_cache. So Rust purges a URL the
+# same way it would request it, just on a different port:
+#
+#   PURGE :8080/articles/foo            → purge html_cache "/articles/foo"
+#   PURGE :8080/api/articles/foo        → purge api_cache  "/api/articles/foo"
+#
+# The cache key (set globally in cache.conf) is $request_uri, which is
+# what proxy_cache_purge receives as its key argument, so storage and
+# purge always match.
 server {
     listen 8080;
     server_name _;
 
-    location ~ ^/purge/html(/.*)$ {
-        # proxy_cache_purge html_cache $scheme$host$1;
-        return 501 "PURGE not yet enabled — needs ngx_cache_purge module";
+    location /api/ {
+        proxy_cache_purge api_cache $request_uri;
     }
 
-    location ~ ^/purge/api(/.*)$ {
-        # proxy_cache_purge api_cache $scheme$host$1;
-        return 501 "PURGE not yet enabled — needs ngx_cache_purge module";
+    location / {
+        proxy_cache_purge html_cache $request_uri;
     }
 }

@@ -16,6 +16,10 @@ pub struct AppConfig {
     pub stripe_price_base: String,
     pub stripe_price_mid: String,
     pub stripe_price_high: String,
+    /// Base URL of the proxy's cluster-internal PURGE listener (e.g.
+    /// `http://nginx-cache:8080`). When unset, `cache::invalidate` is a
+    /// no-op — convenient for local dev without the proxy stack up.
+    pub cache_purge_url: Option<String>,
 }
 
 impl AppConfig {
@@ -40,6 +44,7 @@ impl AppConfig {
             stripe_price_mid: env::var("STRIPE_PRICE_MID").expect("STRIPE_PRICE_MID must be set"),
             stripe_price_high: env::var("STRIPE_PRICE_HIGH")
                 .expect("STRIPE_PRICE_HIGH must be set"),
+            cache_purge_url: env::var("CACHE_PURGE_URL").ok().filter(|s| !s.is_empty()),
         };
         cfg.verify_stripe_prices();
         cfg
