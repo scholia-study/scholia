@@ -28,9 +28,9 @@ declare global {
 
 const getActiveProfile = (): Profile => {
     if (typeof window === "undefined") {
-        // Prerender / SSR context. Routes aren't actually fetched at
-        // prerender time (spa.enabled), so the profile here doesn't
-        // affect output. Default to local.
+        // Prerender / SSR context. The build hits the local API at
+        // localhost:4000 to render book/chapter pages, so the "local"
+        // profile is the right default here.
         return "local";
     }
     return window.__ENV__?.APP_PROFILE ?? "local";

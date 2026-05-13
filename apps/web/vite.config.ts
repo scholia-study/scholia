@@ -16,6 +16,12 @@ const config = defineConfig({
                 enabled: true,
                 crawlLinks: true,
                 autoStaticPathsDiscovery: true,
+                filter: (page) => {
+                    const p = page.path;
+                    if (p.startsWith("/user")) return false;
+                    if (p.startsWith("/admin")) return false;
+                    return true;
+                },
                 onSuccess: ({ page }) => {
                     console.info(`🧼 Rendered ${page.path}`);
                 },
@@ -24,7 +30,6 @@ const config = defineConfig({
                 enabled: true,
                 prerender: {
                     enabled: true,
-                    crawlLinks: true,
                     onSuccess: ({ page }) => {
                         console.info(`🖼️ Rendered ${page.path}!`);
                     },
