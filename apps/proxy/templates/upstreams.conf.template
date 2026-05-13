@@ -1,0 +1,7 @@
+# Rendered into /etc/nginx/conf.d/upstreams.conf at container start by the
+# nginx image's envsubst entrypoint. Set UPSTREAM_WEB and UPSTREAM_API on
+# the container env:
+#   k3s:   UPSTREAM_WEB=web:3000           UPSTREAM_API=api:4000
+#   local: UPSTREAM_WEB=host.docker.internal:3000  UPSTREAM_API=host.docker.internal:4000
+upstream node_ssr { server ${UPSTREAM_WEB}; }
+upstream rust_api { server ${UPSTREAM_API}; }

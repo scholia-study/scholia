@@ -1,0 +1,8 @@
+{
+    "name": "@apps/proxy",
+    "private": true,
+    "scripts": {
+        "build": "docker build -t scholia/proxy .",
+        "dev": "pnpm build && docker run --rm -p 8000:80 --add-host=host.docker.internal:host-gateway -e UPSTREAM_WEB=host.docker.internal:3000 -e UPSTREAM_API=host.docker.internal:4000 -e APP_PROFILE=local-proxy scholia/proxy"
+    }
+}

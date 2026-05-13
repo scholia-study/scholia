@@ -16,7 +16,7 @@
  * stay server-side.
  */
 
-type Profile = "local" | "dev" | "prod";
+type Profile = "local" | "local-proxy" | "dev" | "prod";
 
 declare global {
     interface Window {
@@ -52,6 +52,14 @@ const envConfigs = {
     local: {
         PROFILE: "local",
         API_BASE_URL: "http://localhost:4000",
+        STRIPE_PUBLISHABLE_KEY: _stripePubKeyTest,
+    },
+    "local-proxy": {
+        // Same-origin API: the local proxy (apps/proxy) terminates :8000
+        // and routes /api/* to Rust. Activated by /config.js served from
+        // the proxy container with APP_PROFILE=local-proxy.
+        PROFILE: "local-proxy",
+        API_BASE_URL: "",
         STRIPE_PUBLISHABLE_KEY: _stripePubKeyTest,
     },
     dev: {

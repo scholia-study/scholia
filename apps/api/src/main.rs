@@ -50,6 +50,7 @@ async fn main() {
         .expect("Failed to migrate session store");
 
     let session_layer = SessionManagerLayer::new(session_store)
+        .with_name("scholia_session")
         .with_secure(false) // false for localhost; set true in production
         .with_same_site(SameSite::Lax)
         .with_http_only(true)

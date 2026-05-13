@@ -1,0 +1,107 @@
+# Public-facing server. The k3s Ingress (Traefik) terminates TLS in
+# front of this; nginx just speaks plaintext HTTP internally.
+server {
+    listen 80 default_server;
+    server_name _;
+
+    # Forward proper headers to all upstreams. Without `Host`, vite dev
+    # rejects requests because the Host header would be the upstream name
+    # ("node_ssr"). With these set at the server level, all `location`
+    # blocks below inherit them — as long as none of them set their own
+    # `proxy_set_header` (which would wipe inheritance per nginx's rules).
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # Surface cache decisions in responses for debugging: HIT, MISS, BYPASS,
+    # EXPIRED, STALE, UPDATING, REVALIDATED. Cheap and safe to leave on.
+    add_header X-Cache-Status $upstream_cache_status always;
+
+    # ---- Hosted text — identity-free reads, always cached ----
+    #
+    # These endpoints return identical responses for every caller; logged-in
+    # and anonymous users share the same cache entries. The bypass-on-cookie
+    # default is explicitly overridden here.
+    #
+    # Be extremely conservative about widening this regex — anything matched
+    # here is cached across users, so a handler that ever embeds per-user
+    # data in its response would leak.
+    location ~ ^/api/books/[^/]+(/(toc|nodes))?$ {
+        proxy_pass http://rust_api;
+        proxy_cache api_cache;
+        proxy_cache_valid 200 1h;
+        proxy_cache_valid 404 1m;
+        proxy_cache_key   $scheme$host$request_uri;
+
+        # Don't let Rust's session-refresh Set-Cookie poison the cache,
+        # and strip it from the cached response so we don't accidentally
+        # mint a session cookie for whoever the next caller is.
+        proxy_ignore_headers Set-Cookie Vary Cache-Control;
+        proxy_hide_header    Set-Cookie;
+
+        # Explicitly DO NOT inherit the cookie bypass.
+        proxy_cache_bypass "";
+        proxy_no_cache     "";
+    }
+
+    # ---- Auth endpoints — never cached ----
+    location /api/auth/ {
+        proxy_pass http://rust_api;
+        proxy_cache off;
+        # Re-declare X-Cache-Status because any add_header in a child block
+        # disables inheritance from the server scope.
+        add_header X-Cache-Status $upstream_cache_status always;
+        add_header Cache-Control  "no-store" always;
+    }
+
+    # ---- Default API routing — cache when anon, bypass when authed ----
+    location /api/ {
+        proxy_pass http://rust_api;
+        proxy_cache api_cache;
+        proxy_cache_valid 200 5m;
+        proxy_cache_bypass $bypass_cache;
+        proxy_no_cache     $bypass_cache;
+    }
+
+    # ---- Per-pod runtime config — never cached ----
+    #
+    # Set APP_PROFILE on the container env (one of: local-proxy, dev, prod).
+    # The literal value is baked in here at container startup by envsubst.
+    location = /config.js {
+        default_type application/javascript;
+        add_header Cache-Control "no-store" always;
+        return 200 'window.__ENV__ = { APP_PROFILE: "${APP_PROFILE}" };\n';
+    }
+
+    # ---- HTML — Node SSR, cache when anon ----
+    location / {
+        proxy_pass http://node_ssr;
+        proxy_cache html_cache;
+        proxy_cache_valid 200 1h;
+        proxy_cache_bypass $bypass_cache;
+        proxy_no_cache     $bypass_cache;
+    }
+}
+
+# ---- Cluster-internal PURGE listener ----
+#
+# Bound to a NetworkPolicy that only allows api pods to reach :8080.
+# Not exposed publicly via the Ingress.
+#
+# TODO: depends on ngx_cache_purge module — not in stock nginx:alpine.
+# Wire this up when we choose the image strategy (see Dockerfile comment).
+server {
+    listen 8080;
+    server_name _;
+
+    location ~ ^/purge/html(/.*)$ {
+        # proxy_cache_purge html_cache $scheme$host$1;
+        return 501 "PURGE not yet enabled — needs ngx_cache_purge module";
+    }
+
+    location ~ ^/purge/api(/.*)$ {
+        # proxy_cache_purge api_cache $scheme$host$1;
+        return 501 "PURGE not yet enabled — needs ngx_cache_purge module";
+    }
+}

@@ -12,7 +12,8 @@
         "db:reset": "bash scripts/db_reset.sh",
         "db:kant1": "bash scripts/db_kant1.sh",
         "db:bible": "bash scripts/db_bible.sh",
-        "dev": "turbo run dev",
+        "dev:fb": "turbo run dev --filter=@apps/api --filter=@apps/web",
+        "dev:proxy": "turbo run dev --filter=@apps/proxy",
         "codegen": "turbo run codegen",
         "dp:kant1": "cargo run -p kant1_ocr_to_lines && cargo run -p kant1_lines_to_elements",
         "stripe:listen": "stripe listen --forward-to localhost:4000/api/webhooks/stripe"

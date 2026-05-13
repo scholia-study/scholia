@@ -6,7 +6,7 @@
         "#/*": "./src/*"
     },
     "scripts": {
-        "dev": "vite dev --port 3000",
+        "dev": "vite dev --port 3000 --host",
         "ct": "tsc -p tsconfig.json --pretty --noEmit",
         "build": "vite build",
         "start": "srvx serve --prod --entry ./dist/server/server.js --static ../client --port ${PORT:-3000}",
