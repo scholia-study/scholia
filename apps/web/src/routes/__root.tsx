@@ -7,21 +7,6 @@ import {
     Scripts,
     useLocation,
 } from "@tanstack/react-router";
-
-// SSR polyfill: react-virtuoso calls requestAnimationFrame during render,
-// which Node doesn't define. Without this the chapter renderer crashes
-// silently during SSR and crawlers receive an empty <main>. setTimeout
-// is a close-enough stand-in since SSR doesn't actually animate.
-if (typeof globalThis.requestAnimationFrame === "undefined") {
-    globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
-        setTimeout(
-            () => cb(performance.now()),
-            16,
-        )) as unknown as typeof requestAnimationFrame;
-    globalThis.cancelAnimationFrame = ((id: number) =>
-        clearTimeout(id)) as typeof cancelAnimationFrame;
-}
-
 import { Toaster } from "react-hot-toast";
 import { Footer } from "../layout/Footer";
 import { InfoSubnav } from "../layout/InfoSubnav";
