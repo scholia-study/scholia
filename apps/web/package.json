@@ -1,5 +1,5 @@
 {
-    "name": "web",
+    "name": "@apps/web",
     "private": true,
     "type": "module",
     "imports": {
