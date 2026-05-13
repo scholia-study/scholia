@@ -22,17 +22,17 @@ const config = defineConfig({
                     if (p.startsWith("/admin")) return false;
                     return true;
                 },
-                onSuccess: ({ page }) => {
-                    console.info(`🧼 Rendered ${page.path}`);
-                },
+                // onSuccess: ({ page }) => {
+                //     console.info(`🧼 Rendered ${page.path}`);
+                // },
             },
             spa: {
                 enabled: true,
                 prerender: {
                     enabled: true,
-                    onSuccess: ({ page }) => {
-                        console.info(`🖼️ Rendered ${page.path}!`);
-                    },
+                    // onSuccess: ({ page }) => {
+                    //     console.info(`🖼️ Rendered ${page.path}!`);
+                    // },
                 },
             },
         }),
