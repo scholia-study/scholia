@@ -34,22 +34,34 @@ container image works across all environments.
 
 **Pattern — all profiles in TypeScript, only the active profile is injected:**
 
-- `web/src/config.ts` — profile registry: a typed map keyed by profile
-  name (`local`, `dev`, `prod`) holding all environment-specific values
-  (`API_BASE_URL`, `STRIPE_PUBLISHABLE_KEY`, …). The active profile is
-  read from `window.__ENV__.APP_PROFILE` and selects the matching entry.
-- `web/public/config.js.template` — single-line nginx envsubst source:
-  ```js
-  window.__ENV__ = { APP_PROFILE: "${APP_PROFILE}" };
-  ```
-- nginx Docker entrypoint script in `/docker-entrypoint.d/` runs `envsubst`
-  at pod startup, writing the rendered file to `/usr/share/nginx/html/config.js`
-- The TanStack Start root route (`__root.tsx`) declares
-  `head.scripts: [{ src: "/config.js" }]` so `<script src="/config.js">`
-  is emitted in `<head>` before the app bundle and runs synchronously.
-- `web/public/config.js` — committed no-op stub for local `pnpm dev`.
-  Sets nothing → app falls back to the `"local"` profile. nginx overwrites
-  this file at startup in cluster pods.
+- `apps/web/src/config.ts` — profile registry: a typed map keyed by profile
+  name (`local`, `local-proxy`, `dev`, `prod`) holding all
+  environment-specific values (`API_BASE_URL`, `STRIPE_PUBLISHABLE_KEY`,
+  …). The active profile is read from `window.__ENV__.APP_PROFILE` and
+  selects the matching entry. Default is `"local"` when `__ENV__` is
+  absent.
+- The TanStack Start root route (`__root.tsx`) reads
+  `process.env.APP_PROFILE` at SSR render time and emits an **inline**
+  `<script>window.__ENV__ = { APP_PROFILE: "..." };</script>` in
+  `<head>`. The browser runs it synchronously before the bundle, so
+  `config.ts` sees the value immediately. No separate `/config.js`
+  fetch.
+- `APP_PROFILE` is set on the **web Deployment env** (the Node SSR
+  pod), not on the proxy. One image per environment by env-var, same
+  pattern as `API_BASE_URL` and `CACHE_PURGE_URL`. The proxy no longer
+  has any role in runtime config rendering.
+- Local-dev mode selection (root `package.json` scripts):
+  - `pnpm dev` — api + web only, no `APP_PROFILE` set → web falls back
+    to `"local"` profile → fetches go to `http://localhost:4000`.
+    Browser hits Node SSR on `:3000` directly. Fastest iteration loop.
+  - `pnpm dev:all` — api + web + proxy together, with
+    `APP_PROFILE=local-proxy` baked into the script. Web injects
+    `local-proxy` → fetches go same-origin → proxy routes `/api/*` to
+    Rust. Browser hits the proxy on `:8000`. Use this to exercise the
+    full cache + PURGE path.
+  - `pnpm dev:proxy` — just the proxy (already-running api + web on
+    host ports). Only useful if the web side was started with
+    `APP_PROFILE=local-proxy` separately.
 
 **Why this shape over per-key envsubst:**
 
@@ -120,7 +132,11 @@ migrations directory + `sqlx migrate add` flow.
 - Doubles K8s muscle (two kubeconfig contexts, real cross-cluster practice)
 - Cost difference is ~€5/mo
 
-**Why CX22 prod:** at your scale, RAM budget is ~2-3GB committed (k3s + Postgres + API + nginx + Traefik + cert-manager) on 4GB available. Comfortable for v1; resize to CX32 in-place when traffic warrants.
+**Why CX22 prod:** at your scale, RAM budget is ~2.5-3.5GB committed
+(k3s + Postgres + Rust API + Node SSR + nginx-cache + Traefik +
+cert-manager) on 4GB available. Node SSR adds ~150-300MB over the
+earlier static-web design but stays well within the 4GB envelope.
+Resize to CX32 in-place when traffic warrants.
 
 **No snapshots** — disaster recovery comes from:
 - Terraform-reproducible cluster (test by destroying + recreating dev once during bringup)
@@ -172,19 +188,29 @@ The Terraform graph orders: VPS up → IPv4 known → DNS records created → wa
 - **TLS**: cert-manager + Let's Encrypt (production ACME issuer)
 - **Storage class**: local-path (k3s default) — backed by `/var/lib/rancher/k3s/storage` on the host
 
-**Routing pattern (Pattern X — single hostname, path-based):**
+**Routing pattern (single hostname, three-tier behind nginx-cache):**
+
+Ingress sends everything to `nginx-cache:80`; the proxy fans out to
+upstreams internally per its location blocks (see
+`apps/proxy/conf.d/` and `apps/proxy/templates/`):
 
 ```
-scholia.study/                  → scholia-web (nginx pod, static files)
-scholia.study/api/*             → scholia-api (Rust pod)
-scholia.study/api/webhooks/*    → scholia-api (Rust pod, raw body, no session/CORS layers)
+                Traefik (TLS termination)
+                          │
+                          ▼
+                  nginx-cache (proxy)
+                  ├── /api/*        → scholia-api (Rust)
+                  └── /*            → scholia-web  (Node SSR)
+                          ▲
+                          │  PURGE on :8080 (cluster-only)
+                  scholia-api (Rust)
 ```
 
 Same shape on `dev.scholia.study`.
 
 **Why single hostname:** same-origin = no CORS plumbing, first-party
-cookies for sessions, simple Stripe webhook URL, fewer ingress rules to
-get wrong.
+cookies for sessions, simple Stripe webhook URL, one cache layer for
+both HTML and `/api/*`, fewer ingress rules to get wrong.
 
 ---
 
@@ -198,18 +224,61 @@ get wrong.
 - **Init container**: same image, runs `api migrate` to apply DB migrations
   before the main container starts. Migration failure prevents the API
   from starting (clean failure semantics).
-- **Public**: through ingress, `/api/*` paths
+- **Public**: never directly. Sits behind `scholia-proxy` for everything.
+- **Required env**: in addition to existing keys (DATABASE_URL, session
+  secret, Stripe, etc.), set `CACHE_PURGE_URL=http://scholia-proxy:8080`
+  so `cache::invalidate` fires PURGE after writes. Unset = silent no-op
+  (fine for local dev, a regression in cluster).
 
-### 2.2 Web (`scholia-web`)
+### 2.2 Web — Node SSR (`scholia-web`)
 
-- **Image**: multi-stage build (`node:22-alpine` builder, `nginx:alpine` runtime)
+- **Image**: multi-stage build (`node:22-alpine` builder + runtime).
+  Runs the TanStack Start Nitro output (`pnpm --filter @apps/web build`
+  → `pnpm --filter @apps/web start`).
 - **Tag**: same scheme as API
-- **Pod**: 1 replica (static files; trivial)
-- **Build output**: TanStack Start with `prerender` + `spa.enabled` → fully static
-- **Runtime config**: `envsubst` at pod startup writes `/config.js` from env vars
-- **Public**: through ingress, all paths not starting with `/api/`
+- **Pod**: 1 replica. Multi-replica would mean per-pod request caches
+  drifting; the nginx-cache layer in front handles the public hit rate
+  anyway.
+- **Build output**: Nitro Node server (HTML on demand) + client assets.
+  No prerender, no SPA shell.
+- **Public**: never directly. Receives only HTML requests from the
+  proxy (or `/api/*` requests that miss in the proxy cache go straight
+  to Rust, not via Node).
+- **Required env**:
+  - `API_BASE_URL=http://scholia-api:4000` so SSR loaders reach Rust
+    over the in-cluster Service.
+  - `APP_PROFILE=prod` (or `dev`) — read by `__root.tsx` at render
+    time and inlined into each HTML response as
+    `window.__ENV__.APP_PROFILE`. This is what selects the right
+    entry from `apps/web/src/config.ts`'s profile registry on the
+    client.
 
-### 2.3 Postgres (`scholia-db`)
+### 2.3 Edge proxy / HTTP cache (`scholia-proxy`)
+
+- **Image**: custom multi-stage build at `apps/proxy/Dockerfile`. Stage
+  1 compiles `ngx_cache_purge` against the runtime image's nginx
+  version; stage 2 is plain `nginx:1.27-alpine` with that .so dropped
+  into `/usr/lib/nginx/modules/`.
+- **Tag**: same scheme as API/Web.
+- **Pod**: 1 replica. Multi-replica needs cache coherence
+  (cross-pod PURGE fan-out) — deferred indefinitely.
+- **Public**: yes, via Ingress. `:80` is the only port the Ingress
+  routes to; `:8080` is `ClusterIP`-only for PURGE.
+- **Required env**:
+  - `UPSTREAM_WEB=scholia-web:3000`
+  - `UPSTREAM_API=scholia-api:4000`
+  - (`APP_PROFILE` is **not** needed here — runtime profile injection
+    moved to the Node SSR layer; see § 0.2 and § 2.2.)
+- **Storage**: PVC for cache. ~5GB on `local-path` storage class;
+  sized to fit the cached working set (HTML + API ≈ 700MB at current
+  content) with headroom. Backing cache with a PV (not `emptyDir`) so
+  pod restarts don't cold-start the cache.
+- **NetworkPolicy**: only `scholia-api` pods may reach
+  `scholia-proxy:8080`. Defense-in-depth — the port is `ClusterIP`-only
+  anyway, but the policy makes "no PURGE from outside Rust" an
+  enforceable invariant rather than a deployment fact.
+
+### 2.4 Postgres (`scholia-db`)
 
 - **Pattern**: in-cluster, raw StatefulSet on local-path PVC (no operator)
 - **Image**: official `postgres:16` (or 17 when stable)
@@ -222,7 +291,7 @@ get wrong.
   StatefulSet, Headless Service) are exactly the part of K8s most worth
   learning. Skipping them with on-host Postgres skips the hard part.
 
-### 2.4 cert-manager + Traefik
+### 2.5 cert-manager + Traefik
 
 - cert-manager installed via Helm (one-time, post-cluster-up)
 - ClusterIssuer: Let's Encrypt prod ACME
@@ -314,8 +383,12 @@ The Kustomize bases + overlays from v0 are reused as-is by Argo.
 | Trigger | Action |
 |---|---|
 | PR opened/updated | Build + test + lint + typecheck (no push) |
-| Push to `main` | Build images, push `:main-<sha>` to ghcr.io, **commit image-tag bump to `infra/k8s/overlays/dev/`** |
-| Tag `v*` push | Build images, push `:<version>` and `:latest` to ghcr.io |
+| Push to `main` | Build all three images (api, web, proxy), push `:main-<sha>` to ghcr.io, **commit image-tag bumps to `infra/k8s/overlays/dev/`** |
+| Tag `v*` push | Build all three images, push `:<version>` and `:latest` to ghcr.io |
+
+The proxy image rebuild is slow on first build (it compiles
+`ngx_cache_purge` from source) but well-cached after, since the source
+versions and configure args rarely change.
 
 - **Runner**: GitHub-hosted (free for public repos)
 - **Auth**: `GITHUB_TOKEN` (built-in) for ghcr push and contents:write commit-back
@@ -325,7 +398,8 @@ The Kustomize bases + overlays from v0 are reused as-is by Argo.
 ### 4.6 Image registry: ghcr.io
 
 - **Visibility**: public (image bytes aren't sensitive; secrets live in K8s Secrets)
-- **Two images**: `ghcr.io/<you>/scholia-api`, `ghcr.io/<you>/scholia-web`
+- **Three images**: `ghcr.io/<you>/scholia-api`, `ghcr.io/<you>/scholia-web`,
+  `ghcr.io/<you>/scholia-proxy`
 - **Tag scheme**: `main-<sha7>` for main pushes, semver for releases, never `:latest` in Deployments
 
 ---
@@ -334,8 +408,10 @@ The Kustomize bases + overlays from v0 are reused as-is by Argo.
 
 ```
 .
-├── packages/api/             # existing — Rust API
-├── web/                      # existing — React frontend
+├── apps/
+│   ├── api/                  # existing — Rust axum API
+│   ├── web/                  # existing — React frontend, now Node SSR
+│   └── proxy/                # existing — nginx-cache (Dockerfile + conf)
 ├── db/
 │   └── migrations/           # NEW — sqlx migrations, append-only
 ├── infra/                    # NEW
@@ -349,7 +425,7 @@ The Kustomize bases + overlays from v0 are reused as-is by Argo.
 │   │   └── modules/
 │   │       └── cluster/
 │   └── k8s/
-│       ├── base/             # core manifests (api, web, postgres, ingress)
+│       ├── base/             # core manifests (api, web, proxy, postgres, ingress)
 │       └── overlays/
 │           ├── dev/
 │           └── prod/
@@ -449,11 +525,26 @@ regions). Not infrastructure, but worth tracking.
 
 ### v0 — Pre-deployment refactor
 
-- [ ] Move backend routes under `/api/*`
-- [ ] Implement runtime config injection (`window.__SCHOLIA_CONFIG__`)
+- [x] Move backend routes under `/api/*`
+- [x] Implement runtime config injection (profile registry +
+      `window.__ENV__.APP_PROFILE`; proxy serves `/config.js`)
+- [x] Runtime SSR rewrite (drop prerender + SPA shell, TanStack Start
+      Nitro output)
+- [x] Proxy / nginx-cache scaffold in `apps/proxy/` (Dockerfile,
+      envsubst templates, cache zones, cookie bypass, hosted-text
+      route exception, PURGE on `:8080`)
+- [x] Rust `cache::invalidate` helper + handler wiring (articles
+      update/publish/archive, profile)
+- [ ] Wire PURGE into ingest binaries (`bible_to_db`, `kant1_*`) so a
+      re-ingest invalidates the affected book/chapter URLs
 - [ ] Migrations bootstrap (sqlx-cli, init container)
 - [ ] Update auto-memory note about `db_reset.sh` flow
-- [ ] Regenerate openapi.json + frontend client
+- [ ] Regenerate openapi.json + frontend client (run as part of any
+      handler change)
+- [ ] Smoke-test the production build path end-to-end:
+      `pnpm --filter @apps/web build && pnpm --filter @apps/web start`
+      behind the proxy, then `curl` chapter URLs to confirm Nitro
+      output paths match the `start` script
 - [ ] Update Stripe Dashboard webhook URL post-deploy
 
 ### v0 — Cluster bringup
@@ -466,10 +557,24 @@ regions). Not infrastructure, but worth tracking.
 - [ ] **Validate IaC**: `terraform destroy` + `terraform apply` on dev once
 - [ ] Install cert-manager, configure Let's Encrypt prod issuer
 - [ ] SOPS age keypairs (dev + prod), encrypted backup to HOS + password manager
-- [ ] Write `infra/k8s/base/` + `overlays/{dev,prod}/`
-- [ ] Build + push first images via CI
+- [ ] Write `infra/k8s/base/` + `overlays/{dev,prod}/` covering all
+      three Deployments + Services:
+  - `scholia-api` Deployment + ClusterIP Service (port 4000), init
+    container running `api migrate`, env including `CACHE_PURGE_URL`
+  - `scholia-web` Deployment + ClusterIP Service (port 3000), env
+    including `API_BASE_URL=http://scholia-api:4000`
+  - `scholia-proxy` Deployment + ClusterIP Service (ports 80 + 8080),
+    env including `UPSTREAM_WEB`, `UPSTREAM_API`, `APP_PROFILE`
+  - PVC for proxy cache (~5GB, `local-path`)
+  - PVC for Postgres (existing, ~20GB)
+  - NetworkPolicy restricting `scholia-proxy:8080` to `scholia-api` pods
+  - Ingress (Traefik) terminating TLS, routing to `scholia-proxy:80`
+- [ ] Build + push first images via CI (api, web, proxy)
 - [ ] `kubectl apply -k overlays/dev/`
-- [ ] Validate end-to-end on dev (Stripe test charge → role flips → cancellation flow)
+- [ ] Validate end-to-end on dev: anonymous chapter pageviews cache
+      (X-Cache-Status: MISS then HIT), authenticated requests bypass,
+      PURGE after an article publish invalidates the listing, Stripe
+      test charge → role flips → cancellation flow
 - [ ] `kubectl apply -k overlays/prod/`
 - [ ] Update Stripe to live mode keys + production webhook URL
 - [ ] Public soft launch
@@ -482,10 +587,29 @@ regions). Not infrastructure, but worth tracking.
 - [ ] Sentry integration in API + frontend
 - [ ] Capacity-aware UX (warn at 80% of free-tier limits)
 
+### v1 — SEO infrastructure
+
+Orthogonal to bringup; lands once the cache + PURGE pipeline is live
+in at least dev. Reuses the same invalidation plumbing so re-ingests
+and content writes don't strand stale crawler payloads.
+
+- [ ] Sitemap: Rust handler at `/sitemap.xml` (and shard files
+      `/sitemap-bible-1.xml`, etc.) that enumerates canonical URLs
+      from the DB. Cacheable like everything else; PURGEd via the
+      ingest pipeline once that wiring lands.
+- [ ] JSON-LD breadcrumbs: rendered in `__root.tsx` (or the route
+      component) so they land in the SSR HTML. Reads a `breadcrumb`
+      field on `NodeDetail` — add server-side alongside the existing
+      `book_prefixed_label`.
+- [ ] OG images: lazy per-URL generator. Rust endpoint producing a
+      1200×630 PNG from book title + chapter label. Cache aggressively.
+      Punt until crawler data shows it matters.
+
 ### v2 — Observability + scale
 
 - [ ] Grafana Cloud Agent in clusters
-- [ ] Dashboards for HTTP latency, error rate, DB connections
+- [ ] Dashboards for HTTP latency, error rate, DB connections, cache
+      hit rate (surface `$upstream_cache_status` from access logs)
 - [ ] Prod VPS upgrade to CX32 if RAM headroom drops below 1GB
 - [ ] Postgres operator (CloudNativePG) migration when PITR / replicas matter
 
