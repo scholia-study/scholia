@@ -1061,6 +1061,25 @@
                         "schema": {
                             "type": ["string", "null"]
                         }
+                    },
+                    {
+                        "name": "at",
+                        "in": "query",
+                        "description": "Anchor node slug — return a forward window centered on this node\n(combine with `back` to include nodes before the anchor)",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
+                        "name": "back",
+                        "in": "query",
+                        "description": "Number of nodes to include before the `at` anchor (default 0)",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32"
+                        }
                     }
                 ],
                 "responses": {

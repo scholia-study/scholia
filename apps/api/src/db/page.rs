@@ -369,6 +369,43 @@ pub async fn get_node_page(
     })
 }
 
+/// Resolve a node slug to its sort_order, then return a forward window that
+/// starts `back` positions before the anchor (inclusive). Used by the route
+/// loader so it can prefetch the chapter window without a separate TOC fetch.
+pub async fn get_node_page_at(
+    pool: &PgPool,
+    book_slug: &str,
+    node_slug: &str,
+    back: i32,
+    limit: i32,
+    include_original: bool,
+) -> Result<NodePage, AppError> {
+    let row = sqlx::query!(
+        r#"SELECT tn.sort_order
+           FROM toc_nodes tn
+           JOIN books b ON b.id = tn.book_id
+           WHERE b.slug = $1 AND tn.slug = $2"#,
+        book_slug,
+        node_slug,
+    )
+    .fetch_optional(pool)
+    .await?;
+
+    let Some(row) = row else {
+        return Ok(NodePage {
+            nodes: vec![],
+            has_more: false,
+            has_previous: false,
+        });
+    };
+
+    // Matches the JS formula `Math.max(0, sort_order - 1 - back)` so the
+    // SQL `sort_order > after` predicate yields the anchor and `back` nodes
+    // before it.
+    let after = (row.sort_order - 1 - back).max(0);
+    get_node_page(pool, book_slug, Some(after), None, limit, include_original).await
+}
+
 pub async fn get_nodes_by_source_ids(
     pool: &PgPool,
     slug: &str,

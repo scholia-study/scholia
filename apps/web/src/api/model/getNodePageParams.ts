@@ -36,4 +36,15 @@ export type GetNodePageParams = {
      * @nullable
      */
     node_ids?: string | null;
+    /**
+ * Anchor node slug — return a forward window centered on this node
+(combine with `back` to include nodes before the anchor)
+ * @nullable
+ */
+    at?: string | null;
+    /**
+     * Number of nodes to include before the `at` anchor (default 0)
+     * @nullable
+     */
+    back?: number | null;
 };

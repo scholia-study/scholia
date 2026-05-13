@@ -5,7 +5,10 @@ import type {
 } from "@tanstack/react-query";
 import { getNodePage, type getNodePageResponse } from "../../api/nodes/nodes";
 
-export type PageCursor = { after: number } | { before: number };
+export type PageCursor =
+    | { after: number }
+    | { before: number }
+    | { at: string; back: number };
 
 /** Buffer of chapters loaded above the target on initial render — gives the
  *  user somewhere to scroll up to before the reverse fetch fires. */
@@ -14,21 +17,26 @@ export const PREFETCH_BUFFER = 5;
 interface NodePageQueryArgs {
     bookSlug: string;
     showOriginal: boolean;
-    /** The target chapter's sort_order. The query window is centered on
-     *  it (a few chapters above as prefetch buffer, plus the target and
-     *  some chapters after). When undefined the query won't fire. */
-    startSortOrder: number | undefined;
+    /** The target chapter's slug. The API resolves it to a sort_order and
+     *  returns a window centered on it (PREFETCH_BUFFER chapters above plus
+     *  the target and the rest of the page size after). When undefined the
+     *  query won't fire. */
+    targetNodeSlug: string | undefined;
 }
 
 /** Shared options for the reader's bidirectional infinite chapter query.
  *  The route loader can prefetch with `queryClient.prefetchInfiniteQuery(opts)`
  *  so chapter content is dehydrated into the prerendered HTML (visible to
  *  crawlers); PanelScrollView passes the same options into useInfiniteQuery so
- *  it warm-loads from cache instead of re-fetching on hydration. */
+ *  it warm-loads from cache instead of re-fetching on hydration.
+ *
+ *  Keyed by `targetNodeSlug` (not sort_order) so the loader can prefetch
+ *  without first fetching the TOC to resolve sort_order — the API resolves
+ *  the slug server-side. */
 export function getNodePageQueryOptions({
     bookSlug,
     showOriginal,
-    startSortOrder,
+    targetNodeSlug,
 }: NodePageQueryArgs): UseInfiniteQueryOptions<
     getNodePageResponse,
     Error,
@@ -37,8 +45,8 @@ export function getNodePageQueryOptions({
     PageCursor | undefined
 > {
     const initialPageParam: PageCursor | undefined =
-        startSortOrder != null
-            ? { after: Math.max(0, startSortOrder - 1 - PREFETCH_BUFFER) }
+        targetNodeSlug != null
+            ? { at: targetNodeSlug, back: PREFETCH_BUFFER }
             : undefined;
 
     const queryFn: QueryFunction<
@@ -50,9 +58,11 @@ export function getNodePageQueryOptions({
             ? { limit: 20, original: true }
             : { limit: 20 };
         const params = pageParam
-            ? "after" in pageParam
-                ? { ...base, after: pageParam.after }
-                : { ...base, before: pageParam.before }
+            ? "at" in pageParam
+                ? { ...base, at: pageParam.at, back: pageParam.back }
+                : "after" in pageParam
+                  ? { ...base, after: pageParam.after }
+                  : { ...base, before: pageParam.before }
             : base;
         return getNodePage(bookSlug, params, { signal });
     };
@@ -61,7 +71,7 @@ export function getNodePageQueryOptions({
         queryKey: [
             "node-page-bidir",
             bookSlug,
-            String(startSortOrder),
+            targetNodeSlug ?? "",
             showOriginal ? "og" : "",
         ],
         queryFn,
@@ -78,6 +88,6 @@ export function getNodePageQueryOptions({
             if (!page.has_previous || page.nodes.length === 0) return undefined;
             return { before: page.nodes[0].sort_order };
         },
-        enabled: startSortOrder != null,
+        enabled: targetNodeSlug != null,
     };
 }

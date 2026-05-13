@@ -269,13 +269,6 @@ export function TextPanel({
         if (prefixed) return prefixed;
         return findNodeInToc(toc, activeNodeSlug)?.label;
     }, [activeNodeSlug, toc]);
-    const initialSortOrder = useMemo(
-        () =>
-            nodeSlug && toc
-                ? findNodeInToc(toc, nodeSlug)?.sort_order
-                : undefined,
-        [nodeSlug, toc],
-    );
     const activeNodeId = useMemo(
         () =>
             activeNodeSlug && toc
@@ -1045,7 +1038,6 @@ export function TextPanel({
                             ref={scrollViewRef}
                             bookSlug={bookSlug}
                             initialNodeSlug={nodeSlug}
-                            initialSortOrder={initialSortOrder}
                             selectedSentenceId={selectedSentenceId}
                             showOriginal={showOriginal}
                             viewMode={viewMode}

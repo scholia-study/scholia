@@ -27,7 +27,6 @@ export interface PanelScrollViewHandle {
 interface PanelScrollViewProps {
     bookSlug: string;
     initialNodeSlug: string | undefined;
-    initialSortOrder: number | undefined;
     selectedSentenceId: string | undefined;
     showOriginal: boolean;
     viewMode?: string;
@@ -48,7 +47,6 @@ export const PanelScrollView = forwardRef<
     {
         bookSlug,
         initialNodeSlug,
-        initialSortOrder,
         selectedSentenceId,
         showOriginal,
         viewMode,
@@ -63,15 +61,15 @@ export const PanelScrollView = forwardRef<
     },
     ref,
 ) {
-    const [startSortOrder, setStartSortOrder] = useState<number | undefined>(
-        initialSortOrder,
+    const [targetNodeSlug, setTargetNodeSlug] = useState<string | undefined>(
+        initialNodeSlug,
     );
 
     useEffect(() => {
-        if (initialSortOrder != null && startSortOrder == null) {
-            setStartSortOrder(initialSortOrder);
+        if (initialNodeSlug != null && targetNodeSlug == null) {
+            setTargetNodeSlug(initialNodeSlug);
         }
-    }, [initialSortOrder, startSortOrder]);
+    }, [initialNodeSlug, targetNodeSlug]);
 
     const {
         data,
@@ -84,7 +82,7 @@ export const PanelScrollView = forwardRef<
         isLoading,
         error,
     } = useInfiniteQuery(
-        getNodePageQueryOptions({ bookSlug, showOriginal, startSortOrder }),
+        getNodePageQueryOptions({ bookSlug, showOriginal, targetNodeSlug }),
     );
 
     const nodes = useMemo(
@@ -104,9 +102,9 @@ export const PanelScrollView = forwardRef<
     if (initialNodeSlug !== prevNodeSlug) {
         setPrevNodeSlug(initialNodeSlug);
         const isLoaded = nodes.some((n) => n.slug === initialNodeSlug);
-        if (!isLoaded && initialSortOrder != null) {
-            setStartSortOrder(initialSortOrder);
-            setPendingScrollTarget(initialNodeSlug ?? null);
+        if (!isLoaded && initialNodeSlug != null) {
+            setTargetNodeSlug(initialNodeSlug);
+            setPendingScrollTarget(initialNodeSlug);
         } else if (isLoaded && initialNodeSlug) {
             if (initialNodeSlug !== lastEmittedSlugRef.current) {
                 setPendingScrollTarget(initialNodeSlug);

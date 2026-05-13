@@ -28,6 +28,13 @@ pub struct PageParams {
     /// Comma-separated node UUIDs — fetch nodes by their own ID
     #[serde(default)]
     node_ids: Option<String>,
+    /// Anchor node slug — return a forward window centered on this node
+    /// (combine with `back` to include nodes before the anchor)
+    #[serde(default)]
+    at: Option<String>,
+    /// Number of nodes to include before the `at` anchor (default 0)
+    #[serde(default)]
+    back: Option<i32>,
 }
 
 /// Get paginated nodes for infinite scroll
@@ -87,6 +94,14 @@ pub async fn get_node_page(
     }
 
     let limit = params.limit.unwrap_or(20).clamp(1, 50);
+
+    if let Some(ref node_slug) = params.at {
+        let back = params.back.unwrap_or(0).max(0);
+        let page =
+            db::page::get_node_page_at(pool, &slug, node_slug, back, limit, include_original)
+                .await?;
+        return Ok(Json(page));
+    }
     let page = db::page::get_node_page(
         pool,
         &slug,
