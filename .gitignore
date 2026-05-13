@@ -6,3 +6,4 @@ apps/web/dist/
 .turbo
 node_modules
 .venv
+.claude/projects/
