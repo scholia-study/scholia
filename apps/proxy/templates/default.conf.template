@@ -63,16 +63,6 @@ server {
         proxy_no_cache     $bypass_cache;
     }
 
-    # ---- Per-pod runtime config — never cached ----
-    #
-    # Set APP_PROFILE on the container env (one of: local-proxy, dev, prod).
-    # The literal value is baked in here at container startup by envsubst.
-    location = /config.js {
-        default_type application/javascript;
-        add_header Cache-Control "no-store" always;
-        return 200 'window.__ENV__ = { APP_PROFILE: "${APP_PROFILE}" };\n';
-    }
-
     # ---- HTML — Node SSR, cache when anon ----
     location / {
         proxy_pass http://node_ssr;

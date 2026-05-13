@@ -57,6 +57,6 @@ COPY templates/ /etc/nginx/templates/
 # Restrict envsubst to the variables we actually template. Without this
 # nginx's own `$request_uri`, `$host`, etc. would be substituted to empty
 # strings and silently break the config.
-ENV NGINX_ENVSUBST_FILTER="^(UPSTREAM_(WEB|API)|APP_PROFILE)$"
+ENV NGINX_ENVSUBST_FILTER="^UPSTREAM_(WEB|API)$"
 
 EXPOSE 80 8080

@@ -14,8 +14,8 @@ const config = defineConfig({
         tanstackStart({
             // SSR runtime mode: no prerender pass, no SPA shell. The build
             // produces a Nitro Node server (default output: .output/server/
-            // index.mjs) plus client assets. nginx will sit in front of it
-            // and cache the rendered HTML (see PLAN_3_TIER.md).
+            // index.mjs) plus client assets. The nginx proxy in apps/proxy/
+            // sits in front of it and caches the rendered HTML.
         }),
         viteReact(),
     ],

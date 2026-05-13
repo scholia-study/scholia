@@ -22,18 +22,37 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-    head: () => ({
-        meta: [
-            { charSet: "utf-8" },
-            {
-                name: "viewport",
-                content: "width=device-width, initial-scale=1",
-            },
-            { title: "Scholia" },
-        ],
-        links: [{ rel: "stylesheet", href: appCss }],
-        scripts: [{ src: "/config.js" }],
-    }),
+    head: () => {
+        // Runtime profile injection. The Node SSR reads APP_PROFILE from
+        // its container env at render time and writes it inline; the
+        // browser executes the script before the bundle (it's in <head>
+        // and synchronous) so `apps/web/src/config.ts` sees window.__ENV__
+        // when it evaluates.
+        //
+        // If head() runs on the client too, preserve whatever the server
+        // already injected — re-reading process.env in the browser would
+        // give undefined and clobber "prod" back to "local".
+        const profile =
+            typeof window !== "undefined"
+                ? (window.__ENV__?.APP_PROFILE ?? "local")
+                : (process.env.APP_PROFILE ?? "local");
+        return {
+            meta: [
+                { charSet: "utf-8" },
+                {
+                    name: "viewport",
+                    content: "width=device-width, initial-scale=1",
+                },
+                { title: "Scholia" },
+            ],
+            links: [{ rel: "stylesheet", href: appCss }],
+            scripts: [
+                {
+                    children: `window.__ENV__ = { APP_PROFILE: ${JSON.stringify(profile)} };`,
+                },
+            ],
+        };
+    },
     shellComponent: RootDocument,
     component: RootComponent,
     notFoundComponent: NotFound,
