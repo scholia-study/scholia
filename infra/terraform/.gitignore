@@ -1,0 +1,17 @@
+# Local plan artifacts and lock files specific to a developer's
+# machine. The remote state in Hetzner Object Storage is the source
+# of truth; .terraform/ caches provider binaries which are reproducible
+# from .terraform.lock.hcl.
+.terraform/
+*.tfplan
+*.tfplan.binary
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Keep the lock file under version control — pins exact provider
+# versions across the team.
+!.terraform.lock.hcl
