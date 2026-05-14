@@ -14,7 +14,7 @@ All JS package operations use **pnpm**, never npm (see auto-memory).
 - `pnpm validate` — runs `turbo lint ct test check:modules` across the workspace. This is what pre-commit runs.
 - `pnpm sanity` (`pnpm s`) — biome format + validate.
 - `pnpm codegen` — regenerates the API client. Runs `api#openapi` (Rust binary dumps `openapi.json` at repo root) → orval generates `apps/web/src/api/**` → biome formats. **Run this after any Rust handler/model change that affects the OpenAPI surface.**
-- `pnpm db:reset` — runs `./db_reset.sh`, which drops + recreates `public` schema then applies `db/001_schema.sql`. Always use this script for schema resets, never raw inline psql DROP/CREATE.
+- `pnpm db:reset` — runs `scripts/db_reset.sh`, which drops + recreates the `public` schema then applies every migration in `db/migrations/` via `sqlx migrate run`. Always use this script for schema resets, never raw inline psql DROP/CREATE. Requires `cargo install sqlx-cli --no-default-features --features postgres,rustls`.
 - `pnpm stripe:listen` — forwards Stripe webhooks to `localhost:4000/api/webhooks/stripe` for local billing dev.
 
 Per-package:
@@ -25,9 +25,9 @@ Per-package:
 - `cargo run -p api --bin openapi` — regenerate `openapi.json` directly without orval.
 
 Asset → DB ingestion (run in order against a fresh schema):
-- `./db_reset.sh` — wipe DB.
-- `./db_bible.sh` — imports KJV, WEB, ASV, BBE, DARBY (KJV must run first; it seeds canonical verse counts).
-- `./db_kant1.sh` — imports Kant's Kritik (German + English from `assets/`).
+- `pnpm db:reset` — wipe DB and re-apply migrations.
+- `scripts/db_bible.sh` — imports KJV, WEB, ASV, BBE, DARBY (KJV must run first; it seeds canonical verse counts).
+- `scripts/db_kant1.sh` — imports Kant's Kritik (German + English from `assets/`).
 - Or run the post-OCR/markdown pipeline binaries individually — see `README.md` and `dp:kant1` script in `package.json`.
 
 Pre-commit (lefthook): formats staged JS/TS via biome, runs `cargo fmt`, then runs `pnpm validate`. Do not bypass with `--no-verify`.
@@ -68,11 +68,15 @@ Route file conventions in `src/routes/`:
 
 **Module encapsulation (`pnpm check:modules`)**: code outside `apps/web/src/modules/<x>/` may only import from `apps/web/src/modules/<x>` (the barrel index), never from internal files of another module. Same-module imports may use relative paths. Enforced by `apps/web/scripts/check-module-imports.mjs` and pre-commit.
 
-Path alias `#/*` → `apps/web/src/*`. The active runtime config is selected per-deployment via `window.__ENV__.APP_PROFILE` (`local` | `dev` | `prod`) which nginx envsubst writes into `/config.js` at pod start — one image, three environments. **Never put secrets in `apps/web/src/config.ts`.**
+Path alias `#/*` → `apps/web/src/*`. The active runtime config is selected per-deployment via `window.__ENV__.APP_PROFILE` (`local` | `local-proxy` | `dev` | `prod`); the Node SSR reads `APP_PROFILE` from its container env at render time and inlines `<script>window.__ENV__ = { APP_PROFILE: "…" }</script>` in `<head>` (see `apps/web/src/routes/__root.tsx`). One image, env-selected profile. **Never put secrets in `apps/web/src/config.ts`.**
 
-### Database — `db/001_schema.sql`
+### Database — `db/migrations/`
 
-PostgreSQL 18+ with `ltree`. Single-file schema, idempotent-via-reset. ~35 tables grouped into: users + auth (users, sessions, oauth, password reset, email verification, released_handles), bibliography (persons, sources, books, source_persons, resources), text content (toc_nodes, content_blocks, sentences, footnotes, page_markers, facsimile_pages, reference_systems, cross_references, **cross_translation_alignments** — see `docs/architecture/cross-translation-alignment.md`), user content (quotations, articles, article_quotations, quotation_notes, tags, topics, editorial_labels, feedback), and billing (subscriptions, stripe_processed_events).
+PostgreSQL 18+ with `ltree`. Append-only sqlx migrations named
+`NNNN_<semantic-name>.sql` (sequential, starting at `0000`). Embedded
+into the api binary via `sqlx::migrate!`; the cluster init container
+runs `api migrate`. Dev resets via `pnpm db:reset` (uses `sqlx-cli`).
+~35 tables grouped into: users + auth (users, sessions, oauth, password reset, email verification, released_handles), bibliography (persons, sources, books, source_persons, resources), text content (toc_nodes, content_blocks, sentences, footnotes, page_markers, facsimile_pages, reference_systems, cross_references, **cross_translation_alignments** — see `docs/architecture/cross-translation-alignment.md`), user content (quotations, articles, article_quotations, quotation_notes, tags, topics, editorial_labels, feedback), and billing (subscriptions, stripe_processed_events).
 
 ### Rust packages (ingest CLIs)
 
@@ -84,6 +88,7 @@ PostgreSQL 18+ with `ltree`. Single-file schema, idempotent-via-reset. ~35 table
 
 - `docs/adr/` — architectural decisions (e.g., 0001 says: don't extract a shared form-modal primitive — keep the four modals independent).
 - `docs/architecture/cross-translation-alignment.md` — how quotation projection follows content, not verse numbers, across translations. Read this before touching `apps/api/src/db/quotations.rs`.
+- `docs/architecture/database-migrations.md` — sqlx migration setup, why dev uses sqlx-cli while prod uses `api migrate`, and the chicken-and-egg that forces the split. Read this before touching `db/migrations/`, `apps/api/src/migrate.rs`, or `scripts/db_reset.sh`.
 
 ## Formatting
 

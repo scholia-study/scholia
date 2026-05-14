@@ -36,6 +36,19 @@ async fn main() {
         )
         .init();
 
+    // Subcommand dispatch. The init container in cluster runs
+    // `api migrate` to apply embedded sqlx migrations before the main
+    // server boots; the same binary serves both modes.
+    if std::env::args().nth(1).as_deref() == Some("migrate") {
+        let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+        tracing::info!("Running migrations…");
+        api::migrate::run(&database_url)
+            .await
+            .expect("Migrations failed");
+        tracing::info!("Migrations applied.");
+        return;
+    }
+
     let config = AppConfig::from_env();
 
     let pool = PgPool::connect(&config.database_url)

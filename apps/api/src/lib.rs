@@ -7,6 +7,7 @@ pub mod db;
 pub mod email;
 pub mod error;
 pub mod handlers;
+pub mod migrate;
 pub mod models;
 pub mod state;
 pub mod validation;

@@ -11,7 +11,7 @@ no code yet, just decisions + rationale.
 Three coupled changes that must land **before any cluster bringup**, all on
 one branch:
 
-### 0.1 Move all backend routes under `/api/*`
+### ✅ 0.1 Move all backend routes under `/api/*`
 
 Current state: routes live under `/auth/*`, `/billing/*`, `/api/*`, and
 `/webhooks/stripe`. Production deploys behind a single hostname with
@@ -27,7 +27,7 @@ Touches:
 - `openapi.json` regenerates → run `pnpm codegen` to refresh frontend client
 - Frontend `fetcher.ts` BASE_URL no longer hardcoded (see 0.2)
 
-### 0.2 Runtime config injection (profile-registry model)
+### ✅ 0.2 Runtime config injection (profile-registry model)
 
 Replace build-time Vite env vars with runtime injection so a single
 container image works across all environments.
@@ -80,32 +80,44 @@ IDs). Secret keys stay server-side.
 - `import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY` → `config.STRIPE_PUBLISHABLE_KEY`
 - Hardcoded `BASE_URL = "http://localhost:4000"` in `fetcher.ts` → `config.API_BASE_URL`
 
-### 0.3 Migrations bootstrap (sqlx)
+### ✅ 0.3 Migrations bootstrap (sqlx)
 
-Replace the destructive `db_reset.sh`-only flow with a proper migration
+Replaced the destructive `db_reset.sh`-only flow with a proper migration
 story before any prod data exists.
 
-**Setup:**
+**Landed:**
 
-- Convert `db/001_schema.sql` → `db/migrations/<timestamp>_initial.sql`
-- Add `sqlx-cli` to dev tooling (`cargo install sqlx-cli`)
-- Embed migrations into the API binary via `sqlx::migrate!("../../db/migrations")`
-- New API binary subcommand: `api migrate` runs migrations and exits
-- Update `db_reset.sh`: drops schema, then runs migrations (instead of
-  re-applying the legacy 001_schema.sql)
+- `db/001_schema.sql` → `db/migrations/0000_initial.sql`. Naming
+  convention: `NNNN_<semantic-name>.sql`, sequential starting at `0000`.
+- `sqlx-cli` installed locally:
+  `cargo install sqlx-cli --no-default-features --features postgres,rustls`
+- Migrations embedded into the API binary via `sqlx::migrate!("../../db/migrations")`
+  in `apps/api/src/migrate.rs`.
+- API binary subcommand `api migrate` runs migrations and exits (cluster
+  init container path). `default-run = "api"` set in `Cargo.toml` so
+  `cargo run -p api -- migrate` resolves the main binary.
+- `scripts/db_reset.sh` rewritten: drops schema, then `sqlx migrate run`.
+  sqlx-cli (not the api binary) is used here because the api crate's
+  compile-time `sqlx::query!` macros need a live schema — dropping the
+  schema first creates a chicken-and-egg if you try to rebuild the
+  binary. In production the same problem doesn't arise because builds
+  use committed `.sqlx` offline metadata. Full rationale in
+  `docs/architecture/database-migrations.md`.
 - `_sqlx_migrations` table tracks applied migrations + checksums; sqlx
-  refuses to re-run an edited migration
+  refuses to re-run an edited migration.
 
 **Rule (non-negotiable post-launch):** migrations are **append-only**.
 Every schema change is a new migration file. Never edit a previously-applied
 file. Multi-step changes (add nullable col → backfill → make NOT NULL)
 become multiple migrations, not one edit.
 
-### 0.4 Update auto-memory note
+### ✅ 0.4 Update auto-memory note
 
-The existing memory note about editing `db/001_schema.sql` directly + using
-`db_reset.sh` becomes stale once 0.3 lands. Update to reference the
-migrations directory + `sqlx migrate add` flow.
+The `reference-db-reset` auto-memory now points at `pnpm db:reset` →
+sqlx migrations in `db/migrations/`, and a companion
+`feedback-migration-naming` memory captures the `NNNN_<semantic-name>`
+convention starting at `0000`. CLAUDE.md `Database — db/migrations/`
+section rewritten to match.
 
 ---
 
@@ -537,8 +549,8 @@ regions). Not infrastructure, but worth tracking.
       update/publish/archive, profile)
 - [ ] Wire PURGE into ingest binaries (`bible_to_db`, `kant1_*`) so a
       re-ingest invalidates the affected book/chapter URLs
-- [ ] Migrations bootstrap (sqlx-cli, init container)
-- [ ] Update auto-memory note about `db_reset.sh` flow
+- [x] Migrations bootstrap (sqlx-cli, init container)
+- [x] Update auto-memory note about `db_reset.sh` flow
 - [ ] Regenerate openapi.json + frontend client (run as part of any
       handler change)
 - [ ] Smoke-test the production build path end-to-end:

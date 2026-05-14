@@ -3,13 +3,14 @@
  *
  * Every deployment-environment-specific value lives here, indexed by
  * profile. The active profile is selected at runtime via
- * `window.__ENV__.APP_PROFILE`, which is set by `/config.js` (rendered
- * by nginx envsubst at pod startup in cluster deployments). For local
- * `pnpm dev`, no `__ENV__` is injected and the profile defaults to
+ * `window.__ENV__.APP_PROFILE`, which is set by an inline <script> in
+ * the SSR HTML head — see `src/routes/__root.tsx`. The Node SSR
+ * container reads `APP_PROFILE` from its env at render time. For local
+ * `pnpm dev`, no `APP_PROFILE` is set and the profile defaults to
  * `"local"`.
  *
- * One container image works for every environment — only the rendered
- * `/config.js` differs.
+ * One container image works for every environment — only the
+ * `APP_PROFILE` env var on the web Deployment differs.
  *
  * ⚠️ DO NOT PUT SENSITIVE INFORMATION HERE. This file ships to the
  * browser. Stripe publishable keys are public by design; secret keys
@@ -56,8 +57,10 @@ const envConfigs = {
     },
     "local-proxy": {
         // Same-origin API: the local proxy (apps/proxy) terminates :8000
-        // and routes /api/* to Rust. Activated by /config.js served from
-        // the proxy container with APP_PROFILE=local-proxy.
+        // and routes /api/* to Rust. Activated by running the web dev
+        // server with APP_PROFILE=local-proxy (see `pnpm dev:all` in the
+        // root package.json), which makes __root.tsx inject this profile
+        // into the rendered HTML.
         PROFILE: "local-proxy",
         API_BASE_URL: "",
         STRIPE_PUBLISHABLE_KEY: _stripePubKeyTest,
