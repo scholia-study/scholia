@@ -12,6 +12,7 @@
         "db:reset": "bash scripts/db_reset.sh",
         "db:kant1": "bash scripts/db_kant1.sh",
         "db:bible": "bash scripts/db_bible.sh",
+        "db:reload": "pnpm db:reset && pnpm db:kant1 && pnpm db:bible",
         "dev": "turbo run dev --filter=@apps/api --filter=@apps/web",
         "dev:all": "APP_PROFILE=local-proxy turbo run dev",
         "dev:proxy": "turbo run dev --filter=@apps/proxy",
