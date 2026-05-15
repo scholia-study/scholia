@@ -1,0 +1,32 @@
+# Let's Encrypt staging ClusterIssuer.
+#
+# Browsers don't trust staging certs — they exist purely to validate
+# that our ACME flow + DNS + HTTP-01 challenge plumbing works without
+# burning through production rate limits (5 duplicate certs / week per
+# registered domain).
+#
+# Reference any Ingress's `cert-manager.io/cluster-issuer` annotation
+# at this issuer first during bringup or after major topology changes;
+# flip to letsencrypt-prod once the flow is proven.
+
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: contact@filipniklas.com
+    privateKeySecretRef:
+      # cert-manager stores the ACME account's private key in this Secret.
+      # If the Secret is deleted, cert-manager re-registers the account
+      # on next reconcile — fine, accounts are free.
+      name: letsencrypt-staging-account-key
+    solvers:
+      # HTTP-01: cert-manager temporarily exposes a challenge token at
+      # http://<host>/.well-known/acme-challenge/<token>; Let's Encrypt
+      # fetches it to prove we control the domain. Traefik routes this
+      # automatically when cert-manager creates the challenge Ingress.
+      - http01:
+          ingress:
+            ingressClassName: traefik

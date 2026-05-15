@@ -1,0 +1,21 @@
+# Let's Encrypt production ClusterIssuer.
+#
+# Issues browser-trusted certs. Subject to Let's Encrypt rate limits:
+# 50 certs / registered domain / week, 5 duplicate certs / week.
+# Don't point Ingresses here while debugging — use letsencrypt-staging
+# for that and flip to this once the flow is known-good.
+
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: contact@filipniklas.com
+    privateKeySecretRef:
+      name: letsencrypt-prod-account-key
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: traefik

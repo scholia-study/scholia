@@ -1,0 +1,29 @@
+# SOPS encryption policy.
+#
+# Rules are matched in order; first match wins. Files outside every rule
+# are not encryptable — sops refuses with "no matching creation rules".
+#
+# `encrypted_regex` matches YAML *key names* (recursively). When a key
+# matches, its value (whole subtree) is encrypted; everything else stays
+# plaintext. For Kubernetes Secret manifests we encrypt the `data:` and
+# `stringData:` blocks but leave `metadata.name`, labels, annotations,
+# etc. visible — so a git diff still shows what the file is for.
+#
+# Adding a new environment (e.g. prod) means appending a new rule with
+# its own age recipient. Each environment has its own keypair; never
+# share a private key across environments.
+
+creation_rules:
+  - path_regex: infra/k8s/overlays/dev/.*\.ya?ml$
+    encrypted_regex: "^(data|stringData)$"
+    key_groups:
+      - age:
+          - age1a57wpmedhxjfpc7eggf639ktpwh66pyg0r5n72gavm3w0zrrv3qq8eesn6
+
+  # Add a prod rule here once the prod cluster + age keypair exist:
+  #
+  # - path_regex: infra/k8s/overlays/prod/.*\.ya?ml$
+  #   encrypted_regex: "^(data|stringData)$"
+  #   key_groups:
+  #     - age:
+  #         - <prod-public-key>
