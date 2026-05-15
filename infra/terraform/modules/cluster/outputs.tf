@@ -15,8 +15,13 @@ output "kubeconfig_fetch_command" {
     has server=127.0.0.1, which is rewritten to the tailnet hostname so
     your laptop can reach the API server.
 
+    Note the SSH/MagicDNS hostname is `<env>-scholia` (set by
+    cloud-init's `tailscale up --hostname=...`), distinct from the
+    Hetzner server name `scholia-<env>` which only labels the box in
+    the Hetzner console.
+
     Run after `terraform apply` finishes and the node has had ~60s to
     boot, install Tailscale, and install k3s.
   EOT
-  value = "ssh root@${hcloud_server.this.name} 'sed s,127.0.0.1,${hcloud_server.this.name},g /etc/rancher/k3s/k3s.yaml' > ~/.kube/scholia-${var.environment}.yaml"
+  value = "ssh root@${var.environment}-scholia 'sed s,127.0.0.1,${var.environment}-scholia,g /etc/rancher/k3s/k3s.yaml' > ~/.kube/scholia-${var.environment}.yaml"
 }

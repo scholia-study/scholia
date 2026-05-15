@@ -21,9 +21,9 @@ variable "dns_zone" {
 }
 
 variable "vps_type" {
-  description = "Hetzner Cloud server type. CX22 = 2 vCPU / 4 GB / 40 GB, €4.90/mo."
+  description = "Hetzner Cloud server type. cx23 = 2 vCPU / 4 GB / 40 GB SSD, x86, €4.99/mo in fsn1. (Renamed from the older cx22 slug.)"
   type        = string
-  default     = "cx22"
+  default     = "cx23"
 }
 
 variable "vps_image" {

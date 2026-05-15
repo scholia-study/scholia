@@ -561,12 +561,12 @@ regions). Not infrastructure, but worth tracking.
 
 ### v0 — Cluster bringup
 
-- [ ] Hetzner API token, Porkbun API key, Tailscale auth key in laptop env
-- [ ] Write `infra/terraform/` (Hetzner + Porkbun providers, cloud-init for k3s + Tailscale)
-- [ ] State backend in Hetzner Object Storage
-- [ ] `terraform apply -var-file=dev.tfvars`
+- [x] Hetzner API token, Porkbun API key, Tailscale auth key in laptop env
+- [x] Write `infra/terraform/` (Hetzner + Porkbun providers, cloud-init for k3s + Tailscale)
+- [x] State backend in Hetzner Object Storage
+- [x] `terraform apply -var-file=dev.tfvars`
 - [ ] `terraform apply -var-file=prod.tfvars`
-- [ ] **Validate IaC**: `terraform destroy` + `terraform apply` on dev once
+- [x] **Validate IaC**: `terraform destroy` + `terraform apply` on dev once
 - [ ] Install cert-manager, configure Let's Encrypt prod issuer
 - [ ] SOPS age keypairs (dev + prod), encrypted backup to HOS + password manager
 - [ ] Write `infra/k8s/base/` + `overlays/{dev,prod}/` covering all
