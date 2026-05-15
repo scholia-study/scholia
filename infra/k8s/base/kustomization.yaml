@@ -1,0 +1,25 @@
+# Root base kustomization. Lists every sub-base whose manifests should
+# always be present in any environment overlay. cert-manager's
+# ClusterIssuers are cluster-scoped (not namespaced), so they're
+# applied separately via `kubectl apply -f infra/k8s/base/cert-manager/`,
+# not pulled into this kustomization.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: scholia
+
+resources:
+  - namespace.yaml
+  - postgres
+  - api
+  - web
+  - proxy
+  - ingress
+
+# Common labels stamped on every resource — useful for kubectl
+# filtering (`kubectl get all -l app.kubernetes.io/part-of=scholia`).
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: scholia
+      app.kubernetes.io/managed-by: kustomize

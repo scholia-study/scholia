@@ -1,0 +1,43 @@
+# Public Ingress.
+#
+# Traefik (k3s default) terminates TLS using the cert provisioned by
+# cert-manager from the ClusterIssuer named in the annotation below.
+# All requests for the hostname route to scholia-proxy:80; the proxy
+# then fans out to /api/* → scholia-api and /* → scholia-web per its
+# own location blocks.
+#
+# The hostname AND the cluster-issuer are patched per environment in
+# the overlays (dev uses dev.scholia.study + letsencrypt-staging
+# while debugging; prod uses scholia.study + letsencrypt-prod).
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: scholia
+  labels:
+    app.kubernetes.io/name: scholia
+  annotations:
+    # cert-manager auto-provisions a Certificate (and thus a TLS
+    # Secret) for every host in `spec.tls` using this issuer. Patched
+    # in overlays.
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - PLACEHOLDER.example.com
+      # cert-manager writes the issued cert + key into this Secret.
+      # The name doesn't need to exist before apply — cert-manager
+      # creates it.
+      secretName: scholia-tls
+  rules:
+    - host: PLACEHOLDER.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: scholia-proxy
+                port:
+                  number: 80

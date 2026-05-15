@@ -1,0 +1,27 @@
+# Two ports on one Service.
+#
+# 80 — public-facing HTTP. Ingress routes here from Traefik after TLS
+#      termination.
+# 8080 — cluster-internal PURGE listener. Reachable only from
+#        scholia-api pods (NetworkPolicy enforces this).
+#
+# Both are ClusterIP. The Ingress promotes :80 to public; nothing
+# promotes :8080.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: scholia-proxy
+  labels:
+    app.kubernetes.io/name: scholia-proxy
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: scholia-proxy
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+    - name: purge
+      port: 8080
+      targetPort: 8080

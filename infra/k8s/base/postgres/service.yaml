@@ -1,0 +1,22 @@
+# Headless Service for the Postgres StatefulSet.
+#
+# Headless (`clusterIP: None`) gives the StatefulSet stable
+# per-replica DNS names (`postgres-0.postgres.scholia.svc.cluster.local`,
+# etc). With a single replica it's overkill, but using the StatefulSet
+# pattern from day one means scaling up to a hot standby later doesn't
+# require a service-shape migration.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app.kubernetes.io/name: postgres
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432

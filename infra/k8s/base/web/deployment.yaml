@@ -1,0 +1,49 @@
+# Node SSR runtime (TanStack Start, Nitro output).
+#
+# Single replica — the proxy in front handles caching; multi-replica
+# would mean per-pod request caches drifting, which we explicitly
+# don't want (PLAN_DEVOPS § 2.2).
+#
+# APP_PROFILE is the env var __root.tsx reads at render time and
+# inlines into the HTML head as `window.__ENV__.APP_PROFILE`. The
+# overlay's kustomization patches this for prod (`prod` vs `dev`).
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scholia-web
+  labels:
+    app.kubernetes.io/name: scholia-web
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: scholia-web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: scholia-web
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/filipniklas/scholia-web:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            # In-cluster DNS — Rust API's ClusterIP Service.
+            - name: API_BASE_URL
+              value: http://scholia-api:4000
+            # Selects the profile in apps/web/src/config.ts. Overlay
+            # patches this per environment.
+            - name: APP_PROFILE
+              value: dev
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi

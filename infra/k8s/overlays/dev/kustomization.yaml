@@ -1,0 +1,25 @@
+# Dev environment overlay.
+#
+# Patches the base Ingress to use dev.scholia.study. The
+# letsencrypt-staging cluster-issuer is the default in the base, so
+# no patch needed there until we flip to letsencrypt-prod (which we'll
+# do after confirming the HTTP-01 challenge works against staging).
+#
+# Secrets in secrets/ are NOT referenced here — they're SOPS-encrypted
+# and applied separately via `sops -d <file> | kubectl apply -f -`
+# before `kubectl apply -k overlays/dev/`. See Makefile / docs for
+# the canonical deploy sequence once it's written.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: scholia
+
+resources:
+  - ../../base
+
+patches:
+  - path: ingress-patch.yaml
+    target:
+      kind: Ingress
+      name: scholia

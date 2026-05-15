@@ -1,0 +1,98 @@
+# Postgres 18 StatefulSet, single replica, local-path PVC.
+#
+# Per PLAN_DEVOPS § 2.4: raw StatefulSet (no operator) for v0; revisit
+# CloudNativePG once PITR or replicas matter. Storage is k3s's default
+# local-path provisioner — pinned to whatever node the pod runs on, but
+# since we have one node, that's a no-op constraint.
+#
+# Secrets:
+#   - `postgres` Secret supplies POSTGRES_USER / POSTGRES_PASSWORD /
+#     POSTGRES_DB. It's authored as a SOPS-encrypted manifest in the
+#     dev overlay; absence at apply time is what tells you the
+#     `sops -d | kubectl apply` step hasn't run yet.
+#
+# The `subPath: data` on the volume mount keeps Postgres's data dir
+# (`/var/lib/postgresql/data/pgdata`) inside a subdirectory of the PVC
+# root — important on some storage classes (and harmless on local-path)
+# because Postgres refuses to initdb in a directory with `lost+found`
+# or other crud.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  labels:
+    app.kubernetes.io/name: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: postgres
+          image: postgres:18
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: database
+            # Postgres refuses to use the PVC root directly when the
+            # filesystem has unrelated entries; pgdata in a subdirectory
+            # sidesteps it.
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          # Single-replica, single-node: an outage IS data unavailability
+          # anyway, so probes are mostly about "did initdb finish on
+          # first boot." Generous initial delay.
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - $(POSTGRES_USER)
+                - -d
+                - $(POSTGRES_DB)
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 20Gi

@@ -563,33 +563,92 @@ regions). Not infrastructure, but worth tracking.
 
 - [x] Hetzner API token, Porkbun API key, Tailscale auth key in laptop env
 - [x] Write `infra/terraform/` (Hetzner + Porkbun providers, cloud-init for k3s + Tailscale)
-- [x] State backend in Hetzner Object Storage
-- [x] `terraform apply -var-file=dev.tfvars`
-- [ ] `terraform apply -var-file=prod.tfvars`
+- [x] State backend in Hetzner Object Storage (`scholia-tf-state` bucket, fsn1)
+- [x] `terraform apply -var-file=dev.tfvars` — dev cluster live at `dev.scholia.study`
+- [ ] `terraform apply -var-file=prod.tfvars` — deferred until dev is fully validated
 - [x] **Validate IaC**: `terraform destroy` + `terraform apply` on dev once
-- [ ] Install cert-manager, configure Let's Encrypt prod issuer
-- [ ] SOPS age keypairs (dev + prod), encrypted backup to HOS + password manager
-- [ ] Write `infra/k8s/base/` + `overlays/{dev,prod}/` covering all
-      three Deployments + Services:
+- [x] Install cert-manager (Helm chart v1.20.2 in `cert-manager` namespace)
+- [x] Configure Let's Encrypt staging + prod `ClusterIssuer`s
+      (`infra/k8s/base/cert-manager/cluster-issuer-{staging,prod}.yaml`,
+      ACME contact `contact@filipniklas.com`)
+- [x] SOPS dev age keypair generated + encrypted backups to Hetzner
+      Object Storage (`scholia-key-backups` bucket) + Dropbox
+- [ ] SOPS prod age keypair (deferred with prod cluster)
+- [x] Write `infra/k8s/base/` covering all three Deployments + Services:
   - `scholia-api` Deployment + ClusterIP Service (port 4000), init
-    container running `api migrate`, env including `CACHE_PURGE_URL`
+    container running `api migrate`, env including `CACHE_PURGE_URL`,
+    DATABASE_URL composed from the `postgres` Secret at runtime via
+    `$(VAR)` env substitution
   - `scholia-web` Deployment + ClusterIP Service (port 3000), env
-    including `API_BASE_URL=http://scholia-api:4000`
+    including `API_BASE_URL=http://scholia-api:4000`, `APP_PROFILE`
   - `scholia-proxy` Deployment + ClusterIP Service (ports 80 + 8080),
-    env including `UPSTREAM_WEB`, `UPSTREAM_API`, `APP_PROFILE`
-  - PVC for proxy cache (~5GB, `local-path`)
-  - PVC for Postgres (existing, ~20GB)
-  - NetworkPolicy restricting `scholia-proxy:8080` to `scholia-api` pods
-  - Ingress (Traefik) terminating TLS, routing to `scholia-proxy:80`
-- [ ] Build + push first images via CI (api, web, proxy)
-- [ ] `kubectl apply -k overlays/dev/`
+    env including `UPSTREAM_WEB`, `UPSTREAM_API`. **No `APP_PROFILE`
+    here** — that env moved to the web Deployment after the inline-
+    script profile-injection migration.
+  - PVC for proxy cache (5 GB, `local-path`)
+  - Postgres StatefulSet + headless Service + 20 GB PVC (`postgres:18`,
+    single replica, local-path)
+  - NetworkPolicy restricting `scholia-proxy:8080` to pods labelled
+    `app.kubernetes.io/name: scholia-api`
+  - Ingress (Traefik) terminating TLS, routing to `scholia-proxy:80`;
+    hostname is a `PLACEHOLDER` patched by the env overlay
+- [x] Write `infra/k8s/overlays/dev/`:
+  - `kustomization.yaml` referencing the base
+  - `ingress-patch.yaml` replacing the hostname with `dev.scholia.study`
+  - `secrets/postgres.yaml` and `secrets/api.yaml` — SOPS-encrypted via
+    `.sops.yaml` at the repo root. Filled with real values: Stripe test
+    keys, Resend API key, GitHub OAuth (dev app registered with callback
+    `https://dev.scholia.study/api/auth/github/callback`).
+- [ ] Write `infra/k8s/overlays/prod/` (mirror of dev with hostname
+      `scholia.study`, `letsencrypt-prod` issuer, prod SOPS recipient)
+- [ ] **Dockerfile for `scholia-api`** — doesn't exist yet. Multi-stage
+      Rust build (`rust:bookworm` builder + `debian:bookworm-slim`
+      runtime). Must include `default-run = "api"` working and the
+      `api migrate` subcommand reachable as the binary's CLI.
+      Production build needs committed `.sqlx/` offline metadata
+      (`cargo sqlx prepare`) so the build doesn't require a live DB.
+- [ ] **Dockerfile for `scholia-web`** — doesn't exist yet. Multi-stage
+      Node build (`node:22-alpine` builder + runtime). Builds the
+      TanStack Start Nitro output and runs `pnpm --filter @apps/web start`.
+- [x] **Dockerfile for `scholia-proxy`** — already at `apps/proxy/Dockerfile`
+- [ ] GitHub Actions workflow building all three images, pushing to
+      `ghcr.io/filipniklas/scholia-{api,web,proxy}`, on push-to-main
+      (with `:main-<sha>` tags) and tag pushes (with `:vX.Y.Z` tags)
+- [ ] Deploy to dev:
+  - `source ~/.config/scholia-infra.env` (for `SOPS_AGE_KEY_FILE`)
+  - `sops -d infra/k8s/overlays/dev/secrets/postgres.yaml | kubectl apply -f -`
+  - `sops -d infra/k8s/overlays/dev/secrets/api.yaml | kubectl apply -f -`
+  - `kubectl apply -f infra/k8s/base/cert-manager/` (ClusterIssuers — already applied)
+  - `kubectl apply -k infra/k8s/overlays/dev/`
+  - `kubectl get pods -n scholia -w` until all are Ready
 - [ ] Validate end-to-end on dev: anonymous chapter pageviews cache
       (X-Cache-Status: MISS then HIT), authenticated requests bypass,
       PURGE after an article publish invalidates the listing, Stripe
       test charge → role flips → cancellation flow
+- [ ] Flip dev Ingress's `cert-manager.io/cluster-issuer` annotation
+      from `letsencrypt-staging` to `letsencrypt-prod` once HTTP-01
+      challenge is known-good
 - [ ] `kubectl apply -k overlays/prod/`
 - [ ] Update Stripe to live mode keys + production webhook URL
 - [ ] Public soft launch
+
+### Pickup for next session
+
+When resuming the cluster bringup, the immediate next chunk is:
+
+1. Write `apps/api/Dockerfile` (multi-stage Rust, includes
+   `cargo sqlx prepare` step or relies on committed `.sqlx/`).
+2. Write `apps/web/Dockerfile` (multi-stage Node, Nitro output +
+   `pnpm start`).
+3. Commit `.sqlx/` offline metadata so prod builds don't need a live DB.
+4. `.github/workflows/build-images.yml` — three image builds, ghcr.io
+   push, branch + tag triggers.
+5. Generate a personal access token / use `GITHUB_TOKEN` for ghcr push.
+6. First push to main → first images on ghcr.io.
+7. Deploy sequence above.
+
+Estimate: 1-2 hours for Dockerfiles + workflow; first deploy will
+surface its own debugging tail.
 
 ### v1 — ArgoCD + Sentry
 

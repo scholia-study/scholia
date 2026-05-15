@@ -1,0 +1,21 @@
+# Backing storage for the nginx cache zones (HTML + API). Sized to fit
+# the cached working set (~700 MB at current content) with headroom.
+# Backed by k3s's local-path storage class — same as Postgres.
+#
+# Using a PVC rather than emptyDir means the cache survives pod
+# restarts. Cold-starting the cache after every rolling update would
+# hammer upstreams; this avoids it.
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: scholia-proxy-cache
+  labels:
+    app.kubernetes.io/name: scholia-proxy
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 5Gi

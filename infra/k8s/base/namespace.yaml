@@ -1,0 +1,9 @@
+# All Scholia workloads live in this namespace. cert-manager runs in
+# its own (cert-manager); kube-system is for the cluster's own pods.
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: scholia
+  labels:
+    app.kubernetes.io/name: scholia

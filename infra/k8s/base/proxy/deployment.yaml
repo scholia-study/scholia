@@ -1,0 +1,62 @@
+# nginx-cache edge proxy.
+#
+# Image built from apps/proxy/Dockerfile — stage 1 compiles
+# ngx_cache_purge as a dynamic module against the runtime nginx
+# version, stage 2 drops the .so into a plain nginx:alpine.
+#
+# Two-port topology:
+#   :80   public HTTP, routed by Traefik via Ingress
+#   :8080 PURGE listener, reachable only from scholia-api pods
+#
+# UPSTREAM_WEB / UPSTREAM_API env vars are rendered into the nginx
+# config at container start by the envsubst step in the official
+# nginx entrypoint (see apps/proxy/templates/upstreams.conf.template).
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scholia-proxy
+  labels:
+    app.kubernetes.io/name: scholia-proxy
+spec:
+  replicas: 1
+  strategy:
+    # RollingUpdate would briefly run two pods that share the
+    # ReadWriteOnce PVC — local-path can't satisfy that. Recreate
+    # avoids the conflict at the cost of brief downtime per deploy.
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: scholia-proxy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: scholia-proxy
+    spec:
+      containers:
+        - name: proxy
+          image: ghcr.io/filipniklas/scholia-proxy:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+            - name: purge
+              containerPort: 8080
+          env:
+            - name: UPSTREAM_WEB
+              value: scholia-web:3000
+            - name: UPSTREAM_API
+              value: scholia-api:4000
+          volumeMounts:
+            - name: cache
+              mountPath: /var/cache/nginx
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: scholia-proxy-cache

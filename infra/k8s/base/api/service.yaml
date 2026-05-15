@@ -1,0 +1,17 @@
+# ClusterIP — only the proxy and (debug) port-forwards reach this.
+# Public traffic comes via Ingress → proxy → here.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: scholia-api
+  labels:
+    app.kubernetes.io/name: scholia-api
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: scholia-api
+  ports:
+    - name: http
+      port: 4000
+      targetPort: 4000

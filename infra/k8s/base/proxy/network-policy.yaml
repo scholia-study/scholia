@@ -1,0 +1,44 @@
+# Restrict the proxy's PURGE port (8080) to traffic from scholia-api
+# pods only. Defense-in-depth: the port is already ClusterIP-only
+# (not exposed by the Ingress), so external traffic can't reach it.
+# This policy makes "no PURGE from outside Rust" an enforceable
+# invariant in the cluster's network fabric, rather than a fact about
+# which Service is exposed where.
+#
+# Default for k3s is "no NetworkPolicy active" => everything is
+# allowed. Adding ANY NetworkPolicy that selects a pod activates
+# default-deny for that pod's ingress; we then explicitly allow what
+# we want.
+#
+# Note: NetworkPolicy is enforced by the CNI. k3s ships with flannel
+# by default, which historically didn't enforce NetworkPolicies. As of
+# recent k3s versions, flannel + kube-router or a built-in enforcer
+# does. If a policy seems to have no effect, check:
+#   kubectl -n kube-system get pods | grep -i 'kube-router\|policy'
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: scholia-proxy-purge
+  labels:
+    app.kubernetes.io/name: scholia-proxy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: scholia-proxy
+  policyTypes:
+    - Ingress
+  ingress:
+    # Public HTTP (80) — anyone can talk to it (Ingress routes the
+    # public).
+    - ports:
+        - port: 80
+          protocol: TCP
+    # PURGE (8080) — scholia-api pods only.
+    - ports:
+        - port: 8080
+          protocol: TCP
+      from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: scholia-api
