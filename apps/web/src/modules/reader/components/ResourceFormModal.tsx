@@ -28,17 +28,96 @@ import { SourceFormModal } from "../../source";
 const RESOURCE_TYPES = ["verbatim", "paraphrase", "allusion"] as const;
 const VERBATIM_KINDS = ["entirety", "fragmentary"] as const;
 
+type ResourceType = (typeof RESOURCE_TYPES)[number];
+
 interface ResourceFormModalProps {
     open: boolean;
     onClose: () => void;
     bookSlug: string;
     mode: "create" | "edit";
     initialData?: ResourceResponse;
-    defaultType?: "verbatim" | "paraphrase" | "allusion";
+    defaultType?: ResourceType;
     defaultSentenceStart?: number;
     defaultSentenceEnd?: number;
     defaultSentenceKind?: string;
     isAdmin?: boolean;
+}
+
+interface InitialFormState {
+    resourceType: string;
+    verbatimKind: string;
+    sentenceStart: string;
+    sentenceEnd: string;
+    sentenceKind: string;
+    sourceId: string;
+    sourceLabel: string;
+    sourcePageStart: string;
+    sourcePageEnd: string;
+    sourceLocationFreeform: string;
+    useFreeformLocation: boolean;
+    quotedText: string;
+    editorNote: string;
+    isFeatured: boolean;
+    adminNotes: string;
+}
+
+interface FormDefaults {
+    type?: ResourceType;
+    sentenceStart?: number;
+    sentenceEnd?: number;
+    sentenceKind?: string;
+}
+
+function getInitialFormState(
+    initialData: ResourceResponse | undefined,
+    defaults: FormDefaults,
+): InitialFormState {
+    if (initialData) {
+        return {
+            resourceType: initialData.resource_type,
+            verbatimKind: initialData.verbatim_kind ?? "entirety",
+            sentenceStart: String(initialData.anchor_sentence_start_number),
+            sentenceEnd:
+                initialData.anchor_sentence_end_number != null
+                    ? String(initialData.anchor_sentence_end_number)
+                    : "",
+            sentenceKind: initialData.sentence_kind,
+            sourceId: initialData.source?.id ?? "",
+            sourceLabel: initialData.source?.title ?? "",
+            sourcePageStart:
+                initialData.source_page_start != null
+                    ? String(initialData.source_page_start)
+                    : "",
+            sourcePageEnd:
+                initialData.source_page_end != null
+                    ? String(initialData.source_page_end)
+                    : "",
+            sourceLocationFreeform: initialData.source_location_freeform ?? "",
+            useFreeformLocation: !!initialData.source_location_freeform,
+            quotedText: initialData.quoted_text ?? "",
+            editorNote: initialData.editor_note ?? "",
+            isFeatured: initialData.is_featured,
+            adminNotes: initialData.admin_notes ?? "",
+        };
+    }
+    return {
+        resourceType: defaults.type ?? "verbatim",
+        verbatimKind: "entirety",
+        sentenceStart: String(defaults.sentenceStart ?? ""),
+        sentenceEnd:
+            defaults.sentenceEnd != null ? String(defaults.sentenceEnd) : "",
+        sentenceKind: defaults.sentenceKind ?? "body",
+        sourceId: "",
+        sourceLabel: "",
+        sourcePageStart: "",
+        sourcePageEnd: "",
+        sourceLocationFreeform: "",
+        useFreeformLocation: false,
+        quotedText: "",
+        editorNote: "",
+        isFeatured: false,
+        adminNotes: "",
+    };
 }
 
 export function ResourceFormModal({
@@ -54,39 +133,23 @@ export function ResourceFormModal({
     isAdmin,
 }: ResourceFormModalProps) {
     const isEdit = mode === "edit" && initialData;
+    const initial = getInitialFormState(isEdit ? initialData : undefined, {
+        type: defaultType,
+        sentenceStart: defaultSentenceStart,
+        sentenceEnd: defaultSentenceEnd,
+        sentenceKind: defaultSentenceKind,
+    });
 
     // Form state
-    const [resourceType, setResourceType] = useState(
-        isEdit ? initialData.resource_type : (defaultType ?? "verbatim"),
-    );
-    const [verbatimKind, setVerbatimKind] = useState(
-        isEdit ? (initialData.verbatim_kind ?? "entirety") : "entirety",
-    );
-    const [sentenceStart, setSentenceStart] = useState(
-        String(
-            isEdit
-                ? initialData.anchor_sentence_start_number
-                : (defaultSentenceStart ?? ""),
-        ),
-    );
-    const [sentenceEnd, setSentenceEnd] = useState(
-        isEdit && initialData.anchor_sentence_end_number != null
-            ? String(initialData.anchor_sentence_end_number)
-            : defaultSentenceEnd != null
-              ? String(defaultSentenceEnd)
-              : "",
-    );
-    const [sentenceKind, setSentenceKind] = useState(
-        isEdit ? initialData.sentence_kind : (defaultSentenceKind ?? "body"),
-    );
+    const [resourceType, setResourceType] = useState(initial.resourceType);
+    const [verbatimKind, setVerbatimKind] = useState(initial.verbatimKind);
+    const [sentenceStart, setSentenceStart] = useState(initial.sentenceStart);
+    const [sentenceEnd, setSentenceEnd] = useState(initial.sentenceEnd);
+    const [sentenceKind, setSentenceKind] = useState(initial.sentenceKind);
 
     // Source
-    const [sourceId, setSourceId] = useState(
-        isEdit ? (initialData.source?.id ?? "") : "",
-    );
-    const [sourceLabel, setSourceLabel] = useState(
-        isEdit ? (initialData.source?.title ?? "") : "",
-    );
+    const [sourceId, setSourceId] = useState(initial.sourceId);
+    const [sourceLabel, setSourceLabel] = useState(initial.sourceLabel);
     const [sourceSearch, setSourceSearch] = useState("");
     const debouncedSourceSearch = useDebouncedValue(sourceSearch);
     const { data: sourceResults } = useSearchSources(
@@ -96,35 +159,21 @@ export function ResourceFormModal({
 
     // Source location
     const [sourcePageStart, setSourcePageStart] = useState(
-        isEdit && initialData.source_page_start != null
-            ? String(initialData.source_page_start)
-            : "",
+        initial.sourcePageStart,
     );
-    const [sourcePageEnd, setSourcePageEnd] = useState(
-        isEdit && initialData.source_page_end != null
-            ? String(initialData.source_page_end)
-            : "",
-    );
+    const [sourcePageEnd, setSourcePageEnd] = useState(initial.sourcePageEnd);
     const [sourceLocationFreeform, setSourceLocationFreeform] = useState(
-        isEdit ? (initialData.source_location_freeform ?? "") : "",
+        initial.sourceLocationFreeform,
     );
     const [useFreeformLocation, setUseFreeformLocation] = useState(
-        isEdit ? !!initialData.source_location_freeform : false,
+        initial.useFreeformLocation,
     );
 
     // Content
-    const [quotedText, setQuotedText] = useState(
-        isEdit ? (initialData.quoted_text ?? "") : "",
-    );
-    const [editorNote, setEditorNote] = useState(
-        isEdit ? (initialData.editor_note ?? "") : "",
-    );
-    const [isFeatured, setIsFeatured] = useState(
-        isEdit ? initialData.is_featured : false,
-    );
-    const [adminNotes, setAdminNotes] = useState(
-        isEdit ? (initialData.admin_notes ?? "") : "",
-    );
+    const [quotedText, setQuotedText] = useState(initial.quotedText);
+    const [editorNote, setEditorNote] = useState(initial.editorNote);
+    const [isFeatured, setIsFeatured] = useState(initial.isFeatured);
+    const [adminNotes, setAdminNotes] = useState(initial.adminNotes);
 
     // Source creation modal
     const [sourceModalOpen, setSourceModalOpen] = useState(false);
