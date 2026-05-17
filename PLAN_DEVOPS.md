@@ -601,19 +601,43 @@ regions). Not infrastructure, but worth tracking.
     `https://dev.scholia.study/api/auth/github/callback`).
 - [ ] Write `infra/k8s/overlays/prod/` (mirror of dev with hostname
       `scholia.study`, `letsencrypt-prod` issuer, prod SOPS recipient)
-- [ ] **Dockerfile for `scholia-api`** — doesn't exist yet. Multi-stage
-      Rust build (`rust:bookworm` builder + `debian:bookworm-slim`
-      runtime). Must include `default-run = "api"` working and the
-      `api migrate` subcommand reachable as the binary's CLI.
-      Production build needs committed `.sqlx/` offline metadata
-      (`cargo sqlx prepare`) so the build doesn't require a live DB.
-- [ ] **Dockerfile for `scholia-web`** — doesn't exist yet. Multi-stage
-      Node build (`node:22-alpine` builder + runtime). Builds the
-      TanStack Start Nitro output and runs `pnpm --filter @apps/web start`.
+- [x] **Dockerfile for `scholia-api`** — `apps/api/Dockerfile`.
+      Multi-stage cargo-chef build (Rust 1.91-bookworm builder →
+      `debian:bookworm-slim` runtime, libssl3 + ca-certificates, non-
+      root uid 10001). Reads committed `.sqlx/` offline metadata via
+      `SQLX_OFFLINE=true`, so the build needs no live DB. Image is
+      ~148 MB. `scripts/db_prepare.sh` + `pnpm db:prepare` regenerate
+      `.sqlx/` against the local DB after any sqlx query change.
+- [x] **Dockerfile for `scholia-web`** — `apps/web/Dockerfile`.
+      Multi-stage node:22-alpine + corepack/pnpm. Separate `deps`
+      (full install) and `prod-deps` (`--prod`) stages so the runtime
+      only carries production deps. `--ignore-scripts` everywhere to
+      sidestep the root `prepare: lefthook install` lifecycle hook.
+      Runtime invokes srvx directly (no pnpm in the runtime image).
+      Image is ~455 MB — mostly the React+MUI+@mdxeditor stack itself.
+      Five deps moved to devDependencies as part of this work:
+      `@tailwindcss/vite`, `@tanstack/react-devtools`,
+      `@tanstack/react-router-devtools`, `@tanstack/router-plugin`,
+      `nitro` (the last verified unreferenced at runtime).
 - [x] **Dockerfile for `scholia-proxy`** — already at `apps/proxy/Dockerfile`
-- [ ] GitHub Actions workflow building all three images, pushing to
-      `ghcr.io/filipniklas/scholia-{api,web,proxy}`, on push-to-main
-      (with `:main-<sha>` tags) and tag pushes (with `:vX.Y.Z` tags)
+- [x] **`.sqlx/` offline metadata committed** (144 query files).
+- [x] **`.dockerignore` at repo root** — keeps build context lean
+      across api + web (excludes target, node_modules, infra, docs,
+      assets, terraform state, env files).
+- [x] **GitHub Actions workflow** — `.github/workflows/build.yml`
+      builds api + web + proxy in a matrix, pushes to
+      `ghcr.io/<owner>/scholia-{api,web,proxy}` on push-to-main and
+      manual dispatch. Tags: mutable `main` + immutable
+      `main-<short-sha>` (no semver — Scholia is a deployed app, not
+      a library). Per-service build context (proxy uses
+      `apps/proxy/`, api+web use repo root). Cache: `type=gha`,
+      scoped per service. `fail-fast: true` so partial pushes don't
+      leave the three images out of sync. Top-level `paths:` filter
+      skips builds when nothing image-relevant changed (docs, infra,
+      *.md). `concurrency.cancel-in-progress: true` so a second push
+      to the same ref cancels the in-flight build.
+- [ ] Make the three GHCR packages public (or set retention on the
+      private ones). Defaults to inherit-from-repo on first push.
 - [ ] Deploy to dev:
   - `source ~/.config/scholia-infra.env` (for `SOPS_AGE_KEY_FILE`)
   - `sops -d infra/k8s/overlays/dev/secrets/postgres.yaml | kubectl apply -f -`
@@ -634,21 +658,46 @@ regions). Not infrastructure, but worth tracking.
 
 ### Pickup for next session
 
-When resuming the cluster bringup, the immediate next chunk is:
+Images are building and pushing to GHCR. The remaining work is the
+first deploy to dev plus the validation tail.
 
-1. Write `apps/api/Dockerfile` (multi-stage Rust, includes
-   `cargo sqlx prepare` step or relies on committed `.sqlx/`).
-2. Write `apps/web/Dockerfile` (multi-stage Node, Nitro output +
-   `pnpm start`).
-3. Commit `.sqlx/` offline metadata so prod builds don't need a live DB.
-4. `.github/workflows/build-images.yml` — three image builds, ghcr.io
-   push, branch + tag triggers.
-5. Generate a personal access token / use `GITHUB_TOKEN` for ghcr push.
-6. First push to main → first images on ghcr.io.
-7. Deploy sequence above.
+1. **Make GHCR packages public** (or set retention). After the first
+   workflow run there'll be three packages under
+   `github.com/<owner>?tab=packages`. Per-package settings → change
+   visibility to public. Sidesteps quota concerns forever.
+2. **Wire image pull auth** if packages stay private — create a
+   GHCR-scoped PAT, add as a `regcred` Secret in the `scholia`
+   namespace, reference it via `imagePullSecrets` in the Deployments.
+   Skip if packages are public.
+3. **Update base Deployments** to reference the real images:
+   `ghcr.io/<owner>/scholia-api:main` and `…/scholia-web:main`.
+   (Currently the base manifests still have placeholders or local
+   refs — check `infra/k8s/base/{api,web}/deployment.yaml`.)
+4. **First deploy**:
+   - `source ~/.config/scholia-infra.env`
+   - `sops -d infra/k8s/overlays/dev/secrets/postgres.yaml | kubectl apply -f -`
+   - `sops -d infra/k8s/overlays/dev/secrets/api.yaml | kubectl apply -f -`
+   - `kubectl apply -k infra/k8s/overlays/dev/`
+   - `kubectl get pods -n scholia -w` until all are Ready
+5. **Debug the inevitable**. Common first-deploy snags:
+   - api init container racing Postgres readiness (add a readiness
+     gate or retry loop in the migrate init container).
+   - `AppConfig::from_env` panicking on a missing env var — `sops`
+     edit the api Secret, re-apply, restart the api Deployment.
+   - HTTP-01 challenge stuck waiting for Traefik routing to settle.
+   - DATABASE_URL composition order (env vars referenced by `$(VAR)`
+     must be listed before the var that uses them in the Deployment).
+6. **End-to-end validation on dev** (per § 6.3):
+   - Anonymous chapter pageviews: `X-Cache-Status: MISS` then `HIT`.
+   - Authenticated requests bypass cache.
+   - PURGE after an article publish invalidates the listing.
+   - Stripe test charge → role flips → cancellation flow.
+7. **Flip dev Ingress's cluster-issuer** from `letsencrypt-staging`
+   to `letsencrypt-prod` once HTTP-01 is known-good.
+8. Eventually: prod cluster, prod overlay, Stripe live keys, soft launch.
 
-Estimate: 1-2 hours for Dockerfiles + workflow; first deploy will
-surface its own debugging tail.
+Estimate: 30-90 min for steps 1-4 if smooth; step 5 (debugging) is
+the wildcard.
 
 ### v1 — ArgoCD + Sentry
 
