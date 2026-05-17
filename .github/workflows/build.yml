@@ -3,6 +3,20 @@ name: Build
 on:
     push:
         branches: [main]
+        # Skip pushes that don't touch any file that ends up in an
+        # image. Docs, infra/k8s manifests, terraform, plan files, etc.
+        # are deployed/applied out-of-band and don't need a rebuild.
+        paths:
+            - "apps/**"
+            - "packages/**"
+            - "db/migrations/**"
+            - ".sqlx/**"
+            - "Cargo.toml"
+            - "Cargo.lock"
+            - "package.json"
+            - "pnpm-lock.yaml"
+            - "pnpm-workspace.yaml"
+            - ".github/workflows/build.yml"
     workflow_dispatch:
 
 permissions:
@@ -14,17 +28,23 @@ jobs:
         name: Build ${{ matrix.service }}
         runs-on: ubuntu-latest
         strategy:
-            fail-fast: false
+            fail-fast: true
             matrix:
-                service: [api, web, proxy]
+                include:
+                    - service: api
+                      context: .
+                    - service: web
+                      context: .
+                    - service: proxy
+                      context: apps/proxy
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v3
+              uses: docker/setup-buildx-action@v4
 
             - name: Log in to GHCR
-              uses: docker/login-action@v3
+              uses: docker/login-action@v4
               with:
                   registry: ghcr.io
                   username: ${{ github.actor }}
@@ -46,9 +66,9 @@ jobs:
             # (web) survive across runs. Scoped per service so the three
             # matrix jobs don't trample each other.
             - name: Build and push
-              uses: docker/build-push-action@v6
+              uses: docker/build-push-action@v7
               with:
-                  context: .
+                  context: ${{ matrix.context }}
                   file: apps/${{ matrix.service }}/Dockerfile
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
