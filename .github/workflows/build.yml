@@ -4,8 +4,7 @@ on:
     push:
         branches: [main]
         # Skip pushes that don't touch any file that ends up in an
-        # image. Docs, infra/k8s manifests, terraform, plan files, etc.
-        # are deployed/applied out-of-band and don't need a rebuild.
+        # image. Later we'll work to tighten this.
         paths:
             - "apps/**"
             - "packages/**"
@@ -22,6 +21,10 @@ on:
 permissions:
     contents: read
     packages: write
+
+concurrency:
+    group: build-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
     build:
@@ -54,7 +57,7 @@ jobs:
             # set of OCI tags + labels.
             - name: Extract metadata
               id: meta
-              uses: docker/metadata-action@v5
+              uses: docker/metadata-action@v6
               with:
                   images: ghcr.io/${{ github.repository_owner }}/scholia-${{ matrix.service }}
                   tags: |
