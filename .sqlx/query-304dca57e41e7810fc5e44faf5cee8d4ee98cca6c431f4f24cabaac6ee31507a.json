@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO quotation_note_tags (note_id, tag_id) VALUES ($1, $2)\n               ON CONFLICT DO NOTHING",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "304dca57e41e7810fc5e44faf5cee8d4ee98cca6c431f4f24cabaac6ee31507a"
+}

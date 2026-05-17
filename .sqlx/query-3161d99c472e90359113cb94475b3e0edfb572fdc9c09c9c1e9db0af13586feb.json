@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT t.id, t.name, t.slug\n           FROM topics t\n           JOIN article_topics at2 ON at2.topic_id = t.id\n           WHERE at2.article_id = $1\n           ORDER BY t.name",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, false]
+    },
+    "hash": "3161d99c472e90359113cb94475b3e0edfb572fdc9c09c9c1e9db0af13586feb"
+}

@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "DELETE FROM source_persons\n           WHERE source_id = $1 AND person_id = $2 AND role = $3::source_person_role",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "source_person_role",
+                        "kind": {
+                            "Enum": [
+                                "author",
+                                "editor",
+                                "translator",
+                                "contributor"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "nullable": []
+    },
+    "hash": "db249e5c1650c101d703316469053ea0fd267a823fd8613703c233acf708c1d6"
+}

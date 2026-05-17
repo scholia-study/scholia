@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "DELETE FROM article_topics WHERE article_id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "e6832e5bbc97d1345bf05c2c9c66775eeeaea2642bc74a39db07a27ac6575702"
+}

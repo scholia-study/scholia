@@ -1,0 +1,80 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT\n               tn.id,\n               tn.parent_id,\n               tn.source_ref,\n               tn.slug,\n               tn.label,\n               tn.label_html,\n               tn.depth,\n               tn.sort_order,\n               EXISTS(SELECT 1 FROM content_blocks cb WHERE cb.node_id = tn.id) AS \"has_content!\",\n               tn.source_node_id,\n               tn.source_id\n           FROM toc_nodes tn\n           JOIN books b ON b.id = tn.book_id\n           WHERE b.slug = $1\n           ORDER BY tn.sort_order",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "parent_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "source_ref",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "label",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "label_html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "depth",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 7,
+                "name": "sort_order",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 8,
+                "name": "has_content!",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 9,
+                "name": "source_node_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 10,
+                "name": "source_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            null,
+            true,
+            true
+        ]
+    },
+    "hash": "339578bc16af022980dc00f11cb1610b16aae5ad5cd4c7d115eaabbc330284ae"
+}

@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE articles\n           SET status = 'published',\n               published_at = COALESCE(published_at, now()),\n               updated_at = now()\n           WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "128e39e793bee7a58147782314a4491025851185cba72e115beab0fbbbc133ec"
+}

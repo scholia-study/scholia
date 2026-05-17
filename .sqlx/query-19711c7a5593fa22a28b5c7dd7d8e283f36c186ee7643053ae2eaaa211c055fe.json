@@ -1,0 +1,33 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, slug, language, source_id FROM books",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "language",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "source_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": []
+        },
+        "nullable": [false, false, false, false]
+    },
+    "hash": "19711c7a5593fa22a28b5c7dd7d8e283f36c186ee7643053ae2eaaa211c055fe"
+}

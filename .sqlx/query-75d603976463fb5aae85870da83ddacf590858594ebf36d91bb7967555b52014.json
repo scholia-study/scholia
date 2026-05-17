@@ -1,0 +1,53 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT sp.source_id, sp.person_id, p.name, p.sort_name,\n                  sp.role::TEXT AS \"role!\", sp.position,\n                  p.created_by AS \"person_created_by!\", p.protected AS \"person_protected!\"\n           FROM source_persons sp\n           JOIN persons p ON p.id = sp.person_id\n           WHERE sp.source_id = ANY($1)\n           ORDER BY sp.position",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "source_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "person_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "sort_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "role!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "position",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 6,
+                "name": "person_created_by!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 7,
+                "name": "person_protected!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, false, false, true, null, false, false, false]
+    },
+    "hash": "75d603976463fb5aae85870da83ddacf590858594ebf36d91bb7967555b52014"
+}

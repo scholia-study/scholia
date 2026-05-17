@@ -1,0 +1,23 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, node_id FROM sentences\n                   WHERE book_id = $1 AND sentence_number = $2 AND block_id IS NOT NULL",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "node_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Int4"]
+        },
+        "nullable": [false, false]
+    },
+    "hash": "8f13de96fbcfb24c545055b3aa52aa607ba0e3f9e23d13e0cf76aeafc99a44bd"
+}

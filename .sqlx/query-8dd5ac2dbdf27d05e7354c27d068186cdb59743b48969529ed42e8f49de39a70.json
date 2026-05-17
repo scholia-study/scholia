@@ -1,0 +1,33 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT b.slug AS \"book_slug!\", COALESCE(bs.title_display, bs.title) AS \"book_title!\",\n                  n.slug AS \"node_slug!\", n.label AS \"node_label!\"\n           FROM sentences s\n           JOIN books cur ON cur.id = s.book_id\n           JOIN sentences src ON src.id = s.source_sentence_start_id\n           JOIN books b ON b.id = src.book_id\n           JOIN sources bs ON bs.id = b.source_id\n           JOIN toc_nodes n ON n.id = src.node_id\n           WHERE cur.slug = $1\n             AND s.sentence_number >= $2\n             AND s.sentence_number <= $3\n           LIMIT 1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "book_slug!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 1,
+                "name": "book_title!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "node_slug!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "node_label!",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Int4", "Int4"]
+        },
+        "nullable": [false, null, false, false]
+    },
+    "hash": "8dd5ac2dbdf27d05e7354c27d068186cdb59743b48969529ed42e8f49de39a70"
+}

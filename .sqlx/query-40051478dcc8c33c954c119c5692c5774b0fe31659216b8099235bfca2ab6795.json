@@ -1,0 +1,74 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, block_id AS \"block_id!\", position, sentence_number, text, html, original_text, original_html,\n                  source_sentence_start_id, source_sentence_end_id\n           FROM sentences\n           WHERE node_id = $1 AND block_id IS NOT NULL\n           ORDER BY block_id, position",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "block_id!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "position",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 3,
+                "name": "sentence_number",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 4,
+                "name": "text",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "original_text",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "original_html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "source_sentence_start_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 9,
+                "name": "source_sentence_end_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [
+            false,
+            true,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true,
+            true
+        ]
+    },
+    "hash": "40051478dcc8c33c954c119c5692c5774b0fe31659216b8099235bfca2ab6795"
+}

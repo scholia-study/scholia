@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE articles SET title = $2, slug = $3, updated_at = now()\n                   WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Text", "Text"]
+        },
+        "nullable": []
+    },
+    "hash": "a5481152c42fe68f50256a011234a4531244099580c29f7f454d84c8024cd374"
+}

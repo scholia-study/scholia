@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT qnt.note_id, t.id AS tag_id, t.name AS tag_name\n           FROM quotation_note_tags qnt\n           JOIN tags t ON t.id = qnt.tag_id\n           WHERE qnt.note_id = ANY($1)\n           ORDER BY t.name",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "note_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "tag_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "tag_name",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, false, false]
+    },
+    "hash": "9b967844dd16747e290ebebafdbd1e907a369211b783a302a815a4a7ffe5c73b"
+}

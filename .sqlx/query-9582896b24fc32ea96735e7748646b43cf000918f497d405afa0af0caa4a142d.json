@@ -1,0 +1,55 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO resources (\n               book_id, resource_type, anchor_node_id,\n               anchor_sentence_start_id, anchor_sentence_end_id,\n               sentence_kind, source_id,\n               source_page_start, source_page_end, source_location_freeform,\n               verbatim_kind, quoted_text, editor_note, is_featured, admin_notes\n           ) VALUES (\n               $1, $2::resource_type, $3, $4, $5,\n               $6::sentence_kind, $7, $8, $9, $10,\n               $11::verbatim_kind, $12, $13, $14, $15\n           )\n           RETURNING id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "resource_type",
+                        "kind": {
+                            "Enum": ["verbatim", "paraphrase", "allusion"]
+                        }
+                    }
+                },
+                "Uuid",
+                "Uuid",
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "sentence_kind",
+                        "kind": {
+                            "Enum": ["body", "footnote"]
+                        }
+                    }
+                },
+                "Uuid",
+                "Int4",
+                "Int4",
+                "Text",
+                {
+                    "Custom": {
+                        "name": "verbatim_kind",
+                        "kind": {
+                            "Enum": ["entirety", "fragmentary"]
+                        }
+                    }
+                },
+                "Text",
+                "Text",
+                "Bool",
+                "Text"
+            ]
+        },
+        "nullable": [false]
+    },
+    "hash": "9582896b24fc32ea96735e7748646b43cf000918f497d405afa0af0caa4a142d"
+}

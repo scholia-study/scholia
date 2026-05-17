@@ -1,0 +1,43 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset,\n                  fp.storage_key AS \"storage_key?\"\n           FROM page_markers pm\n           JOIN reference_systems rs ON rs.id = pm.system_id\n           LEFT JOIN facsimile_pages fp\n               ON fp.reference_system_id = pm.system_id\n               AND fp.ref_value = pm.ref_value\n           WHERE pm.sentence_id = ANY(\n               SELECT s.id FROM sentences s\n               WHERE s.block_id IS NOT NULL AND s.block_id = ANY(\n                   SELECT id FROM content_blocks WHERE node_id = ANY($1)\n               )\n           )\n           ORDER BY pm.sort_order",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "sentence_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "system_slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "ref_value",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "sort_order",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 4,
+                "name": "char_offset",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 5,
+                "name": "storage_key?",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, false, false, false, true, false]
+    },
+    "hash": "c2d50a1d5d56ec45a1697484b52890f66d294eeea19f4d8621453d8033560469"
+}

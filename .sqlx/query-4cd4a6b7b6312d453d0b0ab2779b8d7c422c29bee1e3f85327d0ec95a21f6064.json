@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\"\n           FROM feedback\n           WHERE status::TEXT = ANY($1)",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["TextArray"]
+        },
+        "nullable": [null]
+    },
+    "hash": "4cd4a6b7b6312d453d0b0ab2779b8d7c422c29bee1e3f85327d0ec95a21f6064"
+}

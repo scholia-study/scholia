@@ -1,0 +1,38 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, title, slug, status::TEXT AS \"status!\", user_id\n           FROM articles\n           WHERE markdown ILIKE $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "status!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "user_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [false, false, false, null, false]
+    },
+    "hash": "7b6c80f96041feb4e1d534f8bd7880661200e7a33d058e35ae65e798575b09df"
+}

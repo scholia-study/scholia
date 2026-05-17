@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\"\n           FROM articles\n           WHERE user_id = $1 AND status = 'published'",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "009da9f9a47d93d35778e6baa721220bd65cbf6702a174132eb0da016fe93157"
+}

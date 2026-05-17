@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "DELETE FROM quotation_note_tags WHERE note_id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "b23c7f205f0900226d14e2b1e57681118ec1e0c40012100310d7cfdcb3694a10"
+}

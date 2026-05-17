@@ -1,0 +1,80 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT a.id, a.title, a.slug, a.description,\n                  a.status::TEXT AS \"status!\",\n                  u.id AS \"author_user_id!\",\n                  u.display_name AS \"author_display_name!\",\n                  u.handle AS \"author_handle?\",\n                  a.published_at, a.created_at, a.updated_at\n           FROM articles a\n           JOIN users u ON u.id = a.user_id\n           WHERE a.status = 'published'\n             AND ($1::TEXT IS NULL OR EXISTS (\n                 SELECT 1 FROM article_topics at2\n                 JOIN topics t ON t.id = at2.topic_id\n                 WHERE at2.article_id = a.id AND t.slug = $1\n             ))\n             AND ($2::TEXT IS NULL OR EXISTS (\n                 SELECT 1 FROM article_editorial_labels ael\n                 JOIN editorial_labels el ON el.id = ael.label_id\n                 WHERE ael.article_id = a.id AND el.slug = $2\n             ))\n           ORDER BY a.published_at DESC NULLS LAST\n           LIMIT $3 OFFSET $4",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "description",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "status!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "author_user_id!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 6,
+                "name": "author_display_name!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "author_handle?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "published_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 9,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 10,
+                "name": "updated_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Text", "Int8", "Int8"]
+        },
+        "nullable": [
+            false,
+            false,
+            false,
+            true,
+            null,
+            false,
+            false,
+            true,
+            true,
+            false,
+            false
+        ]
+    },
+    "hash": "7e1847cea97728356e0ef148e942f05cea363e677f40761fb6e11482a672e7b2"
+}

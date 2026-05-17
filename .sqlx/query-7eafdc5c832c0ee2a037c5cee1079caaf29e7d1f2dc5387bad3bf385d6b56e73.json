@@ -1,0 +1,38 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO persons (name, sort_name, created_by)\n           VALUES ($1, $2, $3)\n           RETURNING id, name, sort_name, created_by AS \"created_by!\", protected",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "sort_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "created_by!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 4,
+                "name": "protected",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Text", "Uuid"]
+        },
+        "nullable": [false, false, true, false, false]
+    },
+    "hash": "7eafdc5c832c0ee2a037c5cee1079caaf29e7d1f2dc5387bad3bf385d6b56e73"
+}

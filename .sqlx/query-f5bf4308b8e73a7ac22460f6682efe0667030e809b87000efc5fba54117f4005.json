@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "\n        WITH target AS (\n            SELECT path FROM toc_nodes WHERE id = $2 AND book_id = $1\n        )\n        SELECT anc.source_id AS \"source_id!\"\n        FROM toc_nodes anc, target\n        WHERE anc.book_id = $1\n          AND anc.path @> target.path\n          AND anc.source_id IS NOT NULL\n        ORDER BY anc.depth DESC\n        LIMIT 1\n        ",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "source_id!",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": [true]
+    },
+    "hash": "f5bf4308b8e73a7ac22460f6682efe0667030e809b87000efc5fba54117f4005"
+}

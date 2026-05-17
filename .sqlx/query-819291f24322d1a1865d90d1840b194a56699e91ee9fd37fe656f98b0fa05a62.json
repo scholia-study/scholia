@@ -1,0 +1,122 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT DISTINCT s.id, s.source_type::TEXT AS \"source_type!\", s.title, s.title_display,\n                  s.publication_year, s.publisher, s.isbn, s.doi, s.edition, s.volume,\n                  s.journal_name, s.url, s.page_start, s.page_end,\n                  s.parent_source_id, s.translation_of_id,\n                  s.created_by AS \"created_by!\", s.protected\n           FROM sources s\n           LEFT JOIN source_persons sp ON sp.source_id = s.id\n           LEFT JOIN persons p ON p.id = sp.person_id\n           WHERE s.title ILIKE $1 OR p.name ILIKE $1\n           ORDER BY s.title\n           LIMIT 20",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "source_type!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "title_display",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "publication_year",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 5,
+                "name": "publisher",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "isbn",
+                "type_info": "TextArray"
+            },
+            {
+                "ordinal": 7,
+                "name": "doi",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "edition",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 9,
+                "name": "volume",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 10,
+                "name": "journal_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 11,
+                "name": "url",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 12,
+                "name": "page_start",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 13,
+                "name": "page_end",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 14,
+                "name": "parent_source_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 15,
+                "name": "translation_of_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 16,
+                "name": "created_by!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 17,
+                "name": "protected",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [
+            false,
+            null,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false
+        ]
+    },
+    "hash": "819291f24322d1a1865d90d1840b194a56699e91ee9fd37fe656f98b0fa05a62"
+}

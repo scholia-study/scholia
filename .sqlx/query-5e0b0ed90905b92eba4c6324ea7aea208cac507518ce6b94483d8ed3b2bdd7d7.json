@@ -1,0 +1,48 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order, tn.source_node_id\n               FROM toc_nodes tn\n               JOIN books b ON b.id = tn.book_id\n               WHERE b.slug = $1 AND tn.sort_order < $2\n               ORDER BY tn.sort_order DESC\n               LIMIT $3",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "source_ref",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "label",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "depth",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 5,
+                "name": "sort_order",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 6,
+                "name": "source_node_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Int4", "Int8"]
+        },
+        "nullable": [false, false, false, false, false, false, true]
+    },
+    "hash": "5e0b0ed90905b92eba4c6324ea7aea208cac507518ce6b94483d8ed3b2bdd7d7"
+}

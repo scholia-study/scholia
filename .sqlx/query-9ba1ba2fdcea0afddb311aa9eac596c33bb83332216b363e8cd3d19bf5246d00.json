@@ -1,0 +1,23 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT\n               COUNT(*) FILTER (WHERE status != 'archived') AS \"active?\",\n               COUNT(*) FILTER (WHERE status = 'archived')  AS \"archived?\"\n           FROM articles\n           WHERE user_id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "active?",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 1,
+                "name": "archived?",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [null, null]
+    },
+    "hash": "9ba1ba2fdcea0afddb311aa9eac596c33bb83332216b363e8cd3d19bf5246d00"
+}

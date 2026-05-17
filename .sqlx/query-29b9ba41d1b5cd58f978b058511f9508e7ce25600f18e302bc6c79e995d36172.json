@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, title,\n                  CASE WHEN parent_source_id = $1 THEN 'parent' ELSE 'translation' END\n                  AS \"relation!\"\n           FROM sources\n           WHERE parent_source_id = $1 OR translation_of_id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "relation!",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, null]
+    },
+    "hash": "29b9ba41d1b5cd58f978b058511f9508e7ce25600f18e302bc6c79e995d36172"
+}

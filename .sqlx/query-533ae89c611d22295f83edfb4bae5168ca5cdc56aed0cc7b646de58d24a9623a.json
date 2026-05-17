@@ -1,0 +1,43 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, article_id, article_title,\n                  author_display_name, author_sort_name,\n                  source_published_at\n           FROM article_quotations\n           WHERE id = ANY($1)",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "article_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "article_title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "author_display_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "author_sort_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "source_published_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, true, false, false, true, true]
+    },
+    "hash": "533ae89c611d22295f83edfb4bae5168ca5cdc56aed0cc7b646de58d24a9623a"
+}

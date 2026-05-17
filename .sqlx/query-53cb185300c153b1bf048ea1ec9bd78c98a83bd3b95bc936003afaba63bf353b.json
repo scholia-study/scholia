@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT slug FROM articles WHERE id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "slug",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false]
+    },
+    "hash": "53cb185300c153b1bf048ea1ec9bd78c98a83bd3b95bc936003afaba63bf353b"
+}

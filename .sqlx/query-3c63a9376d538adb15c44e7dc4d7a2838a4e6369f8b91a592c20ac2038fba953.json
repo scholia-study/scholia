@@ -1,0 +1,38 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT b.id, b.slug, b.language,\n                      COALESCE(s.title_display, s.title) AS \"title!\",\n                      STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author\n               FROM books b\n               JOIN sources s ON s.id = b.source_id\n               LEFT JOIN source_persons sp ON sp.source_id = s.id AND sp.role = 'author'\n               LEFT JOIN persons p ON p.id = sp.person_id\n               WHERE b.source_id = $1\n               GROUP BY b.id, b.slug, b.language, s.title_display, s.title\n               LIMIT 1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "language",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "title!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "author",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, false, null, null]
+    },
+    "hash": "3c63a9376d538adb15c44e7dc4d7a2838a4e6369f8b91a592c20ac2038fba953"
+}

@@ -1,0 +1,23 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT user_id, book_id FROM quotations WHERE id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "user_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "book_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false]
+    },
+    "hash": "46fe7098ab715e9fac3fd53dbd511fb56391d3439dcebec66d1a68e6067cb8ca"
+}

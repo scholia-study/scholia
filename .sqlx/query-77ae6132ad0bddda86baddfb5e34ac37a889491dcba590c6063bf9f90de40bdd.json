@@ -1,0 +1,33 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT el.id, el.name, el.slug, el.revokes_on_edit\n           FROM editorial_labels el\n           JOIN article_editorial_labels ael ON ael.label_id = el.id\n           WHERE ael.article_id = $1\n           ORDER BY el.sort_order, el.name",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "revokes_on_edit",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, false, false]
+    },
+    "hash": "77ae6132ad0bddda86baddfb5e34ac37a889491dcba590c6063bf9f90de40bdd"
+}

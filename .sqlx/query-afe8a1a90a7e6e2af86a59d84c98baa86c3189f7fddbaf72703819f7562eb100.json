@@ -1,0 +1,23 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, node_id FROM sentences\n                   WHERE book_id = $1 AND sentence_number = $2 AND footnote_id IS NOT NULL",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "node_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Int4"]
+        },
+        "nullable": [false, false]
+    },
+    "hash": "afe8a1a90a7e6e2af86a59d84c98baa86c3189f7fddbaf72703819f7562eb100"
+}

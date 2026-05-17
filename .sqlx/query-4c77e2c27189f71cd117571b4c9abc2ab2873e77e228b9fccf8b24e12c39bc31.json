@@ -1,0 +1,58 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id,\n                  handle           AS \"handle!\",\n                  display_name,\n                  bio,\n                  title,\n                  location,\n                  website_url,\n                  avatar_url,\n                  created_at\n           FROM users\n           WHERE handle = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "handle!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "display_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "bio",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "location",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "website_url",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "avatar_url",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [false, true, false, true, true, true, true, true, false]
+    },
+    "hash": "4c77e2c27189f71cd117571b4c9abc2ab2873e77e228b9fccf8b24e12c39bc31"
+}

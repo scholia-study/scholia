@@ -1,0 +1,25 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE resources\n               SET anchor_node_id = $2,\n                   anchor_sentence_start_id = $3,\n                   anchor_sentence_end_id = $4,\n                   sentence_kind = COALESCE($5::sentence_kind, sentence_kind),\n                   updated_at = now()\n               WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                "Uuid",
+                "Uuid",
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "sentence_kind",
+                        "kind": {
+                            "Enum": ["body", "footnote"]
+                        }
+                    }
+                }
+            ]
+        },
+        "nullable": []
+    },
+    "hash": "47115a202e4d07727584dfb057ea19c84f40f33d8f2c2a25ab5254b6928793a1"
+}

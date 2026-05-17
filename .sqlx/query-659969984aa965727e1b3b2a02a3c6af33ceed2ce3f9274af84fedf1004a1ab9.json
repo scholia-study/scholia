@@ -1,0 +1,92 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,\n                  a.status::TEXT AS \"status!\",\n                  u.id AS \"author_user_id!\",\n                  u.display_name AS \"author_display_name!\",\n                  u.handle AS \"author_handle?\",\n                  a.published_at, a.created_at, a.updated_at\n           FROM articles a\n           JOIN users u ON u.id = a.user_id\n           WHERE a.id = $1 AND a.status IN ('published', 'archived')",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "description",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "markdown",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "status!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "author_user_id!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 8,
+                "name": "author_display_name!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 9,
+                "name": "author_handle?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 10,
+                "name": "published_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 11,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 12,
+                "name": "updated_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            null,
+            false,
+            false,
+            true,
+            true,
+            false,
+            false
+        ]
+    },
+    "hash": "659969984aa965727e1b3b2a02a3c6af33ceed2ce3f9274af84fedf1004a1ab9"
+}

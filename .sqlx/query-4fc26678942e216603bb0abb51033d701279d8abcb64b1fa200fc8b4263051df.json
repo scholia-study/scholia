@@ -1,0 +1,38 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, source_type::TEXT AS \"source_type!\", title, publication_year, publisher\n               FROM sources\n               WHERE id = ANY($1)",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "source_type!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "publication_year",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 4,
+                "name": "publisher",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, null, false, true, true]
+    },
+    "hash": "4fc26678942e216603bb0abb51033d701279d8abcb64b1fa200fc8b4263051df"
+}

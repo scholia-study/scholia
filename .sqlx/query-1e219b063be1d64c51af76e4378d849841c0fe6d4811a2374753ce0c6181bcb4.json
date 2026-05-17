@@ -1,0 +1,38 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT sp.source_id,\n                  sp.role::TEXT AS \"role!\",\n                  p.id AS person_id,\n                  p.name,\n                  p.sort_name\n           FROM source_persons sp\n           JOIN persons p ON p.id = sp.person_id\n           WHERE sp.source_id = ANY($1)\n           ORDER BY sp.position",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "source_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "role!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "person_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 3,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "sort_name",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, null, false, false, true]
+    },
+    "hash": "1e219b063be1d64c51af76e4378d849841c0fe6d4811a2374753ce0c6181bcb4"
+}

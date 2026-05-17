@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id FROM articles\n           WHERE slug = $1 AND status = 'published'",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [false]
+    },
+    "hash": "45c8dd004678e7fba7d4358b215961e6d26359df19e771c4a6d8f59fe8cc81eb"
+}

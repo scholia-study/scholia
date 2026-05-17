@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT handle FROM users WHERE id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "handle",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [true]
+    },
+    "hash": "e223898d53602c1c8b23eb08a4b96cf20ac349d1fa4e91334b225d3069209dcf"
+}

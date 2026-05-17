@@ -1,0 +1,24 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE feedback\n           SET status      = COALESCE($2::feedback_status, status),\n               admin_notes = COALESCE($3, admin_notes),\n               handled_by  = $4,\n               updated_at  = now()\n           WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "feedback_status",
+                        "kind": {
+                            "Enum": ["todo", "in_progress", "done", "cancelled"]
+                        }
+                    }
+                },
+                "Text",
+                "Uuid"
+            ]
+        },
+        "nullable": []
+    },
+    "hash": "7ef392d74472d079b989460e17a480be88c08303f0035e220cac41934ca62371"
+}

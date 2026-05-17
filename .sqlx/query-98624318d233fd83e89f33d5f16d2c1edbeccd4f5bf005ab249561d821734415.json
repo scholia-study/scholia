@@ -1,0 +1,142 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT s.id, s.source_type::TEXT AS \"source_type!\", s.title, s.title_display,\n                  s.publication_year, s.publisher, s.isbn, s.doi, s.edition, s.volume,\n                  s.journal_name, s.url, s.page_start, s.page_end,\n                  s.parent_source_id, s.translation_of_id,\n                  s.created_by AS \"created_by!\", s.protected\n           FROM sources s\n           WHERE ($1::TEXT IS NULL OR s.title ILIKE $1)\n             AND ($2::source_type IS NULL OR s.source_type = $2::source_type)\n             AND ($3::UUID IS NULL OR s.created_by = $3)\n             AND ($4::BOOLEAN IS NULL OR s.protected = $4)\n           ORDER BY s.created_at DESC\n           LIMIT $5 OFFSET $6",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "source_type!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "title_display",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "publication_year",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 5,
+                "name": "publisher",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "isbn",
+                "type_info": "TextArray"
+            },
+            {
+                "ordinal": 7,
+                "name": "doi",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "edition",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 9,
+                "name": "volume",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 10,
+                "name": "journal_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 11,
+                "name": "url",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 12,
+                "name": "page_start",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 13,
+                "name": "page_end",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 14,
+                "name": "parent_source_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 15,
+                "name": "translation_of_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 16,
+                "name": "created_by!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 17,
+                "name": "protected",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": [
+                "Text",
+                {
+                    "Custom": {
+                        "name": "source_type",
+                        "kind": {
+                            "Enum": [
+                                "book",
+                                "article",
+                                "chapter",
+                                "journal",
+                                "web"
+                            ]
+                        }
+                    }
+                },
+                "Uuid",
+                "Bool",
+                "Int8",
+                "Int8"
+            ]
+        },
+        "nullable": [
+            false,
+            null,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false
+        ]
+    },
+    "hash": "98624318d233fd83e89f33d5f16d2c1edbeccd4f5bf005ab249561d821734415"
+}

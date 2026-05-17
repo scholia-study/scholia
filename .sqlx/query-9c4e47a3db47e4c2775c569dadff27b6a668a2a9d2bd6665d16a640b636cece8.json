@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT tn.sort_order\n           FROM toc_nodes tn\n           JOIN books b ON b.id = tn.book_id\n           WHERE b.slug = $1 AND tn.slug = $2",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "sort_order",
+                "type_info": "Int4"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Text"]
+        },
+        "nullable": [false]
+    },
+    "hash": "9c4e47a3db47e4c2775c569dadff27b6a668a2a9d2bd6665d16a640b636cece8"
+}

@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT tn.slug, tn.label, tn.sort_order\n               FROM toc_nodes tn\n               JOIN books b ON b.id = tn.book_id\n               WHERE b.slug = $1 AND tn.depth = 0 AND tn.source_id IS NOT NULL\n               ORDER BY tn.sort_order",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 1,
+                "name": "label",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "sort_order",
+                "type_info": "Int4"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [false, false, false]
+    },
+    "hash": "b779372b84b7fb402d822dfb63b8af1aecec37e015efcdf41d20928741fbc4e7"
+}

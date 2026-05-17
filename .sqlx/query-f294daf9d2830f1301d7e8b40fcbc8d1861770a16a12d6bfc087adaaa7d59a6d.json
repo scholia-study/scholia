@@ -1,0 +1,92 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO articles (user_id, title, slug)\n               VALUES ($1, $2, $3)\n               RETURNING\n                   id, title, slug, description, markdown, html,\n                   status::TEXT AS \"status!\",\n                   $1 AS \"author_user_id!\",\n                   (SELECT display_name FROM users WHERE id = $1) AS \"author_display_name!\",\n                   (SELECT handle FROM users WHERE id = $1) AS \"author_handle?\",\n                   published_at, created_at, updated_at",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "description",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "markdown",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "status!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "author_user_id!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 8,
+                "name": "author_display_name!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 9,
+                "name": "author_handle?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 10,
+                "name": "published_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 11,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 12,
+                "name": "updated_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Text", "Text"]
+        },
+        "nullable": [
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            null,
+            null,
+            null,
+            null,
+            true,
+            false,
+            false
+        ]
+    },
+    "hash": "f294daf9d2830f1301d7e8b40fcbc8d1861770a16a12d6bfc087adaaa7d59a6d"
+}

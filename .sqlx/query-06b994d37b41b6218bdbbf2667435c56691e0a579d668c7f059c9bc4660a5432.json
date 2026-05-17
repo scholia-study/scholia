@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO released_handles (handle, user_id)\n           VALUES ($1, $2)\n           ON CONFLICT (handle) DO NOTHING",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Text", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "06b994d37b41b6218bdbbf2667435c56691e0a579d668c7f059c9bc4660a5432"
+}

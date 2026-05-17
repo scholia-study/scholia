@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COALESCE(s.title_display, s.title) AS \"book_title!\",\n                  n.label AS \"node_label!\",\n                  pn.label AS \"parent_node_label?\"\n           FROM books b\n           JOIN sources s ON s.id = b.source_id\n           JOIN toc_nodes n ON n.book_id = b.id AND n.slug = $2\n           LEFT JOIN toc_nodes pn ON pn.id = n.parent_id\n           WHERE b.slug = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "book_title!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 1,
+                "name": "node_label!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "parent_node_label?",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Text"]
+        },
+        "nullable": [null, false, false]
+    },
+    "hash": "49c6a9a9bb496e46fe8348f6a64f90d30c1dccc9230457246ce37cc51a7eefae"
+}

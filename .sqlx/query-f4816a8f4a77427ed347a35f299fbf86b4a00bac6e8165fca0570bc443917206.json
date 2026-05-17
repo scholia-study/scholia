@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT book_id, slug AS \"node_slug!\", source_id AS \"source_id!\"\n           FROM toc_nodes\n           WHERE source_id IS NOT NULL",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "book_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "node_slug!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "source_id!",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": []
+        },
+        "nullable": [false, false, true]
+    },
+    "hash": "f4816a8f4a77427ed347a35f299fbf86b4a00bac6e8165fca0570bc443917206"
+}

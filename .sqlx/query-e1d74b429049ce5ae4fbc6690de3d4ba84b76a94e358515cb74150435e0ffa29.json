@@ -1,0 +1,23 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, name FROM tags WHERE user_id = $1 ORDER BY name",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false]
+    },
+    "hash": "e1d74b429049ce5ae4fbc6690de3d4ba84b76a94e358515cb74150435e0ffa29"
+}

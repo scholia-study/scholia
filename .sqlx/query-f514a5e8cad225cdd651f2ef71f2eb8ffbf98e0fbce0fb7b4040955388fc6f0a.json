@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id FROM books WHERE slug = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [false]
+    },
+    "hash": "f514a5e8cad225cdd651f2ef71f2eb8ffbf98e0fbce0fb7b4040955388fc6f0a"
+}

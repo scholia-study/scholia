@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO feedback (user_id, body, url, user_agent, viewport_w, viewport_h)\n           VALUES ($1, $2, $3, $4, $5, $6)\n           RETURNING id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Text", "Text", "Text", "Int4", "Int4"]
+        },
+        "nullable": [false]
+    },
+    "hash": "4fc64f6b60fc207c708588f88253aab3d138b65c7f08f523fa48c374d6c6fdec"
+}

@@ -1,0 +1,38 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "WITH me AS (\n               SELECT COALESCE(s.translation_of_id, s.id) AS root_id\n               FROM books b\n               JOIN sources s ON s.id = b.source_id\n               WHERE b.id = $1\n           )\n           SELECT b.id, b.slug, b.language,\n                  COALESCE(s.title_display, s.title) AS \"title!\",\n                  STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author\n           FROM books b\n           JOIN sources s ON s.id = b.source_id\n           LEFT JOIN source_persons sp ON sp.source_id = s.id AND sp.role = 'author'\n           LEFT JOIN persons p ON p.id = sp.person_id\n           WHERE COALESCE(s.translation_of_id, s.id) = (SELECT root_id FROM me)\n             AND b.id != $1\n           GROUP BY b.id, b.slug, b.language, s.title_display, s.title\n           ORDER BY COALESCE(s.title_display, s.title)",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "language",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "title!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "author",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, false, null, null]
+    },
+    "hash": "a9715546ade7eaffe46301bd5ef205e705770b1bd29b6224ed32e20e33385292"
+}

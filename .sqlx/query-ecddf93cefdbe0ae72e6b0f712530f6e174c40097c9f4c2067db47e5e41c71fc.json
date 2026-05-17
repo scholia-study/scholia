@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO article_editorial_labels (article_id, label_id, applied_by)\n           VALUES ($1, $2, $3)\n           ON CONFLICT DO NOTHING",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "ecddf93cefdbe0ae72e6b0f712530f6e174c40097c9f4c2067db47e5e41c71fc"
+}

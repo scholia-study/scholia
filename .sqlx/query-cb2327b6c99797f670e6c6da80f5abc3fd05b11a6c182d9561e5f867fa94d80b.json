@@ -1,0 +1,33 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT at2.article_id, t.id AS topic_id, t.name AS topic_name, t.slug AS topic_slug\n           FROM article_topics at2\n           JOIN topics t ON t.id = at2.topic_id\n           WHERE at2.article_id = ANY($1)\n           ORDER BY t.name",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "article_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "topic_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "topic_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "topic_slug",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, false, false, false]
+    },
+    "hash": "cb2327b6c99797f670e6c6da80f5abc3fd05b11a6c182d9561e5f867fa94d80b"
+}

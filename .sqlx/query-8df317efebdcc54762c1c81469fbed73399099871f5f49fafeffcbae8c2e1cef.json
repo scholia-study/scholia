@@ -1,0 +1,36 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\"\n           FROM sources s\n           WHERE ($1::TEXT IS NULL OR s.title ILIKE $1)\n             AND ($2::source_type IS NULL OR s.source_type = $2::source_type)\n             AND ($3::UUID IS NULL OR s.created_by = $3)\n             AND ($4::BOOLEAN IS NULL OR s.protected = $4)",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": [
+                "Text",
+                {
+                    "Custom": {
+                        "name": "source_type",
+                        "kind": {
+                            "Enum": [
+                                "book",
+                                "article",
+                                "chapter",
+                                "journal",
+                                "web"
+                            ]
+                        }
+                    }
+                },
+                "Uuid",
+                "Bool"
+            ]
+        },
+        "nullable": [null]
+    },
+    "hash": "8df317efebdcc54762c1c81469fbed73399099871f5f49fafeffcbae8c2e1cef"
+}

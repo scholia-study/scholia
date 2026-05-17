@@ -1,0 +1,33 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "DELETE FROM article_editorial_labels ael\n           USING editorial_labels el\n           WHERE ael.label_id = el.id\n             AND ael.article_id = $1\n             AND el.revokes_on_edit = true\n           RETURNING el.id, el.name, el.slug, el.revokes_on_edit",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "revokes_on_edit",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, false, false]
+    },
+    "hash": "709d48aad7d1fdd2d5f024d4bb243edea72cd219baf7cb8230b8ef276da5b86a"
+}

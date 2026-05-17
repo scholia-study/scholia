@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id FROM quotations\n               WHERE user_id = $1\n                 AND anchor_sentence_start_id = $2\n                 AND COALESCE(anchor_sentence_end_id, '00000000-0000-0000-0000-000000000000') = $3",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Uuid", "Uuid"]
+        },
+        "nullable": [false]
+    },
+    "hash": "239d3bf1a85657e913c88abe63f39fa84363707b922222b83367ad7f007a91f2"
+}

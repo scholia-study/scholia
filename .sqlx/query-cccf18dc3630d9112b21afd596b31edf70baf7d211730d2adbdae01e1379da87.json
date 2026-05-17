@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT sp.source_id, p.name, p.sort_name\n           FROM source_persons sp\n           JOIN persons p ON p.id = sp.person_id\n           WHERE sp.source_id = ANY($1) AND sp.role = 'author'\n           ORDER BY sp.position",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "source_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "sort_name",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, false, true]
+    },
+    "hash": "cccf18dc3630d9112b21afd596b31edf70baf7d211730d2adbdae01e1379da87"
+}

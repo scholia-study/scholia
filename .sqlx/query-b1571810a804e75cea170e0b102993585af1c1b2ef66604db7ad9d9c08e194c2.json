@@ -1,0 +1,33 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, name, slug, revokes_on_edit FROM editorial_labels\n           ORDER BY sort_order, name",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "revokes_on_edit",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": []
+        },
+        "nullable": [false, false, false, false]
+    },
+    "hash": "b1571810a804e75cea170e0b102993585af1c1b2ef66604db7ad9d9c08e194c2"
+}

@@ -1,0 +1,38 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE persons\n           SET name = COALESCE($2, name),\n               sort_name = COALESCE($3, sort_name)\n           WHERE id = $1\n           RETURNING id, name, sort_name, created_by AS \"created_by!\", protected",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "sort_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "created_by!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 4,
+                "name": "protected",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Text", "Text"]
+        },
+        "nullable": [false, false, true, false, false]
+    },
+    "hash": "b46c4a94ff607540da072d53ae6841c4b32c8dfe3f19da0d6e507b3080c9799c"
+}

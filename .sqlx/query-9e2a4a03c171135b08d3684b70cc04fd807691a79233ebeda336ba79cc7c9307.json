@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE resources\n           SET archived_at = now(), archived_by = $2\n           WHERE id = $1 AND archived_at IS NULL",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "9e2a4a03c171135b08d3684b70cc04fd807691a79233ebeda336ba79cc7c9307"
+}

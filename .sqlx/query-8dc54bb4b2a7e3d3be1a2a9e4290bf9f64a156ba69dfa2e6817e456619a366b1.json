@@ -1,0 +1,29 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO source_persons (source_id, person_id, role, position)\n           VALUES ($1, $2, $3::source_person_role, $4)\n           ON CONFLICT (source_id, person_id, role)\n           DO UPDATE SET position = EXCLUDED.position",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "source_person_role",
+                        "kind": {
+                            "Enum": [
+                                "author",
+                                "editor",
+                                "translator",
+                                "contributor"
+                            ]
+                        }
+                    }
+                },
+                "Int2"
+            ]
+        },
+        "nullable": []
+    },
+    "hash": "8dc54bb4b2a7e3d3be1a2a9e4290bf9f64a156ba69dfa2e6817e456619a366b1"
+}

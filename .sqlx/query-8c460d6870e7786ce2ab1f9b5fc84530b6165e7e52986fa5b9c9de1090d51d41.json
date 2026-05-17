@@ -1,0 +1,111 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT f.id,\n                  f.user_id,\n                  u.display_name      AS \"submitter_display_name?\",\n                  u.email             AS \"submitter_email?\",\n                  f.body,\n                  f.url,\n                  f.user_agent,\n                  f.viewport_w,\n                  f.viewport_h,\n                  f.status            AS \"status!: FeedbackStatus\",\n                  f.admin_notes,\n                  f.handled_by,\n                  h.display_name      AS \"handler_display_name?\",\n                  f.created_at,\n                  f.updated_at\n           FROM feedback f\n           LEFT JOIN users u ON u.id = f.user_id\n           LEFT JOIN users h ON h.id = f.handled_by\n           WHERE f.id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "user_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "submitter_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "submitter_email?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "body",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "url",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "user_agent",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "viewport_w",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 8,
+                "name": "viewport_h",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 9,
+                "name": "status!: FeedbackStatus",
+                "type_info": {
+                    "Custom": {
+                        "name": "feedback_status",
+                        "kind": {
+                            "Enum": ["todo", "in_progress", "done", "cancelled"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 10,
+                "name": "admin_notes",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 11,
+                "name": "handled_by",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 12,
+                "name": "handler_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 13,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 14,
+                "name": "updated_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            false,
+            false,
+            false
+        ]
+    },
+    "hash": "8c460d6870e7786ce2ab1f9b5fc84530b6165e7e52986fa5b9c9de1090d51d41"
+}

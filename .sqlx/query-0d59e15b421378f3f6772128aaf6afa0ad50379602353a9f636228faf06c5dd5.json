@@ -1,0 +1,104 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT qn.id, qn.body, qn.quotation_id AS \"quotation_id!\",\n                  b.slug AS \"book_slug!\",\n                  CASE\n                      WHEN bs.publisher IS NOT NULL AND char_length(bs.publisher) <= 6\n                          THEN bs.publisher\n                      ELSE UPPER(b.language)\n                  END AS \"translation_label?\",\n                  COALESCE(s.title_display, s.title) AS \"book_title!\",\n                  COALESCE(parent.title_display, parent.title) AS \"parent_compilation_title?\",\n                  n.label AS \"node_label!\",\n                  n.slug AS \"node_slug!\",\n                  ss.sentence_number AS \"start_number?\",\n                  se.sentence_number AS \"end_number?\",\n                  q.sentence_kind::TEXT AS \"sentence_kind!\",\n                  ms.sentence_number AS \"main_number?\",\n                  qn.created_at, qn.updated_at\n           FROM quotation_notes qn\n           JOIN quotations q ON q.id = qn.quotation_id\n           JOIN books b ON b.id = q.book_id\n           JOIN sources bs ON bs.id = b.source_id\n           JOIN sources s ON s.id = q.source_id\n           LEFT JOIN sources parent ON parent.id = s.parent_source_id\n           JOIN toc_nodes n ON n.id = q.anchor_node_id\n           JOIN sentences ss ON ss.id = q.anchor_sentence_start_id\n           LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id\n           LEFT JOIN footnotes fn ON fn.id = ss.footnote_id\n           LEFT JOIN sentences ms ON ms.id = fn.anchor_sentence_id\n           WHERE q.user_id = $1\n             AND ($2::TEXT IS NULL OR b.slug = $2)\n           ORDER BY qn.created_at DESC",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "body",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "quotation_id!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 3,
+                "name": "book_slug!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "translation_label?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "book_title!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "parent_compilation_title?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "node_label!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "node_slug!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 9,
+                "name": "start_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 10,
+                "name": "end_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 11,
+                "name": "sentence_kind!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 12,
+                "name": "main_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 13,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 14,
+                "name": "updated_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Text"]
+        },
+        "nullable": [
+            false,
+            false,
+            true,
+            false,
+            null,
+            null,
+            null,
+            false,
+            false,
+            true,
+            true,
+            null,
+            true,
+            false,
+            false
+        ]
+    },
+    "hash": "0d59e15b421378f3f6772128aaf6afa0ad50379602353a9f636228faf06c5dd5"
+}

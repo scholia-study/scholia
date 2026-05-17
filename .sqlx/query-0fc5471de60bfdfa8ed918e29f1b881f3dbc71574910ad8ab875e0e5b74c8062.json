@@ -1,0 +1,38 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, name, sort_name, created_by AS \"created_by!\", protected\n           FROM persons\n           WHERE name ILIKE $1\n           ORDER BY name\n           LIMIT 20",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "sort_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "created_by!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 4,
+                "name": "protected",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [false, false, true, false, false]
+    },
+    "hash": "0fc5471de60bfdfa8ed918e29f1b881f3dbc71574910ad8ab875e0e5b74c8062"
+}
