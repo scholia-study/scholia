@@ -656,48 +656,77 @@ regions). Not infrastructure, but worth tracking.
 - [ ] Update Stripe to live mode keys + production webhook URL
 - [ ] Public soft launch
 
+### First-deploy landed (2026-05-18)
+
+Dev cluster is serving real traffic. All four pods Ready, Ingress
+routing TLS to the proxy, cache layer producing `X-Cache-Status: MISS`
+→ `HIT`, `/api/library` returns `{"groups":[],"stats":{"works":0,…}}`
+(DB migrations applied, just no content ingested yet).
+
+Two snags hit + fixed along the way:
+
+- Base Deployments referenced the wrong org (`ghcr.io/filipniklas/…`
+  vs the actual GHCR namespace `ghcr.io/scholia-study/…`). The
+  workflow uses `${{ github.repository_owner }}` which resolves to
+  the org. Now corrected.
+- Init container's migration failed with `Configuration(InvalidPort)`.
+  Root cause: postgres password contained URL-special characters, and
+  k8s `$(VAR)` substitution is literal — the rendered `DATABASE_URL`
+  had unencoded chars that confused sqlx's URL parser. Fixed
+  structurally rather than by changing the password:
+  `apps/api/src/config.rs::pg_connect_options_from_env()` now builds
+  a `PgConnectOptions` from discrete `POSTGRES_{USER,PASSWORD,DB,
+  HOST,PORT}` env vars (falls back to `DATABASE_URL` for local dev).
+  Init container env updated to match.
+
+### HTTPS landed (2026-05-18)
+
+`https://dev.scholia.study/` now serves a browser-trusted Let's
+Encrypt cert (issuer `R12`, 90 days), and plain HTTP returns 308 →
+HTTPS via a Traefik `Middleware` CRD
+(`infra/k8s/base/ingress/middleware-redirect-https.yaml`) referenced
+from the Ingress through the
+`traefik.ingress.kubernetes.io/router.middlewares` annotation.
+Renewals are automatic — cert-manager checks every ~12h and re-issues
+when a cert crosses 2/3 lifetime. The HTTP-01 solver creates a
+sibling Ingress without the redirect annotation, so renewals keep
+working.
+
 ### Pickup for next session
 
-Images are building and pushing to GHCR. The remaining work is the
-first deploy to dev plus the validation tail.
+1. **End-to-end validation tail** (per § 6.3 — partially done):
+   - ✅ Anonymous chapter pageview: `X-Cache-Status: MISS` → `HIT`.
+   - ✅ `/api/*` cacheable when anonymous.
+   - ⏳ Authenticated requests bypass cache (look for
+     `X-Cache-Status: BYPASS` once a session cookie is in play).
+   - ⏳ PURGE after article publish invalidates the listing. Requires
+     an editor account + at least one ingested book.
+   - ⏳ Stripe test charge → role flips → cancellation. Requires
+     pointing the Stripe Dashboard webhook at
+     `https://dev.scholia.study/api/webhooks/stripe` and using the
+     dev test-mode keys already in the api Secret.
 
-1. **Make GHCR packages public** (or set retention). After the first
-   workflow run there'll be three packages under
-   `github.com/<owner>?tab=packages`. Per-package settings → change
-   visibility to public. Sidesteps quota concerns forever.
-2. **Wire image pull auth** if packages stay private — create a
-   GHCR-scoped PAT, add as a `regcred` Secret in the `scholia`
-   namespace, reference it via `imagePullSecrets` in the Deployments.
-   Skip if packages are public.
-3. **Update base Deployments** to reference the real images:
-   `ghcr.io/<owner>/scholia-api:main` and `…/scholia-web:main`.
-   (Currently the base manifests still have placeholders or local
-   refs — check `infra/k8s/base/{api,web}/deployment.yaml`.)
-4. **First deploy**:
-   - `source ~/.config/scholia-infra.env`
-   - `sops -d infra/k8s/overlays/dev/secrets/postgres.yaml | kubectl apply -f -`
-   - `sops -d infra/k8s/overlays/dev/secrets/api.yaml | kubectl apply -f -`
-   - `kubectl apply -k infra/k8s/overlays/dev/`
-   - `kubectl get pods -n scholia -w` until all are Ready
-5. **Debug the inevitable**. Common first-deploy snags:
-   - api init container racing Postgres readiness (add a readiness
-     gate or retry loop in the migrate init container).
-   - `AppConfig::from_env` panicking on a missing env var — `sops`
-     edit the api Secret, re-apply, restart the api Deployment.
-   - HTTP-01 challenge stuck waiting for Traefik routing to settle.
-   - DATABASE_URL composition order (env vars referenced by `$(VAR)`
-     must be listed before the var that uses them in the Deployment).
-6. **End-to-end validation on dev** (per § 6.3):
-   - Anonymous chapter pageviews: `X-Cache-Status: MISS` then `HIT`.
-   - Authenticated requests bypass cache.
-   - PURGE after an article publish invalidates the listing.
-   - Stripe test charge → role flips → cancellation flow.
-7. **Flip dev Ingress's cluster-issuer** from `letsencrypt-staging`
-   to `letsencrypt-prod` once HTTP-01 is known-good.
-8. Eventually: prod cluster, prod overlay, Stripe live keys, soft launch.
+2. **Ingest content into dev DB**. Empty `/api/library` is fine for
+   plumbing tests; before showing the site to a human, run
+   `scripts/db_bible.sh` and `scripts/db_kant1.sh` against the dev
+   Postgres. Two ways:
+   - Port-forward `postgres:5432` and run the CLIs from the laptop
+     against `localhost:5432`.
+   - Or run the CLIs as one-off Jobs in-cluster (more involved but
+     closer to how a real deploy ingest would look).
 
-Estimate: 30-90 min for steps 1-4 if smooth; step 5 (debugging) is
-the wildcard.
+3. **Wire PURGE into ingest binaries** (still open from § v0 refactor
+   list). Once content is being re-ingested in cluster, the relevant
+   `book/<handle>` cache keys need invalidation.
+
+4. **Fix the deploy command sequence**. PLAN missed a step: `kubectl
+   apply -f infra/k8s/base/namespace.yaml` MUST run before the SOPS
+   secret applies, because the secrets declare `namespace: scholia`
+   but `kubectl apply` won't auto-create namespaces. Fold that into
+   any future Makefile / deploy script.
+
+5. **Eventually**: prod cluster, prod overlay, Stripe live keys,
+   soft launch.
 
 ### v1 — ArgoCD + Sentry
 
