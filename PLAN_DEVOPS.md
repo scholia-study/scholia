@@ -710,41 +710,117 @@ Two more hardening steps deferred:
   app tables (no DDL, no DROP). Currently the api uses the Postgres
   superuser. Limits blast radius if api credentials leak.
 
+### Dev lockdown landed (2026-05-18)
+
+Public visitors can no longer accidentally find dev.scholia.study.
+Three layers:
+
+1. **HTTP Basic Auth** at the proxy (`scholia` / `loves2study`).
+   Bcrypt-hashed htpasswd in
+   `infra/k8s/overlays/dev/secrets/proxy-htpasswd.yaml`
+   (SOPS-encrypted), mounted via overlay patch at
+   `/etc/nginx/auth/htpasswd`.
+2. **robots.txt** served inline by the proxy (no auth needed so
+   crawlers can read the Disallow) + `X-Robots-Tag: noindex, nofollow,
+   noarchive` on every other response.
+3. **Stripe webhook carve-out**: `location ^~ /api/webhooks/` has
+   `auth_basic off;` so Stripe's servers reach the handler. Stripe-
+   Signature header still authenticates.
+
+Structurally clean: the base proxy stays prod-ready (public, no auth).
+Dev opts in via:
+
+- `apps/proxy/templates/default.conf.template` —
+  `include /etc/nginx/conf.d/security/*.conf;` at server scope (no-op
+  in base; dir is created empty by the Dockerfile).
+- `infra/k8s/overlays/dev/proxy-security.conf` — the lockdown
+  fragment (auth + robots + webhook carve-out).
+- `infra/k8s/overlays/dev/proxy-lockdown-patch.yaml` — strategic
+  merge that mounts both the ConfigMap (generated from the fragment)
+  and the htpasswd Secret onto the proxy pod.
+- `configMapGenerator` in `overlays/dev/kustomization.yaml` —
+  content-hashed ConfigMap name so editing the fragment auto-restarts
+  the pod.
+
+When prod overlay is built, no proxy changes needed — base is already
+public-by-default.
+
+### Dev DB content + ergonomics (2026-05-18)
+
+- Kant ingested into dev DB via `pnpm db:dev:run pnpm db:kant1`
+  through the kubectl port-forward tunnel.
+- New scripts (root `package.json`):
+  - `db:dev:forward` — opens `localhost:55432` → `postgres:5432`.
+  - `db:dev:run <cmd>` — runs any command with `DATABASE_URL`
+    pointed at the tunneled cluster DB. Wraps
+    `scripts/db_dev_run.sh` which decrypts the password from SOPS,
+    URL-encodes it, and `exec`s the command.
+  - `db:dev:reset` — drops public schema + re-applies migrations on
+    the dev cluster. Prompts for explicit `yes` confirmation; bypass
+    with `--yes` for automation.
+  - `db:dev:reload` — `db:dev:reset` + re-ingest of Kant + Bible.
+
+### Cluster capacity snapshot (2026-05-18)
+
+CX22 (2 vCPU, 4GB). Current allocations:
+
+| Pod | CPU req | Mem req | Mem limit |
+|---|---|---|---|
+| proxy    | 50m  | 64Mi  | 256Mi |
+| api      | 100m | 128Mi | 512Mi |
+| web      | 100m | 128Mi | 512Mi |
+| postgres | 100m | 256Mi | 1Gi   |
+
+Idle usage: ~13m CPU, ~156Mi memory across all four pods. Node
+allocations: 27% CPU requests, 18% mem requests, 64% mem limits.
+Headroom for 5-10× current load before resize to CX32 is needed.
+
+No CPU limits set (intentional — requests give priority, limits
+just throttle bursty workloads). Memory limits set for OOM
+protection.
+
+### Redeploy verb
+
+- **Pull new `:main` images without manifest changes**:
+  `kubectl rollout restart deployment -n scholia` (rolls all
+  Deployments in the namespace; StatefulSets unaffected).
+- **Apply manifest changes from git**: `kubectl apply -k
+  infra/k8s/overlays/dev/`. Triggers rolling updates only for
+  Deployments whose spec changed.
+- **Both at once**: chain the two — apply first, then restart to
+  force pulls on Deployments that didn't have spec changes.
+
 ### Pickup for next session
 
 1. **End-to-end validation tail** (per § 6.3 — partially done):
-   - ✅ Anonymous chapter pageview: `X-Cache-Status: MISS` → `HIT`.
-     `EXPIRED` also seen, which is normal — nginx refetches from
-     upstream and the next request becomes `HIT`.
+   - ✅ Anonymous chapter pageview: `X-Cache-Status: MISS` → `HIT`
+     (also `EXPIRED`, normal).
    - ✅ `/api/*` cacheable when anonymous.
    - ✅ Authenticated requests bypass: `X-Cache-Status: BYPASS` on
      every request once `scholia_session` cookie is present
      (verified via DevTools while logged in via GitHub OAuth).
+   - ✅ Authenticated write path: profile bio update via GitHub-
+     authed session round-trips to the DB and renders fresh.
    - ⏳ PURGE after article publish invalidates the listing. Requires
      an editor account + at least one ingested book.
    - ⏳ Stripe test charge → role flips → cancellation. Requires
      pointing the Stripe Dashboard webhook at
      `https://dev.scholia.study/api/webhooks/stripe` and using the
-     dev test-mode keys already in the api Secret.
+     dev test-mode keys already in the api Secret. Carve-out
+     already in place (`/api/webhooks/` bypasses Basic Auth).
 
-2. **Ingest content into dev DB**. Empty `/api/library` is fine for
-   plumbing tests; before showing the site to a human, run
-   `scripts/db_bible.sh` and `scripts/db_kant1.sh` against the dev
-   Postgres. Two ways:
-   - Port-forward `postgres:5432` and run the CLIs from the laptop
-     against `localhost:5432`.
-   - Or run the CLIs as one-off Jobs in-cluster (more involved but
-     closer to how a real deploy ingest would look).
+2. **Ingest the Bible** into dev DB. Kant is in already; Bible would
+   round out the content. `pnpm db:dev:run pnpm db:bible` (with
+   `pnpm db:dev:forward` running in another terminal).
 
 3. **Wire PURGE into ingest binaries** (still open from § v0 refactor
    list). Once content is being re-ingested in cluster, the relevant
    `book/<handle>` cache keys need invalidation.
 
-4. **Fix the deploy command sequence**. PLAN missed a step: `kubectl
-   apply -f infra/k8s/base/namespace.yaml` MUST run before the SOPS
-   secret applies, because the secrets declare `namespace: scholia`
-   but `kubectl apply` won't auto-create namespaces. Fold that into
-   any future Makefile / deploy script.
+4. **Deferred hardening** (from earlier security review):
+   - NetworkPolicy on Postgres ✅ done.
+   - k3s `--secrets-encryption` — defer to prod cluster bringup.
+   - Separate app-level DB user (not superuser) — v1 maintenance.
 
 5. **Eventually**: prod cluster, prod overlay, Stripe live keys,
    soft launch.
