@@ -1,0 +1,34 @@
+# Restrict Postgres :5432 to traffic from scholia-api pods only.
+# Defense-in-depth: even though the Service is ClusterIP (no external
+# reach), this policy ensures that a compromised web/proxy pod can't
+# even *attempt* a brute-force against Postgres — the CNI drops the
+# packet before Postgres sees a SYN.
+#
+# kubectl port-forward continues to work: it terminates inside the
+# pod's loopback via the kubelet, which NetworkPolicy doesn't gate.
+# So one-off DB access from the laptop (psql against a port-forwarded
+# 5432) is unaffected.
+#
+# See the corresponding policy on the proxy's PURGE port for the
+# pattern + caveats on CNI enforcement.
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+    name: postgres-access
+    labels:
+        app.kubernetes.io/name: postgres
+spec:
+    podSelector:
+        matchLabels:
+            app.kubernetes.io/name: postgres
+    policyTypes:
+        - Ingress
+    ingress:
+        - ports:
+              - port: 5432
+                protocol: TCP
+          from:
+              - podSelector:
+                    matchLabels:
+                        app.kubernetes.io/name: scholia-api
