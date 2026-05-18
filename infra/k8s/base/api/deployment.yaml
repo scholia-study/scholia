@@ -1,18 +1,22 @@
 # Rust axum API.
 #
 # Init container runs `api migrate` against the just-started Postgres,
-# applying every embedded sqlx migration. The init container shares
-# all the env vars the main container has (so DATABASE_URL composition
-# works), but only ever runs `migrate` and exits — migration failure
-# blocks the main container from starting.
+# applying every embedded sqlx migration. It only runs `migrate` and
+# exits — migration failure blocks the main container from starting.
 #
-# DATABASE_URL is composed from the `postgres` Secret at runtime via
-# Kubernetes's $(VAR) substitution. The api-secrets Secret holds all
-# the OTHER env (Stripe, GitHub OAuth, Resend, etc.) and is referenced
-# via envFrom — one place to rotate non-DB credentials.
+# DB connection is built from the discrete POSTGRES_{USER,PASSWORD,DB,
+# HOST,PORT} vars (config::pg_connect_options_from_env), not a composed
+# DATABASE_URL. k8s `$(VAR)` substitution is literal — passwords with
+# URL-special chars (`:`, `/`, `@`) would break URL parsing.
+# The api Secret holds all the OTHER env (Stripe, GitHub OAuth, Resend,
+# etc.) and is referenced via envFrom — one place to rotate non-DB
+# credentials.
 #
-# Image is pinned to `:latest` while we wait on CI; bump to an
-# immutable `:main-<sha>` tag once GitHub Actions pushes images.
+# Image tracks the mutable `:main` tag — every push to main rebuilds
+# and re-pushes it. `imagePullPolicy: Always` plus a `kubectl rollout
+# restart deployment/scholia-api` is the redeploy verb. Pin to an
+# immutable `:main-<sha>` tag if a deploy needs to be reproducible
+# (e.g. correlating a prod incident to a specific build).
 
 apiVersion: apps/v1
 kind: Deployment
@@ -34,7 +38,7 @@ spec:
     spec:
       initContainers:
         - name: migrate
-          image: ghcr.io/filipniklas/scholia-api:latest
+          image: ghcr.io/scholia-study/scholia-api:main
           imagePullPolicy: Always
           command: ["api"]
           args: ["migrate"]
@@ -54,18 +58,22 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: database
-            - name: DATABASE_URL
-              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/$(POSTGRES_DB)
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
       containers:
         - name: api
-          image: ghcr.io/filipniklas/scholia-api:latest
+          image: ghcr.io/scholia-study/scholia-api:main
           imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 4000
           env:
-            # Compose DATABASE_URL from the postgres Secret so rotating
-            # the DB password doesn't require touching api-secrets too.
+            # DB creds pulled from the postgres Secret so rotating the
+            # password doesn't touch the api Secret. Connection options
+            # are assembled inside the binary — see
+            # config::pg_connect_options_from_env.
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -81,8 +89,10 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: database
-            - name: DATABASE_URL
-              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/$(POSTGRES_DB)
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
             # The PURGE listener is on the proxy's cluster-internal
             # port 8080 (NetworkPolicy restricts it to this pod's
             # label). Empty value would silently disable PURGE — we

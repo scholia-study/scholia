@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: ghcr.io/filipniklas/scholia-web:latest
+          image: ghcr.io/scholia-study/scholia-web:main
           imagePullPolicy: Always
           ports:
             - name: http
