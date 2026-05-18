@@ -1,14 +1,17 @@
 # Dev environment overlay.
 #
-# Patches the base Ingress to use dev.scholia.study. The
-# letsencrypt-staging cluster-issuer is the default in the base, so
-# no patch needed there until we flip to letsencrypt-prod (which we'll
-# do after confirming the HTTP-01 challenge works against staging).
+# Layers dev-specific behavior over the prod-neutral base:
+#   - Ingress hostname patched to dev.scholia.study + flipped to
+#     letsencrypt-prod cluster-issuer.
+#   - Proxy gets a "security fragment" ConfigMap (auth_basic, robots
+#     noindex header, Stripe-webhook carve-out) mounted into
+#     /etc/nginx/conf.d/security/, plus the htpasswd Secret mounted
+#     into /etc/nginx/auth/. Base proxy stays public + prod-ready;
+#     dev opts in to lockdown via this patch.
 #
 # Secrets in secrets/ are NOT referenced here — they're SOPS-encrypted
 # and applied separately via `sops -d <file> | kubectl apply -f -`
-# before `kubectl apply -k overlays/dev/`. See Makefile / docs for
-# the canonical deploy sequence once it's written.
+# before `kubectl apply -k overlays/dev/`.
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -18,8 +21,17 @@ namespace: scholia
 resources:
   - ../../base
 
+configMapGenerator:
+  - name: proxy-security
+    files:
+      - lockdown.conf=proxy-security.conf
+
 patches:
   - path: ingress-patch.yaml
     target:
       kind: Ingress
       name: scholia
+  - path: proxy-lockdown-patch.yaml
+    target:
+      kind: Deployment
+      name: scholia-proxy

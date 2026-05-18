@@ -18,6 +18,20 @@ server {
     # EXPIRED, STALE, UPDATING, REVALIDATED. Cheap and safe to leave on.
     add_header X-Cache-Status $upstream_cache_status always;
 
+    # Per-environment overrides (auth_basic, X-Robots-Tag, location
+    # carve-outs, etc.) drop into this directory via overlay-provided
+    # ConfigMaps. The base image creates the directory empty in its
+    # Dockerfile so the glob is a no-op when no overlay injects
+    # anything (prod-ready default = public, no auth).
+    #
+    # Fragments at server scope can:
+    #   - add server-level directives (auth_basic, add_header, …)
+    #   - add new location blocks
+    #   - override existing locations IF they use a longer prefix or
+    #     a more specific matcher (so they win nginx's location
+    #     precedence)
+    include /etc/nginx/conf.d/security/*.conf;
+
     # ---- Hosted text — identity-free reads, always cached ----
     #
     # These endpoints return identical responses for every caller; logged-in

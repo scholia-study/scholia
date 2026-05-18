@@ -44,6 +44,13 @@ COPY --from=modules /modules/ngx_http_cache_purge_module.so /usr/lib/nginx/modul
 # cache survives pod restarts.
 RUN mkdir -p /var/cache/nginx/html /var/cache/nginx/api
 
+# Drop-in directory for per-environment server-scope overrides
+# (auth_basic, X-Robots-Tag, location carve-outs). The default.conf
+# template `include`s this dir at server scope; overlays mount a
+# ConfigMap with their fragment files here. Empty by default so the
+# base image is prod-ready (public, no auth).
+RUN mkdir -p /etc/nginx/conf.d/security
+
 # Main nginx.conf override — needed to issue `load_module` before the
 # http {} block.
 COPY nginx.conf /etc/nginx/nginx.conf

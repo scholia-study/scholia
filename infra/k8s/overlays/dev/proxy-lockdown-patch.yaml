@@ -1,0 +1,38 @@
+# Dev-only proxy patch: mount the security fragment (auth + robots +
+# webhook carve-out) into /etc/nginx/conf.d/security/ and the htpasswd
+# file into /etc/nginx/auth/.
+#
+# Strategic merge merges by name on list items (volumes, volumeMounts),
+# so this APPENDS to the existing `cache` volume rather than replacing
+# the list.
+#
+# The ConfigMap name is `proxy-security`, but Kustomize appends a
+# content hash to the generated name; the configMap.name reference
+# below gets rewritten to match at apply time.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: scholia-proxy
+spec:
+    template:
+        spec:
+            containers:
+                - name: proxy
+                  volumeMounts:
+                      - name: security-fragment
+                        mountPath: /etc/nginx/conf.d/security
+                        readOnly: true
+                      - name: htpasswd
+                        mountPath: /etc/nginx/auth
+                        readOnly: true
+            volumes:
+                - name: security-fragment
+                  configMap:
+                      name: proxy-security
+                - name: htpasswd
+                  secret:
+                      secretName: proxy-htpasswd
+                      items:
+                          - key: htpasswd
+                            path: htpasswd
