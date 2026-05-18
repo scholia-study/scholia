@@ -11,11 +11,12 @@
 
 use sqlx::PgPool;
 use sqlx::migrate::Migrator;
+use sqlx::postgres::PgConnectOptions;
 
 pub static MIGRATOR: Migrator = sqlx::migrate!("../../db/migrations");
 
-pub async fn run(database_url: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let pool = PgPool::connect(database_url).await?;
+pub async fn run(options: PgConnectOptions) -> Result<(), Box<dyn std::error::Error>> {
+    let pool = PgPool::connect_with(options).await?;
     MIGRATOR.run(&pool).await?;
     Ok(())
 }

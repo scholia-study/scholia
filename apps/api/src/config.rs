@@ -1,8 +1,42 @@
 use std::env;
 
+use sqlx::postgres::PgConnectOptions;
+
+/// Build sqlx connect options from environment.
+///
+/// Prefers discrete `POSTGRES_*` vars over a composed `DATABASE_URL` so
+/// passwords containing URL-special characters (`:`, `/`, `@`, `?`) don't
+/// break URL parsing — k8s `$(VAR)` substitution is literal, so a single
+/// `DATABASE_URL = postgres://$(USER):$(PASSWORD)@…` string can't survive
+/// non-trivial passwords. Falls back to `DATABASE_URL` when discrete vars
+/// are absent (local dev `.env`, sqlx-cli scripts).
+pub fn pg_connect_options_from_env() -> PgConnectOptions {
+    if let Ok(user) = env::var("POSTGRES_USER") {
+        let password = env::var("POSTGRES_PASSWORD")
+            .expect("POSTGRES_PASSWORD must be set when POSTGRES_USER is set");
+        let database =
+            env::var("POSTGRES_DB").expect("POSTGRES_DB must be set when POSTGRES_USER is set");
+        let host = env::var("POSTGRES_HOST").unwrap_or_else(|_| "localhost".to_string());
+        let port: u16 = env::var("POSTGRES_PORT")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(5432);
+        return PgConnectOptions::new()
+            .username(&user)
+            .password(&password)
+            .database(&database)
+            .host(&host)
+            .port(port);
+    }
+
+    let url = env::var("DATABASE_URL")
+        .expect("Set POSTGRES_USER + POSTGRES_PASSWORD + POSTGRES_DB (preferred) or DATABASE_URL");
+    url.parse()
+        .expect("DATABASE_URL is not a valid Postgres connection string")
+}
+
 #[derive(Clone)]
 pub struct AppConfig {
-    pub database_url: String,
     pub session_secret: String,
     pub resend_api_key: String,
     pub from_email: String,
@@ -25,7 +59,6 @@ pub struct AppConfig {
 impl AppConfig {
     pub fn from_env() -> Self {
         let cfg = Self {
-            database_url: env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
             session_secret: env::var("SESSION_SECRET").expect("SESSION_SECRET must be set"),
             resend_api_key: env::var("RESEND_API_KEY").expect("RESEND_API_KEY must be set"),
             from_email: env::var("FROM_EMAIL").expect("FROM_EMAIL must be set"),

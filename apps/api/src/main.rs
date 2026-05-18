@@ -40,9 +40,8 @@ async fn main() {
     // `api migrate` to apply embedded sqlx migrations before the main
     // server boots; the same binary serves both modes.
     if std::env::args().nth(1).as_deref() == Some("migrate") {
-        let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
         tracing::info!("Running migrations…");
-        api::migrate::run(&database_url)
+        api::migrate::run(api::config::pg_connect_options_from_env())
             .await
             .expect("Migrations failed");
         tracing::info!("Migrations applied.");
@@ -51,7 +50,7 @@ async fn main() {
 
     let config = AppConfig::from_env();
 
-    let pool = PgPool::connect(&config.database_url)
+    let pool = PgPool::connect_with(api::config::pg_connect_options_from_env())
         .await
         .expect("Failed to connect to database");
 
