@@ -21,6 +21,13 @@ metadata:
     # Secret) for every host in `spec.tls` using this issuer. Patched
     # in overlays.
     cert-manager.io/cluster-issuer: letsencrypt-staging
+    # Traefik routes plain HTTP through the redirect-https Middleware
+    # (defined alongside this Ingress) which returns 308 to the https
+    # scheme. The `<namespace>-<name>@kubernetescrd` syntax is
+    # Traefik's provider-prefixed reference to a Middleware CRD in
+    # k8s. Namespace prefix is filled in at deploy time by the
+    # overlay's `namespace:` field.
+    traefik.ingress.kubernetes.io/router.middlewares: scholia-redirect-https@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:

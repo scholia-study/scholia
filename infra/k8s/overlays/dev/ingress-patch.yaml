@@ -1,7 +1,10 @@
-# Replace the base's PLACEHOLDER hostname with dev.scholia.study.
-# When we cut prod, the prod overlay will replace with scholia.study
-# and additionally patch the cluster-issuer annotation to
-# `letsencrypt-prod`.
+# Replace the base's PLACEHOLDER hostname with dev.scholia.study and
+# bump the cluster-issuer to letsencrypt-prod once HTTP-01 challenge
+# is known to work against staging.
+#
+# The `~1` in the JSON Pointer path escapes a literal `/` inside the
+# annotation key `cert-manager.io/cluster-issuer`. Without escaping,
+# the parser would walk into a sub-object.
 
 - op: replace
   path: /spec/tls/0/hosts/0
@@ -9,3 +12,6 @@
 - op: replace
   path: /spec/rules/0/host
   value: dev.scholia.study
+- op: replace
+  path: /metadata/annotations/cert-manager.io~1cluster-issuer
+  value: letsencrypt-prod

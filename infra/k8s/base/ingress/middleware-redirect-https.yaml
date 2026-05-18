@@ -1,0 +1,23 @@
+# HTTP -> HTTPS redirect, applied as a Traefik Middleware referenced
+# from the Ingress via the
+# `traefik.ingress.kubernetes.io/router.middlewares` annotation.
+#
+# Safe for cert-manager renewals: when an HTTP-01 challenge runs,
+# cert-manager creates its own sibling Ingress for the
+# `/.well-known/acme-challenge/<token>` path that does NOT carry this
+# annotation, so Traefik routes the challenge over plain HTTP to the
+# solver pod.
+#
+# `permanent: true` emits a 308 (preserves method/body, unlike 301).
+# Browsers and Stripe webhook delivery both treat it correctly.
+
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+    name: redirect-https
+    labels:
+        app.kubernetes.io/name: scholia
+spec:
+    redirectScheme:
+        scheme: https
+        permanent: true
