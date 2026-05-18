@@ -714,9 +714,12 @@ Two more hardening steps deferred:
 
 1. **End-to-end validation tail** (per § 6.3 — partially done):
    - ✅ Anonymous chapter pageview: `X-Cache-Status: MISS` → `HIT`.
+     `EXPIRED` also seen, which is normal — nginx refetches from
+     upstream and the next request becomes `HIT`.
    - ✅ `/api/*` cacheable when anonymous.
-   - ⏳ Authenticated requests bypass cache (look for
-     `X-Cache-Status: BYPASS` once a session cookie is in play).
+   - ✅ Authenticated requests bypass: `X-Cache-Status: BYPASS` on
+     every request once `scholia_session` cookie is present
+     (verified via DevTools while logged in via GitHub OAuth).
    - ⏳ PURGE after article publish invalidates the listing. Requires
      an editor account + at least one ingested book.
    - ⏳ Stripe test charge → role flips → cancellation. Requires
