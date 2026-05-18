@@ -692,6 +692,24 @@ when a cert crosses 2/3 lifetime. The HTTP-01 solver creates a
 sibling Ingress without the redirect annotation, so renewals keep
 working.
 
+### Network hardening landed (2026-05-18)
+
+`postgres:5432` is now only reachable from pods labelled
+`app.kubernetes.io/name: scholia-api`
+(`infra/k8s/base/postgres/network-policy.yaml`). Verified by `nc`
+from the web pod failing while `curl /api/library` keeps working.
+Defense-in-depth — already ClusterIP-only externally, this closes
+the "compromised web/proxy pod brute-forces Postgres" path.
+
+Two more hardening steps deferred:
+
+- **k3s `--secrets-encryption`** to encrypt the Secrets datastore on
+  the node disk. Worth adding at prod cluster bringup so it's there
+  from day one rather than requiring a Secret rewrap mid-life.
+- **Separate app-level DB user** with only CONNECT/USAGE/CRUD on the
+  app tables (no DDL, no DROP). Currently the api uses the Postgres
+  superuser. Limits blast radius if api credentials leak.
+
 ### Pickup for next session
 
 1. **End-to-end validation tail** (per § 6.3 — partially done):
