@@ -18,6 +18,7 @@
         "db:dev:run": "bash scripts/db_dev_run.sh",
         "db:dev:reset": "bash scripts/db_dev_reset.sh",
         "db:dev:reload": "bash scripts/db_dev_reset.sh && pnpm db:dev:run pnpm db:kant1 && pnpm db:dev:run pnpm db:bible",
+        "assets:sync": "bash scripts/assets_sync.sh",
         "dev": "turbo run dev --filter=@apps/api --filter=@apps/web",
         "dev:all": "APP_PROFILE=local-proxy turbo run dev",
         "dev:proxy": "turbo run dev --filter=@apps/proxy",
