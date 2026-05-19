@@ -562,7 +562,7 @@ regions). Not infrastructure, but worth tracking.
 ### v0 — Cluster bringup
 
 - [x] Hetzner API token, Porkbun API key, Tailscale auth key in laptop env
-- [x] Write `infra/terraform/` (Hetzner + Porkbun providers, cloud-init for k3s + Tailscale)
+- [x] Write `infra/terraform/clusters/` (Hetzner + Porkbun providers, cloud-init for k3s + Tailscale)
 - [x] State backend in Hetzner Object Storage (`scholia-tf-state` bucket, fsn1)
 - [x] `terraform apply -var-file=dev.tfvars` — dev cluster live at `dev.scholia.study`
 - [ ] `terraform apply -var-file=prod.tfvars` — deferred until dev is fully validated
@@ -636,9 +636,9 @@ regions). Not infrastructure, but worth tracking.
       skips builds when nothing image-relevant changed (docs, infra,
       *.md). `concurrency.cancel-in-progress: true` so a second push
       to the same ref cancels the in-flight build.
-- [ ] Make the three GHCR packages public (or set retention on the
+- [x] Make the three GHCR packages public (or set retention on the
       private ones). Defaults to inherit-from-repo on first push.
-- [ ] Deploy to dev:
+- [x] Deploy to dev:
   - `source ~/.config/scholia-infra.env` (for `SOPS_AGE_KEY_FILE`)
   - `sops -d infra/k8s/overlays/dev/secrets/postgres.yaml | kubectl apply -f -`
   - `sops -d infra/k8s/overlays/dev/secrets/api.yaml | kubectl apply -f -`
@@ -790,9 +790,190 @@ protection.
 - **Both at once**: chain the two — apply first, then restart to
   force pulls on Deployments that didn't have spec changes.
 
+### Ingest-as-Jobs (next workstream, designed 2026-05-19)
+
+**Problem.** Bible KJV alone didn't finish in 20 min over the
+kubectl port-forward tunnel; full Bible would be hours. Tunnel
+latency × millions of small INSERTs is the bottleneck. `pg_dump |
+psql` would be faster but still tunnel-bound, and would require
+wiping + restoring content tables (CASCADE-nuking any user
+quotations/articles that reference them). Both are stopgaps. Post-
+launch, we'll regularly add new books and translations against a
+live prod DB — we need a pattern where each ingest is fast,
+additive, and doesn't disturb user content.
+
+**Solution.** Package each ingest binary into its own container
+image (no assets baked in). Assets live in Hetzner Object Storage
+and are pulled at Job start. Run each book/translation ingest as
+a one-shot Kubernetes Job in-cluster. Postgres traffic stays on
+the LAN. Same pattern for dev and prod.
+
+```
+local workstation                cluster
+─────────────────                ─────────────────────────────────
+                                ┌────────────────────────────────┐
+edit assets/ locally            │ rclone sync s3:scholia-assets  │
+pnpm assets:sync ──┐            │   /<scope> → /assets           │
+                   ↓            │ binary (bible_to_db | ...)     │
+       s3://scholia-assets ────►│   reads /assets                │
+                                │   ↓ in-cluster                 │
+                                │   postgres svc                 │
+                                │   ↓                            │
+                                │   curl PURGE                   │
+kubectl apply ─────────────────►│ Job pod orchestrates           │
+  ingest-bible.yaml             └────────────────────────────────┘
+```
+
+**Components.**
+
+1. **One image per importer.** Built from `jobs/<name>/Dockerfile`:
+   - `jobs/ingest-bible/` → `scholia-ingest-bible` image, binary
+     `bible_to_db`, ENTRYPOINT `ingest_bible.sh` (runs KJV first,
+     then WEB/ASV/BBE/DARBY in parallel — preserves existing
+     `db_bible.sh` orchestration).
+   - `jobs/ingest-kant1/` → `scholia-ingest-kant1` image, binary
+     `kant1_struct_to_db`, ENTRYPOINT `ingest_kant1.sh` (runs DE
+     then EN translation).
+   - Future content sources (Aristotle, Augustine, …) drop in
+     under `jobs/` without touching `apps/`.
+
+   Rust source stays under `packages/` (workspace members). Each
+   `jobs/<x>/Dockerfile` references its own crate as build input.
+   `cargo-chef` caches workspace deps across the per-image builds
+   so the marginal cost of N images is just N final-link steps,
+   not N full workspace compiles.
+
+   Convention: `apps/` houses long-running Deployments;
+   `jobs/` houses one-shot Jobs. Mirrors the K8s primitives:
+   `apps/<x>/Dockerfile` ↔ `infra/k8s/base/<x>/` for services;
+   `jobs/<x>/Dockerfile` ↔ `infra/k8s/jobs/<x>.yaml` for batch.
+
+2. **Bucket-based assets (`scholia-assets`, Hetzner Object
+   Storage, fsn1).** Provisioned by
+   `infra/terraform/shared/main.tf`. Local `assets/` is canonical;
+   `pnpm assets:sync` mirrors it up (rclone sync, ~1.7GB total,
+   ~5min cold push, ~1-2min re-run after edits). Each Job pulls
+   only the scope it needs at pod start:
+   - `ingest-bible` pulls `s3://scholia-assets/bible/`.
+   - `ingest-kant1` pulls `s3://scholia-assets/kant1_md_to_struct/`
+     + `s3://scholia-assets/kant1_md_translation_to_struct/`.
+
+   Bucket creds: single Hetzner-issued S3 keypair, account-wide
+   (Hetzner Object Storage doesn't support per-bucket IAM). Local
+   reads/writes via `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY`
+   in `scholia-infra.env`. Cluster Jobs read via the same keypair
+   exposed through a SOPS-encrypted Secret. Per-bucket split would
+   require a separate Hetzner project — defer.
+
+   Image size win: per-binary image is ~30MB (binary + rclone),
+   not ~80-300MB (binary + assets baked in). Faster CI builds and
+   faster Job cold-starts on first pull.
+
+3. **Idempotency in ingest binaries.** Currently each binary
+   `INSERT`s assuming an empty/partial schema. A re-run duplicates
+   sources/books. Required change:
+   - `ON CONFLICT (slug) DO {NOTHING | UPDATE}` on `sources`,
+     `books`, `persons` (and other natural-key tables).
+   - For content (`toc_nodes`, `content_blocks`, `sentences`, …),
+     scope by `book_id`: a re-ingest of book X either no-ops or
+     replaces book X's content transactionally, never touching
+     book Y.
+   - Default: skip-if-exists. `--force-replace` flag for explicit
+     re-ingest of a given book.
+   - This is needed regardless of where ingest runs — without it,
+     any failed mid-run + restart leaves duplicates.
+
+4. **Job manifests (`infra/k8s/jobs/`).** One per content source
+   (Bible is one Job, Kant is one Job — intra-source orchestration
+   stays inside the runner script). Each Job:
+   - `generateName: ingest-bible-` so re-applies create fresh
+     pods; old ones linger as audit trail until TTL'd.
+   - Reads `POSTGRES_*` env from the same `postgres-credentials`
+     Secret the api uses (DB user, password, host, port, db).
+   - Reads `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` from a
+     SOPS-encrypted `assets-bucket` Secret for the rclone pull.
+   - `restartPolicy: Never`, `backoffLimit: 0` — Jobs fail fast
+     on bugs. Investigate, fix, re-apply rather than auto-retry.
+   - `ttlSecondsAfterFinished: 86400` — auto-clean after 1 day.
+   - `resources.requests` modest; `limits.memory` generous (ingest
+     parses + holds book trees in memory).
+
+5. **PURGE on success.** The binary itself calls
+   `CACHE_PURGE_URL` (already available as an env var pattern)
+   on the affected `book/<handle>` cache keys after `tx.commit()`.
+   This is the "wire PURGE into ingest binaries" todo from § v0
+   — folds into this workstream.
+
+6. **Workflow.**
+   ```
+   # 1. edit assets/ locally if content changed; sync to bucket
+   pnpm assets:sync
+   # 2. CI builds scholia-ingest-{bible,kant1}:main (if Dockerfile
+   #    or crate sources changed)
+   # 3. trigger:
+   kubectl apply -f infra/k8s/jobs/ingest-bible.yaml -n scholia
+   # 4. watch:
+   kubectl wait --for=condition=complete \
+     job -l ingest=bible --timeout=20m -n scholia
+   kubectl logs -f -l ingest=bible -n scholia
+   # 5. job terminates; PURGE has fired; content live
+   ```
+
+**First proof point.** Bible-on-dev becomes the first concrete use
+of this pattern, replacing the killed tunneled ingest.
+
+**Once landed.** The `scripts/db_dev_run.sh`, `db_dev_reset.sh`,
+`db_dev_reload`, etc. stay useful for Beekeeper DB inspection and
+emergency wipes, but the primary content path is Jobs. The old
+`pnpm db:dev:run pnpm db:bible` workflow is retired.
+
+### Ingest-as-Jobs prereqs landed (2026-05-19)
+
+- ✅ **Terraform restructured** to `infra/terraform/{clusters,
+  shared}/`. Cluster TF (per-env, workspaced) lives in
+  `clusters/`. Project-wide TF (no workspaces, applied once)
+  lives in `shared/`. Backend keys: `scholia/terraform.tfstate`
+  for clusters, `scholia/shared.tfstate` for shared — same
+  backing bucket (`scholia-tf-state`), different state files.
+- ✅ **`scholia-assets` bucket provisioned** via
+  `infra/terraform/shared/main.tf` (AWS provider pointed at
+  Hetzner Object Storage S3 endpoint, `fsn1`).
+- ✅ **`pnpm assets:sync`** wired up. `scripts/assets_sync.sh`
+  configures rclone via env vars (no `rclone.conf` needed),
+  mirrors `./assets/` → `s3://scholia-assets/`. Source-of-truth
+  is local; sync deletes remote files no longer present locally.
+  Pass-through flags (e.g. `--dry-run`) supported.
+- ✅ **Initial 1.7GB upload complete.** Re-runs take ~1-2 min to
+  list and compare 8300+ files; transfers only changes.
+
 ### Pickup for next session
 
-1. **End-to-end validation tail** (per § 6.3 — partially done):
+1. **Land Ingest-as-Jobs** (see above). Order of operations:
+   1. ✅ Provision `scholia-assets` bucket (Terraform).
+   2. ✅ Seed via `pnpm assets:sync`.
+   3. ⏳ Audit ingest binaries for idempotency. Add `ON CONFLICT`
+      clauses + `--force-replace` flag. New tests covering re-run
+      semantics (no-op on existing book, replace under
+      `--force-replace`).
+   4. ⏳ Wire PURGE into the binaries (folds in the § v0 todo).
+   5. ⏳ Build `jobs/ingest-bible/Dockerfile` and
+      `jobs/ingest-kant1/Dockerfile`. Each image: binary + rclone
+      + runner script (`ingest_bible.sh`, `ingest_kant1.sh`).
+      Refactor `scripts/db_bible.sh` + `db_kant1.sh` so the binary
+      path is `${INGEST_BIN:-target/release/<name>}` — same script
+      works in dev (cargo-build path) and in-image (pre-built bin
+      on PATH). Add to CI workflow alongside api/web/proxy.
+   6. ⏳ Create SOPS-encrypted `assets-bucket` Secret in
+      `infra/k8s/overlays/{dev,prod}/secrets/` for the rclone pull
+      creds.
+   7. ⏳ Write Job manifest templates under `infra/k8s/jobs/`
+      (`ingest-bible.yaml`, `ingest-kant1.yaml`). Kustomized so
+      dev/prod overlays don't fork the YAML.
+   8. ⏳ Run the first Job against dev: Bible. Verify timing,
+      logs, PURGE call, idempotency on re-run.
+   9. ⏳ Run Kant ingest Job against dev as second proof.
+
+2. **End-to-end validation tail** (per § 6.3 — partially done):
    - ✅ Anonymous chapter pageview: `X-Cache-Status: MISS` → `HIT`
      (also `EXPIRED`, normal).
    - ✅ `/api/*` cacheable when anonymous.
@@ -801,28 +982,24 @@ protection.
      (verified via DevTools while logged in via GitHub OAuth).
    - ✅ Authenticated write path: profile bio update via GitHub-
      authed session round-trips to the DB and renders fresh.
-   - ⏳ PURGE after article publish invalidates the listing. Requires
-     an editor account + at least one ingested book.
+   - ⏳ PURGE after article publish invalidates the listing. Any
+     authenticated user can do this — `ArticlesCreate` is a base
+     permission and `create_article` only needs a title. Flow: create
+     article → publish → GET `/articles` (MISS then HIT) → publish a
+     second article → GET `/articles` again and expect MISS (PURGE
+     fired). No editor role or ingested book required.
    - ⏳ Stripe test charge → role flips → cancellation. Requires
      pointing the Stripe Dashboard webhook at
      `https://dev.scholia.study/api/webhooks/stripe` and using the
      dev test-mode keys already in the api Secret. Carve-out
      already in place (`/api/webhooks/` bypasses Basic Auth).
 
-2. **Ingest the Bible** into dev DB. Kant is in already; Bible would
-   round out the content. `pnpm db:dev:run pnpm db:bible` (with
-   `pnpm db:dev:forward` running in another terminal).
-
-3. **Wire PURGE into ingest binaries** (still open from § v0 refactor
-   list). Once content is being re-ingested in cluster, the relevant
-   `book/<handle>` cache keys need invalidation.
-
-4. **Deferred hardening** (from earlier security review):
+3. **Deferred hardening** (from earlier security review):
    - NetworkPolicy on Postgres ✅ done.
    - k3s `--secrets-encryption` — defer to prod cluster bringup.
    - Separate app-level DB user (not superuser) — v1 maintenance.
 
-5. **Eventually**: prod cluster, prod overlay, Stripe live keys,
+4. **Eventually**: prod cluster, prod overlay, Stripe live keys,
    soft launch.
 
 ### v1 — ArgoCD + Sentry
