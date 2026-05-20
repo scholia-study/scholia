@@ -899,11 +899,13 @@ kubectl apply ─────────────────►│ Job pod 
    - `resources.requests` modest; `limits.memory` generous (ingest
      parses + holds book trees in memory).
 
-5. **PURGE on success.** The binary itself calls
-   `CACHE_PURGE_URL` (already available as an env var pattern)
-   on the affected `book/<handle>` cache keys after `tx.commit()`.
-   This is the "wire PURGE into ingest binaries" todo from § v0
-   — folds into this workstream.
+5. **PURGE on success.** ✅ Landed 2026-05-20. Both binaries call
+   `purge_cache(...)` after `tx.commit()`, reading
+   `CACHE_PURGE_URL` from env (no-op if unset, so local dev
+   without a proxy still works). Currently invalidates `/api/
+   library`, `/api/books`, `/books` — enough for the new-book
+   case (skip-if-exists). When `--force-replace` lands, the path
+   list will need to expand to the per-book pages too.
 
 6. **Workflow.**
    ```
@@ -956,7 +958,9 @@ emergency wipes, but the primary content path is Jobs. The old
       (2026-05-20). Each binary now checks `books.slug` before
       opening its transaction and exits cleanly if the book is
       already imported. `--force-replace` deferred (see § 3).
-   4. ⏳ Wire PURGE into the binaries (folds in the § v0 todo).
+   4. ✅ PURGE wired into both binaries (2026-05-20). Reads
+      `CACHE_PURGE_URL` from env; calls after `tx.commit()`;
+      invalidates `/api/library`, `/api/books`, `/books`.
    5. ⏳ Build `jobs/ingest-bible/Dockerfile` and
       `jobs/ingest-kant1/Dockerfile`. Each image: binary + rclone
       + runner script (`ingest_bible.sh`, `ingest_kant1.sh`).

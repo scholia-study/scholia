@@ -869,6 +869,11 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     tx.commit().await?;
 
+    // Drop stale listing entries so the new book shows up immediately
+    // rather than waiting out the TTL. No-op if CACHE_PURGE_URL is
+    // unset (local dev without a proxy).
+    purge_cache(&["/api/library", "/api/books", "/books"]).await;
+
     eprintln!();
     eprintln!("=== Import complete: {} ===", translation.full_title);
     eprintln!("  toc_nodes:      {}", totals.nodes);
@@ -885,6 +890,44 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     Ok(())
+}
+
+/// Send PURGE requests to the proxy's cluster-internal admin port for
+/// each given path. `CACHE_PURGE_URL` looks like
+/// `http://scholia-proxy.scholia.svc.cluster.local:8080`. If unset or
+/// empty (local dev without a proxy), this is a no-op.
+///
+/// Synchronous on purpose — the ingest binary exits right after, so
+/// fire-and-forget tasks would just be killed. We wait for each PURGE
+/// and log the outcome. Failures are logged but don't error out the
+/// import: the cache is best-effort.
+async fn purge_cache(paths: &[&str]) {
+    let Ok(base) = std::env::var("CACHE_PURGE_URL") else {
+        return;
+    };
+    if base.is_empty() {
+        return;
+    }
+    let base = base.trim_end_matches('/');
+    let client = match reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(5))
+        .build()
+    {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("PURGE client init failed: {e} (skipping cache invalidation)");
+            return;
+        }
+    };
+    let method = reqwest::Method::from_bytes(b"PURGE").expect("PURGE is a valid method");
+    for path in paths {
+        let url = format!("{base}{path}");
+        match client.request(method.clone(), &url).send().await {
+            // 412 = key not in cache. Not an error — nothing to do.
+            Ok(resp) => eprintln!("PURGE {} → {}", path, resp.status()),
+            Err(e) => eprintln!("PURGE {} failed: {}", path, e),
+        }
+    }
 }
 
 #[derive(Default)]
