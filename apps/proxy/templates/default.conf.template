@@ -32,16 +32,25 @@ server {
     #     precedence)
     include /etc/nginx/conf.d/security/*.conf;
 
-    # ---- Hosted text — identity-free reads, always cached ----
+    # ---- Identity-free reads — always cached ----
     #
     # These endpoints return identical responses for every caller; logged-in
     # and anonymous users share the same cache entries. The bypass-on-cookie
     # default is explicitly overridden here.
     #
+    # Currently:
+    #   /api/library                      — full library tree
+    #   /api/books                        — book listing
+    #   /api/books/<slug>                 — single book
+    #   /api/books/<slug>/toc             — table of contents
+    #   /api/books/<slug>/nodes           — paginated page query
+    #
     # Be extremely conservative about widening this regex — anything matched
     # here is cached across users, so a handler that ever embeds per-user
-    # data in its response would leak.
-    location ~ ^/api/books/[^/]+(/(toc|nodes))?$ {
+    # data (subscription badges, reading position, "next up", etc.) would
+    # leak between users. If you evolve any of these handlers, remove it
+    # from this block first.
+    location ~ ^/api/(library|books(/[^/]+(/(toc|nodes))?)?)$ {
         proxy_pass http://rust_api;
         proxy_cache api_cache;
         proxy_cache_valid 200 1h;
