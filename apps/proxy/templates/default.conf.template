@@ -77,6 +77,38 @@ server {
         proxy_no_cache     $bypass_cache;
     }
 
+    # ---- Vite-hashed static assets — immutable, year-long cache ----
+    #
+    # `^~` wins over the catch-all `location /` below without paying
+    # for regex matching. Don't bypass-on-cookie: these responses are
+    # identical for every user, so authed users benefit too.
+    location ^~ /assets/ {
+        proxy_pass http://node_ssr;
+        proxy_cache html_cache;
+        proxy_cache_valid 200 1h;
+
+        # add_header in a child block disables inheritance from server
+        # scope, so re-declare X-Cache-Status.
+        add_header X-Cache-Status $upstream_cache_status always;
+        add_header Cache-Control  "public, max-age=31536000, immutable" always;
+    }
+
+    # ---- Fonts — unhashed filenames, 30-day cache ----
+    #
+    # `libre-baskerville-latin-{400,700}-normal.woff2` keep the same
+    # URL across releases, so we can't promise `immutable`. 30 days is
+    # the practical sweet spot: huge bandwidth win on repeat visits,
+    # and a font change just means hard-refresh once (or rename the
+    # file to bust caches everywhere).
+    location ^~ /fonts/ {
+        proxy_pass http://node_ssr;
+        proxy_cache html_cache;
+        proxy_cache_valid 200 1h;
+
+        add_header X-Cache-Status $upstream_cache_status always;
+        add_header Cache-Control  "public, max-age=2592000" always;
+    }
+
     # ---- HTML — Node SSR, cache when anon ----
     location / {
         proxy_pass http://node_ssr;
