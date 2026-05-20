@@ -1,17 +1,13 @@
 #!/usr/bin/env bash
-# Import all five public-domain English Bibles. KJV runs first because
-# it's the canonical translation (its verse counts seed the parity
-# guard) and DARBY's alignment seeder reads KJV's page_markers; the
-# other four are independent and import in parallel.
+# Import all five public-domain English Bibles from a local laptop
+# checkout. KJV runs first because it's the canonical translation (its
+# verse counts seed the parity guard) and DARBY's alignment seeder
+# reads KJV's page_markers; the other four are independent and import
+# in parallel.
 #
-# Re-run safe only against a fresh schema: pair with db_reset.sh +
-# db_kant1.sh as needed.
+# Local only
 set -euo pipefail
 
-# Build once up-front so the four parallel invocations don't all
-# contend on the cargo build lock (and so we get a release binary —
-# import is JSON-deserialization and string-segmentation heavy, both
-# of which benefit notably from optimizations).
 cargo build -p bible_to_db --release
 
 BIN=target/release/bible_to_db

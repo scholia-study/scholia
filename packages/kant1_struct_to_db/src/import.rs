@@ -2,9 +2,46 @@ use std::collections::HashMap;
 use std::fs;
 
 use sqlx::PgPool;
+use sqlx::postgres::PgConnectOptions;
 use uuid::Uuid;
 
 use kant1_md_to_struct::model::Output;
+
+/// Build sqlx connect options. CLI `--database-url` wins; otherwise
+/// prefer discrete `POSTGRES_*` env vars (k8s Secret pattern — avoids
+/// the URL-special-char trap when `$(VAR)` substitution is literal);
+/// fall back to `DATABASE_URL` for laptop `.env`. Same shape as
+/// `apps/api/src/config.rs::pg_connect_options_from_env` — kept
+/// inline rather than extracted to a shared crate because there are
+/// only two ingest consumers today.
+fn pg_connect_options(
+    cli_url: Option<String>,
+) -> Result<PgConnectOptions, Box<dyn std::error::Error>> {
+    if let Some(url) = cli_url {
+        return Ok(url.parse()?);
+    }
+    if let Ok(user) = std::env::var("POSTGRES_USER") {
+        let password = std::env::var("POSTGRES_PASSWORD")
+            .map_err(|_| "POSTGRES_PASSWORD must be set when POSTGRES_USER is set")?;
+        let database = std::env::var("POSTGRES_DB")
+            .map_err(|_| "POSTGRES_DB must be set when POSTGRES_USER is set")?;
+        let host = std::env::var("POSTGRES_HOST").unwrap_or_else(|_| "localhost".to_string());
+        let port: u16 = std::env::var("POSTGRES_PORT")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(5432);
+        return Ok(PgConnectOptions::new()
+            .username(&user)
+            .password(&password)
+            .database(&database)
+            .host(&host)
+            .port(port));
+    }
+    let url = std::env::var("DATABASE_URL").map_err(
+        |_| "Set POSTGRES_USER + POSTGRES_PASSWORD + POSTGRES_DB (preferred) or DATABASE_URL",
+    )?;
+    Ok(url.parse()?)
+}
 
 pub async fn run(
     input_file: &str,
@@ -13,14 +50,10 @@ pub async fn run(
 ) -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
-    let db_url = database_url
-        .or_else(|| std::env::var("DATABASE_URL").ok())
-        .ok_or("No database URL: pass --database-url or set DATABASE_URL")?;
-
     let data = fs::read_to_string(input_file)?;
     let output: Output = serde_json::from_str(&data)?;
 
-    let pool = PgPool::connect(&db_url).await?;
+    let pool = PgPool::connect_with(pg_connect_options(database_url)?).await?;
 
     // Idempotency guard. `books.slug` is UNIQUE; a second run would
     // otherwise hit a constraint violation mid-transaction. Detect

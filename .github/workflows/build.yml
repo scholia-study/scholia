@@ -7,6 +7,7 @@ on:
         # image. Later we'll work to tighten this.
         paths:
             - "apps/**"
+            - "jobs/**"
             - "packages/**"
             - "db/migrations/**"
             - ".sqlx/**"
@@ -36,10 +37,19 @@ jobs:
                 include:
                     - service: api
                       context: .
+                      file: apps/api/Dockerfile
                     - service: web
                       context: .
+                      file: apps/web/Dockerfile
                     - service: proxy
                       context: apps/proxy
+                      file: apps/proxy/Dockerfile
+                    - service: ingest-bible
+                      context: .
+                      file: jobs/ingest-bible/Dockerfile
+                    - service: ingest-kant1
+                      context: .
+                      file: jobs/ingest-kant1/Dockerfile
         steps:
             - uses: actions/checkout@v6
 
@@ -72,7 +82,7 @@ jobs:
               uses: docker/build-push-action@v7
               with:
                   context: ${{ matrix.context }}
-                  file: apps/${{ matrix.service }}/Dockerfile
+                  file: ${{ matrix.file }}
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
