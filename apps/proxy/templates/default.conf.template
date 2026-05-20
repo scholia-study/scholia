@@ -93,14 +93,15 @@ server {
         add_header Cache-Control  "public, max-age=31536000, immutable" always;
     }
 
-    # ---- Fonts — unhashed filenames, 30-day cache ----
+    # ---- Fonts and images — unhashed filenames, 30-day cache ----
     #
-    # `libre-baskerville-latin-{400,700}-normal.woff2` keep the same
-    # URL across releases, so we can't promise `immutable`. 30 days is
-    # the practical sweet spot: huge bandwidth win on repeat visits,
-    # and a font change just means hard-refresh once (or rename the
-    # file to bust caches everywhere).
-    location ^~ /fonts/ {
+    # `libre-baskerville-latin-{400,700}-normal.woff2` and
+    # `/images/scholia_book.webp` etc. keep the same URL across
+    # releases (they ship from apps/web/public/), so we can't promise
+    # `immutable`. 30 days is the practical sweet spot: huge bandwidth
+    # win on repeat visits, and a file swap under the same name just
+    # means a hard-refresh once (or rename to bust caches everywhere).
+    location ~ ^/(fonts|images)/ {
         proxy_pass http://node_ssr;
         proxy_cache html_cache;
         proxy_cache_valid 200 1h;
