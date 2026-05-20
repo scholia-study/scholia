@@ -32,3 +32,11 @@ spec:
               - podSelector:
                     matchLabels:
                         app.kubernetes.io/name: scholia-api
+              # Ingest Jobs (Bible, Kant, future books) — gated by the
+              # `ingest:` label which every Job-template pod carries.
+              # New ingest Jobs slot in here automatically without a
+              # NetworkPolicy edit.
+              - podSelector:
+                    matchExpressions:
+                        - key: ingest
+                          operator: Exists

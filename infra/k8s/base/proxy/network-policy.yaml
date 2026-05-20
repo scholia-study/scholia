@@ -34,7 +34,7 @@ spec:
     - ports:
         - port: 80
           protocol: TCP
-    # PURGE (8080) — scholia-api pods only.
+    # PURGE (8080) — scholia-api pods and ingest Jobs.
     - ports:
         - port: 8080
           protocol: TCP
@@ -42,3 +42,10 @@ spec:
         - podSelector:
             matchLabels:
               app.kubernetes.io/name: scholia-api
+        # Ingest Jobs call PURGE after `tx.commit()` to drop stale
+        # listings for the newly-imported book. Same `ingest:` label
+        # gate as the Postgres NetworkPolicy.
+        - podSelector:
+            matchExpressions:
+              - key: ingest
+                operator: Exists
