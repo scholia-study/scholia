@@ -476,6 +476,24 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         .ok_or("No database URL")?;
 
     let pool = PgPool::connect(&db_url).await?;
+
+    // Idempotency guard. The translation's book slug is a UNIQUE column,
+    // so a second run would otherwise blow up mid-transaction with a
+    // constraint violation. Detect it upfront, no-op cleanly. Schema
+    // fixes still go through `pnpm db:reset`; re-ingesting existing
+    // content under a flag is a separate (still-deferred) design.
+    let existing_book: Option<Uuid> = sqlx::query_scalar("SELECT id FROM books WHERE slug = $1")
+        .bind(translation.book_slug)
+        .fetch_optional(&pool)
+        .await?;
+    if existing_book.is_some() {
+        eprintln!(
+            "Translation '{}' already imported (book slug '{}' exists). Skipping.",
+            translation.slug, translation.book_slug
+        );
+        return Ok(());
+    }
+
     let mut tx = pool.begin().await?;
 
     // System user owns all seed-imported sources/persons.

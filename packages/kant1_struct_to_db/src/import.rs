@@ -21,6 +21,21 @@ pub async fn run(
     let output: Output = serde_json::from_str(&data)?;
 
     let pool = PgPool::connect(&db_url).await?;
+
+    // Idempotency guard. `books.slug` is UNIQUE; a second run would
+    // otherwise hit a constraint violation mid-transaction. Detect
+    // upfront and no-op cleanly. Re-ingesting under a flag is a
+    // separate (still-deferred) design — for now, schema/source-data
+    // fixes go through `pnpm db:reset`.
+    let existing_book: Option<Uuid> = sqlx::query_scalar("SELECT id FROM books WHERE slug = $1")
+        .bind(&output.book.slug)
+        .fetch_optional(&pool)
+        .await?;
+    if existing_book.is_some() {
+        eprintln!("Book '{}' already imported. Skipping.", output.book.slug);
+        return Ok(());
+    }
+
     let mut tx = pool.begin().await?;
 
     // System user owns all seed-imported persons/sources; see db/001_schema.sql.

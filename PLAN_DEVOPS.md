@@ -869,19 +869,20 @@ kubectl apply ─────────────────►│ Job pod 
    not ~80-300MB (binary + assets baked in). Faster CI builds and
    faster Job cold-starts on first pull.
 
-3. **Idempotency in ingest binaries.** Currently each binary
-   `INSERT`s assuming an empty/partial schema. A re-run duplicates
-   sources/books. Required change:
-   - `ON CONFLICT (slug) DO {NOTHING | UPDATE}` on `sources`,
-     `books`, `persons` (and other natural-key tables).
-   - For content (`toc_nodes`, `content_blocks`, `sentences`, …),
-     scope by `book_id`: a re-ingest of book X either no-ops or
-     replaces book X's content transactionally, never touching
-     book Y.
-   - Default: skip-if-exists. `--force-replace` flag for explicit
-     re-ingest of a given book.
-   - This is needed regardless of where ingest runs — without it,
-     any failed mid-run + restart leaves duplicates.
+3. **Idempotency in ingest binaries.** Each binary previously
+   `INSERT`ed assuming an empty schema; a re-run blew up on the
+   `books.slug` UNIQUE constraint mid-transaction.
+   - ✅ **Skip-if-exists landed (2026-05-20).** `bible_to_db` and
+     `kant1_struct_to_db` now check `SELECT id FROM books WHERE
+     slug = $1` before opening the transaction; on hit they log
+     "already imported, skipping" and exit 0. Each translation
+     has its own `books` row (`kjv-bible`, `web-bible`, …) so the
+     guard is per-translation, not per-Bible-as-a-whole.
+   - ⏳ Replace flow deferred. A `--force-replace` flag that
+     deletes + re-inserts a given book is a separate design — has
+     to account for FK chains to user content (quotations →
+     sentences) and for `cross_translation_alignments` regen.
+     Schema/source-data fixes go through `pnpm db:reset` for now.
 
 4. **Job manifests (`infra/k8s/jobs/`).** One per content source
    (Bible is one Job, Kant is one Job — intra-source orchestration
@@ -951,10 +952,10 @@ emergency wipes, but the primary content path is Jobs. The old
 1. **Land Ingest-as-Jobs** (see above). Order of operations:
    1. ✅ Provision `scholia-assets` bucket (Terraform).
    2. ✅ Seed via `pnpm assets:sync`.
-   3. ⏳ Audit ingest binaries for idempotency. Add `ON CONFLICT`
-      clauses + `--force-replace` flag. New tests covering re-run
-      semantics (no-op on existing book, replace under
-      `--force-replace`).
+   3. ✅ Skip-if-exists in `bible_to_db` and `kant1_struct_to_db`
+      (2026-05-20). Each binary now checks `books.slug` before
+      opening its transaction and exits cleanly if the book is
+      already imported. `--force-replace` deferred (see § 3).
    4. ⏳ Wire PURGE into the binaries (folds in the § v0 todo).
    5. ⏳ Build `jobs/ingest-bible/Dockerfile` and
       `jobs/ingest-kant1/Dockerfile`. Each image: binary + rclone
