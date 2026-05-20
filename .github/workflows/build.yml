@@ -3,8 +3,10 @@ name: Build
 on:
     push:
         branches: [main]
-        # Skip pushes that don't touch any file that ends up in an
-        # image. Later we'll work to tighten this.
+        # Workflow-level filter — coarse gate so trivial-only pushes
+        # (README edits, etc.) don't even spin up the `changes` runner.
+        # Fine-grained per-service gating lives in the `changes` job
+        # below.
         paths:
             - "apps/**"
             - "jobs/**"
@@ -28,9 +30,64 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
+    changes:
+        name: Detect changes
+        runs-on: ubuntu-latest
+        outputs:
+            api: ${{ steps.filter.outputs.api }}
+            web: ${{ steps.filter.outputs.web }}
+            proxy: ${{ steps.filter.outputs.proxy }}
+            ingest_bible: ${{ steps.filter.outputs.ingest_bible }}
+            ingest_kant1: ${{ steps.filter.outputs.ingest_kant1 }}
+        steps:
+            - uses: actions/checkout@v6
+            - uses: dorny/paths-filter@v3
+              id: filter
+              with:
+                  # `Cargo.lock` changes appear on every Rust filter
+                  # because a lockfile shift can change transitive deps
+                  # for any binary. Coarse but correct.
+                  filters: |
+                      api:
+                        - 'apps/api/**'
+                        - 'db/migrations/**'
+                        - '.sqlx/**'
+                        - 'Cargo.toml'
+                        - 'Cargo.lock'
+                        - '.github/workflows/build.yml'
+                      web:
+                        - 'apps/web/**'
+                        - 'package.json'
+                        - 'pnpm-lock.yaml'
+                        - 'pnpm-workspace.yaml'
+                        - '.github/workflows/build.yml'
+                      proxy:
+                        - 'apps/proxy/**'
+                        - '.github/workflows/build.yml'
+                      ingest_bible:
+                        - 'packages/bible_to_db/**'
+                        - 'jobs/ingest-bible/**'
+                        - 'Cargo.toml'
+                        - 'Cargo.lock'
+                        - '.github/workflows/build.yml'
+                      ingest_kant1:
+                        - 'packages/kant1_*/**'
+                        - 'packages/common/**'
+                        - 'jobs/ingest-kant1/**'
+                        - 'Cargo.toml'
+                        - 'Cargo.lock'
+                        - '.github/workflows/build.yml'
+
     build:
         name: Build ${{ matrix.service }}
+        needs: changes
         runs-on: ubuntu-latest
+        if: |
+            (matrix.service == 'api' && needs.changes.outputs.api == 'true') ||
+            (matrix.service == 'web' && needs.changes.outputs.web == 'true') ||
+            (matrix.service == 'proxy' && needs.changes.outputs.proxy == 'true') ||
+            (matrix.service == 'ingest-bible' && needs.changes.outputs.ingest_bible == 'true') ||
+            (matrix.service == 'ingest-kant1' && needs.changes.outputs.ingest_kant1 == 'true')
         strategy:
             fail-fast: true
             matrix:
