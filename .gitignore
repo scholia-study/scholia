@@ -7,3 +7,4 @@ apps/web/dist/
 node_modules
 .venv
 .claude/projects/
+.antigravitycli
