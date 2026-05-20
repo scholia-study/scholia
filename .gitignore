@@ -8,3 +8,12 @@ node_modules
 .venv
 .claude/projects/
 .antigravitycli
+
+# Terraform — `.terraform/` is the local plugin/module cache that
+# `terraform init` populates (vendor binaries, sometimes hundreds of
+# MB). `.terraform.lock.hcl` IS tracked (it pins provider versions).
+# tfstate files belong in the remote backend, never in git.
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
