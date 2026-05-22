@@ -855,8 +855,8 @@ kubectl apply ─────────────────►│ Job pod 
    ~5min cold push, ~1-2min re-run after edits). Each Job pulls
    only the scope it needs at pod start:
    - `ingest-bible` pulls `s3://scholia-assets/bible/`.
-   - `ingest-kant1` pulls `s3://scholia-assets/kant1_md_to_struct/`
-     + `s3://scholia-assets/kant1_md_translation_to_struct/`.
+   - `ingest-kant1` pulls `s3://scholia-assets/kant1/derived/md_to_struct/`
+     + `s3://scholia-assets/kant1/derived/md_translation_to_struct/`.
 
    Bucket creds: single Hetzner-issued S3 keypair, account-wide
    (Hetzner Object Storage doesn't support per-bucket IAM). Local

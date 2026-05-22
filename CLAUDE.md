@@ -82,7 +82,7 @@ runs `api migrate`. Dev resets via `pnpm db:reset` (uses `sqlx-cli`).
 
 - `packages/common` — shared parsers (epub, ncx, opf, kant1, sentences, content).
 - `packages/bible_to_db` — `--translation kjv|web|asv|bbe|darby`.
-- `packages/kant1_*` — multi-stage pipeline: OCR → lines → elements → MD → modernized/translated MD → struct → DB. See `README.md` and `assets/kant1_*` directories.
+- `packages/kant1_*` — multi-stage pipeline: OCR → lines → elements → MD → modernized/translated MD → struct → DB. See `README.md` and `assets/kant1/`, which splits into three tiers: `raw/` (pre-curation pipeline outputs — gitignored), `curated/` (human-reviewed MD — tracked), `derived/` (struct JSONs auto-generated from curated MD — gitignored).
 
 ### Docs
 

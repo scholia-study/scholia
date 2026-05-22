@@ -14,11 +14,11 @@ use serde::{Deserialize, Serialize};
 #[command(about = "Extract line-level OCR data from raw Document AI responses")]
 struct Args {
     /// Directory containing raw Document AI response JSON
-    #[arg(long, default_value = "assets/kant1_png_to_ocr")]
+    #[arg(long, default_value = "assets/kant1/raw/png_to_ocr")]
     input_dir: String,
 
     /// Directory for per-page line JSON output
-    #[arg(long, default_value = "assets/kant1_ocr_to_lines")]
+    #[arg(long, default_value = "assets/kant1/raw/ocr_to_lines")]
     output_dir: String,
 
     /// Start page index, 1-based

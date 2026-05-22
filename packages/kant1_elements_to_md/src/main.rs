@@ -22,11 +22,11 @@ use stitch::{BPageAnchor, stitch_lines};
 )]
 struct Args {
     /// Directory containing per-page element JSON
-    #[arg(long, default_value = "assets/kant1_lines_to_elements")]
+    #[arg(long, default_value = "assets/kant1/raw/lines_to_elements")]
     input_dir: String,
 
     /// Output directory for markdown files
-    #[arg(long, default_value = "assets/kant1_elements_to_md")]
+    #[arg(long, default_value = "assets/kant1/raw/elements_to_md")]
     output_dir: String,
 }
 

@@ -1,5 +1,26 @@
 /target
-assets/
+
+# assets/ holds three kinds of files per book:
+#   - raw/        pre-curation pipeline outputs (PDF, OCR, lines,
+#                 elements, raw MD) + external source binaries —
+#                 regenerable, kept out of git
+#   - curated/    human-edited MD (reviewed + modernized + translated)
+#                 — irreplaceable editorial work, tracked
+#   - derived/    auto-generated artifacts downstream of curation
+#                 (struct JSONs the ingest binary loads) — regenerable
+#                 from curated/ in seconds, kept out of git
+#
+# Bibles live flat under assets/bible/ (no curation layer; translations
+# come from external public-domain sources as-is) — all ignored.
+#
+# The negations below re-include the curated tier per source. Add a
+# `!assets/<book>/curated/` line whenever a new book gains a curated
+# layer. Order matters: parent dirs must be un-ignored before children.
+assets/*
+!assets/kant1/
+assets/kant1/*
+!assets/kant1/curated/
+
 .env
 apps/web/node_modules/
 apps/web/dist/

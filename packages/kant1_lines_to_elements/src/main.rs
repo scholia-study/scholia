@@ -49,11 +49,11 @@ static STANDALONE_B_REF_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d{
 #[command(about = "Extract structured elements from OCR line data")]
 struct Args {
     /// Directory containing per-page OCR line JSON
-    #[arg(long, default_value = "assets/kant1_ocr_to_lines")]
+    #[arg(long, default_value = "assets/kant1/raw/ocr_to_lines")]
     input_dir: String,
 
     /// Directory for per-page element JSON output
-    #[arg(long, default_value = "assets/kant1_lines_to_elements")]
+    #[arg(long, default_value = "assets/kant1/raw/lines_to_elements")]
     output_dir: String,
 
     /// Start page index, 1-based

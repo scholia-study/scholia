@@ -15,7 +15,7 @@ OCR images
 
 ## What it does
 
-1. **Reads** all `assets/kant1_lines_to_elements/page_*.json` files.
+1. **Reads** all `assets/kant1/raw/lines_to_elements/page_*.json` files.
 2. **Infers AA page numbers** for pages that lack an explicit `page_number` header
    using the empirical formula `aa_page = page_index − 9` (derived from the
    consistent 1:1 mapping across all pages where the header was OCR'd).
@@ -30,7 +30,7 @@ OCR images
 6. **Preserves B-edition page references** (`b_page_ref`) at both the
    content-block and sentence level, anchored by character offset.
 7. **Numbers** paragraphs and sentences with globally sequential counters.
-8. **Outputs** `assets/kant1_kritik.json`.
+8. **Outputs** per-section markdown into `assets/kant1/raw/elements_to_md/`.
 
 ## Authoritative TOC
 
@@ -73,8 +73,8 @@ cargo run --package kant1_elements_to_struct
 
 # Custom paths:
 cargo run --package kant1_elements_to_struct -- \
-  --input-dir assets/kant1_lines_to_elements \
-  --output assets/kant1_kritik.json
+  --input-dir assets/kant1/raw/lines_to_elements \
+  --output-dir assets/kant1/raw/elements_to_md
 ```
 
 ## Known limitations

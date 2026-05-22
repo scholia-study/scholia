@@ -19,11 +19,15 @@ export RCLONE_CONFIG_SCHOLIA_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"
 export RCLONE_CONFIG_SCHOLIA_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"
 export RCLONE_CONFIG_SCHOLIA_FORCE_PATH_STYLE=true
 
-rclone sync scholia:scholia-assets/kant1_md_to_struct /app/assets/kant1_md_to_struct --fast-list --transfers=8
-rclone sync scholia:scholia-assets/kant1_md_translation_to_struct /app/assets/kant1_md_translation_to_struct --fast-list --transfers=8
+# Bucket paths mirror the local assets/ layout. To re-upload after the
+# kant1 raw/curated/derived reorg:
+#   rclone moveto scholia:scholia-assets/kant1_md_to_struct scholia:scholia-assets/kant1/derived/md_to_struct
+#   rclone moveto scholia:scholia-assets/kant1_md_translation_to_struct scholia:scholia-assets/kant1/derived/md_translation_to_struct
+rclone sync scholia:scholia-assets/kant1/derived/md_to_struct /app/assets/kant1/derived/md_to_struct --fast-list --transfers=8
+rclone sync scholia:scholia-assets/kant1/derived/md_translation_to_struct /app/assets/kant1/derived/md_translation_to_struct --fast-list --transfers=8
 
 BIN=/usr/local/bin/kant1_struct_to_db
 
-"$BIN" --input-file assets/kant1_md_to_struct/output.json
-"$BIN" --input-file assets/kant1_md_translation_to_struct/output.json \
+"$BIN" --input-file assets/kant1/derived/md_to_struct/output.json
+"$BIN" --input-file assets/kant1/derived/md_translation_to_struct/output.json \
        --source-book-slug kritik-der-reinen-vernunft-b

@@ -6,7 +6,7 @@ use clap::Parser;
 #[command(about = "Import structured Kant KrV JSON into PostgreSQL")]
 struct Cli {
     /// Input JSON file (output of kant1_md_to_struct)
-    #[arg(long, default_value = "assets/kant1_md_to_struct/output.json")]
+    #[arg(long, default_value = "assets/kant1/derived/md_to_struct/output.json")]
     input_file: String,
 
     /// PostgreSQL connection URL (overrides DATABASE_URL env var)

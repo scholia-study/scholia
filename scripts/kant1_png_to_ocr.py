@@ -71,10 +71,10 @@ def main():
     parser = argparse.ArgumentParser(
         description="Send Kant KrV page images to GCP Document AI OCR"
     )
-    parser.add_argument("--pages-dir", default="assets/kant1_pages",
-                        help="Directory containing page images (default: assets/kant1_pages)")
-    parser.add_argument("--output-dir", default="assets/kant1_png_to_ocr",
-                        help="Directory for raw Document AI responses (default: assets/kant1_png_to_ocr)")
+    parser.add_argument("--pages-dir", default="assets/kant1/raw/pages",
+                        help="Directory containing page images (default: assets/kant1/raw/pages)")
+    parser.add_argument("--output-dir", default="assets/kant1/raw/png_to_ocr",
+                        help="Directory for raw Document AI responses (default: assets/kant1/raw/png_to_ocr)")
     parser.add_argument("--start", type=int, default=1,
                         help="Start page index, 1-based (default: 1)")
     parser.add_argument("--end", type=int, default=None,
@@ -86,7 +86,7 @@ def main():
     images = find_page_images(args.pages_dir)
     if not images:
         print(f"No page images found in {args.pages_dir}/")
-        print("Run: pdftoppm -png -r 300 assets/kant_kritik_2ed_1911.pdf assets/kant1_pages/page")
+        print("Run: pdftoppm -png -r 300 assets/kant1/raw/kant_kritik_2ed_1911.pdf assets/kant1/raw/pages/page")
         return
 
     total = len(images)

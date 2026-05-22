@@ -16,15 +16,15 @@ use structure::{ParsedFile, build_output};
 #[command(about = "Parse reviewed Kant KrV markdown into DB-ready JSON structures")]
 struct Cli {
     /// Directory containing modernized markdown files (primary text/html)
-    #[arg(long, default_value = "assets/kant1_md_modernized")]
+    #[arg(long, default_value = "assets/kant1/curated/md_modernized")]
     modernized_dir: String,
 
     /// Directory containing reviewed markdown files (original_text/original_html)
-    #[arg(long, default_value = "assets/kant1_md_reviewed")]
+    #[arg(long, default_value = "assets/kant1/curated/md_reviewed")]
     reviewed_dir: String,
 
     /// Output file (- for stdout)
-    #[arg(long, default_value = "assets/kant1_md_to_struct/output.json")]
+    #[arg(long, default_value = "assets/kant1/derived/md_to_struct/output.json")]
     output_file: String,
 }
 

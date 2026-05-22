@@ -10,6 +10,6 @@ set -euo pipefail
 cargo build -p kant1_struct_to_db --release
 BIN=target/release/kant1_struct_to_db
 
-"$BIN" --input-file assets/kant1_md_to_struct/output.json
-"$BIN" --input-file assets/kant1_md_translation_to_struct/output.json \
+"$BIN" --input-file assets/kant1/derived/md_to_struct/output.json
+"$BIN" --input-file assets/kant1/derived/md_translation_to_struct/output.json \
        --source-book-slug kritik-der-reinen-vernunft-b

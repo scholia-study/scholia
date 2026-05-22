@@ -18,17 +18,17 @@ use structure::{ParsedFile, build_output};
 #[command(about = "Parse English translation of Kant KrV into DB-ready JSON structures")]
 struct Cli {
     /// Directory containing English translation markdown files
-    #[arg(long, default_value = "assets/kant1_md_modernized_translated")]
+    #[arg(long, default_value = "assets/kant1/curated/md_modernized_translated")]
     translation_dir: String,
 
     /// Directory containing German modernized markdown files (for sentence parity validation)
-    #[arg(long, default_value = "assets/kant1_md_modernized")]
+    #[arg(long, default_value = "assets/kant1/curated/md_modernized")]
     source_dir: String,
 
     /// Output file (- for stdout)
     #[arg(
         long,
-        default_value = "assets/kant1_md_translation_to_struct/output.json"
+        default_value = "assets/kant1/derived/md_translation_to_struct/output.json"
     )]
     output_file: String,
 }

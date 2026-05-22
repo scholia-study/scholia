@@ -1,0 +1,3 @@
+- "Sperrrdruck" (words that have extra spacing) => ***one or more words***.
+- Regular bold =>  **one or more words**. 
+- Latin (and other foreign words) => _one or more words_
