@@ -8,6 +8,7 @@ use common::sentences::{
 use regex::Regex;
 use std::sync::LazyLock;
 
+use kant1_md_to_struct::figure::build_figure_block;
 use kant1_md_to_struct::html::{FOOTNOTE_REF_RE, md_to_html, md_to_plain};
 use kant1_md_to_struct::model::*;
 use kant1_md_to_struct::parse::{MarkerKind, ParsedBlock, ParsedBlockType, RawMarker};
@@ -165,6 +166,10 @@ fn build_block(
     counters: &mut Counters,
     lookups: &Lookups<'_>,
 ) -> ContentBlockData {
+    if let ParsedBlockType::Figure = &block.block_type {
+        return build_figure_block(block, None, block_pos, flat_index);
+    }
+
     let (block_type_str, para_num) = match &block.block_type {
         ParsedBlockType::Heading => ("heading", None),
         ParsedBlockType::Paragraph => {
@@ -173,6 +178,7 @@ fn build_block(
             ("paragraph", Some(n))
         }
         ParsedBlockType::Footnote { .. } => unreachable!("footnote blocks filtered out"),
+        ParsedBlockType::Figure => unreachable!("figure blocks handled above"),
     };
 
     // Rewrite footnote refs in raw text before conversion

@@ -214,6 +214,21 @@ fn run_extract(translation_dir_str: &str, source_dir_str: &str, output_file: &st
             .zip(de_content_blocks.iter())
             .enumerate()
         {
+            // Figures are verbatim HTML with a single anchor sentence, not
+            // markdown prose — sentence-splitting them is meaningless. Require
+            // that figures align with figures and move on.
+            let en_is_figure = matches!(en_block.block_type, ParsedBlockType::Figure);
+            let de_is_figure = matches!(de_block.block_type, ParsedBlockType::Figure);
+            if en_is_figure || de_is_figure {
+                if en_is_figure != de_is_figure {
+                    panic!(
+                        "{}: figure/non-figure block misalignment at block {}",
+                        en_filename, block_pos
+                    );
+                }
+                continue;
+            }
+
             let en_plain = md_to_plain(&en_block.text);
             let en_html = md_to_html(&en_block.text);
             let en_sentences = split_sentences_en(&en_plain, &en_html);
@@ -227,6 +242,7 @@ fn run_extract(translation_dir_str: &str, source_dir_str: &str, output_file: &st
                     ParsedBlockType::Heading => "heading",
                     ParsedBlockType::Paragraph => "paragraph",
                     ParsedBlockType::Footnote { .. } => "footnote",
+                    ParsedBlockType::Figure => "figure",
                 };
                 panic!(
                     "{}: sentence count mismatch in block {} ({}): \

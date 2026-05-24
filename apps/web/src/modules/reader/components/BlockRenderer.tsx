@@ -448,6 +448,72 @@ export function Block({
                     ))}
                 </div>
             );
+        case "figure": {
+            // Diagram-like insertion (e.g. the table of judgments): the
+            // block's html is verbatim editor-authored `<figure>` markup,
+            // rendered as-is. The whole figure is one selectable/quotable
+            // unit, anchored to its single sentence (the figcaption label).
+            const anchor = block.sentences[0];
+            const figureHtml =
+                showOriginal && block.original_html
+                    ? block.original_html
+                    : block.html;
+
+            let leftMarkers: PageMarkerResponse[] | undefined;
+            let rightMarkers: PageMarkerResponse[] | undefined;
+            if (
+                anchor &&
+                marginSettings &&
+                marginSettings.enabledSystems.size > 0
+            ) {
+                for (const pm of anchor.page_markers) {
+                    if (!marginSettings.enabledSystems.has(pm.system_slug))
+                        continue;
+                    const side =
+                        marginSettings.systemSides[pm.system_slug] ?? "right";
+                    if (side === "left") {
+                        if (!leftMarkers) leftMarkers = [];
+                        leftMarkers.push(pm);
+                    } else {
+                        if (!rightMarkers) rightMarkers = [];
+                        rightMarkers.push(pm);
+                    }
+                }
+            }
+
+            const isSelected = anchor
+                ? sentenceMatchesKey(anchor, selectedSentenceId)
+                : false;
+
+            return (
+                <div className="relative py-4">
+                    {leftMarkers && (
+                        <MarginNotes markers={leftMarkers} side="left" />
+                    )}
+                    {rightMarkers && (
+                        <MarginNotes markers={rightMarkers} side="right" />
+                    )}
+                    <div
+                        data-sentence-key={
+                            anchor ? sentenceKey(anchor) : undefined
+                        }
+                        onMouseDown={(e) => {
+                            if (e.shiftKey) e.preventDefault();
+                        }}
+                        onClick={(e) =>
+                            anchor && onSelectSentence(anchor, e.shiftKey)
+                        }
+                        className={`cursor-pointer rounded-sm transition-colors ${
+                            isSelected
+                                ? "ring-2 ring-amber-300 bg-amber-50"
+                                : "hover:bg-stone-100"
+                        }`}
+                    >
+                        {parse(figureHtml)}
+                    </div>
+                </div>
+            );
+        }
         case "separator":
             // Wrap the <hr> in a div with padding so the spacing is
             // padding-based — `<hr>` has special box behavior and

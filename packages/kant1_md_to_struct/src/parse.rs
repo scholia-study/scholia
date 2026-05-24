@@ -13,6 +13,14 @@ static B_MARKER_RE: LazyLock<Regex> =
 static ANY_MARKER_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\{\{\{?\s*[^}]+?\s*\}?\}\}").unwrap());
 
+// <figcaption>…</figcaption> — the editorial label inside a figure block.
+// `(?s)` lets `.` span newlines so multi-line captions match.
+static FIGCAPTION_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?s)<figcaption[^>]*>(.*?)</figcaption>").unwrap());
+
+// Any HTML tag — used to flatten figure markup to plain text.
+static HTML_TAG_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<[^>]+>").unwrap());
+
 /// YAML front matter parsed from a reviewed markdown file.
 #[derive(Debug)]
 pub struct FrontMatter {
@@ -49,7 +57,31 @@ pub struct ParsedBlock {
 pub enum ParsedBlockType {
     Heading,
     Paragraph,
-    Footnote { marker: String },
+    Footnote {
+        marker: String,
+    },
+    /// A diagram-like insertion (e.g. Kant's table of judgments) authored
+    /// as verbatim `<figure>` HTML. Its `text` is the raw figure markup
+    /// (page markers stripped); rendering and sentence-splitting bypass the
+    /// markdown pipeline entirely. See `figure_caption` for the label.
+    Figure,
+}
+
+/// Flatten HTML markup to plain text by removing tags and collapsing
+/// whitespace. Used to derive a figure's full-text-search content and its
+/// caption label.
+pub fn strip_html_tags(html: &str) -> String {
+    let no_tags = HTML_TAG_RE.replace_all(html, " ");
+    no_tags.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+/// Extract the plain-text label from a `<figure>`'s `<figcaption>`.
+/// Returns `None` when the figure has no caption — callers treat that as a
+/// hard error, since every figure needs a label for quotation/search/anchoring.
+pub fn figure_caption(figure_html: &str) -> Option<String> {
+    let caps = FIGCAPTION_RE.captures(figure_html)?;
+    let plain = strip_html_tags(&caps[1]);
+    if plain.is_empty() { None } else { Some(plain) }
 }
 
 /// Parse YAML front matter from between `---` markers.
@@ -190,6 +222,31 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
             continue;
         }
 
+        // Figure: a verbatim `<figure>…</figure>` HTML block. Captured raw
+        // (preserving inner lines) until the closing tag, then run through
+        // strip_markers so any `{{{ N }}}` in the figcaption becomes a page
+        // marker on the anchor. Detection bypasses the markdown pipeline so
+        // the editor's hand-written HTML survives intact.
+        if line.starts_with("<figure") {
+            let mut fig_lines: Vec<&str> = Vec::new();
+            while i < lines.len() {
+                let raw = lines[i];
+                fig_lines.push(raw);
+                i += 1;
+                if raw.contains("</figure>") {
+                    break;
+                }
+            }
+            let fig_text = fig_lines.join("\n");
+            let (stripped, markers) = strip_markers(&fig_text);
+            blocks.push(ParsedBlock {
+                block_type: ParsedBlockType::Figure,
+                text: stripped,
+                markers,
+            });
+            continue;
+        }
+
         // Heading: ## text
         if let Some(heading_text) = line.strip_prefix("## ") {
             let (stripped, markers) = strip_markers(heading_text);
@@ -300,5 +357,36 @@ mod tests {
         let (marker, text) = try_parse_footnote_start(line).unwrap();
         assert_eq!(marker, "**");
         assert_eq!(text, "Some footnote text here.");
+    }
+
+    #[test]
+    fn test_parse_figure_block() {
+        let body = "First paragraph.\n\n<figure>\n  <figcaption>{{{ 87 }}} Tafel der Urtheile</figcaption>\n  <table><tr><td>Allgemeine</td></tr></table>\n</figure>\n\nAfter paragraph.\n";
+        let blocks = parse_blocks(body);
+        assert_eq!(blocks.len(), 3);
+        assert_eq!(blocks[0].block_type, ParsedBlockType::Paragraph);
+        assert_eq!(blocks[1].block_type, ParsedBlockType::Figure);
+        assert_eq!(blocks[2].block_type, ParsedBlockType::Paragraph);
+        assert_eq!(blocks[2].text, "After paragraph.");
+
+        // The page marker is lifted out of the figcaption; the figure markup
+        // is preserved verbatim (minus the marker).
+        assert_eq!(blocks[1].markers.len(), 1);
+        assert_eq!(blocks[1].markers[0].kind, MarkerKind::Aa);
+        assert_eq!(blocks[1].markers[0].value, "87");
+        assert!(blocks[1].text.contains("<figure>"));
+        assert!(blocks[1].text.contains("</figure>"));
+        assert!(blocks[1].text.contains("<table>"));
+        assert!(!blocks[1].text.contains("{{{"));
+
+        assert_eq!(
+            figure_caption(&blocks[1].text).as_deref(),
+            Some("Tafel der Urtheile")
+        );
+    }
+
+    #[test]
+    fn test_figure_caption_missing() {
+        assert_eq!(figure_caption("<figure><table></table></figure>"), None);
     }
 }
