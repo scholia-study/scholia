@@ -84,6 +84,18 @@ pub fn figure_caption(figure_html: &str) -> Option<String> {
     if plain.is_empty() { None } else { Some(plain) }
 }
 
+/// Inject a bold catalogue prefix at the start of a figure's `<figcaption>`
+/// content, e.g. `<figcaption>Table of Judgments</figcaption>` with prefix
+/// "Figure 1." becomes `<figcaption><b>Figure 1.</b> Table of Judgments</figcaption>`.
+/// Language-specific wording is the caller's responsibility.
+pub fn prepend_figcaption_label(figure_html: &str, prefix: &str) -> String {
+    FIGCAPTION_RE
+        .replace(figure_html, |caps: &regex::Captures| {
+            format!("<figcaption><b>{prefix}</b> {}</figcaption>", &caps[1])
+        })
+        .into_owned()
+}
+
 /// Parse YAML front matter from between `---` markers.
 pub fn parse_front_matter(content: &str) -> Option<(FrontMatter, &str)> {
     let content = content.trim_start();

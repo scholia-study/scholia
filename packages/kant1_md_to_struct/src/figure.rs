@@ -13,7 +13,9 @@
 //! does not), expressed via the `reviewed` argument.
 
 use crate::model::{ContentBlockData, PageMarkerData, SentenceData};
-use crate::parse::{MarkerKind, ParsedBlock, RawMarker, figure_caption, strip_html_tags};
+use crate::parse::{
+    MarkerKind, ParsedBlock, RawMarker, figure_caption, prepend_figcaption_label, strip_html_tags,
+};
 use crate::roman::roman_to_int;
 
 /// Map a raw page marker to its DB-ready form, resolving the reference-system
@@ -39,6 +41,10 @@ pub fn marker_to_page_marker(marker: &RawMarker) -> PageMarkerData {
 /// Build a `figure` content block from the primary (modernized/translation)
 /// figure and, when present, the reviewed/original figure.
 ///
+/// `label_word` is the language-specific catalogue word ("Figure", "Abbildung")
+/// prepended to the figcaption as "{label_word} {figure_number}." — baked in
+/// here because the pipeline, not the renderer, knows the language.
+///
 /// Panics if either layer lacks a `<figcaption>` — every figure must carry a
 /// label, and a missing one is an authoring error worth failing the build for.
 pub fn build_figure_block(
@@ -47,6 +53,7 @@ pub fn build_figure_block(
     block_pos: usize,
     flat_index: usize,
     figure_number: i32,
+    label_word: &str,
 ) -> ContentBlockData {
     let caption = figure_caption(&primary.text).unwrap_or_else(|| {
         panic!(
@@ -66,6 +73,10 @@ pub fn build_figure_block(
         })
     });
 
+    let prefix = format!("{label_word} {figure_number}.");
+    let html = prepend_figcaption_label(&primary.text, &prefix);
+    let original_html = reviewed.map(|r| prepend_figcaption_label(&r.text, &prefix));
+
     let page_markers = primary.markers.iter().map(marker_to_page_marker).collect();
 
     let anchor = SentenceData {
@@ -84,10 +95,10 @@ pub fn build_figure_block(
         block_type: "figure".to_string(),
         paragraph_number: None,
         figure_number: Some(figure_number),
-        text: strip_html_tags(&primary.text),
-        html: primary.text.clone(),
-        original_text: reviewed.map(|r| strip_html_tags(&r.text)),
-        original_html: reviewed.map(|r| r.text.clone()),
+        text: strip_html_tags(&html),
+        original_text: original_html.as_deref().map(strip_html_tags),
+        html,
+        original_html,
         sentences: vec![anchor],
     }
 }
@@ -111,13 +122,21 @@ mod tests {
             figure("<figure><figcaption>Table of Judgments</figcaption><table></table></figure>");
         let reviewed =
             figure("<figure><figcaption>Tafel der Urtheile</figcaption><table></table></figure>");
-        let block = build_figure_block(&primary, Some(&reviewed), 2, 28, 3);
+        let block = build_figure_block(&primary, Some(&reviewed), 2, 28, 3, "Figure");
 
         assert_eq!(block.block_type, "figure");
         assert_eq!(block.position, 2);
         assert_eq!(block.figure_number, Some(3));
         assert!(block.html.contains("<table>"));
         assert_eq!(block.sentences.len(), 1);
+
+        // The catalogue prefix is injected into the figcaption HTML, but the
+        // anchor sentence keeps the bare caption for clean quoting/search.
+        assert!(
+            block
+                .html
+                .contains("<figcaption><b>Figure 3.</b> Table of Judgments</figcaption>")
+        );
 
         let anchor = &block.sentences[0];
         assert_eq!(anchor.position, 0);
@@ -129,7 +148,7 @@ mod tests {
     #[test]
     fn single_layer_figure_has_no_original() {
         let primary = figure("<figure><figcaption>Table of Judgments</figcaption></figure>");
-        let block = build_figure_block(&primary, None, 0, 0, 1);
+        let block = build_figure_block(&primary, None, 0, 0, 1, "Figure");
         assert_eq!(block.figure_number, Some(1));
         assert_eq!(block.original_html, None);
         assert_eq!(block.sentences[0].original_text, None);

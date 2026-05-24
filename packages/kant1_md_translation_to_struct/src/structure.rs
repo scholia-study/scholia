@@ -171,7 +171,7 @@ fn build_block(
     if let ParsedBlockType::Figure = &block.block_type {
         let n = counters.figure;
         counters.figure += 1;
-        return build_figure_block(block, None, block_pos, flat_index, n);
+        return build_figure_block(block, None, block_pos, flat_index, n, "Figure");
     }
 
     let (block_type_str, para_num) = match &block.block_type {
