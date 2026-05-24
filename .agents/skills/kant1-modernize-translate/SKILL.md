@@ -31,3 +31,7 @@ It is very important that to carry over emphasis EXACTLY
 - ***words and phrases in sperrdruck***
 - **normal bold**
 -  _latin words_
+
+### Use English file names in `md_modernized_translated`
+
+Refer to `000_toc.md` for the English file names in `kant1/curated/md_modernized_translated`
