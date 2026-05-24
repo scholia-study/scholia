@@ -23,6 +23,7 @@ struct BlockRow {
     position: i16,
     block_type: String,
     paragraph_number: Option<i32>,
+    figure_number: Option<i32>,
     html: String,
     original_html: Option<String>,
 }
@@ -87,7 +88,7 @@ pub async fn get_node_content(
 
     let blocks = sqlx::query_as!(
         BlockRow,
-        r#"SELECT id, position, block_type::TEXT AS "block_type!", paragraph_number, html, original_html
+        r#"SELECT id, position, block_type::TEXT AS "block_type!", paragraph_number, figure_number, html, original_html
            FROM content_blocks
            WHERE node_id = $1
            ORDER BY position"#,
@@ -227,6 +228,7 @@ pub async fn get_node_content(
                 id: s.id.to_string(),
                 position: s.position,
                 sentence_number: s.sentence_number,
+                figure_number: None,
                 text: s.text,
                 html: s.html,
                 original_text: if include_original {
@@ -249,12 +251,20 @@ pub async fn get_node_content(
     let blocks = blocks
         .into_iter()
         .map(|b| {
-            let sentences = sentence_map.remove(&b.id).unwrap_or_default();
+            let mut sentences = sentence_map.remove(&b.id).unwrap_or_default();
+            // A figure carries its number on the block; copy it onto the
+            // anchor sentence so the reader can key selection as `fig{N}`.
+            if let Some(fig) = b.figure_number {
+                for s in &mut sentences {
+                    s.figure_number = Some(fig);
+                }
+            }
             ContentBlockResponse {
                 id: b.id.to_string(),
                 position: b.position,
                 block_type: b.block_type,
                 paragraph_number: b.paragraph_number,
+                figure_number: b.figure_number,
                 html: b.html,
                 original_html: if include_original {
                     b.original_html

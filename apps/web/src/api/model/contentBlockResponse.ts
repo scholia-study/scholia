@@ -8,6 +8,8 @@ import type { SentenceResponse } from "./sentenceResponse";
 
 export interface ContentBlockResponse {
     block_type: string;
+    /** @nullable */
+    figure_number?: number | null;
     html: string;
     id: string;
     /** @nullable */

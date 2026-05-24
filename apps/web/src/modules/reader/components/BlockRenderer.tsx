@@ -503,7 +503,12 @@ export function Block({
                         onClick={(e) =>
                             anchor && onSelectSentence(anchor, e.shiftKey)
                         }
-                        className={`cursor-pointer rounded-sm transition-colors ${
+                        // The figcaption is editorial apparatus (the figure's
+                        // label), not part of the diagram — pin it to the
+                        // bottom-right of the figure box and mute it so it
+                        // doesn't read as a title. The figure is the
+                        // positioning context.
+                        className={`cursor-pointer rounded-sm transition-colors [&_figure]:relative [&_figcaption]:absolute [&_figcaption]:right-6 [&_figcaption]:bottom-4 [&_figcaption]:text-right [&_figcaption]:text-sm [&_figcaption]:text-stone-400 ${
                             isSelected
                                 ? "ring-2 ring-amber-300 bg-amber-50"
                                 : "hover:bg-stone-100"

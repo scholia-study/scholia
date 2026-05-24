@@ -3250,6 +3250,10 @@
                     "block_type": {
                         "type": "string"
                     },
+                    "figure_number": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    },
                     "html": {
                         "type": "string"
                     },
@@ -4768,6 +4772,11 @@
                 "type": "object",
                 "required": ["id", "position", "text", "html", "page_markers"],
                 "properties": {
+                    "figure_number": {
+                        "type": ["integer", "null"],
+                        "format": "int32",
+                        "description": "Set only on a figure's anchor sentence — drives the `fig{N}` selection key."
+                    },
                     "footnotes": {
                         "type": "array",
                         "items": {

@@ -44,6 +44,8 @@ pub struct ContentBlockData {
     pub block_type: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paragraph_number: Option<i32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub figure_number: Option<i32>,
     pub text: String,
     pub html: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]

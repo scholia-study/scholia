@@ -46,6 +46,7 @@ pub fn build_figure_block(
     reviewed: Option<&ParsedBlock>,
     block_pos: usize,
     flat_index: usize,
+    figure_number: i32,
 ) -> ContentBlockData {
     let caption = figure_caption(&primary.text).unwrap_or_else(|| {
         panic!(
@@ -82,6 +83,7 @@ pub fn build_figure_block(
         position: block_pos as i16,
         block_type: "figure".to_string(),
         paragraph_number: None,
+        figure_number: Some(figure_number),
         text: strip_html_tags(&primary.text),
         html: primary.text.clone(),
         original_text: reviewed.map(|r| strip_html_tags(&r.text)),
@@ -109,10 +111,11 @@ mod tests {
             figure("<figure><figcaption>Table of Judgments</figcaption><table></table></figure>");
         let reviewed =
             figure("<figure><figcaption>Tafel der Urtheile</figcaption><table></table></figure>");
-        let block = build_figure_block(&primary, Some(&reviewed), 2, 28);
+        let block = build_figure_block(&primary, Some(&reviewed), 2, 28, 3);
 
         assert_eq!(block.block_type, "figure");
         assert_eq!(block.position, 2);
+        assert_eq!(block.figure_number, Some(3));
         assert!(block.html.contains("<table>"));
         assert_eq!(block.sentences.len(), 1);
 
@@ -126,7 +129,8 @@ mod tests {
     #[test]
     fn single_layer_figure_has_no_original() {
         let primary = figure("<figure><figcaption>Table of Judgments</figcaption></figure>");
-        let block = build_figure_block(&primary, None, 0, 0);
+        let block = build_figure_block(&primary, None, 0, 0, 1);
+        assert_eq!(block.figure_number, Some(1));
         assert_eq!(block.original_html, None);
         assert_eq!(block.sentences[0].original_text, None);
     }

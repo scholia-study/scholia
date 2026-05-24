@@ -20,6 +20,8 @@ pub struct ContentBlockResponse {
     pub position: i16,
     pub block_type: String,
     pub paragraph_number: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub figure_number: Option<i32>,
     pub html: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub original_html: Option<String>,
@@ -31,6 +33,9 @@ pub struct SentenceResponse {
     pub id: String,
     pub position: i16,
     pub sentence_number: Option<i32>,
+    /// Set only on a figure's anchor sentence — drives the `fig{N}` selection key.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub figure_number: Option<i32>,
     pub text: String,
     pub html: String,
     #[serde(skip_serializing_if = "Option::is_none")]

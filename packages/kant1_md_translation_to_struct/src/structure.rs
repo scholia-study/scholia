@@ -98,6 +98,7 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
     let mut counters = Counters {
         paragraph: 1,
         sentence: 1,
+        figure: 1,
     };
     let lookups = Lookups {
         marker_map: &marker_map,
@@ -151,6 +152,7 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
 struct Counters {
     paragraph: i32,
     sentence: i32,
+    figure: i32,
 }
 
 struct Lookups<'a> {
@@ -167,7 +169,9 @@ fn build_block(
     lookups: &Lookups<'_>,
 ) -> ContentBlockData {
     if let ParsedBlockType::Figure = &block.block_type {
-        return build_figure_block(block, None, block_pos, flat_index);
+        let n = counters.figure;
+        counters.figure += 1;
+        return build_figure_block(block, None, block_pos, flat_index, n);
     }
 
     let (block_type_str, para_num) = match &block.block_type {
@@ -283,6 +287,7 @@ fn build_block(
         position: block_pos as i16,
         block_type: block_type_str.to_string(),
         paragraph_number: para_num,
+        figure_number: None,
         text: block_plain,
         html: block_html,
         original_text: None,

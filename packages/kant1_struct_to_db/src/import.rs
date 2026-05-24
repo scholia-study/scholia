@@ -327,8 +327,8 @@ pub async fn run(
 
         for block in &node.content_blocks {
             let block_id: Uuid = sqlx::query_scalar(
-                "INSERT INTO content_blocks (book_id, node_id, position, block_type, paragraph_number, text, html, original_text, original_html)
-                 VALUES ($1, $2, $3, $4::block_type, $5, $6, $7, $8, $9)
+                "INSERT INTO content_blocks (book_id, node_id, position, block_type, paragraph_number, figure_number, text, html, original_text, original_html)
+                 VALUES ($1, $2, $3, $4::block_type, $5, $6, $7, $8, $9, $10)
                  RETURNING id",
             )
             .bind(book_id)
@@ -336,6 +336,7 @@ pub async fn run(
             .bind(block.position)
             .bind(&block.block_type)
             .bind(block.paragraph_number)
+            .bind(block.figure_number)
             .bind(&block.text)
             .bind(&block.html)
             .bind(&block.original_text)

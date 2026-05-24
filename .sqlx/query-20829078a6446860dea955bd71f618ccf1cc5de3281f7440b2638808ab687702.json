@@ -1,0 +1,53 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, node_id, position, block_type::TEXT AS \"block_type!\", paragraph_number, figure_number, html, original_html\n           FROM content_blocks\n           WHERE node_id = ANY($1)\n           ORDER BY node_id, position",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "node_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "position",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 3,
+                "name": "block_type!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "paragraph_number",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 5,
+                "name": "figure_number",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 6,
+                "name": "html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "original_html",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, false, false, null, true, true, false, true]
+    },
+    "hash": "20829078a6446860dea955bd71f618ccf1cc5de3281f7440b2638808ab687702"
+}

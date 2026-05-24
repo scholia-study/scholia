@@ -8,6 +8,11 @@ import type { FootnoteResponse } from "./footnoteResponse";
 import type { PageMarkerResponse } from "./pageMarkerResponse";
 
 export interface SentenceResponse {
+    /**
+     * Set only on a figure's anchor sentence — drives the `fig{N}` selection key.
+     * @nullable
+     */
+    figure_number?: number | null;
     footnotes?: FootnoteResponse[];
     html: string;
     id: string;

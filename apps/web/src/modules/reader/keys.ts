@@ -3,8 +3,10 @@ import type {
     SentenceResponse,
 } from "../../api/model";
 
-/** URL-friendly key for a sentence: sentence_number if available, otherwise ID. */
+/** URL-friendly key for a sentence: `fig{N}` for a figure anchor,
+ *  else sentence_number if available, otherwise the UUID. */
 export function sentenceKey(s: SentenceResponse): string {
+    if (s.figure_number != null) return `fig${s.figure_number}`;
     return s.sentence_number != null ? String(s.sentence_number) : s.id;
 }
 
@@ -23,12 +25,13 @@ export function parseRangeKey(key: string): [number, number] | null {
     return [start, end];
 }
 
-/** Check if a sentence matches a URL key (sentence_number, ID, or range like "12-21"). */
+/** Check if a sentence matches a URL key (`fig{N}`, sentence_number, ID, or range like "12-21"). */
 export function sentenceMatchesKey(
     s: SentenceResponse,
     key: string | undefined | null,
 ): boolean {
     if (!key) return false;
+    if (s.figure_number != null) return key === `fig${s.figure_number}`;
     const range = parseRangeKey(key);
     if (range && s.sentence_number != null) {
         return s.sentence_number >= range[0] && s.sentence_number <= range[1];
