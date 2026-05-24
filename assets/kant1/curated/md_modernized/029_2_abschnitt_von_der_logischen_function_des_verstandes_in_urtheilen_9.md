@@ -11,36 +11,36 @@ Wenn wir von allem Inhalte eines Urteils überhaupt abstrahieren und nur auf die
 
 <figure style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 60px 20px; max-width: 800px; margin: 50px auto; text-align: center; padding: 40px;">
     <figcaption>{{{ 87 }}} Tafel der Urteile</figcaption>
-    <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.3; font-size: 1.15rem; grid-column: 2; grid-row: 1;">
-        <span style="font-weight: bold; font-size: 0.95rem; margin-bottom: 4px;">1.</span>
-        <span style="font-weight: bold; font-size: 1.25rem; margin-bottom: 4px;">Quantität der Urteile.</span>
+    <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.3; grid-column: 2; grid-row: 1;">
+        <span style="font-weight: bold; margin-bottom: 4px;">1.</span>
+        <span style="font-weight: bold; margin-bottom: 4px;">Quantität der Urteile.</span>
         <div style="display: flex; flex-direction: column;">
             <span>Allgemeine</span>
             <span>Besondere</span>
             <span>Einzelne</span>
         </div>
     </div>
-    <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.3; font-size: 1.15rem; grid-column: 1; grid-row: 2; align-self: center;">
-        <span style="font-weight: bold; font-size: 0.95rem; margin-bottom: 4px;">2.</span>
-        <span style="font-weight: bold; font-size: 1.25rem; margin-bottom: 4px;">Qualität.</span>
+    <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.3; grid-column: 1; grid-row: 2; align-self: center;">
+        <span style="font-weight: bold; margin-bottom: 4px;">2.</span>
+        <span style="font-weight: bold; margin-bottom: 4px;">Qualität.</span>
         <div style="display: flex; flex-direction: column;">
             <span>Bejahende</span>
             <span>Verneinende</span>
             <span>Unendliche</span>
         </div>
     </div>
-    <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.3; font-size: 1.15rem; grid-column: 3; grid-row: 2; align-self: center;">
-        <span style="font-weight: bold; font-size: 0.95rem; margin-bottom: 4px;">3.</span>
-        <span style="font-weight: bold; font-size: 1.25rem; margin-bottom: 4px;">Relation.</span>
+    <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.3; grid-column: 3; grid-row: 2; align-self: center;">
+        <span style="font-weight: bold; margin-bottom: 4px;">3.</span>
+        <span style="font-weight: bold; margin-bottom: 4px;">Relation.</span>
         <div style="display: flex; flex-direction: column;">
             <span>Kategorische</span>
             <span>Hypothetische</span>
             <span>Disjunktive</span>
         </div>
     </div>
-    <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.3; font-size: 1.15rem; grid-column: 2; grid-row: 3;">
-        <span style="font-weight: bold; font-size: 0.95rem; margin-bottom: 4px;">4.</span>
-        <span style="font-weight: bold; font-size: 1.25rem; margin-bottom: 4px;">Modalität.</span>
+    <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.3; grid-column: 2; grid-row: 3;">
+        <span style="font-weight: bold; margin-bottom: 4px;">4.</span>
+        <span style="font-weight: bold; margin-bottom: 4px;">Modalität.</span>
         <div style="display: flex; flex-direction: column;">
             <span>Problematische</span>
             <span>Assertorische</span>
