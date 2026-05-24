@@ -66,6 +66,7 @@ static MULTI_ABBREV_RE: LazyLock<Vec<Regex>> = LazyLock::new(|| {
         r"d\.\s*i\.",   // d. i.
         r"d\.\s*h\.",   // d. h.
         r"z\.\s*B\.",   // z. B.
+        r"z\.\s*E\.",   // z. E.
         r"u\.\s*dgl\.", // u. dgl.
         r"u\.\s*a\.",   // u. a.
         r"a\.\s*a\.",   // a. a.
@@ -88,6 +89,10 @@ static INITIAL_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b[A-ZÄÖÜ]
 /// These are paragraph numbering markers, not sentence endings.
 static NUMBERED_LABEL_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^\d{1,2}\.\s*$").unwrap());
+
+/// Section label pattern: detects "§ 1." "§3." at the end of preceding text.
+static SECTION_LABEL_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"§\s*\d{1,2}\.\s*$").unwrap());
 
 /// Split a paragraph into sentences, returning (text, html) pairs.
 ///
@@ -177,12 +182,28 @@ fn map_text_positions_to_html(text: &str, html: &str, text_positions: &[usize]) 
         }
 
         if html_cursor < html_bytes.len() && html_bytes[html_cursor] == b'<' {
-            // Skip the entire tag
-            while html_cursor < html_bytes.len() && html_bytes[html_cursor] != b'>' {
-                html_cursor += 1;
-            }
-            if html_cursor < html_bytes.len() {
-                html_cursor += 1; // skip '>'
+            // Footnote refs render as `<sup>N</sup>`, but `md_to_plain`
+            // strips them, so the digits inside have no counterpart in the
+            // plain text. Skip the whole element — tag AND content —
+            // without advancing the text cursor. Walking its digits in
+            // lockstep with plain text would desync the cursors and, when
+            // the ref sits at a sentence boundary, split a multi-digit
+            // number across two sentences (`<sup>10</sup>` →
+            // `<sup>1</sup>` + `<sup>0</sup>`).
+            if html[html_cursor..].starts_with("<sup>") {
+                if let Some(rel_end) = html[html_cursor..].find("</sup>") {
+                    html_cursor += rel_end + "</sup>".len();
+                } else {
+                    html_cursor += "<sup>".len();
+                }
+            } else {
+                // Skip the single tag
+                while html_cursor < html_bytes.len() && html_bytes[html_cursor] != b'>' {
+                    html_cursor += 1;
+                }
+                if html_cursor < html_bytes.len() {
+                    html_cursor += 1; // skip '>'
+                }
             }
         } else if html_cursor < html_bytes.len() && text_cursor < text_bytes.len() {
             // Advance both cursors by one character (handling UTF-8)
@@ -451,6 +472,11 @@ fn find_text_split_positions_with(
             continue;
         }
 
+        // Check section labels (e.g. § 3.)
+        if SECTION_LABEL_RE.is_match(preceding) {
+            continue;
+        }
+
         positions.push(split_pos);
     }
 
@@ -621,6 +647,42 @@ mod tests {
     fn test_empty_text() {
         let result = split_sentences("", "");
         assert_eq!(result.len(), 0);
+    }
+
+    #[test]
+    fn test_footnote_sup_at_boundary_single_digit() {
+        // The footnote ref is absent from plain text but renders as
+        // <sup>9</sup> right at the sentence boundary. It must stay whole
+        // in the first sentence, and the second must be clean.
+        let text = "Erster Satz. Zweiter Satz.";
+        let html = "Erster Satz.<sup>9</sup> Zweiter Satz.";
+        let result = split_sentences(text, html);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].1, "Erster Satz.<sup>9</sup>");
+        assert_eq!(result[1].1, "Zweiter Satz.");
+    }
+
+    #[test]
+    fn test_footnote_sup_at_boundary_multidigit() {
+        // Regression: a 2-digit footnote number at a boundary previously
+        // split into <sup>1</sup> + <sup>0</sup> across the two sentences.
+        let text = "Erster Satz. Zweiter Satz.";
+        let html = "Erster Satz.<sup>10</sup> Zweiter Satz.";
+        let result = split_sentences(text, html);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].1, "Erster Satz.<sup>10</sup>");
+        assert_eq!(result[1].1, "Zweiter Satz.");
+    }
+
+    #[test]
+    fn test_footnote_sup_midsentence_does_not_desync() {
+        // A footnote ref mid-sentence must not shift a later boundary.
+        let text = "Ein Wort hier. Zweiter Satz folgt.";
+        let html = "Ein Wort<sup>11</sup> hier. Zweiter Satz folgt.";
+        let result = split_sentences(text, html);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].1, "Ein Wort<sup>11</sup> hier.");
+        assert_eq!(result[1].1, "Zweiter Satz folgt.");
     }
 
     // === English sentence splitting tests ===
