@@ -24,6 +24,7 @@
         "dev:proxy": "turbo run dev --filter=@apps/proxy",
         "codegen": "turbo run codegen",
         "dp:kant1": "cargo run -p kant1_ocr_to_lines && cargo run -p kant1_lines_to_elements",
+        "dp:kant1:struct": "cargo run -p kant1_md_to_struct && cargo run -p kant1_md_translation_to_struct",
         "stripe:listen": "stripe listen --forward-to localhost:4000/api/webhooks/stripe"
     },
     "devDependencies": {
