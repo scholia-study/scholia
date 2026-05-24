@@ -17,7 +17,7 @@
             "outputs": ["../../openapi.json"]
         },
         "codegen": {
-            "dependsOn": ["api#openapi"],
+            "dependsOn": ["@apps/api#openapi"],
             "outputs": ["src/api/**"]
         },
         "dev": {
