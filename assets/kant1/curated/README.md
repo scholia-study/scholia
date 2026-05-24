@@ -1,4 +1,6 @@
 - "Sperrrdruck" (words that have extra spacing) => ***one or more words***.
 - Regular bold =>  **one or more words**. 
 - Latin (and other foreign words) => _one or more words_
+- {{{ 00 }}} => aa or akademische ausgabe edition page numbers
+- {{ 00 }} => b-edition page numbers
 - ||| => manual termination (split)
