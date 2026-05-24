@@ -675,6 +675,18 @@ mod tests {
     }
 
     #[test]
+    fn test_footnote_sup_at_boundary_triple_digit() {
+        // The fix skips from <sup> to </sup> regardless of digit count, so
+        // 3-digit numbers are handled identically to 1- and 2-digit ones.
+        let text = "Erster Satz. Zweiter Satz.";
+        let html = "Erster Satz.<sup>100</sup> Zweiter Satz.";
+        let result = split_sentences(text, html);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].1, "Erster Satz.<sup>100</sup>");
+        assert_eq!(result[1].1, "Zweiter Satz.");
+    }
+
+    #[test]
     fn test_footnote_sup_midsentence_does_not_desync() {
         // A footnote ref mid-sentence must not shift a later boundary.
         let text = "Ein Wort hier. Zweiter Satz folgt.";
