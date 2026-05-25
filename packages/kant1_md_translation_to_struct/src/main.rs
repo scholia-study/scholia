@@ -229,6 +229,22 @@ fn run_extract(translation_dir_str: &str, source_dir_str: &str, output_file: &st
                 continue;
             }
 
+            // Separators are contentless thematic breaks — there is nothing to
+            // sentence-split or compare. Require that a separator aligns with a
+            // separator; a mismatch means the divider was placed in one
+            // language's markdown but not the other's.
+            let en_is_sep = matches!(en_block.block_type, ParsedBlockType::Separator { .. });
+            let de_is_sep = matches!(de_block.block_type, ParsedBlockType::Separator { .. });
+            if en_is_sep || de_is_sep {
+                if en_is_sep != de_is_sep {
+                    panic!(
+                        "{}: separator/non-separator block misalignment at block {}",
+                        en_filename, block_pos
+                    );
+                }
+                continue;
+            }
+
             let en_plain = md_to_plain(&en_block.text);
             let en_html = md_to_html(&en_block.text);
             let en_sentences = split_sentences_en(&en_plain, &en_html);
@@ -243,6 +259,7 @@ fn run_extract(translation_dir_str: &str, source_dir_str: &str, output_file: &st
                     ParsedBlockType::Paragraph => "paragraph",
                     ParsedBlockType::Footnote { .. } => "footnote",
                     ParsedBlockType::Figure => "figure",
+                    ParsedBlockType::Separator { .. } => "separator",
                 };
                 panic!(
                     "{}: sentence count mismatch in block {} ({}): \

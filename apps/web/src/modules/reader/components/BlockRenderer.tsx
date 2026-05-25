@@ -348,6 +348,41 @@ function HeadingSentence({
     );
 }
 
+/**
+ * Thematic break between content blocks. `---` in the source renders as a
+ * plain horizontal rule; `***` renders as a centered, bold "* * *" ornament
+ * (a dinkus). The variant rides along in the block's `html` as a sentinel
+ * `dinkus` class — the styling lives here, not in the stored content, so no
+ * decorative text leaks into search, sentence-splitting, or alignment.
+ * `className` controls the outer spacing so callers can swap padding (the main
+ * reader, whose virtualizer measures padding but not margins) for margin (the
+ * interleaved comparison views).
+ */
+export function Separator({
+    block,
+    className = "py-8",
+}: {
+    block?: ContentBlockResponse;
+    className?: string;
+}) {
+    if (block?.html?.includes("dinkus")) {
+        return (
+            <div
+                className={`text-center font-bold text-stone-400 select-none ${className}`}
+            >
+                * * *
+            </div>
+        );
+    }
+    // `<hr>` has special box behavior and doesn't pad reliably on its own, so
+    // the wrapper carries the spacing.
+    return (
+        <div className={className}>
+            <hr className="border-stone-200" />
+        </div>
+    );
+}
+
 export function Block({
     block,
     selectedSentenceId,
@@ -520,14 +555,7 @@ export function Block({
             );
         }
         case "separator":
-            // Wrap the <hr> in a div with padding so the spacing is
-            // padding-based — `<hr>` has special box behavior and
-            // doesn't pad reliably on its own.
-            return (
-                <div className="py-8">
-                    <hr className="border-stone-200" />
-                </div>
-            );
+            return <Separator block={block} />;
         default:
             return <div className="pb-4">{parse(blockHtml)}</div>;
     }

@@ -13,6 +13,7 @@ use kant1_md_to_struct::html::{FOOTNOTE_REF_RE, md_to_html, md_to_plain};
 use kant1_md_to_struct::model::*;
 use kant1_md_to_struct::parse::{MarkerKind, ParsedBlock, ParsedBlockType, RawMarker};
 use kant1_md_to_struct::roman::roman_to_int;
+use kant1_md_to_struct::separator::build_separator_block;
 
 /// Regex to find `<sup>NUMBER</sup>` in rendered HTML.
 static SUP_NUMBER_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<sup>(\d+)</sup>").unwrap());
@@ -174,6 +175,12 @@ fn build_block(
         return build_figure_block(block, None, block_pos, flat_index, n, "Figure");
     }
 
+    // Separators carry no content — no sentences, no markers, no footnote
+    // rewriting — so they bypass the prose pipeline like figures do.
+    if let ParsedBlockType::Separator { dinkus } = &block.block_type {
+        return build_separator_block(block_pos, *dinkus);
+    }
+
     let (block_type_str, para_num) = match &block.block_type {
         ParsedBlockType::Heading => ("heading", None),
         ParsedBlockType::Paragraph => {
@@ -183,6 +190,7 @@ fn build_block(
         }
         ParsedBlockType::Footnote { .. } => unreachable!("footnote blocks filtered out"),
         ParsedBlockType::Figure => unreachable!("figure blocks handled above"),
+        ParsedBlockType::Separator { .. } => unreachable!("separator blocks handled above"),
     };
 
     // Rewrite footnote refs in raw text before conversion
@@ -374,4 +382,46 @@ fn resolve_marker_to_sentence(
         }
     }
     (0, 0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_build_block_separator_is_contentless_and_skips_counters() {
+        let sep = ParsedBlock {
+            block_type: ParsedBlockType::Separator { dinkus: false },
+            text: String::new(),
+            markers: Vec::new(),
+        };
+
+        let marker_map = HashMap::new();
+        let footnote_content = HashMap::new();
+        let number_to_key = HashMap::new();
+        let lookups = Lookups {
+            marker_map: &marker_map,
+            footnote_content: &footnote_content,
+            number_to_key: &number_to_key,
+        };
+        let mut counters = Counters {
+            paragraph: 1,
+            sentence: 1,
+            figure: 1,
+        };
+
+        let block = build_block(&sep, 2, 0, &mut counters, &lookups);
+
+        assert_eq!(block.block_type, "separator");
+        assert_eq!(block.position, 2);
+        assert!(block.sentences.is_empty());
+        assert_eq!(block.paragraph_number, None);
+        assert_eq!(block.html, "<hr>");
+        // The translation layer has no original/reviewed text.
+        assert_eq!(block.original_html, None);
+        // A divider must not consume a paragraph/sentence/figure number.
+        assert_eq!(counters.paragraph, 1);
+        assert_eq!(counters.sentence, 1);
+        assert_eq!(counters.figure, 1);
+    }
 }

@@ -65,6 +65,14 @@ pub enum ParsedBlockType {
     /// (page markers stripped); rendering and sentence-splitting bypass the
     /// markdown pipeline entirely. See `figure_caption` for the label.
     Figure,
+    /// A thematic break authored as a lone token line. `---` is a plain
+    /// horizontal rule; `***` is a centered, bold "* * *" ornament (a
+    /// dinkus). Carries no text and produces no sentences — the variant is
+    /// all that survives, recorded in `dinkus`. Front-matter `---` never
+    /// reaches here, as it is consumed before `parse_blocks` runs.
+    Separator {
+        dinkus: bool,
+    },
 }
 
 /// Flatten HTML markup to plain text by removing tags and collapsing
@@ -259,6 +267,22 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
             continue;
         }
 
+        // Thematic break: a lone `---` (plain rule) or `***` (centered
+        // "* * *" ornament). Matched on the exact trimmed token so it can't
+        // be confused with inline emphasis (`***word***` always has content
+        // between the asterisks) — and front matter `---` is already gone.
+        if line == "---" || line == "***" {
+            blocks.push(ParsedBlock {
+                block_type: ParsedBlockType::Separator {
+                    dinkus: line == "***",
+                },
+                text: String::new(),
+                markers: Vec::new(),
+            });
+            i += 1;
+            continue;
+        }
+
         // Heading: ## text
         if let Some(heading_text) = line.strip_prefix("## ") {
             let (stripped, markers) = strip_markers(heading_text);
@@ -361,6 +385,55 @@ mod tests {
         assert!(
             matches!(&blocks[3].block_type, ParsedBlockType::Footnote { marker } if marker == "*")
         );
+    }
+
+    #[test]
+    fn test_parse_separator_blocks() {
+        // `---` between paragraphs is a plain rule; `***` is the dinkus
+        // ornament. Both carry no text and sit as their own blocks.
+        let body = "First paragraph.\n\n---\n\nSecond paragraph.\n\n***\n\nThird paragraph.\n";
+        let blocks = parse_blocks(body);
+        assert_eq!(blocks.len(), 5);
+
+        assert_eq!(blocks[0].block_type, ParsedBlockType::Paragraph);
+        assert_eq!(
+            blocks[1].block_type,
+            ParsedBlockType::Separator { dinkus: false }
+        );
+        assert!(blocks[1].text.is_empty());
+        assert!(blocks[1].markers.is_empty());
+
+        assert_eq!(blocks[2].block_type, ParsedBlockType::Paragraph);
+        assert_eq!(
+            blocks[3].block_type,
+            ParsedBlockType::Separator { dinkus: true }
+        );
+        assert_eq!(blocks[4].block_type, ParsedBlockType::Paragraph);
+        assert_eq!(blocks[4].text, "Third paragraph.");
+    }
+
+    #[test]
+    fn test_inline_emphasis_is_not_a_separator() {
+        // A paragraph that merely *contains* `***word***` Sperrdruck must
+        // stay a paragraph — only a line that is exactly `***` breaks.
+        let body = "This has ***emphasis*** in the middle.\n";
+        let blocks = parse_blocks(body);
+        assert_eq!(blocks.len(), 1);
+        assert_eq!(blocks[0].block_type, ParsedBlockType::Paragraph);
+        assert!(blocks[0].text.contains("***emphasis***"));
+    }
+
+    #[test]
+    fn test_separator_after_heading() {
+        let body = "## A Heading\n\n***\n\nBody.\n";
+        let blocks = parse_blocks(body);
+        assert_eq!(blocks.len(), 3);
+        assert_eq!(blocks[0].block_type, ParsedBlockType::Heading);
+        assert_eq!(
+            blocks[1].block_type,
+            ParsedBlockType::Separator { dinkus: true }
+        );
+        assert_eq!(blocks[2].block_type, ParsedBlockType::Paragraph);
     }
 
     #[test]

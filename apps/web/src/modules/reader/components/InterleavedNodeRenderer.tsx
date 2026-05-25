@@ -5,7 +5,7 @@ import type {
 } from "../../../api/model";
 import { sentenceMatchesKey } from "../keys";
 import type { MarginSettings } from "./BlockRenderer";
-import { Block, Sentence } from "./BlockRenderer";
+import { Block, Sentence, Separator } from "./BlockRenderer";
 
 type ViewLayout = "sp" | "ss" | "bpl" | "bpr" | "bsl" | "bsr";
 
@@ -339,9 +339,10 @@ function StackedParagraphs({
             {aligned.map((item, i) => {
                 if (item.type === "separator") {
                     return (
-                        <hr
+                        <Separator
                             key={`sep-${i}`}
-                            className="my-8 border-stone-200"
+                            block={item.primary}
+                            className="my-8"
                         />
                     );
                 }
@@ -406,9 +407,10 @@ function StackedSentences({
             {aligned.map((item, i) => {
                 if (item.type === "separator") {
                     return (
-                        <hr
+                        <Separator
                             key={`sep-${i}`}
-                            className="my-8 border-stone-200"
+                            block={item.primary}
+                            className="my-8"
                         />
                     );
                 }
@@ -560,9 +562,10 @@ function SideBySideParagraphs({
             {aligned.map((item, i) => {
                 if (item.type === "separator") {
                     return (
-                        <hr
+                        <Separator
                             key={`sep-${i}`}
-                            className="my-8 border-stone-200 col-span-2"
+                            block={item.primary}
+                            className="my-8"
                         />
                     );
                 }
@@ -646,9 +649,10 @@ function SideBySideSentences({
             {aligned.map((item, i) => {
                 if (item.type === "separator") {
                     return (
-                        <hr
+                        <Separator
                             key={`sep-${i}`}
-                            className="my-8 border-stone-200"
+                            block={item.primary}
+                            className="my-8"
                         />
                     );
                 }
