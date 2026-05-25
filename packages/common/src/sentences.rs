@@ -56,6 +56,26 @@ static SINGLE_ABBREVS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
         "Königl.",
         "Hochfürstl.",
         "Hochgräfl.",
+        "transz.",
+        "transsc.",
+        "transc.",
+        "transſc.",
+        "transsz.",
+        "transſz.",
+        "transſcend.",
+        "transscend.",
+        "Äſthet.",
+        "Ästhet.",
+        "Äſth.",
+        "Ästh.",
+        "Log.",
+        "log.",
+        "Metaph.",
+        "metaph.",
+        "Metaphys.",
+        "Beweisgr.",
+        "Abschn.",
+        "Hauptst.",
     ]
 });
 
@@ -370,7 +390,9 @@ static SINGLE_ABBREVS_EN: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
     vec![
         "Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Rev.", "St.", "Jr.", "Sr.", "vs.", "Vol.", "No.",
         "Gen.", "Gov.", "Sgt.", "Corp.", "Inc.", "Ltd.", "Jan.", "Feb.", "Mar.", "Apr.", "Aug.",
-        "Sept.", "Oct.", "Nov.", "Dec.",
+        "Sept.", "Oct.", "Nov.", "Dec.", "Transc.", "transc.", "Aesth.", "aesth.", "Log.", "log.",
+        "Metaph.", "metaph.", "Sect.", "sect.", "Chap.", "chap.", "Introd.", "introd.", "Pref.",
+        "pref.",
     ]
 });
 
@@ -620,6 +642,16 @@ mod tests {
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].0, "1. Erster Satz hier.");
         assert_eq!(result[1].0, "Zweiter Satz dort.");
+    }
+
+    #[test]
+    fn test_metaphys_title_abbreviation_not_split() {
+        // "Metaphys. Anfangsgr. der Naturwissensch." is the abbreviated title of
+        // Kant's Metaphysische Anfangsgründe der Naturwissenschaft — one citation,
+        // one sentence. The period after "Metaphys." must not trigger a split.
+        let text = "Metaphys. Anfangsgr. der Naturwissensch.";
+        let result = split_sentences(text, text);
+        assert_eq!(result.len(), 1);
     }
 
     #[test]

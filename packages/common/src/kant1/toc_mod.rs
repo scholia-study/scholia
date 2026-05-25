@@ -216,25 +216,25 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 99,
         depth: 5,
-        label: "2. Hauptstück. Von der Deduction der reinen Verstandesbegriffe",
+        label: "2. Hauptstück. Von der Deduktion der reinen Verstandesbegriffe",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 99,
         depth: 6,
-        label: "1. Abschnitt. Von den Principien einer transscendentalen Deduction überhaupt. \u{00A7}13",
+        label: "1. Abschnitt. Von den Prinzipien einer transzendentalen Deduktion überhaupt. \u{00A7}13",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 104,
         depth: 6,
-        label: "Übergang zur transscendentalen Deduction der Kategorien. \u{00A7}14",
+        label: "Übergang zur transzendentalen Deduktion der Kategorien. \u{00A7}14",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 107,
         depth: 6,
-        label: "2. Abschnitt. Transscendentale Deduction der reinen Verstandesbegriffe. \u{00A7}15\u{2013}27",
+        label: "2. Abschnitt. Transzendentale Deduktion der reinen Verstandesbegriffe. \u{00A7}15\u{2013}27",
         slug_override: None,
     },
     // Zweites Buch: Analytik der Grundsätze
