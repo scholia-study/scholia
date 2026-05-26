@@ -24,8 +24,17 @@ pub fn strip_forced_split_markers(text: &str) -> String {
 
 /// Regex matching a sentence-ending punctuation followed by whitespace and an uppercase letter or ».
 /// We capture the punctuation+space so we can check abbreviation context before accepting the split.
+///
+/// An em dash (`—`, U+2014) is allowed between the whitespace and the uppercase letter: Kant uses
+/// it as a Gedankenstrich that opens a new thought (`…agree with it. — Thus…`). The preceding
+/// sentence-terminator keeps this from firing on the far more common mid-sentence em dashes
+/// (`Möglichkeit — Unmöglichkeit`, `combination—whether`), which have no `.!?` before them. The
+/// split then lands on the dash, so the new sentence keeps its leading `— `.
 static SPLIT_RE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r#"[.!?][)»""\u{201c}\u{201d}\u{201e}\u{201f}]*\s+(?:[A-ZÄÖÜ»\u{201e}(])"#).unwrap()
+    Regex::new(
+        r#"[.!?][)»""\u{201c}\u{201d}\u{201e}\u{201f}]*\s+(?:\u{2014}\s+)?(?:[A-ZÄÖÜ»\u{201e}(])"#,
+    )
+    .unwrap()
 });
 
 /// Known German abbreviations that should NOT trigger a sentence split.
@@ -727,6 +736,43 @@ mod tests {
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].1, "Ein Wort<sup>11</sup> hier.");
         assert_eq!(result[1].1, "Zweiter Satz folgt.");
+    }
+
+    #[test]
+    fn test_em_dash_gedankenstrich_splits_de() {
+        // Kant opens a new thought with `. — ` (Gedankenstrich). The break must
+        // be taken, and the new sentence keeps its leading em dash.
+        let text = "Newtons glaubte entdeckt zu haben. — Wir können das nicht.";
+        let result = split_sentences(text, text);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].0, "Newtons glaubte entdeckt zu haben.");
+        assert_eq!(result[1].0, "— Wir können das nicht.");
+    }
+
+    #[test]
+    fn test_em_dash_gedankenstrich_splits_en() {
+        let text = "had been thought a priori synthetically, and agree with it. — Thus, by the concepts of unity, the table is not supplemented.";
+        let result = split_sentences_en(text, text);
+        assert_eq!(result.len(), 2);
+        assert_eq!(
+            result[0].0,
+            "had been thought a priori synthetically, and agree with it."
+        );
+        assert_eq!(
+            result[1].0,
+            "— Thus, by the concepts of unity, the table is not supplemented."
+        );
+    }
+
+    #[test]
+    fn test_mid_sentence_em_dash_does_not_split() {
+        // Em dashes without a preceding sentence-terminator must stay intact:
+        // category-table pairs and closed-up English em dashes.
+        let de = "Die Tafel zeigt Möglichkeit — Unmöglichkeit als Gegensatz.";
+        assert_eq!(split_sentences(de, de).len(), 1);
+
+        let en = "Any combination—whether of space or time—is an action.";
+        assert_eq!(split_sentences_en(en, en).len(), 1);
     }
 
     // === English sentence splitting tests ===
