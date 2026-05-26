@@ -1,6 +1,6 @@
 # Kant1 Review Progress
 
-Progress log for manual review of `kant1_elements_to_md/*.md` → `kant1_md_reviewed/*.md`. One H2 per file with the changes applied and reasoning. Conventions and shared rules live in `.claude/skills/kant1-work/SKILL.md`.
+Progress log for manual review of `kant1_elements_to_md/*.md` → `kant1_md_reviewed/*.md`. One H2 per file with the changes applied and reasoning. Conventions and shared rules live in `.claude/skills/kant1-review/SKILL.md`.
 
 ## File 017 — Allgemeine Anmerkungen zur transscendentalen Ästhetik (AA 65)
 

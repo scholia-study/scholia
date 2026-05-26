@@ -1,5 +1,5 @@
 ---
-name: kant1-work
+name: kant1-review
 description: Detailed steps in working wih Kant's Critique of Pure Reason text transformation.
 ---
 
@@ -41,6 +41,7 @@ Keep only the author's own footnotes (typically `[^*]`, `[^**]`, …). Drop edit
 ### Marker placement
 
 - B-edition markers often land mid-word in the pipeline (e.g., `d{{ 60 }} erselben`). Move them to the nearest word boundary: `derselben, {{ 60 }} Empfindung`.
+- B-edition markers should be placed at the start of the line they mark out.
 - Verify the section's first `{{ N }}` against the previous reviewed file's last `{{ N }}` — they should be consecutive. If the pipeline dropped the opening B-marker at a section start, recover it from `assets/kant1/raw/ocr_to_lines/page-XXX.json` (look for the bare page number with a left-margin x-coordinate, ~150 vs body text at ~200).
 - **Audit every bare number in the OCR.** Scan `assets/kant1/raw/ocr_to_lines/page-XXX.json` for short numeric tokens. The pipeline often misses or mis-places them. For each one, determine whether it is:
   - **AA running header**: a number near the top of the page (y ≈ 130–170) aligned with the running header text. Indicates the whole page is AA N. The corresponding `{{{ N }}}` marker goes before the first body word on that page.
@@ -61,7 +62,7 @@ Apply these mechanically — they're systematic Fraktur misreads:
 - `f` → `ſ` (long-s misread): `fie` → `ſie`, `finnlich` → `ſinnlich`
 - `ff` → `ſſ`: `müffe` → `müſſe`
 - `å` → `ä`: `wåre` → `wäre`, `Moralitåt` → `Moralität`
-- `N` → `R` at word start: `Naum` → `Raum`
+- `N` → `R` at word start: `Naum` → `B-edition markers`
 - `ſhuthetiſch` → `ſynthetiſch` (y/h confusions in Fraktur ligatures)
 - Stray superscript numbers in body text (e.g., `³5`) are A-edition page references — strip them. We track only AA `{{{ }}}` and B-edition `{{ }}`.
 - Do NOT normalize `Eriſtenz` ↔ `Exiſtenz` — reviewed files keep both renderings as the OCR captured them.
@@ -77,3 +78,10 @@ Italicize Latin technical terms — the pipeline emits them plain:
 - `_a priori_`, `_a posteriori_`
 - `_intuitus derivativus_`, `_intuitus originarius_`
 - `_expositio_`, etc.
+
+### Bold and Sperrdruck emphasis
+
+The OCR scanner was not able to faithfully reproduce sperrdruck emphasis and bold emphasis, so we must check the text against external controls to find these. In `assets/kant1/control` there are references we can use. Find the working text in the reference.
+
+- Bold body text usually means sperrdruck, which we designate by enclosing a word or phrase in triple asterix: `***Raum***`, `***die nur immer unſeren Sinnen vorkommen mögen***`.
+- Sometimes the text is actually bold, in which case we use two asterix: `**Bold**`.
