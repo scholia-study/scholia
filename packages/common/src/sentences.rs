@@ -739,6 +739,24 @@ mod tests {
     }
 
     #[test]
+    fn test_dot_row_image_not_split_de() {
+        // Kant 037: he draws five points as a row of dots to *show* the number
+        // five. The run `....., ` is an illustration mid-sentence, not five
+        // sentence terminators. The whole clause must stay one sentence.
+        let text = "So, wenn ich fünf Punkte hinter einander ſehe: ....., iſt dieſes ein Bild von der Zahl fünf. Dagegen wenn ich eine Zahl überhaupt nur denke.";
+        let result = split_sentences(text, text);
+        assert_eq!(result.len(), 2);
+        assert_eq!(
+            result[0].0,
+            "So, wenn ich fünf Punkte hinter einander ſehe: ....., iſt dieſes ein Bild von der Zahl fünf."
+        );
+        assert_eq!(
+            result[1].0,
+            "Dagegen wenn ich eine Zahl überhaupt nur denke."
+        );
+    }
+
+    #[test]
     fn test_em_dash_gedankenstrich_splits_de() {
         // Kant opens a new thought with `. — ` (Gedankenstrich). The break must
         // be taken, and the new sentence keeps its leading em dash.
