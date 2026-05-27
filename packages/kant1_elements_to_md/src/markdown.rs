@@ -1,6 +1,6 @@
 use crate::model::{MdBlockType, MdTocNode};
 use crate::toc;
-pub use common::kant1::filenames::filename;
+pub use common::kant1::filenames::{filename, position_number};
 
 /// Render a complete markdown file for one TOC node.
 pub fn render_md(node: &MdTocNode) -> String {
@@ -8,7 +8,7 @@ pub fn render_md(node: &MdTocNode) -> String {
 
     // YAML front matter
     out.push_str("---\n");
-    out.push_str(&format!("position: {}\n", node.flat_index + 1));
+    out.push_str(&format!("position: {}\n", position_number(node.flat_index)));
     out.push_str(&format!("label: \"{}\"\n", node.label.replace('"', "\\\"")));
     out.push_str(&format!("depth: {}\n", node.depth));
     out.push_str(&format!("aa_page: {}\n", node.aa_page));

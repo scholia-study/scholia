@@ -59,12 +59,12 @@ fn parse_file(
 
     let (_, aa_page, depth, label, _) = flat_entries[flat_index];
 
-    if fm.position != flat_index + 1 {
+    if fm.position != filenames::position_number(flat_index) {
         panic!(
             "{}: position mismatch: file has {}, expected {}",
             file_path.display(),
             fm.position,
-            flat_index + 1
+            filenames::position_number(flat_index)
         );
     }
     if fm.label != label {

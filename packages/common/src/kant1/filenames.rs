@@ -1,5 +1,25 @@
 use super::toc;
 
+/// Original 1-based TOC positions that were removed as spurious after review.
+/// Numbering keeps a permanent gap at these positions so that already-reviewed
+/// files keep their original numbers (see toc.rs — the entry formerly at
+/// position 48, "Allgemeine zu den Analogien", was not a real TOC heading).
+const REMOVED_POSITIONS: &[u16] = &[48];
+
+/// Map a 0-based index into the flat TOC array to its 1-based document
+/// position number, skipping the removed positions so the numbering retains
+/// a permanent gap where spurious entries were deleted. This keeps filenames,
+/// `position` front matter, and `source_ref`s stable across a TOC fix.
+pub fn position_number(flat_index: usize) -> usize {
+    let mut pos = flat_index + 1;
+    for &removed in REMOVED_POSITIONS {
+        if pos >= removed as usize {
+            pos += 1;
+        }
+    }
+    pos
+}
+
 /// Slugify a label: lowercase, transliterate German characters,
 /// non-alphanumeric → `_`, collapse, trim.
 pub fn slugify(label: &str) -> String {
@@ -29,7 +49,7 @@ pub fn transliterate(ch: char) -> Option<&'static str> {
 
 /// Generate filename: `001_motto.md`
 pub fn filename(flat_index: usize, label: &str) -> String {
-    format!("{:03}_{}.md", flat_index + 1, slugify(label))
+    format!("{:03}_{}.md", position_number(flat_index), slugify(label))
 }
 
 /// Return the expected filename for each TOC entry (excluding 000_toc.md).
@@ -80,11 +100,22 @@ mod tests {
     #[test]
     fn test_all_filenames() {
         let fnames = all_filenames();
-        assert_eq!(fnames.len(), 114);
+        assert_eq!(fnames.len(), 113);
         assert_eq!(fnames[0], (0, "001_motto.md".to_string()));
         assert_eq!(
             fnames[2],
             (2, "003_vorrede_zur_zweiten_auflage.md".to_string())
         );
+    }
+
+    #[test]
+    fn test_position_number_skips_removed_gap() {
+        // Before the removed position 48: number == index + 1.
+        assert_eq!(position_number(0), 1);
+        assert_eq!(position_number(46), 47);
+        // The entry now at index 47 keeps document position 49 (48 is the
+        // permanent gap left by the removed "Allgemeine zu den Analogien").
+        assert_eq!(position_number(47), 49);
+        assert_eq!(position_number(48), 50);
     }
 }

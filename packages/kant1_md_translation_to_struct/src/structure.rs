@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use common::kant1::filenames::slugify;
+use common::kant1::filenames::{position_number, slugify};
 use common::kant1::toc_en;
 use common::sentences::{
     split_sentences_en_forced, strip_forced_split_markers, strip_forced_splits,
@@ -128,12 +128,12 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
             let html_label = md_to_html(label);
 
             TocNodeData {
-                source_ref: format!("{:03}", pf.flat_index + 1),
+                source_ref: format!("{:03}", position_number(pf.flat_index)),
                 slug: slug_override
                     .map(|s| s.to_string())
                     .unwrap_or_else(|| slugify(&plain_label)),
                 path,
-                sort_order: pf.flat_index as i32 + 1,
+                sort_order: position_number(pf.flat_index) as i32,
                 depth: depth as i16,
                 label: plain_label,
                 label_html: html_label,
@@ -317,7 +317,7 @@ fn find_parent_source_ref(
     for i in (0..current_idx).rev() {
         let (_, _, d, _, _) = flat_entries[i];
         if d == target_depth {
-            return Some(format!("{:03}", i + 1));
+            return Some(format!("{:03}", position_number(i)));
         }
         if d < target_depth {
             return None;

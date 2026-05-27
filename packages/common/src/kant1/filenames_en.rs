@@ -1,9 +1,9 @@
-use super::filenames::slugify;
+use super::filenames::{position_number, slugify};
 use super::toc_en;
 
 /// Generate filename for an English TOC entry: `001_motto.md`
 pub fn filename_en(flat_index: usize, label: &str) -> String {
-    format!("{:03}_{}.md", flat_index + 1, slugify(label))
+    format!("{:03}_{}.md", position_number(flat_index), slugify(label))
 }
 
 /// Return the expected English filename for each TOC entry (excluding 000_toc.md).
@@ -31,7 +31,7 @@ mod tests {
     #[test]
     fn test_all_filenames_en() {
         let fnames = all_filenames_en();
-        assert_eq!(fnames.len(), 114);
+        assert_eq!(fnames.len(), 113);
         assert_eq!(fnames[0], (0, "001_motto.md".to_string()));
         assert_eq!(
             fnames[2],

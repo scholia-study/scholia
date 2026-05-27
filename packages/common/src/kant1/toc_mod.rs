@@ -317,12 +317,6 @@ const TOC: &[FlatEntry] = &[
         slug_override: None,
     },
     FlatEntry {
-        aa_page: 183,
-        depth: 8,
-        label: "Allgemeine zu den Analogien",
-        slug_override: None,
-    },
-    FlatEntry {
         aa_page: 185,
         depth: 7,
         label: "4. Die Postulate des empirischen Denkens überhaupt",
@@ -748,7 +742,7 @@ mod tests {
 
     #[test]
     fn test_toc_len_matches_original() {
-        assert_eq!(toc_len(), 114);
+        assert_eq!(toc_len(), 113);
     }
 
     #[test]

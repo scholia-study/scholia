@@ -312,12 +312,6 @@ const TOC: &[FlatEntry] = &[
         slug_override: None,
     },
     FlatEntry {
-        aa_page: 183,
-        depth: 8,
-        label: "General remark on the analogies",
-        slug_override: None,
-    },
-    FlatEntry {
         aa_page: 185,
         depth: 7,
         label: "4. The postulates of empirical thought in general",
@@ -744,7 +738,7 @@ mod tests {
 
     #[test]
     fn test_en_entry_count() {
-        assert_eq!(toc_en_len(), 114);
+        assert_eq!(toc_en_len(), 113);
     }
 
     #[test]
