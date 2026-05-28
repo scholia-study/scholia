@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useGetLibrary } from "../api/books/books";
+import {
+    getGetLibrarySuspenseQueryOptions,
+    useGetLibrarySuspense,
+} from "../api/books/books";
 import type {
     LibraryGroup,
     LibraryStats,
@@ -10,11 +13,14 @@ import type {
 import { InfoLinks } from "../components/InfoLinks";
 
 export const Route = createFileRoute("/")({
+    loader: ({ context }) => {
+        context.queryClient.prefetchQuery(getGetLibrarySuspenseQueryOptions());
+    },
     component: IndexPage,
 });
 
 function IndexPage() {
-    const { data, isLoading } = useGetLibrary();
+    const { data, isLoading } = useGetLibrarySuspense();
     const library = data?.data;
 
     return (
