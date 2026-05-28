@@ -28,6 +28,7 @@
         "source.organizeImports.biome": "explicit"
     },
     "biome.requireConfiguration": true,
+    "tailwindCSS.lint.suggestCanonicalClasses": "ignore",
     "files.readonlyInclude": {
         "**/routeTree.gen.ts": true
     },
