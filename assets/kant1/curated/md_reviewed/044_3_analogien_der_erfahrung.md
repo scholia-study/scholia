@@ -7,7 +7,7 @@ aa_page: 158
 
 ## {{{ 158 }}} 3. Analogien der Erfahrung
 
-## Das Princip derſelben iſt: ***Erfahrung iſt nur durch die Vorſtellung einer nothwendigen Verknüpfung der Wahrnehmungen möglich.***
+**Das Princip derſelben iſt:** ***Erfahrung iſt nur durch die Vorſtellung einer nothwendigen Verknüpfung der Wahrnehmungen möglich.***
 
 ## Beweis.
 

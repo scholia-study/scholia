@@ -8,9 +8,9 @@ aa_page: 166
 
 ## Zweite Analogie. Grundsatz der Zeitfolge nach dem Gesetze der Causalität
 
-## Alle Veränderungen geschehen nach dem Gesetze der Verknüpfung der Ursache und Wirkung.
+***Alle Veränderungen geschehen nach dem Gesetze der Verknüpfung der Ursache und Wirkung.***
 
-## {{{ 167 }}} ***Beweis***.
+## {{{ 167 }}} Beweis.
 
 (Daß alle Erscheinungen der Zeitfolge insgeſammt nur ***Veränderungen***, d. i. ein succeſſives Sein und Nichtſein der Beſtimmungen der Subſtanz, ſeien, die da beharrt, folglich das Sein der Subſtanz ſelbſt, welches aufs Nichtſein derſelben folgt, oder das Nichtſein derſelben, welches aufs {{ 233 }} Daſein folgt, mit anderen Worten, daß das Entſtehen oder Vergehen der Subſtanz ſelbſt nicht ſtattfinde, hat der vorige Grundſatz dargethan. Dieſer hätte auch ſo ausgedrückt werden können: ***Aller Wechſel (Succeſſion) der Erſcheinungen iſt nur Veränderung***; denn Entſehen oder Vergehen der Subſtanz ſind keine Veränderungen derſelben, weil der Begriff der Veränderung eben daſſelbe Subject mit zwei entgegengeſeßten Beſtimmungen als eriſtirend, mithin als beharrend vorausſetzt. Nach dieſer Vorerinnerung folgt der Beweis).
 

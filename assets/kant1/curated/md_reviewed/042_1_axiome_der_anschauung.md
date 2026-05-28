@@ -7,7 +7,7 @@ aa_page: 148
 
 ## 1. Axiome der Anſchauung
 
-## Das Principium derſelben iſt: ***Alle Anſchauungen ſind extenſive Größen.***
+***Das Principium derſelben iſt: Alle Anſchauungen ſind extenſive Größen.***
 
 ## Beweis.
 

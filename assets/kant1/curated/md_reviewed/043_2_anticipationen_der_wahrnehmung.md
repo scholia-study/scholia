@@ -7,7 +7,7 @@ aa_page: 151
 
 ## 2. Anticipationen der Wahrnehmung
 
-## Ihr Principium derſelben iſt: ***In allen Erſcheinungen hat das Reale, was ein Gegenſtand der Empfindung iſt, intenſive Größe***, d. i. einen Grad.
+**Ihr Principium derſelben iſt:** ***In allen Erſcheinungen hat das Reale, was ein Gegenſtand der Empfindung iſt, intenſive Größe***, **d. i. einen Grad.**
 
 ## {{{ 152 }}} Beweis.
 

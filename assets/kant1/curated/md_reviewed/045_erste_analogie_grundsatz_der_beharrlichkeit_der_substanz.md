@@ -8,7 +8,7 @@ aa_page: 162
 
 ## {{{ 162 }}} Erste Analogie. Grundsatz der Beharrlichkeit der Substanz
 
-## Bei allem Wechſel der Erſcheinungen beharrt die Subſtanz, und das Quantum derſelben wird in der Natur weder vermehrt noch vermindert.
+***Bei allem Wechſel der Erſcheinungen beharrt die Subſtanz, und das Quantum derſelben wird in der Natur weder vermehrt noch vermindert.***
 
 ## Beweis.
 
