@@ -19,6 +19,8 @@ import type {
     SentenceResponse,
 } from "../../../api/model";
 import {
+    getListAllNotesQueryKey,
+    getListAllQuotationsQueryKey,
     getListNotesQueryKey,
     useCreateQuotation,
     useDeleteNote,
@@ -110,6 +112,11 @@ export function NotesView({
             onSuccess: () => {
                 toast.success("Quotation saved");
                 invalidateAllNodeQuotations(queryClient);
+                // Also refresh the "My Quotations" account list, which is
+                // cached independently of the reader's node markers.
+                queryClient.invalidateQueries({
+                    queryKey: getListAllQuotationsQueryKey(),
+                });
             },
             onError: (err: unknown) => {
                 const message =
@@ -293,6 +300,14 @@ function QuotationNotesGroup({
                     queryKey: getListNotesQueryKey(bookSlug, quotation.id),
                 });
                 invalidateAllNodeQuotations(queryClient);
+                // Refresh the account lists: "My Notes" drops the note and
+                // "My Quotations" reflects the decremented note_count.
+                queryClient.invalidateQueries({
+                    queryKey: getListAllNotesQueryKey(),
+                });
+                queryClient.invalidateQueries({
+                    queryKey: getListAllQuotationsQueryKey(),
+                });
             },
             onError: () => toast.error("Failed to delete note"),
         },

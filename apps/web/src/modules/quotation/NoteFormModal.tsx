@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
 import type { NoteResponse } from "#/api/model";
 import { FetchError } from "../../api/fetcher";
 import {
+    getListAllNotesQueryKey,
+    getListAllQuotationsQueryKey,
     getListNotesQueryKey,
     useCreateNote,
     useUpdateNote,
@@ -59,6 +61,14 @@ export function NoteFormModal({
                     queryKey: getListNotesQueryKey(bookSlug, quotationId),
                 });
                 invalidateAllNodeQuotations(queryClient);
+                // Refresh the account lists: "My Notes" gains the note and
+                // "My Quotations" reflects the bumped note_count.
+                queryClient.invalidateQueries({
+                    queryKey: getListAllNotesQueryKey(),
+                });
+                queryClient.invalidateQueries({
+                    queryKey: getListAllQuotationsQueryKey(),
+                });
                 onClose();
             },
             onError: (err: unknown) => {

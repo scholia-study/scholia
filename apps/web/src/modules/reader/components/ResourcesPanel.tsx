@@ -29,6 +29,7 @@ import type {
     TocNodeResponse,
 } from "../../../api/model";
 import {
+    getListAllQuotationsQueryKey,
     useCreateQuotation,
     useListQuotations,
 } from "../../../api/quotations/quotations";
@@ -203,6 +204,11 @@ export function ResourcesPanel({
                 // Wider-than-current-book invalidation prevents the
                 // "had to hard refresh to see the marker" bug.
                 invalidateAllNodeQuotations(queryClient);
+                // Also refresh the "My Quotations" account list, which is
+                // cached independently of the reader's node markers.
+                queryClient.invalidateQueries({
+                    queryKey: getListAllQuotationsQueryKey(),
+                });
             },
             onError: (err: unknown) => {
                 const message =
