@@ -1,20 +1,14 @@
 use std::net::SocketAddr;
-use std::sync::Arc;
 
-use api::ApiDoc;
-use api::config::AppConfig;
-use api::state::AppState;
+use api::system::config::AppConfig;
+use api::system::state::AppState;
 use axum::http::HeaderValue;
 use sqlx::PgPool;
 use time::Duration;
-use tower_governor::GovernorLayer;
-use tower_governor::governor::GovernorConfigBuilder;
 use tower_http::cors::CorsLayer;
 use tower_sessions::SessionManagerLayer;
 use tower_sessions::cookie::SameSite;
 use tower_sessions_sqlx_store::PostgresStore;
-use utoipa::OpenApi;
-use utoipa_axum::router::OpenApiRouter;
 use utoipa_swagger_ui::SwaggerUi;
 
 #[tokio::main]
@@ -41,7 +35,7 @@ async fn main() {
     // server boots; the same binary serves both modes.
     if std::env::args().nth(1).as_deref() == Some("migrate") {
         tracing::info!("Running migrations…");
-        api::migrate::run(api::config::pg_connect_options_from_env())
+        api::system::migrate::run(api::system::config::pg_connect_options_from_env())
             .await
             .expect("Migrations failed");
         tracing::info!("Migrations applied.");
@@ -50,7 +44,7 @@ async fn main() {
 
     let config = AppConfig::from_env();
 
-    let pool = PgPool::connect_with(api::config::pg_connect_options_from_env())
+    let pool = PgPool::connect_with(api::system::config::pg_connect_options_from_env())
         .await
         .expect("Failed to connect to database");
 
@@ -68,7 +62,6 @@ async fn main() {
         .with_http_only(true)
         .with_expiry(tower_sessions::Expiry::OnInactivity(Duration::days(30)));
 
-    // CORS
     let cors = CorsLayer::new()
         .allow_origin(
             config
@@ -90,217 +83,29 @@ async fn main() {
         ])
         .allow_credentials(true);
 
-    // Rate limiting for auth endpoints: 10 requests per 60 seconds per IP
-    let governor_config = Arc::new(
-        GovernorConfigBuilder::default()
-            .per_second(6)
-            .burst_size(10)
-            .finish()
-            .expect("Failed to build governor config"),
-    );
-    let rate_limit_layer = GovernorLayer::new(governor_config);
-
     let stripe_client = stripe::Client::new(config.stripe_api_key.clone());
 
     let app_state = AppState {
         pool: pool.clone(),
         config,
         stripe: stripe_client,
-        purge_client: api::cache::build_client(),
+        purge_client: api::system::cache::build_client(),
     };
 
-    // Auth routes (rate limited)
-    let auth_router = OpenApiRouter::new()
-        .routes(utoipa_axum::routes!(api::handlers::auth::register))
-        .routes(utoipa_axum::routes!(api::handlers::auth::login))
-        .routes(utoipa_axum::routes!(api::handlers::auth::logout))
-        .routes(utoipa_axum::routes!(api::handlers::auth::me))
-        .routes(utoipa_axum::routes!(api::handlers::auth::forgot_password))
-        .routes(utoipa_axum::routes!(api::handlers::auth::reset_password))
-        .routes(utoipa_axum::routes!(api::handlers::auth::verify_email))
-        .routes(utoipa_axum::routes!(api::handlers::github::github_login))
-        .routes(utoipa_axum::routes!(api::handlers::github::github_callback))
-        .layer(rate_limit_layer);
+    // The full documented surface is assembled in `api::api_router`
+    // (shared with the `openapi` bin). Here we split it into an axum
+    // router + the OpenAPI doc, then layer on sessions/CORS/state and
+    // attach the undocumented Stripe webhook.
+    let (router, api) = api::api_router().split_for_parts();
 
-    // Authenticated routes (no rate limiting needed)
-    let user_router = OpenApiRouter::new()
-        .routes(utoipa_axum::routes!(
-            api::handlers::auth::get_profile,
-            api::handlers::auth::update_profile
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::auth::request_password_change
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::quotations::list_quotations,
-            api::handlers::quotations::create_quotation
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::quotations::delete_quotation
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::quotations::list_notes,
-            api::handlers::quotations::create_note
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::quotations::update_note,
-            api::handlers::quotations::delete_note
-        ))
-        .routes(utoipa_axum::routes!(api::handlers::quotations::list_tags))
-        .routes(utoipa_axum::routes!(
-            api::handlers::quotations::list_all_quotations
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::quotations::list_all_notes
-        ))
-        // Article endpoints
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::create_article
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::list_user_articles
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::get_user_article,
-            api::handlers::articles::update_article
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::publish_article
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::archive_article
-        ))
-        // Article quotation endpoints
-        .routes(utoipa_axum::routes!(
-            api::handlers::article_quotations::create_article_quotation,
-            api::handlers::article_quotations::list_article_quotations
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::article_quotations::delete_article_quotation
-        ))
-        // Feedback (user-submit). Admin endpoints live in admin_router.
-        .routes(utoipa_axum::routes!(
-            api::handlers::feedback::create_feedback
-        ))
-        // Billing — Stripe Embedded Checkout + Customer Portal.
-        // Webhook intentionally lives outside this router (public,
-        // signature-verified, no session/CORS).
-        .routes(utoipa_axum::routes!(
-            api::handlers::billing::create_checkout_session
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::billing::create_portal_session
-        ));
-
-    // Admin routes — gated per-handler via Permission::AdminPanel.
-    // Note: the `articles/{slug}/labels` endpoints live here for URL
-    // consistency with other admin routes, but they're gated by
-    // Permission::ArticleLabelsManage, not AdminPanel — editors qualify.
-    let admin_router = OpenApiRouter::new()
-        .routes(utoipa_axum::routes!(api::handlers::feedback::list_feedback))
-        .routes(utoipa_axum::routes!(
-            api::handlers::feedback::get_feedback,
-            api::handlers::feedback::update_feedback
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::apply_article_label
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::remove_article_label
-        ));
-
-    // Public routes (no rate limiting)
-    let public_router = OpenApiRouter::new()
-        .routes(utoipa_axum::routes!(api::handlers::books::list_books))
-        .routes(utoipa_axum::routes!(api::handlers::books::get_book))
-        .routes(utoipa_axum::routes!(api::handlers::books::get_book_about))
-        .routes(utoipa_axum::routes!(api::handlers::library::get_library))
-        .routes(utoipa_axum::routes!(api::handlers::toc::get_toc))
-        .routes(utoipa_axum::routes!(api::handlers::nodes::get_node))
-        .routes(utoipa_axum::routes!(api::handlers::page::get_node_page))
-        .routes(utoipa_axum::routes!(
-            api::handlers::resources::list_resources
-        ))
-        // Public article endpoints
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::list_published_articles
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::get_published_article
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::get_article_by_id
-        ))
-        .routes(utoipa_axum::routes!(api::handlers::articles::list_topics))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::list_editorial_labels
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::articles::batch_sentences
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::article_quotations::get_article_quotation
-        ))
-        // Public user profiles + by-id redirect resolver.
-        .routes(utoipa_axum::routes!(
-            api::handlers::users::get_public_profile
-        ))
-        .routes(utoipa_axum::routes!(api::handlers::users::get_handle_by_id));
-
-    // Editor routes (auth checked in each handler)
-    let editor_router = OpenApiRouter::new()
-        .routes(utoipa_axum::routes!(
-            api::handlers::resources::create_resource
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::resources::update_resource,
-            api::handlers::resources::delete_resource
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::sources::search_sources,
-            api::handlers::sources::create_source
-        ))
-        .routes(utoipa_axum::routes!(api::handlers::sources::browse_sources))
-        .routes(utoipa_axum::routes!(
-            api::handlers::sources::get_source,
-            api::handlers::sources::update_source,
-            api::handlers::sources::delete_source
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::sources::add_source_person
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::sources::remove_source_person
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::sources::check_source_references
-        ))
-        .routes(utoipa_axum::routes!(
-            api::handlers::persons::search_persons,
-            api::handlers::persons::create_person
-        ))
-        .routes(utoipa_axum::routes!(api::handlers::persons::update_person));
-
-    let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .merge(auth_router)
-        .merge(user_router)
-        .merge(public_router)
-        .merge(editor_router)
-        .merge(admin_router)
-        .split_for_parts();
-
-    // Stripe webhook lives on a separate router so it bypasses
-    // session + CORS layers. Stripe-signature header is the only auth.
-    let webhook_router = axum::Router::new().route(
-        "/api/webhooks/stripe",
-        axum::routing::post(api::handlers::billing::stripe_webhook),
-    );
-
+    // Stripe webhook lives on a separate router so it bypasses session +
+    // CORS layers (Stripe-Signature is the only auth). Owned by the billing
+    // domain; merged here, before with_state.
     let app = router
         .merge(SwaggerUi::new("/api/docs").url("/api/openapi.json", api))
         .layer(session_layer)
         .layer(cors)
-        .merge(webhook_router)
+        .merge(api::modules::billing::webhook_routes())
         .with_state(app_state);
 
     let addr = "0.0.0.0:4000";

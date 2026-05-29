@@ -1,192 +1,59 @@
+use tower_governor::GovernorLayer;
 use utoipa::OpenApi;
+use utoipa_axum::router::OpenApiRouter;
 
-pub mod auth;
-pub mod cache;
-pub mod config;
-pub mod db;
-pub mod email;
-pub mod error;
-pub mod handlers;
-pub mod migrate;
-pub mod models;
-pub mod state;
-pub mod validation;
+use crate::system::state::AppState;
+
+pub mod modules;
+pub mod system;
 
 #[derive(OpenApi)]
 #[openapi(
     info(title = "Scholia API", version = "0.1.0"),
-    paths(
-        handlers::books::list_books,
-        handlers::books::get_book,
-        handlers::books::get_book_about,
-        handlers::library::get_library,
-        handlers::toc::get_toc,
-        handlers::nodes::get_node,
-        handlers::page::get_node_page,
-        handlers::auth::register,
-        handlers::auth::login,
-        handlers::auth::logout,
-        handlers::auth::me,
-        handlers::auth::forgot_password,
-        handlers::auth::reset_password,
-        handlers::auth::verify_email,
-        handlers::auth::get_profile,
-        handlers::auth::update_profile,
-        handlers::auth::request_password_change,
-        handlers::github::github_login,
-        handlers::github::github_callback,
-        handlers::resources::list_resources,
-        handlers::resources::create_resource,
-        handlers::resources::update_resource,
-        handlers::resources::delete_resource,
-        handlers::sources::search_sources,
-        handlers::sources::browse_sources,
-        handlers::sources::create_source,
-        handlers::sources::get_source,
-        handlers::sources::update_source,
-        handlers::sources::delete_source,
-        handlers::sources::add_source_person,
-        handlers::sources::remove_source_person,
-        handlers::sources::check_source_references,
-        handlers::persons::search_persons,
-        handlers::persons::create_person,
-        handlers::persons::update_person,
-        handlers::quotations::list_quotations,
-        handlers::quotations::create_quotation,
-        handlers::quotations::delete_quotation,
-        handlers::quotations::list_notes,
-        handlers::quotations::create_note,
-        handlers::quotations::update_note,
-        handlers::quotations::delete_note,
-        handlers::quotations::list_tags,
-        handlers::quotations::list_all_quotations,
-        handlers::quotations::list_all_notes,
-        handlers::articles::create_article,
-        handlers::articles::list_user_articles,
-        handlers::articles::get_user_article,
-        handlers::articles::update_article,
-        handlers::articles::publish_article,
-        handlers::articles::archive_article,
-        handlers::articles::list_published_articles,
-        handlers::articles::get_published_article,
-        handlers::articles::get_article_by_id,
-        handlers::articles::list_topics,
-        handlers::articles::list_editorial_labels,
-        handlers::articles::apply_article_label,
-        handlers::articles::remove_article_label,
-        handlers::articles::batch_sentences,
-        handlers::article_quotations::create_article_quotation,
-        handlers::article_quotations::list_article_quotations,
-        handlers::article_quotations::get_article_quotation,
-        handlers::article_quotations::delete_article_quotation,
-        handlers::feedback::create_feedback,
-        handlers::feedback::list_feedback,
-        handlers::feedback::get_feedback,
-        handlers::feedback::update_feedback,
-        handlers::users::get_public_profile,
-        handlers::users::get_handle_by_id,
-        handlers::billing::create_checkout_session,
-        handlers::billing::create_portal_session,
-    ),
+    // Orphan schemas: no documented endpoint references them
+    // (`list_all_quotations` returns `UnifiedQuotationListResponse`), so
+    // the router's automatic schema collection won't pick them up. They
+    // were historically pinned in the manual `components(schemas(...))`
+    // list and are emitted into the generated web client, so we keep
+    // registering them explicitly to hold the OpenAPI surface
+    // byte-identical across the modular refactor. Removing them is a
+    // separate cleanup, intentionally out of scope here.
     components(schemas(
-        models::book::BookSummary,
-        models::book::BookDetail,
-        models::book::AboutThisTextResponse,
-        models::library::LibraryResponse,
-        models::library::LibraryGroup,
-        models::library::LibraryWork,
-        models::library::LibraryVersion,
-        models::library::LibraryStats,
-        models::library::BookPill,
-        models::toc::TocNodeResponse,
-        models::node::NodeDetail,
-        models::node::ContentBlockResponse,
-        models::node::SentenceResponse,
-        models::node::PageMarkerResponse,
-        models::node::FootnoteResponse,
-        models::node::FootnoteSentenceResponse,
-        models::page::NodePage,
-        handlers::auth::RegisterRequest,
-        handlers::auth::LoginRequest,
-        handlers::auth::ForgotPasswordRequest,
-        handlers::auth::ResetPasswordRequest,
-        handlers::auth::AuthResponse,
-        handlers::auth::MessageResponse,
-        handlers::auth::ProfileResponse,
-        handlers::auth::LinkedProvider,
-        handlers::auth::UpdateProfileRequest,
-        models::resource::ResourceResponse,
-        models::resource::ResourceListResponse,
-        models::resource::SourceResponse,
-        models::resource::ParentSourceResponse,
-        models::resource::SourcePersonResponse,
-        models::resource::PersonResponse,
-        models::resource::SourceSearchResponse,
-        models::resource::SourceBrowseResponse,
-        models::resource::CreateResourceRequest,
-        models::resource::UpdateResourceRequest,
-        models::resource::CreateSourceRequest,
-        models::resource::UpdateSourceRequest,
-        models::resource::CreatePersonRequest,
-        models::resource::UpdatePersonRequest,
-        models::resource::LinkSourcePersonRequest,
-        models::resource::ReferenceCheckResponse,
-        models::resource::ReferencedResources,
-        models::resource::ReferencedChildSources,
-        models::resource::ReferencedChildSource,
-        models::resource::ReferencedArticles,
-        models::resource::ReferencedArticle,
-        models::quotation::QuotationResponse,
-        models::quotation::QuotationListResponse,
-        models::quotation::CreateQuotationRequest,
-        models::quotation::CreateQuotationResponse,
-        models::quotation::NoteResponse,
-        models::quotation::NoteListResponse,
-        models::quotation::CreateNoteRequest,
-        models::quotation::UpdateNoteRequest,
-        models::quotation::TagResponse,
-        models::quotation::TagListResponse,
-        models::quotation::QuotationWithContextResponse,
-        models::quotation::QuotationWithContextListResponse,
-        models::quotation::NoteWithContextResponse,
-        models::quotation::NoteWithContextListResponse,
-        models::quotation::QuotationLimitsResponse,
-        models::quotation::NoteLimitsResponse,
-        models::article::TopicResponse,
-        models::article::TopicListResponse,
-        models::article::EditorialLabelResponse,
-        models::article::EditorialLabelListResponse,
-        models::article::ApplyEditorialLabelRequest,
-        models::article::ArticleResponse,
-        models::article::ArticleDetailResponse,
-        models::article::ArticleListResponse,
-        models::article::PublishedArticleListResponse,
-        models::article::ArticleLimitsResponse,
-        models::article::CreateArticleRequest,
-        models::article::UpdateArticleRequest,
-        models::article::BatchSentenceRequest,
-        models::article::BatchSentencesRequest,
-        models::article::SentenceData,
-        models::article::BatchSentenceResponseItem,
-        models::article::BatchSentencesResponse,
-        models::article_quotation::ArticleQuotationResponse,
-        models::article_quotation::ArticleQuotationListResponse,
-        models::article_quotation::CreateArticleQuotationRequest,
-        models::article_quotation::CreateArticleQuotationResponse,
-        models::article_quotation::UnifiedQuotationResponse,
-        models::article_quotation::UnifiedQuotationListResponse,
-        models::feedback::FeedbackStatus,
-        models::feedback::FeedbackSubmitter,
-        models::feedback::FeedbackHandler,
-        models::feedback::FeedbackResponse,
-        models::feedback::FeedbackListResponse,
-        models::feedback::CreateFeedbackRequest,
-        models::feedback::UpdateFeedbackRequest,
-        models::user::PublicProfileResponse,
-        models::user::UserHandleResponse,
-        handlers::billing::CreateCheckoutRequest,
-        handlers::billing::CreateCheckoutResponse,
-        handlers::billing::PortalSessionResponse,
+        modules::writing::QuotationWithContextResponse,
+        modules::writing::QuotationWithContextListResponse,
     ))
 )]
 pub struct ApiDoc;
+
+/// Assemble the full documented API surface into one `OpenApiRouter`.
+pub fn api_router() -> OpenApiRouter<AppState> {
+    let rate_limit_layer = GovernorLayer::new(system::rate_limit::auth_config());
+    let auth_router = crate::modules::identity::rate_limited_router().layer(rate_limit_layer);
+    let user_router = OpenApiRouter::new()
+        .merge(crate::modules::identity::user_router())
+        .merge(crate::modules::writing::user_router())
+        .merge(crate::modules::feedback::user_router())
+        .merge(crate::modules::billing::user_router());
+
+    // Admin routes — gated per-handler via Permission::AdminPanel.
+    // Note: the `articles/{slug}/labels` endpoints live here for URL
+    // consistency with other admin routes, but they're gated by
+    // Permission::ArticleLabelsManage, not AdminPanel — editors qualify.
+    let admin_router = OpenApiRouter::new()
+        .merge(crate::modules::feedback::admin_router())
+        .merge(crate::modules::writing::admin_router());
+
+    let public_router = OpenApiRouter::new()
+        .merge(crate::modules::corpus::public_router())
+        .merge(crate::modules::writing::public_router())
+        .merge(crate::modules::identity::public_router());
+
+    let editor_router = crate::modules::corpus::editor_router();
+
+    OpenApiRouter::with_openapi(ApiDoc::openapi())
+        .merge(auth_router)
+        .merge(user_router)
+        .merge(public_router)
+        .merge(editor_router)
+        .merge(admin_router)
+}
