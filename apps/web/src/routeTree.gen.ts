@@ -22,7 +22,6 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MembershipIndexRouteImport } from './routes/membership.index'
-import { Route as BooksIndexRouteImport } from './routes/books.index'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as UsersHandleRouteImport } from './routes/users.$handle'
 import { Route as MembershipWelcomeRouteImport } from './routes/membership.welcome'
@@ -105,11 +104,6 @@ const IndexRoute = IndexRouteImport.update({
 const MembershipIndexRoute = MembershipIndexRouteImport.update({
   id: '/membership/',
   path: '/membership/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BooksIndexRoute = BooksIndexRouteImport.update({
-  id: '/books/',
-  path: '/books/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
@@ -226,7 +220,6 @@ export interface FileRoutesByFullPath {
   '/membership/welcome': typeof MembershipWelcomeRoute
   '/users/$handle': typeof UsersHandleRoute
   '/articles/': typeof ArticlesIndexRoute
-  '/books/': typeof BooksIndexRoute
   '/membership/': typeof MembershipIndexRoute
   '/user/notes': typeof AuthUserNotesRoute
   '/user/profile': typeof AuthUserProfileRoute
@@ -259,7 +252,6 @@ export interface FileRoutesByTo {
   '/membership/welcome': typeof MembershipWelcomeRoute
   '/users/$handle': typeof UsersHandleRoute
   '/articles': typeof ArticlesIndexRoute
-  '/books': typeof BooksIndexRoute
   '/membership': typeof MembershipIndexRoute
   '/user/notes': typeof AuthUserNotesRoute
   '/user/profile': typeof AuthUserProfileRoute
@@ -295,7 +287,6 @@ export interface FileRoutesById {
   '/membership/welcome': typeof MembershipWelcomeRoute
   '/users/$handle': typeof UsersHandleRoute
   '/articles/': typeof ArticlesIndexRoute
-  '/books/': typeof BooksIndexRoute
   '/membership/': typeof MembershipIndexRoute
   '/_auth/user/notes': typeof AuthUserNotesRoute
   '/_auth/user/profile': typeof AuthUserProfileRoute
@@ -330,7 +321,6 @@ export interface FileRouteTypes {
     | '/membership/welcome'
     | '/users/$handle'
     | '/articles/'
-    | '/books/'
     | '/membership/'
     | '/user/notes'
     | '/user/profile'
@@ -363,7 +353,6 @@ export interface FileRouteTypes {
     | '/membership/welcome'
     | '/users/$handle'
     | '/articles'
-    | '/books'
     | '/membership'
     | '/user/notes'
     | '/user/profile'
@@ -398,7 +387,6 @@ export interface FileRouteTypes {
     | '/membership/welcome'
     | '/users/$handle'
     | '/articles/'
-    | '/books/'
     | '/membership/'
     | '/_auth/user/notes'
     | '/_auth/user/profile'
@@ -433,7 +421,6 @@ export interface RootRouteChildren {
   MembershipWelcomeRoute: typeof MembershipWelcomeRoute
   UsersHandleRoute: typeof UsersHandleRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
-  BooksIndexRoute: typeof BooksIndexRoute
   MembershipIndexRoute: typeof MembershipIndexRoute
   ArticlesByIdIdRoute: typeof ArticlesByIdIdRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
@@ -532,13 +519,6 @@ declare module '@tanstack/react-router' {
       path: '/membership'
       fullPath: '/membership/'
       preLoaderRoute: typeof MembershipIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/books/': {
-      id: '/books/'
-      path: '/books'
-      fullPath: '/books/'
-      preLoaderRoute: typeof BooksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/articles/': {
@@ -733,7 +713,6 @@ const rootRouteChildren: RootRouteChildren = {
   MembershipWelcomeRoute: MembershipWelcomeRoute,
   UsersHandleRoute: UsersHandleRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
-  BooksIndexRoute: BooksIndexRoute,
   MembershipIndexRoute: MembershipIndexRoute,
   ArticlesByIdIdRoute: ArticlesByIdIdRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
