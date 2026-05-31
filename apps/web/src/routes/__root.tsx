@@ -8,6 +8,7 @@ import {
     useLocation,
 } from "@tanstack/react-router";
 import { Toaster } from "react-hot-toast";
+import { getMeQueryOptions } from "../api/auth/auth";
 import { Footer } from "../layout/Footer";
 import { InfoSubnav } from "../layout/InfoSubnav";
 import { Navbar } from "../layout/Navbar";
@@ -22,6 +23,10 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+    loader: ({ context: { queryClient } }) =>
+        queryClient.prefetchQuery(
+            getMeQueryOptions({ query: { retry: false } }), // Speed up auth
+        ),
     head: () => {
         // Runtime profile injection. The Node SSR reads APP_PROFILE from
         // its container env at render time and writes it inline; the
