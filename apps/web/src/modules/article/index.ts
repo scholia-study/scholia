@@ -3,6 +3,7 @@ export {
     type ArticleEditorHandle,
     ArticleEditorLazy,
 } from "./components/ArticleEditorLazy";
+export { ArticlePageUI } from "./components/ArticlePageUI";
 export { EditorialLabelChips } from "./components/EditorialLabelChips";
 export { EditorialLabelManager } from "./components/EditorialLabelManager";
 export {

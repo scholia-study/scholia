@@ -68,10 +68,6 @@ export type listQuotationsResponseError = (
     headers: Headers;
 };
 
-export type listQuotationsResponse =
-    | listQuotationsResponseSuccess
-    | listQuotationsResponseError;
-
 export const getListQuotationsUrl = (
     slug: string,
     params: ListQuotationsParams,
@@ -98,8 +94,8 @@ export const listQuotations = async (
     slug: string,
     params: ListQuotationsParams,
     options?: RequestInit,
-): Promise<listQuotationsResponse> => {
-    return customFetch<listQuotationsResponse>(
+): Promise<listQuotationsResponseSuccess> => {
+    return customFetch<listQuotationsResponseSuccess>(
         getListQuotationsUrl(slug, params),
         {
             ...options,
@@ -439,10 +435,6 @@ export type createQuotationResponseError = (
     headers: Headers;
 };
 
-export type createQuotationResponse =
-    | createQuotationResponseSuccess
-    | createQuotationResponseError;
-
 export const getCreateQuotationUrl = (slug: string) => {
     return `/api/books/${slug}/quotations`;
 };
@@ -451,13 +443,19 @@ export const createQuotation = async (
     slug: string,
     createQuotationRequest: CreateQuotationRequest,
     options?: RequestInit,
-): Promise<createQuotationResponse> => {
-    return customFetch<createQuotationResponse>(getCreateQuotationUrl(slug), {
-        ...options,
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
-        body: JSON.stringify(createQuotationRequest),
-    });
+): Promise<createQuotationResponseSuccess> => {
+    return customFetch<createQuotationResponseSuccess>(
+        getCreateQuotationUrl(slug),
+        {
+            ...options,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(createQuotationRequest),
+        },
+    );
 };
 
 export const getCreateQuotationMutationOptions = <
@@ -554,10 +552,6 @@ export type deleteQuotationResponseError = (
     headers: Headers;
 };
 
-export type deleteQuotationResponse =
-    | deleteQuotationResponseSuccess
-    | deleteQuotationResponseError;
-
 export const getDeleteQuotationUrl = (slug: string, id: string) => {
     return `/api/books/${slug}/quotations/${id}`;
 };
@@ -566,8 +560,8 @@ export const deleteQuotation = async (
     slug: string,
     id: string,
     options?: RequestInit,
-): Promise<deleteQuotationResponse> => {
-    return customFetch<deleteQuotationResponse>(
+): Promise<deleteQuotationResponseSuccess> => {
+    return customFetch<deleteQuotationResponseSuccess>(
         getDeleteQuotationUrl(slug, id),
         {
             ...options,
@@ -670,10 +664,6 @@ export type listNotesResponseError = (
     headers: Headers;
 };
 
-export type listNotesResponse =
-    | listNotesResponseSuccess
-    | listNotesResponseError;
-
 export const getListNotesUrl = (slug: string, id: string) => {
     return `/api/books/${slug}/quotations/${id}/notes`;
 };
@@ -682,8 +672,8 @@ export const listNotes = async (
     slug: string,
     id: string,
     options?: RequestInit,
-): Promise<listNotesResponse> => {
-    return customFetch<listNotesResponse>(getListNotesUrl(slug, id), {
+): Promise<listNotesResponseSuccess> => {
+    return customFetch<listNotesResponseSuccess>(getListNotesUrl(slug, id), {
         ...options,
         method: "GET",
     });
@@ -1012,10 +1002,6 @@ export type createNoteResponseError = (
     headers: Headers;
 };
 
-export type createNoteResponse =
-    | createNoteResponseSuccess
-    | createNoteResponseError;
-
 export const getCreateNoteUrl = (slug: string, id: string) => {
     return `/api/books/${slug}/quotations/${id}/notes`;
 };
@@ -1025,8 +1011,8 @@ export const createNote = async (
     id: string,
     createNoteRequest: CreateNoteRequest,
     options?: RequestInit,
-): Promise<createNoteResponse> => {
-    return customFetch<createNoteResponse>(getCreateNoteUrl(slug, id), {
+): Promise<createNoteResponseSuccess> => {
+    return customFetch<createNoteResponseSuccess>(getCreateNoteUrl(slug, id), {
         ...options,
         method: "POST",
         headers: { "Content-Type": "application/json", ...options?.headers },
@@ -1134,10 +1120,6 @@ export type updateNoteResponseError = (
     headers: Headers;
 };
 
-export type updateNoteResponse =
-    | updateNoteResponseSuccess
-    | updateNoteResponseError;
-
 export const getUpdateNoteUrl = (slug: string, id: string, noteId: string) => {
     return `/api/books/${slug}/quotations/${id}/notes/${noteId}`;
 };
@@ -1148,13 +1130,19 @@ export const updateNote = async (
     noteId: string,
     updateNoteRequest: UpdateNoteRequest,
     options?: RequestInit,
-): Promise<updateNoteResponse> => {
-    return customFetch<updateNoteResponse>(getUpdateNoteUrl(slug, id, noteId), {
-        ...options,
-        method: "PUT",
-        headers: { "Content-Type": "application/json", ...options?.headers },
-        body: JSON.stringify(updateNoteRequest),
-    });
+): Promise<updateNoteResponseSuccess> => {
+    return customFetch<updateNoteResponseSuccess>(
+        getUpdateNoteUrl(slug, id, noteId),
+        {
+            ...options,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(updateNoteRequest),
+        },
+    );
 };
 
 export const getUpdateNoteMutationOptions = <
@@ -1256,10 +1244,6 @@ export type deleteNoteResponseError = (
     headers: Headers;
 };
 
-export type deleteNoteResponse =
-    | deleteNoteResponseSuccess
-    | deleteNoteResponseError;
-
 export const getDeleteNoteUrl = (slug: string, id: string, noteId: string) => {
     return `/api/books/${slug}/quotations/${id}/notes/${noteId}`;
 };
@@ -1269,11 +1253,14 @@ export const deleteNote = async (
     id: string,
     noteId: string,
     options?: RequestInit,
-): Promise<deleteNoteResponse> => {
-    return customFetch<deleteNoteResponse>(getDeleteNoteUrl(slug, id, noteId), {
-        ...options,
-        method: "DELETE",
-    });
+): Promise<deleteNoteResponseSuccess> => {
+    return customFetch<deleteNoteResponseSuccess>(
+        getDeleteNoteUrl(slug, id, noteId),
+        {
+            ...options,
+            method: "DELETE",
+        },
+    );
 };
 
 export const getDeleteNoteMutationOptions = <
@@ -1362,10 +1349,6 @@ export type listAllNotesResponseError = listAllNotesResponse401 & {
     headers: Headers;
 };
 
-export type listAllNotesResponse =
-    | listAllNotesResponseSuccess
-    | listAllNotesResponseError;
-
 export const getListAllNotesUrl = (params?: ListAllNotesParams) => {
     const normalizedParams = new URLSearchParams();
 
@@ -1388,11 +1371,14 @@ export const getListAllNotesUrl = (params?: ListAllNotesParams) => {
 export const listAllNotes = async (
     params?: ListAllNotesParams,
     options?: RequestInit,
-): Promise<listAllNotesResponse> => {
-    return customFetch<listAllNotesResponse>(getListAllNotesUrl(params), {
-        ...options,
-        method: "GET",
-    });
+): Promise<listAllNotesResponseSuccess> => {
+    return customFetch<listAllNotesResponseSuccess>(
+        getListAllNotesUrl(params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
 };
 
 export const getListAllNotesQueryKey = (params?: ListAllNotesParams) => {
@@ -1689,10 +1675,6 @@ export type listAllQuotationsResponseError = listAllQuotationsResponse401 & {
     headers: Headers;
 };
 
-export type listAllQuotationsResponse =
-    | listAllQuotationsResponseSuccess
-    | listAllQuotationsResponseError;
-
 export const getListAllQuotationsUrl = (params?: ListAllQuotationsParams) => {
     const normalizedParams = new URLSearchParams();
 
@@ -1715,8 +1697,8 @@ export const getListAllQuotationsUrl = (params?: ListAllQuotationsParams) => {
 export const listAllQuotations = async (
     params?: ListAllQuotationsParams,
     options?: RequestInit,
-): Promise<listAllQuotationsResponse> => {
-    return customFetch<listAllQuotationsResponse>(
+): Promise<listAllQuotationsResponseSuccess> => {
+    return customFetch<listAllQuotationsResponseSuccess>(
         getListAllQuotationsUrl(params),
         {
             ...options,

@@ -1,30 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getGetTocQueryOptions } from "../api/toc/toc";
+import { getGetBookSuspenseQueryOptions } from "#/api/books/books";
+import { getGetTocSuspenseQueryOptions } from "../api/toc/toc";
 import {
     decode,
-    getNodePageQueryOptions,
+    getNodePageSuspenseQueryOptions,
     ReaderLayout,
     validateSearch,
 } from "../modules/reader";
 
 export const Route = createFileRoute("/books/$bookSlug/$nodeSlug")({
     validateSearch,
-    loader: async ({ context, params }) => {
-        // TOC + node-page run in parallel: the API resolves the target
-        // node's slug → sort_order server-side, so the node-page prefetch
-        // no longer depends on the TOC response.
-        await Promise.all([
-            context.queryClient.ensureQueryData(
-                getGetTocQueryOptions(params.bookSlug),
-            ),
-            context.queryClient.prefetchInfiniteQuery(
-                getNodePageQueryOptions({
-                    bookSlug: params.bookSlug,
-                    showOriginal: false,
-                    targetNodeSlug: params.nodeSlug,
-                }),
-            ),
-        ]);
+    loader: ({ context, params }) => {
+        context.queryClient.prefetchQuery(
+            getGetTocSuspenseQueryOptions(params.bookSlug),
+        );
+        context.queryClient.prefetchInfiniteQuery(
+            getNodePageSuspenseQueryOptions({
+                bookSlug: params.bookSlug,
+                showOriginal: false,
+                targetNodeSlug: params.nodeSlug,
+            }),
+        );
+        context.queryClient.prefetchQuery(
+            getGetBookSuspenseQueryOptions(params.bookSlug),
+        );
     },
     component: ReaderPage,
 });

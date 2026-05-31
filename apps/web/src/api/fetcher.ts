@@ -17,6 +17,20 @@ const getRequestCookie = createIsomorphicFn()
     .server(() => getRequestHeader("cookie") ?? "")
     .client(() => "");
 
+const getBody = <T>(c: Response | Request): Promise<T> => {
+    const contentType = c.headers.get("content-type");
+
+    if (contentType?.includes("application/json")) {
+        return c.json();
+    }
+
+    if (contentType?.includes("application/pdf")) {
+        return c.blob() as Promise<T>;
+    }
+
+    return c.text() as Promise<T>;
+};
+
 export const customFetch = async <T>(
     url: string,
     options?: RequestInit,
@@ -39,8 +53,9 @@ export const customFetch = async <T>(
         throw new FetchError(text || res.statusText, res.status);
     }
 
-    const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-    const data = body ? JSON.parse(body) : {};
+    const data = [204, 205, 304].includes(res.status)
+        ? {}
+        : await getBody<T>(res);
 
     return { data, status: res.status, headers: res.headers } as T;
 };

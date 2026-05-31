@@ -1,9 +1,12 @@
 import type {
     InfiniteData,
     QueryFunction,
-    UseInfiniteQueryOptions,
+    UseSuspenseInfiniteQueryOptions,
 } from "@tanstack/react-query";
-import { getNodePage, type getNodePageResponse } from "../../api/nodes/nodes";
+import {
+    getNodePage,
+    type getNodePageResponseSuccess,
+} from "../../api/nodes/nodes";
 
 export type PageCursor =
     | { after: number }
@@ -33,14 +36,14 @@ interface NodePageQueryArgs {
  *  Keyed by `targetNodeSlug` (not sort_order) so the loader can prefetch
  *  without first fetching the TOC to resolve sort_order — the API resolves
  *  the slug server-side. */
-export function getNodePageQueryOptions({
+export function getNodePageSuspenseQueryOptions({
     bookSlug,
     showOriginal,
     targetNodeSlug,
-}: NodePageQueryArgs): UseInfiniteQueryOptions<
-    getNodePageResponse,
+}: NodePageQueryArgs): UseSuspenseInfiniteQueryOptions<
+    getNodePageResponseSuccess,
     Error,
-    InfiniteData<getNodePageResponse, PageCursor | undefined>,
+    InfiniteData<getNodePageResponseSuccess, PageCursor | undefined>,
     Array<string>,
     PageCursor | undefined
 > {
@@ -50,7 +53,7 @@ export function getNodePageQueryOptions({
             : undefined;
 
     const queryFn: QueryFunction<
-        getNodePageResponse,
+        getNodePageResponseSuccess,
         Array<string>,
         PageCursor | undefined
     > = async ({ pageParam, signal }) => {
@@ -88,6 +91,5 @@ export function getNodePageQueryOptions({
             if (!page.has_previous || page.nodes.length === 0) return undefined;
             return { before: page.nodes[0].sort_order };
         },
-        enabled: targetNodeSlug != null,
     };
 }

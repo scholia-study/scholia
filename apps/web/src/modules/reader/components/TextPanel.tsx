@@ -17,14 +17,14 @@ import {
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useGetBook } from "../../../api/books/books";
+import { useGetBook, useGetBookSuspense } from "../../../api/books/books";
 import type {
     FootnoteSentenceResponse,
     SentenceResponse,
     TocNodeResponse,
 } from "../../../api/model";
 import { useListQuotations } from "../../../api/quotations/quotations";
-import { getGetTocQueryOptions, useGetToc } from "../../../api/toc/toc";
+import { getGetTocQueryOptions, useGetTocSuspense } from "../../../api/toc/toc";
 import { useAuth } from "../../../hooks/useAuth";
 import { QuotationProvider } from "../context/Quotations";
 import { SelectionProvider } from "../context/selection";
@@ -40,14 +40,13 @@ import {
     sentenceMatchesKey,
 } from "../keys";
 import type { Panel } from "../state";
-
-const getSentenceNumber = (s: { sentence_number?: number | null }) =>
-    s.sentence_number;
-
 import type { MarginSettings } from "./BlockRenderer";
 import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";
 import { ResourcesPanel } from "./ResourcesPanel";
+
+const getSentenceNumber = (s: { sentence_number?: number | null }) =>
+    s.sentence_number;
 
 function findNodeInTocBySourceRef(
     nodes: TocNodeResponse[],
@@ -193,10 +192,10 @@ export function TextPanel({
         [onScrollNavigate],
     );
 
-    const { data: tocData } = useGetToc(bookSlug);
+    const { data: tocData } = useGetTocSuspense(bookSlug);
     const toc = tocData?.data;
 
-    const { data: bookData } = useGetBook(bookSlug);
+    const { data: bookData } = useGetBookSuspense(bookSlug);
     const bookDetail = bookData?.status === 200 ? bookData.data : undefined;
     const bookTitle = bookDetail?.title ?? bookSlug;
 

@@ -60,10 +60,6 @@ export type getNodePageResponseError = getNodePageResponse404 & {
     headers: Headers;
 };
 
-export type getNodePageResponse =
-    | getNodePageResponseSuccess
-    | getNodePageResponseError;
-
 export const getGetNodePageUrl = (slug: string, params?: GetNodePageParams) => {
     const normalizedParams = new URLSearchParams();
 
@@ -87,11 +83,14 @@ export const getNodePage = async (
     slug: string,
     params?: GetNodePageParams,
     options?: RequestInit,
-): Promise<getNodePageResponse> => {
-    return customFetch<getNodePageResponse>(getGetNodePageUrl(slug, params), {
-        ...options,
-        method: "GET",
-    });
+): Promise<getNodePageResponseSuccess> => {
+    return customFetch<getNodePageResponseSuccess>(
+        getGetNodePageUrl(slug, params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
 };
 
 export const getGetNodePageInfiniteQueryKey = (
@@ -794,8 +793,6 @@ export type getNodeResponseError = getNodeResponse404 & {
     headers: Headers;
 };
 
-export type getNodeResponse = getNodeResponseSuccess | getNodeResponseError;
-
 export const getGetNodeUrl = (
     slug: string,
     nodeSlug: string,
@@ -824,11 +821,14 @@ export const getNode = async (
     nodeSlug: string,
     params?: GetNodeParams,
     options?: RequestInit,
-): Promise<getNodeResponse> => {
-    return customFetch<getNodeResponse>(getGetNodeUrl(slug, nodeSlug, params), {
-        ...options,
-        method: "GET",
-    });
+): Promise<getNodeResponseSuccess> => {
+    return customFetch<getNodeResponseSuccess>(
+        getGetNodeUrl(slug, nodeSlug, params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
 };
 
 export const getGetNodeQueryKey = (

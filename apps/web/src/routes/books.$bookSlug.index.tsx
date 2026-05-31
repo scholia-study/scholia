@@ -1,18 +1,22 @@
 import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
-import { getGetBookQueryOptions, useGetBookSuspense } from "../api/books/books";
-import { getGetTocQueryOptions, useGetTocSuspense } from "../api/toc/toc";
+import {
+    getGetBookSuspenseQueryOptions,
+    useGetBookSuspense,
+} from "../api/books/books";
+import {
+    getGetTocSuspenseQueryOptions,
+    useGetTocSuspense,
+} from "../api/toc/toc";
 import { BibleShapeFullToc, PanelToc } from "../modules/reader";
 
 export const Route = createFileRoute("/books/$bookSlug/")({
-    loader: async ({ context, params }) => {
-        await Promise.all([
-            context.queryClient.ensureQueryData(
-                getGetBookQueryOptions(params.bookSlug),
-            ),
-            context.queryClient.ensureQueryData(
-                getGetTocQueryOptions(params.bookSlug),
-            ),
-        ]);
+    loader: ({ context, params }) => {
+        context.queryClient.prefetchQuery(
+            getGetBookSuspenseQueryOptions(params.bookSlug),
+        );
+        context.queryClient.prefetchQuery(
+            getGetTocSuspenseQueryOptions(params.bookSlug),
+        );
     },
     component: BookPage,
 });
@@ -21,8 +25,8 @@ function BookPage() {
     const { bookSlug } = Route.useParams();
     const { data: bookData } = useGetBookSuspense(bookSlug);
     const { data: tocData, isLoading, error } = useGetTocSuspense(bookSlug);
-    const book = bookData?.data;
-    const toc = tocData?.data;
+    const book = bookData.data;
+    const toc = tocData.data;
     // URL fragment shortcut, e.g. /books/kjv-bible#john — used by the
     // library book pills to jump straight to a Bible-book section on
     // this TOC page.

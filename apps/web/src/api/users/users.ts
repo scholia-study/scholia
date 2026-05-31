@@ -58,10 +58,6 @@ export type getHandleByIdResponseError = (
     headers: Headers;
 };
 
-export type getHandleByIdResponse =
-    | getHandleByIdResponseSuccess
-    | getHandleByIdResponseError;
-
 export const getGetHandleByIdUrl = (id: string) => {
     return `/api/users/by-id/${id}`;
 };
@@ -69,8 +65,8 @@ export const getGetHandleByIdUrl = (id: string) => {
 export const getHandleById = async (
     id: string,
     options?: RequestInit,
-): Promise<getHandleByIdResponse> => {
-    return customFetch<getHandleByIdResponse>(getGetHandleByIdUrl(id), {
+): Promise<getHandleByIdResponseSuccess> => {
+    return customFetch<getHandleByIdResponseSuccess>(getGetHandleByIdUrl(id), {
         ...options,
         method: "GET",
     });
@@ -387,10 +383,6 @@ export type getPublicProfileResponseError = (
     headers: Headers;
 };
 
-export type getPublicProfileResponse =
-    | getPublicProfileResponseSuccess
-    | getPublicProfileResponseError;
-
 export const getGetPublicProfileUrl = (
     handle: string,
     params?: GetPublicProfileParams,
@@ -417,8 +409,8 @@ export const getPublicProfile = async (
     handle: string,
     params?: GetPublicProfileParams,
     options?: RequestInit,
-): Promise<getPublicProfileResponse> => {
-    return customFetch<getPublicProfileResponse>(
+): Promise<getPublicProfileResponseSuccess> => {
+    return customFetch<getPublicProfileResponseSuccess>(
         getGetPublicProfileUrl(handle, params),
         {
             ...options,

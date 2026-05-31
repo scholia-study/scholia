@@ -61,10 +61,6 @@ export type listFeedbackResponseError = (
     headers: Headers;
 };
 
-export type listFeedbackResponse =
-    | listFeedbackResponseSuccess
-    | listFeedbackResponseError;
-
 export const getListFeedbackUrl = (params?: ListFeedbackParams) => {
     const normalizedParams = new URLSearchParams();
 
@@ -87,11 +83,14 @@ export const getListFeedbackUrl = (params?: ListFeedbackParams) => {
 export const listFeedback = async (
     params?: ListFeedbackParams,
     options?: RequestInit,
-): Promise<listFeedbackResponse> => {
-    return customFetch<listFeedbackResponse>(getListFeedbackUrl(params), {
-        ...options,
-        method: "GET",
-    });
+): Promise<listFeedbackResponseSuccess> => {
+    return customFetch<listFeedbackResponseSuccess>(
+        getListFeedbackUrl(params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
 };
 
 export const getListFeedbackQueryKey = (params?: ListFeedbackParams) => {
@@ -396,10 +395,6 @@ export type getFeedbackResponseError = (
     headers: Headers;
 };
 
-export type getFeedbackResponse =
-    | getFeedbackResponseSuccess
-    | getFeedbackResponseError;
-
 export const getGetFeedbackUrl = (id: string) => {
     return `/api/admin/feedback/${id}`;
 };
@@ -407,8 +402,8 @@ export const getGetFeedbackUrl = (id: string) => {
 export const getFeedback = async (
     id: string,
     options?: RequestInit,
-): Promise<getFeedbackResponse> => {
-    return customFetch<getFeedbackResponse>(getGetFeedbackUrl(id), {
+): Promise<getFeedbackResponseSuccess> => {
+    return customFetch<getFeedbackResponseSuccess>(getGetFeedbackUrl(id), {
         ...options,
         method: "GET",
     });
@@ -727,10 +722,6 @@ export type updateFeedbackResponseError = (
     headers: Headers;
 };
 
-export type updateFeedbackResponse =
-    | updateFeedbackResponseSuccess
-    | updateFeedbackResponseError;
-
 export const getUpdateFeedbackUrl = (id: string) => {
     return `/api/admin/feedback/${id}`;
 };
@@ -739,13 +730,19 @@ export const updateFeedback = async (
     id: string,
     updateFeedbackRequest: UpdateFeedbackRequest,
     options?: RequestInit,
-): Promise<updateFeedbackResponse> => {
-    return customFetch<updateFeedbackResponse>(getUpdateFeedbackUrl(id), {
-        ...options,
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", ...options?.headers },
-        body: JSON.stringify(updateFeedbackRequest),
-    });
+): Promise<updateFeedbackResponseSuccess> => {
+    return customFetch<updateFeedbackResponseSuccess>(
+        getUpdateFeedbackUrl(id),
+        {
+            ...options,
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(updateFeedbackRequest),
+        },
+    );
 };
 
 export const getUpdateFeedbackMutationOptions = <
@@ -842,10 +839,6 @@ export type createFeedbackResponseError = (
     headers: Headers;
 };
 
-export type createFeedbackResponse =
-    | createFeedbackResponseSuccess
-    | createFeedbackResponseError;
-
 export const getCreateFeedbackUrl = () => {
     return `/api/feedback`;
 };
@@ -853,8 +846,8 @@ export const getCreateFeedbackUrl = () => {
 export const createFeedback = async (
     createFeedbackRequest: CreateFeedbackRequest,
     options?: RequestInit,
-): Promise<createFeedbackResponse> => {
-    return customFetch<createFeedbackResponse>(getCreateFeedbackUrl(), {
+): Promise<createFeedbackResponseSuccess> => {
+    return customFetch<createFeedbackResponseSuccess>(getCreateFeedbackUrl(), {
         ...options,
         method: "POST",
         headers: { "Content-Type": "application/json", ...options?.headers },

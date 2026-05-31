@@ -60,10 +60,6 @@ export type searchPersonsResponseError = (
     headers: Headers;
 };
 
-export type searchPersonsResponse =
-    | searchPersonsResponseSuccess
-    | searchPersonsResponseError;
-
 export const getSearchPersonsUrl = (params?: SearchPersonsParams) => {
     const normalizedParams = new URLSearchParams();
 
@@ -86,11 +82,14 @@ export const getSearchPersonsUrl = (params?: SearchPersonsParams) => {
 export const searchPersons = async (
     params?: SearchPersonsParams,
     options?: RequestInit,
-): Promise<searchPersonsResponse> => {
-    return customFetch<searchPersonsResponse>(getSearchPersonsUrl(params), {
-        ...options,
-        method: "GET",
-    });
+): Promise<searchPersonsResponseSuccess> => {
+    return customFetch<searchPersonsResponseSuccess>(
+        getSearchPersonsUrl(params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
 };
 
 export const getSearchPersonsQueryKey = (params?: SearchPersonsParams) => {
@@ -395,10 +394,6 @@ export type createPersonResponseError = (
     headers: Headers;
 };
 
-export type createPersonResponse =
-    | createPersonResponseSuccess
-    | createPersonResponseError;
-
 export const getCreatePersonUrl = () => {
     return `/api/persons`;
 };
@@ -406,8 +401,8 @@ export const getCreatePersonUrl = () => {
 export const createPerson = async (
     createPersonRequest: CreatePersonRequest,
     options?: RequestInit,
-): Promise<createPersonResponse> => {
-    return customFetch<createPersonResponse>(getCreatePersonUrl(), {
+): Promise<createPersonResponseSuccess> => {
+    return customFetch<createPersonResponseSuccess>(getCreatePersonUrl(), {
         ...options,
         method: "POST",
         headers: { "Content-Type": "application/json", ...options?.headers },
@@ -515,10 +510,6 @@ export type updatePersonResponseError = (
     headers: Headers;
 };
 
-export type updatePersonResponse =
-    | updatePersonResponseSuccess
-    | updatePersonResponseError;
-
 export const getUpdatePersonUrl = (id: string) => {
     return `/api/persons/${id}`;
 };
@@ -527,8 +518,8 @@ export const updatePerson = async (
     id: string,
     updatePersonRequest: UpdatePersonRequest,
     options?: RequestInit,
-): Promise<updatePersonResponse> => {
-    return customFetch<updatePersonResponse>(getUpdatePersonUrl(id), {
+): Promise<updatePersonResponseSuccess> => {
+    return customFetch<updatePersonResponseSuccess>(getUpdatePersonUrl(id), {
         ...options,
         method: "PUT",
         headers: { "Content-Type": "application/json", ...options?.headers },

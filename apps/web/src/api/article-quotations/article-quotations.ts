@@ -54,18 +54,14 @@ export type listArticleQuotationsResponseError =
         headers: Headers;
     };
 
-export type listArticleQuotationsResponse =
-    | listArticleQuotationsResponseSuccess
-    | listArticleQuotationsResponseError;
-
 export const getListArticleQuotationsUrl = () => {
     return `/api/article-quotations`;
 };
 
 export const listArticleQuotations = async (
     options?: RequestInit,
-): Promise<listArticleQuotationsResponse> => {
-    return customFetch<listArticleQuotationsResponse>(
+): Promise<listArticleQuotationsResponseSuccess> => {
+    return customFetch<listArticleQuotationsResponseSuccess>(
         getListArticleQuotationsUrl(),
         {
             ...options,
@@ -365,10 +361,6 @@ export type createArticleQuotationResponseError = (
     headers: Headers;
 };
 
-export type createArticleQuotationResponse =
-    | createArticleQuotationResponseSuccess
-    | createArticleQuotationResponseError;
-
 export const getCreateArticleQuotationUrl = () => {
     return `/api/article-quotations`;
 };
@@ -376,8 +368,8 @@ export const getCreateArticleQuotationUrl = () => {
 export const createArticleQuotation = async (
     createArticleQuotationRequest: CreateArticleQuotationRequest,
     options?: RequestInit,
-): Promise<createArticleQuotationResponse> => {
-    return customFetch<createArticleQuotationResponse>(
+): Promise<createArticleQuotationResponseSuccess> => {
+    return customFetch<createArticleQuotationResponseSuccess>(
         getCreateArticleQuotationUrl(),
         {
             ...options,
@@ -482,10 +474,6 @@ export type getArticleQuotationResponseError =
         headers: Headers;
     };
 
-export type getArticleQuotationResponse =
-    | getArticleQuotationResponseSuccess
-    | getArticleQuotationResponseError;
-
 export const getGetArticleQuotationUrl = (id: string) => {
     return `/api/article-quotations/${id}`;
 };
@@ -493,8 +481,8 @@ export const getGetArticleQuotationUrl = (id: string) => {
 export const getArticleQuotation = async (
     id: string,
     options?: RequestInit,
-): Promise<getArticleQuotationResponse> => {
-    return customFetch<getArticleQuotationResponse>(
+): Promise<getArticleQuotationResponseSuccess> => {
+    return customFetch<getArticleQuotationResponseSuccess>(
         getGetArticleQuotationUrl(id),
         {
             ...options,
@@ -816,10 +804,6 @@ export type deleteArticleQuotationResponseError = (
     headers: Headers;
 };
 
-export type deleteArticleQuotationResponse =
-    | deleteArticleQuotationResponseSuccess
-    | deleteArticleQuotationResponseError;
-
 export const getDeleteArticleQuotationUrl = (id: string) => {
     return `/api/article-quotations/${id}`;
 };
@@ -827,8 +811,8 @@ export const getDeleteArticleQuotationUrl = (id: string) => {
 export const deleteArticleQuotation = async (
     id: string,
     options?: RequestInit,
-): Promise<deleteArticleQuotationResponse> => {
-    return customFetch<deleteArticleQuotationResponse>(
+): Promise<deleteArticleQuotationResponseSuccess> => {
+    return customFetch<deleteArticleQuotationResponseSuccess>(
         getDeleteArticleQuotationUrl(id),
         {
             ...options,

@@ -42,16 +42,14 @@ export type listBooksResponseSuccess = listBooksResponse200 & {
     headers: Headers;
 };
 
-export type listBooksResponse = listBooksResponseSuccess;
-
 export const getListBooksUrl = () => {
     return `/api/books`;
 };
 
 export const listBooks = async (
     options?: RequestInit,
-): Promise<listBooksResponse> => {
-    return customFetch<listBooksResponse>(getListBooksUrl(), {
+): Promise<listBooksResponseSuccess> => {
+    return customFetch<listBooksResponseSuccess>(getListBooksUrl(), {
         ...options,
         method: "GET",
     });
@@ -333,8 +331,6 @@ export type getBookResponseError = getBookResponse404 & {
     headers: Headers;
 };
 
-export type getBookResponse = getBookResponseSuccess | getBookResponseError;
-
 export const getGetBookUrl = (slug: string) => {
     return `/api/books/${slug}`;
 };
@@ -342,8 +338,8 @@ export const getGetBookUrl = (slug: string) => {
 export const getBook = async (
     slug: string,
     options?: RequestInit,
-): Promise<getBookResponse> => {
-    return customFetch<getBookResponse>(getGetBookUrl(slug), {
+): Promise<getBookResponseSuccess> => {
+    return customFetch<getBookResponseSuccess>(getGetBookUrl(slug), {
         ...options,
         method: "GET",
     });
@@ -629,10 +625,6 @@ export type getBookAboutResponseError = getBookAboutResponse404 & {
     headers: Headers;
 };
 
-export type getBookAboutResponse =
-    | getBookAboutResponseSuccess
-    | getBookAboutResponseError;
-
 export const getGetBookAboutUrl = (
     slug: string,
     params?: GetBookAboutParams,
@@ -659,11 +651,14 @@ export const getBookAbout = async (
     slug: string,
     params?: GetBookAboutParams,
     options?: RequestInit,
-): Promise<getBookAboutResponse> => {
-    return customFetch<getBookAboutResponse>(getGetBookAboutUrl(slug, params), {
-        ...options,
-        method: "GET",
-    });
+): Promise<getBookAboutResponseSuccess> => {
+    return customFetch<getBookAboutResponseSuccess>(
+        getGetBookAboutUrl(slug, params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
 };
 
 export const getGetBookAboutQueryKey = (
@@ -982,16 +977,14 @@ export type getLibraryResponseSuccess = getLibraryResponse200 & {
     headers: Headers;
 };
 
-export type getLibraryResponse = getLibraryResponseSuccess;
-
 export const getGetLibraryUrl = () => {
     return `/api/library`;
 };
 
 export const getLibrary = async (
     options?: RequestInit,
-): Promise<getLibraryResponse> => {
-    return customFetch<getLibraryResponse>(getGetLibraryUrl(), {
+): Promise<getLibraryResponseSuccess> => {
+    return customFetch<getLibraryResponseSuccess>(getGetLibraryUrl(), {
         ...options,
         method: "GET",
     });

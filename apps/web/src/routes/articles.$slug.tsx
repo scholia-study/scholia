@@ -1,9 +1,16 @@
 import { Chip } from "@mui/material";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { Element } from "html-react-parser";
-import { useGetPublishedArticle } from "../api/articles/articles";
+import {
+    getGetPublishedArticleSuspenseQueryOptions,
+    useGetPublishedArticleSuspense,
+} from "../api/articles/articles";
 import { useAuth } from "../hooks/useAuth";
-import { EditorialLabelChips, EditorialLabelManager } from "../modules/article";
+import {
+    ArticlePageUI,
+    EditorialLabelChips,
+    EditorialLabelManager,
+} from "../modules/article";
 import {
     ArticleQuotationCard,
     ArticleSentences,
@@ -11,7 +18,14 @@ import {
 } from "../modules/quotation";
 
 export const Route = createFileRoute("/articles/$slug")({
+    loader: ({ context, params }) => {
+        context.queryClient.prefetchQuery(
+            getGetPublishedArticleSuspenseQueryOptions(params.slug),
+        );
+    },
     component: PublishedArticlePage,
+    pendingComponent: () => <ArticlePageUI kind="loading" />,
+    errorComponent: () => <ArticlePageUI kind="error" />,
 });
 
 function replaceEmbed(domNode: Element) {
@@ -60,30 +74,10 @@ function replaceEmbed(domNode: Element) {
 
 function PublishedArticlePage() {
     const { slug } = Route.useParams();
-    const { data: articleData, isLoading } = useGetPublishedArticle(slug);
-    const article = articleData?.data;
+    const { data: articleData } = useGetPublishedArticleSuspense(slug);
+    const article = articleData.data;
     const { hasPermission } = useAuth();
     const canManageLabels = hasPermission("article_labels_manage");
-
-    if (isLoading) {
-        return (
-            <div className="flex-1 bg-white">
-                <div className="max-w-3xl mx-auto px-8 py-16">
-                    <p className="text-sm text-stone-400">Loading...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!article) {
-        return (
-            <div className="flex-1 bg-white">
-                <div className="max-w-3xl mx-auto px-8 py-16">
-                    <p className="text-sm text-stone-400">Article not found.</p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="flex-1 bg-white">

@@ -44,8 +44,6 @@ export type getTocResponseError = getTocResponse404 & {
     headers: Headers;
 };
 
-export type getTocResponse = getTocResponseSuccess | getTocResponseError;
-
 export const getGetTocUrl = (slug: string) => {
     return `/api/books/${slug}/toc`;
 };
@@ -53,8 +51,8 @@ export const getGetTocUrl = (slug: string) => {
 export const getToc = async (
     slug: string,
     options?: RequestInit,
-): Promise<getTocResponse> => {
-    return customFetch<getTocResponse>(getGetTocUrl(slug), {
+): Promise<getTocResponseSuccess> => {
+    return customFetch<getTocResponseSuccess>(getGetTocUrl(slug), {
         ...options,
         method: "GET",
     });

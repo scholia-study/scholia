@@ -44,16 +44,14 @@ export type listTagsResponseError = listTagsResponse401 & {
     headers: Headers;
 };
 
-export type listTagsResponse = listTagsResponseSuccess | listTagsResponseError;
-
 export const getListTagsUrl = () => {
     return `/api/tags`;
 };
 
 export const listTags = async (
     options?: RequestInit,
-): Promise<listTagsResponse> => {
-    return customFetch<listTagsResponse>(getListTagsUrl(), {
+): Promise<listTagsResponseSuccess> => {
+    return customFetch<listTagsResponseSuccess>(getListTagsUrl(), {
         ...options,
         method: "GET",
     });

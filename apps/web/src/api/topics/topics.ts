@@ -36,16 +36,14 @@ export type listTopicsResponseSuccess = listTopicsResponse200 & {
     headers: Headers;
 };
 
-export type listTopicsResponse = listTopicsResponseSuccess;
-
 export const getListTopicsUrl = () => {
     return `/api/topics`;
 };
 
 export const listTopics = async (
     options?: RequestInit,
-): Promise<listTopicsResponse> => {
-    return customFetch<listTopicsResponse>(getListTopicsUrl(), {
+): Promise<listTopicsResponseSuccess> => {
+    return customFetch<listTopicsResponseSuccess>(getListTopicsUrl(), {
         ...options,
         method: "GET",
     });

@@ -50,8 +50,6 @@ export type forgotPasswordResponseSuccess = forgotPasswordResponse200 & {
     headers: Headers;
 };
 
-export type forgotPasswordResponse = forgotPasswordResponseSuccess;
-
 export const getForgotPasswordUrl = () => {
     return `/api/auth/forgot-password`;
 };
@@ -59,8 +57,8 @@ export const getForgotPasswordUrl = () => {
 export const forgotPassword = async (
     forgotPasswordRequest: ForgotPasswordRequest,
     options?: RequestInit,
-): Promise<forgotPasswordResponse> => {
-    return customFetch<forgotPasswordResponse>(getForgotPasswordUrl(), {
+): Promise<forgotPasswordResponseSuccess> => {
+    return customFetch<forgotPasswordResponseSuccess>(getForgotPasswordUrl(), {
         ...options,
         method: "POST",
         headers: { "Content-Type": "application/json", ...options?.headers },
@@ -759,8 +757,6 @@ export type loginResponseError = (loginResponse401 | loginResponse403) & {
     headers: Headers;
 };
 
-export type loginResponse = loginResponseSuccess | loginResponseError;
-
 export const getLoginUrl = () => {
     return `/api/auth/login`;
 };
@@ -768,8 +764,8 @@ export const getLoginUrl = () => {
 export const login = async (
     loginRequest: LoginRequest,
     options?: RequestInit,
-): Promise<loginResponse> => {
-    return customFetch<loginResponse>(getLoginUrl(), {
+): Promise<loginResponseSuccess> => {
+    return customFetch<loginResponseSuccess>(getLoginUrl(), {
         ...options,
         method: "POST",
         headers: { "Content-Type": "application/json", ...options?.headers },
@@ -855,16 +851,14 @@ export type logoutResponseSuccess = logoutResponse200 & {
     headers: Headers;
 };
 
-export type logoutResponse = logoutResponseSuccess;
-
 export const getLogoutUrl = () => {
     return `/api/auth/logout`;
 };
 
 export const logout = async (
     options?: RequestInit,
-): Promise<logoutResponse> => {
-    return customFetch<logoutResponse>(getLogoutUrl(), {
+): Promise<logoutResponseSuccess> => {
+    return customFetch<logoutResponseSuccess>(getLogoutUrl(), {
         ...options,
         method: "POST",
     });
@@ -954,14 +948,12 @@ export type meResponseError = meResponse401 & {
     headers: Headers;
 };
 
-export type meResponse = meResponseSuccess | meResponseError;
-
 export const getMeUrl = () => {
     return `/api/auth/me`;
 };
 
-export const me = async (options?: RequestInit): Promise<meResponse> => {
-    return customFetch<meResponse>(getMeUrl(), {
+export const me = async (options?: RequestInit): Promise<meResponseSuccess> => {
+    return customFetch<meResponseSuccess>(getMeUrl(), {
         ...options,
         method: "GET",
     });
@@ -1207,18 +1199,14 @@ export type getProfileResponseError = getProfileResponse401 & {
     headers: Headers;
 };
 
-export type getProfileResponse =
-    | getProfileResponseSuccess
-    | getProfileResponseError;
-
 export const getGetProfileUrl = () => {
     return `/api/auth/profile`;
 };
 
 export const getProfile = async (
     options?: RequestInit,
-): Promise<getProfileResponse> => {
-    return customFetch<getProfileResponse>(getGetProfileUrl(), {
+): Promise<getProfileResponseSuccess> => {
+    return customFetch<getProfileResponseSuccess>(getGetProfileUrl(), {
         ...options,
         method: "GET",
     });
@@ -1508,10 +1496,6 @@ export type updateProfileResponseError = (
     headers: Headers;
 };
 
-export type updateProfileResponse =
-    | updateProfileResponseSuccess
-    | updateProfileResponseError;
-
 export const getUpdateProfileUrl = () => {
     return `/api/auth/profile`;
 };
@@ -1519,8 +1503,8 @@ export const getUpdateProfileUrl = () => {
 export const updateProfile = async (
     updateProfileRequest: UpdateProfileRequest,
     options?: RequestInit,
-): Promise<updateProfileResponse> => {
-    return customFetch<updateProfileResponse>(getUpdateProfileUrl(), {
+): Promise<updateProfileResponseSuccess> => {
+    return customFetch<updateProfileResponseSuccess>(getUpdateProfileUrl(), {
         ...options,
         method: "PUT",
         headers: { "Content-Type": "application/json", ...options?.headers },
@@ -1622,8 +1606,6 @@ export type registerResponseError = (
     headers: Headers;
 };
 
-export type registerResponse = registerResponseSuccess | registerResponseError;
-
 export const getRegisterUrl = () => {
     return `/api/auth/register`;
 };
@@ -1631,8 +1613,8 @@ export const getRegisterUrl = () => {
 export const register = async (
     registerRequest: RegisterRequest,
     options?: RequestInit,
-): Promise<registerResponse> => {
-    return customFetch<registerResponse>(getRegisterUrl(), {
+): Promise<registerResponseSuccess> => {
+    return customFetch<registerResponseSuccess>(getRegisterUrl(), {
         ...options,
         method: "POST",
         headers: { "Content-Type": "application/json", ...options?.headers },
@@ -1728,18 +1710,14 @@ export type requestPasswordChangeResponseError =
         headers: Headers;
     };
 
-export type requestPasswordChangeResponse =
-    | requestPasswordChangeResponseSuccess
-    | requestPasswordChangeResponseError;
-
 export const getRequestPasswordChangeUrl = () => {
     return `/api/auth/request-password-change`;
 };
 
 export const requestPasswordChange = async (
     options?: RequestInit,
-): Promise<requestPasswordChangeResponse> => {
-    return customFetch<requestPasswordChangeResponse>(
+): Promise<requestPasswordChangeResponseSuccess> => {
+    return customFetch<requestPasswordChangeResponseSuccess>(
         getRequestPasswordChangeUrl(),
         {
             ...options,
@@ -1835,10 +1813,6 @@ export type resetPasswordResponseError = resetPasswordResponse400 & {
     headers: Headers;
 };
 
-export type resetPasswordResponse =
-    | resetPasswordResponseSuccess
-    | resetPasswordResponseError;
-
 export const getResetPasswordUrl = () => {
     return `/api/auth/reset-password`;
 };
@@ -1846,8 +1820,8 @@ export const getResetPasswordUrl = () => {
 export const resetPassword = async (
     resetPasswordRequest: ResetPasswordRequest,
     options?: RequestInit,
-): Promise<resetPasswordResponse> => {
-    return customFetch<resetPasswordResponse>(getResetPasswordUrl(), {
+): Promise<resetPasswordResponseSuccess> => {
+    return customFetch<resetPasswordResponseSuccess>(getResetPasswordUrl(), {
         ...options,
         method: "POST",
         headers: { "Content-Type": "application/json", ...options?.headers },

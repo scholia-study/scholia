@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
 
 function IndexPage() {
     const { data, isLoading } = useGetLibrarySuspense();
-    const library = data?.data;
+    const library = data.data;
 
     return (
         <div className="min-h-full bg-white flex justify-center">

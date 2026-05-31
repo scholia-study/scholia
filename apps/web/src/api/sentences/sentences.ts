@@ -29,8 +29,6 @@ export type batchSentencesResponseSuccess = batchSentencesResponse200 & {
     headers: Headers;
 };
 
-export type batchSentencesResponse = batchSentencesResponseSuccess;
-
 export const getBatchSentencesUrl = () => {
     return `/api/sentences/batch`;
 };
@@ -38,8 +36,8 @@ export const getBatchSentencesUrl = () => {
 export const batchSentences = async (
     batchSentencesRequest: BatchSentencesRequest,
     options?: RequestInit,
-): Promise<batchSentencesResponse> => {
-    return customFetch<batchSentencesResponse>(getBatchSentencesUrl(), {
+): Promise<batchSentencesResponseSuccess> => {
+    return customFetch<batchSentencesResponseSuccess>(getBatchSentencesUrl(), {
         ...options,
         method: "POST",
         headers: { "Content-Type": "application/json", ...options?.headers },

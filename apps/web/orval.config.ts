@@ -11,6 +11,9 @@ export default defineConfig({
             schemas: "src/api/model",
             client: "react-query",
             override: {
+                fetch: {
+                    forceSuccessResponse: true,
+                },
                 mutator: {
                     path: "./src/api/fetcher.ts",
                     name: "customFetch",

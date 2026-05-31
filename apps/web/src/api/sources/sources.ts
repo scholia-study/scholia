@@ -65,10 +65,6 @@ export type searchSourcesResponseError = (
     headers: Headers;
 };
 
-export type searchSourcesResponse =
-    | searchSourcesResponseSuccess
-    | searchSourcesResponseError;
-
 export const getSearchSourcesUrl = (params?: SearchSourcesParams) => {
     const normalizedParams = new URLSearchParams();
 
@@ -91,11 +87,14 @@ export const getSearchSourcesUrl = (params?: SearchSourcesParams) => {
 export const searchSources = async (
     params?: SearchSourcesParams,
     options?: RequestInit,
-): Promise<searchSourcesResponse> => {
-    return customFetch<searchSourcesResponse>(getSearchSourcesUrl(params), {
-        ...options,
-        method: "GET",
-    });
+): Promise<searchSourcesResponseSuccess> => {
+    return customFetch<searchSourcesResponseSuccess>(
+        getSearchSourcesUrl(params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
 };
 
 export const getSearchSourcesQueryKey = (params?: SearchSourcesParams) => {
@@ -400,10 +399,6 @@ export type createSourceResponseError = (
     headers: Headers;
 };
 
-export type createSourceResponse =
-    | createSourceResponseSuccess
-    | createSourceResponseError;
-
 export const getCreateSourceUrl = () => {
     return `/api/sources`;
 };
@@ -411,8 +406,8 @@ export const getCreateSourceUrl = () => {
 export const createSource = async (
     createSourceRequest: CreateSourceRequest,
     options?: RequestInit,
-): Promise<createSourceResponse> => {
-    return customFetch<createSourceResponse>(getCreateSourceUrl(), {
+): Promise<createSourceResponseSuccess> => {
+    return customFetch<createSourceResponseSuccess>(getCreateSourceUrl(), {
         ...options,
         method: "POST",
         headers: { "Content-Type": "application/json", ...options?.headers },
@@ -514,10 +509,6 @@ export type browseSourcesResponseError = (
     headers: Headers;
 };
 
-export type browseSourcesResponse =
-    | browseSourcesResponseSuccess
-    | browseSourcesResponseError;
-
 export const getBrowseSourcesUrl = (params?: BrowseSourcesParams) => {
     const normalizedParams = new URLSearchParams();
 
@@ -540,11 +531,14 @@ export const getBrowseSourcesUrl = (params?: BrowseSourcesParams) => {
 export const browseSources = async (
     params?: BrowseSourcesParams,
     options?: RequestInit,
-): Promise<browseSourcesResponse> => {
-    return customFetch<browseSourcesResponse>(getBrowseSourcesUrl(params), {
-        ...options,
-        method: "GET",
-    });
+): Promise<browseSourcesResponseSuccess> => {
+    return customFetch<browseSourcesResponseSuccess>(
+        getBrowseSourcesUrl(params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
 };
 
 export const getBrowseSourcesQueryKey = (params?: BrowseSourcesParams) => {
@@ -855,10 +849,6 @@ export type getSourceResponseError = (
     headers: Headers;
 };
 
-export type getSourceResponse =
-    | getSourceResponseSuccess
-    | getSourceResponseError;
-
 export const getGetSourceUrl = (id: string) => {
     return `/api/sources/${id}`;
 };
@@ -866,8 +856,8 @@ export const getGetSourceUrl = (id: string) => {
 export const getSource = async (
     id: string,
     options?: RequestInit,
-): Promise<getSourceResponse> => {
-    return customFetch<getSourceResponse>(getGetSourceUrl(id), {
+): Promise<getSourceResponseSuccess> => {
+    return customFetch<getSourceResponseSuccess>(getGetSourceUrl(id), {
         ...options,
         method: "GET",
     });
@@ -1186,10 +1176,6 @@ export type updateSourceResponseError = (
     headers: Headers;
 };
 
-export type updateSourceResponse =
-    | updateSourceResponseSuccess
-    | updateSourceResponseError;
-
 export const getUpdateSourceUrl = (id: string) => {
     return `/api/sources/${id}`;
 };
@@ -1198,8 +1184,8 @@ export const updateSource = async (
     id: string,
     updateSourceRequest: UpdateSourceRequest,
     options?: RequestInit,
-): Promise<updateSourceResponse> => {
-    return customFetch<updateSourceResponse>(getUpdateSourceUrl(id), {
+): Promise<updateSourceResponseSuccess> => {
+    return customFetch<updateSourceResponseSuccess>(getUpdateSourceUrl(id), {
         ...options,
         method: "PUT",
         headers: { "Content-Type": "application/json", ...options?.headers },
@@ -1314,10 +1300,6 @@ export type deleteSourceResponseError = (
     headers: Headers;
 };
 
-export type deleteSourceResponse =
-    | deleteSourceResponseSuccess
-    | deleteSourceResponseError;
-
 export const getDeleteSourceUrl = (id: string) => {
     return `/api/sources/${id}`;
 };
@@ -1325,8 +1307,8 @@ export const getDeleteSourceUrl = (id: string) => {
 export const deleteSource = async (
     id: string,
     options?: RequestInit,
-): Promise<deleteSourceResponse> => {
-    return customFetch<deleteSourceResponse>(getDeleteSourceUrl(id), {
+): Promise<deleteSourceResponseSuccess> => {
+    return customFetch<deleteSourceResponseSuccess>(getDeleteSourceUrl(id), {
         ...options,
         method: "DELETE",
     });
@@ -1427,10 +1409,6 @@ export type addSourcePersonResponseError = (
     headers: Headers;
 };
 
-export type addSourcePersonResponse =
-    | addSourcePersonResponseSuccess
-    | addSourcePersonResponseError;
-
 export const getAddSourcePersonUrl = (id: string) => {
     return `/api/sources/${id}/persons`;
 };
@@ -1439,13 +1417,19 @@ export const addSourcePerson = async (
     id: string,
     linkSourcePersonRequest: LinkSourcePersonRequest,
     options?: RequestInit,
-): Promise<addSourcePersonResponse> => {
-    return customFetch<addSourcePersonResponse>(getAddSourcePersonUrl(id), {
-        ...options,
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
-        body: JSON.stringify(linkSourcePersonRequest),
-    });
+): Promise<addSourcePersonResponseSuccess> => {
+    return customFetch<addSourcePersonResponseSuccess>(
+        getAddSourcePersonUrl(id),
+        {
+            ...options,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(linkSourcePersonRequest),
+        },
+    );
 };
 
 export const getAddSourcePersonMutationOptions = <
@@ -1543,10 +1527,6 @@ export type removeSourcePersonResponseError = (
     headers: Headers;
 };
 
-export type removeSourcePersonResponse =
-    | removeSourcePersonResponseSuccess
-    | removeSourcePersonResponseError;
-
 export const getRemoveSourcePersonUrl = (
     id: string,
     personId: string,
@@ -1560,8 +1540,8 @@ export const removeSourcePerson = async (
     personId: string,
     role: string,
     options?: RequestInit,
-): Promise<removeSourcePersonResponse> => {
-    return customFetch<removeSourcePersonResponse>(
+): Promise<removeSourcePersonResponseSuccess> => {
+    return customFetch<removeSourcePersonResponseSuccess>(
         getRemoveSourcePersonUrl(id, personId, role),
         {
             ...options,
@@ -1668,10 +1648,6 @@ export type checkSourceReferencesResponseError = (
     headers: Headers;
 };
 
-export type checkSourceReferencesResponse =
-    | checkSourceReferencesResponseSuccess
-    | checkSourceReferencesResponseError;
-
 export const getCheckSourceReferencesUrl = (id: string) => {
     return `/api/sources/${id}/references`;
 };
@@ -1679,8 +1655,8 @@ export const getCheckSourceReferencesUrl = (id: string) => {
 export const checkSourceReferences = async (
     id: string,
     options?: RequestInit,
-): Promise<checkSourceReferencesResponse> => {
-    return customFetch<checkSourceReferencesResponse>(
+): Promise<checkSourceReferencesResponseSuccess> => {
+    return customFetch<checkSourceReferencesResponseSuccess>(
         getCheckSourceReferencesUrl(id),
         {
             ...options,

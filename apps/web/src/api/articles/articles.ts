@@ -78,10 +78,6 @@ export type applyArticleLabelResponseError = (
     headers: Headers;
 };
 
-export type applyArticleLabelResponse =
-    | applyArticleLabelResponseSuccess
-    | applyArticleLabelResponseError;
-
 export const getApplyArticleLabelUrl = (slug: string) => {
     return `/api/admin/articles/${slug}/labels`;
 };
@@ -90,8 +86,8 @@ export const applyArticleLabel = async (
     slug: string,
     applyEditorialLabelRequest: ApplyEditorialLabelRequest,
     options?: RequestInit,
-): Promise<applyArticleLabelResponse> => {
-    return customFetch<applyArticleLabelResponse>(
+): Promise<applyArticleLabelResponseSuccess> => {
+    return customFetch<applyArticleLabelResponseSuccess>(
         getApplyArticleLabelUrl(slug),
         {
             ...options,
@@ -204,10 +200,6 @@ export type removeArticleLabelResponseError = (
     headers: Headers;
 };
 
-export type removeArticleLabelResponse =
-    | removeArticleLabelResponseSuccess
-    | removeArticleLabelResponseError;
-
 export const getRemoveArticleLabelUrl = (slug: string, labelSlug: string) => {
     return `/api/admin/articles/${slug}/labels/${labelSlug}`;
 };
@@ -216,8 +208,8 @@ export const removeArticleLabel = async (
     slug: string,
     labelSlug: string,
     options?: RequestInit,
-): Promise<removeArticleLabelResponse> => {
-    return customFetch<removeArticleLabelResponse>(
+): Promise<removeArticleLabelResponseSuccess> => {
+    return customFetch<removeArticleLabelResponseSuccess>(
         getRemoveArticleLabelUrl(slug, labelSlug),
         {
             ...options,
@@ -309,9 +301,6 @@ export type listPublishedArticlesResponseSuccess =
         headers: Headers;
     };
 
-export type listPublishedArticlesResponse =
-    listPublishedArticlesResponseSuccess;
-
 export const getListPublishedArticlesUrl = (
     params?: ListPublishedArticlesParams,
 ) => {
@@ -336,8 +325,8 @@ export const getListPublishedArticlesUrl = (
 export const listPublishedArticles = async (
     params?: ListPublishedArticlesParams,
     options?: RequestInit,
-): Promise<listPublishedArticlesResponse> => {
-    return customFetch<listPublishedArticlesResponse>(
+): Promise<listPublishedArticlesResponseSuccess> => {
+    return customFetch<listPublishedArticlesResponseSuccess>(
         getListPublishedArticlesUrl(params),
         {
             ...options,
@@ -663,10 +652,6 @@ export type createArticleResponseError = (
     headers: Headers;
 };
 
-export type createArticleResponse =
-    | createArticleResponseSuccess
-    | createArticleResponseError;
-
 export const getCreateArticleUrl = () => {
     return `/api/articles`;
 };
@@ -674,8 +659,8 @@ export const getCreateArticleUrl = () => {
 export const createArticle = async (
     createArticleRequest: CreateArticleRequest,
     options?: RequestInit,
-): Promise<createArticleResponse> => {
-    return customFetch<createArticleResponse>(getCreateArticleUrl(), {
+): Promise<createArticleResponseSuccess> => {
+    return customFetch<createArticleResponseSuccess>(getCreateArticleUrl(), {
         ...options,
         method: "POST",
         headers: { "Content-Type": "application/json", ...options?.headers },
@@ -769,10 +754,6 @@ export type getArticleByIdResponseError = getArticleByIdResponse404 & {
     headers: Headers;
 };
 
-export type getArticleByIdResponse =
-    | getArticleByIdResponseSuccess
-    | getArticleByIdResponseError;
-
 export const getGetArticleByIdUrl = (id: string) => {
     return `/api/articles/by-id/${id}`;
 };
@@ -780,11 +761,14 @@ export const getGetArticleByIdUrl = (id: string) => {
 export const getArticleById = async (
     id: string,
     options?: RequestInit,
-): Promise<getArticleByIdResponse> => {
-    return customFetch<getArticleByIdResponse>(getGetArticleByIdUrl(id), {
-        ...options,
-        method: "GET",
-    });
+): Promise<getArticleByIdResponseSuccess> => {
+    return customFetch<getArticleByIdResponseSuccess>(
+        getGetArticleByIdUrl(id),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
 };
 
 export const getGetArticleByIdQueryKey = (id: string) => {
@@ -1088,10 +1072,6 @@ export type getPublishedArticleResponseError =
         headers: Headers;
     };
 
-export type getPublishedArticleResponse =
-    | getPublishedArticleResponseSuccess
-    | getPublishedArticleResponseError;
-
 export const getGetPublishedArticleUrl = (slug: string) => {
     return `/api/articles/${slug}`;
 };
@@ -1099,8 +1079,8 @@ export const getGetPublishedArticleUrl = (slug: string) => {
 export const getPublishedArticle = async (
     slug: string,
     options?: RequestInit,
-): Promise<getPublishedArticleResponse> => {
-    return customFetch<getPublishedArticleResponse>(
+): Promise<getPublishedArticleResponseSuccess> => {
+    return customFetch<getPublishedArticleResponseSuccess>(
         getGetPublishedArticleUrl(slug),
         {
             ...options,
@@ -1410,16 +1390,14 @@ export type listEditorialLabelsResponseSuccess =
         headers: Headers;
     };
 
-export type listEditorialLabelsResponse = listEditorialLabelsResponseSuccess;
-
 export const getListEditorialLabelsUrl = () => {
     return `/api/editorial-labels`;
 };
 
 export const listEditorialLabels = async (
     options?: RequestInit,
-): Promise<listEditorialLabelsResponse> => {
-    return customFetch<listEditorialLabelsResponse>(
+): Promise<listEditorialLabelsResponseSuccess> => {
+    return customFetch<listEditorialLabelsResponseSuccess>(
         getListEditorialLabelsUrl(),
         {
             ...options,
@@ -1712,10 +1690,6 @@ export type listUserArticlesResponseError = listUserArticlesResponse401 & {
     headers: Headers;
 };
 
-export type listUserArticlesResponse =
-    | listUserArticlesResponseSuccess
-    | listUserArticlesResponseError;
-
 export const getListUserArticlesUrl = (params?: ListUserArticlesParams) => {
     const normalizedParams = new URLSearchParams();
 
@@ -1738,8 +1712,8 @@ export const getListUserArticlesUrl = (params?: ListUserArticlesParams) => {
 export const listUserArticles = async (
     params?: ListUserArticlesParams,
     options?: RequestInit,
-): Promise<listUserArticlesResponse> => {
-    return customFetch<listUserArticlesResponse>(
+): Promise<listUserArticlesResponseSuccess> => {
+    return customFetch<listUserArticlesResponseSuccess>(
         getListUserArticlesUrl(params),
         {
             ...options,
@@ -2057,10 +2031,6 @@ export type getUserArticleResponseError = (
     headers: Headers;
 };
 
-export type getUserArticleResponse =
-    | getUserArticleResponseSuccess
-    | getUserArticleResponseError;
-
 export const getGetUserArticleUrl = (slug: string) => {
     return `/api/user/articles/${slug}`;
 };
@@ -2068,11 +2038,14 @@ export const getGetUserArticleUrl = (slug: string) => {
 export const getUserArticle = async (
     slug: string,
     options?: RequestInit,
-): Promise<getUserArticleResponse> => {
-    return customFetch<getUserArticleResponse>(getGetUserArticleUrl(slug), {
-        ...options,
-        method: "GET",
-    });
+): Promise<getUserArticleResponseSuccess> => {
+    return customFetch<getUserArticleResponseSuccess>(
+        getGetUserArticleUrl(slug),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
 };
 
 export const getGetUserArticleQueryKey = (slug: string) => {
@@ -2388,10 +2361,6 @@ export type updateArticleResponseError = (
     headers: Headers;
 };
 
-export type updateArticleResponse =
-    | updateArticleResponseSuccess
-    | updateArticleResponseError;
-
 export const getUpdateArticleUrl = (slug: string) => {
     return `/api/user/articles/${slug}`;
 };
@@ -2400,13 +2369,19 @@ export const updateArticle = async (
     slug: string,
     updateArticleRequest: UpdateArticleRequest,
     options?: RequestInit,
-): Promise<updateArticleResponse> => {
-    return customFetch<updateArticleResponse>(getUpdateArticleUrl(slug), {
-        ...options,
-        method: "PUT",
-        headers: { "Content-Type": "application/json", ...options?.headers },
-        body: JSON.stringify(updateArticleRequest),
-    });
+): Promise<updateArticleResponseSuccess> => {
+    return customFetch<updateArticleResponseSuccess>(
+        getUpdateArticleUrl(slug),
+        {
+            ...options,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(updateArticleRequest),
+        },
+    );
 };
 
 export const getUpdateArticleMutationOptions = <
@@ -2503,10 +2478,6 @@ export type archiveArticleResponseError = (
     headers: Headers;
 };
 
-export type archiveArticleResponse =
-    | archiveArticleResponseSuccess
-    | archiveArticleResponseError;
-
 export const getArchiveArticleUrl = (slug: string) => {
     return `/api/user/articles/${slug}/archive`;
 };
@@ -2514,11 +2485,14 @@ export const getArchiveArticleUrl = (slug: string) => {
 export const archiveArticle = async (
     slug: string,
     options?: RequestInit,
-): Promise<archiveArticleResponse> => {
-    return customFetch<archiveArticleResponse>(getArchiveArticleUrl(slug), {
-        ...options,
-        method: "POST",
-    });
+): Promise<archiveArticleResponseSuccess> => {
+    return customFetch<archiveArticleResponseSuccess>(
+        getArchiveArticleUrl(slug),
+        {
+            ...options,
+            method: "POST",
+        },
+    );
 };
 
 export const getArchiveArticleMutationOptions = <
@@ -2621,10 +2595,6 @@ export type publishArticleResponseError = (
     headers: Headers;
 };
 
-export type publishArticleResponse =
-    | publishArticleResponseSuccess
-    | publishArticleResponseError;
-
 export const getPublishArticleUrl = (slug: string) => {
     return `/api/user/articles/${slug}/publish`;
 };
@@ -2632,11 +2602,14 @@ export const getPublishArticleUrl = (slug: string) => {
 export const publishArticle = async (
     slug: string,
     options?: RequestInit,
-): Promise<publishArticleResponse> => {
-    return customFetch<publishArticleResponse>(getPublishArticleUrl(slug), {
-        ...options,
-        method: "POST",
-    });
+): Promise<publishArticleResponseSuccess> => {
+    return customFetch<publishArticleResponseSuccess>(
+        getPublishArticleUrl(slug),
+        {
+            ...options,
+            method: "POST",
+        },
+    );
 };
 
 export const getPublishArticleMutationOptions = <

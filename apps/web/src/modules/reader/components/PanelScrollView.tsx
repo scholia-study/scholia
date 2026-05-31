@@ -1,8 +1,8 @@
 import { Paper } from "@mui/material";
 import {
     keepPreviousData,
-    useInfiniteQuery,
     useQuery,
+    useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
 import {
     forwardRef,
@@ -15,7 +15,7 @@ import {
 } from "react";
 import type { NodeDetail, SentenceResponse } from "../../../api/model";
 import { getNodePage } from "../../../api/nodes/nodes";
-import { getNodePageQueryOptions } from "../nodePageQuery";
+import { getNodePageSuspenseQueryOptions } from "../nodePageQuery";
 import type { MarginSettings } from "./BlockRenderer";
 import { Block } from "./BlockRenderer";
 import { InterleavedNodeRenderer } from "./InterleavedNodeRenderer";
@@ -81,8 +81,12 @@ export const PanelScrollView = forwardRef<
         fetchPreviousPage,
         isLoading,
         error,
-    } = useInfiniteQuery(
-        getNodePageQueryOptions({ bookSlug, showOriginal, targetNodeSlug }),
+    } = useSuspenseInfiniteQuery(
+        getNodePageSuspenseQueryOptions({
+            bookSlug,
+            showOriginal,
+            targetNodeSlug,
+        }),
     );
 
     const nodes = useMemo(

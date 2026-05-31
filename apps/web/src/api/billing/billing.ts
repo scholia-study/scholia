@@ -57,10 +57,6 @@ export type createCheckoutSessionResponseError = (
     headers: Headers;
 };
 
-export type createCheckoutSessionResponse =
-    | createCheckoutSessionResponseSuccess
-    | createCheckoutSessionResponseError;
-
 export const getCreateCheckoutSessionUrl = () => {
     return `/api/billing/checkout`;
 };
@@ -68,8 +64,8 @@ export const getCreateCheckoutSessionUrl = () => {
 export const createCheckoutSession = async (
     createCheckoutRequest: CreateCheckoutRequest,
     options?: RequestInit,
-): Promise<createCheckoutSessionResponse> => {
-    return customFetch<createCheckoutSessionResponse>(
+): Promise<createCheckoutSessionResponseSuccess> => {
+    return customFetch<createCheckoutSessionResponseSuccess>(
         getCreateCheckoutSessionUrl(),
         {
             ...options,
@@ -190,18 +186,14 @@ export type createPortalSessionResponseError = (
     headers: Headers;
 };
 
-export type createPortalSessionResponse =
-    | createPortalSessionResponseSuccess
-    | createPortalSessionResponseError;
-
 export const getCreatePortalSessionUrl = () => {
     return `/api/billing/portal`;
 };
 
 export const createPortalSession = async (
     options?: RequestInit,
-): Promise<createPortalSessionResponse> => {
-    return customFetch<createPortalSessionResponse>(
+): Promise<createPortalSessionResponseSuccess> => {
+    return customFetch<createPortalSessionResponseSuccess>(
         getCreatePortalSessionUrl(),
         {
             ...options,

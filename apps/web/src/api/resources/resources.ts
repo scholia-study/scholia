@@ -52,10 +52,6 @@ export type listResourcesResponseError = listResourcesResponse404 & {
     headers: Headers;
 };
 
-export type listResourcesResponse =
-    | listResourcesResponseSuccess
-    | listResourcesResponseError;
-
 export const getListResourcesUrl = (
     slug: string,
     params: ListResourcesParams,
@@ -82,8 +78,8 @@ export const listResources = async (
     slug: string,
     params: ListResourcesParams,
     options?: RequestInit,
-): Promise<listResourcesResponse> => {
-    return customFetch<listResourcesResponse>(
+): Promise<listResourcesResponseSuccess> => {
+    return customFetch<listResourcesResponseSuccess>(
         getListResourcesUrl(slug, params),
         {
             ...options,
@@ -427,10 +423,6 @@ export type createResourceResponseError = (
     headers: Headers;
 };
 
-export type createResourceResponse =
-    | createResourceResponseSuccess
-    | createResourceResponseError;
-
 export const getCreateResourceUrl = (slug: string) => {
     return `/api/books/${slug}/resources`;
 };
@@ -439,13 +431,19 @@ export const createResource = async (
     slug: string,
     createResourceRequest: CreateResourceRequest,
     options?: RequestInit,
-): Promise<createResourceResponse> => {
-    return customFetch<createResourceResponse>(getCreateResourceUrl(slug), {
-        ...options,
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
-        body: JSON.stringify(createResourceRequest),
-    });
+): Promise<createResourceResponseSuccess> => {
+    return customFetch<createResourceResponseSuccess>(
+        getCreateResourceUrl(slug),
+        {
+            ...options,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(createResourceRequest),
+        },
+    );
 };
 
 export const getCreateResourceMutationOptions = <
@@ -554,10 +552,6 @@ export type updateResourceResponseError = (
     headers: Headers;
 };
 
-export type updateResourceResponse =
-    | updateResourceResponseSuccess
-    | updateResourceResponseError;
-
 export const getUpdateResourceUrl = (slug: string, id: string) => {
     return `/api/books/${slug}/resources/${id}`;
 };
@@ -567,13 +561,19 @@ export const updateResource = async (
     id: string,
     updateResourceRequest: UpdateResourceRequest,
     options?: RequestInit,
-): Promise<updateResourceResponse> => {
-    return customFetch<updateResourceResponse>(getUpdateResourceUrl(slug, id), {
-        ...options,
-        method: "PUT",
-        headers: { "Content-Type": "application/json", ...options?.headers },
-        body: JSON.stringify(updateResourceRequest),
-    });
+): Promise<updateResourceResponseSuccess> => {
+    return customFetch<updateResourceResponseSuccess>(
+        getUpdateResourceUrl(slug, id),
+        {
+            ...options,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(updateResourceRequest),
+        },
+    );
 };
 
 export const getUpdateResourceMutationOptions = <
@@ -676,10 +676,6 @@ export type deleteResourceResponseError = (
     headers: Headers;
 };
 
-export type deleteResourceResponse =
-    | deleteResourceResponseSuccess
-    | deleteResourceResponseError;
-
 export const getDeleteResourceUrl = (slug: string, id: string) => {
     return `/api/books/${slug}/resources/${id}`;
 };
@@ -688,11 +684,14 @@ export const deleteResource = async (
     slug: string,
     id: string,
     options?: RequestInit,
-): Promise<deleteResourceResponse> => {
-    return customFetch<deleteResourceResponse>(getDeleteResourceUrl(slug, id), {
-        ...options,
-        method: "DELETE",
-    });
+): Promise<deleteResourceResponseSuccess> => {
+    return customFetch<deleteResourceResponseSuccess>(
+        getDeleteResourceUrl(slug, id),
+        {
+            ...options,
+            method: "DELETE",
+        },
+    );
 };
 
 export const getDeleteResourceMutationOptions = <
