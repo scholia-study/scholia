@@ -357,8 +357,8 @@ pub async fn run(
                 };
 
                 let sentence_id: Uuid = sqlx::query_scalar(
-                    "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, source_sentence_start_id, text, html, original_text, original_html)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, segment, source_sentence_start_id, text, html, original_text, original_html)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                      RETURNING id",
                 )
                 .bind(book_id)
@@ -366,6 +366,7 @@ pub async fn run(
                 .bind(block_id)
                 .bind(sent.position)
                 .bind(sent.sentence_number)
+                .bind(sent.segment)
                 .bind(source_sentence_start_id)
                 .bind(&sent.text)
                 .bind(&sent.html)

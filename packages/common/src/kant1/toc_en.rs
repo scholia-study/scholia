@@ -364,19 +364,19 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 237,
         depth: 6,
-        label: "Of reason in general",
+        label: "A. Of reason in general",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 240,
         depth: 6,
-        label: "Of the logical use of reason",
+        label: "B. Of the logical use of reason",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 241,
         depth: 6,
-        label: "Of the pure use of reason",
+        label: "C. Of the pure use of reason",
         slug_override: None,
     },
     // Book I of Dialectic

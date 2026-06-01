@@ -60,6 +60,13 @@ pub struct SentenceData {
     pub position: i16,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sentence_number: Option<i32>,
+    /// 1-based index of the indented run this sentence belongs to within its
+    /// block, or `None` for the normal paragraph flow. Authored as `+ ` line
+    /// prefixes (e.g. Kant's numbered `1) 2) 3)` enumerations); the reader
+    /// groups consecutive same-segment sentences into one hanging-indent block.
+    /// The paragraph stays a single block with one `paragraph_number`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub segment: Option<i16>,
     pub text: String,
     pub html: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]

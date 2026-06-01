@@ -1,6 +1,14 @@
 use regex::Regex;
 use std::sync::LazyLock;
 
+/// Internal sentinel marking the start of an indented run (a `+ `-prefixed
+/// line in the reviewed markdown). Never authored by hand — `parse_blocks`
+/// injects it — and never stored: it rides at the head of a run's first
+/// sentence through splitting, then the struct builder strips it and records
+/// the run index. U+241E (␞, "symbol for record separator") never occurs in
+/// the source text and is inert to the markdown→plain/html regexes.
+pub const RUN_BREAK: &str = "\u{241E}";
+
 /// Strip `|||` markers from text, returning (cleaned text, byte positions of forced splits).
 /// Each position is the byte offset in the cleaned text where a new sentence should begin.
 pub fn strip_forced_splits(text: &str) -> (String, Vec<usize>) {
@@ -18,8 +26,50 @@ pub fn strip_forced_splits(text: &str) -> (String, Vec<usize>) {
 }
 
 /// Strip `|||` markers from text without tracking positions.
+///
+/// Leaves [`RUN_BREAK`] in place: on the HTML side the run sentinel must
+/// survive splitting so the struct builder can detect and strip it per
+/// sentence, exactly mirroring the plain-text side.
 pub fn strip_forced_split_markers(text: &str) -> String {
     text.replace("|||", "")
+}
+
+/// Like [`strip_forced_splits`] but also treats [`RUN_BREAK`] as a forced
+/// split. `|||` markers are removed; each `RUN_BREAK` is **kept** in the
+/// cleaned text (so it survives into the first sentence of its run as a
+/// leading sentinel) while its position is still recorded as a forced split,
+/// so the run always opens a new sentence. Returns (cleaned text, byte
+/// positions in the cleaned text where a new sentence must begin).
+pub fn strip_forced_splits_keep_runs(text: &str) -> (String, Vec<usize>) {
+    let mut cleaned = String::with_capacity(text.len());
+    let mut positions = Vec::new();
+    let mut rest = text;
+
+    while !rest.is_empty() {
+        if let Some(stripped) = rest.strip_prefix("|||") {
+            positions.push(cleaned.len());
+            rest = stripped;
+        } else if let Some(stripped) = rest.strip_prefix(RUN_BREAK) {
+            positions.push(cleaned.len());
+            cleaned.push_str(RUN_BREAK);
+            rest = stripped;
+        } else {
+            let ch = rest.chars().next().unwrap();
+            cleaned.push(ch);
+            rest = &rest[ch.len_utf8()..];
+        }
+    }
+    (cleaned, positions)
+}
+
+/// Strip a single leading [`RUN_BREAK`] from a sentence, returning
+/// (was_run_start, remainder). Used by struct builders to detect a run's
+/// first sentence and drop the sentinel from stored text/html.
+pub fn take_run_marker(s: &str) -> (bool, &str) {
+    match s.strip_prefix(RUN_BREAK) {
+        Some(rest) => (true, rest),
+        None => (false, s),
+    }
 }
 
 /// Regex matching a sentence-ending punctuation followed by whitespace and an uppercase letter or ».
@@ -895,6 +945,54 @@ mod tests {
     #[test]
     fn test_strip_forced_split_markers() {
         assert_eq!(strip_forced_split_markers("a||| b||| c"), "a b c");
+    }
+
+    #[test]
+    fn test_strip_forced_split_markers_keeps_run_break() {
+        // The HTML side must retain RUN_BREAK so the builder can strip it per
+        // sentence in lockstep with the plain-text side.
+        let input = format!("intro |||{RUN_BREAK}1) item");
+        assert_eq!(
+            strip_forced_split_markers(&input),
+            format!("intro {RUN_BREAK}1) item")
+        );
+    }
+
+    #[test]
+    fn test_strip_forced_splits_keep_runs() {
+        // RUN_BREAK is kept (and recorded); ||| is removed (and recorded).
+        let input = format!("intro.{RUN_BREAK}1) one.{RUN_BREAK}2) two.");
+        let (cleaned, positions) = strip_forced_splits_keep_runs(&input);
+        assert_eq!(
+            cleaned,
+            format!("intro.{RUN_BREAK}1) one.{RUN_BREAK}2) two.")
+        );
+        // Positions point at each RUN_BREAK in the cleaned text.
+        assert_eq!(positions, vec![6, 6 + RUN_BREAK.len() + 7]);
+        for &p in &positions {
+            assert!(cleaned[p..].starts_with(RUN_BREAK));
+        }
+    }
+
+    #[test]
+    fn test_strip_forced_splits_keep_runs_mixed() {
+        let input = format!("a|||b{RUN_BREAK}c");
+        let (cleaned, positions) = strip_forced_splits_keep_runs(&input);
+        assert_eq!(cleaned, format!("ab{RUN_BREAK}c"));
+        // ||| removed at offset 1; RUN_BREAK kept at offset 2.
+        assert_eq!(positions, vec![1, 2]);
+    }
+
+    #[test]
+    fn test_take_run_marker() {
+        let input = format!("{RUN_BREAK}1) item");
+        let (is_run, rest) = take_run_marker(&input);
+        assert!(is_run);
+        assert_eq!(rest, "1) item");
+
+        let (is_run, rest) = take_run_marker("plain sentence");
+        assert!(!is_run);
+        assert_eq!(rest, "plain sentence");
     }
 
     #[test]

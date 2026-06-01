@@ -1,3 +1,4 @@
+use common::sentences::RUN_BREAK;
 use regex::Regex;
 use std::sync::LazyLock;
 
@@ -295,8 +296,12 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
             continue;
         }
 
-        // Paragraph: collect lines until blank line or footnote
-        let mut para_lines = vec![line.to_string()];
+        // Paragraph: collect lines until blank line or footnote. A line
+        // prefixed with `+ ` opens an indented run (e.g. Kant's numbered
+        // `1) 2) 3)` enumerations): the prefix is replaced by a RUN_BREAK
+        // sentinel so the lines still join into one paragraph block, with the
+        // run boundary recorded for sentence-splitting and tagging downstream.
+        let mut para_lines = vec![apply_run_marker(line)];
         i += 1;
         while i < lines.len() {
             let next = lines[i].trim();
@@ -309,7 +314,7 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
             if try_parse_footnote_start(next).is_some() {
                 break;
             }
-            para_lines.push(next.to_string());
+            para_lines.push(apply_run_marker(next));
             i += 1;
         }
 
@@ -323,6 +328,17 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
     }
 
     blocks
+}
+
+/// Replace a leading `+ ` run-marker with a `RUN_BREAK` sentinel; pass other
+/// lines through unchanged. The `+ ` is our authoring convention for an
+/// indented run; the sentinel carries that intent into the joined paragraph
+/// text without breaking the block apart.
+fn apply_run_marker(line: &str) -> String {
+    match line.strip_prefix("+ ") {
+        Some(rest) => format!("{RUN_BREAK}{rest}"),
+        None => line.to_string(),
+    }
 }
 
 /// Try to parse a footnote definition start: `[^marker]: text`
@@ -385,6 +401,29 @@ mod tests {
         assert!(
             matches!(&blocks[3].block_type, ParsedBlockType::Footnote { marker } if marker == "*")
         );
+    }
+
+    #[test]
+    fn test_parse_blocks_run_markers() {
+        // `+ ` lines stay inside one paragraph block; each becomes a RUN_BREAK
+        // sentinel in the joined text, leaving exactly one paragraph block.
+        let body = "Intro flow.\n+ 1) First item.\n+ 2) Second item.\n";
+        let blocks = parse_blocks(body);
+        assert_eq!(blocks.len(), 1);
+        assert_eq!(blocks[0].block_type, ParsedBlockType::Paragraph);
+        assert_eq!(
+            blocks[0].text,
+            format!("Intro flow. {RUN_BREAK}1) First item. {RUN_BREAK}2) Second item.")
+        );
+    }
+
+    #[test]
+    fn test_parse_blocks_run_marker_at_start() {
+        // A paragraph that opens directly with an item (no intro flow).
+        let body = "+ 1) Only item.\n";
+        let blocks = parse_blocks(body);
+        assert_eq!(blocks.len(), 1);
+        assert_eq!(blocks[0].text, format!("{RUN_BREAK}1) Only item."));
     }
 
     #[test]

@@ -369,19 +369,19 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 237,
         depth: 6,
-        label: "Von der Vernunft überhaupt",
+        label: "A. Von der Vernunft überhaupt",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 240,
         depth: 6,
-        label: "Vom logichen Gebrauche der Vernunft",
+        label: "B. Vom logichen Gebrauche der Vernunft",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 241,
         depth: 6,
-        label: "Von dem reinen Gebrauche der Vernunft",
+        label: "C. Von dem reinen Gebrauche der Vernunft",
         slug_override: None,
     },
     // Erstes Buch der Dialektik

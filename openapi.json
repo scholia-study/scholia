@@ -4805,6 +4805,11 @@
                         "type": "integer",
                         "format": "int32"
                     },
+                    "segment": {
+                        "type": ["integer", "null"],
+                        "format": "int32",
+                        "description": "1-based index of the indented run within the paragraph (`+ ` enumerations),\nor absent for normal flow. Consecutive same-`segment` sentences render as\none hanging-indent block."
+                    },
                     "sentence_number": {
                         "type": ["integer", "null"],
                         "format": "int32"

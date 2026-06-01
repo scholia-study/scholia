@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use common::kant1::filenames::{position_number, slugify};
 use common::kant1::toc_en;
 use common::sentences::{
-    split_sentences_en_forced, strip_forced_split_markers, strip_forced_splits,
+    RUN_BREAK, split_sentences_en_forced, strip_forced_split_markers, strip_forced_splits,
+    strip_forced_splits_keep_runs, take_run_marker,
 };
 use regex::Regex;
 use std::sync::LazyLock;
@@ -196,14 +197,23 @@ fn build_block(
     // Rewrite footnote refs in raw text before conversion
     let rewritten_text = rewrite_footnote_refs(&block.text, flat_index, lookups.marker_map);
 
-    let (block_plain, forced_splits) = strip_forced_splits(&md_to_plain(&rewritten_text));
-    let block_html = strip_forced_split_markers(&md_to_html(&rewritten_text));
-    let sentence_pairs = split_sentences_en_forced(&block_plain, &block_html, &forced_splits);
+    // RUN_BREAK sentinels (from `+ ` run markers) are kept through splitting
+    // so each indented run's first sentence can be tagged; stripped from the
+    // stored text below.
+    let (block_plain_tok, forced_splits) =
+        strip_forced_splits_keep_runs(&md_to_plain(&rewritten_text));
+    let block_html_tok = strip_forced_split_markers(&md_to_html(&rewritten_text));
+    let sentence_pairs =
+        split_sentences_en_forced(&block_plain_tok, &block_html_tok, &forced_splits);
+    let block_plain = block_plain_tok.replace(RUN_BREAK, "");
+    let block_html = block_html_tok.replace(RUN_BREAK, "");
 
-    // Build sentences with cumulative char tracking for marker resolution
+    // Build sentences with cumulative char tracking for marker resolution.
     let mut sentences = Vec::new();
     let mut cumulative_chars: Vec<usize> = Vec::new();
     let mut offset: usize = 0;
+    let mut current_segment: Option<i16> = None;
+    let mut next_segment: i16 = 1;
 
     for (sent_pos, (sent_text, sent_html)) in sentence_pairs.iter().enumerate() {
         cumulative_chars.push(offset);
@@ -251,11 +261,20 @@ fn build_block(
             })
             .collect();
 
+        // A leading RUN_BREAK marks the first sentence of an indented run.
+        let (is_run_start, sent_text_clean) = take_run_marker(sent_text);
+        if is_run_start {
+            current_segment = Some(next_segment);
+            next_segment += 1;
+        }
+        let (_, sent_html_clean) = take_run_marker(sent_html);
+
         sentences.push(SentenceData {
             position: sent_pos as i16,
             sentence_number: sent_num,
-            text: sent_text.clone(),
-            html: sent_html.clone(),
+            segment: current_segment,
+            text: sent_text_clean.to_string(),
+            html: sent_html_clean.to_string(),
             original_text: None,
             original_html: None,
             page_markers: Vec::new(),

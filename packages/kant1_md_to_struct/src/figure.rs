@@ -82,6 +82,7 @@ pub fn build_figure_block(
     let anchor = SentenceData {
         position: 0,
         sentence_number: None,
+        segment: None,
         text: caption.clone(),
         html: caption,
         original_text: orig_caption.clone(),

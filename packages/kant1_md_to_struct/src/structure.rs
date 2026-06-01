@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use common::kant1::filenames::{position_number, slugify};
 use common::kant1::toc_mod;
-use common::sentences::{split_sentences_forced, strip_forced_split_markers, strip_forced_splits};
+use common::sentences::{
+    RUN_BREAK, split_sentences_forced, strip_forced_split_markers, strip_forced_splits,
+    strip_forced_splits_keep_runs, take_run_marker,
+};
 use regex::Regex;
 use std::sync::LazyLock;
 
@@ -226,15 +229,27 @@ fn build_block(
     let rewritten_orig =
         rewrite_footnote_refs(&original_block.text, flat_index, lookups.marker_map);
 
-    // Modernized (primary)
-    let (block_plain, forced_splits) = strip_forced_splits(&md_to_plain(&rewritten_text));
-    let block_html = strip_forced_split_markers(&md_to_html(&rewritten_text));
-    let sentence_pairs = split_sentences_forced(&block_plain, &block_html, &forced_splits);
+    // Modernized (primary). RUN_BREAK sentinels (from `+ ` run markers) are
+    // kept through splitting so each indented run's first sentence can be
+    // detected and tagged below; they're stripped from the stored text.
+    let (block_plain_tok, forced_splits) =
+        strip_forced_splits_keep_runs(&md_to_plain(&rewritten_text));
+    let block_html_tok = strip_forced_split_markers(&md_to_html(&rewritten_text));
+    let sentence_pairs = split_sentences_forced(&block_plain_tok, &block_html_tok, &forced_splits);
 
-    // Original (reviewed)
-    let (orig_plain, _) = strip_forced_splits(&md_to_plain(&rewritten_orig));
-    let orig_html = strip_forced_split_markers(&md_to_html(&rewritten_orig));
-    let orig_sentence_pairs = split_sentences_forced(&orig_plain, &orig_html, &forced_splits);
+    // Original (reviewed) — split at its OWN run/forced positions so the
+    // sentinels land correctly despite spelling differences from the
+    // modernized text. The sentence-count check below guards alignment.
+    let (orig_plain_tok, orig_forced) =
+        strip_forced_splits_keep_runs(&md_to_plain(&rewritten_orig));
+    let orig_html_tok = strip_forced_split_markers(&md_to_html(&rewritten_orig));
+    let orig_sentence_pairs = split_sentences_forced(&orig_plain_tok, &orig_html_tok, &orig_forced);
+
+    // Stored block text/html carry no sentinels.
+    let block_plain = block_plain_tok.replace(RUN_BREAK, "");
+    let block_html = block_html_tok.replace(RUN_BREAK, "");
+    let orig_plain = orig_plain_tok.replace(RUN_BREAK, "");
+    let orig_html = orig_html_tok.replace(RUN_BREAK, "");
 
     // Validate sentence counts match
     if sentence_pairs.len() != orig_sentence_pairs.len() {
@@ -248,10 +263,14 @@ fn build_block(
         );
     }
 
-    // Build sentences with cumulative char tracking for marker resolution
+    // Build sentences with cumulative char tracking for marker resolution.
+    // `current_segment` carries the active indented-run index forward across
+    // a run's sentences; a leading RUN_BREAK opens the next run.
     let mut sentences = Vec::new();
     let mut cumulative_chars: Vec<usize> = Vec::new();
     let mut offset: usize = 0;
+    let mut current_segment: Option<i16> = None;
+    let mut next_segment: i16 = 1;
 
     for (sent_pos, ((sent_text, sent_html), (orig_sent_text, orig_sent_html))) in sentence_pairs
         .iter()
@@ -310,13 +329,26 @@ fn build_block(
             })
             .collect();
 
+        // A leading RUN_BREAK marks the first sentence of an indented run.
+        // Tagging is driven by the modernized text; the sentinel is stripped
+        // from all four stored strings.
+        let (is_run_start, sent_text_clean) = take_run_marker(sent_text);
+        if is_run_start {
+            current_segment = Some(next_segment);
+            next_segment += 1;
+        }
+        let (_, sent_html_clean) = take_run_marker(sent_html);
+        let (_, orig_text_clean) = take_run_marker(orig_sent_text);
+        let (_, orig_html_clean) = take_run_marker(orig_sent_html);
+
         sentences.push(SentenceData {
             position: sent_pos as i16,
             sentence_number: sent_num,
-            text: sent_text.clone(),
-            html: sent_html.clone(),
-            original_text: Some(orig_sent_text.clone()),
-            original_html: Some(orig_sent_html.clone()),
+            segment: current_segment,
+            text: sent_text_clean.to_string(),
+            html: sent_html_clean.to_string(),
+            original_text: Some(orig_text_clean.to_string()),
+            original_html: Some(orig_html_clean.to_string()),
             page_markers: Vec::new(),
             footnotes,
         });
@@ -521,6 +553,118 @@ mod tests {
         assert_eq!(counters.paragraph, 1);
         assert_eq!(counters.sentence, 1);
         assert_eq!(counters.figure, 1);
+    }
+
+    #[test]
+    fn test_build_block_tags_indented_runs() {
+        use kant1_md_to_struct::parse::{ParsedBlock, ParsedBlockType};
+
+        // Intro flow, then two `+ ` runs (as parse_blocks would emit them).
+        let text = format!(
+            "Intro flow here. {RUN_BREAK}1) First item is here. {RUN_BREAK}2) Second item here."
+        );
+        let block = ParsedBlock {
+            block_type: ParsedBlockType::Paragraph,
+            text,
+            markers: Vec::new(),
+        };
+
+        let marker_map = HashMap::new();
+        let footnote_content = HashMap::new();
+        let number_to_key = HashMap::new();
+        let lookups = Lookups {
+            marker_map: &marker_map,
+            footnote_content: &footnote_content,
+            number_to_key: &number_to_key,
+        };
+        let mut counters = Counters {
+            paragraph: 1,
+            sentence: 1,
+            figure: 1,
+        };
+
+        // Pass the same block as modernized + original (identical run structure).
+        let out = build_block(&block, &block, 0, 0, &mut counters, &lookups);
+
+        assert_eq!(out.block_type, "paragraph");
+        assert_eq!(out.paragraph_number, Some(1)); // one true paragraph, one number
+        assert_eq!(out.sentences.len(), 3);
+
+        // Intro is normal flow; each `+ ` item is its own indented run.
+        assert_eq!(out.sentences[0].segment, None);
+        assert_eq!(out.sentences[1].segment, Some(1));
+        assert_eq!(out.sentences[2].segment, Some(2));
+
+        // Sentence numbers stay continuous across the whole paragraph.
+        assert_eq!(out.sentences[0].sentence_number, Some(1));
+        assert_eq!(out.sentences[2].sentence_number, Some(3));
+
+        // The sentinel never reaches stored text/html.
+        assert!(out.sentences[1].text.starts_with("1)"));
+        assert!(!out.sentences.iter().any(|s| s.text.contains(RUN_BREAK)));
+        assert!(!out.sentences.iter().any(|s| s.html.contains(RUN_BREAK)));
+        assert!(!out.text.contains(RUN_BREAK));
+        assert!(!out.html.contains(RUN_BREAK));
+    }
+
+    #[test]
+    fn test_build_block_nihil_enumeration_end_to_end() {
+        use kant1_md_to_struct::parse::parse_blocks;
+
+        // The nihil passage shape: intro flow, then four `+ ` runs carrying
+        // page markers ({{ N }}), Sperrdruck (***x***) and antiqua (_x_).
+        let body = "\
+Weil die Kategorien fortgehen.
++ 1) {{ 347 }} Den Begriffen ist ***Keines*** entgegengesetzt (_ens rationis_).
++ 2) Realität ist ***Etwas***, Negation ist ***Nichts*** (_nihil privativum_).
++ 3) Die bloße Form der Anschauung (_ens imaginarium_).
++ 4) Der Gegenstand {{ 348 }} ist Nichts (_nihil negativum_).
+";
+        let blocks = parse_blocks(body);
+        assert_eq!(blocks.len(), 1, "must stay a single paragraph block");
+        let block = &blocks[0];
+
+        let marker_map = HashMap::new();
+        let footnote_content = HashMap::new();
+        let number_to_key = HashMap::new();
+        let lookups = Lookups {
+            marker_map: &marker_map,
+            footnote_content: &footnote_content,
+            number_to_key: &number_to_key,
+        };
+        let mut counters = Counters {
+            paragraph: 1,
+            sentence: 1,
+            figure: 1,
+        };
+
+        let out = build_block(block, block, 0, 0, &mut counters, &lookups);
+
+        // Intro + four items, each item its own indented run.
+        assert_eq!(out.sentences.len(), 5);
+        let segs: Vec<_> = out.sentences.iter().map(|s| s.segment).collect();
+        assert_eq!(segs, vec![None, Some(1), Some(2), Some(3), Some(4)]);
+
+        // Markup survives inside a run; the sentinel never does.
+        assert!(out.sentences[1].html.contains("sperrdruck"));
+        assert!(out.sentences[1].html.contains("antiqua"));
+        assert!(out.sentences[1].text.starts_with("1)"));
+        assert!(!out.sentences.iter().any(|s| s.text.contains(RUN_BREAK)));
+        assert!(!out.sentences.iter().any(|s| s.html.contains(RUN_BREAK)));
+
+        // Page markers land on the runs that carry them.
+        assert!(
+            out.sentences[1]
+                .page_markers
+                .iter()
+                .any(|m| m.ref_value == "347")
+        );
+        assert!(
+            out.sentences[4]
+                .page_markers
+                .iter()
+                .any(|m| m.ref_value == "348")
+        );
     }
 
     #[test]
