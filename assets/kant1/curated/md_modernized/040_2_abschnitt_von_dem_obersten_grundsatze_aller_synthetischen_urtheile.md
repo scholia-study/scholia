@@ -1,6 +1,6 @@
 ---
 position: 40
-label: "2. Abschnitt. Von dem obersten Grundsatze aller synthetischen Urteile"
+label: "2. Abschnitt. Von dem obersten Grundsatze aller synthetischen Urtheile"
 depth: 6
 aa_page: 143
 ---

@@ -1,6 +1,6 @@
 ---
 position: 39
-label: "1. Abschnitt. Von dem obersten Grundsatze aller analytischen Urteile"
+label: "1. Abschnitt. Von dem obersten Grundsatze aller analytischen Urtheile"
 depth: 6
 aa_page: 141
 ---
