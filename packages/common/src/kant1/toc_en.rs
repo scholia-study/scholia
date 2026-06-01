@@ -418,7 +418,7 @@ const TOC: &[FlatEntry] = &[
         slug_override: None,
     },
     FlatEntry {
-        aa_page: 262,
+        aa_page: 279,
         depth: 5,
         label: "General remark concerning the transition from rational psychology to cosmology",
         slug_override: None,

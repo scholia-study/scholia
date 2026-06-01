@@ -423,7 +423,7 @@ const TOC: &[FlatEntry] = &[
         slug_override: None,
     },
     FlatEntry {
-        aa_page: 262,
+        aa_page: 279,
         depth: 5,
         label: "Allgemeine Anmerkung, den Übergang von der rationalen Psychologie zur Kosmologie betreffend",
         slug_override: None,
