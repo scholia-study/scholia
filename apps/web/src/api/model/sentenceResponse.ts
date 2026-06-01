@@ -22,6 +22,13 @@ export interface SentenceResponse {
     original_text?: string | null;
     page_markers: PageMarkerResponse[];
     position: number;
+    /**
+     * 1-based index of the indented run within the paragraph (`+ ` enumerations),
+  or absent for normal flow. Consecutive same-`segment` sentences render as
+  one hanging-indent block.
+     * @nullable
+     */
+    segment?: number | null;
     /** @nullable */
     sentence_number?: number | null;
     /** @nullable */

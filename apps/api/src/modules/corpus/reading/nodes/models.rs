@@ -36,6 +36,11 @@ pub struct SentenceResponse {
     /// Set only on a figure's anchor sentence — drives the `fig{N}` selection key.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub figure_number: Option<i32>,
+    /// 1-based index of the indented run within the paragraph (`+ ` enumerations),
+    /// or absent for normal flow. Consecutive same-`segment` sentences render as
+    /// one hanging-indent block.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub segment: Option<i16>,
     pub text: String,
     pub html: String,
     #[serde(skip_serializing_if = "Option::is_none")]

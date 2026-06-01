@@ -1,6 +1,13 @@
 import EditNoteOutlined from "@mui/icons-material/EditNoteOutlined";
 import parse, { Element } from "html-react-parser";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+    Fragment,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import type {
     ContentBlockResponse,
     PageMarkerResponse,
@@ -18,6 +25,37 @@ import { FootnotePopover } from "./FootnotePopover";
 export interface MarginSettings {
     enabledSystems: Set<string>;
     systemSides: Record<string, "left" | "right">;
+}
+
+interface SentenceGroup {
+    /** Indented-run index, or null for the normal paragraph flow. */
+    segment: number | null;
+    /** Sentences in this run, with their original index into block.sentences
+     *  (preserved so per-sentence margin-marker lookups stay aligned). */
+    items: { sentence: SentenceResponse; index: number }[];
+}
+
+/**
+ * Split a block's sentences into consecutive runs sharing a `segment`. Normal
+ * flow (segment null) groups together; each `+ `-authored indented run carries
+ * a distinct segment value and so becomes its own group. The reader wraps each
+ * indented group in one hanging-indent block — see the `paragraph` case.
+ */
+function groupSentencesBySegment(
+    sentences: SentenceResponse[],
+): SentenceGroup[] {
+    const groups: SentenceGroup[] = [];
+    for (let index = 0; index < sentences.length; index++) {
+        const sentence = sentences[index];
+        const segment = sentence.segment ?? null;
+        const last = groups.at(-1);
+        if (last && last.segment === segment) {
+            last.items.push({ sentence, index });
+        } else {
+            groups.push({ segment, items: [{ sentence, index }] });
+        }
+    }
+    return groups;
 }
 
 function MarginNotes({
@@ -443,26 +481,52 @@ export function Block({
                         : parse(blockHtml)}
                 </h2>
             );
-        case "paragraph":
+        case "paragraph": {
+            // Sentences split into runs: normal flow renders inline; each
+            // `+ `-authored indented run renders as one hanging-indent block
+            // (e.g. Kant's `1) 2) 3)` enumerations). The paragraph stays a
+            // single <p> with one paragraph_number.
+            const groups = groupSentencesBySegment(block.sentences);
+            const renderSentence = (s: SentenceResponse, i: number) => (
+                <Sentence
+                    key={s.id}
+                    sentence={s}
+                    isSelected={sentenceMatchesKey(s, selectedSentenceId)}
+                    showOriginal={showOriginal}
+                    onSelect={onSelectSentence}
+                    marginSettings={marginSettings}
+                    nodeSourceRef={nodeSourceRef}
+                    displayPageMarkers={sentenceDisplayMarkers[i]}
+                />
+            );
             return (
                 <p className="relative pb-4 leading-relaxed text-stone-700">
-                    {block.sentences.map((s, i) => (
-                        <Sentence
-                            key={s.id}
-                            sentence={s}
-                            isSelected={sentenceMatchesKey(
-                                s,
-                                selectedSentenceId,
-                            )}
-                            showOriginal={showOriginal}
-                            onSelect={onSelectSentence}
-                            marginSettings={marginSettings}
-                            nodeSourceRef={nodeSourceRef}
-                            displayPageMarkers={sentenceDisplayMarkers[i]}
-                        />
-                    ))}
+                    {groups.map((group, gi) =>
+                        group.segment == null ? (
+                            <Fragment key={`flow-${gi}`}>
+                                {group.items.map(({ sentence, index }) =>
+                                    renderSentence(sentence, index),
+                                )}
+                            </Fragment>
+                        ) : (
+                            // Hanging indent, no list marker — Kant's own
+                            // `1)`/`2)` is the only visible label. A <span>
+                            // (display:block), not a <div>, so it stays valid
+                            // phrasing content inside <p> and survives SSR
+                            // hydration.
+                            <span
+                                key={`seg-${gi}`}
+                                className="block [padding-left:2em] [text-indent:-1em]"
+                            >
+                                {group.items.map(({ sentence, index }) =>
+                                    renderSentence(sentence, index),
+                                )}
+                            </span>
+                        ),
+                    )}
                 </p>
             );
+        }
         case "footnote":
             return (
                 <div className="relative pb-4 ml-8 text-sm text-stone-500 italic border-l-2 border-stone-200 pl-4">

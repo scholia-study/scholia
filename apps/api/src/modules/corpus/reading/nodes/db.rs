@@ -33,6 +33,7 @@ struct SentenceRow {
     block_id: Uuid,
     position: i16,
     sentence_number: Option<i32>,
+    segment: Option<i16>,
     text: String,
     html: String,
     original_text: Option<String>,
@@ -99,7 +100,7 @@ pub async fn get_node_content(
 
     let sentences = sqlx::query_as!(
         SentenceRow,
-        r#"SELECT id, block_id AS "block_id!", position, sentence_number, text, html, original_text, original_html,
+        r#"SELECT id, block_id AS "block_id!", position, sentence_number, segment, text, html, original_text, original_html,
                   source_sentence_start_id, source_sentence_end_id
            FROM sentences
            WHERE node_id = $1 AND block_id IS NOT NULL
@@ -229,6 +230,7 @@ pub async fn get_node_content(
                 position: s.position,
                 sentence_number: s.sentence_number,
                 figure_number: None,
+                segment: s.segment,
                 text: s.text,
                 html: s.html,
                 original_text: if include_original {

@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT id, block_id AS \"block_id!\", position, sentence_number, text, html, original_text, original_html,\n                  source_sentence_start_id, source_sentence_end_id\n           FROM sentences\n           WHERE block_id IS NOT NULL AND block_id = ANY(\n               SELECT id FROM content_blocks WHERE node_id = ANY($1)\n           )\n           ORDER BY block_id, position",
+    "query": "SELECT id, block_id AS \"block_id!\", position, sentence_number, segment, text, html, original_text, original_html,\n                  source_sentence_start_id, source_sentence_end_id\n           FROM sentences\n           WHERE block_id IS NOT NULL AND block_id = ANY(\n               SELECT id FROM content_blocks WHERE node_id = ANY($1)\n           )\n           ORDER BY block_id, position",
     "describe": {
         "columns": [
             {
@@ -25,31 +25,36 @@
             },
             {
                 "ordinal": 4,
+                "name": "segment",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 5,
                 "name": "text",
                 "type_info": "Text"
             },
             {
-                "ordinal": 5,
+                "ordinal": 6,
                 "name": "html",
                 "type_info": "Text"
             },
             {
-                "ordinal": 6,
+                "ordinal": 7,
                 "name": "original_text",
                 "type_info": "Text"
             },
             {
-                "ordinal": 7,
+                "ordinal": 8,
                 "name": "original_html",
                 "type_info": "Text"
             },
             {
-                "ordinal": 8,
+                "ordinal": 9,
                 "name": "source_sentence_start_id",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 9,
+                "ordinal": 10,
                 "name": "source_sentence_end_id",
                 "type_info": "Uuid"
             }
@@ -62,6 +67,7 @@
             true,
             false,
             true,
+            true,
             false,
             false,
             true,
@@ -70,5 +76,5 @@
             true
         ]
     },
-    "hash": "38f225bf55dfc8c5da388b5084d4208926b7ac476c63ae35eaa3a27f04104aa3"
+    "hash": "6e74631d4606e09531b316ec75d4d594844584e0ed9e5c4a361191c04ff2a75a"
 }
