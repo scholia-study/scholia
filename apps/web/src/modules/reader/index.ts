@@ -1,5 +1,6 @@
 export { BibleShapeFullToc, PanelToc } from "./components/PanelToc";
 export { ReaderLayout } from "./components/ReaderLayout";
+export { TranslationBadge } from "./components/TranslationBadge";
 export { getNodePageSuspenseQueryOptions } from "./nodePageQuery";
 export {
     createPanel,

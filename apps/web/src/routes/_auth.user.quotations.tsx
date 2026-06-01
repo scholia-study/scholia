@@ -18,8 +18,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import parse from "html-react-parser";
 import { useMemo, useState } from "react";
-import { TranslationBadge } from "#/components/TranslationBadge";
 import { useUnsaveQuotation } from "#/modules/quotation";
+import { TranslationBadge } from "#/modules/reader";
 import {
     getListArticleQuotationsQueryKey,
     useDeleteArticleQuotation,

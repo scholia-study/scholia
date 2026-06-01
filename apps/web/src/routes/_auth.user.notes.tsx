@@ -14,8 +14,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { TranslationBadge } from "#/components/TranslationBadge";
 import { NoteFormModal } from "#/modules/quotation";
+import { TranslationBadge } from "#/modules/reader";
 import type { NoteWithContextResponse } from "../api/model";
 import {
     getListAllNotesQueryKey,
