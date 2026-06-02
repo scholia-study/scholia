@@ -1,6 +1,6 @@
 ---
 position: 58
-label: "Of the logical use of reason"
+label: "B. Of the logical use of reason"
 depth: 6
 aa_page: 240
 ---

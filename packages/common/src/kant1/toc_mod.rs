@@ -375,7 +375,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 240,
         depth: 6,
-        label: "B. Vom logichen Gebrauche der Vernunft",
+        label: "B. Vom logischen Gebrauche der Vernunft",
         slug_override: None,
     },
     FlatEntry {
@@ -400,13 +400,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 250,
         depth: 5,
-        label: "2. Abschnitt. Von den transscendentalen Ideen",
+        label: "2. Abschnitt. Von den transzendentalen Ideen",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 257,
         depth: 5,
-        label: "3. Abschnitt. System der transscendentalen Ideen",
+        label: "3. Abschnitt. System der transzendentalen Ideen",
         slug_override: None,
     },
     // Zweites Buch der Dialektik

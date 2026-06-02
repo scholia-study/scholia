@@ -1,11 +1,11 @@
 ---
 position: 57
-label: "Of reason in general"
+label: "A. Of reason in general"
 depth: 6
 aa_page: 237
 ---
 
-## A. Of Reason in General
+## A. Of reason in general
 
 All our cognition starts from the senses, goes from there to the understanding, and ends with reason, beyond which nothing higher is found in us to work up the matter of intuition and bring it under the highest unity of thought. Since I am now to give an explanation of this supreme cognitive power, I find myself in some embarrassment. There is of it, as of the understanding, a merely formal, i.e., logical use, where reason abstracts from all content of cognition, but also a real use, since it itself contains the origin of certain concepts and principles which it borrows neither from the senses nor from the understanding. The former faculty has, to be sure, long since been explained by logicians as the faculty of drawing mediate inferences (in distinction from immediate inferences, _consequentiis immediatis_); but the second, which itself generates concepts, is thereby not {{{ 238 }}} yet understood. Since, then, a division of reason into a {{ 356 }} logical and a transcendental faculty occurs here, a higher concept of this source of cognition must be sought which comprises both concepts under itself, while we can expect, according to the analogy with the concepts of understanding, that the logical concept will at the same time provide the key to the transcendental one, and the table of functions of the former will at the same time provide the ancestral registry of the concepts of reason.
 

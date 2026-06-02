@@ -6,7 +6,7 @@ aa_page: 244
 ---
 
 
-## Book I. Of the Concepts of Pure Reason
+## First Book. Of the Concepts of Pure Reason
 
 Whatever may be the case regarding the possibility of concepts from pure reason: they are nevertheless not merely reflected, but inferred concepts. Concepts of the understanding are also thought _a priori_, before {{ 367 }} experience and for the sake of the same; but they contain nothing further than the unity of reflection on appearances, insofar as they are necessarily to belong to a possible empirical consciousness. Through them alone is cognition and determination of an object possible. They therefore first provide the material for inferring, and no concepts _a priori_ of objects precede them, from which they could be inferred. On the other hand, their objective reality nevertheless rests solely upon this: that, because they constitute the intellectual form of all experience, their application must always be capable of being shown in experience.
 
