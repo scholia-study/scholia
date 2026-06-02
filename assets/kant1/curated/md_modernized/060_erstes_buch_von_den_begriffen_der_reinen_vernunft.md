@@ -1,0 +1,13 @@
+---
+position: 60
+label: "Erstes Buch. Von den Begriffen der reinen Vernunft"
+depth: 4
+aa_page: 244
+---
+
+
+## Erstes Buch. Von den Begriffen der reinen Vernunft
+
+Was es auch mit der Möglichkeit der Begriffe aus reiner Vernunft für eine Bewandtnis haben mag: so sind sie doch nicht bloß reflektierte, sondern geschlossene Begriffe. Verstandesbegriffe werden auch _a priori_, vor der {{ 367 }} Erfahrung und zum Behuf derselben, gedacht; aber sie enthalten nichts weiter, als die Einheit der Reflexion über die Erscheinungen, insofern sie notwendig zu einem möglichen empirischen Bewusstsein gehören sollen. Durch sie allein wird Erkenntnis und Bestimmung eines Gegenstandes möglich. Sie geben also zuerst Stoff zum Schließen, und vor ihnen gehen keine Begriffe _a priori_ von Gegenständen vorher, aus denen sie könnten geschlossen werden. Dagegen gründet sich ihre objektive Realität doch lediglich darauf: dass, weil sie die intellektuelle Form aller Erfahrung ausmachen, ihre Anwendung jederzeit in der Erfahrung muss gezeigt werden können.
+
+Die Benennung eines Vernunftbegriffs aber zeigt schon vorläufig: dass er sich nicht innerhalb der Erfahrung wolle beschränken lassen, weil er eine Erkenntnis betrifft, von der jede empirische nur ein Teil ist (vielleicht das Ganze der möglichen Erfahrung oder ihrer empirischen Synthesis), bis dahin zwar keine wirkliche Erfahrung jemals völlig zureicht, aber doch jederzeit dazu gehörig ist. Vernunftbegriffe dienen zum ***Begreifen***, wie Verstandesbegriffe zum ***Verstehen*** (der Wahrnehmungen). Wenn sie das Unbedingte enthalten, so betreffen sie etwas, worunter alle Erfahrung gehört, welches selbst aber niemals ein Gegenstand der Erfahrung ist: etwas, worauf die Vernunft in ihren Schlüssen aus der Erfahrung führt, und wornach sie den Grad ihres empirischen Gebrauchs schätzt und {{ 368 }} {{{ 245 }}} abmisst, niemals aber ein Glied der empirischen Synthesis ausmacht. Haben dergleichen Begriffe dessen ungeachtet objektive Gültigkeit, so können sie _conceptus ratiocinati_ (richtig geschlossene Begriffe) heißen; wo nicht, so sind sie wenigstens durch einen Schein des Schließens erschlichen und mögen _conceptus ratiocinantes_ (vernünftelnde Begriffe) genannt werden. Da diese aber allererst in dem Hauptstücke von den dialektischen Schlüssen der reinen Vernunft ausgemacht werden kann, so können wir darauf noch nicht Rücksicht nehmen, sondern werden vorläufig, so wie wir die reinen Verstandesbegriffe Kategorien nannten, die Begriffe der reinen Vernunft mit einem neuen Namen belegen und sie transzendentale Ideen nennen, diese Benennung aber jetzt erläutern und rechtfertigen.
