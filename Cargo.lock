@@ -390,6 +390,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "dotenvy",
+ "reconcile",
  "reqwest 0.12.28",
  "serde",
  "serde_json",
@@ -1748,6 +1749,7 @@ dependencies = [
  "common",
  "dotenvy",
  "kant1_md_to_struct",
+ "reconcile",
  "reqwest 0.12.28",
  "serde_json",
  "sqlx",
@@ -2627,6 +2629,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "498cd0dc59d73224351ee52a95fee0f1a617a2eae0e7d9d720cc622c73a54186"
 dependencies = [
  "bitflags",
+]
+
+[[package]]
+name = "reconcile"
+version = "0.1.0"
+dependencies = [
+ "common",
+ "sqlx",
+ "uuid",
 ]
 
 [[package]]

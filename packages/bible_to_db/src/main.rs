@@ -1,3 +1,5 @@
+mod reconcile;
+
 use std::fs;
 use std::path::PathBuf;
 
@@ -21,6 +23,14 @@ struct Cli {
     /// Root directory for cached chapter JSON
     #[arg(long, default_value = "assets/bible")]
     assets_dir: String,
+
+    /// Plan and report a reconcile without committing anything.
+    #[arg(long)]
+    dry_run: bool,
+
+    /// Permit deleting a sentence that still has quotations anchored to it.
+    #[arg(long)]
+    force: bool,
 }
 
 /// Build sqlx connect options. CLI `--database-url` wins; otherwise
@@ -509,20 +519,35 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let pool = PgPool::connect_with(pg_connect_options(cli.database_url)?).await?;
 
-    // Idempotency guard. The translation's book slug is a UNIQUE column,
-    // so a second run would otherwise blow up mid-transaction with a
-    // constraint violation. Detect it upfront, no-op cleanly. Schema
-    // fixes still go through `pnpm db:reset`; re-ingesting existing
-    // content under a flag is a separate (still-deferred) design.
+    // An already-imported translation is reconciled in place from the asset
+    // JSON — preserving verse-sentence UUIDs (and the quotations anchored to
+    // them) across text corrections and verse re-segmentation. A new
+    // translation is inserted fresh below.
     let existing_book: Option<Uuid> = sqlx::query_scalar("SELECT id FROM books WHERE slug = $1")
         .bind(translation.book_slug)
         .fetch_optional(&pool)
         .await?;
-    if existing_book.is_some() {
+    if let Some(existing_id) = existing_book {
         eprintln!(
-            "Translation '{}' already imported (book slug '{}' exists). Skipping.",
-            translation.slug, translation.book_slug
+            "Reconciling existing translation '{}' (book '{}', {})",
+            translation.slug, translation.book_slug, existing_id
         );
+        let mut tx = pool.begin().await?;
+        let report = reconcile::reconcile_translation(
+            &mut tx,
+            existing_id,
+            translation,
+            &cli.assets_dir,
+            cli.force,
+        )
+        .await?;
+        if cli.dry_run {
+            tx.rollback().await?;
+        } else {
+            tx.commit().await?;
+            purge_cache(&["/api/library", "/api/books", "/books"]).await;
+        }
+        report.print(cli.dry_run);
         return Ok(());
     }
 
@@ -712,13 +737,14 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         // still has a target. Heading sentences carry no sentence_number
         // (those count body text only).
         sqlx::query(
-            "INSERT INTO sentences (book_id, node_id, block_id, position, text, html)
-             VALUES ($1, $2, $3, 0, $4, $4)",
+            "INSERT INTO sentences (book_id, node_id, block_id, position, text, html, natural_key)
+             VALUES ($1, $2, $3, 0, $4, $4, $5)",
         )
         .bind(book_id)
         .bind(bb_node_id)
         .bind(bb_heading_block_id)
         .bind(bb.label)
+        .bind(format!("{}/heading/s0", bb.slug))
         .execute(&mut *tx)
         .await?;
         totals.sentences += 1;
@@ -832,12 +858,16 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 // intuit as "a sentence" — and lets verse markers anchor
                 // *each* sentence in the verse.
                 let sentences = segment_sentences(&verse_text);
-                for sentence_text in &sentences {
+                // 0-based index of the sentence within its verse; the verse is
+                // the reconcile unit, so the natural key is verse-scoped.
+                for (idx_in_verse, sentence_text) in sentences.iter().enumerate() {
                     let html = html_escape(sentence_text);
+                    let natural_key =
+                        format!("{}:{}/s{}", chapter_source_ref, verse.verse, idx_in_verse);
 
                     let sentence_id: Uuid = sqlx::query_scalar(
-                        "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, text, html)
-                         VALUES ($1, $2, $3, $4, $5, $6, $7)
+                        "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, text, html, natural_key)
+                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                          RETURNING id",
                     )
                     .bind(book_id)
@@ -847,6 +877,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                     .bind(sentence_number)
                     .bind(sentence_text)
                     .bind(&html)
+                    .bind(&natural_key)
                     .fetch_one(&mut *tx)
                     .await?;
                     totals.sentences += 1;
@@ -899,12 +930,17 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     .await?;
     totals.alignments = alignment_rows;
 
-    tx.commit().await?;
+    if cli.dry_run {
+        tx.rollback().await?;
+        eprintln!("(dry-run: nothing committed)");
+    } else {
+        tx.commit().await?;
 
-    // Drop stale listing entries so the new book shows up immediately
-    // rather than waiting out the TTL. No-op if CACHE_PURGE_URL is
-    // unset (local dev without a proxy).
-    purge_cache(&["/api/library", "/api/books", "/books"]).await;
+        // Drop stale listing entries so the new book shows up immediately
+        // rather than waiting out the TTL. No-op if CACHE_PURGE_URL is
+        // unset (local dev without a proxy).
+        purge_cache(&["/api/library", "/api/books", "/books"]).await;
+    }
 
     eprintln!();
     eprintln!("=== Import complete: {} ===", translation.full_title);
