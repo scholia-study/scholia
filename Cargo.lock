@@ -1745,6 +1745,7 @@ name = "kant1_struct_to_db"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "common",
  "dotenvy",
  "kant1_md_to_struct",
  "reqwest 0.12.28",

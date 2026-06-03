@@ -5,3 +5,4 @@ pub mod model;
 pub mod ncx;
 pub mod opf;
 pub mod sentences;
+pub mod textmatch;

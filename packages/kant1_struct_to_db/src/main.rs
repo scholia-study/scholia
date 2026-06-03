@@ -1,4 +1,5 @@
 mod import;
+mod reconcile;
 
 use clap::Parser;
 
@@ -16,6 +17,15 @@ struct Cli {
     /// Source book slug (for translation imports — links to existing book)
     #[arg(long)]
     source_book_slug: Option<String>,
+
+    /// Plan and report a reconcile without committing anything.
+    #[arg(long)]
+    dry_run: bool,
+
+    /// Permit deleting a sentence that still has quotations/resources anchored
+    /// to it (otherwise such a delete aborts the run).
+    #[arg(long)]
+    force: bool,
 }
 
 fn main() {
@@ -23,7 +33,15 @@ fn main() {
 
     let rt = tokio::runtime::Runtime::new().expect("Failed to create tokio runtime");
     rt.block_on(async {
-        if let Err(e) = import::run(&cli.input_file, cli.database_url, cli.source_book_slug).await {
+        if let Err(e) = import::run(
+            &cli.input_file,
+            cli.database_url,
+            cli.source_book_slug,
+            cli.dry_run,
+            cli.force,
+        )
+        .await
+        {
             eprintln!("Import failed: {e}");
             std::process::exit(1);
         }

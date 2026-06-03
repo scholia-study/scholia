@@ -43,10 +43,97 @@ fn pg_connect_options(
     Ok(url.parse()?)
 }
 
+/// A translation edition is locked 1:1 to its source book: every paragraph and
+/// footnote must carry the same number of sentences as the German source, or
+/// quotation projection and side-by-side alignment break (the extra/missing
+/// translation sentences end up with no `source_sentence_start_id`). The MD →
+/// struct pipeline builds the two editions independently, so a split/merge made
+/// in only one edition would otherwise pass silently. Check up front — before
+/// either the fresh-insert or reconcile path — and abort listing every offender.
+fn validate_translation_parity(
+    output: &Output,
+    source_sentence_map: &HashMap<(String, i16, i16), Uuid>,
+    source_fn_sentence_counts: &HashMap<i32, i16>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    // German sentence count per (source_ref, block_position).
+    let mut de_block_counts: HashMap<(String, i16), usize> = HashMap::new();
+    for (source_ref, block_pos, _sent_pos) in source_sentence_map.keys() {
+        *de_block_counts
+            .entry((source_ref.clone(), *block_pos))
+            .or_insert(0) += 1;
+    }
+
+    let mut problems: Vec<String> = Vec::new();
+
+    for node in &output.toc_nodes {
+        for block in &node.content_blocks {
+            let en = block.sentences.len();
+            let de = de_block_counts
+                .get(&(node.source_ref.clone(), block.position))
+                .copied()
+                .unwrap_or(0);
+            if en != de {
+                problems.push(format!(
+                    "  node {} / block {}: translation has {en} sentence(s), source has {de}",
+                    node.source_ref, block.position
+                ));
+            }
+            for footnote in block.sentences.iter().flat_map(|s| &s.footnotes) {
+                let en = footnote.sentences.len();
+                match source_fn_sentence_counts.get(&footnote.number) {
+                    Some(de) if en != *de as usize => problems.push(format!(
+                        "  footnote {}: translation has {en} sentence(s), source has {de}",
+                        footnote.number
+                    )),
+                    None => problems.push(format!(
+                        "  footnote {}: present in translation but missing from source",
+                        footnote.number
+                    )),
+                    _ => {}
+                }
+            }
+        }
+    }
+
+    // Symmetric direction: a source block carrying sentences that has no
+    // counterpart in the translation (the forward loop only sees translation
+    // blocks, so a wholly missing block would otherwise slip through).
+    let en_block_keys: std::collections::HashSet<(String, i16)> = output
+        .toc_nodes
+        .iter()
+        .flat_map(|n| {
+            n.content_blocks
+                .iter()
+                .map(move |b| (n.source_ref.clone(), b.position))
+        })
+        .collect();
+    for (source_ref, block_pos) in de_block_counts.keys() {
+        if !en_block_keys.contains(&(source_ref.clone(), *block_pos)) {
+            problems.push(format!(
+                "  node {source_ref} / block {block_pos}: present in source but missing from translation"
+            ));
+        }
+    }
+
+    if !problems.is_empty() {
+        return Err(format!(
+            "translation is out of sync with the source edition ({} mismatch(es)) — \
+             fix the markdown so sentence/footnote splits match, then re-run \
+             (reconcile the source book first if you edited it too):\n{}",
+            problems.len(),
+            problems.join("\n")
+        )
+        .into());
+    }
+    Ok(())
+}
+
 pub async fn run(
     input_file: &str,
     database_url: Option<String>,
     source_book_slug: Option<String>,
+    dry_run: bool,
+    force: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
@@ -55,19 +142,14 @@ pub async fn run(
 
     let pool = PgPool::connect_with(pg_connect_options(database_url)?).await?;
 
-    // Idempotency guard. `books.slug` is UNIQUE; a second run would
-    // otherwise hit a constraint violation mid-transaction. Detect
-    // upfront and no-op cleanly. Re-ingesting under a flag is a
-    // separate (still-deferred) design — for now, schema/source-data
-    // fixes go through `pnpm db:reset`.
-    let existing_book: Option<Uuid> = sqlx::query_scalar("SELECT id FROM books WHERE slug = $1")
+    // A book already in the DB is reconciled in place — matching the freshly
+    // parsed struct against existing rows and carrying sentence UUIDs (and the
+    // quotations/resources anchored to them) forward across edits. A new book
+    // is inserted fresh below.
+    let existing_book_id: Option<Uuid> = sqlx::query_scalar("SELECT id FROM books WHERE slug = $1")
         .bind(&output.book.slug)
         .fetch_optional(&pool)
         .await?;
-    if existing_book.is_some() {
-        eprintln!("Book '{}' already imported. Skipping.", output.book.slug);
-        return Ok(());
-    }
 
     let mut tx = pool.begin().await?;
 
@@ -96,35 +178,39 @@ pub async fn run(
     let source_book_id: Option<Uuid> = source_book.map(|(id, _)| id);
     let translation_of_id: Option<Uuid> = source_book.map(|(_, id)| id);
 
-    // 1a. Upsert person (author)
-    let person_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO persons (name, sort_name, protected, created_by)
+    let book_id: Uuid = if let Some(id) = existing_book_id {
+        eprintln!("Reconciling existing book {:?} ({})", output.book.slug, id);
+        id
+    } else {
+        // 1a. Upsert person (author)
+        let person_id: Uuid = sqlx::query_scalar(
+            "INSERT INTO persons (name, sort_name, protected, created_by)
          VALUES ($1, $2, true, $3)
          ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
          RETURNING id",
-    )
-    .bind(&output.book.author)
-    .bind({
-        // Auto-generate sort_name: "Immanuel Kant" → "Kant, Immanuel"
-        let parts: Vec<&str> = output.book.author.split_whitespace().collect();
-        if parts.len() >= 2 {
-            Some(format!(
-                "{}, {}",
-                parts.last().unwrap(),
-                parts[..parts.len() - 1].join(" ")
-            ))
-        } else {
-            None
-        }
-    })
-    .bind(system_user_id)
-    .fetch_one(&mut *tx)
-    .await?;
-    eprintln!("Person {:?} ({})", output.book.author, person_id);
+        )
+        .bind(&output.book.author)
+        .bind({
+            // Auto-generate sort_name: "Immanuel Kant" → "Kant, Immanuel"
+            let parts: Vec<&str> = output.book.author.split_whitespace().collect();
+            if parts.len() >= 2 {
+                Some(format!(
+                    "{}, {}",
+                    parts.last().unwrap(),
+                    parts[..parts.len() - 1].join(" ")
+                ))
+            } else {
+                None
+            }
+        })
+        .bind(system_user_id)
+        .fetch_one(&mut *tx)
+        .await?;
+        eprintln!("Person {:?} ({})", output.book.author, person_id);
 
-    // 1b. Insert bibliographic source
-    let publication_year: Option<i16> = output.book.source_date.parse::<i16>().ok();
-    let bib_source_id: Uuid = sqlx::query_scalar(
+        // 1b. Insert bibliographic source
+        let publication_year: Option<i16> = output.book.source_date.parse::<i16>().ok();
+        let bib_source_id: Uuid = sqlx::query_scalar(
         "INSERT INTO sources (source_type, title, publication_year, publisher, translation_of_id, protected, created_by)
          VALUES ('book', $1, $2, $3, $4, true, $5)
          RETURNING id",
@@ -136,49 +222,53 @@ pub async fn run(
     .bind(system_user_id)
     .fetch_one(&mut *tx)
     .await?;
-    eprintln!("Source {:?} ({})", output.book.title, bib_source_id);
+        eprintln!("Source {:?} ({})", output.book.title, bib_source_id);
 
-    // 1c. Link person to source as author
-    sqlx::query(
-        "INSERT INTO source_persons (source_id, person_id, role, position)
+        // 1c. Link person to source as author
+        sqlx::query(
+            "INSERT INTO source_persons (source_id, person_id, role, position)
          VALUES ($1, $2, 'author', 0)
          ON CONFLICT DO NOTHING",
-    )
-    .bind(bib_source_id)
-    .bind(person_id)
-    .execute(&mut *tx)
-    .await?;
+        )
+        .bind(bib_source_id)
+        .bind(person_id)
+        .execute(&mut *tx)
+        .await?;
 
-    // 1d. Insert book
-    let about_text: &str = if source_book_id.is_some() {
-        // Translation: English (or other) rendering of the German source.
-        "This English translation of Kant's Kritik der reinen Vernunft is a Scholia community project. \
+        // 1d. Insert book
+        let about_text: &str = if source_book_id.is_some() {
+            // Translation: English (or other) rendering of the German source.
+            "This English translation of Kant's Kritik der reinen Vernunft is a Scholia community project. \
          It is prepared from the 1911 Akademie-Ausgabe (Band III) facsimile of the second edition (B), \
          which serves as the underlying German text on Scholia."
-    } else {
-        // Source-language book: the German B-edition.
-        "This German edition reproduces the text of Kant's Kritik der reinen Vernunft as printed in the \
+        } else {
+            // Source-language book: the German B-edition.
+            "This German edition reproduces the text of Kant's Kritik der reinen Vernunft as printed in the \
          1911 Akademie-Ausgabe (Band III) facsimile of the second edition (B, 1787). Margin markers \
          refer to AA page numbers; inline B-edition pagination is preserved within the text. \
          The text itself is in public domain. The digital edition on Scholia is a community-driven \
          project. Corrections and refinements are welcome."
-    };
+        };
 
-    let book_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO books (slug, source_id, language, about_text)
+        let book_id: Uuid = sqlx::query_scalar(
+            "INSERT INTO books (slug, source_id, language, about_text)
          VALUES ($1, $2, $3, $4)
          RETURNING id",
-    )
-    .bind(&output.book.slug)
-    .bind(bib_source_id)
-    .bind(&output.book.language)
-    .bind(about_text)
-    .fetch_one(&mut *tx)
-    .await?;
+        )
+        .bind(&output.book.slug)
+        .bind(bib_source_id)
+        .bind(&output.book.language)
+        .bind(about_text)
+        .fetch_one(&mut *tx)
+        .await?;
 
-    eprintln!("Inserted book {:?} ({})", output.book.slug, book_id);
+        eprintln!("Inserted book {:?} ({})", output.book.slug, book_id);
+        book_id
+    };
 
-    // 2. Reference systems — reuse source book's systems in translation mode, otherwise insert new
+    // 2. Reference systems — translation reuses the source book's systems;
+    // a fresh source-language book inserts its own; a reconcile loads the ones
+    // already in place.
     let mut system_ids: HashMap<String, Uuid> = HashMap::new();
 
     if let Some(source_id) = source_book_id {
@@ -195,6 +285,16 @@ pub async fn run(
             "Reusing {} reference systems from source book",
             system_ids.len()
         );
+    } else if existing_book_id.is_some() {
+        let rows: Vec<(Uuid, String)> =
+            sqlx::query_as("SELECT id, slug FROM reference_systems WHERE book_id = $1")
+                .bind(book_id)
+                .fetch_all(&mut *tx)
+                .await?;
+        for (id, slug) in rows {
+            system_ids.insert(slug, id);
+        }
+        eprintln!("Loaded {} existing reference systems", system_ids.len());
     } else {
         for sys in &output.reference_systems {
             let sys_id: Uuid = sqlx::query_scalar(
@@ -273,6 +373,36 @@ pub async fn run(
             source_sentence_map.len(),
             fn_sent_rows.len()
         );
+    }
+
+    // Translation must stay structurally locked to its source (covers both the
+    // fresh-insert and reconcile paths below).
+    if is_translation {
+        validate_translation_parity(&output, &source_sentence_map, &source_fn_sentence_counts)?;
+    }
+
+    // Reconcile path: the book exists, so update it in place from `output`
+    // rather than running the fresh-insert loop below.
+    if let Some(eid) = existing_book_id {
+        let report = crate::reconcile::reconcile(
+            &mut tx,
+            eid,
+            &output,
+            is_translation,
+            &source_sentence_map,
+            &source_fn_sentence_map,
+            &system_ids,
+            force,
+        )
+        .await?;
+        if dry_run {
+            tx.rollback().await?;
+        } else {
+            tx.commit().await?;
+            purge_cache(&["/api/library", "/api/books", "/books"]).await;
+        }
+        report.print(dry_run);
+        return Ok(());
     }
 
     // 4. Insert toc_nodes, content blocks, sentences, page markers, footnotes
@@ -356,9 +486,12 @@ pub async fn run(
                     None
                 };
 
+                let natural_key =
+                    format!("{}/b{}/s{}", node.source_ref, block.position, sent.position);
+
                 let sentence_id: Uuid = sqlx::query_scalar(
-                    "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, segment, source_sentence_start_id, text, html, original_text, original_html)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                    "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, segment, source_sentence_start_id, text, html, original_text, original_html, natural_key)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                      RETURNING id",
                 )
                 .bind(book_id)
@@ -372,6 +505,7 @@ pub async fn run(
                 .bind(&sent.html)
                 .bind(&sent.original_text)
                 .bind(&sent.original_html)
+                .bind(&natural_key)
                 .fetch_one(&mut *tx)
                 .await?;
 
@@ -413,23 +547,8 @@ pub async fn run(
 
                     footnote_count += 1;
 
-                    // Verify footnote sentence parity in translation mode
-                    if is_translation {
-                        let en_count = footnote.sentences.len() as i16;
-                        let de_count = source_fn_sentence_counts
-                            .get(&footnote.number)
-                            .copied()
-                            .ok_or_else(|| {
-                                format!("Source footnote #{} not found", footnote.number)
-                            })?;
-                        if en_count != de_count {
-                            return Err(format!(
-                                "Footnote #{} sentence count mismatch: source has {}, translation has {}",
-                                footnote.number, de_count, en_count
-                            )
-                            .into());
-                        }
-                    }
+                    // Footnote/sentence parity with the source edition is
+                    // validated up front by validate_translation_parity.
 
                     // Insert footnote sentences (block_id NULL, footnote_id set)
                     for fn_sent in &footnote.sentences {
@@ -451,9 +570,14 @@ pub async fn run(
                         let fn_sent_num = footnote_sentence_number;
                         footnote_sentence_number += 1;
 
+                        let fn_natural_key = format!(
+                            "{}/fn{}/s{}",
+                            node.source_ref, footnote.number, fn_sent.position
+                        );
+
                         sqlx::query(
-                            "INSERT INTO sentences (book_id, node_id, footnote_id, position, sentence_number, source_sentence_start_id, text, html, original_text, original_html)
-                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+                            "INSERT INTO sentences (book_id, node_id, footnote_id, position, sentence_number, source_sentence_start_id, text, html, original_text, original_html, natural_key)
+                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
                         )
                         .bind(book_id)
                         .bind(node_id)
@@ -465,6 +589,7 @@ pub async fn run(
                         .bind(&fn_sent.html)
                         .bind(&fn_sent.original_text)
                         .bind(&fn_sent.original_html)
+                        .bind(&fn_natural_key)
                         .execute(&mut *tx)
                         .await?;
 
@@ -476,12 +601,17 @@ pub async fn run(
         }
     }
 
-    tx.commit().await?;
+    if dry_run {
+        tx.rollback().await?;
+        eprintln!("(dry-run: nothing committed)");
+    } else {
+        tx.commit().await?;
 
-    // Drop stale listing entries so the new book shows up immediately
-    // rather than waiting out the TTL. No-op if CACHE_PURGE_URL is
-    // unset (local dev without a proxy).
-    purge_cache(&["/api/library", "/api/books", "/books"]).await;
+        // Drop stale listing entries so the new book shows up immediately
+        // rather than waiting out the TTL. No-op if CACHE_PURGE_URL is
+        // unset (local dev without a proxy).
+        purge_cache(&["/api/library", "/api/books", "/books"]).await;
+    }
 
     eprintln!();
     eprintln!("=== Import complete ===");
