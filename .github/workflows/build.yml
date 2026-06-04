@@ -71,6 +71,8 @@ jobs:
                         - '.github/workflows/build.yml'
                       ingest_bible:
                         - 'packages/bible_to_db/**'
+                        - 'packages/reconcile/**'
+                        - 'packages/common/**'
                         - 'jobs/ingest-bible/**'
                         - 'Cargo.toml'
                         - 'Cargo.lock'
@@ -78,6 +80,7 @@ jobs:
                       ingest_kant1:
                         - 'packages/kant1_*/**'
                         - 'packages/common/**'
+                        - 'packages/reconcile/**'
                         - 'jobs/ingest-kant1/**'
                         - 'Cargo.toml'
                         - 'Cargo.lock'
