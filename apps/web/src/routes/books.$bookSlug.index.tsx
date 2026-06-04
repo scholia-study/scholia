@@ -67,6 +67,7 @@ function BookPage() {
                         toc={toc}
                         bookSlug={bookSlug}
                         activeNodeSlug={undefined}
+                        scrollable={false}
                     />
                 ) : null}
             </div>

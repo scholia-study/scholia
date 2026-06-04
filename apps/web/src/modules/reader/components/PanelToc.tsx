@@ -26,11 +26,39 @@ function findAncestorPath(
     return result;
 }
 
+/** Slugs of every node with children — the set "expand all" opens. */
+function collectCollapsibleSlugs(nodes: TocNodeResponse[]): string[] {
+    const slugs: string[] = [];
+    function walk(node: TocNodeResponse) {
+        if (node.children.length > 0) slugs.push(node.slug);
+        for (const child of node.children) walk(child);
+    }
+    for (const node of nodes) walk(node);
+    return slugs;
+}
+
+/** Initial open set: nodes with children in the top two levels. */
+function seedExpanded(nodes: TocNodeResponse[]): Set<string> {
+    const set = new Set<string>();
+    function walk(node: TocNodeResponse) {
+        if (node.children.length > 0 && node.depth < 2) set.add(node.slug);
+        for (const child of node.children) walk(child);
+    }
+    for (const node of nodes) walk(node);
+    return set;
+}
+
 interface PanelTocProps {
     toc: TocNodeResponse[];
     bookSlug: string;
     activeNodeSlug: string | undefined;
     onNavigate?: (nodeSlug: string) => void;
+    /**
+     * Whether the nav owns its own scroll (sidebar panel). When false
+     * (full-page TOC route) the nav grows with the page and the sticky
+     * toggle follows the page scroll instead of a trapped inner scroll.
+     */
+    scrollable?: boolean;
 }
 
 export function PanelToc({
@@ -38,6 +66,7 @@ export function PanelToc({
     bookSlug,
     activeNodeSlug,
     onNavigate,
+    scrollable = true,
 }: PanelTocProps) {
     // Bible-shape: top-level nodes are bibliographic anchors (source_id
     // set on each — e.g. Genesis, John inside a Bible). Switch to the
@@ -62,6 +91,7 @@ export function PanelToc({
             bookSlug={bookSlug}
             activeNodeSlug={activeNodeSlug}
             onNavigate={onNavigate}
+            scrollable={scrollable}
         />
     );
 }
@@ -71,29 +101,58 @@ function DefaultToc({
     bookSlug,
     activeNodeSlug,
     onNavigate,
+    scrollable = true,
 }: PanelTocProps) {
-    const prevAncestorsRef = useRef(new Set<string>());
-    const expandedAncestors = useMemo(() => {
-        const next = activeNodeSlug
-            ? findAncestorPath(toc, activeNodeSlug)
-            : new Set<string>();
-        const prev = prevAncestorsRef.current;
-        if (next.size === prev.size) {
-            let same = true;
-            for (const id of next) {
-                if (!prev.has(id)) {
-                    same = false;
-                    break;
+    const collapsibleSlugs = useMemo(() => collectCollapsibleSlugs(toc), [toc]);
+    const [expanded, setExpanded] = useState(() => seedExpanded(toc));
+
+    // Follow the reader: opening the active node's ancestors (without
+    // collapsing anything the user opened manually).
+    useEffect(() => {
+        if (!activeNodeSlug) return;
+        const ancestors = findAncestorPath(toc, activeNodeSlug);
+        if (ancestors.size === 0) return;
+        setExpanded((prev) => {
+            let changed = false;
+            const next = new Set(prev);
+            for (const slug of ancestors) {
+                if (!next.has(slug)) {
+                    next.add(slug);
+                    changed = true;
                 }
             }
-            if (same) return prev;
-        }
-        prevAncestorsRef.current = next;
-        return next;
+            return changed ? next : prev;
+        });
     }, [toc, activeNodeSlug]);
 
+    const toggle = (slug: string) =>
+        setExpanded((prev) => {
+            const next = new Set(prev);
+            if (next.has(slug)) next.delete(slug);
+            else next.add(slug);
+            return next;
+        });
+
+    const allExpanded =
+        collapsibleSlugs.length > 0 &&
+        collapsibleSlugs.every((slug) => expanded.has(slug));
+
+    const toggleAll = () =>
+        setExpanded(allExpanded ? new Set() : new Set(collapsibleSlugs));
+
     return (
-        <nav className="p-2 overflow-y-auto flex-1">
+        <nav className={`p-2 flex-1 ${scrollable ? "overflow-y-auto" : ""}`}>
+            {collapsibleSlugs.length > 1 && (
+                <div className="sticky -top-2 z-10 flex justify-end -mx-2 -mt-2 mb-1 px-2 py-2 backdrop-blur-sm">
+                    <button
+                        type="button"
+                        onClick={toggleAll}
+                        className="text-xs text-stone-500 hover:text-stone-900 transition-colors"
+                    >
+                        {allExpanded ? "Collapse all" : "Expand all"}
+                    </button>
+                </div>
+            )}
             <ul>
                 {toc.map((node) => (
                     <TocItem
@@ -102,7 +161,8 @@ function DefaultToc({
                         bookSlug={bookSlug}
                         activeSlug={activeNodeSlug}
                         onNavigate={onNavigate}
-                        expandedAncestors={expandedAncestors}
+                        expanded={expanded}
+                        onToggle={toggle}
                     />
                 ))}
             </ul>
@@ -272,23 +332,19 @@ function TocItem({
     bookSlug,
     activeSlug,
     onNavigate,
-    expandedAncestors,
+    expanded,
+    onToggle,
 }: {
     node: TocNodeResponse;
     bookSlug: string;
     activeSlug: string | undefined;
     onNavigate?: (nodeSlug: string) => void;
-    expandedAncestors: Set<string>;
+    expanded: Set<string>;
+    onToggle: (slug: string) => void;
 }) {
-    const [expanded, setExpanded] = useState(node.depth < 2);
     const hasChildren = node.children.length > 0;
     const isActive = node.slug === activeSlug;
-
-    useEffect(() => {
-        if (expandedAncestors.has(node.slug)) {
-            setExpanded(true);
-        }
-    }, [expandedAncestors, node.slug]);
+    const isExpanded = expanded.has(node.slug);
 
     return (
         <li>
@@ -300,10 +356,10 @@ function TocItem({
             >
                 {hasChildren ? (
                     <button
-                        onClick={() => setExpanded(!expanded)}
+                        onClick={() => onToggle(node.slug)}
                         className="w-4 h-4 mt-0.5 flex items-center justify-center text-stone-400 shrink-0"
                     >
-                        {expanded ? "\u25BE" : "\u25B8"}
+                        {isExpanded ? "\u25BE" : "\u25B8"}
                     </button>
                 ) : (
                     <span className="w-4 mt-0.5 shrink-0" />
@@ -327,13 +383,13 @@ function TocItem({
                 ) : (
                     <span
                         className="flex-1 cursor-pointer"
-                        onClick={() => hasChildren && setExpanded(!expanded)}
+                        onClick={() => hasChildren && onToggle(node.slug)}
                     >
                         {node.label_html ? parse(node.label_html) : node.label}
                     </span>
                 )}
             </div>
-            {hasChildren && expanded && (
+            {hasChildren && isExpanded && (
                 <ul>
                     {node.children.map((child) => (
                         <TocItem
@@ -342,7 +398,8 @@ function TocItem({
                             bookSlug={bookSlug}
                             activeSlug={activeSlug}
                             onNavigate={onNavigate}
-                            expandedAncestors={expandedAncestors}
+                            expanded={expanded}
+                            onToggle={onToggle}
                         />
                     ))}
                 </ul>
