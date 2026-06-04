@@ -1,0 +1,60 @@
+# Dev-cluster lockdown fragment (envsubst template).
+#
+# Mounted into the proxy at /etc/nginx/conf.d/security/lockdown.conf and
+# picked up by `include /etc/nginx/conf.d/security/*.conf;` in the base
+# default.conf template. This file is a TEMPLATE: the `render-gate`
+# initContainer runs envsubst over it at pod start so the secret token
+# (from the SOPS-encrypted proxy-dev-gate Secret) never lives in the
+# plaintext ConfigMap. Only the DEV_GATE_TOKEN var is substituted —
+# nginx's own cookie/arg variables are left untouched.
+
+add_header X-Robots-Tag "noindex, nofollow, noarchive" always;
+
+# Gate every request on the dev_gate cookie via an internal auth subrequest.
+# Inherits to all server-scope locations (like auth_basic did); exempt
+# locations opt out with `auth_request off;`.
+auth_request /__gate_check;
+error_page 403 = @gate_denied;
+
+location = /__gate_check {
+    internal;
+    auth_request off;                       # never gate the gate (no recursion)
+    if ($cookie_dev_gate = "${DEV_GATE_TOKEN}") {
+        return 200;
+    }
+    return 403;
+}
+
+# One-time unlock. Hit /__unlock?key=<secret> once per browser; sets the
+# cookie and lands you on /.
+location = /__unlock {
+    auth_request off;
+    access_log off;                         # keep the secret out of access logs
+    if ($arg_key = "${DEV_GATE_TOKEN}") {
+        add_header Set-Cookie "dev_gate=${DEV_GATE_TOKEN}; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax" always;
+        return 302 /;
+    }
+    return 403;
+}
+
+location @gate_denied {
+    auth_request off;
+    default_type text/html;
+    add_header X-Robots-Tag "noindex, nofollow, noarchive" always;
+    return 403 "<!doctype html><meta name=\"robots\" content=\"noindex\"><title>Scholia \xE2\x80\x94 restricted</title><h1>Restricted</h1><p>This environment is not public.</p>";
+}
+
+location = /robots.txt {
+    auth_request off;
+    add_header Content-Type "text/plain"                       always;
+    add_header X-Robots-Tag "noindex, nofollow, noarchive"     always;
+    return 200 "User-agent: *\nDisallow: /\n";
+}
+
+location ^~ /api/webhooks/ {
+    auth_request off;
+    proxy_pass http://rust_api;
+    proxy_cache off;
+    add_header X-Cache-Status $upstream_cache_status           always;
+    add_header X-Robots-Tag   "noindex, nofollow, noarchive"   always;
+}

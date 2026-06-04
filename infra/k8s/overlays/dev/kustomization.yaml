@@ -3,15 +3,17 @@
 # Layers dev-specific behavior over the prod-neutral base:
 #   - Ingress hostname patched to dev.scholia.study + flipped to
 #     letsencrypt-prod cluster-issuer.
-#   - Proxy gets a "security fragment" ConfigMap (auth_basic, robots
-#     noindex header, Stripe-webhook carve-out) mounted into
-#     /etc/nginx/conf.d/security/, plus the htpasswd Secret mounted
-#     into /etc/nginx/auth/. Base proxy stays public + prod-ready;
+#   - Proxy gets a "security fragment" ConfigMap (cookie gate, robots
+#     noindex header, Stripe-webhook carve-out) shipped as an envsubst
+#     template; a render-gate initContainer fills in the gate token from
+#     the proxy-dev-gate Secret and the proxy mounts the result into
+#     /etc/nginx/conf.d/security/. Base proxy stays public + prod-ready;
 #     dev opts in to lockdown via this patch.
 #
 # Secrets in secrets/ are NOT referenced here — they're SOPS-encrypted
 # and applied separately via `sops -d <file> | kubectl apply -f -`
-# before `kubectl apply -k overlays/dev/`.
+# before `kubectl apply -k overlays/dev/`. The gate token lives in
+# secrets/proxy-dev-gate.yaml under key `token`.
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -24,7 +26,7 @@ resources:
 configMapGenerator:
   - name: proxy-security
     files:
-      - lockdown.conf=proxy-security.conf
+      - lockdown.conf.template=proxy-security.conf.template
 
 patches:
   - path: ingress-patch.yaml

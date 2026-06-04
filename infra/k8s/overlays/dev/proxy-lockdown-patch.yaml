@@ -1,14 +1,18 @@
-# Dev-only proxy patch: mount the security fragment (auth + robots +
-# webhook carve-out) into /etc/nginx/conf.d/security/ and the htpasswd
-# file into /etc/nginx/auth/.
+# Dev-only proxy patch: render the security fragment (cookie gate + robots
+# + webhook carve-out) and mount it into /etc/nginx/conf.d/security/.
 #
-# Strategic merge merges by name on list items (volumes, volumeMounts),
-# so this APPENDS to the existing `cache` volume rather than replacing
-# the list.
+# The fragment is an envsubst template (proxy-security.conf.template) so the
+# gate token stays in the SOPS-encrypted proxy-dev-gate Secret instead of the
+# plaintext ConfigMap. The official nginx entrypoint only envsubst's its own
+# template dir, so a `render-gate` initContainer does the substitution into a
+# shared emptyDir that the proxy then mounts read-only.
 #
-# The ConfigMap name is `proxy-security`, but Kustomize appends a
-# content hash to the generated name; the configMap.name reference
-# below gets rewritten to match at apply time.
+# Strategic merge merges by name on list items (initContainers, containers,
+# volumes, volumeMounts), so this APPENDS rather than replacing.
+#
+# The ConfigMap name is `proxy-security`, but Kustomize appends a content
+# hash to the generated name; the configMap.name reference below gets
+# rewritten to match at apply time.
 
 apiVersion: apps/v1
 kind: Deployment
@@ -17,22 +21,34 @@ metadata:
 spec:
     template:
         spec:
+            initContainers:
+                - name: render-gate
+                  image: nginx:1.27-alpine
+                  command:
+                      - sh
+                      - -c
+                      - envsubst '$DEV_GATE_TOKEN' < /tpl/lockdown.conf.template > /out/lockdown.conf
+                  env:
+                      - name: DEV_GATE_TOKEN
+                        valueFrom:
+                            secretKeyRef:
+                                name: proxy-dev-gate
+                                key: token
+                  volumeMounts:
+                      - name: security-template
+                        mountPath: /tpl
+                        readOnly: true
+                      - name: security-rendered
+                        mountPath: /out
             containers:
                 - name: proxy
                   volumeMounts:
-                      - name: security-fragment
+                      - name: security-rendered
                         mountPath: /etc/nginx/conf.d/security
                         readOnly: true
-                      - name: htpasswd
-                        mountPath: /etc/nginx/auth
-                        readOnly: true
             volumes:
-                - name: security-fragment
+                - name: security-template
                   configMap:
                       name: proxy-security
-                - name: htpasswd
-                  secret:
-                      secretName: proxy-htpasswd
-                      items:
-                          - key: htpasswd
-                            path: htpasswd
+                - name: security-rendered
+                  emptyDir: {}
