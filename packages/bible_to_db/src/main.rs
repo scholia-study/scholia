@@ -31,6 +31,13 @@ struct Cli {
     /// Permit deleting a sentence that still has quotations anchored to it.
     #[arg(long)]
     force: bool,
+
+    /// Bypass content-hash checks: treat every chapter as changed, force-rewrite
+    /// every sentence (bumping updated_at), always renumber, and rewrite all
+    /// stored hashes. The escape hatch when hashes may be stale or after a
+    /// hash-format change.
+    #[arg(long)]
+    full_rewrite: bool,
 }
 
 /// Build sqlx connect options. CLI `--database-url` wins; otherwise
@@ -539,6 +546,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             translation,
             &cli.assets_dir,
             cli.force,
+            cli.full_rewrite,
         )
         .await?;
         if cli.dry_run {
@@ -667,6 +675,9 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         *so
     };
     let mut totals = Totals::default();
+    // Chapter content hashes accumulate as we insert; the root is stored on
+    // `books` after the loop so the first reconcile starts in the fast state.
+    let mut node_hashes: Vec<String> = Vec::new();
 
     for bb in BIBLE_BOOKS {
         // Q5/Q9 import guard: enforce slug agreement with the canonical
@@ -838,6 +849,8 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             // increments once per grammatical sentence, regardless of which
             // verse the sentence belongs to.
             let mut block_position: i16 = 0;
+            // (text, html, verse_ref) per sentence, for this chapter's content hash.
+            let mut chapter_sentences: Vec<(String, String, String)> = Vec::new();
             // Track the running paragraph text and per-sentence char offsets
             // so verse markers can pinpoint the start of their verse inside
             // the joined paragraph if a renderer ever uses block.text.
@@ -862,6 +875,11 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 // the reconcile unit, so the natural key is verse-scoped.
                 for (idx_in_verse, sentence_text) in sentences.iter().enumerate() {
                     let html = html_escape(sentence_text);
+                    chapter_sentences.push((
+                        sentence_text.clone(),
+                        html.clone(),
+                        format!("{}:{}", chapter_num, verse.verse),
+                    ));
                     let natural_key =
                         format!("{}:{}/s{}", chapter_source_ref, verse.verse, idx_in_verse);
 
@@ -918,8 +936,25 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .bind(block_id)
                 .execute(&mut *tx)
                 .await?;
+
+            // Store this chapter's content hash so the first reconcile can diff it.
+            let chapter_hash =
+                reconcile::chapter_node_hash(chapter_num, &para_text, &chapter_sentences);
+            sqlx::query("UPDATE toc_nodes SET content_hash = $1 WHERE id = $2")
+                .bind(&chapter_hash)
+                .bind(chapter_node_id)
+                .execute(&mut *tx)
+                .await?;
+            node_hashes.push(chapter_hash);
         }
     }
+
+    // Store the book root hash so the first reconcile can short-circuit.
+    sqlx::query("UPDATE books SET content_hash = $2 WHERE id = $1")
+        .bind(book_id)
+        .bind(reconcile::root_of(&node_hashes))
+        .execute(&mut *tx)
+        .await?;
 
     let alignment_rows = seed_cross_translation_alignments(
         &mut tx,

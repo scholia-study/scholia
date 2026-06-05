@@ -6,6 +6,9 @@ use sqlx::postgres::PgConnectOptions;
 use uuid::Uuid;
 
 use kant1_md_to_struct::model::Output;
+use reconcile::{node_hash, root_hash};
+
+use crate::reconcile::node_content;
 
 /// Build sqlx connect options. CLI `--database-url` wins; otherwise
 /// prefer discrete `POSTGRES_*` env vars (k8s Secret pattern — avoids
@@ -134,6 +137,7 @@ pub async fn run(
     source_book_slug: Option<String>,
     dry_run: bool,
     force: bool,
+    full_rewrite: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
@@ -393,6 +397,7 @@ pub async fn run(
             &source_fn_sentence_map,
             &system_ids,
             force,
+            full_rewrite,
         )
         .await?;
         if dry_run {
@@ -414,8 +419,13 @@ pub async fn run(
     let mut footnote_count = 0u32;
     let mut footnote_sentence_count = 0u32;
     let mut footnote_sentence_number = 1i32;
+    // Node content hashes accumulate as we insert; the root is stored on `books`
+    // after the loop, so the first *reconcile* is already in the fast state.
+    let mut node_hashes: Vec<String> = Vec::new();
 
     for node in &output.toc_nodes {
+        let content_hash = node_hash(&node_content(node));
+        node_hashes.push(content_hash.clone());
         let parent_id: Option<Uuid> = node
             .parent_source_ref
             .as_ref()
@@ -435,8 +445,8 @@ pub async fn run(
         };
 
         let node_id: Uuid = sqlx::query_scalar(
-            "INSERT INTO toc_nodes (book_id, parent_id, source_node_id, source_ref, slug, path, sort_order, depth, label, label_html)
-             VALUES ($1, $2, $3, $4, $5, $6::ltree, $7, $8, $9, $10)
+            "INSERT INTO toc_nodes (book_id, parent_id, source_node_id, source_ref, slug, path, sort_order, depth, label, label_html, content_hash)
+             VALUES ($1, $2, $3, $4, $5, $6::ltree, $7, $8, $9, $10, $11)
              RETURNING id",
         )
         .bind(book_id)
@@ -449,6 +459,7 @@ pub async fn run(
         .bind(node.depth)
         .bind(&node.label)
         .bind(label_html)
+        .bind(&content_hash)
         .fetch_one(&mut *tx)
         .await?;
 
@@ -600,6 +611,13 @@ pub async fn run(
             }
         }
     }
+
+    // Store the book root hash so the first reconcile can short-circuit.
+    sqlx::query("UPDATE books SET content_hash = $2 WHERE id = $1")
+        .bind(book_id)
+        .bind(root_hash(&node_hashes))
+        .execute(&mut *tx)
+        .await?;
 
     if dry_run {
         tx.rollback().await?;

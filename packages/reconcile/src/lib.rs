@@ -13,6 +13,11 @@
 
 pub mod align;
 pub mod deps;
+pub mod hash;
 
 pub use align::{BlockPlan, Existing, plan_block};
 pub use deps::{extend_anchors_to, migrate_dependents, sentence_has_dependents};
+pub use hash::{
+    BlockContent, FootnoteContent, MarkerContent, NodeContent, SentenceContent, node_hash,
+    root_hash,
+};

@@ -26,6 +26,13 @@ struct Cli {
     /// to it (otherwise such a delete aborts the run).
     #[arg(long)]
     force: bool,
+
+    /// Bypass content-hash checks: treat every node as changed, force-rewrite
+    /// every sentence (bumping updated_at), always renumber, and rewrite all
+    /// stored hashes. The escape hatch when hashes may be stale or after a
+    /// hash-format change.
+    #[arg(long)]
+    full_rewrite: bool,
 }
 
 fn main() {
@@ -39,6 +46,7 @@ fn main() {
             cli.source_book_slug,
             cli.dry_run,
             cli.force,
+            cli.full_rewrite,
         )
         .await
         {
