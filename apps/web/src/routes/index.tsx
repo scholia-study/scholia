@@ -10,6 +10,7 @@ import type {
     LibraryVersion,
     LibraryWork,
 } from "../api/model";
+import { DevServerNotice } from "../components/DevServerNotice";
 import { InfoLinks } from "../components/InfoLinks";
 
 export const Route = createFileRoute("/")({
@@ -29,6 +30,7 @@ function IndexPage() {
                 <div className="flex-1 min-w-0 px-6 md:pl-20 md:pr-8 py-10 md:pt-24 md:pb-14">
                     <div className="max-w-3xl mx-auto">
                         <h1 className="sr-only">Library</h1>
+                        <DevServerNotice />
                         {!isLoading &&
                             library &&
                             library.groups.length === 0 && (
