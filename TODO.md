@@ -35,8 +35,6 @@
 - update READMEs
 
 ## 🧪 TO TEST
-- 🚨 test kant1 pipeline after reorganizing
-  - test segments parsing in Amphiboly
 - paid to free tier, check over-quota items are no longer editable
 - test input caps
 - test editing of sources and persons
