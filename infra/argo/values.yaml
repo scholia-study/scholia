@@ -51,17 +51,19 @@ repoServer:
   # --- KSOPS wiring -------------------------------------------------
   initContainers:
     - name: install-ksops
-      # Pinned to the current ksops release (checked 2026-06-07); the
-      # image ships matching `ksops` and `kustomize` binaries. Releases:
+      # Pinned to the current ksops release. The v4.5.1 image is
+      # distroless — no /bin/sh — so the old `sh -c "mv ksops ..."` recipe
+      # fails with StartError. The binary's own `install` subcommand
+      # copies itself, and kustomize too via --with-kustomize, into the
+      # mounted /custom-tools emptyDir. Verified against the v4.5.1 image
+      # 2026-06-08. Releases:
       #   https://github.com/viaduct-ai/kustomize-sops/releases
       image: viaductoss/ksops:v4.5.1
-      command: ["/bin/sh", "-c"]
-      args:
-        - |
-          echo "Installing KSOPS + kustomize into shared volume...";
-          mv ksops /custom-tools/;
-          mv $(which kustomize) /custom-tools/;
-          echo "Done.";
+      command:
+        - /usr/local/bin/ksops
+        - install
+        - --with-kustomize
+        - /custom-tools
       volumeMounts:
         - mountPath: /custom-tools
           name: custom-tools
