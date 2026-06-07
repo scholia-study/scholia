@@ -168,3 +168,66 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   cache-from: type=gha,scope=${{ matrix.service }}
                   cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+    # GitOps write-back: pin the dev overlay's image tags to the
+    # immutable `main-<sha>` tags this run just pushed, so ArgoCD sees a
+    # git diff and rolls the deployment. Only bumps services that were
+    # actually built (the changes matrix) — bumping an unbuilt service
+    # would point it at a tag that was never pushed (ImagePullBackOff).
+    # Only api/web/proxy live in the overlay; the ingest jobs aren't
+    # Argo-managed, so they're skipped.
+    #
+    # Pushes directly to main using the PAT secret (on the branch-
+    # protection bypass list). The default GITHUB_TOKEN can't bypass
+    # protection. Loop-safety: this commit touches only infra/**, which
+    # isn't in this workflow's `paths:` filter, so it won't retrigger a
+    # build — and `[skip ci]` is belt-and-suspenders on top.
+    bump:
+        name: Bump dev image tags
+        needs: [changes, build]
+        if: needs.changes.outputs.matrix != '[]'
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  ref: main
+                  # PAT (not GITHUB_TOKEN) so the push bypasses branch
+                  # protection. checkout persists it as the push cred.
+                  token: ${{ secrets.PAT }}
+
+            - name: Rewrite overlay image tags
+              env:
+                  MATRIX: ${{ needs.changes.outputs.matrix }}
+                  SHA: ${{ github.sha }}
+              run: |
+                  # Must match docker/metadata-action's
+                  # `type=sha,format=short` tag (first 7 of the sha).
+                  TAG="main-${SHA:0:7}"
+                  FILE=infra/k8s/overlays/dev/kustomization.yaml
+                  for svc in $(echo "$MATRIX" | jq -r '.[].service'); do
+                      case "$svc" in
+                          api|web|proxy)
+                              img="ghcr.io/scholia-study/scholia-$svc"
+                              yq -i "(.images[] | select(.name == \"$img\").newTag) = \"$TAG\"" "$FILE"
+                              echo "bumped $img -> $TAG"
+                              ;;
+                          *)
+                              echo "skip $svc (not Argo-managed)"
+                              ;;
+                      esac
+                  done
+
+            - name: Commit + push if changed
+              env:
+                  SHA: ${{ github.sha }}
+              run: |
+                  FILE=infra/k8s/overlays/dev/kustomization.yaml
+                  if git diff --quiet -- "$FILE"; then
+                      echo "no tag changes to commit"
+                      exit 0
+                  fi
+                  git config user.name "scholia-ci[bot]"
+                  git config user.email "ci@scholia.study"
+                  git add "$FILE"
+                  git commit -m "ci: bump dev image tags to main-${SHA:0:7} [skip ci]"
+                  git push origin HEAD:main

@@ -1,0 +1,39 @@
+# ArgoCD Application for the dev cluster.
+#
+# Registered once at bootstrap: `kubectl apply -f infra/argo/application-dev.yaml`
+# (over the tailnet). After that Argo watches git and self-manages;
+# re-apply only when THIS spec changes.
+#
+# Single Application (not app-of-apps) — we deploy exactly one app. It
+# points at the dev overlay; Argo runs `kustomize build` there (with the
+# KSOPS plugin enabled on the repo-server) and keeps the scholia
+# namespace matching the result: api, web, proxy, postgres, ingress, and
+# the SOPS-decrypted Secrets.
+#
+# NOT covered (by design): the ingest Jobs (run on-demand via kubectl)
+# and cert-manager + its ClusterIssuers (one-time manual install). Those
+# live outside overlays/dev so this Application never sees them.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: scholia-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/scholia-study/scholia.git
+    targetRevision: main
+    path: infra/k8s/overlays/dev
+  destination:
+    # This same cluster — one self-contained Argo per cluster.
+    server: https://kubernetes.default.svc
+    namespace: scholia
+  syncPolicy:
+    automated:
+      prune: true # delete resources removed from git
+      selfHeal: true # revert out-of-band kubectl edits back to git
+    syncOptions:
+      # base/namespace.yaml already declares the scholia namespace, so
+      # Argo doesn't need to create it.
+      - CreateNamespace=false

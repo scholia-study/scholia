@@ -29,7 +29,6 @@ spec:
       containers:
         - name: web
           image: ghcr.io/scholia-study/scholia-web:main
-          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3000

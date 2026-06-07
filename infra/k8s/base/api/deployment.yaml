@@ -12,11 +12,11 @@
 # etc.) and is referenced via envFrom — one place to rotate non-DB
 # credentials.
 #
-# Image tracks the mutable `:main` tag — every push to main rebuilds
-# and re-pushes it. `imagePullPolicy: Always` plus a `kubectl rollout
-# restart deployment/scholia-api` is the redeploy verb. Pin to an
-# immutable `:main-<sha>` tag if a deploy needs to be reproducible
-# (e.g. correlating a prod incident to a specific build).
+# Image is pinned to an immutable `:main-<sha>` tag by the overlay's
+# `images:` transformer (CI rewrites it on every build; Argo syncs the
+# diff). The base names the `:main` tag only as a default; deploys never
+# run off it. No `imagePullPolicy` — immutable tags default to
+# IfNotPresent, so a given sha is pulled once and cached.
 
 apiVersion: apps/v1
 kind: Deployment
@@ -39,7 +39,6 @@ spec:
       initContainers:
         - name: migrate
           image: ghcr.io/scholia-study/scholia-api:main
-          imagePullPolicy: Always
           command: ["api"]
           args: ["migrate"]
           env:
@@ -65,7 +64,6 @@ spec:
       containers:
         - name: api
           image: ghcr.io/scholia-study/scholia-api:main
-          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 4000

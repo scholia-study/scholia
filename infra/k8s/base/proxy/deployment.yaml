@@ -36,7 +36,6 @@ spec:
       containers:
         - name: proxy
           image: ghcr.io/scholia-study/scholia-proxy:main
-          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 80

@@ -1,0 +1,87 @@
+# Helm values for installing ArgoCD itself (NOT synced by Argo — applied
+# manually at bootstrap; see README.md). Chart: argo/argo-cd.
+#
+#   helm repo add argo https://argoproj.github.io/argo-helm
+#   helm upgrade --install argocd argo/argo-cd \
+#     -n argocd --create-namespace \
+#     --version 9.5.20 -f infra/argo/values.yaml
+#
+# Chart 9.5.20 = ArgoCD v3.4.3 (checked 2026-06-07). Re-check
+# `helm search repo argo/argo-cd --versions` before a fresh install and
+# bump if a newer stable has landed. Keeping the pin on the CLI rather
+# than here means the runbook records exactly what ran.
+#
+# The one non-default thing here is KSOPS on the repo-server, so that
+# `kustomize build` can decrypt the SOPS-encrypted secrets in
+# overlays/dev/secrets/. Recipe: an init container drops the `ksops` and
+# `kustomize` binaries into a shared volume, the repo-server mounts them
+# onto PATH, the age key is mounted from the `sops-age` Secret (created
+# manually at bootstrap), and kustomize is told to allow exec plugins.
+
+global:
+  # Single small node (CX22) — one of each controller, no HA.
+  revisionHistoryLimit: 3
+
+# Trim components we don't use to keep the footprint small on a 4GB node.
+dex:
+  enabled: false # no external SSO; local admin login only
+notifications:
+  enabled: false
+applicationSet:
+  enabled: false # single Application, no generators
+
+configs:
+  cm:
+    # Allow the KSOPS exec KRM function during `kustomize build`. Without
+    # these flags the ksops generator in overlays/dev is ignored and the
+    # Secrets never materialize.
+    kustomize.buildOptions: --enable-alpha-plugins --enable-exec
+  params:
+    # argocd-server behind a port-forward terminates its own TLS; running
+    # insecure avoids redirect/cert friction over `kubectl port-forward`.
+    server.insecure: true
+
+server:
+  # No ingress for Argo — reached only via `kubectl port-forward` over
+  # the tailnet (see README). ClusterIP keeps it off the public edge.
+  service:
+    type: ClusterIP
+
+repoServer:
+  # --- KSOPS wiring -------------------------------------------------
+  initContainers:
+    - name: install-ksops
+      # Pinned to the current ksops release (checked 2026-06-07); the
+      # image ships matching `ksops` and `kustomize` binaries. Releases:
+      #   https://github.com/viaduct-ai/kustomize-sops/releases
+      image: viaductoss/ksops:v4.5.1
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          echo "Installing KSOPS + kustomize into shared volume...";
+          mv ksops /custom-tools/;
+          mv $(which kustomize) /custom-tools/;
+          echo "Done.";
+      volumeMounts:
+        - mountPath: /custom-tools
+          name: custom-tools
+  volumes:
+    - name: custom-tools
+      emptyDir: {}
+    - name: sops-age
+      secret:
+        secretName: sops-age # created manually at bootstrap (see README)
+  volumeMounts:
+    # Override the chart's bundled kustomize with the KSOPS-enabled one,
+    # and put the ksops binary on PATH.
+    - mountPath: /usr/local/bin/kustomize
+      name: custom-tools
+      subPath: kustomize
+    - mountPath: /usr/local/bin/ksops
+      name: custom-tools
+      subPath: ksops
+    - mountPath: /home/argocd/.config/sops/age
+      name: sops-age
+  env:
+    - name: SOPS_AGE_KEY_FILE
+      value: /home/argocd/.config/sops/age/keys.txt
