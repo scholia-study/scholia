@@ -354,19 +354,29 @@ The DB is the obvious thing. **Don't forget:**
 
 ### 4.2 Manifests: Kustomize → ArgoCD
 
-**v0 (initial bringup):**
+> **Status (2026-06-08): ArgoCD is LIVE for dev.** The manual
+> `kubectl apply -k` path below is **superseded** — dev now deploys via
+> GitOps. Canonical docs: `PLAN_ARGOCD.md` (decisions) and
+> `infra/argo/README.md` (bootstrap + day-to-day). Prod will follow the
+> same pattern when its cluster exists.
+
+**v0 (initial bringup — historical):**
 
 - Plain Kustomize with `base/` + `overlays/{dev,prod}/`
 - Manual `kubectl apply -k overlays/dev/` from your laptop
 - CI pushes images + commits image-tag bump to dev overlay
-- You apply to prod manually after testing dev
 
-**v1 (before public launch):**
+**v1 (now — dev):**
 
-- ArgoCD installed in each cluster (or one Argo managing both via cross-cluster Applications)
-- Argo `Application` CR per environment, points at git path
-- Sync = `kustomize build` + `kubectl apply` + drift detection
-- Optional: Argo Image Updater for auto-bumping dev overlay on every push
+- One self-contained ArgoCD **per cluster** (no cross-cluster creds)
+- Argo `Application` CR per environment (`infra/argo/application-dev.yaml`),
+  points at `infra/k8s/overlays/dev`
+- Sync = `kustomize build` (KSOPS-enabled repo-server) + apply + drift
+  detection, automated with prune + selfHeal
+- Image flow = **CI git write-back**: the `bump` job rewrites the
+  overlay's immutable `main-<sha>` tags and pushes to `main` (via PAT);
+  Argo syncs the diff. (Chose this over Argo Image Updater — one fewer
+  controller.)
 
 The Kustomize bases + overlays from v0 are reused as-is by Argo.
 
@@ -375,9 +385,14 @@ The Kustomize bases + overlays from v0 are reused as-is by Argo.
 - **Tool**: SOPS (mozilla/getsops) with age keys
 - **Keys**: one age key per environment (dev, prod). Distinct, never shared.
 - **Storage**: encrypted YAML files committed to git
-- **Apply path (v0)**: `sops -d secret.yaml | kubectl apply -f -`
-  (or a small `make secrets-dev` wrapper)
-- **Apply path (v1, ArgoCD)**: `argocd-vault-plugin` or SOPS-aware plugin sidecar
+- **Apply path (v0 — historical)**: `sops -d secret.yaml | kubectl apply -f -`
+- **Apply path (v1, ArgoCD — live)**: **KSOPS** init-container on the
+  repo-server decrypts during `kustomize build` (age key mounted from the
+  `sops-age` Secret). The overlay references `secrets/` via a ksops
+  generator; plaintext never leaves the repo-server. See
+  `infra/argo/values.yaml` + `infra/k8s/overlays/dev/secret-generator.yaml`.
+  (Chose KSOPS over argocd-vault-plugin — AVP targets external vaults,
+  not SOPS-in-git.)
 - **Why SOPS over Sealed Secrets**: Bitnami acquisition by Broadcom has
   eroded trust; SOPS is vendor-neutral, broadly used, and works for
   non-K8s secrets too (e.g. tfvars).
@@ -395,7 +410,7 @@ The Kustomize bases + overlays from v0 are reused as-is by Argo.
 | Trigger | Action |
 |---|---|
 | PR opened/updated | Build + test + lint + typecheck (no push) |
-| Push to `main` | Build all three images (api, web, proxy), push `:main-<sha>` to ghcr.io, **commit image-tag bumps to `infra/k8s/overlays/dev/`** |
+| Push to `main` | Build changed images (api, web, proxy, + ingest jobs), push `:main-<sha>` to ghcr.io, then the `bump` job **commits per-service image-tag bumps to `infra/k8s/overlays/dev/`** (via PAT) for Argo to sync |
 | Tag `v*` push | Build all three images, push `:<version>` and `:latest` to ghcr.io |
 
 The proxy image rebuild is slow on first build (it compiles
@@ -403,9 +418,11 @@ The proxy image rebuild is slow on first build (it compiles
 versions and configure args rarely change.
 
 - **Runner**: GitHub-hosted (free for public repos)
-- **Auth**: `GITHUB_TOKEN` (built-in) for ghcr push and contents:write commit-back
-- **No Hetzner / kubectl credentials in CI for v1** — Terraform runs from
-  laptop, manual `kubectl apply` from laptop
+- **Auth**: `GITHUB_TOKEN` (built-in) for ghcr push; a `PAT` secret for
+  the `bump` job's commit-back (bypasses branch protection on `main`)
+- **No Hetzner / kubectl credentials in CI** — Terraform runs from
+  laptop; deploys are pull-based (ArgoCD syncs from git), so CI never
+  touches the cluster
 
 ### 4.6 Image registry: ghcr.io
 
@@ -462,13 +479,18 @@ versions and configure args rarely change.
 - Quarterly manual restore test into dev cluster
 - Never let restore-test cadence slip — untested backup = no backup
 
-### 6.3 Deploy discipline (v1)
+### 6.3 Deploy discipline (dev — ArgoCD)
 
-- Push to main → CI builds + bumps dev overlay → manual `kubectl apply -k overlays/dev`
+- Push to main → CI builds + `bump` job commits the dev overlay tag →
+  **ArgoCD auto-syncs** (no manual apply). Watch
+  `kubectl get applications -n argocd -w`.
 - Verify on dev (smoke-test paid checkout flow, articles, profile)
-- Tag a release (`vX.Y.Z`) → CI builds prod-tagged image
-- Manual: bump `overlays/prod/kustomization.yaml`, commit, manual `kubectl apply -k overlays/prod`
+- Manual hotfixes via `kubectl` get reverted by selfHeal — put fixes in
+  git.
 - Watch logs via `kubectl logs` for first ~10 minutes post-deploy
+- **Prod (when it exists)**: same pattern — second Argo on the prod
+  cluster, `application-prod.yaml` tracking `overlays/prod`. Tag a
+  release (`vX.Y.Z`) → CI builds prod-tagged image → bump prod overlay.
 
 ### 6.4 Disaster recovery
 
@@ -638,12 +660,13 @@ regions). Not infrastructure, but worth tracking.
       to the same ref cancels the in-flight build.
 - [x] Make the three GHCR packages public (or set retention on the
       private ones). Defaults to inherit-from-repo on first push.
-- [x] Deploy to dev:
+- [x] Deploy to dev (originally manual; **now via ArgoCD** — see
+      `infra/argo/README.md`. Historical manual steps:)
   - `source ~/.config/scholia-infra.env` (for `SOPS_AGE_KEY_FILE`)
   - `sops -d infra/k8s/overlays/dev/secrets/postgres.yaml | kubectl apply -f -`
   - `sops -d infra/k8s/overlays/dev/secrets/api.yaml | kubectl apply -f -`
-  - `kubectl apply -f infra/k8s/base/cert-manager/` (ClusterIssuers — already applied)
-  - `kubectl apply -k infra/k8s/overlays/dev/`
+  - `kubectl apply -f infra/k8s/base/cert-manager/` (ClusterIssuers — still manual)
+  - ~~`kubectl apply -k infra/k8s/overlays/dev/`~~ → ArgoCD syncs this
   - `kubectl get pods -n scholia -w` until all are Ready
 - [ ] Validate end-to-end on dev: anonymous chapter pageviews cache
       (X-Cache-Status: MISS then HIT), authenticated requests bypass,
@@ -781,14 +804,17 @@ protection.
 
 ### Redeploy verb
 
-- **Pull new `:main` images without manifest changes**:
-  `kubectl rollout restart deployment -n scholia` (rolls all
-  Deployments in the namespace; StatefulSets unaffected).
-- **Apply manifest changes from git**: `kubectl apply -k
-  infra/k8s/overlays/dev/`. Triggers rolling updates only for
-  Deployments whose spec changed.
-- **Both at once**: chain the two — apply first, then restart to
-  force pulls on Deployments that didn't have spec changes.
+**Dev is GitOps now — the redeploy verb is `git push`.** ArgoCD
+auto-syncs any change merged to `main` under `overlays/dev` (image-tag
+bumps from CI, manifest edits, secret rotations). Immutable `main-<sha>`
+tags mean a code change = CI bump = new tag = Argo rolls the Deployment.
+
+Manual `kubectl` escape hatches (rarely needed; selfHeal reverts
+out-of-band edits):
+- **Force a re-sync**: `argocd app sync scholia-dev` (or the UI).
+- **Inspect drift**: `argocd app diff scholia-dev`.
+- The old `kubectl rollout restart` / `kubectl apply -k` flow is retired
+  for dev; immutable tags make `rollout restart` a no-op anyway.
 
 ### Ingest-as-Jobs (next workstream, designed 2026-05-19)
 
@@ -1009,9 +1035,10 @@ emergency wipes, but the primary content path is Jobs. The old
 
 ### v1 — ArgoCD + Sentry
 
-- [ ] Install ArgoCD in each cluster
-- [ ] Migrate Kustomize apply → Argo Application sync
-- [ ] SOPS plugin / sidecar for encrypted secret handling in Argo
+- [x] Install ArgoCD (dev cluster; per-cluster model) — 2026-06-08
+- [x] Migrate Kustomize apply → Argo Application sync (dev)
+- [x] SOPS handling in Argo (KSOPS init-container on repo-server)
+- [ ] Install ArgoCD on prod cluster when it exists
 - [ ] Sentry integration in API + frontend
 - [ ] Capacity-aware UX (warn at 80% of free-tier limits)
 
