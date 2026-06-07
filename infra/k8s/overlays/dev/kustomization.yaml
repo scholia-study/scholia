@@ -19,11 +19,15 @@
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
 namespace: scholia
+
 resources:
   - ../../base
+
 generators:
   - secret-generator.yaml
+
 # Image tags are immutable `main-<sha>` pins. CI's write-back step
 # (.github/workflows/build.yml) rewrites the newTag values on every
 # build and commits to main; ArgoCD syncs the diff. The PLACEHOLDER
@@ -35,10 +39,12 @@ images:
     newTag: main-607524c
   - name: ghcr.io/scholia-study/scholia-proxy
     newTag: main-607524c
+
 configMapGenerator:
   - name: proxy-security
     files:
       - lockdown.conf.template=proxy-security.conf.template
+
 patches:
   - path: ingress-patch.yaml
     target:
