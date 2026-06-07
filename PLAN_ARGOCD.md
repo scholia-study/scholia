@@ -27,7 +27,7 @@ real wrinkle is secrets (SOPS); everything else is plumbing.
 | 7 | Sync policy | Automated: prune + selfHeal |
 | 8 | Image flow | CI git write-back; kustomize `images:` block pinned to immutable `main-<sha>` |
 | 9 | Argo access | Tailscale port-forward only; no ingress for Argo |
-| 10 | Write-back | Bot-bypass on protected `main`; CI pushes the bump commit directly |
+| 10 | Write-back | CI pushes the bump commit to `main` using a PAT (secret `PAT`) on the branch-protection bypass list |
 
 ## Prerequisites (must land before / alongside implementation)
 
@@ -43,10 +43,13 @@ These are gating — the chosen image-flow and access model assume them.
      repo exposes all history, not just HEAD). `.env` is gitignored and
      was never tracked — good — but verify nothing else slipped in.
 3. **Branch protection on `main`** (a free ruleset on public repos):
-   require PR + review for humans; add the **GitHub Actions bot to the
+   require PR + review for humans; put the **write-back PAT on the
    bypass list** so CI can push the image-tag bump commit directly.
-4. **CI permissions:** `build.yml` currently has `contents: read`. The
-   write-back step needs `contents: write`.
+   *(Done: repo is public; a PAT named `PAT` is configured as a repo
+   secret.)*
+4. **CI credential:** the `bump` job checks out and pushes with
+   `secrets.PAT` (not `GITHUB_TOKEN`, which can't bypass protection), so
+   no `contents: write` grant on the default token is required.
 5. **GHCR package visibility:** once public, set the five
    `scholia-*` packages to public (or confirm the existing pull path).
 
@@ -223,19 +226,27 @@ proves annoying. One-annotation upgrade if so.
 
 ## CI write-back (build.yml)
 
-After the existing build+push matrix, add a step that:
-1. Computes the short sha tag (`main-<sha7>`) already produced by
-   `docker/metadata-action`.
-2. Rewrites the `newTag:` lines in `overlays/dev/kustomization.yaml`
-   (e.g. via `kustomize edit set image` or `yq`).
-3. Commits + pushes directly to `main` as the Actions bot (on the
+A `bump` job (`needs: [changes, build]`) runs once after the matrix and:
+1. Computes the short sha tag (`main-${SHA:0:7}`), matching
+   `docker/metadata-action`'s `type=sha,format=short`.
+2. For **only the services that were built** (the `changes` matrix) and
+   that live in the overlay (api/web/proxy — ingest jobs are skipped),
+   rewrites that service's `newTag` via `yq`. Bumping an *unbuilt*
+   service would point it at a `main-<sha>` tag that was never pushed →
+   ImagePullBackOff, so the per-service filter is load-bearing.
+3. Commits + pushes directly to `main` using `secrets.PAT` (on the
    protection bypass list).
 
-Loop-safety is doubly assured: the bump commit touches only `infra/**`,
-which is **not** in `build.yml`'s `paths:` filter; and commits made with
-the default `GITHUB_TOKEN` don't trigger workflows anyway.
+Loop-safety: PAT-pushed commits *do* trigger workflows (unlike
+`GITHUB_TOKEN`), so the guard is the `paths:` filter — the bump commit
+touches only `infra/**`, which isn't in `build.yml`'s filter. `[skip ci]`
+in the commit message is belt-and-suspenders on top.
 
-Needs `permissions: contents: write` added to the workflow.
+**Placeholder resolution:** the overlay ships `main-PLACEHOLDER` for all
+three images. The merge that lands this work touches `build.yml`, which
+is in *every* service's path filter, so it rebuilds all services and the
+bump replaces all three placeholders at once. Bootstrap Argo only after
+confirming `PLACEHOLDER` is gone from `main`.
 
 ## Argo access
 
@@ -262,16 +273,18 @@ Zero public surface beyond Tailscale itself.
 
 ## Implementation checklist
 
-- [ ] **Prereqs**: history/secret audit → repo public → branch protection
-      + bot bypass → GHCR packages public.
-- [ ] `build.yml`: add `contents: write` + tag-bump write-back step.
-- [ ] Overlay: add `images:` block (placeholder tags), drop
+- [ ] **Prereqs**: history/secret audit → ~~repo public~~ (done) →
+      branch protection + PAT bypass → GHCR packages public.
+- [x] `build.yml`: `bump` job (per-service tag write-back via PAT).
+- [x] Overlay: add `images:` block (placeholder tags), drop
       `imagePullPolicy: Always` from base Deployments.
-- [ ] Overlay: add `secret-generator.yaml` + `generators:` entry.
-- [ ] `infra/argo/values.yaml` (chart pin + KSOPS sidecar + age mount +
+- [x] Overlay: add `secret-generator.yaml` + `generators:` entry.
+- [x] `infra/argo/values.yaml` (chart pin + KSOPS sidecar + age mount +
       ClusterIP server).
-- [ ] `infra/argo/application-dev.yaml`.
-- [ ] `infra/argo/README.md` (bootstrap runbook above).
+- [x] `infra/argo/application-dev.yaml`.
+- [x] `infra/argo/README.md` (bootstrap runbook above).
+- [x] Pin versions: argo-cd chart 9.5.20 (ArgoCD v3.4.3), ksops v4.5.1
+      (checked 2026-06-07). Re-verify before install.
 - [ ] Bootstrap dev cluster; verify Synced/Healthy.
 - [ ] One end-to-end test: push a trivial app change → CI builds → bump
       commit → Argo auto-syncs → pod rolls.
