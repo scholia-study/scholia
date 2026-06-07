@@ -3,6 +3,8 @@ _Full character'd with lasting memory,_
 _Which shall above that idle rank remain_
 _Beyond all date, even to eternity;_
 
+&mdash;Shakespeare
+
 # Scholia
 
 _TBC_
