@@ -131,10 +131,11 @@ section rewritten to match.
 
 | | dev cluster | prod cluster |
 |---|---|---|
-| **VPS** | CX22 (2 vCPU, 4GB, 40GB disk) | CX22 (2 vCPU, 4GB, 40GB disk) |
-| **Cost** | €4.90/mo | €4.90/mo |
+| **VPS** | cx23 (2 vCPU, 4GB, 40GB disk) | cx43 (8 vCPU, 16GB, 160GB disk) |
 | **OS** | Ubuntu 24.04 LTS | Ubuntu 24.04 LTS |
 | **Hostname** | `dev.scholia.study` | `scholia.study` |
+
+(Slugs are Hetzner's `cx_3` Intel line: cx23→cx33→cx43→cx53.)
 
 **Why two clusters, not namespaces in one cluster:**
 
@@ -142,13 +143,16 @@ section rewritten to match.
 - Independent k3s upgrades (test on dev first, schedule prod separately)
 - Distinct Stripe webhook URLs by hostname (no routing-rule collisions)
 - Doubles K8s muscle (two kubeconfig contexts, real cross-cluster practice)
-- Cost difference is ~€5/mo
 
-**Why CX22 prod:** at your scale, RAM budget is ~2.5-3.5GB committed
-(k3s + Postgres + Rust API + Node SSR + nginx-cache + Traefik +
-cert-manager) on 4GB available. Node SSR adds ~150-300MB over the
-earlier static-web design but stays well within the 4GB envelope.
-Resize to CX32 in-place when traffic warrants.
+**Why cx43 prod (8 vCPU / 16 GB / 160 GB):** sized for launch plus the
+medium term rather than minimal-at-start. Committed RAM is only
+~2.5-3.5 GB (k3s + Postgres + Rust API + Node SSR + nginx-cache +
+Traefik + cert-manager), so 16 GB leaves wide headroom for traffic
+growth, in-cluster ingest/build spikes, and a future light
+observability stack without an early resize (cx53 is the in-place step
+up if ever needed). **Reserved 2026-06-08** — the box runs idle (no
+app) until the prod app-layer bootstrap. Dev stays on cx23 (2/4/40); it
+only needs to validate the chain.
 
 **No snapshots** — disaster recovery comes from:
 - Terraform-reproducible cluster (test by destroying + recreating dev once during bringup)
@@ -316,7 +320,7 @@ both HTML and `/api/*`, fewer ingress rules to get wrong.
 
 ### 3.1 Target
 
-**Hetzner Object Storage** (S3-compatible). Same provider as VPS — same-region traffic, single vendor, single bill, flat ~€5.99/mo for 1TB incl. egress.
+**Hetzner Object Storage** (S3-compatible). Same provider as VPS — same-region traffic, single vendor, single bill, flat-rate 1TB pool incl. egress.
 
 ### 3.2 Cadence + retention
 
@@ -347,10 +351,10 @@ The DB is the obvious thing. **Don't forget:**
 ### 4.1 IaC: Terraform
 
 - **Provisioned**: Hetzner Cloud (VPS, firewall, Cloud Network), Porkbun (DNS records)
-- **k3s install**: cloud-init script attached to the VPS; runs `curl -sfL https://get.k3s.io | sh -` on first boot, plus Tailscale install
+- **k3s install**: cloud-init script attached to the VPS; runs `curl -sfL https://get.k3s.io | sh -` on first boot, plus Tailscale install. Both `curl | sh` installs are wrapped in a **5× retry loop** (10s backoff) — a single transient GitHub/network blip on first boot otherwise leaves a half-provisioned box with no k3s. (Learned the hard way: the prod bringup hit `k3s "[ERROR] Download failed"` and needed a manual SSH re-run of the install before the retry wrapper was added.)
 - **State**: stored in Hetzner Object Storage as the Terraform backend
-- **Workspaces**: `dev` and `prod` for the two environments
-- **Module structure**: one `modules/cluster/` instantiated twice with different vars
+- **Workspaces**: `dev` and `prod` for the two environments. Both provisioned (dev 2026-05, prod reserved 2026-06-08); per-workspace state at `env:/<ws>/...`.
+- **Module structure**: one `modules/cluster/` instantiated twice with different vars (only `hostname` + `vps_type` differ: dev cx23, prod cx43)
 
 ### 4.2 Manifests: Kustomize → ArgoCD
 
@@ -530,32 +534,14 @@ Recovery scenarios:
 | **v1** (pre-launch) | Sentry (errors only) | Best ROI per minute of integration; free tier covers our scale |
 | **v2** (after launch + traffic) | Grafana Cloud free tier | Logs + metrics aggregation; 50GB logs, 10k metrics, 14-day retention |
 
-**Don't self-host Grafana/Loki/Prometheus on a CX22.** The stack alone
-eats ~1GB RAM, leaving no headroom on a 4GB box.
+**Don't self-host Grafana/Loki/Prometheus on the dev cx23.** The stack
+alone eats ~1GB RAM, leaving no headroom on a 4GB box. (Prod's cx43 has
+16GB, so a light self-hosted stack there is viable later — but Grafana
+Cloud's free tier is still the lower-effort default.)
 
 ---
 
-## 8. Cost estimate (monthly)
-
-| Item | Cost |
-|---|---|
-| Dev VPS (CX22) | €4.90 |
-| Prod VPS (CX22) | €4.90 |
-| Hetzner Object Storage (1TB pool) | €5.99 |
-| Domain (scholia.study, Porkbun) | ~€0.80 (annualized) |
-| Tailscale | €0 (personal use) |
-| ghcr.io (public images) | €0 |
-| GitHub Actions (public repo) | €0 |
-| Sentry (free tier, v1) | €0 |
-| Grafana Cloud (free tier, v2) | €0 |
-| **Total v1** | **~€16.59/mo** |
-
-Stripe takes 1.4% + €0.25 per EU card transaction (different in other
-regions). Not infrastructure, but worth tracking.
-
----
-
-## 9. Roadmap
+## 8. Roadmap
 
 ### v0 — Pre-deployment refactor
 
@@ -587,7 +573,7 @@ regions). Not infrastructure, but worth tracking.
 - [x] Write `infra/terraform/clusters/` (Hetzner + Porkbun providers, cloud-init for k3s + Tailscale)
 - [x] State backend in Hetzner Object Storage (`scholia-tf-state` bucket, fsn1)
 - [x] `terraform apply -var-file=dev.tfvars` — dev cluster live at `dev.scholia.study`
-- [ ] `terraform apply -var-file=prod.tfvars` — deferred until dev is fully validated
+- [x] `terraform apply -var-file=prod.tfvars` — **prod box reserved 2026-06-08** (cx43, apex `scholia.study`). Box up + Ready; idle (no app yet). Gotcha: had to delete Porkbun's apex ALIAS + wildcard-parking records first, and the k3s install hit a transient download failure needing a manual SSH re-run (now mitigated by the cloud-init retry wrapper).
 - [x] **Validate IaC**: `terraform destroy` + `terraform apply` on dev once
 - [x] Install cert-manager (Helm chart v1.20.2 in `cert-manager` namespace)
 - [x] Configure Let's Encrypt staging + prod `ClusterIssuer`s
@@ -1070,7 +1056,7 @@ and content writes don't strand stale crawler payloads.
 
 ---
 
-## 10. Open questions / deferred decisions
+## 9. Open questions / deferred decisions
 
 These were touched on during the grill but explicitly deferred:
 
