@@ -28,7 +28,11 @@ dex:
 notifications:
   enabled: false
 applicationSet:
-  enabled: false # single Application, no generators
+  # This chart's applicationSet section has no `enabled` key (unlike dex
+  # / notifications above) — scaling to zero is how you switch the
+  # controller off. We hand-write one Application per cluster, so the
+  # ApplicationSet controller has nothing to reconcile.
+  replicas: 0
 
 configs:
   cm:
