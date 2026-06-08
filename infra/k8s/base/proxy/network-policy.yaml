@@ -49,3 +49,11 @@ spec:
             matchExpressions:
               - key: ingest
                 operator: Exists
+        # The cache-flush hook (an ArgoCD PostSync Job) issues a
+        # wildcard `PURGE /*` after each deploy to drop HTML cached
+        # against a previous build's asset hashes. Scoped to the hook's
+        # own ephemeral pod label — the web SSR pod deliberately never
+        # gets PURGE access. See cache-flush-hook.yaml.
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: scholia-cache-flush
