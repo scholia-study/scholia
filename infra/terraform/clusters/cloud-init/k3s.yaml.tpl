@@ -60,7 +60,12 @@ runcmd:
   # we can reach the box without Hetzner-firewall port 22 being open.
   # `--accept-routes=false` keeps the node from advertising other
   # tailnet subnets out of caution.
-  - curl -fsSL https://tailscale.com/install.sh | sh
+  - |
+    n=0
+    until [ "$n" -ge 5 ]; do
+      curl -fsSL https://tailscale.com/install.sh | sh && break
+      n=$((n+1)); echo "tailscale install attempt $n/5 failed; retrying in 10s"; sleep 10
+    done
   - tailscale up
       --auth-key=${tailscale_auth_key}
       --hostname=${environment}-scholia
@@ -73,10 +78,12 @@ runcmd:
   # train without surprise jumps. `--write-kubeconfig-mode=644` makes
   # the kubeconfig readable to a normal user once we add one; for now
   # everything runs as root so it doesn't matter much.
-  - curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL=stable sh -s - server
-      --write-kubeconfig-mode=644
-      --disable-cloud-controller
-      --node-name=${environment}-scholia
+  - |
+    n=0
+    until [ "$n" -ge 5 ]; do
+      curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL=stable sh -s - server --write-kubeconfig-mode=644 --disable-cloud-controller --node-name=${environment}-scholia && break
+      n=$((n+1)); echo "k3s install attempt $n/5 failed; retrying in 10s"; sleep 10
+    done
 
   # Apply sysctl tweaks now (they're persisted via the file above for
   # future boots).
