@@ -8,7 +8,8 @@ import {
     useLocation,
 } from "@tanstack/react-router";
 import { Toaster } from "react-hot-toast";
-import { getMeQueryOptions } from "../api/auth/auth";
+import { getMeQueryKey, getMeQueryOptions } from "../api/auth/auth";
+import { AuthProvider } from "../hooks/useAuth";
 import { Footer } from "../layout/Footer";
 import { InfoSubnav } from "../layout/InfoSubnav";
 import { Navbar } from "../layout/Navbar";
@@ -23,10 +24,20 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-    loader: ({ context: { queryClient } }) =>
-        queryClient.prefetchQuery(
-            getMeQueryOptions({ query: { retry: false } }), // Speed up auth
-        ),
+    loader: ({ context: { queryClient } }) => {
+        // Root loaders re-run on every navigation (defaultStaleTime 0). A
+        // logged-out /api/auth/me is a 401 → React Query error state, which is
+        // always "stale", so an unconditional prefetch re-fires it on each
+        // navigation (e.g. every tour step). Skip when a logged-out result is
+        // already cached; the AuthProvider observer and login/logout
+        // invalidation keep auth current after the first fetch.
+        const cached = queryClient.getQueryState(getMeQueryKey());
+        if (cached?.status !== "error") {
+            return queryClient.prefetchQuery(
+                getMeQueryOptions({ query: { retry: false } }), // Speed up auth
+            );
+        }
+    },
     head: () => {
         // Runtime profile injection. The Node SSR reads APP_PROFILE from
         // its container env at render time and writes it inline; the
@@ -77,24 +88,26 @@ function RootComponent() {
 
     return (
         <ThemeProvider theme={theme}>
-            <FeedbackProvider>
-                <Navbar />
-                <UserSubnav />
-                <InfoSubnav />
-                <main className="flex-1 overflow-y-auto">
-                    <div
-                        className={`${isReader ? "h-full" : "min-h-full"} flex flex-col`}
-                    >
-                        <div className="flex-1 min-h-0 flex flex-col">
-                            <Outlet />
+            <AuthProvider>
+                <FeedbackProvider>
+                    <Navbar />
+                    <UserSubnav />
+                    <InfoSubnav />
+                    <main className="flex-1 overflow-y-auto">
+                        <div
+                            className={`${isReader ? "h-full" : "min-h-full"} flex flex-col`}
+                        >
+                            <div className="flex-1 min-h-0 flex flex-col">
+                                <Outlet />
+                            </div>
+                            {showFooter && <Footer />}
                         </div>
-                        {showFooter && <Footer />}
-                    </div>
-                </main>
-                <ScrollToTop />
-                <FeedbackModal />
-                <Toaster position="bottom-right" />
-            </FeedbackProvider>
+                    </main>
+                    <ScrollToTop />
+                    <FeedbackModal />
+                    <Toaster position="bottom-right" />
+                </FeedbackProvider>
+            </AuthProvider>
         </ThemeProvider>
     );
 }
