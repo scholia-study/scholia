@@ -6,6 +6,7 @@ import EditNoteOutlined from "@mui/icons-material/EditNoteOutlined";
 import ExploreOutlined from "@mui/icons-material/ExploreOutlined";
 import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
 import FavoriteOutlined from "@mui/icons-material/FavoriteOutlined";
+import FeedbackOutlined from "@mui/icons-material/FeedbackOutlined";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import ListOutlined from "@mui/icons-material/ListOutlined";
 import MenuBookOutlined from "@mui/icons-material/MenuBookOutlined";
@@ -38,6 +39,7 @@ import {
 import { useListResources } from "../../../api/resources/resources";
 import { useGetToc } from "../../../api/toc/toc";
 import { useAuth } from "../../../hooks/useAuth";
+import { useFeedback } from "../../feedback";
 import { AboutThisTextView } from "./AboutThisTextView";
 import { CommentaryView, getSentenceRange } from "./CommentaryView";
 import { NotesView } from "./NotesView";
@@ -88,6 +90,7 @@ export function ResourcesPanel({
 }: ResourcesPanelProps) {
     const { user } = useAuth();
     const { startReaderTour } = useReaderTour();
+    const { openModal: openFeedbackModal } = useFeedback();
     const isEditor =
         user?.roles?.includes("editor") ||
         user?.roles?.includes("admin") ||
@@ -458,6 +461,16 @@ export function ResourcesPanel({
                                                 sx={{ color: "#b45264" }}
                                             />
                                         )
+                                    }
+                                />
+                                <MenuButton
+                                    onClick={openFeedbackModal}
+                                    label="Send Feedback"
+                                    icon={
+                                        <FeedbackOutlined
+                                            fontSize="small"
+                                            sx={{ color: "#5c6b8b" }}
+                                        />
                                     }
                                 />
                             </>
