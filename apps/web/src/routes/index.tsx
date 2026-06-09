@@ -12,6 +12,7 @@ import type {
 } from "../api/model";
 import { DevServerNotice } from "../components/DevServerNotice";
 import { InfoLinks } from "../components/InfoLinks";
+import { libraryHasBook, TOUR_BOOK_SLUG, useReaderTour } from "../modules/tour";
 
 export const Route = createFileRoute("/")({
     loader: ({ context }) => {
@@ -23,6 +24,16 @@ export const Route = createFileRoute("/")({
 function IndexPage() {
     const { data, isLoading } = useGetLibrarySuspense();
     const library = data.data;
+
+    const { startReaderTour, maybeWelcome } = useReaderTour();
+    const canTour = !!library && libraryHasBook(library, TOUR_BOOK_SLUG);
+
+    // First-visit welcome prompt (shown once; replayable from the reader after).
+    useEffect(() => {
+        if (canTour) maybeWelcome();
+    }, [canTour, maybeWelcome]);
+
+    const onTakeTour = canTour ? startReaderTour : undefined;
 
     return (
         <div className="min-h-full bg-white flex justify-center">
@@ -50,14 +61,20 @@ function IndexPage() {
                         )}
 
                         <div className="md:hidden mt-10">
-                            <AboutPanel stats={library?.stats} />
+                            <AboutPanel
+                                stats={library?.stats}
+                                onTakeTour={onTakeTour}
+                            />
                         </div>
                     </div>
                 </div>
 
                 <aside className="hidden md:block md:w-96 md:shrink-0 bg-stone-50">
                     <div className="sticky top-0 h-[calc(100vh-3rem)] overflow-y-auto px-6 pt-24 pb-6">
-                        <AboutPanel stats={library?.stats} />
+                        <AboutPanel
+                            stats={library?.stats}
+                            onTakeTour={onTakeTour}
+                        />
                     </div>
                 </aside>
             </div>
@@ -369,7 +386,13 @@ function VersionPill({
     );
 }
 
-function AboutPanel({ stats }: { stats: LibraryStats | undefined }) {
+function AboutPanel({
+    stats,
+    onTakeTour,
+}: {
+    stats: LibraryStats | undefined;
+    onTakeTour?: () => void;
+}) {
     const pClasses = "text-sm text-stone-600 leading-relaxed";
     return (
         <div className="md:border-0 border border-stone-200 md:p-0 p-5 md:bg-transparent bg-stone-100">
@@ -394,7 +417,20 @@ function AboutPanel({ stats }: { stats: LibraryStats | undefined }) {
                     {formatStats(stats)}
                 </p>
             )}
-            <InfoLinks className="text-sm mt-6 md:mt-16 flex flex-wrap gap-x-4 gap-y-1 text-stone-500" />
+            <InfoLinks
+                className="text-sm mt-6 md:mt-16 flex flex-wrap gap-x-4 gap-y-1 text-stone-500"
+                trailing={
+                    onTakeTour ? (
+                        <button
+                            type="button"
+                            onClick={onTakeTour}
+                            className="cursor-pointer hover:underline"
+                        >
+                            Take a tour
+                        </button>
+                    ) : undefined
+                }
+            />
         </div>
     );
 }

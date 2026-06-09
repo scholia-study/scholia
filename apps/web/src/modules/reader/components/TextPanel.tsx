@@ -461,6 +461,7 @@ export function TextPanel({
                             <div className="flex items-center gap-1 shrink-0">
                                 <IconButton
                                     size="small"
+                                    data-tour="view-mode"
                                     onClick={(e) =>
                                         setMenuAnchor(e.currentTarget)
                                     }

@@ -80,6 +80,9 @@ importers:
       axios:
         specifier: ^1
         version: 1.16.1
+      driver.js:
+        specifier: ^1.4.0
+        version: 1.4.0
       html-react-parser:
         specifier: ^5.2.17
         version: 5.2.17(@types/react@19.2.14)(react@19.2.4)
@@ -2601,6 +2604,9 @@ packages:
     resolution: {integrity: sha512-iOv+E1Hyt3JDdL9yYcOgW7nZ7GQ2Uz6YbggwXvKUSleetYhU2nXD482Rz6CzvM4lvI1At34BYruKAL4swRGxaA==}
     peerDependencies:
       react: '>=16.12.0'
+
+  driver.js@1.4.0:
+    resolution: {integrity: sha512-Gm64jm6PmcU+si21sQhBrTAM1JvUrR0QhNmjkprNLxohOBzul9+pNHXgQaT9lW84gwg9GMLB3NZGuGolsz5uew==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -7141,6 +7147,8 @@ snapshots:
       react: 19.2.4
       react-is: 17.0.2
       tslib: 2.8.1
+
+  driver.js@1.4.0: {}
 
   dunder-proto@1.0.1:
     dependencies:

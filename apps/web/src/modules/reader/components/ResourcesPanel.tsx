@@ -3,6 +3,7 @@ import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import CommitOutlined from "@mui/icons-material/CommitOutlined";
 import CompareOutlined from "@mui/icons-material/CompareOutlined";
 import EditNoteOutlined from "@mui/icons-material/EditNoteOutlined";
+import ExploreOutlined from "@mui/icons-material/ExploreOutlined";
 import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
 import FavoriteOutlined from "@mui/icons-material/FavoriteOutlined";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
@@ -19,6 +20,7 @@ import {
     NoteFormModal,
     useUnsaveQuotation,
 } from "#/modules/quotation";
+import { useReaderTour } from "#/modules/tour";
 import { useListBooks } from "../../../api/books/books";
 import { FetchError } from "../../../api/fetcher";
 import type {
@@ -85,6 +87,7 @@ export function ResourcesPanel({
     onViewChange,
 }: ResourcesPanelProps) {
     const { user } = useAuth();
+    const { startReaderTour } = useReaderTour();
     const isEditor =
         user?.roles?.includes("editor") ||
         user?.roles?.includes("admin") ||
@@ -297,7 +300,10 @@ export function ResourcesPanel({
     }, [viewKind]);
 
     return (
-        <aside className="w-80 border-l border-stone-200 bg-white shrink-0 flex flex-col">
+        <aside
+            data-tour="resources-panel"
+            className="w-80 border-l border-stone-200 bg-white shrink-0 flex flex-col"
+        >
             {/* Header - matches TextPanel toolbar height */}
             <div className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 flex items-center px-3">
                 <IconButton
@@ -350,6 +356,7 @@ export function ResourcesPanel({
                         <MenuButton
                             onClick={() => onViewChange("toc")}
                             label="Table of Contents"
+                            dataTour="toc"
                             icon={<ListOutlined fontSize="small" />}
                         />
                         <MenuButton
@@ -362,15 +369,22 @@ export function ResourcesPanel({
                             <MenuButton
                                 onClick={() => onViewChange("compare")}
                                 label="Compare Text"
+                                dataTour="compare"
                                 icon={<CompareOutlined fontSize="small" />}
                             />
                         )}
+                        <MenuButton
+                            onClick={() => void startReaderTour()}
+                            label="Take a Tour"
+                            icon={<ExploreOutlined fontSize="small" />}
+                        />
                         <div className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-3 pb-1">
                             Commentary
                         </div>
                         <MenuButton
                             onClick={() => onViewChange("verbatim")}
                             label={`Verbatim${commentaryCounts.verbatim ? ` (${commentaryCounts.verbatim})` : ""}`}
+                            dataTour="commentary"
                             disabled={!selectedSentence}
                             icon={
                                 <MenuBookOutlined
@@ -401,7 +415,10 @@ export function ResourcesPanel({
                                 />
                             }
                         />
-                        <div className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-3 pb-1">
+                        <div
+                            data-tour="tools"
+                            className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-3 pb-1"
+                        >
                             Tools
                         </div>
                         {user ? (
@@ -572,16 +589,19 @@ function MenuButton({
     label,
     disabled,
     icon,
+    dataTour,
 }: {
     onClick: () => void;
     label: string;
     disabled?: boolean;
     icon: React.ReactNode;
+    dataTour?: string;
 }) {
     return (
         <button
             onClick={onClick}
             disabled={disabled}
+            data-tour={dataTour}
             className="w-full text-left text-sm px-3 py-2 rounded hover:bg-stone-100 text-stone-700 transition-colors disabled:text-stone-300 disabled:hover:bg-transparent disabled:cursor-default flex items-center gap-2"
         >
             <span className="text-stone-400">{icon}</span>
