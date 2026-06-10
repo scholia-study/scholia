@@ -400,10 +400,10 @@ function AboutPanel({
                 A living library for scholars
             </h2>
             <p className={pClasses}>
-                Scholia is a reading and annotation library for philosophical
-                and literary texts. Every work is structured down to the
-                sentence, linked across translations, and open for quotation,
-                notes, and citation in your own writing.
+                Scholia is a hermeneutical workspace designed for the deep study
+                of literary, philosophical, and sacred texts. Every work is
+                structured down to the sentence, linked across translations, and
+                open for quotation, notes, and citation in your own writing.
             </p>
             <br />
             <p className={pClasses}>
