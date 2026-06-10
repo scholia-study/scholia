@@ -1,15 +1,9 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
-import Prism from "prismjs";
 import { DefaultCatchBoundary } from "./components/DefaultCatchBoundary";
 import { NotFound } from "./components/NotFound";
 import { routeTree } from "./routeTree.gen";
-
-// Set window.Prism early so lazy MDXEditor prism components don't throw "Prism is not defined" in prod.
-if (typeof window !== "undefined") {
-    (window as Window & { Prism?: typeof Prism }).Prism ??= Prism;
-}
 
 export function getRouter() {
     const queryClient = new QueryClient({
