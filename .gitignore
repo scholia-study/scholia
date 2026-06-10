@@ -17,6 +17,7 @@
 # `!assets/<book>/curated/` line whenever a new book gains a curated
 # layer. Order matters: parent dirs must be un-ignored before children.
 assets/*
+!assets/LICENSE
 !assets/kant1/
 assets/kant1/*
 !assets/kant1/curated/
