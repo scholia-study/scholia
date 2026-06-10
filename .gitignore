@@ -38,3 +38,7 @@ node_modules
 *.tfstate
 *.tfstate.backup
 *.tfplan
+
+# Exact pg_dump DDL, regenerable via `pnpm db:schema`. The companion
+# schema.simplified.sql IS tracked (small, diagram-import friendly).
+docs/db/schema.sql

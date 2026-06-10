@@ -14,6 +14,7 @@
         "db:bible": "bash scripts/db_bible.sh",
         "db:reload": "pnpm db:reset && pnpm db:kant1 && pnpm db:bible",
         "db:prepare": "bash scripts/db_prepare.sh",
+        "db:schema": "bash scripts/db_schema_dump.sh",
         "db:dev:forward": "KUBECONFIG=~/.kube/scholia-dev.yaml kubectl port-forward -n scholia svc/postgres 55432:5432",
         "db:dev:run": "bash scripts/db_dev_run.sh",
         "db:dev:reset": "bash scripts/db_dev_reset.sh",
