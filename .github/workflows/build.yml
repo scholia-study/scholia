@@ -204,5 +204,5 @@ jobs:
                   git config user.name "scholia-ci[bot]"
                   git config user.email "ci@scholia.study"
                   git add "$FILE"
-                  git commit -m "ci: bump dev image tags to main-${SHA:0:7} [skip ci]"
+                  git commit -m "ci: bump image tags to main-${SHA:0:7} [skip ci]"
                   git push origin HEAD:main
