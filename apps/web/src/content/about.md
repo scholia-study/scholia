@@ -2,7 +2,7 @@
 
 # About Scholia
 
-Scholia is a reading and annotation library for philosophical and literary texts, designed for careful study of classical texts. Every work is structured down to the sentence, linked across translations, and open for quotation, notes, and citation in your own writing in the article builder.
+Scholia is a reading and annotation library for philosophical, sacred and literary texts, designed for careful study of classical texts. Every work is structured down to the sentence, linked across translations, and open for quotation, notes, and citation in your own writing in the article builder.
 
 Etch your thoughts, map the spirit's mental landscape, engage in dialogue with the ancients and give voice to your insights among the echoes of eternity.
 
