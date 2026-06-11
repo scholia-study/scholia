@@ -27,8 +27,6 @@ Setzet: die Welt ſelber oder in ihr ſei ein nothwendiges Weſen, ſo würde in
 
 Setzet dagegen: es gebe eine ſchlechthin nothwendige Welturſache {{ 483 }} außer der Welt, ſo würde dieſelbe als das oberſte Glied in der ***Reihe der Urſachen*** der Weltveränderungen das Daſein der leßteren und ihre Reihe zuerſt anfangen.[^**] Nun müßte ſie aber alsdann auch anfangen zu handeln, und ihre Cauſalität würde in die Zeit, eben darum aber in den Inbegriff der Erſcheinungen, d. i. in die Welt, gehören, folglich ſie ſelbſt, {{{ 317 }}} die Urſache, nicht außer der Welt ſein, welches der Vorausſeßung widerſpricht. Alſo iſt weder in der Welt, noch außer derſelben (aber mit ihr in Cauſalverbindung) irgend ein ſchlechthin nothwendiges Weſen.
 
-
-
 ## {{ 484 }} Anmerkung zur vierten Antinomie.
 
 ## I. zur Theſis.
