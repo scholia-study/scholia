@@ -169,6 +169,17 @@ static INITIAL_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b[A-ZÄÖÜ]
 static NUMBERED_LABEL_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^\d{1,2}\.\s*$").unwrap());
 
+/// Roman-numeral label pattern: detects "II." "III." "IV." at the start of the
+/// preceding text — the section labels Kant uses in his Anmerkung headings
+/// ("II. zur Antithesis" / "II. On the Antithesis"). Like NUMBERED_LABEL_RE,
+/// it only fires when the numeral is the whole preceding text, i.e. a leading
+/// label. Single-letter "I." is already caught by INITIAL_RE; without this the
+/// multi-letter numerals false-split before a following capital — harmless in
+/// German (the title word is usually lowercase, e.g. "zur") but a real split
+/// in the English titles ("On", "Of"), desyncing the EN/DE sentence counts.
+static ROMAN_LABEL_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^[IVXLCDM]{1,5}\.\s*$").unwrap());
+
 /// Section label pattern: detects "§ 1." "§3." at the end of preceding text.
 static SECTION_LABEL_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"§\s*\d{1,2}\.\s*$").unwrap());
@@ -553,6 +564,11 @@ fn find_text_split_positions_with(
             continue;
         }
 
+        // Check roman-numeral section labels (e.g. II., III.)
+        if ROMAN_LABEL_RE.is_match(preceding) {
+            continue;
+        }
+
         // Check section labels (e.g. § 3.)
         if SECTION_LABEL_RE.is_match(preceding) {
             continue;
@@ -701,6 +717,32 @@ mod tests {
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].0, "1. Erster Satz hier.");
         assert_eq!(result[1].0, "Zweiter Satz dort.");
+    }
+
+    #[test]
+    fn test_roman_numeral_label_not_split() {
+        // Kant's Anmerkung headings carry roman-numeral labels. The label must
+        // stay attached to its title so the English heading ("II. On the
+        // Antithesis.") matches the German ("II. zur Antithesis."), which never
+        // splits because a lowercase word follows.
+        let en = "II. On the Antithesis.";
+        assert_eq!(split_sentences_en(en, en).len(), 1);
+        let de = "II. zur Antithesis.";
+        assert_eq!(split_sentences(de, de).len(), 1);
+        // Numerals beyond II, before a capital, must also stay whole.
+        let en3 = "III. Philosophy of nature.";
+        assert_eq!(split_sentences_en(en3, en3).len(), 1);
+    }
+
+    #[test]
+    fn test_roman_numeral_label_with_later_split() {
+        // The label suppresses only the split right after it; a genuine later
+        // boundary still splits, exactly like the numbered-label case.
+        let text = "II. On the Antithesis. Second sentence here.";
+        let result = split_sentences_en(text, text);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].0, "II. On the Antithesis.");
+        assert_eq!(result[1].0, "Second sentence here.");
     }
 
     #[test]
