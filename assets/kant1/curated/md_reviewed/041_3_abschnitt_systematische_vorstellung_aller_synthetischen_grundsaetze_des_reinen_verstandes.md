@@ -49,7 +49,7 @@ Die Tafel der Kategorien giebt uns die ganz natürliche Anweiſung zur Tafel der
         <span style="font-weight: bold; margin-bottom: 4px;">Poſtulate</span>
         <div style="display: flex; flex-direction: column;">
             <span>des</span>
-            <span>des empiriſchen Denkens</span>
+            <span>empiriſchen Denkens</span>
             <span>überhaupt.</span>
         </div>
     </div>

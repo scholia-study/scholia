@@ -7,9 +7,9 @@ aa_page: 57
 
 ## {{{ 57 }}} {{ 46 }} 2. Abschnitt. Von der Zeit
 
-## 4. Metaphysische Erörterung des Begriffs der Zeit.
+## § 4. Metaphysische Erörterung des Begriffs der Zeit.
 
-Die Zeit ist  kein empirischer Begriff, der irgend von einer Erfahrung abgezogen worden. Denn das Zugleichſein oder Aufeinanderfolgen würde ſelbſt nicht in die Wahrnehmung kommen, wenn die Vorſtellung der Zeit nicht _a priori_ zum Grunde läge. Nur unter deren Vorausſeßung kann man ſich vorſtellen: daß einiges zu einer und derſelben Zeit (zugleich) oder in verſchiedenen Zeiten (nach einander) ſei.
+Die Zeit ist 1) kein empirischer Begriff, der irgend von einer Erfahrung abgezogen worden. Denn das Zugleichſein oder Aufeinanderfolgen würde ſelbſt nicht in die Wahrnehmung kommen, wenn die Vorſtellung der Zeit nicht _a priori_ zum Grunde läge. Nur unter deren Vorausſeßung kann man ſich vorſtellen: daß einiges zu einer und derſelben Zeit (zugleich) oder in verſchiedenen Zeiten (nach einander) ſei.
 
 2) Die Zeit iſt eine nothwendige Vorſtellung, die allen Anſchauungen zum Grunde liegt. Man kann in Anſehung der Erſcheinungen überhaupt die Zeit ſelbſt nicht aufheben, ob man zwar ganz wohl die Erſcheinungen aus der Zeit wegnehmen kann. Die Zeit iſt alſo _a priori_ gegeben. In {{{ 58 }}} ihr allein iſt alle Wirklichkeit der Erſcheinungen möglich. Diese können insgeſammt wegfallen, aber ſie ſelbſt (als die allgemeine Bedingung ihrer Möglichkeit) kann nicht aufgehoben werden.
 

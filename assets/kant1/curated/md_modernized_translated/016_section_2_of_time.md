@@ -7,9 +7,9 @@ aa_page: 57
 
 ## {{{ 57 }}} {{ 46 }} Section 2. Of Time
 
-## 4. Metaphysical Exposition of the Concept of Time.
+## § 4. Metaphysical Exposition of the Concept of Time.
 
-Time is no empirical concept that has been drawn from any experience. For coexistence or succession would not even come into perception if the representation of time did not ground them _a priori_. Only under its presupposition can one represent to oneself that several things exist at one and the same time (simultaneously) or in different times (successively).
+Time is 1) no empirical concept that has been drawn from any experience. For coexistence or succession would not even come into perception if the representation of time did not ground them _a priori_. Only under its presupposition can one represent to oneself that several things exist at one and the same time (simultaneously) or in different times (successively).
 
 2) Time is a necessary representation that grounds all intuitions. In respect of appearances in general, one cannot take time itself away, though one can very well take appearances out of time. Time is therefore given _a priori_. In {{{ 58 }}} it alone is all actuality of appearances possible. These can collectively fall away, but time itself (as the general condition of their possibility) cannot be abolished.
 

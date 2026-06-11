@@ -5,7 +5,7 @@ depth: 3
 aa_page: 65
 ---
 
-## {{{ 65 }}} {{ 59 }} Allgemeine Anmerkungen zur transscendentalen Ästhetik
+## {{{ 65 }}} {{ 59 }} § 8. Allgemeine Anmerkungen zur transscendentalen Ästhetik
 
 I. Zuerst wird es nöthig ſein, uns ſo deutlich als möglich zu erklären, was in Anſehung der Grundbeſchaffenheit der ſinnlichen Erkenntniß überhaupt unſere Meinung ſei, um aller Mißdeutung derſelben vorzubeugen.
 
