@@ -393,6 +393,7 @@ pub async fn run(
             eid,
             &output,
             is_translation,
+            &source_node_map,
             &source_sentence_map,
             &source_fn_sentence_map,
             &system_ids,
