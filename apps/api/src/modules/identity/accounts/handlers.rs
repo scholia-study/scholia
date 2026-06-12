@@ -433,6 +433,14 @@ pub async fn forgot_password(
     let (raw_token, token_hash) = tokens::generate_token();
     let expires_at = OffsetDateTime::now_utc() + Duration::hours(1);
 
+    // Invalidate any prior unused reset tokens so only the newest one works.
+    let _ = sqlx::query(
+        "UPDATE password_reset_tokens SET used_at = now() WHERE user_id = $1 AND used_at IS NULL",
+    )
+    .bind(user_id)
+    .execute(&state.pool)
+    .await;
+
     let _ = sqlx::query(
         "INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
     )
@@ -604,7 +612,10 @@ pub async fn verify_email(
     ),
     tag = "auth"
 )]
-pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<ProfileResponse> {
+pub async fn get_profile(
+    State(state): State<AppState>,
+    user: AuthUser,
+) -> Result<Json<ProfileResponse>, AppError> {
     let row = sqlx::query(
         "SELECT password_hash IS NOT NULL AS has_password,
                 sort_name, handle, handle_changed_at,
@@ -613,8 +624,7 @@ pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<
     )
     .bind(user.id)
     .fetch_one(&state.pool)
-    .await
-    .unwrap();
+    .await?;
 
     let has_password: bool = row.get("has_password");
     let sort_name: Option<String> = row.get("sort_name");
@@ -652,7 +662,7 @@ pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<
         })
         .collect();
 
-    Json(ProfileResponse {
+    Ok(Json(ProfileResponse {
         id: user.id.to_string(),
         email: user.email,
         display_name: user.display_name,
@@ -667,7 +677,7 @@ pub async fn get_profile(State(state): State<AppState>, user: AuthUser) -> Json<
         has_password,
         roles,
         providers,
-    })
+    }))
 }
 
 /// Update display name
@@ -885,6 +895,14 @@ pub async fn request_password_change(
 ) -> Json<MessageResponse> {
     let (raw_token, token_hash) = tokens::generate_token();
     let expires_at = OffsetDateTime::now_utc() + Duration::hours(1);
+
+    // Invalidate any prior unused reset tokens so only the newest one works.
+    let _ = sqlx::query(
+        "UPDATE password_reset_tokens SET used_at = now() WHERE user_id = $1 AND used_at IS NULL",
+    )
+    .bind(user.id)
+    .execute(&state.pool)
+    .await;
 
     let _ = sqlx::query(
         "INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",

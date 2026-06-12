@@ -5,6 +5,7 @@ use api::system::state::AppState;
 use axum::http::HeaderValue;
 use sqlx::PgPool;
 use time::Duration;
+use tower_http::catch_panic::CatchPanicLayer;
 use tower_http::cors::CorsLayer;
 use tower_sessions::SessionManagerLayer;
 use tower_sessions::cookie::SameSite;
@@ -106,7 +107,10 @@ async fn main() {
         .layer(session_layer)
         .layer(cors)
         .merge(api::modules::billing::webhook_routes())
-        .with_state(app_state);
+        .with_state(app_state)
+        // Outermost: turn any handler panic into a 500 instead of a dropped
+        // connection. Wraps every route, including the merged Stripe webhook.
+        .layer(CatchPanicLayer::new());
 
     let addr = "0.0.0.0:4000";
     tracing::info!("Listening on {addr}");
