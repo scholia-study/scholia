@@ -98,7 +98,7 @@ spec:
             - name: CACHE_PURGE_URL
               value: http://scholia-proxy:8080
           envFrom:
-            # Pulls every other env var the API needs: SESSION_SECRET,
+            # Pulls every other env var the API needs:
             # RESEND_API_KEY, FROM_EMAIL, BACKEND_URL, FRONTEND_URL,
             # GITHUB_CLIENT_ID/SECRET/REDIRECT_URI, STRIPE_API_KEY,
             # STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_BASE/MID/HIGH.

@@ -37,7 +37,6 @@ pub fn pg_connect_options_from_env() -> PgConnectOptions {
 
 #[derive(Clone)]
 pub struct AppConfig {
-    pub session_secret: String,
     /// Whether the session cookie carries the `Secure` attribute. Defaults to
     /// `true` (production is served over HTTPS). Set `COOKIE_SECURE=false` for
     /// local HTTP dev, otherwise the browser won't send the cookie at all.
@@ -63,7 +62,6 @@ pub struct AppConfig {
 impl AppConfig {
     pub fn from_env() -> Self {
         let cfg = Self {
-            session_secret: env::var("SESSION_SECRET").expect("SESSION_SECRET must be set"),
             // Secure-by-default; only the literal "false" opts out (local dev).
             cookie_secure: env::var("COOKIE_SECURE")
                 .map(|v| v != "false")
