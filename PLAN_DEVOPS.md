@@ -1031,6 +1031,44 @@ emergency wipes, but the primary content path is Jobs. The old
      XFF entry). Blocked on the prod ingress trust boundary (the trusted edge
      CIDR), which doesn't exist yet. Local dev hits the API directly, so the
      peer IP is the real client and the limiter already works there.
+   - **CSP + security headers** (optional; auth audit #5, deferred
+     2026-06-12) — browser-enforced defense-in-depth behind the server-side
+     HTML sanitization already shipped for stored XSS. Optional: the XSS hole
+     is already closed by sanitization, so this is hardening, not a fix — nice
+     to have before public launch, but not required.
+     Set headers in the web SSR layer (a global request middleware:
+     `createStart` + `createMiddleware({ type: "request" })` + `setResponseHeader`
+     from `@tanstack/react-start`), gated to `import.meta.env.PROD` so Vite
+     dev/HMR (inline scripts + eval + ws) isn't broken.
+     - **Must be a nonce, NOT a hash.** TanStack Router emits its own inline
+       SSR-hydration scripts (`ScriptOnce`, dehydrated state) which are
+       dynamic per request — a `script-src 'self'`/hash policy would block
+       them and break the page. The framework supports a per-request nonce
+       via `router.options.ssr.nonce`, applied to *all* its scripts
+       including head scripts — so generate a nonce per request, set it on
+       the router and echo it into the CSP header. This also covers the
+       existing `window.__ENV__` head script automatically, so that inline
+       script can stay (dropping it is optional tidiness, unrelated to CSP,
+       and has a non-React-call-site ergonomics cost — see `fetcher.ts`).
+     - Policy: `default-src 'self'`; `script-src 'self' 'nonce-…'
+       https://js.stripe.com`; `style-src 'self' 'unsafe-inline'` (required —
+       MUI/Emotion inject runtime styles; style-injection is low-risk vs
+       script, which stays locked down); `img-src 'self' https: data:`
+       (GitHub avatars + sanitized article `<img>`); `font-src 'self'`
+       (self-hosted); `connect-src 'self' https://api.stripe.com`;
+       `frame-src https://js.stripe.com https://checkout.stripe.com
+       https://hooks.stripe.com` (Stripe Embedded Checkout); `frame-ancestors
+       'none'`; `base-uri 'self'`; `object-src 'none'`; `form-action 'self'`.
+     - Also: HSTS (`max-age=63072000; includeSubDomains`),
+       `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
+       `Referrer-Policy: strict-origin-when-cross-origin`.
+     - Verify under the policy: Stripe checkout (script/iframe/connect), the
+       MDXEditor article editor, and GitHub avatar image loading; confirm the
+       page boots (nonce reaches both the scripts and the header).
+     - Nonce + nginx cache: anonymous HTML is cached, so the nonce is reused
+       for the TTL rather than unique per hit — fine, since header and script
+       nonce stay matched within the cached unit and the anonymous page is
+       identical for all callers (nothing per-victim to inject).
 
 4. **Eventually**: prod cluster, prod overlay, Stripe live keys,
    soft launch.
