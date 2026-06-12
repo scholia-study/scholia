@@ -57,7 +57,7 @@ async fn main() {
 
     let session_layer = SessionManagerLayer::new(session_store)
         .with_name("scholia_session")
-        .with_secure(false) // false for localhost; set true in production
+        .with_secure(config.cookie_secure)
         .with_same_site(SameSite::Lax)
         .with_http_only(true)
         .with_expiry(tower_sessions::Expiry::OnInactivity(Duration::days(30)));

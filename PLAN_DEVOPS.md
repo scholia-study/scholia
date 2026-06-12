@@ -1015,6 +1015,22 @@ emergency wipes, but the primary content path is Jobs. The old
    - NetworkPolicy on Postgres ✅ done.
    - k3s `--secrets-encryption` — defer to prod cluster bringup.
    - Separate app-level DB user (not superuser) — v1 maintenance.
+   - **Auth rate-limit key** (auth audit #4, deferred 2026-06-12) — the API
+     auth limiter (`apps/api/src/system/rate_limit.rs`) keys on the TCP peer
+     IP via `PeerIpKeyExtractor`. Behind Traefik → nginx → api that peer is
+     the proxy, so all auth traffic shares one global bucket (no per-client
+     limiting). Fix is two coupled changes: (1) in
+     `apps/proxy/templates/default.conf.template`, resolve the real client and
+     collapse `X-Forwarded-For` to it —
+     `set_real_ip_from <trusted edge CIDR>;` (k3s default pod net
+     `10.42.0.0/16`), `real_ip_header X-Forwarded-For;`,
+     `real_ip_recursive on;`, `proxy_set_header X-Forwarded-For $remote_addr;`
+     — then (2) switch the API to `tower_governor::SmartIpKeyExtractor`.
+     **Order matters:** swapping the extractor before the proxy rewrite makes
+     the limit trivially spoofable (it trusts the leftmost, client-supplied
+     XFF entry). Blocked on the prod ingress trust boundary (the trusted edge
+     CIDR), which doesn't exist yet. Local dev hits the API directly, so the
+     peer IP is the real client and the limiter already works there.
 
 4. **Eventually**: prod cluster, prod overlay, Stripe live keys,
    soft launch.

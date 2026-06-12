@@ -1,3 +1,5 @@
+use std::sync::OnceLock;
+
 use argon2::password_hash::SaltString;
 use argon2::password_hash::rand_core::OsRng;
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
@@ -271,41 +273,43 @@ pub async fn login(
         .into_response();
     }
 
-    let row = match sqlx::query(
+    let maybe_row = sqlx::query(
         "SELECT id, email, display_name, password_hash, avatar_url, email_verified_at FROM users WHERE email = $1",
     )
     .bind(&email)
     .fetch_optional(&state.pool)
     .await
-    {
-        Ok(Some(r)) => r,
-        _ => return (StatusCode::UNAUTHORIZED, "Invalid credentials").into_response(),
+    .unwrap_or(None);
+
+    // Always run exactly one Argon2 verification — against the real hash when
+    // the account exists, otherwise a dummy — so response time doesn't reveal
+    // whether the email is registered. (forgot-password is already
+    // enumeration-safe; this closes the login timing oracle.)
+    let stored_hash: Option<String> = maybe_row
+        .as_ref()
+        .and_then(|r| r.get::<Option<String>, _>("password_hash"));
+    let hash_to_verify = stored_hash
+        .as_deref()
+        .unwrap_or_else(|| dummy_password_hash());
+    let password_ok = PasswordHash::new(hash_to_verify)
+        .map(|parsed| {
+            Argon2::default()
+                .verify_password(body.password.as_bytes(), &parsed)
+                .is_ok()
+        })
+        .unwrap_or(false);
+
+    // Reject with the same generic response whether the account is missing,
+    // is OAuth-only (no password hash), or the password simply didn't match.
+    let (Some(row), true) = (maybe_row, password_ok && stored_hash.is_some()) else {
+        return (StatusCode::UNAUTHORIZED, "Invalid credentials").into_response();
     };
 
     let user_id: Uuid = row.get("id");
     let user_email: String = row.get("email");
     let user_display_name: String = row.get("display_name");
-    let password_hash: Option<String> = row.get("password_hash");
     let avatar_url: Option<String> = row.get("avatar_url");
     let email_verified_at: Option<OffsetDateTime> = row.get("email_verified_at");
-
-    // Verify password
-    let hash_str = match &password_hash {
-        Some(h) => h,
-        None => return (StatusCode::UNAUTHORIZED, "Invalid credentials").into_response(),
-    };
-
-    let parsed_hash = match PasswordHash::new(hash_str) {
-        Ok(h) => h,
-        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
-    };
-
-    if Argon2::default()
-        .verify_password(body.password.as_bytes(), &parsed_hash)
-        .is_err()
-    {
-        return (StatusCode::UNAUTHORIZED, "Invalid credentials").into_response();
-    }
 
     // Check email verification
     if email_verified_at.is_none() {
@@ -909,4 +913,18 @@ fn is_unique_violation(e: &sqlx::Error) -> bool {
         return db_err.code().as_deref() == Some("23505");
     }
     false
+}
+
+/// A fixed, valid Argon2 PHC string used to equalize login timing when no
+/// account (or no password) matches. Computed once on first use; the password
+/// it encodes is irrelevant — it exists only so the verify cost is always paid.
+fn dummy_password_hash() -> &'static str {
+    static HASH: OnceLock<String> = OnceLock::new();
+    HASH.get_or_init(|| {
+        let salt = SaltString::generate(&mut OsRng);
+        Argon2::default()
+            .hash_password(b"timing-equalization-placeholder", &salt)
+            .expect("hash dummy password")
+            .to_string()
+    })
 }

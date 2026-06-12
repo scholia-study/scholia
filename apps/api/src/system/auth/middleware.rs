@@ -32,7 +32,15 @@ pub async fn set_session_user(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    // Save the session first so it gets an ID
+    // Rotate the session ID on login/elevation to defeat session fixation:
+    // any pre-auth session (e.g. one carrying OAuth CSRF state) is discarded
+    // and the authenticated session gets a fresh ID.
+    session
+        .cycle_id()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    // Save so the session gets its (new) ID before we record the mapping.
     session
         .save()
         .await
