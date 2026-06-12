@@ -11,5 +11,6 @@ pub mod email;
 pub mod error;
 pub mod migrate;
 pub mod rate_limit;
+pub mod sanitize;
 pub mod state;
 pub mod validation;

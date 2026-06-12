@@ -49,13 +49,15 @@ pub async fn create_article_quotation(
     check_max_len("Quotation text", &body.text, MAX_ARTICLE_QUOTATION_TEXT)?;
     check_max_len("Quotation html", &body.html, MAX_ARTICLE_QUOTATION_HTML)?;
 
+    let html = crate::system::sanitize::clean_inline_html(&body.html);
+
     let (article_quotation, created) =
         crate::modules::writing::article_quotations::db::create_article_quotation(
             &state.pool,
             user.id,
             article_id,
             &body.text,
-            &body.html,
+            &html,
         )
         .await?;
 

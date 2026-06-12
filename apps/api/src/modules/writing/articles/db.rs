@@ -394,19 +394,23 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
     }
 
     if !bib_entries.is_empty() {
-        html_output.push_str("\n<section class=\"bibliography\">\n<h2>Bibliography</h2>\n<ul style=\"list-style:none;padding:0;margin:0\">\n");
+        html_output.push_str("\n<section class=\"bibliography\">\n<h2>Bibliography</h2>\n<ul>\n");
         let mut rendered: Vec<(String, String)> = bib_entries
             .iter()
             .map(|e| (e.sort_key(), e.render(frontend_url)))
             .collect();
         rendered.sort_by(|a, b| a.0.cmp(&b.0));
         for (_key, entry) in rendered {
-            html_output.push_str(&format!("<li style=\"margin:0.25em 0\">{entry}</li>\n"));
+            html_output.push_str(&format!("<li>{entry}</li>\n"));
         }
         html_output.push_str("</ul>\n</section>\n");
     }
 
-    html_output
+    // Final chokepoint: strip any raw HTML the author embedded in their
+    // markdown (pulldown-cmark passes it through verbatim) while preserving
+    // the embed/citation/bibliography markup built above. The frontend
+    // renders this with a non-sanitizing parser, so it must be safe here.
+    crate::system::sanitize::clean_article_html(&html_output)
 }
 
 // ── Citation helpers ─────────────────────────────────────

@@ -69,3 +69,15 @@
 .antiqua {
   font-style: italic;
 }
+
+/* Article bibliography. Server-rendered markup carries no inline styles
+   (sanitized server-side); presentation lives here. */
+.bibliography ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bibliography li {
+  margin: 0.25em 0;
+}
