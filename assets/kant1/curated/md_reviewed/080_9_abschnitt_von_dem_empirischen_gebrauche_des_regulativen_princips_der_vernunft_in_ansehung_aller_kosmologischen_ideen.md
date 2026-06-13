@@ -1,0 +1,12 @@
+---
+position: 80
+label: "9. Abschnitt. Von dem empirischen Gebrauche des regulativen Princips der Vernunft in Ansehung aller kosmologischen Ideen"
+depth: 6
+aa_page: 353
+---
+
+## {{{ 353 }}} Neunter Abſchnitt. Von dem empiriſchen Gebrauche des regulativen Princips der Vernunft in Anſehung aller kosmologiſchen Ideen.
+
+Da es, wie wir mehrmals gezeigt haben, keinen transſcendentalen Gebrauch, ſo wenig von reinen Verſtandes- als Vernunftbegriffen, giebt; da die abſolute Totalität der Reihen der Bedingungen in der Sinnenwelt ſich lediglich auf einen transſcendentalen Gebrauch der Vernunft fußt, welche dieſe unbedingte Vollſtändigkeit von demjenigen fordert, was ſie {{ 544 }} als ***Ding an ſich ſelbſt*** vorausſetzt, da die Sinnenwelt aber dergleichen nicht enthält: ſo kann die Rede niemals mehr von der abſoluten Größe der Reihen in derſelben ſein, ob ſie begrenzt, oder ***an ſich*** unbegrenzt ſein mögen, ſondern nur, wie weit wir im empiriſchen Regreſſus bei Zurückführung der Erfahrung auf ihre Bedingungen zurückgehen ſollen, um nach der Regel der Vernunft bei keiner andern, als dem Gegenſtande angemeſſenen Beantwortung der Fragen derſelben ſtehen zu bleiben.
+
+Es iſt alſo nur die ***Gültigkeit des Vernunftprincips***, als einer Regel der ***Fortſetzung*** und Größe einer möglichen Erfahrung, die uns allein übrig bleibt, nachdem ſeine Ungültigkeit als eines conſtitutiven Grundſatzes der Erſcheinungen an ſich ſelbſt hinlänglich dargethan worden. Auch wird, wenn wir jene ungezweifelt vor Augen legen können, der Streit der Vernunft mit ſich ſelbſt völlig geendigt, indem nicht allein durch kritiſche Auflöſung der Schein, der ſie mit ſich entzweiete, aufgehoben worden, ſondern an deſſen Statt der Sinn, in welchem ſie mit ſich ſelbſt zuſammenſtimmt und deſſen Mißdeutung allein den Streit veranlaßte, aufgeſchloſſen und ein ſonſt ***dialektiſcher*** Grundſatz in einen ***doctrinalen*** verwandelt wird. In der That wenn dieſer ſeiner ſubjectiven Bedeutung nach, den größtmöglichen Verſtandesgebrauch in der Erfahrung den Gegenſtänden derſelben angemeſſen zu beſtimmen, bewährt werden kann: ſo iſt es gerade eben ſo viel, als ob er wie ein Axiom (welches aus {{ 545 }} reiner Vernunft unmöglich iſt) die Gegenſtände an ſich ſelbſt _a priori_ beſtimmte; denn auch dieſes könnte in Anſehung der Objecte der Erfahrung keinen größeren Einfluß auf die Erweiterung und Berichtigung unſerer {{{ 354 }}} Erkenntniß haben, als daß es ſich in dem ausgebreitetſten Erfahrungsgebrauche unſeres Verſtandes thätig bewieſe.

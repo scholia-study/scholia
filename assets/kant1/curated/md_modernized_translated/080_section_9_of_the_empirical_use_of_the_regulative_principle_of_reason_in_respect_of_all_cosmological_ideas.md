@@ -1,0 +1,12 @@
+---
+position: 80
+label: "Section 9. Of the empirical use of the regulative principle of reason, in respect of all cosmological ideas"
+depth: 6
+aa_page: 353
+---
+
+## {{{ 353 }}} Section 9. Of the empirical use of the regulative principle of reason in respect of all cosmological ideas.
+
+Since, as we have repeatedly shown, there is just as little transcendental use of pure concepts of understanding as there is of concepts of reason, because the absolute totality of series of conditions in the world of sense is based solely on a transcendental use of reason that demands this unconditioned completeness from what it presupposes {{ 544 }} is a ***thing in itself***; and since the world of sense, however, contains nothing like that completeness, there can never again be an issue about the absolute magnitude of the series in this world, whether it might be bounded or ***in itself*** unbounded, but only about how far we should go back in the empirical regress when we trace experience back to its conditions, so that, following the rule of reason, we do not stop with any answer to its questions except that which is appropriate to the object.
+
+Thus the only thing left to us is the ***validity of the principle of reason***, as a rule for the ***continuation*** and magnitude of a possible experience, once its invalidity as a constitutive principle of appearances in themselves has been adequately demonstrated. If we can keep the former in view and beyond doubt, then the conflict of reason with itself will also be entirely at an end, since not only will the illusion that put reason at odds with itself have been done away with through its critical dissolution, but in place of it, that sense will have been uncovered in which reason agrees with itself, and whose misinterpretation was the sole cause of the conflict; and a principle that would otherwise be ***dialectical*** will be transformed into a ***doctrinal*** principle. In fact, if this principle can be preserved in its subjective signification for suitably determining the greatest possible use of the understanding in experience in regard to its objects, then that would be just as if the principle were (what it is impossible to get from {{ 545 }} pure reason) an axiom determining objects in themselves _a priori_; for even this could have no greater influence on the extension and correction of our {{{ 354 }}} cognition in regard to objects of experience than by actively proving itself in the most extensive use of our understanding in experience.
