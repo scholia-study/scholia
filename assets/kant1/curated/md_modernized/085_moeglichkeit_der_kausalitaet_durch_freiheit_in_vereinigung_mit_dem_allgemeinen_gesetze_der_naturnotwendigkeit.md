@@ -1,7 +1,7 @@
 ---
 position: 85
 label: "Möglichkeit der Kausalität durch Freiheit, in Vereinigung mit dem allgemeinen Gesetze der Naturnotwendigkeit"
-depth: 7
+depth: 8
 aa_page: 366
 ---
 

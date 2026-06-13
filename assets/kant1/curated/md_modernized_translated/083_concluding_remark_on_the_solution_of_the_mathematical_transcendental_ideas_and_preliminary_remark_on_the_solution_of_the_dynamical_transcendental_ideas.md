@@ -1,7 +1,7 @@
 ---
 position: 83
 label: "Concluding remark on the solution of the mathematical-transcendental ideas, and preliminary remark on the solution of the dynamical-transcendental ideas"
-depth: 7
+depth: 8
 aa_page: 360
 ---
 

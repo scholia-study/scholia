@@ -521,7 +521,7 @@ const TOC: &[FlatEntry] = &[
     },
     FlatEntry {
         aa_page: 360,
-        depth: 7,
+        depth: 8,
         label: "Concluding remark on the solution of the mathematical-transcendental ideas, and preliminary remark on the solution of the dynamical-transcendental ideas",
         slug_override: None,
     },
@@ -533,13 +533,13 @@ const TOC: &[FlatEntry] = &[
     },
     FlatEntry {
         aa_page: 366,
-        depth: 7,
+        depth: 8,
         label: "Possibility of causality through freedom, in harmony with the universal law of natural necessity",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 368,
-        depth: 7,
+        depth: 8,
         label: "Explanation of the cosmological idea of freedom in connection with universal natural necessity",
         slug_override: None,
     },

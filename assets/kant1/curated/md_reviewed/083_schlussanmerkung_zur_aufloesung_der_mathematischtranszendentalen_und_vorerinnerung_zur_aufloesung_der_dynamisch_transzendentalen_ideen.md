@@ -1,7 +1,7 @@
 ---
 position: 83
 label: "Schlußanmerkung zur Auflösung der mathematischtranszendentalen, und Vorerinnerung zur Auflösung der dynamisch-transzendentalen Ideen"
-depth: 7
+depth: 8
 aa_page: 360
 ---
 

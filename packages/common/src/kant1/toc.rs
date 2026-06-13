@@ -522,7 +522,7 @@ const TOC: &[FlatEntry] = &[
     },
     FlatEntry {
         aa_page: 360,
-        depth: 7,
+        depth: 8,
         label: "Schlußanmerkung zur Auflösung der mathematischtranszendentalen, und Vorerinnerung zur Auflösung der dynamisch-transzendentalen Ideen",
         slug_override: None,
     },
@@ -534,13 +534,13 @@ const TOC: &[FlatEntry] = &[
     },
     FlatEntry {
         aa_page: 366,
-        depth: 7,
+        depth: 8,
         label: "Möglichkeit der Kausalität durch Freiheit, in Vereinigung mit dem allgemeinen Gesetze der Naturnotwendigkeit",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 368,
-        depth: 7,
+        depth: 8,
         label: "Erläuterung der kosmologischen Idee einer Freiheit in Verbindung mit der allgemeinen Naturnotwendigkeit",
         slug_override: None,
     },

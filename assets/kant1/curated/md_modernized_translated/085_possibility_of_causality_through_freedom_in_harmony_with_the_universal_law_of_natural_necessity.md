@@ -1,7 +1,7 @@
 ---
 position: 85
 label: "Possibility of causality through freedom, in harmony with the universal law of natural necessity"
-depth: 7
+depth: 8
 aa_page: 366
 ---
 
