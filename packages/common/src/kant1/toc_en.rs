@@ -632,13 +632,13 @@ const TOC: &[FlatEntry] = &[
     // II. Transcendental Doctrine of Method
     // -----------------------------------------------------------------------
     FlatEntry {
-        aa_page: 465,
+        aa_page: 463,
         depth: 1,
         label: "II. Transcendental Doctrine of Method",
         slug_override: None,
     },
     FlatEntry {
-        aa_page: 466,
+        aa_page: 465,
         depth: 2,
         label: "Introduction",
         slug_override: Some("introduction-methodology"),

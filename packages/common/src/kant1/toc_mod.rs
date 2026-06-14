@@ -637,13 +637,13 @@ const TOC: &[FlatEntry] = &[
     // II. Transscendentale Methodenlehre
     // -----------------------------------------------------------------------
     FlatEntry {
-        aa_page: 465,
+        aa_page: 463,
         depth: 1,
         label: "II. Transscendentale Methodenlehre",
         slug_override: None,
     },
     FlatEntry {
-        aa_page: 466,
+        aa_page: 465,
         depth: 2,
         label: "Einleitung",
         slug_override: Some("einleitung-methodenlehre"),

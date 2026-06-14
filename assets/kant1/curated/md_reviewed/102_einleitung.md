@@ -1,0 +1,12 @@
+---
+position: 102
+label: "Einleitung"
+depth: 2
+aa_page: 465
+---
+
+## Einleitung
+
+{{{ 465 }}} {{ 735 }} Wenn ich den Jnbegriff aller Erkenntniß der reinen und ſpeculativen Vernunft wie ein Gebäude anſehe, dazu wir wenigſtens die Jdee in uns haben, ſo kann ich ſagen: wir haben in der transſcendentalen Elementarlehre den Bauzeug überſchlagen und beſtimmt, zu welchem Gebäude, von welcher Höhe und Feſtigkeit er zulange. Freilich fand es ſich, daß, ob wir zwar einen Thurm im Sinne hatten, der bis an den Himmel reichen ſollte, der Vorrath der Materialien doch nur zu einem Wohnhauſe zureichte, welches zu unſeren Geſchäften auf der Ebene der Erfahrung gerade geräumig und hoch genug war, ſie zu überſehen; daß aber jene kühne Unternehmung aus Mangel an Stoff fehlſchlagen mußte, ohne einmal auf die Sprachverwirrung zu rechnen, welche die Arbeiter über den Plan unvermeidlich entzweien und ſie in alle Welt zerſtreuen mußte, um ſich, ein jeder nach ſeinem Entwurfe, beſonders anzubauen. Jetzt iſt es uns nicht ſowohl um die Materialien, als vielmehr um den Plan zu thun und, indem wir gewarnt ſind, es nicht auf einen beliebigen blinden Entwurf, der vielleicht unſer ganzes Vermögen überſteigen könnte, zu wagen, gleichwohl doch von der Errichtung eines feſten Wohnſitzes nicht wohl abſtehen können, den Anſchlag zu einem Gebäude in Verhältniß auf den Vorrath, der uns gegeben und zugleich unſerem Bedürfniß angemeſſen iſt, zu machen.
+
+Jch verſtehe alſo unter der transſcendentalen Methodenlehre die {{ 736 }} Beſtimmung der formalen Bedingungen eines vollſtändigen Syſtems der reinen Vernunft. Wir werden es in dieſer Abſicht mit einer ***Disciplin***, einem ***Kanon***, einer ***Architektonik***, endlich einer ***Geſchichte*** der reinen Vernunft zu thun haben und dasjenige in transſcendentaler Abſicht leiſten, was unter dem Namen einer ***praktiſchen Logik*** in Anſehung des Gebrauchs des Verſtandes überhaupt in den Schulen geſucht, aber ſchlecht {{{ 466 }}} geleiſtet wird, weil, da die allgemeine Logik auf keine beſondere Art der Verſtandeserkenntniß (z. B. nicht auf die reine), auch nicht auf gewiſße Gegenſtände eingeſchränkt iſt, ſie, ohne Kenntniſße aus anderen Wiſſenſchaften zu borgen, nichts mehr thun kann, als Titel zu ***möglichen Methoden*** und techniſche Ausdrücke, deren man ſich in Anſehung des Syſtematiſchen in allerlei Wiſſenſchaften bedient, vorzutragen, die den Lehrling zum voraus mit Namen bekannt machen, deren Bedeutung und Gebrauch er künftig allererſt ſoll kennen lernen.
