@@ -149,6 +149,23 @@ fn run_extract(modernized_dir_str: &str, reviewed_dir_str: &str, output_file: &s
         );
 
         if blocks.len() != original_blocks.len() {
+            eprintln!("Error: block count mismatch in {}", expected_name);
+            eprintln!("MODERNIZED blocks (len {}):", blocks.len());
+            for (idx, b) in blocks.iter().enumerate() {
+                eprintln!("  Block {}: {:?}", idx, b.block_type);
+                eprintln!(
+                    "    Content: {:?}",
+                    b.text.chars().take(60).collect::<String>()
+                );
+            }
+            eprintln!("REVIEWED blocks (len {}):", original_blocks.len());
+            for (idx, b) in original_blocks.iter().enumerate() {
+                eprintln!("  Block {}: {:?}", idx, b.block_type);
+                eprintln!(
+                    "    Content: {:?}",
+                    b.text.chars().take(60).collect::<String>()
+                );
+            }
             panic!(
                 "{}: block count mismatch: modernized has {}, reviewed has {}",
                 expected_name,
