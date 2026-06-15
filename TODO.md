@@ -1,6 +1,8 @@
 ## 🐞 BUGS
 - saving a range quotation wrongly shows "edit" icon
-- refine kant1 headings
+- cannot save diagram
+- mobile layout broken
+- Bible layout comparison broken
 - purge being sent when editing a draft article?
   - @apps/api:dev: 2026-05-31T21:07:36.338507Z  WARN cache: PURGE /api/articles/kant-stop failed: error sending request for url (http://nginx-cache:8080/api/articles/kant-stop)
 
@@ -10,6 +12,7 @@
 - rate-limiting on backend API
 
 ## 🪡 PATCH
+- refine kant1 headings
 - need filter on tags for quotation in editor
 - Verify the production build path end-to-end. pnpm --filter @apps/web build && pnpm --filter @apps/web start should
   produce a Node SSR server. We've never actually run it through the proxy. Worth a smoke test before assuming k3s will
