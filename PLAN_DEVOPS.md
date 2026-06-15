@@ -555,8 +555,8 @@ Cloud's free tier is still the lower-effort default.)
       route exception, PURGE on `:8080`)
 - [x] Rust `cache::invalidate` helper + handler wiring (articles
       update/publish/archive, profile)
-- [ ] Wire PURGE into ingest binaries (`bible_to_db`, `kant1_*`) so a
-      re-ingest invalidates the affected book/chapter URLs
+- [x] Wire PURGE into ingest binaries (`bible_to_db`, `kant1_*`) so a
+      re-ingest invalidates the affected book/chapter URLs. Syncs were set up to handle this on any service deployment.
 - [x] Migrations bootstrap (sqlx-cli, init container)
 - [x] Update auto-memory note about `db_reset.sh` flow
 - [ ] Regenerate openapi.json + frontend client (run as part of any
