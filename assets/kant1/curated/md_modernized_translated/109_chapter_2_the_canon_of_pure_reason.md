@@ -1,0 +1,14 @@
+---
+position: 109
+label: "Chapter 2. The Canon of Pure Reason"
+depth: 2
+aa_page: 517
+---
+
+## {{{ 517 }}} {{ 823 }} Chapter 2. The Canon of Pure Reason
+
+It is humiliating for human reason that it accomplishes nothing in its pure use, and even requires a discipline to check its extravagances and avoid the deceptions that come from them. But, on the other side, that reason can and must exercise this discipline itself, without allowing anything else to censor it, elevates it and gives it confidence in itself, for the boundaries that it is required to set for its speculative use at the same time limit the sophistical pretensions of every opponent, and thus it can secure against all attacks everything that may still be left to it from its previously exaggerated demands. The greatest and perhaps only utility of all philosophy of pure reason is thus only negative, namely that it does not serve for expansion, as an organon, but rather, as a discipline, serves for the determination of boundaries, and instead of discovering truth it has only the silent merit of guarding against errors.
+
+Nevertheless, there must somewhere be a source of positive cognitions that belong in the domain of pure reason, and that perhaps {{ 824 }} give occasion for errors only through misunderstanding, but that in fact constitute the goal of the strenuous effort of reason. For to what cause should the unquenchable desire to find a firm footing somewhere beyond all bounds of experience otherwise be ascribed? It has a presentiment of objects that carry a great interest with them. It takes the path of mere speculation in order to come closer to these; but they flee before it. Presumably it may hope for better luck on the only path that still remains to it, namely that of its ***practical*** use.
+
+I understand by a canon the sum total of the _a priori_ principles of the correct use of certain cognitive faculties in general. Thus general logic in its analytic part is a canon for the understanding and reason in general, but only as far as form is concerned, for it abstracts from all content. Thus the transcendental analytic was the canon of the pure ***understanding***; for it alone is capable of true synthetic _a priori_ cognitions. But where no correct use of a cognitive faculty {{{ 518 }}} is possible, there is no canon. Now all synthetic cognition of pure ***reason*** in its speculative use is, according to all proofs conducted up to now, completely impossible. Hence there is no canon at all of the speculative use of reason (for this use is thoroughly dialectical), but rather all transcendental logic is in this respect nothing but a discipline. {{ 825 }} Consequently, if there is any correct use of pure reason at all, in which case there must also be a ***canon*** of it, this will concern not the speculative but rather the ***practical use of reason***, which we will therefore now investigate.
