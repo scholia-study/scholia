@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 #
-# Wipe the local Postgres schema and re-apply all sqlx migrations.
-#
-# ! DO NOT RUN UNLESS PERMISSION IS GIVEN EXPLICITLY
+# Apply pending sqlx migrations to the local Postgres WITHOUT wiping data.
 #
 # Prerequisite: `cargo install sqlx-cli --no-default-features --features postgres,rustls`
 
@@ -16,6 +14,8 @@ if ! command -v sqlx >/dev/null 2>&1; then
     exit 1
 fi
 
-psql "$DB_URL" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+echo "Migration status before:"
+DATABASE_URL="$DB_URL" sqlx migrate info --source db/migrations
 
+echo
 DATABASE_URL="$DB_URL" sqlx migrate run --source db/migrations
