@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
     getGetLibrarySuspenseQueryOptions,
     useGetLibrarySuspense,
@@ -94,10 +94,10 @@ function GroupSection({ group }: { group: LibraryGroup }) {
     // Bible-shape: one compilation work in many translations.
     // Pills become the primary navigation, translation collapses to a
     // single subtle chooser (PLAN_BIG_BOOKS.md Q1/Q2/Q5).
-    const isBibleShape = group.book_pills.length > 0;
+    const isCompilationShape = group.book_pills.length > 0;
 
-    if (isBibleShape) {
-        return <BibleShapeGroup group={group} accent={accent} />;
+    if (isCompilationShape) {
+        return <CompilationShapeGroup group={group} accent={accent} />;
     }
 
     return (
@@ -198,7 +198,7 @@ function useBibleTranslation(
     return [slug, setAndPersist];
 }
 
-function BibleShapeGroup({
+function CompilationShapeGroup({
     group,
     accent,
 }: {
@@ -213,6 +213,10 @@ function BibleShapeGroup({
     const activeVersion = versions.find((v) => v.book_slug === activeSlug);
     const activeLabel =
         activeVersion?.publisher ?? activeVersion?.language.toUpperCase() ?? "";
+    // Single-edition compilations (e.g. Shakespeare) have no translation
+    // versions, so activeSlug is empty; fall back to the group's own book.
+    const pillBookSlug =
+        activeSlug || group.primary_slug?.replace(/^\/books\//, "") || "";
 
     return (
         <section>
@@ -252,22 +256,23 @@ function BibleShapeGroup({
                 className="h-0.5 rounded-full mb-4"
                 style={{ backgroundColor: accent }}
             />
-            <div className="flex flex-wrap gap-1.5">
+            <div className="text-justify leading-6">
                 {group.book_pills.map((p) => (
-                    <Link
-                        key={p.node_slug}
-                        to="/books/$bookSlug"
-                        params={{ bookSlug: activeSlug }}
-                        hash={p.node_slug}
-                        title={
-                            activeLabel
-                                ? `Open ${p.label} (${activeLabel})`
-                                : `Open ${p.label}`
-                        }
-                        className="cursor-pointer text-xs px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500 hover:text-stone-900 transition-colors"
-                    >
-                        {p.label}
-                    </Link>
+                    <Fragment key={p.node_slug}>
+                        <Link
+                            to="/books/$bookSlug"
+                            params={{ bookSlug: pillBookSlug }}
+                            hash={p.node_slug}
+                            title={
+                                activeLabel
+                                    ? `Open ${p.label} (${activeLabel})`
+                                    : `Open ${p.label}`
+                            }
+                            className="inline-block cursor-pointer text-xs px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500 hover:text-stone-900 transition-colors"
+                        >
+                            {p.label}
+                        </Link>{" "}
+                    </Fragment>
                 ))}
             </div>
         </section>

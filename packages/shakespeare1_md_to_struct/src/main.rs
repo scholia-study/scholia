@@ -33,8 +33,19 @@ struct FrontMatter {
     depth: i16,
 }
 
-/// Verse body parsed into stanzas, each a list of lines.
-type Stanzas = Vec<Vec<String>>;
+/// A parsed content block from a sonnet body: a `## N` heading or a verse stanza.
+#[derive(Clone, Copy, PartialEq)]
+enum BlockKind {
+    Heading,
+    Verse,
+}
+
+struct ParsedBlock {
+    kind: BlockKind,
+    lines: Vec<String>,
+}
+
+type Stanzas = Vec<ParsedBlock>;
 
 fn main() {
     let cli = Cli::parse();
@@ -71,6 +82,25 @@ fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
     let mut toc_nodes = Vec::new();
     let mut sentence_number = 1i32; // global per-book line enumeration
 
+    // The "Sonnets" work: a depth-0, source-anchored node (Bible-shape pill).
+    // Pure navigation container — no content of its own; the 154 sonnets are its
+    // children.
+    toc_nodes.push(TocNodeData {
+        source_ref: sonnets::SONNETS_SOURCE_REF.to_string(),
+        slug: sonnets::SONNETS_SLUG.to_string(),
+        path: sonnets::SONNETS_PATH.to_string(),
+        sort_order: 0,
+        depth: 0,
+        label: sonnets::SONNETS_LABEL.to_string(),
+        label_html: sonnets::SONNETS_LABEL.to_string(),
+        parent_source_ref: None,
+        source: Some(NodeSource {
+            title: sonnets::SONNETS_SOURCE_TITLE.to_string(),
+            publication_year: Some(sonnets::SONNETS_YEAR),
+        }),
+        content_blocks: vec![],
+    });
+
     for (n, fname) in &expected {
         let (m_fm, m_blocks) = parse_file(modernized_dir, fname)?;
         let (r_fm, r_blocks) = parse_file(reviewed_dir, fname)?;
@@ -98,12 +128,12 @@ fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
 
     let output = Output {
         book: BookData {
-            slug: "shakespeares-sonnets".into(),
-            title: "Shakespeare's Sonnets".into(),
+            slug: sonnets::BOOK_SLUG.into(),
+            title: sonnets::BOOK_TITLE.into(),
             author: "William Shakespeare".into(),
             language: "en".into(),
-            source: "1609 Quarto (EEBO-TCP A12044, CC0); modern spelling from PoetryDB".into(),
-            source_date: "1609".into(),
+            source: "A Scholia compilation; each work carries its own source provenance.".into(),
+            source_date: String::new(),
         },
         reference_systems: vec![ReferenceSystemData {
             slug: "line".into(),
@@ -135,61 +165,98 @@ fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
 fn build_node(
     n: u32,
     fm: &FrontMatter,
-    modern: &[Vec<String>],
-    reviewed: &[Vec<String>],
+    modern: &[ParsedBlock],
+    reviewed: &[ParsedBlock],
     sentence_number: &mut i32,
 ) -> Result<TocNodeData, Box<dyn std::error::Error>> {
     let mut content_blocks = Vec::with_capacity(modern.len());
     let mut line_in_node = 0i32; // canonical line number, reset per sonnet
 
-    for (block_pos, (m_lines, r_lines)) in modern.iter().zip(reviewed.iter()).enumerate() {
-        if m_lines.len() != r_lines.len() {
+    for (block_pos, (mb, rb)) in modern.iter().zip(reviewed.iter()).enumerate() {
+        if mb.kind != rb.kind {
+            return Err(format!(
+                "Sonnet {n} block {block_pos}: block-kind mismatch between layers"
+            )
+            .into());
+        }
+        if mb.lines.len() != rb.lines.len() {
             return Err(format!(
                 "Sonnet {n} block {block_pos}: line count mismatch — modernized {}, reviewed {}",
-                m_lines.len(),
-                r_lines.len()
+                mb.lines.len(),
+                rb.lines.len()
             )
             .into());
         }
 
-        let mut sentences = Vec::with_capacity(m_lines.len());
-        for (i, (m_raw, r_raw)) in m_lines.iter().zip(r_lines.iter()).enumerate() {
-            let (indent, m_text) = strip_indent(m_raw);
-            let r_text = r_raw.trim();
-            line_in_node += 1;
+        match mb.kind {
+            BlockKind::Heading => {
+                // The `## N` sonnet-number heading. One non-numbered sentence;
+                // no line marker (it isn't a verse line).
+                let m_text = mb.lines[0].trim();
+                let r_text = rb.lines[0].trim();
+                content_blocks.push(ContentBlockData {
+                    position: block_pos as i16,
+                    block_type: "heading".into(),
+                    paragraph_number: None,
+                    figure_number: None,
+                    text: md_to_plain(m_text),
+                    html: md_to_html(m_text),
+                    original_text: Some(md_to_plain(r_text)),
+                    original_html: Some(md_to_html(r_text)),
+                    sentences: vec![SentenceData {
+                        position: 0,
+                        sentence_number: None,
+                        segment: None,
+                        indent: None,
+                        text: md_to_plain(m_text),
+                        html: md_to_html(m_text),
+                        original_text: Some(md_to_plain(r_text)),
+                        original_html: Some(md_to_html(r_text)),
+                        page_markers: vec![],
+                    }],
+                });
+            }
+            BlockKind::Verse => {
+                let mut sentences = Vec::with_capacity(mb.lines.len());
+                for (i, (m_raw, r_raw)) in mb.lines.iter().zip(rb.lines.iter()).enumerate() {
+                    let (indent, m_text) = strip_indent(m_raw);
+                    let r_text = r_raw.trim();
+                    line_in_node += 1;
 
-            sentences.push(SentenceData {
-                position: i as i16,
-                sentence_number: Some(*sentence_number),
-                segment: None,
-                indent,
-                text: md_to_plain(&m_text),
-                html: md_to_html(&m_text),
-                original_text: Some(md_to_plain(r_text)),
-                original_html: Some(md_to_html(r_text)),
-                page_markers: vec![PageMarkerData {
-                    system: "line".into(),
-                    ref_value: line_in_node.to_string(),
-                    sort_order: line_in_node - 1,
-                    char_offset: 0,
-                }],
-            });
-            *sentence_number += 1;
+                    sentences.push(SentenceData {
+                        position: i as i16,
+                        sentence_number: Some(*sentence_number),
+                        segment: None,
+                        indent,
+                        text: md_to_plain(&m_text),
+                        html: md_to_html(&m_text),
+                        original_text: Some(md_to_plain(r_text)),
+                        original_html: Some(md_to_html(r_text)),
+                        page_markers: vec![PageMarkerData {
+                            system: "line".into(),
+                            ref_value: line_in_node.to_string(),
+                            sort_order: line_in_node - 1,
+                            char_offset: 0,
+                        }],
+                    });
+                    *sentence_number += 1;
+                }
+
+                let m_clean: Vec<String> = mb.lines.iter().map(|l| strip_indent(l).1).collect();
+                let r_clean: Vec<String> = rb.lines.iter().map(|l| l.trim().to_string()).collect();
+                content_blocks.push(ContentBlockData {
+                    position: block_pos as i16,
+                    block_type: "verse".into(),
+                    paragraph_number: None,
+                    figure_number: None,
+                    text: m_clean.join("\n"),
+                    html: join_html(&m_clean),
+                    original_text: Some(r_clean.join("\n")),
+                    original_html: Some(join_html(&r_clean)),
+                    sentences,
+                });
+            }
         }
-
-        let m_clean: Vec<String> = m_lines.iter().map(|l| strip_indent(l).1).collect();
-        let r_clean: Vec<String> = r_lines.iter().map(|l| l.trim().to_string()).collect();
-        content_blocks.push(ContentBlockData {
-            position: block_pos as i16,
-            block_type: "verse".into(),
-            paragraph_number: None,
-            figure_number: None,
-            text: m_clean.join("\n"),
-            html: join_html(&m_clean),
-            original_text: Some(r_clean.join("\n")),
-            original_html: Some(join_html(&r_clean)),
-            sentences,
-        });
     }
 
     Ok(TocNodeData {
@@ -200,7 +267,8 @@ fn build_node(
         depth: fm.depth,
         label: fm.label.clone(),
         label_html: fm.label.clone(),
-        parent_source_ref: None,
+        parent_source_ref: Some(sonnets::SONNETS_SOURCE_REF.to_string()),
+        source: None,
         content_blocks,
     })
 }
@@ -274,24 +342,37 @@ fn parse_front_matter(content: &str) -> Option<(FrontMatter, &str)> {
     ))
 }
 
-/// Split a body into blocks (stanzas) on blank lines; each block is its verse
-/// lines (leading whitespace preserved for indent detection).
-fn parse_blocks(body: &str) -> Vec<Vec<String>> {
+/// Split a body into blocks: a `## …` line is its own heading block; runs of
+/// other non-blank lines (separated by blank lines) are verse stanzas. Leading
+/// whitespace on verse lines is preserved for indent detection.
+fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
     let mut blocks = Vec::new();
     let mut cur: Vec<String> = Vec::new();
     for line in body.lines() {
-        if line.trim().is_empty() {
-            if !cur.is_empty() {
-                blocks.push(std::mem::take(&mut cur));
-            }
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            flush_verse(&mut blocks, &mut cur);
+        } else if let Some(heading) = trimmed.strip_prefix("## ") {
+            flush_verse(&mut blocks, &mut cur);
+            blocks.push(ParsedBlock {
+                kind: BlockKind::Heading,
+                lines: vec![heading.trim().to_string()],
+            });
         } else {
             cur.push(line.to_string());
         }
     }
-    if !cur.is_empty() {
-        blocks.push(cur);
-    }
+    flush_verse(&mut blocks, &mut cur);
     blocks
+}
+
+fn flush_verse(blocks: &mut Vec<ParsedBlock>, cur: &mut Vec<String>) {
+    if !cur.is_empty() {
+        blocks.push(ParsedBlock {
+            kind: BlockKind::Verse,
+            lines: std::mem::take(cur),
+        });
+    }
 }
 
 fn validate_front_matter(

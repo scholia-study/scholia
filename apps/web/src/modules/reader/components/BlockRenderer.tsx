@@ -61,9 +61,17 @@ function groupSentencesBySegment(
 function MarginNotes({
     markers,
     side,
+    vAlign = "top",
 }: {
     markers: PageMarkerResponse[];
     side: "left" | "right";
+    /**
+     * "top" anchors the note at the start of its container (paragraphs, where
+     * the container spans many lines). "center" vertically centres it within
+     * the container — used for verse, where each line is its own one-line box,
+     * so the number sits level with the line instead of riding its top edge.
+     */
+    vAlign?: "top" | "center";
 }) {
     return (
         <span
@@ -71,7 +79,7 @@ function MarginNotes({
                 side === "left"
                     ? "right-full mr-2 justify-end"
                     : "left-full ml-2 justify-start"
-            }`}
+            } ${vAlign === "center" ? "inset-y-0 items-center" : ""}`}
             style={{ lineHeight: "inherit" }}
         >
             {[...markers]
@@ -192,6 +200,7 @@ export function Sentence({
     marginSettings,
     nodeSourceRef,
     displayPageMarkers,
+    markerVAlign = "top",
 }: {
     sentence: SentenceResponse;
     isSelected: boolean;
@@ -215,6 +224,8 @@ export function Sentence({
      * verse numbers on top of one another in the margin.
      */
     displayPageMarkers?: PageMarkerResponse[];
+    /** Vertical alignment of margin notes; "center" for verse lines. */
+    markerVAlign?: "top" | "center";
 }) {
     const { isCorrespondent } = useSentenceSelection(sentence);
     const isFootnoteAnchor = useFootnoteAnchor(sentence.footnotes);
@@ -312,9 +323,19 @@ export function Sentence({
                     <EditNoteOutlined sx={{ fontSize: 14 }} />
                 </span>
             )}
-            {leftMarkers && <MarginNotes markers={leftMarkers} side="left" />}
+            {leftMarkers && (
+                <MarginNotes
+                    markers={leftMarkers}
+                    side="left"
+                    vAlign={markerVAlign}
+                />
+            )}
             {rightMarkers && (
-                <MarginNotes markers={rightMarkers} side="right" />
+                <MarginNotes
+                    markers={rightMarkers}
+                    side="right"
+                    vAlign={markerVAlign}
+                />
             )}
             <span
                 data-sentence-key={sentenceKey(sentence)}
@@ -525,6 +546,36 @@ export function Block({
                         ),
                     )}
                 </p>
+            );
+        }
+        case "verse": {
+            // One <Sentence> per verse line, each on its own line (no reflow)
+            // with a hanging indent so a line too long for the column wraps
+            // under itself. Reuses the paragraph selection wiring, so lines
+            // are individually clickable and shift-click range-selects.
+            return (
+                <div className="relative pb-4 leading-relaxed text-stone-700">
+                    {block.sentences.map((s, i) => (
+                        <span
+                            key={s.id}
+                            className="block relative [padding-left:1.5em] [text-indent:-1.5em]"
+                        >
+                            <Sentence
+                                sentence={s}
+                                isSelected={sentenceMatchesKey(
+                                    s,
+                                    selectedSentenceId,
+                                )}
+                                showOriginal={showOriginal}
+                                onSelect={onSelectSentence}
+                                marginSettings={marginSettings}
+                                nodeSourceRef={nodeSourceRef}
+                                displayPageMarkers={sentenceDisplayMarkers[i]}
+                                markerVAlign="center"
+                            />
+                        </span>
+                    ))}
+                </div>
             );
         }
         case "footnote":

@@ -17,6 +17,7 @@ assets/kant1/*
 !assets/shakespeare1/
 assets/shakespeare1/*
 !assets/shakespeare1/curated/
+!assets/shakespeare1/*.md
 
 .env
 apps/web/node_modules/

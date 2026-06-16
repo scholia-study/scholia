@@ -229,7 +229,9 @@ export function TextPanel({
             for (const s of systems) {
                 if (!(s in newSides)) {
                     newEnabled.add(s);
-                    newSides[s] = "right";
+                    // Line-number systems (poetry/verse) sit in the left gutter
+                    // by convention; other systems (page numbers) on the right.
+                    newSides[s] = s === "line" ? "left" : "right";
                     changed = true;
                 }
             }

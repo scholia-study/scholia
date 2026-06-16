@@ -7,10 +7,11 @@ use uuid::Uuid;
 
 use shakespeare1_md_to_struct::model::Output;
 
-const ABOUT_TEXT: &str = "Shakespeare's Sonnets, first printed in the 1609 Quarto. \
-The modern-spelling reading text is drawn from public-domain sources; the \
-original-spelling layer reproduces the 1609 Quarto via EEBO-TCP (released CC0). \
-The digital edition on Scholia is a community-driven project; corrections are welcome.";
+const ABOUT_TEXT: &str = "The works of William Shakespeare. The modern-spelling \
+reading text is drawn from public-domain sources; original-spelling layers \
+reproduce the early editions (the Sonnets from the 1609 Quarto via EEBO-TCP, \
+released CC0). The digital edition on Scholia is a community-driven project; \
+corrections are welcome.";
 
 /// Build sqlx connect options. CLI `--database-url` wins; otherwise prefer
 /// discrete `POSTGRES_*` env vars (k8s Secret pattern); fall back to
@@ -123,15 +124,10 @@ pub async fn run(
     .fetch_one(&mut *tx)
     .await?;
 
-    sqlx::query(
-        "INSERT INTO source_persons (source_id, person_id, role, position)
-         VALUES ($1, $2, 'author', 0)
-         ON CONFLICT DO NOTHING",
-    )
-    .bind(bib_source_id)
-    .bind(person_id)
-    .execute(&mut *tx)
-    .await?;
+    // NB: the author is linked to each WORK source (in the node loop), not to
+    // this compilation source. An author-less compilation is what the library
+    // classifies as a Bible-shape "self" group (pills + grand TOC); an authored
+    // top-level source would group under the author instead (work cards, no pills).
 
     let book_id: Uuid = sqlx::query_scalar(
         "INSERT INTO books (slug, source_id, language, about_text)
@@ -167,6 +163,7 @@ pub async fn run(
     let mut node_ids: HashMap<String, Uuid> = HashMap::new();
     let (mut node_count, mut block_count, mut sentence_count, mut marker_count) =
         (0u32, 0u32, 0u32, 0u32);
+    let mut source_count = 1u32; // the compilation source; sub-work sources add on
 
     for node in &output.toc_nodes {
         let parent_id: Option<Uuid> = node
@@ -175,13 +172,45 @@ pub async fn run(
             .and_then(|r| node_ids.get(r).copied());
         let label_html = (node.label_html != node.label).then_some(&node.label_html);
 
+        // Source-anchored work node (e.g. "Sonnets"): create its sub-work source
+        // (source_type 'chapter', parented to the book's compilation source) and
+        // point the node's source_id at it — the Bible-shape work anchor.
+        let node_source_id: Option<Uuid> = if let Some(src) = &node.source {
+            source_count += 1;
+            let sid: Uuid = sqlx::query_scalar(
+                "INSERT INTO sources (source_type, title, publication_year, parent_source_id, protected, created_by)
+                 VALUES ('chapter', $1, $2, $3, true, $4)
+                 RETURNING id",
+            )
+            .bind(&src.title)
+            .bind(src.publication_year)
+            .bind(bib_source_id)
+            .bind(system_user_id)
+            .fetch_one(&mut *tx)
+            .await?;
+            // Author lives on the work source (keeps the compilation author-less).
+            sqlx::query(
+                "INSERT INTO source_persons (source_id, person_id, role, position)
+                 VALUES ($1, $2, 'author', 0)
+                 ON CONFLICT DO NOTHING",
+            )
+            .bind(sid)
+            .bind(person_id)
+            .execute(&mut *tx)
+            .await?;
+            Some(sid)
+        } else {
+            None
+        };
+
         let node_id: Uuid = sqlx::query_scalar(
-            "INSERT INTO toc_nodes (book_id, parent_id, source_ref, slug, path, sort_order, depth, label, label_html)
-             VALUES ($1, $2, $3, $4, $5::ltree, $6, $7, $8, $9)
+            "INSERT INTO toc_nodes (book_id, parent_id, source_id, source_ref, slug, path, sort_order, depth, label, label_html)
+             VALUES ($1, $2, $3, $4, $5, $6::ltree, $7, $8, $9, $10)
              RETURNING id",
         )
         .bind(book_id)
         .bind(parent_id)
+        .bind(node_source_id)
         .bind(&node.source_ref)
         .bind(&node.slug)
         .bind(&node.path)
@@ -270,6 +299,7 @@ pub async fn run(
     eprintln!();
     eprintln!("=== Import complete ===");
     eprintln!("  book:           1");
+    eprintln!("  sources:        {source_count}");
     eprintln!("  ref_systems:    {}", system_ids.len());
     eprintln!("  toc_nodes:      {node_count}");
     eprintln!("  content_blocks: {block_count}");

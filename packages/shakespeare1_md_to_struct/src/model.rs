@@ -39,7 +39,19 @@ pub struct TocNodeData {
     pub label_html: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub parent_source_ref: Option<String>,
+    /// When set, the importer creates a sub-work source (source_type 'chapter',
+    /// parented to the book's compilation source) and points this node's
+    /// `source_id` at it — the Bible-shape anchor that makes the node a work pill.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source: Option<NodeSource>,
     pub content_blocks: Vec<ContentBlockData>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NodeSource {
+    pub title: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub publication_year: Option<i16>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

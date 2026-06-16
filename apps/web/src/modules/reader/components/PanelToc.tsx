@@ -237,7 +237,7 @@ function BibleShapeToc({
                 ))}
             </div>
             {visibleBook && visibleBook.children.length > 0 && (
-                <div className="flex flex-wrap gap-1">
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(2.5rem,1fr))] gap-1">
                     {visibleBook.children.map((child) => (
                         <Link
                             key={child.slug}
@@ -251,7 +251,7 @@ function BibleShapeToc({
                                       }
                                     : undefined
                             }
-                            className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                            className={`text-xs px-2 py-0.5 rounded border text-center transition-colors ${
                                 child.slug === activeNodeSlug
                                     ? "border-stone-800 text-stone-900 bg-stone-100"
                                     : "border-stone-300 text-stone-600 hover:border-stone-500 hover:text-stone-900"
@@ -300,7 +300,7 @@ export function BibleShapeFullToc({
                         {book.label}
                     </h2>
                     {book.children.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
+                        <div className="grid grid-cols-[repeat(auto-fill,minmax(2.5rem,1fr))] gap-1">
                             {book.children.map((child) => (
                                 <Link
                                     key={child.slug}
@@ -309,7 +309,7 @@ export function BibleShapeFullToc({
                                         bookSlug,
                                         nodeSlug: child.slug,
                                     }}
-                                    className="text-xs px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500 hover:text-stone-900 transition-colors"
+                                    className="text-xs px-2 py-0.5 rounded border border-stone-300 text-stone-700 text-center hover:border-stone-500 hover:text-stone-900 transition-colors"
                                 >
                                     {chapterPillLabel(child.label)}
                                 </Link>
@@ -323,7 +323,9 @@ export function BibleShapeFullToc({
 }
 
 function chapterPillLabel(label: string): string {
-    const m = label.match(/^Chapter\s+(\d+)$/i);
+    // "Chapter 1" / "Sonnet 1" → "1" in the pill grid (the section heading
+    // already names the work); other labels pass through unchanged.
+    const m = label.match(/^(?:Chapter|Sonnet)\s+(\d+)$/i);
     return m ? m[1] : label;
 }
 

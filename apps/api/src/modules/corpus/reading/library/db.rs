@@ -347,12 +347,12 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
         });
     }
 
-    // Populate book_pills for "Bible-shape" groups: a SelfNamed group
-    // whose single work is available in 2+ translations and whose
-    // representative book carries depth=0 toc-anchored child sources
-    // (the compilation pattern). Pills are sourced from the first
-    // version's book under the assumption — guarded at import time —
-    // that all sibling translations agree on depth=0 node slugs.
+    // Populate book_pills for "Bible-shape" groups: a SelfNamed (compilation)
+    // group whose representative book carries depth=0 toc-anchored child
+    // sources (the compilation pattern). Both multi-translation compilations
+    // (the Bible) and single-edition ones (The Works of Shakespeare) qualify;
+    // sibling translations are assumed (guarded at import time) to agree on
+    // depth=0 node slugs.
     populate_book_pills(pool, &mut groups).await?;
 
     // Sort by sort_name (case-insensitive), then label as tiebreaker.
@@ -415,18 +415,26 @@ async fn populate_book_pills(pool: &PgPool, groups: &mut [LibraryGroup]) -> Resu
         if group.primary_kind != "self" {
             continue;
         }
-        // Exactly one work, with multiple translations of it.
-        let Some(work) = group.books.first() else {
-            continue;
-        };
-        if work.versions.len() < 2 {
-            continue;
-        }
-        // First version is the representative — versions are sorted in
-        // build_work so [0] is the original (or first by language) which
-        // is the most stable reference point.
-        let Some(rep) = work.versions.first() else {
-            continue;
+        // Representative book: the first version of the group's primary work
+        // (the Bible's case — a translation), or, for a single-edition
+        // compilation (e.g. The Works of Shakespeare), the book that hosts the
+        // compilation source directly. A single edition still gets pills from
+        // its depth-0 source-anchored works, so we don't require 2+ versions.
+        let rep_book_slug: String = match group.books.first().and_then(|w| w.versions.first()) {
+            Some(v) => v.book_slug.clone(),
+            None => {
+                let Ok(source_id) = Uuid::parse_str(&group.id) else {
+                    continue;
+                };
+                match sqlx::query_scalar::<_, String>("SELECT slug FROM books WHERE source_id = $1")
+                    .bind(source_id)
+                    .fetch_optional(pool)
+                    .await?
+                {
+                    Some(slug) => slug,
+                    None => continue,
+                }
+            }
         };
         let pills = sqlx::query!(
             r#"SELECT tn.slug, tn.label, tn.sort_order
@@ -434,7 +442,7 @@ async fn populate_book_pills(pool: &PgPool, groups: &mut [LibraryGroup]) -> Resu
                JOIN books b ON b.id = tn.book_id
                WHERE b.slug = $1 AND tn.depth = 0 AND tn.source_id IS NOT NULL
                ORDER BY tn.sort_order"#,
-            rep.book_slug,
+            rep_book_slug,
         )
         .fetch_all(pool)
         .await?;
