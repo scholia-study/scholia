@@ -83,11 +83,36 @@ function IndexPage() {
 }
 
 /**
+ * Collapsible group state. The DEFAULT is responsive and CSS-driven (collapsed
+ * below `md`, open at `md+`) so SSR stays deterministic with no hydration flash;
+ * a user click then overrides it. `null` = follow the responsive default;
+ * `true`/`false` = explicit user choice.
+ */
+function useCollapsible() {
+    const [open, setOpen] = useState<boolean | null>(null);
+    const toggle = useCallback(() => {
+        setOpen((prev) =>
+            prev !== null
+                ? !prev
+                : // null = currently following the CSS default; flip relative
+                  // to what's actually showing at this viewport.
+                  !window.matchMedia("(min-width: 768px)").matches,
+        );
+    }, []);
+    const contentClass =
+        open === null ? "hidden md:block" : open ? "block" : "hidden";
+    return { contentClass, toggle };
+}
+
+/**
  * Renders one group: an author with their works, a compilation with its
  * children, or a singleton authorless work that has no listed children
- * (the heading itself is the entry).
+ * (the heading itself is the entry). The group name toggles its body
+ * collapsed/expanded; the colored rule under the name stays visible either way.
  */
+
 function GroupSection({ group }: { group: LibraryGroup }) {
+    const collapse = useCollapsible();
     const accent = accentColorFor(group.primary_label, group.id);
     const isSelf = group.primary_kind === "self";
     const isSingleton = isSelf && group.books.length === 0;
@@ -100,32 +125,50 @@ function GroupSection({ group }: { group: LibraryGroup }) {
         return <CompilationShapeGroup group={group} accent={accent} />;
     }
 
+    const headingClass =
+        "text-sm font-semibold uppercase tracking-wider text-stone-700 pb-2";
+
     return (
         <section>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-700 pb-2">
-                {isSelf && group.primary_slug ? (
-                    <Link
-                        to="/books/$bookSlug"
-                        params={{
-                            bookSlug: group.primary_slug.replace(
-                                /^\/books\//,
-                                "",
-                            ),
-                        }}
-                        className="hover:underline"
+            {isSingleton ? (
+                // No collapsible body — the heading links straight to the work.
+                <h2 className={headingClass}>
+                    {group.primary_slug ? (
+                        <Link
+                            to="/books/$bookSlug"
+                            params={{
+                                bookSlug: group.primary_slug.replace(
+                                    /^\/books\//,
+                                    "",
+                                ),
+                            }}
+                            className="hover:underline"
+                        >
+                            {group.primary_label}
+                        </Link>
+                    ) : (
+                        group.primary_label
+                    )}
+                </h2>
+            ) : (
+                // The name itself toggles the body.
+                <h2 className={headingClass}>
+                    <button
+                        type="button"
+                        onClick={collapse.toggle}
+                        aria-label={`Toggle ${group.primary_label}`}
+                        className="cursor-pointer appearance-none bg-transparent p-0 text-left text-sm font-semibold uppercase tracking-wider text-stone-700"
                     >
                         {group.primary_label}
-                    </Link>
-                ) : (
-                    group.primary_label
-                )}
-            </h2>
+                    </button>
+                </h2>
+            )}
             <div
-                className="h-0.5 rounded-full mb-4"
+                className="h-0.5 rounded-full"
                 style={{ backgroundColor: accent }}
             />
             {!isSingleton && (
-                <div className="space-y-5">
+                <div className={`${collapse.contentClass} mt-4 space-y-5`}>
                     {group.books.map((work) => (
                         <WorkCard
                             key={work.work_id}
@@ -217,12 +260,20 @@ function CompilationShapeGroup({
     // versions, so activeSlug is empty; fall back to the group's own book.
     const pillBookSlug =
         activeSlug || group.primary_slug?.replace(/^\/books\//, "") || "";
+    const collapse = useCollapsible();
 
     return (
         <section>
             <div className="flex items-baseline justify-between gap-4 pb-2">
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-700">
-                    {group.primary_label}
+                    <button
+                        type="button"
+                        onClick={collapse.toggle}
+                        aria-label={`Toggle ${group.primary_label}`}
+                        className="cursor-pointer appearance-none bg-transparent p-0 text-left text-sm font-semibold uppercase tracking-wider text-stone-700"
+                    >
+                        {group.primary_label}
+                    </button>
                 </h2>
                 <div className="text-xs text-stone-400 flex flex-wrap gap-x-2">
                     {versions.map((v) => {
@@ -253,10 +304,12 @@ function CompilationShapeGroup({
                 </div>
             </div>
             <div
-                className="h-0.5 rounded-full mb-4"
+                className="h-0.5 rounded-full"
                 style={{ backgroundColor: accent }}
             />
-            <div className="text-justify leading-6">
+            <div
+                className={`${collapse.contentClass} mt-4 text-justify leading-6`}
+            >
                 {group.book_pills.map((p) => (
                     <Fragment key={p.node_slug}>
                         <Link
