@@ -3,17 +3,17 @@ position: 1
 label: "Sonnet 1"
 depth: 1
 ---
-From fairest creatures we desire increase,
-That thereby beauties *Rose* might neuer die,
-But as the riper should by time decease,
+From faireſt creatures we deſire increaſe,
+That thereby beauties *Roſe* might neuer die,
+But as the riper ſhould by time deceaſe,
 His tender heire might beare his memory:
 But thou contracted to thine owne bright eyes,
-Feed'st thy lights flame with selfe substantiall fewell,
+Feed'ſt thy lights flame with ſelfe ſubſtantiall fewell,
 Making a famine where aboundance lies,
-Thy selfe thy foe, to thy sweet selfe too cruell:
-Thou that art now the worlds fresh ornament,
-And only herauld to the gaudy spring,
-Within thine owne bud buriest thy content,
-And tender chorle makst wast in niggarding:
-Pitty the world, or else this glutton be,
+Thy ſelfe thy foe, to thy ſweet ſelfe too cruell:
+Thou that art now the worlds freſh ornament,
+And only herauld to the gaudy ſpring,
+Within thine owne bud burieſt thy content,
+And tender chorle makſt waſt in niggarding:
+Pitty the world, or elſe this glutton be,
 To eate the worlds due, by the graue and thee.

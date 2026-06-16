@@ -3,17 +3,17 @@ position: 17
 label: "Sonnet 17"
 depth: 1
 ---
-Who will beleeue my verse in time to come
-If it were fild with your most high deserts?
-〈1 line〉
-Which hides your life, and shewes not halfe your parts:
+Who will beleeue my verſe in time to come
+If it were fild with your moſt high deſerts?
+Though yet heauen knowes it is but as a tombe
+Which hides your life, and ſhewes not halfe your parts:
 If I could write the beauty of your eyes,
-And in fresh numbers number all your graces,
-The age to come would say this Poet lies,
+And in freſh numbers number all your graces,
+The age to come would ſay this Poet lies,
 Such heauenly touches nere toucht earthly faces.
-So should my papers (yellowed with their age)
-Be scorn'd, like old men of lesse truth then tongue,
+So ſhould my papers (yellowed with their age)
+Be ſcorn'd, like old men of leſſe truth then tongue,
 And your true rights be termd a Poets rage,
-And stretched miter of an Antique song.
-But were some childe of yours aliue that time,
-You should liue twise in it, and in my rime.
+And ſtretched miter of an Antique ſong.
+But were ſome childe of yours aliue that time,
+You ſhould liue twiſe in it, and in my rime.

@@ -3,17 +3,17 @@ position: 67
 label: "Sonnet 67"
 depth: 1
 ---
-Ah wherefore with infection should he liue,
-And with his presence grace impietie,
-That sinne by him aduantage should atchiue,
-And lace it selfe with his societie?
-Why should false painting immitate his cheeke,
-And steale dead seeing of his liuing hew?
-Why should poore beautie indirectly seeke,
-Roses of shaddow, since his Rose is true?
-Why should he liue, now nature banckrout is,
-Beggerd of blood to blush through liuely vaines,
-For she hath no exchecker now but his,
+Ah wherefore with infection ſhould he liue,
+And with his preſence grace impietie,
+That ſinne by him aduantage ſhould atchiue,
+And lace it ſelfe with his ſocietie?
+Why ſhould falſe painting immitate his cheeke,
+And ſteale dead ſeeing of his liuing hew?
+Why ſhould poore beautie indirectly ſeeke,
+Roſes of ſhaddow, ſince his Roſe is true?
+Why ſhould he liue, now nature banckrout is,
+Beggerd of blood to bluſh through liuely vaines,
+For ſhe hath no exchecker now but his,
 And proud of many, liues vpon his gaines?
-O him she stores, to show what welth she had,
-In daies long since, before these last so bad.
+O him ſhe ſtores, to ſhow what welth ſhe had,
+In daies long ſince, before theſe laſt ſo bad.

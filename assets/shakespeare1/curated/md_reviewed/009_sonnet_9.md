@@ -4,16 +4,16 @@ label: "Sonnet 9"
 depth: 1
 ---
 Is it for feare to wet a widdowes eye,
-That thou consum'st thy selfe in single life?
-Ah; if thou issulesse shalt hap to die,
-The world will waile thee like a makelesse wife,
-The world wilbe thy widdow and still weepe,
-That thou no forme of thee hast left behind,
+That thou conſum'ſt thy ſelfe in ſingle life?
+Ah; if thou iſſuleſſe ſhalt hap to die,
+The world will waile thee like a makeleſſe wife,
+The world wilbe thy widdow and ſtill weepe,
+That thou no forme of thee haſt left behind,
 When euery priuat widdow well may keepe,
-By childrens eyes, her husbands shape in minde:
-Looke what an vnthrift in the world doth spend
-Shifts but his place, for still the world inioyes it
-But beauties waste hath in the world an end,
-And kept vnvsde the vser so destroyes it:
-No loue toward others in that bosome sits
-That on himselfe such murdrous shame commits.
+By childrens eyes, her husbands ſhape in minde:
+Looke what an vnthrift in the world doth ſpend
+Shifts but his place, for ſtill the world inioyes it
+But beauties waſte hath in the world an end,
+And kept vnvſde the vſer ſo deſtroyes it:
+No loue toward others in that boſome ſits
+That on himſelfe ſuch murdrous ſhame commits.

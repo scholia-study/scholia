@@ -3,17 +3,17 @@ position: 11
 label: "Sonnet 11"
 depth: 1
 ---
-As fast as thou shalt wane so fast thou grow'st,
-In one of thine, from that which thou departest,
-And that fresh bloud which yongly thou bestow'st,
-Thou maist call thine, when thou from youth conuertest,
-Herein liues wisdome, beauty, and increase,
+As faſt as thou ſhalt wane ſo faſt thou grow'ſt,
+In one of thine, from that which thou departeſt,
+And that freſh bloud which yongly thou beſtow'ſt,
+Thou maiſt call thine, when thou from youth conuerteſt,
+Herein liues wiſdome, beauty, and increaſe,
 Without this follie, age, and could decay,
-If all were minded so, the times should cease,
-And threescoore yeare would make the world away:
-Let those whom nature hath not made for store,
-Harsh, featurelesse, and rude, barrenly perrish,
-Looke whom she best indow'd, she gaue the more;
-Which bountious guift thou shouldst in bounty cherrish,
-She caru'd thee for her seale, and ment therby,
-Thou shouldst print more, not let that coppy die.
+If all were minded ſo, the times ſhould ceaſe,
+And threeſcoore yeare would make the world away:
+Let thoſe whom nature hath not made for ſtore,
+Harſh, featureleſſe, and rude, barrenly perriſh,
+Looke whom ſhe beſt indow'd, ſhe gaue the more;
+Which bountious guift thou ſhouldſt in bounty cherriſh,
+She caru'd thee for her ſeale, and ment therby,
+Thou ſhouldſt print more, not let that coppy die.

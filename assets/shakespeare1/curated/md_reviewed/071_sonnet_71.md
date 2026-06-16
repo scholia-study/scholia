@@ -4,16 +4,16 @@ label: "Sonnet 71"
 depth: 1
 ---
 Noe Longer mourne for me when I am dead,
-Then you shall heare the surly sullen bell
+Then you ſhall heare the ſurly ſullen bell
 Giue warning to the world that I am fled
-From this vile world with vildest wormes to dwell:
+From this vile world with vildeſt wormes to dwell:
 Nay if you read this line, remember not,
-The hand that writ it, for I loue you so,
-That I in your sweet thoughts would be forgot,
-If thinking on me then should make you woe.
-O if (I say) you looke vpon this verse,
+The hand that writ it, for I loue you ſo,
+That I in your ſweet thoughts would be forgot,
+If thinking on me then ſhould make you woe.
+O if (I ſay) you looke vpon this verſe,
 When I (perhaps) compounded am with clay,
-Do not so much as my poore name reherse;
+Do not ſo much as my poore name reherſe;
 But let your loue euen with my life decay.
-Least the wise world should looke into your mone,
+Leaſt the wiſe world ſhould looke into your mone,
 And mocke you with me after I am gon.

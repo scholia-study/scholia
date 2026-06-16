@@ -3,17 +3,17 @@ position: 60
 label: "Sonnet 60"
 depth: 1
 ---
-Like as the waues make towards the pibled shore,
-So do our minuites haften to their end,
+Like as the waues make towards the pibled ſhore,
+So do our minuites haſten to their end,
 Each changing place with that which goes before,
-In sequent toile all forwards do contend.
+In ſequent toile all forwards do contend.
 Natiuity once in the maine of light.
 Crawles to maturity, wherewith being crown'd,
-Crooked eclipses gainst his glory fight,
+Crooked eclipſes gainſt his glory fight,
 And time that gaue, doth now his gift confound.
-Time doth transfixe the florish set on youth,
+Time doth tranſfixe the floriſh ſet on youth,
 And delues the paralels in beauties brow,
 Feedes on the rarities of natures truth,
-And nothing stands but for his sieth to mow.
-And yet to times in hope, my verse shall stand
-Praising thy worth, dispight his cruell hand.
+And nothing ſtands but for his ſieth to mow.
+And yet to times in hope, my verſe ſhall ſtand
+Praiſing thy worth, diſpight his cruell hand.

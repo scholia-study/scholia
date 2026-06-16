@@ -3,17 +3,17 @@ position: 3
 label: "Sonnet 3"
 depth: 1
 ---
-Looke in thy glasse and tell the face thou vewest,
-Now is the time that face should forme an other,
-Whose fresh repaire if now thou not renewest,
-Thou doo'st beguile the world, vnblesse some mother.
-For where is she so faire whose vn-eard wombe
-Disdaines the tillage of thy husbandry?
-Or who is he so fond will be the tombe,
-Of his selfe loue to stop posterity?
-Thou art thy mothers glasse and she in thee
+Looke in thy glaſſe and tell the face thou veweſt,
+Now is the time that face ſhould forme an other,
+Whoſe freſh repaire if now thou not reneweſt,
+Thou doo'ſt beguile the world, vnbleſſe ſome mother.
+For where is ſhe ſo faire whoſe vn-eard wombe
+Diſdaines the tillage of thy husbandry?
+Or who is he ſo fond will be the tombe,
+Of his ſelfe loue to ſtop poſterity?
+Thou art thy mothers glaſſe and ſhe in thee
 Calls backe the louely Aprill of her prime,
-So thou through windowes of thine age shalt see,
-Dispight of wrinkles this thy goulden time.
+So thou through windowes of thine age ſhalt ſee,
+Diſpight of wrinkles this thy goulden time.
 But if thou liue remembred not to be,
-Die single and thine Image dies with thee.
+Die ſingle and thine Image dies with thee.

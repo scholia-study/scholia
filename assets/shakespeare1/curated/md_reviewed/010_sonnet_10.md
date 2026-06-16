@@ -3,17 +3,17 @@ position: 10
 label: "Sonnet 10"
 depth: 1
 ---
-For shame deny that thou bear'st loue to any
-Who for thy selfe art so vnprouident
+For ſhame deny that thou bear'ſt loue to any
+Who for thy ſelfe art ſo vnprouident
 Graunt if thou wilt, thou art belou'd of many,
-But that thou none lou'st is most euident:
-For thou art so possest with murdrous hate,
-That gainst thy selfe thou stickst not to conspire,
+But that thou none lou'ſt is moſt euident:
+For thou art ſo poſſeſt with murdrous hate,
+That gainſt thy ſelfe thou ſtickſt not to conſpire,
 Seeking that beautious roofe to ruinate
-Which to repaire should be thy chiefe desire:
+Which to repaire ſhould be thy chiefe deſire:
 O change thy thought, that I may change my minde,
 Shall hate be fairer log'd then gentle loue?
-Be as thy presence is gracious and kind,
-Or to thy selfe at least kind harted proue,
-Make thee an other selfe for loue of me,
-That beauty still may liue in thine or thee.
+Be as thy preſence is gracious and kind,
+Or to thy ſelfe at leaſt kind harted proue,
+Make thee an other ſelfe for loue of me,
+That beauty ſtill may liue in thine or thee.

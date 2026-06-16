@@ -4,16 +4,16 @@ label: "Sonnet 20"
 depth: 1
 ---
 A Womans face with natures owne hand painted,
-Haste thou the Master Mistris of my passion,
+Haſte thou the Maſter Miſtris of my paſſion,
 A womans gentle hart but not acquainted
-With shifting change as is false womens fashion,
-An eye more bright then theirs, lesse false in rowling:
+With ſhifting change as is falſe womens faſhion,
+An eye more bright then theirs, leſſe falſe in rowling:
 Gilding the obiect where-vpon it gazeth,
 A man in hew all *Hews* in his controwling,
-Which steales mens eyes and womens soules amaseth.
-And for a woman wert thou first created,
-Till nature as she wrought thee fell a dotinge,
+Which ſteales mens eyes and womens ſoules amaſeth.
+And for a woman wert thou firſt created,
+Till nature as ſhe wrought thee fell a dotinge,
 And by addition me of thee defeated,
-By adding one thing to my purpose nothing.
-But since she prickt thee out for womens pleasure,
-Mine be thy loue and thy loues vse their treasure.
+By adding one thing to my purpoſe nothing.
+But ſince ſhe prickt thee out for womens pleaſure,
+Mine be thy loue and thy loues vſe their treaſure.

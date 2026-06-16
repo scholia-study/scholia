@@ -3,17 +3,17 @@ position: 74
 label: "Sonnet 74"
 depth: 1
 ---
-Bvt be contented when that fell arest,
-With out all bayle shall carry me away,
-My life hath in this line some interest,
-Which for memoriall still with thee shall stay.
-When thou reuewest this, thou doest reuew,
-The very part was consecrate to thee,
+Bvt be contented when that fell areſt,
+With out all bayle ſhall carry me away,
+My life hath in this line ſome intereſt,
+Which for memoriall ſtill with thee ſhall ſtay.
+When thou reueweſt this, thou doeſt reuew,
+The very part was conſecrate to thee,
 The earth can haue but earth, which is his due,
-My spirit is thine the better part of me,
-So then thou hast but lost the dregs of life,
+My ſpirit is thine the better part of me,
+So then thou haſt but loſt the dregs of life,
 The pray of wormes, my body being dead,
-The coward conquest of a wretches knife,
-To base of thee to be remembred,
+The coward conqueſt of a wretches knife,
+To baſe of thee to be remembred,
 The worth of that, is that which it containes,
 And that is this, and this with thee remaines.

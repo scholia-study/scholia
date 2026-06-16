@@ -3,17 +3,17 @@ position: 73
 label: "Sonnet 73"
 depth: 1
 ---
-That time of yeeare thou maist in me behold,
+That time of yeeare thou maiſt in me behold,
 When yellow leaues, or none, or few doe hange
-Vpon those boughes which shake against the could,
-Bare rn'wd quiers, where late the sweet birds sang.
-In me thou seest the twi-light of such day,
-As after Sun-set fadeth in the West,
+Vpon thoſe boughes which ſhake againſt the could,
+Bare rn'wd quiers, where late the ſweet birds ſang.
+In me thou ſeeſt the twi-light of ſuch day,
+As after Sun-ſet fadeth in the Weſt,
 Which by and by blacke night doth take away,
-Deaths second selfe that seals vp all in rest.
-In me thou seest the glowing of such fire,
-That on the ashes of his youth doth lye,
-As the death bed, whereon it must expire,
-Consum'd with that which it was nurrisht by.
-This thou perceu'st, which makes thy loue more strong,
-To loue that well, which thou must leaue ere long.
+Deaths ſecond ſelfe that ſeals vp all in reſt.
+In me thou ſeeſt the glowing of ſuch fire,
+That on the aſhes of his youth doth lye,
+As the death bed, whereon it muſt expire,
+Conſum'd with that which it was nurriſht by.
+This thou perceu'ſt, which makes thy loue more ſtrong,
+To loue that well, which thou muſt leaue ere long.

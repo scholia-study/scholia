@@ -3,17 +3,17 @@ position: 76
 label: "Sonnet 76"
 depth: 1
 ---
-Why is my verse so barren of new pride?
+Why is my verſe ſo barren of new pride?
 So far from variation or quicke change?
-Why with the time do I not glance aside
-To new found methods, and to compounds strange?
-Why write I still all one, euer the same,
+Why with the time do I not glance aſide
+To new found methods, and to compounds ſtrange?
+Why write I ſtill all one, euer the ſame,
 And keepe inuention in a noted weed,
-That euery word doth almost fel my name,
+That euery word doth almoſt fel my name,
 Shewing their birth, and where they did proceed?
-O know sweet loue I alwaies write of you,
-And you and loue are still my argument:
-So all my best is dressing old words new,
-Spending againe what is already spent:
+O know ſweet loue I alwaies write of you,
+And you and loue are ſtill my argument:
+So all my beſt is dreſſing old words new,
+Spending againe what is already ſpent:
 For as the Sun is daily new and old,
-So is my loue still telling what is told,
+So is my loue ſtill telling what is told,

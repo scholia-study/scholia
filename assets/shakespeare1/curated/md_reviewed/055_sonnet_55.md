@@ -4,16 +4,16 @@ label: "Sonnet 55"
 depth: 1
 ---
 Not marble, nor the guilded monument,
-Of Princes shall out-liue this powrefull rime,
-But you shall shine more bright in these contents
-Then vnswept stone, besmeer'd with sluttish time.
-When wastefull warre shall *Statues* ouer-turne,
-And broiles roote out the worke of masonry,
-Nor *Mars* his sword, nor warres quick fire shall burne:
+Of Princes ſhall out-liue this powrefull rime,
+But you ſhall ſhine more bright in theſe contents
+Then vnſwept ſtone, beſmeer'd with ſluttiſh time.
+When waſtefull warre ſhall *Statues* ouer-turne,
+And broiles roote out the worke of maſonry,
+Nor *Mars* his ſword, nor warres quick fire ſhall burne:
 The liuing record of your memory.
-Gainst death, and all obliuious emnity
-Shall you pace forth, your praise shall stil finde roome,
-Euen in the eyes of all posterity
+Gainſt death, and all obliuious emnity
+Shall you pace forth, your praiſe ſhall ſtil finde roome,
+Euen in the eyes of all poſterity
 That weare this world out to the ending doome.
-So til the iudgement that your selfe arise,
+So til the iudgement that your ſelfe ariſe,
 You liue in this, and dwell in louers eies.

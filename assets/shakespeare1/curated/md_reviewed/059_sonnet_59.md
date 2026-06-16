@@ -5,15 +5,15 @@ depth: 1
 ---
 If their bee nothing new, but that which is,
 Hath beene before, how are our braines beguild,
-Which laboring for inuention beare amisse
-The second burthen of a former child?
+Which laboring for inuention beare amiſſe
+The ſecond burthen of a former child?
 Oh that record could with a back-ward looke,
-Euen of fiue hundreth courses of the Sunne,
-Show me your image in some antique booke,
-Since minde at first in carrecter was done.
-That I might see what the old world could say,
-To this composed wonder of your frame,
+Euen of fiue hundreth courſes of the Sunne,
+Show me your image in ſome antique booke,
+Since minde at firſt in carrecter was done.
+That I might ſee what the old world could ſay,
+To this compoſed wonder of your frame,
 Whether we are mended, or where better they,
-Or whether reuolution be the same.
-Oh sure I am the wits of former daies,
-To subiects worse haue giuen admiring praise.
+Or whether reuolution be the ſame.
+Oh ſure I am the wits of former daies,
+To ſubiects worſe haue giuen admiring praiſe.

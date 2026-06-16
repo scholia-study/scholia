@@ -3,17 +3,17 @@ position: 8
 label: "Sonnet 8"
 depth: 1
 ---
-Mvsick to heare, why hear'st thou musick sadly,
-Sweets with sweets warre not, ioy delights in ioy:
-Why lou'st thou that which thou receaust not gladly,
-Or else receaus'st with pleasure thine annoy?
-If the true concord of well tuned sounds,
+Mvſick to heare, why hear'ſt thou muſick ſadly,
+Sweets with ſweets warre not, ioy delights in ioy:
+Why lou'ſt thou that which thou receauſt not gladly,
+Or elſe receau'ſt with pleaſure thine annoy?
+If the true concord of well tuned ſounds,
 By vnions married do offend thine eare,
-They do but sweetly chide thee, who confounds
-In singlenesse the parts that thou should'st beare:
-Marke how one string sweet husband to an other,
+They do but ſweetly chide thee, who confounds
+In ſingleneſſe the parts that thou ſhould'ſt beare:
+Marke how one ſtring ſweet husband to an other,
 Strikes each in each by mutuall ordering;
-Resembling sier, and child, and happy mother,
-Who all in one, one pleasing note do sing:
-Whose speechlesse song being many, seeming one,
-Sings this to thee thou single wilt proue none.
+Reſembling ſier, and child, and happy mother,
+Who all in one, one pleaſing note do ſing:
+Whoſe ſpeechleſſe ſong being many, ſeeming one,
+Sings this to thee thou ſingle wilt proue none.
