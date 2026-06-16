@@ -2795,7 +2795,9 @@ dependencies = [
  "base64",
  "bytes",
  "encoding_rs",
+ "futures-channel",
  "futures-core",
+ "futures-util",
  "h2",
  "http",
  "http-body",
@@ -3233,6 +3235,43 @@ dependencies = [
  "cfg-if",
  "cpufeatures 0.2.17",
  "digest",
+]
+
+[[package]]
+name = "shakespeare1_fetch"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "quick-xml",
+ "regex",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "shakespeare1_md_to_struct"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "shakespeare1_struct_to_db"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "dotenvy",
+ "serde_json",
+ "shakespeare1_md_to_struct",
+ "sqlx",
+ "tokio",
+ "uuid",
 ]
 
 [[package]]
