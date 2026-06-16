@@ -3,6 +3,8 @@ position: 8
 label: "Sonnet 8"
 depth: 1
 ---
+## 8
+
 Mvſick to heare, why hear'ſt thou muſick ſadly,
 Sweets with ſweets warre not, ioy delights in ioy:
 Why lou'ſt thou that which thou receauſt not gladly,

@@ -3,6 +3,8 @@ position: 25
 label: "Sonnet 25"
 depth: 1
 ---
+## 25
+
 Let those who are in favour with their stars
 Of public honour and proud titles boast,
 Whilst I, whom fortune of such triumph bars

@@ -3,6 +3,8 @@ position: 10
 label: "Sonnet 10"
 depth: 1
 ---
+## 10
+
 For shame! deny that thou bear'st love to any,
 Who for thy self art so unprovident.
 Grant, if thou wilt, thou art belov'd of many,

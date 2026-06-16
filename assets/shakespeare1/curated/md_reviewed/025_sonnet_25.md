@@ -3,6 +3,8 @@ position: 25
 label: "Sonnet 25"
 depth: 1
 ---
+## 25
+
 Let thoſe who are in fauor with their ſtars,
 Of publike honour and proud titles boſt,
 Whilſt I whome fortune of ſuch tryumph bars

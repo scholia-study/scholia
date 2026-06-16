@@ -3,6 +3,8 @@ position: 94
 label: "Sonnet 94"
 depth: 1
 ---
+## 94
+
 They that haue powre to hurt, and will doe none,
 That doe not do the thing, they moſt do ſhowe,
 Who mouing others, are themſelues as ſtone,

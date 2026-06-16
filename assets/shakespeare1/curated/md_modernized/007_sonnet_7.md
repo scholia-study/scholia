@@ -3,6 +3,8 @@ position: 7
 label: "Sonnet 7"
 depth: 1
 ---
+## 7
+
 Lo! in the orient when the gracious light
 Lifts up his burning head, each under eye
 Doth homage to his new-appearing sight,

@@ -3,6 +3,8 @@ position: 83
 label: "Sonnet 83"
 depth: 1
 ---
+## 83
+
 I Neuer ſaw that you did painting need,
 And therefore to your faire no painting ſet,
 I found (or thought I found) you did exceed,

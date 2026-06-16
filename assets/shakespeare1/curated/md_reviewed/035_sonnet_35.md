@@ -3,6 +3,8 @@ position: 35
 label: "Sonnet 35"
 depth: 1
 ---
+## 35
+
 No more bee greeu'd at that which thou haſt done,
 Roſes haue thornes, and ſiluer fountaines mud,
 Cloudes and eclipſes ſtaine both Moone and Sunne,

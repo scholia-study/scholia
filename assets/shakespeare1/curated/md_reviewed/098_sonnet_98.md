@@ -3,6 +3,8 @@ position: 98
 label: "Sonnet 98"
 depth: 1
 ---
+## 98
+
 From you haue I beene abſent in the ſpring,
 When proud pide Aprill (dreſt in all his trim)
 Hath put a ſpirit of youth in euery thing:

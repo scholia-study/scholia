@@ -3,6 +3,8 @@ position: 88
 label: "Sonnet 88"
 depth: 1
 ---
+## 88
+
 When thou ſhalt be diſpode to ſet me light,
 And place my merrit in the eie of skorne,
 Vpon thy ſide, againſt my ſelfe ile fight,

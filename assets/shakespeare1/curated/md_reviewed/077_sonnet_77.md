@@ -3,6 +3,8 @@ position: 77
 label: "Sonnet 77"
 depth: 1
 ---
+## 77
+
 Thy glaſſe will ſhew thee how thy beauties were,
 Thy dyall how thy pretious mynuits waſte,
 The vacant leaues thy mindes imprint will beare,

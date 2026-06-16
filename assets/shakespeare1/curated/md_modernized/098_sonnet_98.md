@@ -3,6 +3,8 @@ position: 98
 label: "Sonnet 98"
 depth: 1
 ---
+## 98
+
 From you have I been absent in the spring,
 When proud-pied April, dress'd in all his trim,
 Hath put a spirit of youth in every thing,

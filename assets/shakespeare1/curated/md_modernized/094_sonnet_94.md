@@ -3,6 +3,8 @@ position: 94
 label: "Sonnet 94"
 depth: 1
 ---
+## 94
+
 They that have power to hurt, and will do none,
 That do not do the thing they most do show,
 Who, moving others, are themselves as stone,

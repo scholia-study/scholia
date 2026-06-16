@@ -3,6 +3,8 @@ position: 24
 label: "Sonnet 24"
 depth: 1
 ---
+## 24
+
 Mine eye hath play'd the painter and hath stell'd,
 Thy beauty's form in table of my heart;
 My body is the frame wherein 'tis held,

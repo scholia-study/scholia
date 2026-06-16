@@ -3,6 +3,8 @@ position: 42
 label: "Sonnet 42"
 depth: 1
 ---
+## 42
+
 That thou hast her it is not all my grief,
 And yet it may be said I loved her dearly;
 That she hath thee is of my wailing chief,

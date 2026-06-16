@@ -3,6 +3,8 @@ position: 96
 label: "Sonnet 96"
 depth: 1
 ---
+## 96
+
 Some ſay thy fault is youth, ſome wantoneſſe,
 Some ſay thy grace is youth and gentle ſport,
 Both grace and faults are lou'd of more and leſſe:

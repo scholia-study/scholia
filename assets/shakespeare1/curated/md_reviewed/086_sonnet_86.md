@@ -3,6 +3,8 @@ position: 86
 label: "Sonnet 86"
 depth: 1
 ---
+## 86
+
 Was it the proud full ſaile of his great verſe,
 Bound for the prize of (all to precious) you,
 That did my ripe thoughts in my braine inhearce,

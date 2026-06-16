@@ -3,6 +3,8 @@ position: 43
 label: "Sonnet 43"
 depth: 1
 ---
+## 43
+
 When most I wink, then do mine eyes best see,
 For all the day they view things unrespected;
 But when I sleep, in dreams they look on thee,

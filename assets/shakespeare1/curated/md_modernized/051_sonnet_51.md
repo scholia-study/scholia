@@ -3,6 +3,8 @@ position: 51
 label: "Sonnet 51"
 depth: 1
 ---
+## 51
+
 Thus can my love excuse the slow offence
 Of my dull bearer when from thee I speed:
 From where thou art why should I haste me thence?

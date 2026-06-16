@@ -3,6 +3,8 @@ position: 69
 label: "Sonnet 69"
 depth: 1
 ---
+## 69
+
 Those parts of thee that the world's eye doth view
 Want nothing that the thought of hearts can mend;
 All tongues--the voice of souls--give thee that due,

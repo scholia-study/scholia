@@ -3,6 +3,8 @@ position: 7
 label: "Sonnet 7"
 depth: 1
 ---
+## 7
+
 Loe in the Orient when the gracious light,
 Lifts vp his burning head, each vnder eye
 Doth homage to his new appearing ſight,

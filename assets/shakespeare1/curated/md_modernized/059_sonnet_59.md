@@ -3,6 +3,8 @@ position: 59
 label: "Sonnet 59"
 depth: 1
 ---
+## 59
+
 If there be nothing new, but that which is
 Hath been before, how are our brains beguil'd,
 Which labouring for invention bear amiss

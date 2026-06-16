@@ -3,6 +3,8 @@ position: 93
 label: "Sonnet 93"
 depth: 1
 ---
+## 93
+
 So shall I live, supposing thou art true,
 Like a deceived husband; so love's face
 May still seem love to me, though alter'd new;

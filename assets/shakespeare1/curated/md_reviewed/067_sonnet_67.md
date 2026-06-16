@@ -3,6 +3,8 @@ position: 67
 label: "Sonnet 67"
 depth: 1
 ---
+## 67
+
 Ah wherefore with infection ſhould he liue,
 And with his preſence grace impietie,
 That ſinne by him aduantage ſhould atchiue,

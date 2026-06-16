@@ -3,6 +3,8 @@ position: 75
 label: "Sonnet 75"
 depth: 1
 ---
+## 75
+
 So are you to my thoughts as food to life,
 Or as ſweet ſeaſon'd ſhewers are to the ground;
 And for the peace of you I hold ſuch ſtrife,

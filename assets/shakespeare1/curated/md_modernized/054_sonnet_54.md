@@ -3,6 +3,8 @@ position: 54
 label: "Sonnet 54"
 depth: 1
 ---
+## 54
+
 O! how much more doth beauty beauteous seem
 By that sweet ornament which truth doth give.
 The rose looks fair, but fairer we it deem

@@ -3,6 +3,8 @@ position: 70
 label: "Sonnet 70"
 depth: 1
 ---
+## 70
+
 That thou art blam'd shall not be thy defect,
 For slander's mark was ever yet the fair;
 The ornament of beauty is suspect,

@@ -3,6 +3,8 @@ position: 68
 label: "Sonnet 68"
 depth: 1
 ---
+## 68
+
 Thus is his cheeke the map of daies out-worne,
 When beauty liu'd and dy'ed as flowers do now,
 Before theſe baſtard ſignes of faire were borne,

@@ -3,6 +3,8 @@ position: 8
 label: "Sonnet 8"
 depth: 1
 ---
+## 8
+
 Music to hear, why hear'st thou music sadly?
 Sweets with sweets war not, joy delights in joy:
 Why lov'st thou that which thou receiv'st not gladly,

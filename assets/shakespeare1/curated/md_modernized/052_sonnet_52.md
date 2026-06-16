@@ -3,6 +3,8 @@ position: 52
 label: "Sonnet 52"
 depth: 1
 ---
+## 52
+
 So am I as the rich, whose blessed key,
 Can bring him to his sweet up-locked treasure,
 The which he will not every hour survey,

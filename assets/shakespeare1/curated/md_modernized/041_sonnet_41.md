@@ -3,6 +3,8 @@ position: 41
 label: "Sonnet 41"
 depth: 1
 ---
+## 41
+
 Those pretty wrongs that liberty commits,
 When I am sometime absent from thy heart,
 Thy beauty, and thy years full well befits,

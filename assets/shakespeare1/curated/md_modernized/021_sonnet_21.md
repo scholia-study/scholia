@@ -3,6 +3,8 @@ position: 21
 label: "Sonnet 21"
 depth: 1
 ---
+## 21
+
 So is it not with me as with that Muse,
 Stirr'd by a painted beauty to his verse,
 Who heaven itself for ornament doth use

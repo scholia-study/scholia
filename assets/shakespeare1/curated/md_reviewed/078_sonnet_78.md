@@ -3,6 +3,8 @@ position: 78
 label: "Sonnet 78"
 depth: 1
 ---
+## 78
+
 So oft haue I inuok'd thee for my Muſe,
 And found ſuch faire aſſiſtance in my verſe,
 As euery *Alien* pen hath got my vſe,

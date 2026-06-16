@@ -3,6 +3,8 @@ position: 47
 label: "Sonnet 47"
 depth: 1
 ---
+## 47
+
 Betwixt mine eye and heart a league is tooke,
 And each doth good turnes now vnto the other,
 When that mine eye is famiſht for a looke,

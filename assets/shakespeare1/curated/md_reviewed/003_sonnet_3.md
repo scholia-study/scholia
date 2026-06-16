@@ -3,6 +3,8 @@ position: 3
 label: "Sonnet 3"
 depth: 1
 ---
+## 3
+
 Looke in thy glaſſe and tell the face thou veweſt,
 Now is the time that face ſhould forme an other,
 Whoſe freſh repaire if now thou not reneweſt,

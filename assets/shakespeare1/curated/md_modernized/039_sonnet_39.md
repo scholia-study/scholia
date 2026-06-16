@@ -3,6 +3,8 @@ position: 39
 label: "Sonnet 39"
 depth: 1
 ---
+## 39
+
 O! how thy worth with manners may I sing,
 When thou art all the better part of me?
 What can mine own praise to mine own self bring?

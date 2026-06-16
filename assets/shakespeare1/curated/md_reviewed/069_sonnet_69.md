@@ -3,6 +3,8 @@ position: 69
 label: "Sonnet 69"
 depth: 1
 ---
+## 69
+
 Thoſe parts of thee that the worlds eye doth view,
 Want nothing that the thought of hearts can mend:
 All toungs (the voice of ſoules) giue thee that end,

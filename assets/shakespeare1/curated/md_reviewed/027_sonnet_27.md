@@ -3,6 +3,8 @@ position: 27
 label: "Sonnet 27"
 depth: 1
 ---
+## 27
+
 Weary with toyle, I haſt me to my bed,
 The deare repoſe for lims with trauaill tired,
 But then begins a iourny in my head

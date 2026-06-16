@@ -3,6 +3,8 @@ position: 91
 label: "Sonnet 91"
 depth: 1
 ---
+## 91
+
 Some glory in their birth, ſome in their skill,
 Some in their wealth, ſome in their bodies force,
 Some in their garments though new-fangled ill:

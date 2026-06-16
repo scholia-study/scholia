@@ -3,6 +3,8 @@ position: 66
 label: "Sonnet 66"
 depth: 1
 ---
+## 66
+
 Tyr'd with all theſe for reſtfull death I cry,
 As to behold deſert a begger borne,
 And needie Nothing trimd in iollitie,

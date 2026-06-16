@@ -3,6 +3,8 @@ position: 46
 label: "Sonnet 46"
 depth: 1
 ---
+## 46
+
 Mine eye and heart are at a mortall warre,
 How to deuide the conqueſt of thy ſight,
 Mine eye, my heart their pictures ſight would barre,

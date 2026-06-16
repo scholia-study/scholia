@@ -3,6 +3,8 @@ position: 52
 label: "Sonnet 52"
 depth: 1
 ---
+## 52
+
 So am I as the rich whoſe bleſſed key,
 Can bring him to his ſweet vp-locked treaſure,
 The which he will not eu'ry hower ſuruay,

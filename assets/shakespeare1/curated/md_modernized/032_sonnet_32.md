@@ -3,6 +3,8 @@ position: 32
 label: "Sonnet 32"
 depth: 1
 ---
+## 32
+
 If thou survive my well-contented day,
 When that churl Death my bones with dust shall cover
 And shalt by fortune once more re-survey

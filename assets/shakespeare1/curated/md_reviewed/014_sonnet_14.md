@@ -3,6 +3,8 @@ position: 14
 label: "Sonnet 14"
 depth: 1
 ---
+## 14
+
 Not from the ſtars do I my iudgement plucke,
 And yet me thinkes I haue Aſtronomy,
 But not to tell of good, or euil lucke,

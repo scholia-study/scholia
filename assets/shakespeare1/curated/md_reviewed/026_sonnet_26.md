@@ -3,6 +3,8 @@ position: 26
 label: "Sonnet 26"
 depth: 1
 ---
+## 26
+
 Lord of my loue, to whome in vaſſalage
 Thy merrit hath my dutie ſtrongly knit;
 To thee I ſend this written ambaſſage

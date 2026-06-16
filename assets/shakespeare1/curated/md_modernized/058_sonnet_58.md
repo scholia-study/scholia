@@ -3,6 +3,8 @@ position: 58
 label: "Sonnet 58"
 depth: 1
 ---
+## 58
+
 That god forbid, that made me first your slave,
 I should in thought control your times of pleasure,
 Or at your hand the account of hours to crave,

@@ -3,6 +3,8 @@ position: 93
 label: "Sonnet 93"
 depth: 1
 ---
+## 93
+
 So ſhall I liue, ſuppoſing thou art true,
 Like a deceiued husband, ſo loues face,
 May ſtill ſeeme loue to me, though alter'd new:

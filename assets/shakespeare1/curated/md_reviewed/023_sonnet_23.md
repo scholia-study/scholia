@@ -3,6 +3,8 @@ position: 23
 label: "Sonnet 23"
 depth: 1
 ---
+## 23
+
 As an vnperfect actor on the ſtage,
 Who with his feare is put beſides his part,
 Or ſome fierce thing repleat with too much rage,

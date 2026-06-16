@@ -3,6 +3,8 @@ position: 4
 label: "Sonnet 4"
 depth: 1
 ---
+## 4
+
 Unthrifty loveliness, why dost thou spend
 Upon thy self thy beauty's legacy?
 Nature's bequest gives nothing, but doth lend,

@@ -3,6 +3,8 @@ position: 92
 label: "Sonnet 92"
 depth: 1
 ---
+## 92
+
 Bvt doe thy worſt to ſteale thy ſelfe away,
 For tearme of life thou art aſſured mine,
 And life no longer then thy loue will ſtay,

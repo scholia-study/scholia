@@ -3,6 +3,8 @@ position: 48
 label: "Sonnet 48"
 depth: 1
 ---
+## 48
+
 How carefull was I when I tooke my way,
 Each trifle vnder trueſt barres to thruſt,
 That to my vſe it might vn-vſed ſtay

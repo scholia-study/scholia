@@ -3,6 +3,8 @@ position: 6
 label: "Sonnet 6"
 depth: 1
 ---
+## 6
+
 Then let not winters wragged hand deface,
 In thee thy ſummer ere thou be diſtil'd:
 Make ſweet ſome viall; treaſure thou ſome place,

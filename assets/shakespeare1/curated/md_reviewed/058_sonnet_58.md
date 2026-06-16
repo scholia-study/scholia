@@ -3,6 +3,8 @@ position: 58
 label: "Sonnet 58"
 depth: 1
 ---
+## 58
+
 That God forbid, that made me firſt your ſlaue,
 I ſhould in thought controule your times of pleaſure,
 Or at your hand th' account of houres to craue,

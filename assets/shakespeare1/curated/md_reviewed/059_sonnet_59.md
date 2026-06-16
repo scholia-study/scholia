@@ -3,6 +3,8 @@ position: 59
 label: "Sonnet 59"
 depth: 1
 ---
+## 59
+
 If their bee nothing new, but that which is,
 Hath beene before, how are our braines beguild,
 Which laboring for inuention beare amiſſe

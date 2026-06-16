@@ -3,6 +3,8 @@ position: 21
 label: "Sonnet 21"
 depth: 1
 ---
+## 21
+
 So is it not with me as with that Muſe,
 Stird by a painted beauty to his verſe,
 Who heauen it ſelfe for ornament doth vſe,

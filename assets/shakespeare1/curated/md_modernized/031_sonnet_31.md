@@ -3,6 +3,8 @@ position: 31
 label: "Sonnet 31"
 depth: 1
 ---
+## 31
+
 Thy bosom is endeared with all hearts,
 Which I by lacking have supposed dead;
 And there reigns Love, and all Love's loving parts,

@@ -3,6 +3,8 @@ position: 56
 label: "Sonnet 56"
 depth: 1
 ---
+## 56
+
 Sweet loue renew thy force, be it not ſaid
 Thy edge ſhould blunter be then apetite,
 Which but too daie by feeding is alaied,

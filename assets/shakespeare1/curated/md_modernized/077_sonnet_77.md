@@ -3,6 +3,8 @@ position: 77
 label: "Sonnet 77"
 depth: 1
 ---
+## 77
+
 Thy glass will show thee how thy beauties wear,
 Thy dial how thy precious minutes waste;
 These vacant leaves thy mind's imprint will bear,

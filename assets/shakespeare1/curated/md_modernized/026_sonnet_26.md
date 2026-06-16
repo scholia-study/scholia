@@ -3,6 +3,8 @@ position: 26
 label: "Sonnet 26"
 depth: 1
 ---
+## 26
+
 Lord of my love, to whom in vassalage
 Thy merit hath my duty strongly knit,
 To thee I send this written embassage,

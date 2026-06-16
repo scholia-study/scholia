@@ -3,6 +3,8 @@ position: 82
 label: "Sonnet 82"
 depth: 1
 ---
+## 82
+
 I Grant thou wert not married to my Muſe,
 And therefore maieſt without attaint ore-looke
 The dedicated words which writers vſe

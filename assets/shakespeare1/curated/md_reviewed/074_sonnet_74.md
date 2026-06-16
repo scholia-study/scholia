@@ -3,6 +3,8 @@ position: 74
 label: "Sonnet 74"
 depth: 1
 ---
+## 74
+
 Bvt be contented when that fell areſt,
 With out all bayle ſhall carry me away,
 My life hath in this line ſome intereſt,

@@ -3,6 +3,8 @@ position: 27
 label: "Sonnet 27"
 depth: 1
 ---
+## 27
+
 Weary with toil, I haste me to my bed,
 The dear respose for limbs with travel tir'd;
 But then begins a journey in my head

@@ -3,6 +3,8 @@ position: 76
 label: "Sonnet 76"
 depth: 1
 ---
+## 76
+
 Why is my verſe ſo barren of new pride?
 So far from variation or quicke change?
 Why with the time do I not glance aſide

@@ -3,6 +3,8 @@ position: 56
 label: "Sonnet 56"
 depth: 1
 ---
+## 56
+
 Sweet love, renew thy force; be it not said
 Thy edge should blunter be than appetite,
 Which but to-day by feeding is allay'd,

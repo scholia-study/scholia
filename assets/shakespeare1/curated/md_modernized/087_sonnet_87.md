@@ -3,6 +3,8 @@ position: 87
 label: "Sonnet 87"
 depth: 1
 ---
+## 87
+
 Farewell! thou art too dear for my possessing,
 And like enough thou know'st thy estimate,
 The charter of thy worth gives thee releasing;

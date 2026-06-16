@@ -3,6 +3,8 @@ position: 23
 label: "Sonnet 23"
 depth: 1
 ---
+## 23
+
 As an unperfect actor on the stage,
 Who with his fear is put beside his part,
 Or some fierce thing replete with too much rage,

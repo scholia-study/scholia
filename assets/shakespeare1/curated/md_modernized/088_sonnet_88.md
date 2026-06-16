@@ -3,6 +3,8 @@ position: 88
 label: "Sonnet 88"
 depth: 1
 ---
+## 88
+
 When thou shalt be dispos'd to set me light,
 And place my merit in the eye of scorn,
 Upon thy side, against myself I'll fight,

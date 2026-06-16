@@ -3,6 +3,8 @@ position: 67
 label: "Sonnet 67"
 depth: 1
 ---
+## 67
+
 Ah! wherefore with infection should he live,
 And with his presence grace impiety,
 That sin by him advantage should achieve,

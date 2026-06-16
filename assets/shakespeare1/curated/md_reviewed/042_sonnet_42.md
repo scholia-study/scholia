@@ -3,6 +3,8 @@ position: 42
 label: "Sonnet 42"
 depth: 1
 ---
+## 42
+
 That thou haſt her it is not all my griefe,
 And yet it may be ſaid I lou'd her deerely,
 That ſhe hath thee is of my wayling cheefe,

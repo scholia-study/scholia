@@ -3,6 +3,8 @@ position: 4
 label: "Sonnet 4"
 depth: 1
 ---
+## 4
+
 Vnthrifty louelineſſe why doſt thou ſpend,
 Vpon thy ſelfe thy beauties legacy?
 Natures bequeſt giues nothing but doth lend,

@@ -3,6 +3,8 @@ position: 46
 label: "Sonnet 46"
 depth: 1
 ---
+## 46
+
 Mine eye and heart are at a mortal war,
 How to divide the conquest of thy sight;
 Mine eye my heart thy picture's sight would bar,

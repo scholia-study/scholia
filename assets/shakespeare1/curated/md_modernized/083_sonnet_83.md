@@ -3,6 +3,8 @@ position: 83
 label: "Sonnet 83"
 depth: 1
 ---
+## 83
+
 I never saw that you did painting need,
 And therefore to your fair no painting set;
 I found, or thought I found, you did exceed
