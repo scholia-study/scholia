@@ -521,7 +521,7 @@ export function Block({
                 />
             );
             return (
-                <p className="relative pb-4 leading-relaxed text-stone-700">
+                <p className="relative pb-4 leading-[var(--reader-line-height)] text-stone-700">
                     {groups.map((group, gi) =>
                         group.segment == null ? (
                             <Fragment key={`flow-${gi}`}>
@@ -554,7 +554,7 @@ export function Block({
             // under itself. Reuses the paragraph selection wiring, so lines
             // are individually clickable and shift-click range-selects.
             return (
-                <div className="relative pb-4 leading-relaxed text-stone-700">
+                <div className="relative pb-4 leading-[var(--reader-line-height)] text-stone-700">
                     {block.sentences.map((s, i) => (
                         <span
                             key={s.id}

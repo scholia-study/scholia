@@ -12,6 +12,11 @@ import type {
 } from "../api/model";
 import { DevServerNotice } from "../components/DevServerNotice";
 import { InfoLinks } from "../components/InfoLinks";
+import {
+    getLocalStorage,
+    LOC_STORAGE_KEYS,
+    setLocalStorage,
+} from "../hooks/local-storage";
 import { libraryHasBook, TOUR_BOOK_SLUG, useReaderTour } from "../modules/tour";
 
 export const Route = createFileRoute("/")({
@@ -183,11 +188,6 @@ function GroupSection({ group }: { group: LibraryGroup }) {
     );
 }
 
-/** Storage key holding the user's preferred translation per Bible-shape group. */
-function bibleTranslationStorageKey(groupId: string): string {
-    return `bible-translation:${groupId}`;
-}
-
 /**
  * Reads the persisted translation slug from localStorage on mount only.
  * Initial state matches the SSR default to avoid hydration mismatch;
@@ -209,30 +209,18 @@ function useBibleTranslation(
     const [slug, setSlug] = useState(fallback);
 
     useEffect(() => {
-        if (typeof window === "undefined") return;
-        try {
-            const stored = window.localStorage.getItem(
-                bibleTranslationStorageKey(groupId),
-            );
-            if (stored && versions.some((v) => v.book_slug === stored)) {
-                setSlug(stored);
-            }
-        } catch {
-            // localStorage may throw under privacy modes; just fall back.
+        const stored = getLocalStorage(
+            LOC_STORAGE_KEYS.bibleTranslation(groupId),
+        );
+        if (stored && versions.some((v) => v.book_slug === stored)) {
+            setSlug(stored);
         }
     }, [groupId, versions]);
 
     const setAndPersist = useCallback(
         (next: string) => {
             setSlug(next);
-            try {
-                window.localStorage.setItem(
-                    bibleTranslationStorageKey(groupId),
-                    next,
-                );
-            } catch {
-                // ignore
-            }
+            setLocalStorage(LOC_STORAGE_KEYS.bibleTranslation(groupId), next);
         },
         [groupId],
     );

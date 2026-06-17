@@ -5,6 +5,7 @@ import { driver } from "driver.js";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { getGetTocQueryOptions } from "#/api/toc/toc";
+import { getLocalStorage, setLocalStorage } from "#/hooks/local-storage";
 import {
     buildTourSteps,
     firstContentNodeSlug,
@@ -95,8 +96,8 @@ export function useReaderTour() {
      *  it's shown — accepted or dismissed, it never auto-nags again. */
     const maybeWelcome = useCallback(() => {
         if (typeof window === "undefined") return;
-        if (window.localStorage.getItem(TOUR_SEEN_KEY)) return;
-        window.localStorage.setItem(TOUR_SEEN_KEY, "1");
+        if (getLocalStorage(TOUR_SEEN_KEY)) return;
+        setLocalStorage(TOUR_SEEN_KEY, "1");
 
         const welcome = driver({
             overlayColor: OVERLAY_COLOR,

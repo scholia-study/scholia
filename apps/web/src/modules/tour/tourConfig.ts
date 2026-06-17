@@ -1,4 +1,5 @@
 import type { LibraryResponse, TocNodeResponse } from "#/api/model";
+import { LOC_STORAGE_KEYS } from "#/hooks/local-storage";
 
 /** The tour is pinned to the KJV Bible — the foundational seed text, always
  *  ingested first (see CLAUDE.md). Only the book slug is hardcoded; the entry
@@ -8,7 +9,7 @@ export const TOUR_BOOK_SLUG = "kjv-bible";
 
 /** localStorage flag — set the first time the welcome prompt is shown so it
  *  never auto-nags again (the tour stays replayable from the resources panel). */
-export const TOUR_SEEN_KEY = "scholia:reader-tour:seen:v1";
+export const TOUR_SEEN_KEY = LOC_STORAGE_KEYS.readerTourSeen;
 
 /** Verse-number keys used as anchors. Every chapter starts at verse 1, and
  *  "1-3" demonstrates a range — both safe across any KJV entry node. */

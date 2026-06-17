@@ -109,6 +109,10 @@ export const PanelScrollView = forwardRef<
     const [initialScrollPending, setInitialScrollPending] = useState(
         initialNodeSlug != null,
     );
+    // Sentence to focus on initial load from URL params (seeded once at mount).
+    const pendingSentenceScroll = useRef<string | null>(
+        selectedSentenceId ?? null,
+    );
     if (initialNodeSlug !== prevNodeSlug) {
         setPrevNodeSlug(initialNodeSlug);
         const isLoaded = nodes.some((n) => n.slug === initialNodeSlug);
@@ -240,7 +244,9 @@ export const PanelScrollView = forwardRef<
         );
         if (!(el instanceof HTMLElement)) return;
         el.scrollIntoView({ block: "start", behavior: "auto" });
-        setInitialScrollPending(false);
+        // If a sentence also needs focusing, stay masked until that lands
+        // (handled below) so we don't reveal at the node top then jump.
+        if (!pendingSentenceScroll.current) setInitialScrollPending(false);
         const timer = setTimeout(() => setPendingScrollTarget(null), 50);
         return () => clearTimeout(timer);
     }, [pendingScrollTarget, targetLoaded]);
@@ -255,38 +261,46 @@ export const PanelScrollView = forwardRef<
     }, [initialScrollPending]);
 
     // After landing on the target node, scroll to the selected sentence
-    // (only on initial load from URL params).
-    const pendingSentenceScroll = useRef<string | null>(
-        selectedSentenceId ?? null,
-    );
-    useEffect(() => {
+    // (only on initial load from URL params). A layout effect, before paint,
+    // and it reveals the masked column only once positioned — so the focus
+    // scroll is never visible as a jump.
+    useLayoutEffect(() => {
         if (pendingScrollTarget) return;
         if (!pendingSentenceScroll.current) return;
         const key = pendingSentenceScroll.current;
-        const raf = requestAnimationFrame(() => {
-            const el = document.querySelector(
-                `[data-sentence-key="${CSS.escape(key)}"]`,
-            );
-            if (el) {
-                pendingSentenceScroll.current = null;
-                for (const node of nodes) {
-                    for (const block of node.blocks) {
-                        for (const sentence of block.sentences) {
-                            if (
-                                sentence.id === key ||
-                                (sentence.sentence_number != null &&
-                                    String(sentence.sentence_number) === key)
-                            ) {
-                                onSelectSentence(sentence, false);
-                                break;
-                            }
-                        }
+        const el = document.querySelector(
+            `[data-sentence-key="${CSS.escape(key)}"]`,
+        );
+        if (!el) return;
+        pendingSentenceScroll.current = null;
+        for (const node of nodes) {
+            for (const block of node.blocks) {
+                for (const sentence of block.sentences) {
+                    if (
+                        sentence.id === key ||
+                        (sentence.sentence_number != null &&
+                            String(sentence.sentence_number) === key)
+                    ) {
+                        onSelectSentence(sentence, false);
+                        break;
                     }
                 }
-                el.scrollIntoView({ block: "center" });
             }
-        });
-        return () => cancelAnimationFrame(raf);
+        }
+        // Land the sentence ~20% below the top of the reading viewport (not
+        // dead-center). Scoped to our own scroller so it never scrolls
+        // <main>/window.
+        const scroller = scrollerRef.current;
+        if (scroller) {
+            const delta =
+                el.getBoundingClientRect().top -
+                scroller.getBoundingClientRect().top -
+                scroller.clientHeight * 0.2;
+            scroller.scrollTop += delta;
+        } else {
+            el.scrollIntoView({ block: "start" });
+        }
+        setInitialScrollPending(false);
     }, [pendingScrollTarget, nodes, onSelectSentence]);
 
     useImperativeHandle(
@@ -450,7 +464,7 @@ export const PanelScrollView = forwardRef<
             ? "max-w-5xl mx-auto px-8"
             : hasActiveMargins
               ? "max-w-4xl mx-auto"
-              : "max-w-2xl mx-auto px-8";
+              : "max-w-[var(--reader-width)] mx-auto px-8";
 
     if (isLoading) {
         return (
@@ -509,7 +523,7 @@ export const PanelScrollView = forwardRef<
                             <div
                                 className={`py-8 border-b border-stone-100 ${
                                     hasActiveMargins && !isInterleaved
-                                        ? "max-w-2xl mx-auto px-8"
+                                        ? "max-w-[var(--reader-width)] mx-auto px-8"
                                         : ""
                                 }`}
                             >

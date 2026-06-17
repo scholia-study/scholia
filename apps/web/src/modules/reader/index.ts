@@ -2,8 +2,10 @@ export { BibleShapeFullToc, PanelToc } from "./components/PanelToc";
 export { ReaderLayout } from "./components/ReaderLayout";
 export { TranslationBadge } from "./components/TranslationBadge";
 export {
-    READER_FONT_SIZE_CSS,
-    READER_FONT_SIZE_INIT_SCRIPT,
+    LINE_SPACINGS,
+    READER_DISPLAY_CSS,
+    READER_DISPLAY_INIT_SCRIPT,
+    READING_WIDTHS,
     ReaderPreferencesProvider,
     useReaderPreferences,
 } from "./context/ReaderPreferences";

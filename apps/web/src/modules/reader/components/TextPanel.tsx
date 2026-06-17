@@ -16,6 +16,7 @@ import {
     ToggleButton,
     ToggleButtonGroup,
     Typography,
+    useMediaQuery,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -29,7 +30,11 @@ import { useListQuotations } from "../../../api/quotations/quotations";
 import { getGetTocQueryOptions, useGetTocSuspense } from "../../../api/toc/toc";
 import { useAuth } from "../../../hooks/useAuth";
 import { QuotationProvider } from "../context/Quotations";
-import { useReaderPreferences } from "../context/ReaderPreferences";
+import {
+    LINE_SPACINGS,
+    READING_WIDTHS,
+    useReaderPreferences,
+} from "../context/ReaderPreferences";
 import { SelectionProvider } from "../context/selection";
 import {
     type SelectionMode,
@@ -187,14 +192,40 @@ export function TextPanel({
     const { user } = useAuth();
     const [showBookmarks, setShowBookmarks] = useState(true);
 
-    // Reader text size (+/- in the display menu; persisted globally)
+    // Reader display prefs (in the display menu; persisted globally)
     const {
         fontSizePx,
         increaseFontSize,
         decreaseFontSize,
         canIncrease,
         canDecrease,
+        lineHeight,
+        setLineHeight,
+        readingWidth,
+        setReadingWidth,
     } = useReaderPreferences();
+
+    const compactMenu = useMediaQuery("(max-width:767px)", { noSsr: true });
+    const menuControlRowSx = {
+        px: 2,
+        py: 0.5,
+        "&:hover": { backgroundColor: "transparent" },
+    };
+    const toggleButtonSx = { textTransform: "none" as const };
+    // Phone: tighten the whole menu vertically from one place. Descendant
+    // selectors outrank each control's own padding on specificity, and the
+    // overline labels otherwise carry MUI's 2.66 line-height.
+    const compactMenuSx = compactMenu
+        ? {
+              "& .MuiTypography-overline": { lineHeight: 1.6 },
+              "& .MuiMenuItem-root": { minHeight: 0, py: 0.25 },
+              "& .MuiRadio-root": { p: 0.25 },
+              "& .MuiCheckbox-root": { p: 0.25 },
+              "& .MuiIconButton-root": { p: 0.25 },
+              "& .MuiToggleButton-root": { py: 0.25, fontSize: "0.7rem" },
+              "& .MuiDivider-root": { my: 0.5 },
+          }
+        : {};
 
     const handleVisibleNodeChange = useCallback(
         (slug: string) => {
@@ -487,9 +518,16 @@ export function TextPanel({
                                     anchorEl={menuAnchor}
                                     open={Boolean(menuAnchor)}
                                     onClose={() => setMenuAnchor(null)}
+                                    MenuListProps={{ dense: compactMenu }}
                                     slotProps={{
                                         paper: {
-                                            sx: { minWidth: 240, py: 1 },
+                                            sx: {
+                                                minWidth: compactMenu
+                                                    ? 210
+                                                    : 240,
+                                                py: compactMenu ? 0.5 : 1,
+                                                ...compactMenuSx,
+                                            },
                                         },
                                     }}
                                 >
@@ -505,14 +543,7 @@ export function TextPanel({
                                     </Typography>
                                     <MenuItem
                                         disableRipple
-                                        sx={{
-                                            py: 0.5,
-                                            px: 2,
-                                            gap: 1,
-                                            "&:hover": {
-                                                backgroundColor: "transparent",
-                                            },
-                                        }}
+                                        sx={{ ...menuControlRowSx, gap: 1 }}
                                     >
                                         <IconButton
                                             size="small"
@@ -539,6 +570,74 @@ export function TextPanel({
                                         >
                                             <AddOutlined fontSize="small" />
                                         </IconButton>
+                                    </MenuItem>
+                                    <Typography
+                                        variant="overline"
+                                        sx={{
+                                            px: 2,
+                                            color: "text.secondary",
+                                            display: "block",
+                                        }}
+                                    >
+                                        Line spacing
+                                    </Typography>
+                                    <MenuItem
+                                        disableRipple
+                                        sx={menuControlRowSx}
+                                    >
+                                        <ToggleButtonGroup
+                                            value={lineHeight}
+                                            exclusive
+                                            size="small"
+                                            fullWidth
+                                            onChange={(_, v) => {
+                                                if (v) setLineHeight(v);
+                                            }}
+                                        >
+                                            {LINE_SPACINGS.map((o) => (
+                                                <ToggleButton
+                                                    key={o.key}
+                                                    value={o.value}
+                                                    sx={toggleButtonSx}
+                                                >
+                                                    {o.label}
+                                                </ToggleButton>
+                                            ))}
+                                        </ToggleButtonGroup>
+                                    </MenuItem>
+                                    <Typography
+                                        variant="overline"
+                                        sx={{
+                                            px: 2,
+                                            color: "text.secondary",
+                                            display: "block",
+                                        }}
+                                    >
+                                        Reading width
+                                    </Typography>
+                                    <MenuItem
+                                        disableRipple
+                                        sx={menuControlRowSx}
+                                    >
+                                        <ToggleButtonGroup
+                                            value={readingWidth}
+                                            exclusive
+                                            size="small"
+                                            fullWidth
+                                            onChange={(_, v) => {
+                                                if (v) setReadingWidth(v);
+                                            }}
+                                        >
+                                            {READING_WIDTHS.map((o) => (
+                                                <ToggleButton
+                                                    key={o.key}
+                                                    value={o.value}
+                                                    sx={toggleButtonSx}
+                                                >
+                                                    {o.label}
+                                                </ToggleButton>
+                                            ))}
+                                        </ToggleButtonGroup>
                                     </MenuItem>
                                     <Divider />
                                     {hasRelationship && [

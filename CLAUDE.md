@@ -93,3 +93,7 @@ runs `api migrate`. Dev resets via `pnpm db:reset` (uses `sqlx-cli`).
 ## Formatting
 
 Biome 2.4.5, 4-space indent, 80-col width, double quotes, trailing commas, semicolons. `cargo fmt` for Rust. Both run on staged files at commit time.
+
+## Comments
+
+Let code stand on its own — make it self-explanatory through naming and structure. Reserve comments for genuinely non-obvious rationale ("why", exotic edge cases) and brief top-of-file overviews; don't narrate "what" the code already says. Prefer deleting a comment over keeping a redundant one.

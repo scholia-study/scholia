@@ -455,7 +455,7 @@ function StackedSentences({
                         {groups.map((group, gi) => (
                             <div key={gi} className="mb-2">
                                 {group.primary.length > 0 && (
-                                    <p className="relative border-l-2 border-blue-300 pl-3 leading-relaxed text-stone-700">
+                                    <p className="relative border-l-2 border-blue-300 pl-3 leading-[var(--reader-line-height)] text-stone-700">
                                         {gi === 0 && (
                                             <TextLabel
                                                 label={primaryLabel}
@@ -478,7 +478,7 @@ function StackedSentences({
                                     </p>
                                 )}
                                 {group.companion.length > 0 && (
-                                    <p className="relative border-l-2 border-amber-300 pl-3 leading-relaxed text-stone-700">
+                                    <p className="relative border-l-2 border-amber-300 pl-3 leading-[var(--reader-line-height)] text-stone-700">
                                         {gi === 0 && (
                                             <TextLabel
                                                 label={companionLabel}
@@ -719,7 +719,7 @@ function SideBySideSentences({
                                     key={gi}
                                     className="grid grid-cols-2 gap-4 mb-1"
                                 >
-                                    <p className="relative leading-relaxed text-stone-700">
+                                    <p className="relative leading-[var(--reader-line-height)] text-stone-700">
                                         {leftSentences.map((s) => (
                                             <Sentence
                                                 key={s.id}
@@ -734,7 +734,7 @@ function SideBySideSentences({
                                             />
                                         ))}
                                     </p>
-                                    <p className="relative leading-relaxed text-stone-700">
+                                    <p className="relative leading-[var(--reader-line-height)] text-stone-700">
                                         {rightSentences.map((s) => (
                                             <Sentence
                                                 key={s.id}

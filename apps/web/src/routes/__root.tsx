@@ -17,8 +17,8 @@ import { ScrollToTop } from "../layout/ScrollToTop";
 import { UserSubnav } from "../layout/UserSubnav";
 import { FeedbackModal, FeedbackProvider } from "../modules/feedback";
 import {
-    READER_FONT_SIZE_CSS,
-    READER_FONT_SIZE_INIT_SCRIPT,
+    READER_DISPLAY_CSS,
+    READER_DISPLAY_INIT_SCRIPT,
     ReaderPreferencesProvider,
 } from "../modules/reader";
 import appCss from "../styles.css?url";
@@ -71,8 +71,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
                 {
                     children: `window.__ENV__ = { APP_PROFILE: ${JSON.stringify(profile)} };`,
                 },
-                // Apply a saved reader text size before first paint (no flash).
-                { children: READER_FONT_SIZE_INIT_SCRIPT },
+                // Apply saved reader display prefs before first paint (no flash).
+                { children: READER_DISPLAY_INIT_SCRIPT },
             ],
         };
     },
@@ -141,11 +141,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <html lang="en">
             <head>
                 <HeadContent />
-                {/* Critical CSS: size the reading column before first paint so a
-                    hard refresh doesn't reflow/scroll-shift (see ReaderPreferences). */}
+                {/* Critical CSS: size/space the reading column before first paint
+                    so a hard refresh doesn't reflow/scroll-shift (see ReaderPreferences). */}
                 <style
                     // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted, build-time constant
-                    dangerouslySetInnerHTML={{ __html: READER_FONT_SIZE_CSS }}
+                    dangerouslySetInnerHTML={{ __html: READER_DISPLAY_CSS }}
                 />
             </head>
             <body className="antialiased h-screen overflow-hidden flex flex-col bg-stone-50 text-stone-900">
