@@ -103,6 +103,12 @@ export const PanelScrollView = forwardRef<
     const [pendingScrollTarget, setPendingScrollTarget] = useState<
         string | null
     >(initialNodeSlug ?? null);
+    // Mask the reading column until the initial deep-link/refresh scroll lands,
+    // so we never flash the top of the prefetch buffer before jumping to target.
+    // One-time: only the first load masks; in-reader navigation never does.
+    const [initialScrollPending, setInitialScrollPending] = useState(
+        initialNodeSlug != null,
+    );
     if (initialNodeSlug !== prevNodeSlug) {
         setPrevNodeSlug(initialNodeSlug);
         const isLoaded = nodes.some((n) => n.slug === initialNodeSlug);
@@ -221,20 +227,32 @@ export const PanelScrollView = forwardRef<
 
     // Initial / requested scroll-to-node. Once the target's <section>
     // exists in the DOM (re-checked whenever the loaded window changes),
-    // scroll it to the top of the viewport.
+    // scroll it to the top of the viewport — in a layout effect, before the
+    // browser paints, so the target is already in place on the first frame
+    // (no top-of-buffer flash, then jump). Reveals the masked column too.
     const targetLoaded =
         pendingScrollTarget != null &&
         nodes.some((n) => n.slug === pendingScrollTarget);
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!pendingScrollTarget || !targetLoaded) return;
         const el = scrollerRef.current?.querySelector(
             `[data-node-slug="${CSS.escape(pendingScrollTarget)}"]`,
         );
         if (!(el instanceof HTMLElement)) return;
         el.scrollIntoView({ block: "start", behavior: "auto" });
+        setInitialScrollPending(false);
         const timer = setTimeout(() => setPendingScrollTarget(null), 50);
         return () => clearTimeout(timer);
     }, [pendingScrollTarget, targetLoaded]);
+
+    // Safety: never leave the column masked if the target can't be reached
+    // (e.g. an unknown slug). The layout effect above still scrolls before
+    // paint once data arrives, so revealing early causes no jump.
+    useEffect(() => {
+        if (!initialScrollPending) return;
+        const t = setTimeout(() => setInitialScrollPending(false), 1500);
+        return () => clearTimeout(t);
+    }, [initialScrollPending]);
 
     // After landing on the target node, scroll to the selected sentence
     // (only on initial load from URL params).
@@ -470,6 +488,7 @@ export const PanelScrollView = forwardRef<
                 style={{
                     overflowAnchor: "none",
                     fontSize: "var(--reader-font-size, 1rem)",
+                    opacity: initialScrollPending ? 0 : 1,
                 }}
             >
                 <div ref={topSentinelRef} aria-hidden="true">
