@@ -305,7 +305,7 @@ export function ResourcesPanel({
     return (
         <aside
             data-tour="resources-panel"
-            className="w-80 border-l border-stone-200 bg-white shrink-0 flex flex-col"
+            className="flex flex-col bg-white shrink-0 border-stone-200 w-full h-[45vh] border-t shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:h-auto md:w-80 md:border-t-0 md:border-l md:shadow-none"
         >
             {/* Header - matches TextPanel toolbar height */}
             <div className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 flex items-center px-3">
@@ -350,142 +350,150 @@ export function ResourcesPanel({
             {/* Menu */}
             {isMenu && (
                 <div className="flex-1 overflow-y-auto">
-                    <nav className="p-2 space-y-1">
-                        <MenuButton
-                            onClick={() => onViewChange("about")}
-                            label="About this text"
-                            icon={<InfoOutlined fontSize="small" />}
-                        />
-                        <MenuButton
-                            onClick={() => onViewChange("toc")}
-                            label="Table of Contents"
-                            dataTour="toc"
-                            icon={<ListOutlined fontSize="small" />}
-                        />
-                        <MenuButton
-                            onClick={() => onViewChange("sentence")}
-                            label="Sentence Details"
-                            disabled={!selectedSentence}
-                            icon={<CommitOutlined fontSize="small" />}
-                        />
-                        {canAddPanel && (
+                    <nav className="flex flex-col p-1 gap-0.5 md:p-2 md:gap-1">
+                        <div className="order-3 flex flex-col gap-0.5 md:order-1 md:gap-1">
                             <MenuButton
-                                onClick={() => onViewChange("compare")}
-                                label="Compare Text"
-                                dataTour="compare"
-                                icon={<CompareOutlined fontSize="small" />}
+                                onClick={() => onViewChange("about")}
+                                label="About this text"
+                                icon={<InfoOutlined fontSize="small" />}
                             />
-                        )}
-                        <MenuButton
-                            onClick={() => void startReaderTour()}
-                            label="Take a Tour"
-                            icon={<ExploreOutlined fontSize="small" />}
-                        />
-                        <div className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-3 pb-1">
-                            Commentary
+                            <MenuButton
+                                onClick={() => onViewChange("toc")}
+                                label="Table of Contents"
+                                dataTour="toc"
+                                icon={<ListOutlined fontSize="small" />}
+                            />
+                            <MenuButton
+                                onClick={() => onViewChange("sentence")}
+                                label="Sentence Details"
+                                disabled={!selectedSentence}
+                                icon={<CommitOutlined fontSize="small" />}
+                            />
+                            {canAddPanel && (
+                                <MenuButton
+                                    onClick={() => onViewChange("compare")}
+                                    label="Compare Text"
+                                    dataTour="compare"
+                                    icon={<CompareOutlined fontSize="small" />}
+                                />
+                            )}
+                            <MenuButton
+                                onClick={() => void startReaderTour()}
+                                label="Take a Tour"
+                                icon={<ExploreOutlined fontSize="small" />}
+                            />
                         </div>
-                        <MenuButton
-                            onClick={() => onViewChange("verbatim")}
-                            label={`Verbatim${commentaryCounts.verbatim ? ` (${commentaryCounts.verbatim})` : ""}`}
-                            dataTour="commentary"
-                            disabled={!selectedSentence}
-                            icon={
-                                <MenuBookOutlined
-                                    fontSize="small"
-                                    sx={{ color: "#722f37" }}
-                                />
-                            }
-                        />
-                        <MenuButton
-                            onClick={() => onViewChange("paraphrase")}
-                            label={`Paraphrase${commentaryCounts.paraphrase ? ` (${commentaryCounts.paraphrase})` : ""}`}
-                            disabled={!selectedSentence}
-                            icon={
-                                <MenuBookOutlined
-                                    fontSize="small"
-                                    sx={{ color: "#5c6b8b" }}
-                                />
-                            }
-                        />
-                        <MenuButton
-                            onClick={() => onViewChange("allusion")}
-                            label={`Allusion${commentaryCounts.allusion ? ` (${commentaryCounts.allusion})` : ""}`}
-                            disabled={!selectedSentence}
-                            icon={
-                                <MenuBookOutlined
-                                    fontSize="small"
-                                    sx={{ color: "#5c7a5c" }}
-                                />
-                            }
-                        />
-                        <div
-                            data-tour="tools"
-                            className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-3 pb-1"
-                        >
-                            Tools
+                        <div className="order-2 flex flex-col gap-0.5 md:gap-1">
+                            <div className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-2 pb-0.5 md:pt-3 md:pb-1">
+                                Commentary
+                            </div>
+                            <MenuButton
+                                onClick={() => onViewChange("verbatim")}
+                                label={`Verbatim${commentaryCounts.verbatim ? ` (${commentaryCounts.verbatim})` : ""}`}
+                                dataTour="commentary"
+                                disabled={!selectedSentence}
+                                icon={
+                                    <MenuBookOutlined
+                                        fontSize="small"
+                                        sx={{ color: "#722f37" }}
+                                    />
+                                }
+                            />
+                            <MenuButton
+                                onClick={() => onViewChange("paraphrase")}
+                                label={`Paraphrase${commentaryCounts.paraphrase ? ` (${commentaryCounts.paraphrase})` : ""}`}
+                                disabled={!selectedSentence}
+                                icon={
+                                    <MenuBookOutlined
+                                        fontSize="small"
+                                        sx={{ color: "#5c6b8b" }}
+                                    />
+                                }
+                            />
+                            <MenuButton
+                                onClick={() => onViewChange("allusion")}
+                                label={`Allusion${commentaryCounts.allusion ? ` (${commentaryCounts.allusion})` : ""}`}
+                                disabled={!selectedSentence}
+                                icon={
+                                    <MenuBookOutlined
+                                        fontSize="small"
+                                        sx={{ color: "#5c7a5c" }}
+                                    />
+                                }
+                            />
                         </div>
-                        {user ? (
-                            <>
-                                <MenuButton
-                                    onClick={() => onViewChange("notes")}
-                                    label={`Notes${noteCount ? ` (${noteCount})` : ""}`}
-                                    disabled={!selectedSentence}
-                                    icon={
-                                        <EditNoteOutlined
-                                            fontSize="small"
-                                            sx={{ color: "#6b5b73" }}
-                                        />
-                                    }
-                                />
-                                <MenuButton
-                                    onClick={handleToggleSaveQuotation}
-                                    label={
-                                        exactQuotation
-                                            ? "Unsave Quotation"
-                                            : "Save Quotation"
-                                    }
-                                    disabled={
-                                        !selectedSentence ||
-                                        createQuotation.isPending ||
-                                        unsavePending
-                                    }
-                                    icon={
-                                        exactQuotation ? (
-                                            <FavoriteOutlined
+                        <div className="order-1 flex flex-col gap-0.5 md:order-3 md:gap-1">
+                            <div
+                                data-tour="tools"
+                                className="text-[11px] uppercase tracking-wider text-stone-400 font-medium px-3 pt-2 pb-0.5 md:pt-3 md:pb-1"
+                            >
+                                Tools
+                            </div>
+                            {user ? (
+                                <>
+                                    <MenuButton
+                                        onClick={() => onViewChange("notes")}
+                                        label={`Notes${noteCount ? ` (${noteCount})` : ""}`}
+                                        disabled={!selectedSentence}
+                                        icon={
+                                            <EditNoteOutlined
                                                 fontSize="small"
-                                                sx={{ color: "#b45264" }}
+                                                sx={{ color: "#6b5b73" }}
                                             />
-                                        ) : (
-                                            <FavoriteBorderOutlined
-                                                fontSize="small"
-                                                sx={{ color: "#b45264" }}
-                                            />
-                                        )
-                                    }
-                                />
-                                <MenuButton
-                                    onClick={openFeedbackModal}
-                                    label="Send Feedback"
-                                    icon={
-                                        <FeedbackOutlined
-                                            fontSize="small"
-                                            sx={{ color: "#5c6b8b" }}
+                                        }
+                                    />
+                                    <MenuButton
+                                        onClick={handleToggleSaveQuotation}
+                                        label={
+                                            exactQuotation
+                                                ? "Unsave Quotation"
+                                                : "Save Quotation"
+                                        }
+                                        disabled={
+                                            !selectedSentence ||
+                                            createQuotation.isPending ||
+                                            unsavePending
+                                        }
+                                        icon={
+                                            exactQuotation ? (
+                                                <FavoriteOutlined
+                                                    fontSize="small"
+                                                    sx={{ color: "#b45264" }}
+                                                />
+                                            ) : (
+                                                <FavoriteBorderOutlined
+                                                    fontSize="small"
+                                                    sx={{ color: "#b45264" }}
+                                                />
+                                            )
+                                        }
+                                    />
+                                    <div className="hidden md:block">
+                                        <MenuButton
+                                            onClick={openFeedbackModal}
+                                            label="Send Feedback"
+                                            icon={
+                                                <FeedbackOutlined
+                                                    fontSize="small"
+                                                    sx={{ color: "#5c6b8b" }}
+                                                />
+                                            }
                                         />
-                                    }
-                                />
-                            </>
-                        ) : (
-                            <p className="px-3 py-2 text-sm text-stone-400">
-                                <Link
-                                    to="/login"
-                                    className="text-stone-600 underline hover:text-stone-900"
-                                >
-                                    Log in or create an account
-                                </Link>{" "}
-                                to start saving quotations, writig notes and
-                                articles.
-                            </p>
-                        )}
+                                    </div>
+                                </>
+                            ) : (
+                                <p className="px-3 py-2 text-sm text-stone-400">
+                                    <Link
+                                        to="/login"
+                                        className="text-stone-600 underline hover:text-stone-900"
+                                    >
+                                        Log in or create an account
+                                    </Link>{" "}
+                                    to start saving quotations, writig notes and
+                                    articles.
+                                </p>
+                            )}
+                        </div>
                     </nav>
                 </div>
             )}
@@ -615,7 +623,7 @@ function MenuButton({
             onClick={onClick}
             disabled={disabled}
             data-tour={dataTour}
-            className="w-full text-left text-sm px-3 py-2 rounded hover:bg-stone-100 text-stone-700 transition-colors disabled:text-stone-300 disabled:hover:bg-transparent disabled:cursor-default flex items-center gap-2"
+            className="w-full text-left text-sm px-3 py-1.5 md:py-2 rounded cursor-pointer hover:bg-stone-100 text-stone-700 transition-colors disabled:text-stone-300 disabled:hover:bg-transparent disabled:cursor-default flex items-center gap-2"
         >
             <span className="text-stone-400">{icon}</span>
             {label}

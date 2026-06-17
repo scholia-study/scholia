@@ -1,4 +1,6 @@
+import AddOutlined from "@mui/icons-material/AddOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
+import RemoveOutlined from "@mui/icons-material/RemoveOutlined";
 import TextFormatOutlined from "@mui/icons-material/TextFormatOutlined";
 import {
     Checkbox,
@@ -27,6 +29,7 @@ import { useListQuotations } from "../../../api/quotations/quotations";
 import { getGetTocQueryOptions, useGetTocSuspense } from "../../../api/toc/toc";
 import { useAuth } from "../../../hooks/useAuth";
 import { QuotationProvider } from "../context/Quotations";
+import { useReaderPreferences } from "../context/ReaderPreferences";
 import { SelectionProvider } from "../context/selection";
 import {
     type SelectionMode,
@@ -183,6 +186,15 @@ export function TextPanel({
     // Quotation bookmarks
     const { user } = useAuth();
     const [showBookmarks, setShowBookmarks] = useState(true);
+
+    // Reader text size (+/- in the display menu; persisted globally)
+    const {
+        fontSizePx,
+        increaseFontSize,
+        decreaseFontSize,
+        canIncrease,
+        canDecrease,
+    } = useReaderPreferences();
 
     const handleVisibleNodeChange = useCallback(
         (slug: string) => {
@@ -435,9 +447,9 @@ export function TextPanel({
 
     return (
         <SelectionProvider value={selectionCtx}>
-            <div className="flex flex-1 min-w-0 border-r border-stone-200 last:border-r-0">
+            <div className="flex flex-col md:flex-row flex-1 min-w-0 border-r border-stone-200 last:border-r-0">
                 {/* Main content area */}
-                <div className="flex-1 flex flex-col min-w-0">
+                <div className="flex-1 flex flex-col min-w-0 min-h-0">
                     {/* Toolbar */}
                     <div className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 relative z-10">
                         <div className="flex items-center max-w-2xl mx-auto px-2">
@@ -481,6 +493,54 @@ export function TextPanel({
                                         },
                                     }}
                                 >
+                                    <Typography
+                                        variant="overline"
+                                        sx={{
+                                            px: 2,
+                                            color: "text.secondary",
+                                            display: "block",
+                                        }}
+                                    >
+                                        Text size
+                                    </Typography>
+                                    <MenuItem
+                                        disableRipple
+                                        sx={{
+                                            py: 0.5,
+                                            px: 2,
+                                            gap: 1,
+                                            "&:hover": {
+                                                backgroundColor: "transparent",
+                                            },
+                                        }}
+                                    >
+                                        <IconButton
+                                            size="small"
+                                            disabled={!canDecrease}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                decreaseFontSize();
+                                            }}
+                                            title="Decrease text size"
+                                        >
+                                            <RemoveOutlined fontSize="small" />
+                                        </IconButton>
+                                        <span className="flex-1 text-center text-sm text-stone-500 tabular-nums">
+                                            {fontSizePx}px
+                                        </span>
+                                        <IconButton
+                                            size="small"
+                                            disabled={!canIncrease}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                increaseFontSize();
+                                            }}
+                                            title="Increase text size"
+                                        >
+                                            <AddOutlined fontSize="small" />
+                                        </IconButton>
+                                    </MenuItem>
+                                    <Divider />
                                     {hasRelationship && [
                                         <Typography
                                             key="vm-label"

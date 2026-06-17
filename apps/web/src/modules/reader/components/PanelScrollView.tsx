@@ -467,7 +467,10 @@ export const PanelScrollView = forwardRef<
             <div
                 ref={scrollerRef}
                 className="h-full overflow-y-auto"
-                style={{ overflowAnchor: "none" }}
+                style={{
+                    overflowAnchor: "none",
+                    fontSize: "var(--reader-font-size, 1rem)",
+                }}
             >
                 <div ref={topSentinelRef} aria-hidden="true">
                     {isFetchingPreviousPage && (

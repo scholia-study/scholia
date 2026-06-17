@@ -16,6 +16,11 @@ import { Navbar } from "../layout/Navbar";
 import { ScrollToTop } from "../layout/ScrollToTop";
 import { UserSubnav } from "../layout/UserSubnav";
 import { FeedbackModal, FeedbackProvider } from "../modules/feedback";
+import {
+    READER_FONT_SIZE_CSS,
+    READER_FONT_SIZE_INIT_SCRIPT,
+    ReaderPreferencesProvider,
+} from "../modules/reader";
 import appCss from "../styles.css?url";
 import { theme } from "../theme";
 
@@ -66,6 +71,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
                 {
                     children: `window.__ENV__ = { APP_PROFILE: ${JSON.stringify(profile)} };`,
                 },
+                // Apply a saved reader text size before first paint (no flash).
+                { children: READER_FONT_SIZE_INIT_SCRIPT },
             ],
         };
     },
@@ -90,22 +97,24 @@ function RootComponent() {
         <ThemeProvider theme={theme}>
             <AuthProvider>
                 <FeedbackProvider>
-                    <Navbar />
-                    <UserSubnav />
-                    <InfoSubnav />
-                    <main className="flex-1 overflow-y-auto">
-                        <div
-                            className={`${isReader ? "h-full" : "min-h-full"} flex flex-col`}
-                        >
-                            <div className="flex-1 min-h-0 flex flex-col">
-                                <Outlet />
+                    <ReaderPreferencesProvider>
+                        <Navbar />
+                        <UserSubnav />
+                        <InfoSubnav />
+                        <main className="flex-1 overflow-y-auto">
+                            <div
+                                className={`${isReader ? "h-full" : "min-h-full"} flex flex-col`}
+                            >
+                                <div className="flex-1 min-h-0 flex flex-col">
+                                    <Outlet />
+                                </div>
+                                {showFooter && <Footer />}
                             </div>
-                            {showFooter && <Footer />}
-                        </div>
-                    </main>
-                    <ScrollToTop />
-                    <FeedbackModal />
-                    <Toaster position="bottom-right" />
+                        </main>
+                        <ScrollToTop />
+                        <FeedbackModal />
+                        <Toaster position="bottom-right" />
+                    </ReaderPreferencesProvider>
                 </FeedbackProvider>
             </AuthProvider>
         </ThemeProvider>
@@ -132,6 +141,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <html lang="en">
             <head>
                 <HeadContent />
+                {/* Critical CSS: size the reading column before first paint so a
+                    hard refresh doesn't reflow/scroll-shift (see ReaderPreferences). */}
+                <style
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted, build-time constant
+                    dangerouslySetInnerHTML={{ __html: READER_FONT_SIZE_CSS }}
+                />
             </head>
             <body className="antialiased h-screen overflow-hidden flex flex-col bg-stone-50 text-stone-900">
                 {children}

@@ -489,7 +489,7 @@ export function Block({
     switch (block.block_type) {
         case "heading":
             return (
-                <h2 className="relative text-2xl font-bold pt-8 pb-6 text-stone-900">
+                <h2 className="relative text-[1.5em] font-bold pt-8 pb-6 text-stone-900">
                     {block.sentences.length > 0
                         ? block.sentences.map((s) => (
                               <HeadingSentence

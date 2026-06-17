@@ -110,7 +110,6 @@ function useCollapsible() {
  * (the heading itself is the entry). The group name toggles its body
  * collapsed/expanded; the colored rule under the name stays visible either way.
  */
-
 function GroupSection({ group }: { group: LibraryGroup }) {
     const collapse = useCollapsible();
     const accent = accentColorFor(group.primary_label, group.id);
@@ -157,7 +156,7 @@ function GroupSection({ group }: { group: LibraryGroup }) {
                         type="button"
                         onClick={collapse.toggle}
                         aria-label={`Toggle ${group.primary_label}`}
-                        className="cursor-pointer appearance-none bg-transparent p-0 text-left text-sm font-semibold uppercase tracking-wider text-stone-700"
+                        className="cursor-pointer appearance-none bg-transparent hover:bg-stone-100 p-0 text-left text-sm font-semibold uppercase tracking-wider text-stone-700"
                     >
                         {group.primary_label}
                     </button>
@@ -270,7 +269,7 @@ function CompilationShapeGroup({
                         type="button"
                         onClick={collapse.toggle}
                         aria-label={`Toggle ${group.primary_label}`}
-                        className="cursor-pointer appearance-none bg-transparent p-0 text-left text-sm font-semibold uppercase tracking-wider text-stone-700"
+                        className="cursor-pointer appearance-none bg-transparent hover:bg-stone-100 p-0 text-left text-sm font-semibold uppercase tracking-wider text-stone-700"
                     >
                         {group.primary_label}
                     </button>
