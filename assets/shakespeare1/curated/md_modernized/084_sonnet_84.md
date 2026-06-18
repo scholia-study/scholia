@@ -6,7 +6,7 @@ depth: 1
 ## 84
 
 Who is it that says most, which can say more,
-Than this rich praise,--that you alone, are you?
+Than this rich praise,—that you alone, are you?
 In whose confine immured is the store
 Which should example where your equal grew.
 Lean penury within that pen doth dwell

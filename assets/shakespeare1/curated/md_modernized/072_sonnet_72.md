@@ -7,7 +7,7 @@ depth: 1
 
 O! lest the world should task you to recite
 What merit lived in me, that you should love
-After my death,--dear love, forget me quite,
+After my death,—dear love, forget me quite,
 For you in me can nothing worthy prove;
 Unless you would devise some virtuous lie,
 To do more for me than mine own desert,

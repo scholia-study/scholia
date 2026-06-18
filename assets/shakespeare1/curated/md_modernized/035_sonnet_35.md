@@ -13,8 +13,8 @@ All men make faults, and even I in this,
 Authorizing thy trespass with compare,
 Myself corrupting, salving thy amiss,
 Excusing thy sins more than thy sins are;
-For to thy sensual fault I bring in sense,--
-Thy adverse party is thy advocate,--
+For to thy sensual fault I bring in sense,—
+Thy adverse party is thy advocate,—
 And 'gainst myself a lawful plea commence:
 Such civil war is in my love and hate,
 That I an accessary needs must be,

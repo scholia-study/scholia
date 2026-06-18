@@ -15,7 +15,7 @@ Then should I spur, though mounted on the wind,
 In winged speed no motion shall I know,
 Then can no horse with my desire keep pace;
 Therefore desire, of perfect'st love being made,
-Shall neigh--no dull flesh--in his fiery race;
-But love, for love, thus shall excuse my jade,--
+Shall neigh—no dull flesh—in his fiery race;
+But love, for love, thus shall excuse my jade,—
 'Since from thee going, he went wilful-slow,
 Towards thee I'll run, and give him leave to go.'

@@ -14,7 +14,7 @@ Featur'd like him, like him with friends possess'd,
 Desiring this man's art, and that man's scope,
 With what I most enjoy contented least;
 Yet in these thoughts my self almost despising,
-Haply I think on thee,-- and then my state,
+Haply I think on thee,—and then my state,
 Like to the lark at break of day arising
 From sullen earth, sings hymns at heaven's gate;
 For thy sweet love remember'd such wealth brings

@@ -18,4 +18,4 @@ Hung with the trophies of my lovers gone,
 Who all their parts of me to thee did give,
 That due of many now is thine alone:
 Their images I lov'd, I view in thee,
-And thou--all they--hast all the all of me.
+And thou—all they—hast all the all of me.

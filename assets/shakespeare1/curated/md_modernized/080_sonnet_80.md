@@ -9,7 +9,7 @@ O! how I faint when I of you do write,
 Knowing a better spirit doth use your name,
 And in the praise thereof spends all his might,
 To make me tongue-tied speaking of your fame!
-But since your worth--wide as the ocean is,--
+But since your worth—wide as the ocean is,—
 The humble as the proudest sail doth bear,
 My saucy bark, inferior far to his,
 On your broad main doth wilfully appear.
@@ -18,4 +18,4 @@ Whilst he upon your soundless deep doth ride;
 Or, being wrack'd, I am a worthless boat,
 He of tall building, and of goodly pride:
 Then if he thrive and I be cast away,
-The worst was this,--my love was my decay.
+The worst was this,—my love was my decay.

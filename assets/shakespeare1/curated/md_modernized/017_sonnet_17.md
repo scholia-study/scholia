@@ -18,4 +18,4 @@ Be scorn'd, like old men of less truth than tongue,
 And your true rights be term'd a poet's rage
 And stretched metre of an antique song:
 But were some child of yours alive that time,
-You should live twice,--in it, and in my rhyme.
+You should live twice,—in it, and in my rhyme.

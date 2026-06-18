@@ -9,8 +9,8 @@ Mine eye and heart are at a mortal war,
 How to divide the conquest of thy sight;
 Mine eye my heart thy picture's sight would bar,
 My heart mine eye the freedom of that right.
-My heart doth plead that thou in him dost lie,--
-A closet never pierc'd with crystal eyes--
+My heart doth plead that thou in him dost lie,—
+A closet never pierc'd with crystal eyes—
 But the defendant doth that plea deny,
 And says in him thy fair appearance lies.
 To side this title is impannelled

@@ -17,5 +17,5 @@ But when my glass shows me myself indeed
 Beated and chopp'd with tanned antiquity,
 Mine own self-love quite contrary I read;
 Self so self-loving were iniquity.
-'Tis thee,--myself,--that for myself I praise,
+'Tis thee,—myself,—that for myself I praise,
 Painting my age with beauty of thy days.

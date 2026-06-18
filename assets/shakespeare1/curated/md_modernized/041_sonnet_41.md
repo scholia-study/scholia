@@ -16,6 +16,6 @@ Will sourly leave her till he have prevail'd?
 Ay me! but yet thou mightst my seat forbear,
 And chide thy beauty and thy straying youth,
 Who lead thee in their riot even there
-Where thou art forced to break a twofold truth:--
+Where thou art forced to break a twofold truth:—
 Hers by thy beauty tempting her to thee,
 Thine by thy beauty being false to me.

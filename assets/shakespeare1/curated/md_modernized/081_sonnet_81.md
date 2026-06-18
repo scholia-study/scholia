@@ -17,5 +17,5 @@ Your monument shall be my gentle verse,
 Which eyes not yet created shall o'er-read;
 And tongues to be, your being shall rehearse,
 When all the breathers of this world are dead;
-You still shall live,--such virtue hath my pen,--
+You still shall live,—such virtue hath my pen,—
 Where breath most breathes, even in the mouths of men.
