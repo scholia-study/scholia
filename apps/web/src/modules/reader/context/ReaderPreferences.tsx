@@ -26,7 +26,7 @@ const STEPS = [6, 8, 10, 12, 14, 16, 18, 20, 22, 24] as const;
 const MIN = STEPS[0];
 const MAX = STEPS[STEPS.length - 1];
 /** Responsive defaults, used until the reader stores an explicit choice. */
-const DEFAULT_MOBILE = 12;
+const DEFAULT_MOBILE = 14;
 const DEFAULT_DESKTOP = 18;
 const MD_QUERY = "(min-width: 768px)";
 
