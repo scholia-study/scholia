@@ -45,6 +45,7 @@ jobs:
                         - 'apps/api/**'
                         - 'db/migrations/**'
                         - '.sqlx/**'
+                        - 'packages/dataduct/**'
                         - 'Cargo.toml'
                         - 'Cargo.lock'
                         - '.github/workflows/build.yml'
