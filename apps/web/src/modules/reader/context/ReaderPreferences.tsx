@@ -41,6 +41,16 @@ export const READING_WIDTHS = [
 ] as const;
 const DEFAULT_READING_WIDTH = "42rem";
 
+// How often line-number margin markers appear: every line, or every Nth line
+// (line 1 always shows, then multiples of N). Applied client-side in
+// BlockRenderer; only affects texts that carry a "line" reference system.
+export const LINE_NUMBER_INTERVALS = [
+    { key: "every", label: "Every line", value: 1 },
+    { key: "five", label: "Every 5", value: 5 },
+    { key: "ten", label: "Every 10", value: 10 },
+] as const;
+const DEFAULT_LINE_NUMBER_INTERVAL = 5;
+
 /**
  * Critical CSS injected into <head> (see `__root.tsx`) so the reading column is
  * correctly sized/spaced on the very first paint — no post-hydration resize, no
@@ -108,6 +118,13 @@ interface ReaderPreferences {
     /** Current text-column max-width (e.g. "42rem"); see READING_WIDTHS. */
     readingWidth: string;
     setReadingWidth: (value: string) => void;
+    /** Show line-number markers every Nth line (1 = every line). */
+    lineNumberInterval: number;
+    setLineNumberInterval: (value: number) => void;
+    /** Clear all stored display prefs (size, spacing, width, line nums) to defaults. */
+    resetDisplayPreferences: () => void;
+    /** True when any display pref differs from its default. */
+    hasDisplayOverrides: boolean;
 }
 
 const Ctx = createContext<ReaderPreferences | null>(null);
@@ -126,13 +143,29 @@ export function ReaderPreferencesProvider({
             ? true
             : window.matchMedia(MD_QUERY).matches,
     );
-    const [lineHeight, setLineHeight] = useLocalStorageState(
+    const [lineHeight, setLineHeight, resetLineHeight] = useLocalStorageState(
         LOC_STORAGE_KEYS.readerLineHeight,
         DEFAULT_LINE_HEIGHT,
     );
-    const [readingWidth, setReadingWidth] = useLocalStorageState(
-        LOC_STORAGE_KEYS.readerWidth,
-        DEFAULT_READING_WIDTH,
+    const [readingWidth, setReadingWidth, resetReadingWidth] =
+        useLocalStorageState(
+            LOC_STORAGE_KEYS.readerWidth,
+            DEFAULT_READING_WIDTH,
+        );
+    const [
+        lineNumberIntervalRaw,
+        setLineNumberIntervalRaw,
+        resetLineNumberInterval,
+    ] = useLocalStorageState(
+        LOC_STORAGE_KEYS.readerLineNumberInterval,
+        String(DEFAULT_LINE_NUMBER_INTERVAL),
+    );
+    const lineNumberInterval =
+        Number.parseInt(lineNumberIntervalRaw, 10) ||
+        DEFAULT_LINE_NUMBER_INTERVAL;
+    const setLineNumberInterval = useCallback(
+        (value: number) => setLineNumberIntervalRaw(String(value)),
+        [setLineNumberIntervalRaw],
     );
 
     const responsiveDefault = isDesktop ? DEFAULT_DESKTOP : DEFAULT_MOBILE;
@@ -193,6 +226,23 @@ export function ReaderPreferencesProvider({
         removeLocalStorage(LOC_STORAGE_KEYS.readerFontSize);
         setOverride(null);
     }, []);
+    const resetDisplayPreferences = useCallback(() => {
+        resetFontSize();
+        resetLineHeight();
+        resetReadingWidth();
+        resetLineNumberInterval();
+    }, [
+        resetFontSize,
+        resetLineHeight,
+        resetReadingWidth,
+        resetLineNumberInterval,
+    ]);
+
+    const hasDisplayOverrides =
+        override != null ||
+        lineHeight !== DEFAULT_LINE_HEIGHT ||
+        readingWidth !== DEFAULT_READING_WIDTH ||
+        lineNumberInterval !== DEFAULT_LINE_NUMBER_INTERVAL;
 
     const value = useMemo<ReaderPreferences>(
         () => ({
@@ -207,6 +257,10 @@ export function ReaderPreferencesProvider({
             setLineHeight,
             readingWidth,
             setReadingWidth,
+            lineNumberInterval,
+            setLineNumberInterval,
+            resetDisplayPreferences,
+            hasDisplayOverrides,
         }),
         [
             fontSizePx,
@@ -218,6 +272,10 @@ export function ReaderPreferencesProvider({
             setLineHeight,
             readingWidth,
             setReadingWidth,
+            lineNumberInterval,
+            setLineNumberInterval,
+            resetDisplayPreferences,
+            hasDisplayOverrides,
         ],
     );
 

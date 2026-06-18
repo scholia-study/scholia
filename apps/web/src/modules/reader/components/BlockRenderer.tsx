@@ -25,6 +25,23 @@ import { FootnotePopover } from "./FootnotePopover";
 export interface MarginSettings {
     enabledSystems: Set<string>;
     systemSides: Record<string, "left" | "right">;
+    /** Thin "line" markers to every Nth line (1 = every line). Optional so
+     *  callers building partial settings can omit it; defaults to every line. */
+    lineNumberInterval?: number;
+}
+
+/**
+ * Line-number markers can be thinned to every Nth line via the reader display
+ * pref: line 1 always shows, then multiples of the interval. Other systems
+ * (verse, page) and non-numeric refs are never thinned.
+ */
+function lineMarkerHiddenByInterval(
+    pm: PageMarkerResponse,
+    interval: number,
+): boolean {
+    if (pm.system_slug !== "line" || interval <= 1) return false;
+    const n = Number.parseInt(pm.ref_value, 10);
+    return Number.isFinite(n) && n !== 1 && n % interval !== 0;
 }
 
 interface SentenceGroup {
@@ -254,6 +271,13 @@ export function Sentence({
         if (!marginSettings || marginSettings.enabledSystems.size === 0)
             continue;
         if (!marginSettings.enabledSystems.has(pm.system_slug)) continue;
+        if (
+            lineMarkerHiddenByInterval(
+                pm,
+                marginSettings.lineNumberInterval ?? 1,
+            )
+        )
+            continue;
         const side = marginSettings.systemSides[pm.system_slug] ?? "right";
         if (side === "left") {
             if (!leftMarkers) leftMarkers = [];
@@ -379,6 +403,13 @@ function HeadingSentence({
     ) {
         for (const pm of sentence.page_markers) {
             if (!marginSettings.enabledSystems.has(pm.system_slug)) continue;
+            if (
+                lineMarkerHiddenByInterval(
+                    pm,
+                    marginSettings.lineNumberInterval ?? 1,
+                )
+            )
+                continue;
             const side = marginSettings.systemSides[pm.system_slug] ?? "right";
             if (side === "left") {
                 if (!leftMarkers) leftMarkers = [];
@@ -618,6 +649,13 @@ export function Block({
             ) {
                 for (const pm of anchor.page_markers) {
                     if (!marginSettings.enabledSystems.has(pm.system_slug))
+                        continue;
+                    if (
+                        lineMarkerHiddenByInterval(
+                            pm,
+                            marginSettings.lineNumberInterval ?? 1,
+                        )
+                    )
                         continue;
                     const side =
                         marginSettings.systemSides[pm.system_slug] ?? "right";

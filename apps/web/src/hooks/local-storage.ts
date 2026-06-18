@@ -4,6 +4,7 @@ export const LOC_STORAGE_KEYS = {
     readerFontSize: "scholia:reader-font-size",
     readerLineHeight: "scholia:reader-line-height",
     readerWidth: "scholia:reader-width",
+    readerLineNumberInterval: "scholia:reader-line-number-interval",
     readerTourSeen: "scholia:reader-tour:seen:v1",
     /** Per Bible-shape group; legacy un-namespaced key (kept verbatim). */
     bibleTranslation: (groupId: string) => `bible-translation:${groupId}`,
@@ -39,7 +40,7 @@ export function removeLocalStorage(key: string): void {
 export function useLocalStorageState(
     key: string,
     defaultValue: string,
-): [string, (value: string) => void] {
+): [string, (value: string) => void, () => void] {
     const [value, setValue] = useState<string>(
         () => getLocalStorage(key) ?? defaultValue,
     );
@@ -50,5 +51,9 @@ export function useLocalStorageState(
         },
         [key],
     );
-    return [value, set];
+    const reset = useCallback(() => {
+        removeLocalStorage(key);
+        setValue(defaultValue);
+    }, [key, defaultValue]);
+    return [value, set, reset];
 }

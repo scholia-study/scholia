@@ -2,6 +2,7 @@ export { BibleShapeFullToc, PanelToc } from "./components/PanelToc";
 export { ReaderLayout } from "./components/ReaderLayout";
 export { TranslationBadge } from "./components/TranslationBadge";
 export {
+    LINE_NUMBER_INTERVALS,
     LINE_SPACINGS,
     READER_DISPLAY_CSS,
     READER_DISPLAY_INIT_SCRIPT,

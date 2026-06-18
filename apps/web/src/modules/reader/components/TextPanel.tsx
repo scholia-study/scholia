@@ -1,6 +1,7 @@
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import RemoveOutlined from "@mui/icons-material/RemoveOutlined";
+import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
 import TextFormatOutlined from "@mui/icons-material/TextFormatOutlined";
 import {
     Checkbox,
@@ -31,6 +32,7 @@ import { getGetTocQueryOptions, useGetTocSuspense } from "../../../api/toc/toc";
 import { useAuth } from "../../../hooks/useAuth";
 import { QuotationProvider } from "../context/Quotations";
 import {
+    LINE_NUMBER_INTERVALS,
     LINE_SPACINGS,
     READING_WIDTHS,
     useReaderPreferences,
@@ -203,6 +205,10 @@ export function TextPanel({
         setLineHeight,
         readingWidth,
         setReadingWidth,
+        lineNumberInterval,
+        setLineNumberInterval,
+        resetDisplayPreferences,
+        hasDisplayOverrides,
     } = useReaderPreferences();
 
     const compactMenu = useMediaQuery("(max-width:767px)", { noSsr: true });
@@ -333,6 +339,12 @@ export function TextPanel({
         selectedSentence != null &&
         sentenceMatchesKey(selectedSentence, selectedSentenceId);
     const availableSystems = Object.keys(marginSettings.systemSides);
+    // The line-number interval is a persisted display pref, not session margin
+    // state — merge it in here so BlockRenderer sees one settings object.
+    const effectiveMarginSettings = useMemo(
+        () => ({ ...marginSettings, lineNumberInterval }),
+        [marginSettings, lineNumberInterval],
+    );
 
     const onMainSelect = useCallback(
         (key: string, sentence: SentenceResponse, mode: SelectionMode) => {
@@ -638,6 +650,57 @@ export function TextPanel({
                                                 </ToggleButton>
                                             ))}
                                         </ToggleButtonGroup>
+                                    </MenuItem>
+                                    {availableSystems.includes("line") && [
+                                        <Typography
+                                            key="ln-label"
+                                            variant="overline"
+                                            sx={{
+                                                px: 2,
+                                                color: "text.secondary",
+                                                display: "block",
+                                            }}
+                                        >
+                                            Line numbers
+                                        </Typography>,
+                                        <MenuItem
+                                            key="ln-control"
+                                            disableRipple
+                                            sx={menuControlRowSx}
+                                        >
+                                            <ToggleButtonGroup
+                                                value={lineNumberInterval}
+                                                exclusive
+                                                size="small"
+                                                fullWidth
+                                                onChange={(_, v) => {
+                                                    if (v != null)
+                                                        setLineNumberInterval(
+                                                            v,
+                                                        );
+                                                }}
+                                            >
+                                                {LINE_NUMBER_INTERVALS.map(
+                                                    (o) => (
+                                                        <ToggleButton
+                                                            key={o.key}
+                                                            value={o.value}
+                                                            sx={toggleButtonSx}
+                                                        >
+                                                            {o.label}
+                                                        </ToggleButton>
+                                                    ),
+                                                )}
+                                            </ToggleButtonGroup>
+                                        </MenuItem>,
+                                    ]}
+                                    <MenuItem
+                                        disabled={!hasDisplayOverrides}
+                                        onClick={resetDisplayPreferences}
+                                        sx={{ py: 0.5, px: 2, gap: 1 }}
+                                    >
+                                        <RestartAltOutlined fontSize="small" />
+                                        <ListItemText primary="Reset to defaults" />
                                     </MenuItem>
                                     <Divider />
                                     {hasRelationship && [
@@ -1209,7 +1272,7 @@ export function TextPanel({
                             onSelectSentence={handleSelectSentence}
                             onVisibleNodeChange={handleVisibleNodeChange}
                             onSystemsDiscovered={handleSystemsDiscovered}
-                            marginSettings={marginSettings}
+                            marginSettings={effectiveMarginSettings}
                         />
                     </QuotationProvider>
                 </div>
