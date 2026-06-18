@@ -487,7 +487,6 @@ function plural(n: number, singular: string, pluralForm: string) {
 function formatStats(stats: LibraryStats) {
     return [
         plural(stats.works, "work", "works"),
-        plural(stats.authors, "author", "authors"),
         plural(stats.languages, "language", "languages"),
     ].join(" · ");
 }
