@@ -10,7 +10,7 @@
 # Rust change that adds, removes, or alters a sqlx query.
 #
 # Prerequisites:
-#   - Local DB up with the current schema applied (run pnpm db:reset first).
+#   - Local DB up with the latest schema applied (run pnpm db:migrate first).
 #   - sqlx-cli installed:
 #       cargo install sqlx-cli --no-default-features --features postgres,rustls
 
