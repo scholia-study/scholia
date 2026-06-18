@@ -172,16 +172,18 @@ function GroupSection({ group }: { group: LibraryGroup }) {
                 style={{ backgroundColor: accent }}
             />
             {!isSingleton && (
-                <div className={`${collapse.contentClass} mt-4 space-y-5`}>
-                    {group.books.map((work) => (
-                        <WorkCard
-                            key={work.work_id}
-                            work={work}
-                            hideTitle={
-                                isSelf && work.title === group.primary_label
-                            }
-                        />
-                    ))}
+                <div className={`${collapse.contentClass} mt-4`}>
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-x-8 gap-y-6">
+                        {group.books.map((work) => (
+                            <WorkCard
+                                key={work.work_id}
+                                work={work}
+                                hideTitle={
+                                    isSelf && work.title === group.primary_label
+                                }
+                            />
+                        ))}
+                    </div>
                 </div>
             )}
         </section>
