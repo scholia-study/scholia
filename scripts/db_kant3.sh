@@ -4,7 +4,7 @@
 # translation import looks the source book up by slug to thread sentence + node
 # alignments.
 #
-# Imports the pre-built structs; run `pnpm dp:kant3:struct` first to (re)generate
+# Imports the pre-built structs; run `pnpm struct:kant3` first to (re)generate
 # them from the curated MD. Pass importer flags through, e.g.
 # `pnpm db:kant3 -- --database-url postgres://…/scratch` to target a throwaway DB.
 #
