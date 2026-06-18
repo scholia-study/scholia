@@ -1,0 +1,12 @@
+---
+position: 98
+label: "§ 69. What an Antinomy of the Power of Judgment Is"
+depth: 3
+aa_page: 385
+---
+
+## § 69. What an Antinomy of the Power of Judgment Is
+
+The ***determining*** power of judgment has of itself no principles that ground ***concepts of objects***. It is not an autonomy; for it only ***subsumes*** under given laws, or concepts, as principles. For this very reason, it is also exposed to no danger of an antinomy of its own and to no conflict of its principles. Thus the transcendental power of judgment, which contained the conditions for subsuming under categories, was not ***nomothetic*** of itself; rather, it only named the conditions of sensible intuition under which reality (application) can be given to a given concept as a law of the understanding: concerning which it could never (at least as far as principles are concerned) fall into disagreement with itself.
+
+But the ***reflecting*** power of judgment is to subsume under a law {{ 312 }} that is not yet given, and thus is in fact only a principle of reflection on objects for which we objectively entirely lack a law, or a concept of the object that would be sufficient as a principle for cases that occur. Since, then, no use of the cognitive faculties may be permitted without principles, the reflecting power of judgment must in such cases serve as a principle for itself: which, because it is not objective and cannot ground any cognitive basis of the object sufficient for the purpose, is to serve as a merely subjective principle for the purposive use of the cognitive faculties, namely, for reflecting on a certain kind of objects. Hence, in relation to such cases, the reflecting power of judgment has its maxims, and indeed necessary ones, for the sake of the cognition of the laws of nature {{{ 386 }}} in experience, in order to arrive at concepts by means of them, even if these should be concepts of reason; if it absolutely requires them in order merely to get to know nature according to its empirical laws. — Between these necessary maxims of the reflecting power of judgment a conflict, and consequently an antinomy, can now take place, on which is grounded a dialectic, which, if each of two mutually conflicting maxims has its ground in the nature of the cognitive faculties, can be called a natural dialectic and an {{ 313 }} unavoidable illusion which one must expose and resolve in the critique so that it does not deceive.

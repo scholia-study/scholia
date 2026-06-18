@@ -1,0 +1,20 @@
+---
+position: 68
+label: "§ 43. On Art in General"
+depth: 5
+aa_page: 303
+---
+
+## § 43. On Art in General
+
+1) ***Art*** is distinguished from ***nature*** as doing (_facere_) is from acting or working in general (_agere_), and the product, or the consequence of the former, as a ***work*** (_opus_) from that of the latter as an effect (_effectus_) {{ 174 }}.
+
+By right, only production through freedom, i.e., through a power of choice that places reason at the basis of its actions, should be called art. For although one is pleased to call the product of bees (the regularly constructed combs of wax) a work of art, this happens only on account of the analogy with the latter; as soon as one reflects, namely, that they do not ground their work on any rational deliberation of their own, one says at once that it is a product of their nature (of instinct), and as art it is ascribed only to their Creator.
+
+If, in searching through a peat-bog, as sometimes happens, one encounters a piece of hewn wood, one says not that it is a product of nature, but of art; its producing cause had conceived a purpose, to which this owes its form. Otherwise, one also perceives art in everything that is so constituted that a representation of it in its cause must have preceded its reality (as even with bees), without the effect having had to be precisely ***thought*** by it; but if one calls something simply a work of art, in order to distinguish it from an effect of nature, one always understands by that a work of human beings.
+
+2) ***Art*** as human skill is also distinguished from {{ 175 }} ***science*** (***ability*** from ***knowledge***), as a practical from a theoretical faculty, as technique from theory (like land-surveying from geometry). And in that case, what one ***can*** do as soon as one merely ***knows*** what is to be done, and thus merely knows the desired effect sufficiently, is not exactly called art. Only that which, even if one knows it most completely, one does not therefore immediately {{{ 304 }}} have the skill to make, belongs to that extent to art. ***Camper*** describes very precisely how the best shoe would have to be constituted, but he certainly could not make one[^*].
+
+3) ***Art*** is also distinguished from ***handicraft***; the first is called ***free***, the other can also be called ***mercenary art***. One regards the first in such a way as if it could turn out purposive (succeed) only as play, i.e., an occupation that is agreeable in itself; the second in such a way that it is regarded as labor, i.e., an occupation that is disagreeable (burdensome) in itself and is attractive only through its effect (e.g., the wages), and can consequently be {{ 176 }} imposed by constraint. Whether in the scale of rank of the guilds watchmakers are to count as artists, but smiths as handicraftsmen, requires another point of view for assessment than the one we are taking here; namely, the proportion of talents that must lie at the basis of one or the other of these occupations. Whether there might not also have been included among the so-called seven free arts some that are to be numbered among the sciences, and some also that are to be compared with handicrafts, is something I do not wish to discuss here. But that in all free arts there is nevertheless required something compulsory, or, as it is called, a ***mechanism***, without which the ***spirit***, which must be ***free*** in art and alone animates the work, would have no body at all and would completely evaporate, is not unadvisable to recall (e.g., in poetry, correctness and richness of language, as well as prosody and meter), since many modern educators believe they can best promote a free art if they remove all constraint from it and convert it from labor into mere play.
+
+[^*]: In my region, the common man says, when one presents him with a task such as Columbus with his egg: ***that is no art, it is only a science***. That is, if one knows it, one ***can*** do it; and he says precisely this of all the alleged arts of the juggler. That of the tightrope-walker, on the contrary, he will by no means deny calling art.

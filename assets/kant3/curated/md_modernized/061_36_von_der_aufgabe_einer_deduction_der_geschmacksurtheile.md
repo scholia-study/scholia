@@ -1,0 +1,16 @@
+---
+position: 61
+label: "§ 36. Von der Aufgabe einer Deduktion der Geschmacksurteile"
+depth: 5
+aa_page: 287
+---
+
+## {{ 147 }} § 36. Von der Aufgabe einer Deduktion der Geschmacksurteile
+
+Mit der Wahrnehmung eines Gegenstandes kann unmittelbar der Begriff von einem Objekte überhaupt, von welchem jene die empirischen {{{ 288 }}} Prädikate enthält, zu einem Erkenntnisurteil verbunden und dadurch ein Erfahrungsurteil erzeugt werden. Diesem liegen nun Begriffe _a priori_ von der synthetischen Einheit des Mannigfaltigen der Anschauung, um es als Bestimmung eines Objekts zu denken, zum Grunde; und diese Begriffe (die Kategorien) erfordern eine Deduktion, die auch in der Kritik der r. V. gegeben worden, wodurch denn auch die Auflösung der Aufgabe zustande kommen konnte: Wie sind synthetische Erkenntnisurteile _a priori_ möglich? Diese Aufgabe betraf also die Prinzipien a priori des reinen Verstandes und seiner theoretischen Urteile.
+
+Mit einer Wahrnehmung kann aber auch unmittelbar ein Gefühl der Lust (oder Unlust) und ein Wohlgefallen verbunden werden, welches die Vorstellung des Objekts begleitet und derselben statt Prädikats dient, und so ein ästhetisches Urteil, welches kein Erkenntnisurteil ist, entspringen. Einem solchen, wenn es nicht bloßes Empfindungs-, sondern ein formales Reflexionsurteil ist, welches dieses Wohlgefallen jedermann als notwendig ansinnt, muss etwas als Prinzip _a priori_ zum Grunde {{ 148 }} liegen, welches allenfalls ein bloß subjektives sein mag (wenn ein objektives zu solcher Art Urteile unmöglich sein sollte), aber auch als ein solches einer Deduktion bedarf, damit begriffen werde, wie ein ästhetisches Urteil auf Notwendigkeit Anspruch machen könne. Hierauf gründet sich nun die Aufgabe, mit der wir uns jetzt beschäftigen: Wie sind Geschmacksurteile möglich? Welche Aufgabe also die Prinzipien _a priori_ der reinen Urteilskraft in ***ästhetischen*** Urteilen betrifft, d. i. in solchen, wo sie nicht (wie in den theoretischen) unter objektiven Verstandesbegriffen bloß zu subsumieren hat und unter einem Gesetze steht, sondern wo sie sich selbst subjektiv Gegenstand sowohl als Gesetz ist.
+
+Diese Aufgabe kann auch so vorgestellt werden: Wie ist ein Urteil möglich, das bloß aus dem ***eigenen*** Gefühl der Lust an einem Gegenstande unabhängig von dessen Begriffe diese Lust, als der Vorstellung desselben Objekts ***in jedem anderen Subjekte*** anhängig, _a priori_, d. i. ohne fremde Beistimmung abwarten zu dürfen, beurteilte?
+
+Dass Geschmacksurteile synthetische sind, ist leicht einzusehen, weil sie über den Begriff und selbst die Anschauung des Objekts hinausgehen und etwas, das gar nicht einmal Erkenntnis ist, nämlich Gefühl der Lust (oder Unlust), zu jener als Prädikat hinzutun. Dass sie aber, obgleich das Prädikat (der mit der Vorstellung verbundenen ***eigenen*** Lust) empirisch {{ 149 }} ist, gleichwohl, was die geforderte Beistimmung ***von jedermann*** {{{ 289 }}} betrifft, Urteile _a priori_ sind, oder dafür gehalten werden wollen, ist gleichfalls schon in den Ausdrücken ihres Anspruchs enthalten; und so gehört diese Aufgabe der Kritik der Urteilskraft unter das allgemeine Problem der Transzendentalphilosophie: Wie sind synthetische Urteile _a priori_ möglich?

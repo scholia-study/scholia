@@ -1,0 +1,19 @@
+---
+position: 69
+label: "§ 44. Von der schönen Kunst"
+depth: 5
+aa_page: 304
+---
+
+## § 44. Von der schönen Kunst
+
+Es giebt weder eine Wissenschaft des Schönen, sondern nur Kritik, noch schöne Wissenschaft, sondern nur schöne Kunst. Denn was die erstere {{ 177 }} betrifft, so würde in ihr wissenschaftlich, d. i. durch Beweisgründe, ausgemacht {{{ 305 }}} werden sollen, ob etwas für schön zu halten sei oder nicht; das Urtheil über Schönheit würde also, wenn es zur Wissenschaft gehörte, kein Geschmacksurtheil sein. Was das zweite anlangt, so ist eine Wissenschaft, die als solche schön sein soll, ein Unding. Denn wenn man in ihr als Wissenschaft nach Gründen und Beweisen fragte, so würde man durch geschmackvolle Aussprüche (Bonmots) abgefertigt. — Was den gewöhnlichen Ausdruck ***schöne Wissenschaften*** veranlaßt hat, ist ohne Zweifel nichts anders, als daß man ganz richtig bemerkt hat, es werde zur schönen Kunst in ihrer ganzen Vollkommenheit viel Wissenschaft, als z. B. Kenntniß alter Sprachen, Belesenheit der Autoren, die für Classiker gelten, Geschichte, Kenntniß der Alterthümer u. s. w., erfordert, und deshalb diese historischen Wissenschaften, weil sie zur schönen Kunst die nothwendige Vorbereitung und Grundlage ausmachen, zum Theil auch weil darunter selbst die Kenntniß der Producte der schönen Kunst (Beredsamkeit und Dichtkunst) begriffen worden, durch eine Wortverwechselung selbst schöne Wissenschaften genannt hat.
+
+Wenn die Kunst, dem ***Erkenntnisse*** eines möglichen Gegenstandes angemessen, bloß ihn wirklich zu machen die dazu erforderlichen Handlungen verrichtet, so ist sie ***mechanische***; hat sie aber das Gefühl der Lust zur unmittelbaren Absicht, so heißt sie ***ästhetische*** Kunst. Diese ist entweder {{ 178 }} ***angenehme*** oder ***schöne*** Kunst. Das erste ist sie, wenn der Zweck derselben ist, daß die Lust die Vorstellungen als bloße ***Empfindungen***, das zweite, daß sie dieselben als ***Erkenntnißarten*** begleite.
+
+Angenehme Künste sind die, welche bloß zum Genusse abgezweckt werden; dergleichen alle die Reize sind, welche die Gesellschaft an einer Tafel vergnügen können: als unterhaltend zu erzählen, die Gesellschaft in freimüthige und lebhafte Gesprächigkeit zu versetzen, durch Scherz und Lachen sie zu einem gewissen Tone der Lustigkeit zu stimmen, wo, wie man sagt, manches ins Gelag hinein geschwatzt werden kann, und niemand über das, was er spricht, verantwortlich sein will, weil es nur auf die augenblickliche Unterhaltung, nicht auf einen bleibenden Stoff zum Nachdenken oder Nachsagen angelegt ist. (Hiezu gehört denn auch die Art, wie der Tisch zum Genusse ausgerüstet ist, oder wohl gar bei großen Gelagen die Tafelmusik: ein wunderliches Ding, welches nur als ein angenehmes Geräusch die Stimmung der Gemüther zur Fröhlichkeit unterhalten soll und, ohne daß jemand auf die Composition derselben die mindeste Aufmerksamkeit verwendet, die freie Gesprächigkeit eines Nachbars mit dem andern {{{ 306 }}} begünstigt.) Dazu gehören ferner alle Spiele, die weiter kein Interesse bei sich führen, als die Zeit unvermerkt verlaufen zu machen.
+
+Schöne Kunst dagegen ist eine Vorstellungsart, die für sich selbst {{ 179 }} zweckmäßig ist und, obgleich ohne Zweck, dennoch die Cultur der Gemüthskräfte zur geselligen Mittheilung befördert.
+
+Die allgemeine Mittheilbarkeit einer Lust führt es schon in ihrem Begriffe mit sich, daß diese nicht eine Lust des Genusses aus bloßer Empfindung, sondern der Reflexion sein müsse; und so ist ästhetische Kunst als schöne Kunst eine solche, die die reflectirende Urtheilskraft und nicht die Sinnenempfindung zum Richtmaße hat.
+

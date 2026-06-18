@@ -1,0 +1,18 @@
+---
+position: 94
+label: "§ 66. Vom Prinzip der Beurteilung der innern Zweckmäßigkeit in organisierten Wesen"
+depth: 3
+aa_page: 376
+---
+
+## § 66. Vom Prinzip der Beurteilung der innern Zweckmäßigkeit in organisierten Wesen
+
+Dieses Prinzip, zugleich die Definition derselben, heißt: ***Ein organisiertes Produkt der Natur ist das, in welchem alles {{ 296 }} Zweck und wechselseitig auch Mittel ist.*** Nichts in ihm ist umsonst, zwecklos, oder einem blinden Naturmechanismus zuzuschreiben.
+
+Dieses Prinzip ist zwar seiner Veranlassung nach von Erfahrung abzuleiten, nämlich derjenigen, welche methodisch angestellt wird und Beobachtung heißt; der Allgemeinheit und Notwendigkeit wegen aber, die es von einer solchen Zweckmäßigkeit aussagt, kann es nicht bloß auf Erfahrungsgründen beruhen, sondern muss irgendein Prinzip _a priori_, wenn es gleich bloß regulativ wäre, und jene Zwecke allein in der Idee des Beurteilenden und nirgend in einer wirkenden Ursache lägen, zum Grunde haben. Man kann daher obgenanntes Prinzip eine ***Maxime*** der Beurteilung der innern Zweckmäßigkeit organisierter Wesen nennen.
+
+Dass die Zergliederer der Gewächse und Tiere, um ihre Struktur zu erforschen und die Gründe einsehen zu können, warum und zu welchem Ende solche Teile, warum eine solche Lage und Verbindung der Teile und gerade diese innere Form ihnen gegeben worden, jene Maxime: dass nichts in einem solchen Geschöpf ***umsonst*** sei, als unumgänglich notwendig annehmen und sie ebenso, als den Grundsatz der allgemeinen Naturlehre: dass ***nichts von ungefähr*** geschehe, geltend machen, ist bekannt. In der Tat können sie sich auch von diesem teleologischen Grundsatze ebenso wenig lossagen, als von dem allgemeinen physischen, weil, so wie bei Verlassung des letzteren gar keine Erfahrung überhaupt, {{ 297 }} so bei der des ersteren Grundsatzes kein Leitfaden für die Beobachtung einer Art von Naturdingen, die wir einmal teleologisch unter dem Begriffe der Naturzwecke gedacht haben, übrig bleiben würde.
+
+{{{ 377 }}} Denn dieser Begriff führt die Vernunft in eine ganz andere Ordnung der Dinge, als die eines bloßen Mechanismus der Natur, der uns hier nicht mehr genugtun will. Eine Idee soll der Möglichkeit des Naturprodukts zum Grunde liegen. Weil diese aber eine absolute Einheit der Vorstellung ist, statt dass die Materie eine Vielheit der Dinge ist, die für sich keine bestimmte Einheit der Zusammensetzung an die Hand geben kann: so muss, wenn jene Einheit der Idee sogar als Bestimmungsgrund _a priori_ eines Naturgesetzes der Kausalität einer solchen Form des Zusammengesetzten dienen soll, der Zweck der Natur auf ***alles***, was in ihrem Produkte liegt, erstreckt werden. Denn wenn wir einmal dergleichen Wirkung ***im Ganzen*** auf einen übersinnlichen Bestimmungsgrund über den blinden Mechanismus der Natur hinaus beziehen, müssen wir sie auch ganz nach diesem Prinzip beurteilen; und es ist kein Grund da, die Form eines solchen Dinges noch zum Teil vom letzteren als abhängig anzunehmen, da alsdann bei der Vermischung ungleichartiger Prinzipien gar keine sichere Regel der Beurteilung übrig bleiben würde.
+
+Es mag immer sein, dass z. B. in einem tierischen Körper manche {{ 298 }} Teile als Konkretionen nach bloß mechanischen Gesetzen begriffen werden könnten (als Häute, Knochen, Haare). Doch muss die Ursache, welche die dazu schickliche Materie herbeischafft, diese so modifiziert, formt und an ihren gehörigen Stellen absetzt, immer teleologisch beurteilt werden, so dass alles in ihm als organisiert betrachtet werden muss, und alles auch in gewisser Beziehung auf das Ding selbst wiederum Organ ist.

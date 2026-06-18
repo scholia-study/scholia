@@ -1,0 +1,12 @@
+---
+position: 98
+label: "§ 69. Was eine Antinomie der Urteilskraft sei"
+depth: 3
+aa_page: 385
+---
+
+## § 69. Was eine Antinomie der Urteilskraft sei
+
+Die ***bestimmende*** Urteilskraft hat für sich keine Prinzipien, welche ***Begriffe von Objekten*** gründen. Sie ist keine Autonomie; denn sie ***subsumiert*** nur unter gegebenen Gesetzen, oder Begriffen, als Prinzipien. Eben darum ist sie auch keiner Gefahr ihrer eigenen Antinomie und keinem Widerstreit ihrer Prinzipien ausgesetzt. So war die transzendentale Urteilskraft, welche die Bedingungen unter Kategorien zu subsumieren enthielt, für sich nicht ***nomothetisch***; sondern nannte nur die Bedingungen der sinnlichen Anschauung, unter welchen einem gegebenen Begriffe, als Gesetze des Verstandes, Realität (Anwendung) gegeben werden kann: worüber sie niemals mit sich selbst in Uneinigkeit (wenigstens den Prinzipien nach) geraten konnte.
+
+Allein die ***reflektierende*** Urteilskraft soll unter einem Gesetze subsumieren, {{ 312 }} welches noch nicht gegeben und also in der Tat nur ein Prinzip der Reflexion über Gegenstände ist, für die es uns objektiv gänzlich an einem Gesetze mangelt, oder an einem Begriffe vom Objekt, der zum Prinzip für vorkommende Fälle hinreichend wäre. Da nun kein Gebrauch der Erkenntnisvermögen ohne Prinzipien verstattet werden darf, so wird die reflektierende Urteilskraft in solchen Fällen ihr selbst zum Prinzip dienen müssen: welches, weil es nicht objektiv ist und keinen für die Absicht hinreichenden Erkenntnisgrund des Objekts unterlegen kann, als bloß subjektives Prinzip zum zweckmäßigen Gebrauche der Erkenntnisvermögen, nämlich über eine Art Gegenstände zu reflektieren, dienen soll. Also hat in Beziehung auf solche Fälle die reflektierende Urteilskraft ihre Maximen und zwar notwendige zum Behuf der Erkenntnis der Naturgesetze {{{ 386 }}} in der Erfahrung, um vermittelst derselben zu Begriffen zu gelangen, sollten diese auch Vernunftbegriffe sein; wenn sie solcher durchaus bedarf, um die Natur nach ihren empirischen Gesetzen bloß kennenzulernen. — Zwischen diesen notwendigen Maximen der reflektierenden Urteilskraft kann nun ein Widerstreit, mithin eine Antinomie stattfinden, worauf sich eine Dialektik gründet, die, wenn jede von zwei einander widerstreitenden Maximen in der Natur der Erkenntnisvermögen ihren Grund hat, eine natürliche Dialektik genannt werden kann und ein {{ 313 }} unvermeidlicher Schein, den man in der Kritik entblößen und auflösen muss, damit er nicht betrüge.

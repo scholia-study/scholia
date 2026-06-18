@@ -1,0 +1,11 @@
+---
+position: 23
+label: "§ 6. Das Schöne ist das, was ohne Begriff als Object eines allgemeinen Wohlgefallens vorgestellt wird"
+depth: 5
+aa_page: 211
+---
+
+## § 6. Das Schöne ist das, was ohne Begriff als Object eines allgemeinen Wohlgefallens vorgestellt wird
+
+Diese Erklärung des Schönen kann aus der vorigen Erklärung desselben, als eines Gegenstandes des Wohlgefallens ohne alles Interesse, gefolgert werden. Denn das, wovon jemand sich bewußt ist, daß das Wohlgefallen an demselben bei ihm selbst ohne alles Interesse sei, das kann derselbe nicht anders als so beurtheilen, daß es einen Grund des Wohlgefallens für jedermann enthalten müsse. Denn da es sich nicht auf irgend eine Neigung des Subjects (noch auf irgend ein anderes überlegtes Interesse) gründet, sondern da der Urtheilende sich in Ansehung des Wohlgefallens, welches er dem Gegenstande widmet, völlig ***frei*** fühlt: so kann er keine Privatbedingungen als Gründe des Wohlgefallens auffinden, an die sich sein Subject allein hinge, und muß es daher als in demjenigen begründet ansehen, was er auch bei jedem andern voraussetzen kann; folglich muß er glauben Grund zu haben, jedermann ein ähnliches Wohlgefallen zuzumuthen. Er wird daher vom Schönen so sprechen, als ob Schönheit {{ 18 }} eine Beschaffenheit des Gegenstandes und das Urtheil logisch (durch Begriffe vom Objecte eine Erkenntniß desselben ausmachend) wäre; ob es gleich nur ästhetisch ist und bloß eine Beziehung der Vorstellung des Gegenstandes auf das Subject enthält: darum weil es doch mit dem logischen die Ähnlichkeit hat, daß man die Gültigkeit desselben für jedermann daran voraussetzen kann. Aber aus Begriffen kann diese Allgemeinheit auch nicht entspringen. Denn von Begriffen giebt es keinen Übergang zum Gefühle der Lust oder Unlust (ausgenommen in reinen praktischen Gesetzen, die aber ein Interesse bei sich führen, dergleichen mit dem reinen Geschmacksurtheile {{{ 212 }}} nicht verbunden ist). Folglich muß dem Geschmacksurtheile mit dem Bewußtsein der Absonderung in demselben von allem Interesse ein Anspruch auf Gültigkeit für jedermann ohne auf Objecte gestellte Allgemeinheit anhängen, d. i. es muß damit ein Anspruch auf subjective Allgemeinheit verbunden sein.
+

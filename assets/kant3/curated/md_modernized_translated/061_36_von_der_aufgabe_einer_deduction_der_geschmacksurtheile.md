@@ -1,0 +1,16 @@
+---
+position: 61
+label: "§ 36. On the Task of a Deduction of Judgments of Taste"
+depth: 5
+aa_page: 287
+---
+
+## {{ 147 }} § 36. On the Task of a Deduction of Judgments of Taste
+
+With the perception of an object, the concept of an object in general, of which that perception contains the empirical {{{ 288 }}} predicates, can be immediately connected to a judgment of cognition and thereby an empirical judgment can be generated. At the basis of this lie concepts _a priori_ of the synthetic unity of the manifold of intuition in order to think it as a determination of an object; and these concepts (the categories) require a deduction, which was also given in the Critique of Pure Reason, whereby then the resolution of the task was also able to be achieved: How are synthetic judgments of cognition _a priori_ possible? This task therefore concerned the principles _a priori_ of pure understanding and of its theoretical judgments.
+
+With a perception, however, there can also be immediately connected a feeling of pleasure (or displeasure) and a satisfaction, which accompanies the representation of the object and serves in place of a predicate, and thus an aesthetic judgment, which is not a judgment of cognition, can arise. At the basis of such a judgment, if it is not a mere judgment of sensation but a formal judgment of reflection, which requires this satisfaction from everyone as necessary, there must {{ 148 }} lie something as a principle _a priori_ for its ground, which at most may be a merely subjective one (if an objective one should be impossible for this kind of judgment), but which also as such requires a deduction, in order that it may be understood how an aesthetic judgment can make a claim to necessity. On this is now founded the task with which we are now occupied: How are judgments of taste possible? Which task therefore concerns the principles _a priori_ of pure power of judgment in ***aesthetic*** judgments, i.e., in those where it has not (as in theoretical ones) merely to subsume under objective concepts of the understanding and stands under a law, but where it is to itself, subjectively, both object and law.
+
+This task can also be presented in this way: How is a judgment possible which, merely from one's ***own*** feeling of pleasure in an object, independently of its concept, judged this pleasure _a priori_, i.e., without being allowed to wait for the assent of others, as attached to the representation of the same object ***in every other subject***?
+
+That judgments of taste are synthetic is easy to see, because they go beyond the concept and even the intuition of the object and add to the latter as a predicate something that is not even cognition at all, namely the feeling of pleasure (or displeasure). But that they, although the predicate (of one's ***own*** pleasure connected with the representation) is empirical {{ 149 }}, are nevertheless, as regards the required assent ***of everyone*** {{{ 289 }}}, judgments _a priori_, or want to be held as such, is likewise already contained in the expressions of their claim; and so this task of the Critique of Judgement belongs under the general problem of transcendental philosophy: How are synthetic judgments _a priori_ possible?

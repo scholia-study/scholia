@@ -1,0 +1,10 @@
+---
+position: 40
+label: "§ 21. Ob man mit Grunde einen Gemeinsinn voraussetzen könne"
+depth: 5
+aa_page: 238
+---
+
+## § 21. Ob man mit Grunde einen Gemeinsinn voraussetzen könne
+
+Erkenntnisse und Urteile müssen sich samt der Überzeugung, die sie begleitet, allgemein mitteilen lassen; denn sonst käme ihnen keine Übereinstimmung mit dem Objekt zu: sie wären insgesamt ein bloß subjektives Spiel der Vorstellungskräfte, gerade so wie es der Skeptizism verlangt. Sollen sich aber Erkenntnisse mitteilen lassen, so muss sich auch der Gemütszustand, d. i. die Stimmung der Erkenntniskräfte zu einer Erkenntnis überhaupt, und zwar diejenige Proportion, welche sich für eine Vorstellung (wodurch uns ein Gegenstand gegeben wird) gebührt, um daraus Erkenntnis zu machen, allgemein mitteilen lassen: weil ohne diese als subjektive Bedingung des Erkennens das Erkenntnis als Wirkung nicht entspringen könnte. Dieses geschieht auch wirklich jederzeit, wenn ein gegebener Gegenstand vermittelst der Sinne die Einbildungskraft zur Zusammensetzung des Mannigfaltigen, diese aber den Verstand zur Einheit desselben in Begriffen in Tätigkeit bringt. Aber diese Stimmung der Erkenntniskräfte hat nach Verschiedenheit der Objekte, die gegeben werden, eine verschiedene Proportion. Gleichwohl aber muss es eine geben, {{ 66 }} in welcher dieses innere Verhältnis zur Belebung (einer durch die andere) die zuträglichste für beide Gemütskräfte in Absicht auf Erkenntnis (gegebener {{{ 239 }}} Gegenstände) überhaupt ist; und diese Stimmung kann nicht anders als durch das Gefühl (nicht nach Begriffen) bestimmt werden. Da sich nun diese Stimmung selbst muss allgemein mitteilen lassen, mithin auch das Gefühl derselben (bei einer gegebenen Vorstellung); die allgemeine Mitteilbarkeit eines Gefühls aber einen Gemeinsinn voraussetzt: so wird dieser mit Grunde angenommen werden können, und zwar ohne sich desfalls auf psychologische Beobachtungen zu fußen, sondern als die notwendige Bedingung der allgemeinen Mitteilbarkeit unserer Erkenntnis, welche in jeder Logik und jedem Prinzip der Erkenntnisse, das nicht skeptisch ist, vorausgesetzt werden muss.

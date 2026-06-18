@@ -1,0 +1,16 @@
+---
+position: 56
+label: "§ 31. Von der Methode der Deduktion der Geschmacksurteile"
+depth: 5
+aa_page: 280
+---
+
+## § 31. Von der Methode der Deduktion der Geschmacksurteile
+
+Die Obliegenheit einer Deduktion, d. i. der Gewährleistung der Rechtmäßigkeit, einer Art Urteile tritt nur ein, wenn das Urteil Anspruch auf {{ 134 }} Notwendigkeit macht; welches der Fall auch alsdann ist, wenn es subjektive Allgemeinheit, d. i. jedermanns Beistimmung, fordert: indes es doch kein Erkenntnisurteil, sondern nur der Lust oder Unlust an einem gegebenen Gegenstande, d. i. Anmaßung einer durchgängig für jedermann geltenden subjektiven Zweckmäßigkeit, ist, die sich auf keine Begriffe von der Sache gründen soll, weil es Geschmacksurteil ist.
+
+Da wir im letzteren Falle kein Erkenntnisurteil, weder ein theoretisches, welches den Begriff einer ***Natur*** überhaupt durch den Verstand, noch ein (reines) praktisches, welches die Idee der ***Freiheit*** als _a priori_ durch die Vernunft gegeben zum Grunde legt, vor uns haben; und also weder ein Urteil, welches vorstellt, was eine Sache ist, noch dass ich, um sie hervorzubringen, etwas verrichten soll, nach seiner Gültigkeit _a priori_ zu rechtfertigen haben: so wird bloß die ***allgemeine Gültigkeit*** eines {{{ 281 }}} ***einzelnen*** Urteils, welches die subjektive Zweckmäßigkeit einer empirischen Vorstellung der Form eines Gegenstandes ausdrückt, für die Urteilskraft überhaupt darzutun sein, um zu erklären, wie es möglich sei, dass etwas bloß in der Beurteilung (ohne Sinnenempfindung oder Begriff) gefallen könne, und, so wie die Beurteilung eines Gegenstandes zum Behuf einer ***Erkenntnis*** überhaupt allgemeine Regeln hat, auch das {{ 135 }} Wohlgefallen eines Jeden für jeden anderen als Regel dürfe angekündigt werden.
+
+Wenn nun diese Allgemeingültigkeit sich nicht auf Stimmensammlung und Herumfragen bei anderen wegen ihrer Art zu empfinden gründen, sondern gleichsam auf einer Autonomie des über das Gefühl der Lust (an der gegebenen Vorstellung) urteilenden Subjekts, d. i. auf seinem eigenen Geschmacke, beruhen, gleichwohl aber doch auch nicht von Begriffen abgeleitet werden soll: so hat ein solches Urteil — wie das Geschmacksurteil in der Tat ist — eine zwiefache und zwar logische Eigentümlichkeit: nämlich ***erstlich*** die Allgemeingültigkeit a priori und doch nicht eine logische Allgemeinheit nach Begriffen, sondern die Allgemeinheit eines einzelnen Urteils; ***zweitens*** eine Notwendigkeit (die jederzeit auf Gründen _a priori_ beruhen muss), die aber doch von keinen Beweisgründen _a priori_ abhängt, durch deren Vorstellung der Beifall, den das Geschmacksurteil jedermann ansinnt, erzwungen werden könnte.
+
+Die Auflösung dieser logischen Eigentümlichkeiten, worin sich ein Geschmacksurteil von allen Erkenntnisurteilen unterscheidet, wenn wir hier anfänglich von allem Inhalte desselben, nämlich dem Gefühle der Lust, abstrahieren und bloß die ästhetische Form mit der Form der objektiven Urteile, wie sie die Logik vorschreibt, vergleichen, wird allein zur Deduktion dieses sonderbaren Vermögens hinreichend sein. Wir wollen also diese charakteristischen Eigenschaften des Geschmacks zuvor, durch Beispiele {{ 136 }} erläutert, vorstellig machen.
