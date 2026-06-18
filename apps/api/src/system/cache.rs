@@ -10,8 +10,6 @@
 
 use std::time::Duration;
 
-use reqwest::Method;
-
 use crate::system::state::AppState;
 
 /// Build the shared reqwest client used for PURGE requests. Created
@@ -43,13 +41,11 @@ where
 
     for path in paths {
         let path = path.as_ref().to_owned();
-        let url = format!("{base}{path}");
+        let base = base.clone();
         let client = state.purge_client.clone();
         tokio::spawn(async move {
-            let method = Method::from_bytes(b"PURGE").expect("PURGE is a valid method");
-            match client.request(method, &url).send().await {
-                Ok(resp) => {
-                    let status = resp.status();
+            match dataduct::cache::send_purge(&client, &base, &path).await {
+                Ok(status) => {
                     // 412 Precondition Failed = key not in cache. Not
                     // an error — just nothing to do.
                     if status.is_success() || status.as_u16() == 412 {

@@ -10,7 +10,7 @@
 # Stock nginx:alpine doesn't include ngx_cache_purge. We build it as a
 # dynamic module here so the runtime layer can load it via `load_module`.
 # Using the same nginx image as the base ensures the module ABI matches.
-FROM nginx:1.27-alpine AS modules
+FROM nginx:1.29-alpine AS modules
 
 RUN apk add --no-cache \
     build-base linux-headers \
@@ -36,7 +36,7 @@ RUN NGX_VERSION=$(nginx -v 2>&1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+') \
     && cp objs/ngx_http_cache_purge_module.so /modules/
 
 # --- Stage 2: runtime ---
-FROM nginx:1.27-alpine
+FROM nginx:1.29-alpine
 
 COPY --from=modules /modules/ngx_http_cache_purge_module.so /usr/lib/nginx/modules/
 

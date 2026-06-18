@@ -73,6 +73,14 @@ jobs:
                         - 'Cargo.toml'
                         - 'Cargo.lock'
                         - '.github/workflows/build.yml'
+                      ingest_shakespeare1:
+                        - 'packages/shakespeare1_*/**'
+                        - 'packages/common/**'
+                        - 'packages/reconcile/**'
+                        - 'jobs/ingest-shakespeare1/**'
+                        - 'Cargo.toml'
+                        - 'Cargo.lock'
+                        - '.github/workflows/build.yml'
 
             - name: Build matrix
               id: matrix
@@ -83,6 +91,7 @@ jobs:
                   PROXY: ${{ steps.filter.outputs.proxy }}
                   INGEST_BIBLE: ${{ steps.filter.outputs.ingest_bible }}
                   INGEST_KANT1: ${{ steps.filter.outputs.ingest_kant1 }}
+                  INGEST_SHAKESPEARE1: ${{ steps.filter.outputs.ingest_shakespeare1 }}
               run: |
                   # Manual (workflow_dispatch) trigger = rebuild
                   # everything. paths-filter has no useful base to
@@ -90,7 +99,7 @@ jobs:
                   # in flight.
                   if [[ "$EVENT" == "workflow_dispatch" ]]; then
                       API=true; WEB=true; PROXY=true
-                      INGEST_BIBLE=true; INGEST_KANT1=true
+                      INGEST_BIBLE=true; INGEST_KANT1=true; INGEST_SHAKESPEARE1=true
                   fi
 
                   matrix='[]'
@@ -105,6 +114,7 @@ jobs:
                   if [[ "$PROXY"         == "true" ]]; then add proxy        apps/proxy apps/proxy/Dockerfile;        fi
                   if [[ "$INGEST_BIBLE"  == "true" ]]; then add ingest-bible .          jobs/ingest-bible/Dockerfile; fi
                   if [[ "$INGEST_KANT1"  == "true" ]]; then add ingest-kant1 .          jobs/ingest-kant1/Dockerfile; fi
+                  if [[ "$INGEST_SHAKESPEARE1" == "true" ]]; then add ingest-shakespeare1 . jobs/ingest-shakespeare1/Dockerfile; fi
 
                   echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
                   echo "Build matrix: $matrix"

@@ -1,6 +1,6 @@
-//! Reconciling re-import: update an already-imported book in place from the
-//! freshly parsed struct, preserving the UUIDs of unchanged sentences (and the
-//! quotations / resources / cross-references anchored to them).
+//! Book-agnostic reconciling re-import: update an already-imported book in place
+//! from a freshly parsed struct, preserving the UUIDs of unchanged sentences
+//! (and the quotations / resources / cross-references anchored to them).
 //!
 //! Identity is anchored to the block: a split/merge only reshuffles ordinals
 //! inside the one affected paragraph, so we reconcile per block, aligning old
@@ -26,21 +26,18 @@
 //! global `sentence_number` renumber. `--full-rewrite` bypasses the hash checks
 //! and rewrites everything. See docs/architecture/reconcile-incremental-hashing.md.
 //!
-//! The book-agnostic alignment + dependent-migration logic lives in the shared
-//! `reconcile` crate; this module is the Kant-specific orchestration on top.
+//! Callers map their own struct → the owned [`ReconcileInput`] IR below, compute
+//! their stored hashes themselves (so hashing stays identical to the fresh-insert
+//! path), and pass everything in. This module never recomputes hashes — it only
+//! compares the passed-in ones against stored values and writes them back.
 
 use std::collections::{HashMap, HashSet};
 
-use kant1_md_to_struct::model::{
-    ContentBlockData, FootnoteData, Output, SentenceData, TocNodeData,
-};
-use reconcile::{
-    BlockContent, BlockPlan, Existing, FootnoteContent, MarkerContent, NodeContent,
-    SentenceContent, extend_anchors_to, migrate_dependents, node_hash, plan_block, root_hash,
-    sentence_has_dependents,
-};
 use sqlx::{Postgres, Transaction};
 use uuid::Uuid;
+
+use crate::align::{BlockPlan, Existing, plan_block};
+use crate::deps::{extend_anchors_to, migrate_dependents, sentence_has_dependents};
 
 // Temp `sentence_number` base for rows inserted during apply. Existing rows keep
 // their real numbers until the set-based renumber reassigns everything, so a
@@ -49,87 +46,80 @@ use uuid::Uuid;
 // rewrites these to their final dense values.
 const TEMP_SENTENCE_NUMBER_BASE: i32 = 8_000_000;
 
-// --- Content hashing (tier-2 incremental reconcile) ------------------------
-// Build the book-agnostic `reconcile::NodeContent` from the Kant struct so the
-// insert path and the reconcile path hash *identical* content. The field set
-// here must mirror what reconcile writes (text/html/original_*/segment, page
-// markers, footnote content, block + label fields) — never the recomputed
-// numbering/positional fields. See docs/architecture/reconcile-incremental-hashing.md.
-
-pub(crate) fn node_content(node: &TocNodeData) -> NodeContent<'_> {
-    NodeContent {
-        label: &node.label,
-        label_html: &node.label_html,
-        blocks: node.content_blocks.iter().map(block_content).collect(),
-    }
+/// How an *added* node's source link is set. Existing (non-added) nodes never
+/// have their `source_id`/`source_node_id` touched.
+pub enum NodeAnchor {
+    /// No source link: both `source_id` and `source_node_id` stay NULL.
+    None,
+    /// Translation node: point `toc_nodes.source_node_id` at the source book's
+    /// matching node.
+    SourceNode(Uuid),
+    /// Source-anchored work node (e.g. a Bible-shape sub-work): create a
+    /// `source_type='chapter'` source under the book's compilation source, link
+    /// the author, and point `toc_nodes.source_id` at it.
+    WorkSource {
+        title: String,
+        publication_year: Option<i16>,
+        parent_source_id: Uuid,
+        author_person_id: Uuid,
+        created_by: Uuid,
+    },
 }
 
-fn block_content(block: &ContentBlockData) -> BlockContent<'_> {
-    BlockContent {
-        block_type: &block.block_type,
-        text: &block.text,
-        html: &block.html,
-        original_text: block.original_text.as_deref(),
-        original_html: block.original_html.as_deref(),
-        sentences: block.sentences.iter().map(sentence_content).collect(),
-    }
+pub struct MarkerInput {
+    pub system: String,
+    pub ref_value: String,
+    pub sort_order: i32,
+    pub char_offset: i32,
 }
 
-fn sentence_content(s: &SentenceData) -> SentenceContent<'_> {
-    SentenceContent {
-        text: &s.text,
-        html: &s.html,
-        original_text: s.original_text.as_deref(),
-        original_html: s.original_html.as_deref(),
-        segment: s.segment,
-        markers: s
-            .page_markers
-            .iter()
-            .map(|m| MarkerContent {
-                system: &m.system,
-                ref_value: &m.ref_value,
-                char_offset: Some(m.char_offset),
-            })
-            .collect(),
-        footnotes: s.footnotes.iter().map(footnote_content).collect(),
-    }
+/// A footnote's sentences. Footnote sentences carry `indent = None`, no markers,
+/// and no nested footnotes.
+pub struct FootnoteInput {
+    pub number: i32,
+    pub sentences: Vec<SentenceInput>,
 }
 
-fn footnote_content(f: &FootnoteData) -> FootnoteContent<'_> {
-    FootnoteContent {
-        number: f.number,
-        sentences: f
-            .sentences
-            .iter()
-            .map(|fs| SentenceContent {
-                text: &fs.text,
-                html: &fs.html,
-                original_text: fs.original_text.as_deref(),
-                original_html: fs.original_html.as_deref(),
-                segment: None,
-                markers: Vec::new(),
-                footnotes: Vec::new(),
-            })
-            .collect(),
-    }
+pub struct SentenceInput {
+    pub position: i16,
+    pub sentence_number: Option<i32>,
+    pub segment: Option<i16>,
+    pub indent: Option<i16>,
+    pub text: String,
+    pub html: String,
+    pub original_text: Option<String>,
+    pub original_html: Option<String>,
+    pub markers: Vec<MarkerInput>,
+    pub footnotes: Vec<FootnoteInput>,
 }
 
-/// Per-node hashes in document (sort) order, paired with `source_ref`, plus the
-/// root hash. Both the insert and reconcile paths derive their stored hashes
-/// from here.
-pub(crate) fn compute_hashes(output: &Output) -> (Vec<(String, String)>, String) {
-    let node_hashes: Vec<(String, String)> = output
-        .toc_nodes
-        .iter()
-        .map(|n| (n.source_ref.clone(), node_hash(&node_content(n))))
-        .collect();
-    let root = root_hash(
-        &node_hashes
-            .iter()
-            .map(|(_, h)| h.clone())
-            .collect::<Vec<_>>(),
-    );
-    (node_hashes, root)
+pub struct BlockInput {
+    pub position: i16,
+    pub block_type: String,
+    pub paragraph_number: Option<i32>,
+    pub figure_number: Option<i32>,
+    pub text: String,
+    pub html: String,
+    pub original_text: Option<String>,
+    pub original_html: Option<String>,
+    pub sentences: Vec<SentenceInput>,
+}
+
+pub struct NodeInput {
+    pub source_ref: String,
+    pub parent_source_ref: Option<String>,
+    pub slug: String,
+    pub path: String,
+    pub sort_order: i32,
+    pub depth: i16,
+    pub label: String,
+    pub label_html: String,
+    pub anchor: NodeAnchor,
+    pub blocks: Vec<BlockInput>,
+}
+
+pub struct ReconcileInput {
+    pub nodes: Vec<NodeInput>,
 }
 
 #[derive(Default)]
@@ -192,7 +182,6 @@ type SourceFnSentenceMap = HashMap<(i32, i16), Uuid>;
 type BlockRow = (Uuid, String, i16, Option<i32>, Option<i32>);
 type BlockNumbering = HashMap<i16, (Option<i32>, Option<i32>)>;
 
-// Loaded existing block / footnote sentence rows (changed nodes only).
 type BlockSentRow = (
     Uuid,
     String,
@@ -202,6 +191,7 @@ type BlockSentRow = (
     String,
     Option<String>,
     Option<String>,
+    Option<i16>,
     Option<i16>,
 );
 type FnSentRow = (Uuid, i32, String, String, Option<String>, Option<String>);
@@ -214,25 +204,35 @@ struct ExistingSentence {
     original_text: Option<String>,
     original_html: Option<String>,
     segment: Option<i16>,
+    indent: Option<i16>,
 }
 
+/// Reconcile a book in place from `input`, carrying unchanged sentence UUIDs (and
+/// their dependents) forward across edits.
+///
+/// The caller computes `desired_node_hashes` (document order, paired with
+/// `source_ref`) and `desired_root` from its own model — this function never
+/// recomputes hashes, only compares them against stored values and writes them
+/// back. `is_translation` + the two source maps drive the translation links;
+/// pass empty maps and `false` for a self-standing book.
 #[allow(clippy::too_many_arguments)]
-pub async fn reconcile(
+pub async fn reconcile_book(
     tx: &mut Transaction<'_, Postgres>,
     book_id: Uuid,
-    output: &Output,
+    input: &ReconcileInput,
+    desired_node_hashes: &[(String, String)],
+    desired_root: &str,
+    system_ids: &HashMap<String, Uuid>,
     is_translation: bool,
-    source_node_map: &HashMap<String, Uuid>,
     source_sentence_map: &SourceSentenceMap,
     source_fn_sentence_map: &SourceFnSentenceMap,
-    system_ids: &HashMap<String, Uuid>,
     force: bool,
     full_rewrite: bool,
 ) -> Result<ReconcileReport, Box<dyn std::error::Error>> {
     let mut report = ReconcileReport::default();
+    let nodes = &input.nodes;
 
     // --- Desired hashes + root short-circuit -------------------------------
-    let (desired_node_hashes, desired_root) = compute_hashes(output);
     let desired_hash_by_ref: HashMap<&str, &str> = desired_node_hashes
         .iter()
         .map(|(r, h)| (r.as_str(), h.as_str()))
@@ -243,7 +243,7 @@ pub async fn reconcile(
             .bind(book_id)
             .fetch_one(&mut **tx)
             .await?;
-    if !full_rewrite && stored_root.as_deref() == Some(desired_root.as_str()) {
+    if !full_rewrite && stored_root.as_deref() == Some(desired_root) {
         report.unchanged = true;
         return Ok(report);
     }
@@ -304,8 +304,7 @@ pub async fn reconcile(
     // strictly additive. Removals, reorders, and anything that would shift an
     // existing identity (node sort_order, block position, paragraph/figure
     // number, footnote number/anchor) abort to `db:reset`.
-    let desired_nodes: Vec<(&str, i32)> = output
-        .toc_nodes
+    let desired_nodes: Vec<(&str, i32)> = nodes
         .iter()
         .map(|n| (n.source_ref.as_str(), n.sort_order))
         .collect();
@@ -323,12 +322,12 @@ pub async fn reconcile(
             .insert(*pos, (*para, *fig));
     }
     let no_blocks: BlockNumbering = HashMap::new();
-    for node in &output.toc_nodes {
+    for node in nodes {
         if added_node_refs.contains(&node.source_ref) {
             continue;
         }
         let desired_blocks: Vec<(i16, Option<i32>, Option<i32>)> = node
-            .content_blocks
+            .blocks
             .iter()
             .map(|b| (b.position, b.paragraph_number, b.figure_number))
             .collect();
@@ -346,8 +345,8 @@ pub async fn reconcile(
         block_rows.iter().filter_map(|(_, _, _, p, _)| *p).collect();
     let stored_figure_numbers: HashSet<i32> =
         block_rows.iter().filter_map(|(_, _, _, _, f)| *f).collect();
-    for node in &output.toc_nodes {
-        for block in &node.content_blocks {
+    for node in nodes {
+        for block in &node.blocks {
             if block_id_by_pos.contains_key(&(node.source_ref.clone(), block.position)) {
                 continue;
             }
@@ -376,11 +375,10 @@ pub async fn reconcile(
 
     // Footnote numbers may grow but never shift. Sentence counts *within* an
     // existing footnote may change: those splits/merges are reconciled below.
-    let desired_fn_anchor: HashMap<i32, (String, i16)> = output
-        .toc_nodes
+    let desired_fn_anchor: HashMap<i32, (String, i16)> = nodes
         .iter()
         .flat_map(|n| {
-            n.content_blocks.iter().flat_map(move |b| {
+            n.blocks.iter().flat_map(move |b| {
                 b.sentences.iter().flat_map(move |s| {
                     s.footnotes
                         .iter()
@@ -401,7 +399,7 @@ pub async fn reconcile(
     // stored hash, so it always lands in the changed set): its blocks are
     // inserted in the planning loop, sentences/markers/footnotes in the apply,
     // and its content_hash in step 9.
-    for node in &output.toc_nodes {
+    for node in nodes {
         if !added_node_refs.contains(node.source_ref.as_str()) {
             continue;
         }
@@ -415,10 +413,41 @@ pub async fn reconcile(
             })?),
             None => None,
         };
-        let source_node_id: Option<Uuid> = if is_translation {
-            source_node_map.get(&node.source_ref).copied()
-        } else {
-            None
+        // The added node's source link comes from its anchor: a translation node
+        // points at the source book's node; a Bible-shape work node creates its
+        // own sub-work source + author link. Existing nodes keep their links.
+        let (source_id, source_node_id): (Option<Uuid>, Option<Uuid>) = match &node.anchor {
+            NodeAnchor::None => (None, None),
+            NodeAnchor::SourceNode(id) => (None, Some(*id)),
+            NodeAnchor::WorkSource {
+                title,
+                publication_year,
+                parent_source_id,
+                author_person_id,
+                created_by,
+            } => {
+                let sid: Uuid = sqlx::query_scalar(
+                    "INSERT INTO sources (source_type, title, publication_year, parent_source_id, protected, created_by)
+                     VALUES ('chapter', $1, $2, $3, true, $4)
+                     RETURNING id",
+                )
+                .bind(title)
+                .bind(publication_year)
+                .bind(parent_source_id)
+                .bind(created_by)
+                .fetch_one(&mut **tx)
+                .await?;
+                sqlx::query(
+                    "INSERT INTO source_persons (source_id, person_id, role, position)
+                     VALUES ($1, $2, 'author', 0)
+                     ON CONFLICT DO NOTHING",
+                )
+                .bind(sid)
+                .bind(author_person_id)
+                .execute(&mut **tx)
+                .await?;
+                (Some(sid), None)
+            }
         };
         let label_html = if node.label_html != node.label {
             Some(&node.label_html)
@@ -426,12 +455,13 @@ pub async fn reconcile(
             None
         };
         let node_id: Uuid = sqlx::query_scalar(
-            "INSERT INTO toc_nodes (book_id, parent_id, source_node_id, source_ref, slug, path, sort_order, depth, label, label_html)
-             VALUES ($1, $2, $3, $4, $5, $6::ltree, $7, $8, $9, $10)
+            "INSERT INTO toc_nodes (book_id, parent_id, source_id, source_node_id, source_ref, slug, path, sort_order, depth, label, label_html)
+             VALUES ($1, $2, $3, $4, $5, $6, $7::ltree, $8, $9, $10, $11)
              RETURNING id",
         )
         .bind(book_id)
         .bind(parent_id)
+        .bind(source_id)
         .bind(source_node_id)
         .bind(&node.source_ref)
         .bind(&node.slug)
@@ -448,8 +478,7 @@ pub async fn reconcile(
 
     // --- Changed set (NULL stored hash ⇒ changed; `--full-rewrite` ⇒ everything) ----
     // Added nodes have no stored hash, so they are always part of the set.
-    let changed_refs: HashSet<String> = output
-        .toc_nodes
+    let changed_refs: HashSet<String> = nodes
         .iter()
         .filter(|n| {
             full_rewrite
@@ -471,7 +500,7 @@ pub async fn reconcile(
     if changed_refs.is_empty() {
         sqlx::query("UPDATE books SET content_hash = $2 WHERE id = $1")
             .bind(book_id)
-            .bind(&desired_root)
+            .bind(desired_root)
             .execute(&mut **tx)
             .await?;
         return Ok(report);
@@ -479,11 +508,10 @@ pub async fn reconcile(
 
     let changed_refs_vec: Vec<String> = changed_refs.iter().cloned().collect();
     let changed_node_ids: Vec<Uuid> = changed_refs.iter().map(|r| node_id_by_ref[r]).collect();
-    let changed_fn_numbers: Vec<i32> = output
-        .toc_nodes
+    let changed_fn_numbers: Vec<i32> = nodes
         .iter()
         .filter(|n| changed_refs.contains(&n.source_ref))
-        .flat_map(|n| &n.content_blocks)
+        .flat_map(|n| &n.blocks)
         .flat_map(|b| &b.sentences)
         .flat_map(|s| &s.footnotes)
         .map(|f| f.number)
@@ -492,7 +520,7 @@ pub async fn reconcile(
     // --- Load existing sentence content, scoped to changed nodes -----------
     let sent_rows: Vec<BlockSentRow> = sqlx::query_as(
         "SELECT s.id, tn.source_ref, cb.position, s.position,
-                    s.text, s.html, s.original_text, s.original_html, s.segment
+                    s.text, s.html, s.original_text, s.original_html, s.segment, s.indent
              FROM sentences s
              JOIN content_blocks cb ON s.block_id = cb.id
              JOIN toc_nodes tn ON cb.node_id = tn.id
@@ -505,7 +533,8 @@ pub async fn reconcile(
     .await?;
     let mut existing_by_block: HashMap<(String, i16), Vec<Existing>> = HashMap::new();
     let mut existing_content: HashMap<Uuid, ExistingSentence> = HashMap::new();
-    for (id, sref, block_pos, _spos, text, html, original_text, original_html, segment) in sent_rows
+    for (id, sref, block_pos, _spos, text, html, original_text, original_html, segment, indent) in
+        sent_rows
     {
         existing_by_block
             .entry((sref, block_pos))
@@ -522,6 +551,7 @@ pub async fn reconcile(
                 original_text,
                 original_html,
                 segment,
+                indent,
             },
         );
     }
@@ -553,6 +583,7 @@ pub async fn reconcile(
                 original_text,
                 original_html,
                 segment: None,
+                indent: None,
             },
         );
     }
@@ -572,12 +603,12 @@ pub async fn reconcile(
     let mut works: Vec<BlockWork> = Vec::new();
     let mut all_retired: Vec<(Uuid, Option<Uuid>)> = Vec::new();
 
-    for (node_idx, node) in output.toc_nodes.iter().enumerate() {
+    for (node_idx, node) in nodes.iter().enumerate() {
         if !changed_refs.contains(&node.source_ref) {
             continue;
         }
         let node_id = node_id_by_ref[&node.source_ref];
-        for (block_idx, block) in node.content_blocks.iter().enumerate() {
+        for (block_idx, block) in node.blocks.iter().enumerate() {
             let key = (node.source_ref.clone(), block.position);
             let (block_id, plan, count_delta) = match block_id_by_pos.get(&key) {
                 Some(&block_id) => {
@@ -647,8 +678,8 @@ pub async fn reconcile(
     }
     let mut fn_works: Vec<FnWork> = Vec::new();
     for work in &works {
-        let node = &output.toc_nodes[work.node_idx];
-        let block = &node.content_blocks[work.block_idx];
+        let node = &nodes[work.node_idx];
+        let block = &node.blocks[work.block_idx];
         for sent in &block.sentences {
             for footnote in &sent.footnotes {
                 let (plan, count_delta) = if added_fn_numbers.contains(&footnote.number) {
@@ -747,8 +778,8 @@ pub async fn reconcile(
     let mut next_block_temp: i32 = TEMP_SENTENCE_NUMBER_BASE;
 
     for work in &works {
-        let node = &output.toc_nodes[work.node_idx];
-        let block = &node.content_blocks[work.block_idx];
+        let node = &nodes[work.node_idx];
+        let block = &node.blocks[work.block_idx];
         for (i, sent) in block.sentences.iter().enumerate() {
             let sentence_id = if work.count_delta {
                 let source_start = if is_translation {
@@ -759,22 +790,23 @@ pub async fn reconcile(
                     None
                 };
                 let natural_key =
-                    format!("{}/b{}/s{}", node.source_ref, block.position, sent.position);
+                    crate::keys::natural_key(&node.source_ref, block.position, sent.position);
                 match work.plan.assignment[i] {
                     Some(existing_id) => {
                         // Full reassign: positions shifted. `sentence_number` is
                         // left to the global renumber (step 8).
                         sqlx::query(
                             "UPDATE sentences
-                             SET position = $2, segment = $3,
-                                 source_sentence_start_id = $4, source_sentence_end_id = NULL,
-                                 text = $5, html = $6, original_text = $7, original_html = $8,
-                                 natural_key = $9, updated_at = now()
+                             SET position = $2, segment = $3, indent = $4,
+                                 source_sentence_start_id = $5, source_sentence_end_id = NULL,
+                                 text = $6, html = $7, original_text = $8, original_html = $9,
+                                 natural_key = $10, updated_at = now()
                              WHERE id = $1",
                         )
                         .bind(existing_id)
                         .bind(sent.position)
                         .bind(sent.segment)
+                        .bind(sent.indent)
                         .bind(source_start)
                         .bind(&sent.text)
                         .bind(&sent.html)
@@ -796,8 +828,8 @@ pub async fn reconcile(
                             t
                         });
                         let id: Uuid = sqlx::query_scalar(
-                            "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, segment, source_sentence_start_id, text, html, original_text, original_html, natural_key)
-                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                            "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, segment, indent, source_sentence_start_id, text, html, original_text, original_html, natural_key)
+                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                              RETURNING id",
                         )
                         .bind(book_id)
@@ -806,6 +838,7 @@ pub async fn reconcile(
                         .bind(sent.position)
                         .bind(temp_number)
                         .bind(sent.segment)
+                        .bind(sent.indent)
                         .bind(source_start)
                         .bind(&sent.text)
                         .bind(&sent.html)
@@ -832,18 +865,20 @@ pub async fn reconcile(
                             || c.original_text != sent.original_text
                             || c.original_html != sent.original_html
                             || c.segment != sent.segment
+                            || c.indent != sent.indent
                     }
                     None => true,
                 };
                 if differs {
                     sqlx::query(
                         "UPDATE sentences
-                         SET segment = $2, text = $3, html = $4,
-                             original_text = $5, original_html = $6, updated_at = now()
+                         SET segment = $2, indent = $3, text = $4, html = $5,
+                             original_text = $6, original_html = $7, updated_at = now()
                          WHERE id = $1",
                     )
                     .bind(existing_id)
                     .bind(sent.segment)
+                    .bind(sent.indent)
                     .bind(&sent.text)
                     .bind(&sent.html)
                     .bind(&sent.original_text)
@@ -907,13 +942,12 @@ pub async fn reconcile(
         };
 
         // Re-find the footnote's sentences in the desired struct.
-        let node = output
-            .toc_nodes
+        let node = nodes
             .iter()
             .find(|n| node_id_by_ref.get(&n.source_ref) == Some(&work.node_id))
             .expect("footnote node present");
         let footnote = node
-            .content_blocks
+            .blocks
             .iter()
             .flat_map(|b| &b.sentences)
             .flat_map(|s| &s.footnotes)
@@ -923,9 +957,10 @@ pub async fn reconcile(
         let mut idx_uuid: Vec<Uuid> = Vec::with_capacity(footnote.sentences.len());
         for (i, fn_sent) in footnote.sentences.iter().enumerate() {
             let sid = if work.count_delta {
-                let natural_key = format!(
-                    "{}/fn{}/s{}",
-                    node.source_ref, work.number, fn_sent.position
+                let natural_key = crate::keys::footnote_natural_key(
+                    &node.source_ref,
+                    work.number,
+                    fn_sent.position,
                 );
                 let source_start = if is_translation {
                     source_fn_sentence_map
@@ -1042,14 +1077,14 @@ pub async fn reconcile(
     .bind(&changed_node_ids)
     .execute(&mut **tx)
     .await?;
-    for node in &output.toc_nodes {
+    for node in nodes {
         if !changed_refs.contains(&node.source_ref) {
             continue;
         }
-        for block in &node.content_blocks {
+        for block in &node.blocks {
             for sent in &block.sentences {
                 let sid = resolved[&(node.source_ref.clone(), block.position, sent.position)];
-                for pm in &sent.page_markers {
+                for pm in &sent.markers {
                     let system_id = system_ids
                         .get(&pm.system)
                         .ok_or_else(|| format!("Unknown reference system: {}", pm.system))?;
@@ -1071,7 +1106,7 @@ pub async fn reconcile(
     }
 
     // 7. Update block + node text for changed nodes (paragraph/heading edits).
-    for node in &output.toc_nodes {
+    for node in nodes {
         if !changed_refs.contains(&node.source_ref) {
             continue;
         }
@@ -1087,7 +1122,7 @@ pub async fn reconcile(
             .bind(label_html)
             .execute(&mut **tx)
             .await?;
-        for block in &node.content_blocks {
+        for block in &node.blocks {
             let block_id = block_id_by_pos[&(node.source_ref.clone(), block.position)];
             sqlx::query(
                 "UPDATE content_blocks
@@ -1166,7 +1201,7 @@ pub async fn reconcile(
 
     // 9. Write back hashes: changed nodes + the book root. Unchanged nodes keep
     //    their stored hash.
-    for node in &output.toc_nodes {
+    for node in nodes {
         if !changed_refs.contains(&node.source_ref) {
             continue;
         }
@@ -1178,7 +1213,7 @@ pub async fn reconcile(
     }
     sqlx::query("UPDATE books SET content_hash = $2 WHERE id = $1")
         .bind(book_id)
-        .bind(&desired_root)
+        .bind(desired_root)
         .execute(&mut **tx)
         .await?;
 

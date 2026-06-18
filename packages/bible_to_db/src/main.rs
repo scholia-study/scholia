@@ -6,7 +6,6 @@ use std::path::PathBuf;
 use clap::Parser;
 use serde::Deserialize;
 use sqlx::PgPool;
-use sqlx::postgres::PgConnectOptions;
 use uuid::Uuid;
 
 #[derive(Parser)]
@@ -38,42 +37,6 @@ struct Cli {
     /// hash-format change.
     #[arg(long)]
     full_rewrite: bool,
-}
-
-/// Build sqlx connect options. CLI `--database-url` wins; otherwise
-/// prefer discrete `POSTGRES_*` env vars (k8s Secret pattern — avoids
-/// the URL-special-char trap when `$(VAR)` substitution is literal);
-/// fall back to `DATABASE_URL` for laptop `.env`. Same shape as
-/// `apps/api/src/config.rs::pg_connect_options_from_env` — kept
-/// inline rather than extracted to a shared crate because there are
-/// only two ingest consumers today.
-fn pg_connect_options(
-    cli_url: Option<String>,
-) -> Result<PgConnectOptions, Box<dyn std::error::Error>> {
-    if let Some(url) = cli_url {
-        return Ok(url.parse()?);
-    }
-    if let Ok(user) = std::env::var("POSTGRES_USER") {
-        let password = std::env::var("POSTGRES_PASSWORD")
-            .map_err(|_| "POSTGRES_PASSWORD must be set when POSTGRES_USER is set")?;
-        let database = std::env::var("POSTGRES_DB")
-            .map_err(|_| "POSTGRES_DB must be set when POSTGRES_USER is set")?;
-        let host = std::env::var("POSTGRES_HOST").unwrap_or_else(|_| "localhost".to_string());
-        let port: u16 = std::env::var("POSTGRES_PORT")
-            .ok()
-            .and_then(|s| s.parse().ok())
-            .unwrap_or(5432);
-        return Ok(PgConnectOptions::new()
-            .username(&user)
-            .password(&password)
-            .database(&database)
-            .host(&host)
-            .port(port));
-    }
-    let url = std::env::var("DATABASE_URL").map_err(
-        |_| "Set POSTGRES_USER + POSTGRES_PASSWORD + POSTGRES_DB (preferred) or DATABASE_URL",
-    )?;
-    Ok(url.parse()?)
 }
 
 #[derive(Deserialize)]
@@ -524,7 +487,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         .find(|t| t.slug == cli.translation)
         .ok_or_else(|| format!("Unknown translation: {}", cli.translation))?;
 
-    let pool = PgPool::connect_with(pg_connect_options(cli.database_url)?).await?;
+    let pool = PgPool::connect_with(dataduct::db::pg_connect_options(cli.database_url)?).await?;
 
     // An already-imported translation is reconciled in place from the asset
     // JSON — preserving verse-sentence UUIDs (and the quotations anchored to
@@ -553,7 +516,8 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             tx.rollback().await?;
         } else {
             tx.commit().await?;
-            purge_cache(&["/api/library", "/api/books", "/books"]).await;
+            dataduct::cache::purge_blocking(&dataduct::cache::purge_paths(translation.book_slug))
+                .await;
         }
         report.print(cli.dry_run);
         return Ok(());
@@ -561,8 +525,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut tx = pool.begin().await?;
 
-    // System user owns all seed-imported sources/persons.
-    let system_user_id: Uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000001").unwrap();
+    let system_user_id = dataduct::seed::SYSTEM_USER_ID;
 
     // 1a. Canonical "The Bible" source — the translation root that KJV and WEB
     //     fold under. SELECT-then-INSERT so importing both translations is
@@ -974,7 +937,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         // Drop stale listing entries so the new book shows up immediately
         // rather than waiting out the TTL. No-op if CACHE_PURGE_URL is
         // unset (local dev without a proxy).
-        purge_cache(&["/api/library", "/api/books", "/books"]).await;
+        dataduct::cache::purge_blocking(&dataduct::cache::purge_paths(translation.book_slug)).await;
     }
 
     eprintln!();
@@ -993,44 +956,6 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     Ok(())
-}
-
-/// Send PURGE requests to the proxy's cluster-internal admin port for
-/// each given path. `CACHE_PURGE_URL` looks like
-/// `http://scholia-proxy.scholia.svc.cluster.local:8080`. If unset or
-/// empty (local dev without a proxy), this is a no-op.
-///
-/// Synchronous on purpose — the ingest binary exits right after, so
-/// fire-and-forget tasks would just be killed. We wait for each PURGE
-/// and log the outcome. Failures are logged but don't error out the
-/// import: the cache is best-effort.
-async fn purge_cache(paths: &[&str]) {
-    let Ok(base) = std::env::var("CACHE_PURGE_URL") else {
-        return;
-    };
-    if base.is_empty() {
-        return;
-    }
-    let base = base.trim_end_matches('/');
-    let client = match reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(5))
-        .build()
-    {
-        Ok(c) => c,
-        Err(e) => {
-            eprintln!("PURGE client init failed: {e} (skipping cache invalidation)");
-            return;
-        }
-    };
-    let method = reqwest::Method::from_bytes(b"PURGE").expect("PURGE is a valid method");
-    for path in paths {
-        let url = format!("{base}{path}");
-        match client.request(method.clone(), &url).send().await {
-            // 412 = key not in cache. Not an error — nothing to do.
-            Ok(resp) => eprintln!("PURGE {} → {}", path, resp.status()),
-            Err(e) => eprintln!("PURGE {} failed: {}", path, e),
-        }
-    }
 }
 
 #[derive(Default)]

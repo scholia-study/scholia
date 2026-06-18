@@ -2,48 +2,18 @@ use std::collections::HashMap;
 use std::fs;
 
 use sqlx::PgPool;
-use sqlx::postgres::PgConnectOptions;
 use uuid::Uuid;
 
+use reconcile::{node_hash, root_hash};
 use shakespeare1_md_to_struct::model::Output;
+
+use crate::reconcile_input::node_content;
 
 const ABOUT_TEXT: &str = "The works of William Shakespeare. The modern-spelling \
 reading text is drawn from public-domain sources; original-spelling layers \
 reproduce the early editions (the Sonnets from the 1609 Quarto via EEBO-TCP, \
 released CC0). The digital edition on Scholia is a community-driven project; \
 corrections are welcome.";
-
-/// Build sqlx connect options. CLI `--database-url` wins; otherwise prefer
-/// discrete `POSTGRES_*` env vars (k8s Secret pattern); fall back to
-/// `DATABASE_URL` for laptop `.env`. Mirrors `kant1_struct_to_db`.
-fn pg_connect_options(
-    cli_url: Option<String>,
-) -> Result<PgConnectOptions, Box<dyn std::error::Error>> {
-    if let Some(url) = cli_url {
-        return Ok(url.parse()?);
-    }
-    if let Ok(user) = std::env::var("POSTGRES_USER") {
-        let password = std::env::var("POSTGRES_PASSWORD")
-            .map_err(|_| "POSTGRES_PASSWORD must be set when POSTGRES_USER is set")?;
-        let database = std::env::var("POSTGRES_DB")
-            .map_err(|_| "POSTGRES_DB must be set when POSTGRES_USER is set")?;
-        let host = std::env::var("POSTGRES_HOST").unwrap_or_else(|_| "localhost".to_string());
-        let port: u16 = std::env::var("POSTGRES_PORT")
-            .ok()
-            .and_then(|s| s.parse().ok())
-            .unwrap_or(5432);
-        return Ok(PgConnectOptions::new()
-            .username(&user)
-            .password(&password)
-            .database(&database)
-            .host(&host)
-            .port(port));
-    }
-    let url = std::env::var("DATABASE_URL").map_err(
-        |_| "Set POSTGRES_USER + POSTGRES_PASSWORD + POSTGRES_DB (preferred) or DATABASE_URL",
-    )?;
-    Ok(url.parse()?)
-}
 
 /// Auto-generate sort_name: "William Shakespeare" -> "Shakespeare, William".
 fn sort_name(name: &str) -> Option<String> {
@@ -64,21 +34,23 @@ pub async fn run(
     database_url: Option<String>,
     replace: bool,
     dry_run: bool,
+    force: bool,
+    full_rewrite: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
     let data = fs::read_to_string(input_file)?;
     let output: Output = serde_json::from_str(&data)?;
 
-    let pool = PgPool::connect_with(pg_connect_options(database_url)?).await?;
+    let pool = PgPool::connect_with(dataduct::db::pg_connect_options(database_url)?).await?;
     let mut tx = pool.begin().await?;
 
-    // System user owns all seed-imported persons/sources.
-    let system_user_id: Uuid =
-        Uuid::parse_str("00000000-0000-0000-0000-000000000001").expect("valid system user UUID");
+    let system_user_id = dataduct::seed::SYSTEM_USER_ID;
 
-    // This importer is fresh-insert only (no reconcile). A pre-existing book is
-    // either replaced (cascading delete) or a hard error.
+    // A book already in the DB is reconciled in place — matching the freshly
+    // parsed struct against existing rows and carrying sentence UUIDs (and the
+    // quotations/resources anchored to them) forward across edits. `--replace`
+    // is the destructive escape hatch (cascading delete + fresh insert).
     let existing: Option<Uuid> = sqlx::query_scalar("SELECT id FROM books WHERE slug = $1")
         .bind(&output.book.slug)
         .fetch_optional(&mut *tx)
@@ -91,11 +63,68 @@ pub async fn run(
                 .await?;
             eprintln!("Replaced existing book {:?} ({})", output.book.slug, id);
         } else {
-            return Err(format!(
-                "book {:?} already exists ({id}); pass --replace to overwrite",
-                output.book.slug
+            // Reconcile-by-default: load the existing reference systems, then
+            // update the book in place.
+            eprintln!("Reconciling existing book {:?} ({})", output.book.slug, id);
+            let mut system_ids: HashMap<String, Uuid> = HashMap::new();
+            let rows: Vec<(Uuid, String)> =
+                sqlx::query_as("SELECT id, slug FROM reference_systems WHERE book_id = $1")
+                    .bind(id)
+                    .fetch_all(&mut *tx)
+                    .await?;
+            for (sys_id, slug) in rows {
+                system_ids.insert(slug, sys_id);
+            }
+
+            // The compilation source + author, needed when an added node carries
+            // its own per-work `source` anchor (a Bible-shape sub-work). The
+            // fresh-insert path below creates them; a reconcile only inherits the
+            // source, so fetch it and re-upsert the author here. Existing nodes'
+            // source links are never touched by the reconcile.
+            let bib_source_id: Uuid =
+                sqlx::query_scalar("SELECT source_id FROM books WHERE id = $1")
+                    .bind(id)
+                    .fetch_one(&mut *tx)
+                    .await?;
+            let person_id: Uuid = sqlx::query_scalar(
+                "INSERT INTO persons (name, sort_name, protected, created_by)
+                 VALUES ($1, $2, true, $3)
+                 ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+                 RETURNING id",
             )
-            .into());
+            .bind(&output.book.author)
+            .bind(sort_name(&output.book.author))
+            .bind(system_user_id)
+            .fetch_one(&mut *tx)
+            .await?;
+
+            let (desired_node_hashes, desired_root) =
+                crate::reconcile_input::compute_hashes(&output);
+            let input =
+                crate::reconcile_input::to_input(&output, bib_source_id, person_id, system_user_id);
+            let report = reconcile::reconcile_book(
+                &mut tx,
+                id,
+                &input,
+                &desired_node_hashes,
+                &desired_root,
+                &system_ids,
+                false,
+                &HashMap::new(),
+                &HashMap::new(),
+                force,
+                full_rewrite,
+            )
+            .await?;
+            if dry_run {
+                tx.rollback().await?;
+            } else {
+                tx.commit().await?;
+                dataduct::cache::purge_blocking(&dataduct::cache::purge_paths(&output.book.slug))
+                    .await;
+            }
+            report.print(dry_run);
+            return Ok(());
         }
     }
 
@@ -164,8 +193,13 @@ pub async fn run(
     let (mut node_count, mut block_count, mut sentence_count, mut marker_count) =
         (0u32, 0u32, 0u32, 0u32);
     let mut source_count = 1u32; // the compilation source; sub-work sources add on
+    // Node content hashes accumulate as we insert; the root is stored on `books`
+    // after the loop, so the first *reconcile* is already in the fast state.
+    let mut node_hashes: Vec<String> = Vec::new();
 
     for node in &output.toc_nodes {
+        let content_hash = node_hash(&node_content(node));
+        node_hashes.push(content_hash.clone());
         let parent_id: Option<Uuid> = node
             .parent_source_ref
             .as_ref()
@@ -204,8 +238,8 @@ pub async fn run(
         };
 
         let node_id: Uuid = sqlx::query_scalar(
-            "INSERT INTO toc_nodes (book_id, parent_id, source_id, source_ref, slug, path, sort_order, depth, label, label_html)
-             VALUES ($1, $2, $3, $4, $5, $6::ltree, $7, $8, $9, $10)
+            "INSERT INTO toc_nodes (book_id, parent_id, source_id, source_ref, slug, path, sort_order, depth, label, label_html, content_hash)
+             VALUES ($1, $2, $3, $4, $5, $6::ltree, $7, $8, $9, $10, $11)
              RETURNING id",
         )
         .bind(book_id)
@@ -218,6 +252,7 @@ pub async fn run(
         .bind(node.depth)
         .bind(&node.label)
         .bind(label_html)
+        .bind(&content_hash)
         .fetch_one(&mut *tx)
         .await?;
         node_ids.insert(node.source_ref.clone(), node_id);
@@ -245,7 +280,7 @@ pub async fn run(
 
             for sent in &block.sentences {
                 let natural_key =
-                    format!("{}/b{}/s{}", node.source_ref, block.position, sent.position);
+                    reconcile::natural_key(&node.source_ref, block.position, sent.position);
 
                 let sentence_id: Uuid = sqlx::query_scalar(
                     "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, segment, indent, text, html, original_text, original_html, natural_key)
@@ -289,11 +324,23 @@ pub async fn run(
         }
     }
 
+    // Store the book root hash so the first reconcile can short-circuit.
+    sqlx::query("UPDATE books SET content_hash = $2 WHERE id = $1")
+        .bind(book_id)
+        .bind(root_hash(&node_hashes))
+        .execute(&mut *tx)
+        .await?;
+
     if dry_run {
         tx.rollback().await?;
         eprintln!("(dry-run: nothing committed)");
     } else {
         tx.commit().await?;
+
+        // Drop stale listing entries so the new book shows up immediately
+        // rather than waiting out the TTL. No-op if CACHE_PURGE_URL is
+        // unset (local dev without a proxy).
+        dataduct::cache::purge_blocking(&dataduct::cache::purge_paths(&output.book.slug)).await;
     }
 
     eprintln!();

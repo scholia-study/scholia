@@ -126,6 +126,7 @@ dependencies = [
  "async-stripe-types",
  "async-stripe-webhook",
  "axum",
+ "dataduct",
  "dotenvy",
  "governor",
  "hex",
@@ -415,9 +416,9 @@ name = "bible_to_db"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "dataduct",
  "dotenvy",
  "reconcile",
- "reqwest 0.12.28",
  "serde",
  "serde_json",
  "sqlx",
@@ -826,6 +827,15 @@ name = "data-encoding"
 version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d7a1e2f27636f116493b8b860f5546edb47c8d8f8ea73e1d2a20be88e28d1fea"
+
+[[package]]
+name = "dataduct"
+version = "0.1.0"
+dependencies = [
+ "reqwest 0.12.28",
+ "sqlx",
+ "uuid",
+]
 
 [[package]]
 name = "deflate64"
@@ -1817,10 +1827,10 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "common",
+ "dataduct",
  "dotenvy",
  "kant1_md_to_struct",
  "reconcile",
- "reqwest 0.12.28",
  "serde_json",
  "sqlx",
  "tokio",
@@ -3266,7 +3276,9 @@ name = "shakespeare1_struct_to_db"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "dataduct",
  "dotenvy",
+ "reconcile",
  "serde_json",
  "shakespeare1_md_to_struct",
  "sqlx",

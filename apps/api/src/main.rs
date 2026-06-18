@@ -36,18 +36,22 @@ async fn main() {
     // server boots; the same binary serves both modes.
     if std::env::args().nth(1).as_deref() == Some("migrate") {
         tracing::info!("Running migrations…");
-        api::system::migrate::run(api::system::config::pg_connect_options_from_env())
-            .await
-            .expect("Migrations failed");
+        api::system::migrate::run(
+            dataduct::db::pg_connect_options(None).expect("Invalid Postgres connection config"),
+        )
+        .await
+        .expect("Migrations failed");
         tracing::info!("Migrations applied.");
         return;
     }
 
     let config = AppConfig::from_env();
 
-    let pool = PgPool::connect_with(api::system::config::pg_connect_options_from_env())
-        .await
-        .expect("Failed to connect to database");
+    let pool = PgPool::connect_with(
+        dataduct::db::pg_connect_options(None).expect("Invalid Postgres connection config"),
+    )
+    .await
+    .expect("Failed to connect to database");
 
     // Session store
     let session_store = PostgresStore::new(pool.clone());

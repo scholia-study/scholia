@@ -1,4 +1,5 @@
 mod import;
+mod reconcile_input;
 
 use clap::Parser;
 
@@ -13,21 +14,41 @@ struct Cli {
     #[arg(long)]
     database_url: Option<String>,
 
-    /// Delete an existing book with the same slug (cascading) before importing.
+    /// Delete an existing book with the same slug (cascading) and re-insert
+    /// fresh, instead of reconciling it in place.
     #[arg(long)]
     replace: bool,
 
-    /// Insert then roll back — validate without committing.
+    /// Insert/reconcile then roll back — validate without committing.
     #[arg(long)]
     dry_run: bool,
+
+    /// Permit deleting a sentence that still has quotations/resources anchored
+    /// to it (otherwise such a delete aborts the run). Reconcile path only.
+    #[arg(long)]
+    force: bool,
+
+    /// Bypass content-hash checks: treat every node as changed, force-rewrite
+    /// every sentence (bumping updated_at), always renumber, and rewrite all
+    /// stored hashes. The escape hatch when hashes may be stale or after a
+    /// hash-format change. Reconcile path only.
+    #[arg(long)]
+    full_rewrite: bool,
 }
 
 fn main() {
     let cli = Cli::parse();
     let rt = tokio::runtime::Runtime::new().expect("create tokio runtime");
     rt.block_on(async {
-        if let Err(e) =
-            import::run(&cli.input_file, cli.database_url, cli.replace, cli.dry_run).await
+        if let Err(e) = import::run(
+            &cli.input_file,
+            cli.database_url,
+            cli.replace,
+            cli.dry_run,
+            cli.force,
+            cli.full_rewrite,
+        )
+        .await
         {
             eprintln!("Import failed: {e}");
             std::process::exit(1);

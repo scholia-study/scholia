@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: ingest-shakespeare1-
+  namespace: scholia
+  labels:
+    ingest: shakespeare1
+spec:
+  ttlSecondsAfterFinished: 86400 # 1 day
+  backoffLimit: 0 # Fail fast
+  template:
+    metadata:
+      labels:
+        ingest: shakespeare1
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: ingest-shakespeare1
+          image: ghcr.io/scholia-study/scholia-ingest-shakespeare1:main
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 1Gi
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: database
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: CACHE_PURGE_URL
+              value: http://scholia-proxy:8080
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: assets-bucket
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: assets-bucket
+                  key: AWS_SECRET_ACCESS_KEY

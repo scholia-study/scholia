@@ -2,49 +2,12 @@ use std::collections::HashMap;
 use std::fs;
 
 use sqlx::PgPool;
-use sqlx::postgres::PgConnectOptions;
 use uuid::Uuid;
 
 use kant1_md_to_struct::model::Output;
 use reconcile::{node_hash, root_hash};
 
-use crate::reconcile::node_content;
-
-/// Build sqlx connect options. CLI `--database-url` wins; otherwise
-/// prefer discrete `POSTGRES_*` env vars (k8s Secret pattern — avoids
-/// the URL-special-char trap when `$(VAR)` substitution is literal);
-/// fall back to `DATABASE_URL` for laptop `.env`. Same shape as
-/// `apps/api/src/config.rs::pg_connect_options_from_env` — kept
-/// inline rather than extracted to a shared crate because there are
-/// only two ingest consumers today.
-fn pg_connect_options(
-    cli_url: Option<String>,
-) -> Result<PgConnectOptions, Box<dyn std::error::Error>> {
-    if let Some(url) = cli_url {
-        return Ok(url.parse()?);
-    }
-    if let Ok(user) = std::env::var("POSTGRES_USER") {
-        let password = std::env::var("POSTGRES_PASSWORD")
-            .map_err(|_| "POSTGRES_PASSWORD must be set when POSTGRES_USER is set")?;
-        let database = std::env::var("POSTGRES_DB")
-            .map_err(|_| "POSTGRES_DB must be set when POSTGRES_USER is set")?;
-        let host = std::env::var("POSTGRES_HOST").unwrap_or_else(|_| "localhost".to_string());
-        let port: u16 = std::env::var("POSTGRES_PORT")
-            .ok()
-            .and_then(|s| s.parse().ok())
-            .unwrap_or(5432);
-        return Ok(PgConnectOptions::new()
-            .username(&user)
-            .password(&password)
-            .database(&database)
-            .host(&host)
-            .port(port));
-    }
-    let url = std::env::var("DATABASE_URL").map_err(
-        |_| "Set POSTGRES_USER + POSTGRES_PASSWORD + POSTGRES_DB (preferred) or DATABASE_URL",
-    )?;
-    Ok(url.parse()?)
-}
+use crate::reconcile_input::node_content;
 
 /// A translation edition is locked 1:1 to its source book: every paragraph and
 /// footnote must carry the same number of sentences as the German source, or
@@ -144,7 +107,7 @@ pub async fn run(
     let data = fs::read_to_string(input_file)?;
     let output: Output = serde_json::from_str(&data)?;
 
-    let pool = PgPool::connect_with(pg_connect_options(database_url)?).await?;
+    let pool = PgPool::connect_with(dataduct::db::pg_connect_options(database_url)?).await?;
 
     // A book already in the DB is reconciled in place — matching the freshly
     // parsed struct against existing rows and carrying sentence UUIDs (and the
@@ -157,9 +120,7 @@ pub async fn run(
 
     let mut tx = pool.begin().await?;
 
-    // System user owns all seed-imported persons/sources; see db/001_schema.sql.
-    let system_user_id: Uuid =
-        Uuid::parse_str("00000000-0000-0000-0000-000000000001").expect("valid system user UUID");
+    let system_user_id = dataduct::seed::SYSTEM_USER_ID;
 
     let is_translation = source_book_slug.is_some();
 
@@ -386,17 +347,22 @@ pub async fn run(
     }
 
     // Reconcile path: the book exists, so update it in place from `output`
-    // rather than running the fresh-insert loop below.
+    // rather than running the fresh-insert loop below. Kant computes its own
+    // hashes (parity with the fresh-insert path) and maps the struct → the
+    // shared IR; the generic orchestration takes it from there.
     if let Some(eid) = existing_book_id {
-        let report = crate::reconcile::reconcile(
+        let (desired_node_hashes, desired_root) = crate::reconcile_input::compute_hashes(&output);
+        let input = crate::reconcile_input::to_input(&output, &source_node_map);
+        let report = reconcile::reconcile_book(
             &mut tx,
             eid,
-            &output,
+            &input,
+            &desired_node_hashes,
+            &desired_root,
+            &system_ids,
             is_translation,
-            &source_node_map,
             &source_sentence_map,
             &source_fn_sentence_map,
-            &system_ids,
             force,
             full_rewrite,
         )
@@ -405,7 +371,7 @@ pub async fn run(
             tx.rollback().await?;
         } else {
             tx.commit().await?;
-            purge_cache(&["/api/library", "/api/books", "/books"]).await;
+            dataduct::cache::purge_blocking(&dataduct::cache::purge_paths(&output.book.slug)).await;
         }
         report.print(dry_run);
         return Ok(());
@@ -499,7 +465,7 @@ pub async fn run(
                 };
 
                 let natural_key =
-                    format!("{}/b{}/s{}", node.source_ref, block.position, sent.position);
+                    reconcile::natural_key(&node.source_ref, block.position, sent.position);
 
                 let sentence_id: Uuid = sqlx::query_scalar(
                     "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, segment, source_sentence_start_id, text, html, original_text, original_html, natural_key)
@@ -582,9 +548,10 @@ pub async fn run(
                         let fn_sent_num = footnote_sentence_number;
                         footnote_sentence_number += 1;
 
-                        let fn_natural_key = format!(
-                            "{}/fn{}/s{}",
-                            node.source_ref, footnote.number, fn_sent.position
+                        let fn_natural_key = reconcile::footnote_natural_key(
+                            &node.source_ref,
+                            footnote.number,
+                            fn_sent.position,
                         );
 
                         sqlx::query(
@@ -629,7 +596,7 @@ pub async fn run(
         // Drop stale listing entries so the new book shows up immediately
         // rather than waiting out the TTL. No-op if CACHE_PURGE_URL is
         // unset (local dev without a proxy).
-        purge_cache(&["/api/library", "/api/books", "/books"]).await;
+        dataduct::cache::purge_blocking(&dataduct::cache::purge_paths(&output.book.slug)).await;
     }
 
     eprintln!();
@@ -647,41 +614,4 @@ pub async fn run(
     eprintln!("  page_markers:      {}", marker_count);
 
     Ok(())
-}
-
-/// Send PURGE requests to the proxy's cluster-internal admin port for
-/// each given path. `CACHE_PURGE_URL` looks like
-/// `http://scholia-proxy.scholia.svc.cluster.local:8080`. If unset or
-/// empty (local dev without a proxy), this is a no-op.
-///
-/// Synchronous on purpose — the ingest binary exits right after, so
-/// fire-and-forget tasks would just be killed. We wait for each PURGE
-/// and log the outcome. Failures are logged but don't error out the
-/// import: the cache is best-effort.
-async fn purge_cache(paths: &[&str]) {
-    let Ok(base) = std::env::var("CACHE_PURGE_URL") else {
-        return;
-    };
-    if base.is_empty() {
-        return;
-    }
-    let base = base.trim_end_matches('/');
-    let client = match reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(5))
-        .build()
-    {
-        Ok(c) => c,
-        Err(e) => {
-            eprintln!("PURGE client init failed: {e} (skipping cache invalidation)");
-            return;
-        }
-    };
-    let method = reqwest::Method::from_bytes(b"PURGE").expect("PURGE is a valid method");
-    for path in paths {
-        let url = format!("{base}{path}");
-        match client.request(method.clone(), &url).send().await {
-            Ok(resp) => eprintln!("PURGE {} → {}", path, resp.status()),
-            Err(e) => eprintln!("PURGE {} failed: {}", path, e),
-        }
-    }
 }
