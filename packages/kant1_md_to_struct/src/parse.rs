@@ -286,11 +286,13 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
 
         // Heading: ## text
         if let Some(heading_text) = line.strip_prefix("## ") {
-            let (stripped, markers) = strip_markers(heading_text);
+            // Page markers are left in the text; the struct builder strips them
+            // off the rendered plain/html so their offsets land in plain-text
+            // coordinates (see structure.rs).
             blocks.push(ParsedBlock {
                 block_type: ParsedBlockType::Heading,
-                text: stripped,
-                markers,
+                text: heading_text.to_string(),
+                markers: Vec::new(),
             });
             i += 1;
             continue;
@@ -319,11 +321,13 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
         }
 
         let para_text = para_lines.join(" ");
-        let (stripped, markers) = strip_markers(&para_text);
+        // Page markers are left in the text; the struct builder strips them off
+        // the rendered plain/html so their offsets land in plain-text
+        // coordinates (see structure.rs).
         blocks.push(ParsedBlock {
             block_type: ParsedBlockType::Paragraph,
-            text: stripped,
-            markers,
+            text: para_text,
+            markers: Vec::new(),
         });
     }
 
@@ -393,7 +397,10 @@ mod tests {
         let blocks = parse_blocks(body);
         assert_eq!(blocks.len(), 4);
         assert_eq!(blocks[0].block_type, ParsedBlockType::Heading);
-        assert_eq!(blocks[0].text, "Vorrede");
+        // Heading/paragraph blocks now retain page markers (stripped later, off
+        // the rendered plain/html, in the struct builder).
+        assert_eq!(blocks[0].text, "{{{ 7 }}} {{ VII }} Vorrede");
+        assert!(blocks[0].markers.is_empty());
         assert_eq!(blocks[1].block_type, ParsedBlockType::Paragraph);
         assert_eq!(blocks[1].text, "First paragraph.");
         assert_eq!(blocks[2].block_type, ParsedBlockType::Paragraph);

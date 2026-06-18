@@ -12,7 +12,9 @@ use std::sync::LazyLock;
 use kant1_md_to_struct::figure::build_figure_block;
 use kant1_md_to_struct::html::{FOOTNOTE_REF_RE, md_to_html, md_to_plain};
 use kant1_md_to_struct::model::*;
-use kant1_md_to_struct::parse::{MarkerKind, ParsedBlock, ParsedBlockType, RawMarker};
+use kant1_md_to_struct::parse::{
+    MarkerKind, ParsedBlock, ParsedBlockType, RawMarker, strip_markers,
+};
 use kant1_md_to_struct::roman::roman_to_int;
 use kant1_md_to_struct::separator::build_separator_block;
 
@@ -200,11 +202,25 @@ fn build_block(
     // RUN_BREAK sentinels (from `+ ` run markers) are kept through splitting
     // so each indented run's first sentence can be tagged; stripped from the
     // stored text below.
-    let (block_plain_tok, forced_splits) =
-        strip_forced_splits_keep_runs(&md_to_plain(&rewritten_text));
-    let block_html_tok = strip_forced_split_markers(&md_to_html(&rewritten_text));
+    // Page markers ride through md_to_plain/md_to_html inert (no markdown
+    // chars), so we strip them off the RENDERED text rather than the raw
+    // markdown — that way each marker's recorded offset is already in plain-text
+    // coordinates (the space the sentence offsets live in).
+    let (plain_no_markers, mut page_markers) = strip_markers(&md_to_plain(&rewritten_text));
+    let (block_plain_tok, forced_splits) = strip_forced_splits_keep_runs(&plain_no_markers);
+    let (html_no_markers, _) = strip_markers(&md_to_html(&rewritten_text));
+    let block_html_tok = strip_forced_split_markers(&html_no_markers);
     let sentence_pairs =
         split_sentences_en_forced(&block_plain_tok, &block_html_tok, &forced_splits);
+
+    // `strip_forced_splits_keep_runs` deleted each `|||` (3 chars) from the
+    // plain text; shift any marker that sat after one back into block_plain_tok
+    // coordinates. (RUN_BREAK is kept, so it needs no adjustment.)
+    for marker in &mut page_markers {
+        let prefix: String = plain_no_markers.chars().take(marker.char_offset).collect();
+        marker.char_offset -= prefix.matches("|||").count() * 3;
+    }
+
     let block_plain = block_plain_tok.replace(RUN_BREAK, "");
     let block_html = block_html_tok.replace(RUN_BREAK, "");
 
@@ -283,13 +299,21 @@ fn build_block(
     }
 
     // Assign page markers to their sentences
-    for marker in &block.markers {
+    for marker in &page_markers {
         if sentences.is_empty() {
             continue;
         }
 
-        let (sent_idx, char_offset_in_sentence) =
+        let (sent_idx, mut char_offset_in_sentence) =
             resolve_marker_to_sentence(&sentence_pairs, &cumulative_chars, marker);
+
+        // The offset is measured against block_plain_tok, where a run's first
+        // sentence still carries its leading RUN_BREAK sentinel; the stored text
+        // has it stripped (take_run_marker), so shift markers in that sentence
+        // back by the one sentinel char.
+        if sentence_pairs[sent_idx].0.starts_with(RUN_BREAK) {
+            char_offset_in_sentence = (char_offset_in_sentence - 1).max(0);
+        }
 
         let (system_slug, sort_order) = match marker.kind {
             MarkerKind::Aa => {

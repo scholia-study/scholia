@@ -245,12 +245,15 @@ fn run_extract(translation_dir_str: &str, source_dir_str: &str, output_file: &st
                 continue;
             }
 
-            let en_plain = md_to_plain(&en_block.text);
-            let en_html = md_to_html(&en_block.text);
+            // Page markers now ride in block.text; strip them off the rendered
+            // text before counting so a marker at a sentence boundary can't
+            // suppress the split (it would leave `. {{ N }} Capital`).
+            let (en_plain, _) = parse::strip_markers(&md_to_plain(&en_block.text));
+            let (en_html, _) = parse::strip_markers(&md_to_html(&en_block.text));
             let en_sentences = split_sentences_en(&en_plain, &en_html);
 
-            let de_plain = md_to_plain(&de_block.text);
-            let de_html = md_to_html(&de_block.text);
+            let (de_plain, _) = parse::strip_markers(&md_to_plain(&de_block.text));
+            let (de_html, _) = parse::strip_markers(&md_to_html(&de_block.text));
             let de_sentences = split_sentences(&de_plain, &de_html);
 
             if en_sentences.len() != de_sentences.len() {

@@ -12,7 +12,9 @@ use std::sync::LazyLock;
 use kant1_md_to_struct::figure::build_figure_block;
 use kant1_md_to_struct::html::{FOOTNOTE_REF_RE, md_to_html, md_to_plain};
 use kant1_md_to_struct::model::*;
-use kant1_md_to_struct::parse::{MarkerKind, ParsedBlock, ParsedBlockType, RawMarker};
+use kant1_md_to_struct::parse::{
+    MarkerKind, ParsedBlock, ParsedBlockType, RawMarker, strip_markers,
+};
 use kant1_md_to_struct::separator::build_separator_block;
 
 /// Regex to find `<sup>NUMBER</sup>` in rendered HTML (only footnote refs produce these).
@@ -229,20 +231,36 @@ fn build_block(
     let rewritten_orig =
         rewrite_footnote_refs(&original_block.text, flat_index, lookups.marker_map);
 
-    // Modernized (primary). RUN_BREAK sentinels (from `+ ` run markers) are
-    // kept through splitting so each indented run's first sentence can be
-    // detected and tagged below; they're stripped from the stored text.
-    let (block_plain_tok, forced_splits) =
-        strip_forced_splits_keep_runs(&md_to_plain(&rewritten_text));
-    let block_html_tok = strip_forced_split_markers(&md_to_html(&rewritten_text));
+    // Modernized (primary). Page markers ride through md_to_plain/md_to_html
+    // inert (no markdown chars), so we strip them off the RENDERED text rather
+    // than the raw markdown — that way each marker's recorded offset is already
+    // in plain-text coordinates (the space the sentence offsets live in).
+    // RUN_BREAK sentinels (from `+ ` run markers) are kept through splitting so
+    // each indented run's first sentence can be detected and tagged below;
+    // they're stripped from the stored text.
+    let (plain_no_markers, mut page_markers) = strip_markers(&md_to_plain(&rewritten_text));
+    let (block_plain_tok, forced_splits) = strip_forced_splits_keep_runs(&plain_no_markers);
+    let (html_no_markers, _) = strip_markers(&md_to_html(&rewritten_text));
+    let block_html_tok = strip_forced_split_markers(&html_no_markers);
     let sentence_pairs = split_sentences_forced(&block_plain_tok, &block_html_tok, &forced_splits);
+
+    // `strip_forced_splits_keep_runs` deleted each `|||` (3 chars) from the
+    // plain text; shift any marker that sat after one back into block_plain_tok
+    // coordinates. (RUN_BREAK is kept, so it needs no adjustment.)
+    for marker in &mut page_markers {
+        let prefix: String = plain_no_markers.chars().take(marker.char_offset).collect();
+        marker.char_offset -= prefix.matches("|||").count() * 3;
+    }
 
     // Original (reviewed) — split at its OWN run/forced positions so the
     // sentinels land correctly despite spelling differences from the
-    // modernized text. The sentence-count check below guards alignment.
-    let (orig_plain_tok, orig_forced) =
-        strip_forced_splits_keep_runs(&md_to_plain(&rewritten_orig));
-    let orig_html_tok = strip_forced_split_markers(&md_to_html(&rewritten_orig));
+    // modernized text. Markers are stripped (offsets unused — page markers are
+    // positioned by the modernized text). The sentence-count check below guards
+    // alignment.
+    let (orig_plain_no_markers, _) = strip_markers(&md_to_plain(&rewritten_orig));
+    let (orig_plain_tok, orig_forced) = strip_forced_splits_keep_runs(&orig_plain_no_markers);
+    let (orig_html_no_markers, _) = strip_markers(&md_to_html(&rewritten_orig));
+    let orig_html_tok = strip_forced_split_markers(&orig_html_no_markers);
     let orig_sentence_pairs = split_sentences_forced(&orig_plain_tok, &orig_html_tok, &orig_forced);
 
     // Stored block text/html carry no sentinels.
@@ -355,13 +373,21 @@ fn build_block(
     }
 
     // Assign page markers to their sentences (based on modernized text positions)
-    for marker in &block.markers {
+    for marker in &page_markers {
         if sentences.is_empty() {
             continue;
         }
 
-        let (sent_idx, char_offset_in_sentence) =
+        let (sent_idx, mut char_offset_in_sentence) =
             resolve_marker_to_sentence(&sentence_pairs, &cumulative_chars, marker);
+
+        // The offset is measured against block_plain_tok, where a run's first
+        // sentence still carries its leading RUN_BREAK sentinel; the stored text
+        // has it stripped (take_run_marker), so shift markers in that sentence
+        // back by the one sentinel char.
+        if sentence_pairs[sent_idx].0.starts_with(RUN_BREAK) {
+            char_offset_in_sentence = (char_offset_in_sentence - 1).max(0);
+        }
 
         let (system_slug, sort_order) = match marker.kind {
             MarkerKind::Aa => {
@@ -481,6 +507,19 @@ use kant1_md_to_struct::roman::roman_to_int;
 mod tests {
     use super::*;
     use kant1_md_to_struct::parse::{MarkerKind, RawMarker};
+
+    #[test]
+    fn marker_offset_is_plain_coordinate_inside_emphasis() {
+        // A page marker sitting inside a Sperrdruck span must be recorded at its
+        // plain-text offset — not shifted by the `***` syntax that md_to_plain
+        // removes. Regression test for the markdown/plain coordinate bug.
+        let (plain, markers) = strip_markers(&md_to_plain("x ***a {{ 5 }} b*** y"));
+        assert_eq!(plain, "x a b y");
+        assert_eq!(markers.len(), 1);
+        assert_eq!(markers[0].value, "5");
+        // "x a " is 4 chars → marker sits before "b", not at 7 (the *** drift).
+        assert_eq!(markers[0].char_offset, 4);
+    }
 
     #[test]
     fn test_resolve_marker_single_sentence() {
