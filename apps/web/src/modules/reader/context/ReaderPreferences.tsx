@@ -20,17 +20,13 @@ import {
 const useIsomorphicLayoutEffect =
     typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-// --- Text size: bounded steps with a responsive default ---------------------
-/** Bounded, vetted size steps (px). */
 const STEPS = [6, 8, 10, 12, 14, 16, 18, 20, 22, 24] as const;
 const MIN = STEPS[0];
 const MAX = STEPS[STEPS.length - 1];
-/** Responsive defaults, used until the reader stores an explicit choice. */
 const DEFAULT_MOBILE = 14;
 const DEFAULT_DESKTOP = 18;
 const MD_QUERY = "(min-width: 768px)";
 
-// --- Line spacing: a few presets (unitless, so it scales with font size) -----
 export const LINE_SPACINGS = [
     { key: "compact", label: "Compact", value: "1.4" },
     { key: "normal", label: "Normal", value: "1.65" },
@@ -38,7 +34,6 @@ export const LINE_SPACINGS = [
 ] as const;
 const DEFAULT_LINE_HEIGHT = "1.65";
 
-// --- Reading width: text-column max-width presets ----------------------------
 export const READING_WIDTHS = [
     { key: "narrow", label: "Narrow", value: "36rem" },
     { key: "medium", label: "Medium", value: "42rem" },
