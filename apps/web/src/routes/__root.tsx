@@ -138,7 +138,7 @@ function NotFound() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en">
+        <html lang="en" className="h-[100dvh] overflow-hidden">
             <head>
                 <HeadContent />
                 {/* Critical CSS: size/space the reading column before first paint
@@ -148,7 +148,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                     dangerouslySetInnerHTML={{ __html: READER_DISPLAY_CSS }}
                 />
             </head>
-            <body className="antialiased h-screen overflow-hidden flex flex-col bg-stone-50 text-stone-900">
+            <body className="antialiased h-[100dvh] overflow-hidden flex flex-col bg-stone-50 text-stone-900">
                 {children}
                 <Scripts />
             </body>
