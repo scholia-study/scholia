@@ -13,6 +13,7 @@
         "db:kant1": "bash scripts/db_kant1.sh",
         "db:bible": "bash scripts/db_bible.sh",
         "db:shakespeare1": "bash scripts/db_shakespeare1.sh",
+        "db:kant3": "bash scripts/db_kant3.sh",
         "db:reload": "pnpm db:reset && pnpm db:kant1 && pnpm db:bible",
         "db:prepare": "bash scripts/db_prepare.sh",
         "db:schema": "bash scripts/db_schema_dump.sh",
@@ -25,9 +26,10 @@
         "dev:all": "APP_PROFILE=local-proxy turbo run dev",
         "dev:proxy": "turbo run dev --filter=@apps/proxy",
         "codegen": "turbo run codegen",
-        "dp:kant1": "cargo run -p kant1_ocr_to_lines && cargo run -p kant1_lines_to_elements",
-        "dp:kant1:struct": "cargo run -p kant1_md_to_struct && cargo run -p kant1_md_translation_to_struct",
-        "dp:shakespeare1:struct": "cargo run -p shakespeare1_md_to_struct",
+        "elem:kant1": "cargo run -p kant1_ocr_to_lines && cargo run -p kant1_lines_to_elements",
+        "struct:kant1": "cargo run -p kant1_md_to_struct && cargo run -p kant1_md_translation_to_struct",
+        "struct:kant3": "cargo run -p kant3_md_to_struct && cargo run -p kant3_md_translation_to_struct",
+        "struct:shakespeare1": "cargo run -p shakespeare1_md_to_struct",
         "stripe:listen": "stripe listen --forward-to localhost:4000/api/webhooks/stripe"
     },
     "devDependencies": {

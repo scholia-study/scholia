@@ -82,7 +82,7 @@ pub fn take_run_marker(s: &str) -> (bool, &str) {
 /// split then lands on the dash, so the new sentence keeps its leading `— `.
 static SPLIT_RE: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(
-        r#"[.!?][)»""\u{201c}\u{201d}\u{201e}\u{201f}]*\s+(?:\u{2014}\s+)?(?:[A-ZÄÖÜ»\u{201e}(])"#,
+        r#"[.!?][)»\u{00AB}""\u{201c}\u{201d}\u{201e}\u{201f}]*\s+(?:\u{2014}\s+)?(?:[A-ZÄÖÜ»\u{201e}\u{201c}\u{0022}(])"#,
     )
     .unwrap()
 });
@@ -108,6 +108,11 @@ static SINGLE_ABBREVS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
         "Dr.",
         "Fr.",
         "Hr.",
+        "Hofr.",
+        // Leading space: only the standalone "von" abbreviation in names
+        // (e.g. "Hr. v. Saussure"), NOT word-final -v. (objektiv., sukzessiv.).
+        " v.",
+        "gl.",
         "Prof.",
         // Honorific/title abbreviations common in older German texts
         "Sr.",
@@ -147,6 +152,7 @@ static MULTI_ABBREV_RE: LazyLock<Vec<Regex>> = LazyLock::new(|| {
         r"z\.\s*B\.",   // z. B.
         r"z\.\s*E\.",   // z. E.
         r"u\.\s*dgl\.", // u. dgl.
+        r"r\.\s*V\.",   // r. V. (= reinen Vernunft, in self-references)
         r"u\.\s*a\.",   // u. a.
         r"a\.\s*a\.",   // a. a.
         r"u\.\s*ö\.",   // u. ö.

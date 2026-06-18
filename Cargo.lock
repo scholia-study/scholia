@@ -1838,6 +1838,44 @@ dependencies = [
 ]
 
 [[package]]
+name = "kant3_md_to_struct"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "kant1_md_to_struct",
+ "regex",
+ "serde_json",
+]
+
+[[package]]
+name = "kant3_md_translation_to_struct"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "kant1_md_to_struct",
+ "regex",
+ "serde_json",
+]
+
+[[package]]
+name = "kant3_struct_to_db"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "dataduct",
+ "dotenvy",
+ "kant1_md_to_struct",
+ "reconcile",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
