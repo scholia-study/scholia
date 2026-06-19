@@ -21,6 +21,10 @@ assets/shakespeare1/*
 !assets/kant3/
 assets/kant3/*
 !assets/kant3/curated/
+!assets/milton1/
+assets/milton1/*
+!assets/milton1/curated/
+!assets/milton1/*.md
 
 .env
 apps/web/node_modules/
