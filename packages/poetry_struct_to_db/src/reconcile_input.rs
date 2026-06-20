@@ -1,15 +1,15 @@
-//! Shakespeare-specific glue for the shared reconcile crate: build the
-//! content-hash inputs from the Shakespeare struct (so the fresh-insert and
+//! Glue between the poetry struct and the shared reconcile crate: build the
+//! content-hash inputs from the struct (so the fresh-insert and
 //! reconcile paths hash *identical* content) and map the struct → the
 //! book-agnostic [`reconcile::ReconcileInput`] IR. The orchestration itself —
 //! alignment, split/merge, dependent migration, hash short-circuit, renumber —
 //! lives in `reconcile::orchestrate`.
 
+use poetry_md_to_struct::model::{ContentBlockData, Output, SentenceData, TocNodeData};
 use reconcile::{
     BlockContent, BlockInput, MarkerContent, MarkerInput, NodeAnchor, NodeContent, NodeInput,
     ReconcileInput, SentenceContent, SentenceInput, node_hash, root_hash,
 };
-use shakespeare1_md_to_struct::model::{ContentBlockData, Output, SentenceData, TocNodeData};
 use uuid::Uuid;
 
 // --- Content hashing (tier-2 incremental reconcile) ------------------------

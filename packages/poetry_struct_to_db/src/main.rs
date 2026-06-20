@@ -4,10 +4,10 @@ mod reconcile_input;
 use clap::Parser;
 
 #[derive(Parser)]
-#[command(about = "Import the Shakespeare sonnets struct JSON into PostgreSQL")]
+#[command(about = "Import a poetry-corpus struct JSON into PostgreSQL")]
 struct Cli {
-    /// Input struct JSON (output of shakespeare1_md_to_struct).
-    #[arg(long, default_value = "assets/shakespeare1/derived/output.json")]
+    /// Input struct JSON (output of poetry_md_to_struct).
+    #[arg(long)]
     input_file: String,
 
     /// PostgreSQL connection URL (overrides POSTGRES_*/DATABASE_URL env).

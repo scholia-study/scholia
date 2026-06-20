@@ -1,8 +1,8 @@
-//! Verse-line markdown → HTML / plain text.
+//! Verse/prose markdown → HTML / plain text.
 //!
-//! The only inline markup in the curated sonnet MD is `*word*` for the Quarto's
-//! italicised words (e.g. proper names). HTML metacharacters are escaped first
-//! so the only tags in the output are the ones we add.
+//! The only inline markup in the curated MD is `*word*` for italicised words
+//! (proper names in the Quarto/1674 originals). HTML metacharacters are escaped
+//! first so the only tags in the output are the ones we add.
 
 use std::sync::LazyLock;
 
@@ -25,6 +25,15 @@ pub fn md_to_html(text: &str) -> String {
 /// Strip `*` emphasis markers, leaving plain text.
 pub fn md_to_plain(text: &str) -> String {
     ITALIC_RE.replace_all(text, "$1").into_owned()
+}
+
+/// Join verse lines into one HTML blob with `<br>` line breaks.
+pub fn join_html(lines: &[String]) -> String {
+    lines
+        .iter()
+        .map(|l| md_to_html(l))
+        .collect::<Vec<_>>()
+        .join("<br>\n")
 }
 
 #[cfg(test)]

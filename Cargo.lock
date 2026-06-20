@@ -2518,6 +2518,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4596b6d070b27117e987119b4dac604f3c58cfb0b191112e24771b2faeac1a6"
 
 [[package]]
+name = "poetry_md_to_struct"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "poetry_struct_to_db"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "dataduct",
+ "dotenvy",
+ "poetry_md_to_struct",
+ "reconcile",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "portable-atomic"
 version = "1.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3296,32 +3322,6 @@ dependencies = [
  "reqwest 0.12.28",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "shakespeare1_md_to_struct"
-version = "0.1.0"
-dependencies = [
- "clap",
- "common",
- "regex",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "shakespeare1_struct_to_db"
-version = "0.1.0"
-dependencies = [
- "clap",
- "dataduct",
- "dotenvy",
- "reconcile",
- "serde_json",
- "shakespeare1_md_to_struct",
- "sqlx",
- "tokio",
- "uuid",
 ]
 
 [[package]]

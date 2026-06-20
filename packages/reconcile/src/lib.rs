@@ -1,6 +1,6 @@
 //! Shared reconciling-re-import toolkit, used by every importer that updates an
 //! already-imported book in place (`kant1_struct_to_db`,
-//! `shakespeare1_struct_to_db`, `bible_to_db`).
+//! `poetry_struct_to_db`, `bible_to_db`).
 //!
 //! Five book-agnostic pieces live here:
 //! - [`align`]: the text-based aligner that classifies a unit's before/after

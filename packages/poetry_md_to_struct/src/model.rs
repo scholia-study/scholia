@@ -1,17 +1,18 @@
-//! Struct-JSON schema for the Shakespeare pipeline. Mirrors the Kant `Output`
-//! tree (so the importer logic stays familiar) with one addition:
+//! Struct-JSON schema for the poetry pipeline (shared by every verse corpus —
+//! Shakespeare's Sonnets, Milton's *Paradise Lost*, …). Mirrors the Kant
+//! `Output` tree (so the importer logic stays familiar) with one addition:
 //! `SentenceData.indent` for verse line indentation (ADR 0003).
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Output {
     pub book: BookData,
     pub reference_systems: Vec<ReferenceSystemData>,
     pub toc_nodes: Vec<TocNodeData>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BookData {
     pub slug: String,
     pub title: String,
@@ -19,16 +20,19 @@ pub struct BookData {
     pub language: String,
     pub source: String,
     pub source_date: String,
+    /// Editorial "about this book" copy → `books.about_text`.
+    #[serde(default)]
+    pub about_text: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ReferenceSystemData {
     pub slug: String,
     pub label: String,
     pub ref_type: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TocNodeData {
     pub source_ref: String,
     pub slug: String,
@@ -47,14 +51,14 @@ pub struct TocNodeData {
     pub content_blocks: Vec<ContentBlockData>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NodeSource {
     pub title: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub publication_year: Option<i16>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ContentBlockData {
     pub position: i16,
     pub block_type: String,
@@ -71,7 +75,7 @@ pub struct ContentBlockData {
     pub sentences: Vec<SentenceData>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SentenceData {
     pub position: i16,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -92,7 +96,7 @@ pub struct SentenceData {
     pub page_markers: Vec<PageMarkerData>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageMarkerData {
     pub system: String,
     pub ref_value: String,

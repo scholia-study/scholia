@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Job-image entrypoint for the Shakespeare ingest. Pulls the struct JSON
-# from the scholia-assets bucket, then runs shakespeare1_struct_to_db
+# from the scholia-assets bucket, then runs poetry_struct_to_db
 # once. With no flags the importer reconciles in place when the book
 # already exists (preserving sentence UUIDs and the quotations/notes
 # anchored to them) and fresh-inserts on first run.
@@ -25,6 +25,6 @@ export RCLONE_CONFIG_SCHOLIA_FORCE_PATH_STYLE=true
 # `pnpm dp:shakespeare1:struct`, then `pnpm assets:sync`.
 rclone sync scholia:scholia-assets/shakespeare1/derived /app/assets/shakespeare1/derived --fast-list --transfers=8
 
-BIN=/usr/local/bin/shakespeare1_struct_to_db
+BIN=/usr/local/bin/poetry_struct_to_db
 
 "$BIN" --input-file assets/shakespeare1/derived/output.json

@@ -1,5 +1,5 @@
 [package]
-name = "shakespeare1_md_to_struct"
+name = "poetry_md_to_struct"
 version = "0.1.0"
 edition = "2024"
 

@@ -11,6 +11,6 @@
 # Local only
 set -euo pipefail
 
-cargo build -p shakespeare1_struct_to_db --release
-target/release/shakespeare1_struct_to_db \
+cargo build -p poetry_struct_to_db --release
+target/release/poetry_struct_to_db \
     --input-file assets/shakespeare1/derived/output.json "$@"

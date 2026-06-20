@@ -4,16 +4,10 @@ use std::fs;
 use sqlx::PgPool;
 use uuid::Uuid;
 
+use poetry_md_to_struct::model::Output;
 use reconcile::{node_hash, root_hash};
-use shakespeare1_md_to_struct::model::Output;
 
 use crate::reconcile_input::node_content;
-
-const ABOUT_TEXT: &str = "The works of William Shakespeare. The modern-spelling \
-reading text is drawn from public-domain sources; original-spelling layers \
-reproduce the early editions (the Sonnets from the 1609 Quarto via EEBO-TCP, \
-released CC0). The digital edition on Scholia is a community-driven project; \
-corrections are welcome.";
 
 /// Auto-generate sort_name: "William Shakespeare" -> "Shakespeare, William".
 fn sort_name(name: &str) -> Option<String> {
@@ -166,7 +160,7 @@ pub async fn run(
     .bind(&output.book.slug)
     .bind(bib_source_id)
     .bind(&output.book.language)
-    .bind(ABOUT_TEXT)
+    .bind(&output.book.about_text)
     .fetch_one(&mut *tx)
     .await?;
     eprintln!("Inserted book {:?} ({})", output.book.slug, book_id);
