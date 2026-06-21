@@ -66,11 +66,15 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
             slug: "aa_iii".to_string(),
             label: "Akademie-Ausgabe Band III".to_string(),
             ref_type: "block".to_string(),
+            cite_priority: None,
+            cite_template: Some("AA III {ref}".to_string()),
         },
         ReferenceSystemData {
             slug: "b_edition".to_string(),
             label: "B-Edition Page Number".to_string(),
             ref_type: "inline".to_string(),
+            cite_priority: None,
+            cite_template: Some("B {ref}".to_string()),
         },
     ];
 

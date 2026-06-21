@@ -263,14 +263,16 @@ pub async fn run(
     } else {
         for sys in &output.reference_systems {
             let sys_id: Uuid = sqlx::query_scalar(
-                "INSERT INTO reference_systems (book_id, slug, label, ref_type)
-                 VALUES ($1, $2, $3, $4)
+                "INSERT INTO reference_systems (book_id, slug, label, ref_type, cite_priority, cite_template)
+                 VALUES ($1, $2, $3, $4, $5, $6)
                  RETURNING id",
             )
             .bind(book_id)
             .bind(&sys.slug)
             .bind(&sys.label)
             .bind(&sys.ref_type)
+            .bind(sys.cite_priority)
+            .bind(&sys.cite_template)
             .fetch_one(&mut *tx)
             .await?;
 

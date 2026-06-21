@@ -3080,6 +3080,7 @@
                     "book_title",
                     "node_slug",
                     "node_label",
+                    "citation",
                     "sentences"
                 ],
                 "properties": {
@@ -3089,6 +3090,13 @@
                     "book_title": {
                         "type": "string"
                     },
+                    "citation": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CitationPart"
+                        },
+                        "description": "Resolved citation parts (ordered by `cite_priority`). Empty = no\ndefault citation system; the card falls back to `s. N`."
+                    },
                     "node_label": {
                         "type": "string"
                     },
@@ -3097,7 +3105,7 @@
                     },
                     "parent_node_label": {
                         "type": ["string", "null"],
-                        "description": "Label of the cited node's parent in the toc tree, when one\nexists. For bibles this is the bible-book (\"Romans\"); for\nHegel/Kant it's a chapter title or compilation header. The\nfrontend uses this together with `reference_label` to render\nbible-style attributions like \"Romans 13:2\"."
+                        "description": "Label of the cited node's parent in the toc tree, when one\nexists. For bibles this is the bible-book (\"Romans\"); for Milton\nthe work (\"Paradise Lost\"). Substituted into `{parent}` of a\ncitation template."
                     },
                     "sentences": {
                         "type": "array",
@@ -3233,6 +3241,22 @@
                         "type": "string"
                     },
                     "title": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CitationPart": {
+                "type": "object",
+                "description": "One system's contribution to a quotation's citation, resolved over the cited\nrange. `template` carries `{parent}`/`{self}`/`{ref}` tokens (the frontend\nsubstitutes the node labels and the `first_ref`[–`last_ref`] range). Parts\nare ordered by the system's `cite_priority`; multiple parts are joined for\nmulti-system citations (e.g. Kant A/B). An empty list means the book has no\ndefault citation system, so the card falls back to `s. N`.",
+                "required": ["template", "first_ref"],
+                "properties": {
+                    "first_ref": {
+                        "type": "string"
+                    },
+                    "last_ref": {
+                        "type": ["string", "null"]
+                    },
+                    "template": {
                         "type": "string"
                     }
                 }
@@ -4757,10 +4781,6 @@
                     },
                     "original_html": {
                         "type": ["string", "null"]
-                    },
-                    "reference_label": {
-                        "type": ["string", "null"],
-                        "description": "Inline reference marker for this sentence when one applies\n(e.g. Bible verse `\"13:2\"`). When present, the quotation card\nrenders attribution as `Parent ref` (e.g. `Romans 13:2`) rather\nthan `Book · Chapter · s. N`. Only the first verse-system\nmarker is returned; other reference systems are out of scope\nfor this surface."
                     },
                     "sentence_number": {
                         "type": "integer",

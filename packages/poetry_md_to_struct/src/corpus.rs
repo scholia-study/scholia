@@ -57,11 +57,17 @@ reproduce the early editions (Paradise Lost from the 1674 second edition via \
 EEBO-TCP, released CC0). The digital edition on Scholia is a community-driven \
 project; corrections are welcome.";
 
-fn line_system() -> Vec<ReferenceSystemData> {
+/// The `line` reference system. `cite_priority` decides whether lines are the
+/// *default* citation (Milton: `Some(0)`; the Sonnets stay sentence-cited:
+/// `None`); `cite_template` is always set so the system is citation-capable.
+/// See migration 0008.
+fn line_system(cite_priority: Option<i16>, cite_template: &str) -> Vec<ReferenceSystemData> {
     vec![ReferenceSystemData {
         slug: "line".into(),
         label: "Line".into(),
         ref_type: "block".into(),
+        cite_priority,
+        cite_template: Some(cite_template.to_string()),
     }]
 }
 
@@ -114,7 +120,7 @@ pub fn shakespeare() -> Corpus {
             source_date: String::new(),
             about_text: SHAKESPEARE_ABOUT.into(),
         },
-        reference_systems: line_system(),
+        reference_systems: line_system(Some(0), "{self} · {ref}"),
         modernized_dir: "assets/shakespeare1/curated/md_modernized".into(),
         reviewed_dir: "assets/shakespeare1/curated/md_reviewed".into(),
         prose_headings: vec![],
@@ -180,7 +186,7 @@ pub fn milton() -> Corpus {
             source_date: String::new(),
             about_text: MILTON_ABOUT.into(),
         },
-        reference_systems: line_system(),
+        reference_systems: line_system(Some(0), "{parent} · {self} · {ref}"),
         modernized_dir: "assets/milton1/curated/md_modernized".into(),
         reviewed_dir: "assets/milton1/curated/md_reviewed".into(),
         prose_headings: vec![

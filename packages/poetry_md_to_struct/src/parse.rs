@@ -269,12 +269,12 @@ fn build_node(
     }
 
     // Guard: verse-line count must match the canonical per-node total.
-    if let Some(expected) = spec.content.as_ref().and_then(|c| c.expected_lines) {
-        if verse_lines != expected {
-            return Err(
-                format!("{label}: verse-line count {verse_lines} != expected {expected}").into(),
-            );
-        }
+    if let Some(expected) = spec.content.as_ref().and_then(|c| c.expected_lines)
+        && verse_lines != expected
+    {
+        return Err(
+            format!("{label}: verse-line count {verse_lines} != expected {expected}").into(),
+        );
     }
 
     Ok(TocNodeData {
@@ -380,12 +380,11 @@ fn parse_blocks(body: &str, prose_headings: &[String]) -> Vec<ParsedBlock> {
     for i in 0..blocks.len() {
         let is_prose_heading = blocks[i].kind == BlockKind::Heading
             && prose_headings.iter().any(|h| h == &blocks[i].lines[0]);
-        if is_prose_heading {
-            if let Some(next) = blocks.get_mut(i + 1) {
-                if next.kind == BlockKind::Verse {
-                    next.kind = BlockKind::Prose;
-                }
-            }
+        if is_prose_heading
+            && let Some(next) = blocks.get_mut(i + 1)
+            && next.kind == BlockKind::Verse
+        {
+            next.kind = BlockKind::Prose;
         }
     }
     blocks

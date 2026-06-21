@@ -71,11 +71,16 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
             slug: "aa_v".to_string(),
             label: "Akademie-Ausgabe Band V".to_string(),
             ref_type: "block".to_string(),
+            // Citation-capable but not the default — Kant cites by sentence.
+            cite_priority: None,
+            cite_template: Some("AA V {ref}".to_string()),
         },
         ReferenceSystemData {
             slug: "e1790".to_string(),
             label: "Erstausgabe 1790".to_string(),
             ref_type: "inline".to_string(),
+            cite_priority: None,
+            cite_template: Some("E {ref}".to_string()),
         },
     ];
 

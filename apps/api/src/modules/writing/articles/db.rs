@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::modules::writing::articles::models::{
     ArticleDetailResponse, ArticleLimitsResponse, ArticleResponse, BatchSentenceResponseItem,
-    EditorialLabelResponse, SentenceData, SourceContext, TopicResponse,
+    CitationPart, EditorialLabelResponse, SentenceData, SourceContext, TopicResponse,
 };
 use crate::system::auth::permissions::{Permission, resolve_permissions};
 use crate::system::error::AppError;
@@ -1459,7 +1459,6 @@ struct SentenceRow {
     sentence_number: Option<i32>,
     html: String,
     original_html: Option<String>,
-    reference_label: Option<String>,
 }
 
 pub async fn batch_get_sentences(
@@ -1496,23 +1495,12 @@ pub async fn batch_get_sentences(
     .await
     .map_err(|_| AppError::NotFound("Book or node not found".into()))?;
 
-    // Per-sentence verse reference (e.g. "13:2" for bibles). Picks the
-    // first marker from any inline reference_system; for bibles the only
-    // inline system is "verse", so this is unambiguous. Books without
-    // inline reference systems (Hegel/Kant) return NULL and the frontend
-    // falls back to the s. N attribution.
     let rows = if is_body {
         sqlx::query_as!(
             SentenceRow,
             r#"SELECT s.sentence_number AS "sentence_number?",
                       s.html AS "html!",
-                      COALESCE(s.original_html, src.html) AS original_html,
-                      (SELECT pm.ref_value
-                         FROM page_markers pm
-                         JOIN reference_systems rs ON rs.id = pm.system_id
-                         WHERE pm.sentence_id = s.id AND rs.ref_type = 'inline'
-                         ORDER BY pm.sort_order
-                         LIMIT 1) AS reference_label
+                      COALESCE(s.original_html, src.html) AS original_html
                FROM sentences s
                JOIN books b ON b.id = s.book_id
                LEFT JOIN sentences src ON src.id = s.source_sentence_start_id
@@ -1532,13 +1520,7 @@ pub async fn batch_get_sentences(
             SentenceRow,
             r#"SELECT s.sentence_number AS "sentence_number?",
                       s.html AS "html!",
-                      COALESCE(s.original_html, src.html) AS original_html,
-                      (SELECT pm.ref_value
-                         FROM page_markers pm
-                         JOIN reference_systems rs ON rs.id = pm.system_id
-                         WHERE pm.sentence_id = s.id AND rs.ref_type = 'inline'
-                         ORDER BY pm.sort_order
-                         LIMIT 1) AS reference_label
+                      COALESCE(s.original_html, src.html) AS original_html
                FROM sentences s
                JOIN books b ON b.id = s.book_id
                LEFT JOIN sentences src ON src.id = s.source_sentence_start_id
@@ -1554,6 +1536,58 @@ pub async fn batch_get_sentences(
         .fetch_all(pool)
         .await?
     };
+
+    // Citation parts: each default-citation system (cite_priority NOT NULL),
+    // resolved over the range to first/last marker, ordered by priority. Empty
+    // for books with no default system (Kant/Shakespeare) → sentence fallback.
+    struct CiteRow {
+        slug: String,
+        template: String,
+        ref_value: String,
+    }
+    let cite_rows = sqlx::query_as!(
+        CiteRow,
+        r#"SELECT rs.slug AS "slug!",
+                  rs.cite_template AS "template!",
+                  pm.ref_value AS "ref_value!"
+           FROM sentences s
+           JOIN books b ON b.id = s.book_id
+           JOIN page_markers pm ON pm.sentence_id = s.id
+           JOIN reference_systems rs ON rs.id = pm.system_id
+           WHERE b.slug = $1
+             AND s.sentence_number >= $2
+             AND s.sentence_number <= $3
+             AND ($4 AND s.block_id IS NOT NULL OR NOT $4 AND s.footnote_id IS NOT NULL)
+             AND rs.cite_priority IS NOT NULL
+             AND rs.cite_template IS NOT NULL
+           ORDER BY rs.cite_priority, s.sentence_number, pm.sort_order"#,
+        book_slug,
+        start_number,
+        end,
+        is_body,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    // Fold per system (rows already grouped by priority then sentence order):
+    // the first row of a system gives first_ref, the last gives last_ref.
+    let mut citation: Vec<CitationPart> = Vec::new();
+    let mut current_slug: Option<String> = None;
+    for r in cite_rows {
+        if current_slug.as_deref() == Some(r.slug.as_str()) {
+            let part = citation.last_mut().expect("part exists for current slug");
+            if r.ref_value != part.first_ref {
+                part.last_ref = Some(r.ref_value);
+            }
+        } else {
+            current_slug = Some(r.slug);
+            citation.push(CitationPart {
+                template: r.template,
+                first_ref: r.ref_value,
+                last_ref: None,
+            });
+        }
+    }
 
     // Fetch source book/node context if sentences link to a source
     struct SourceRow {
@@ -1596,13 +1630,13 @@ pub async fn batch_get_sentences(
         node_label: context.node_label,
         parent_node_label: context.parent_node_label,
         source: source_context,
+        citation,
         sentences: rows
             .into_iter()
             .map(|r| SentenceData {
                 sentence_number: r.sentence_number.unwrap_or(0),
                 html: r.html,
                 original_html: r.original_html,
-                reference_label: r.reference_label,
             })
             .collect(),
     })

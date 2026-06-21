@@ -139,14 +139,20 @@ pub struct SentenceData {
     pub html: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub original_html: Option<String>,
-    /// Inline reference marker for this sentence when one applies
-    /// (e.g. Bible verse `"13:2"`). When present, the quotation card
-    /// renders attribution as `Parent ref` (e.g. `Romans 13:2`) rather
-    /// than `Book · Chapter · s. N`. Only the first verse-system
-    /// marker is returned; other reference systems are out of scope
-    /// for this surface.
+}
+
+/// One system's contribution to a quotation's citation, resolved over the cited
+/// range. `template` carries `{parent}`/`{self}`/`{ref}` tokens (the frontend
+/// substitutes the node labels and the `first_ref`[–`last_ref`] range). Parts
+/// are ordered by the system's `cite_priority`; multiple parts are joined for
+/// multi-system citations (e.g. Kant A/B). An empty list means the book has no
+/// default citation system, so the card falls back to `s. N`.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct CitationPart {
+    pub template: String,
+    pub first_ref: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reference_label: Option<String>,
+    pub last_ref: Option<String>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -164,14 +170,16 @@ pub struct BatchSentenceResponseItem {
     pub node_slug: String,
     pub node_label: String,
     /// Label of the cited node's parent in the toc tree, when one
-    /// exists. For bibles this is the bible-book ("Romans"); for
-    /// Hegel/Kant it's a chapter title or compilation header. The
-    /// frontend uses this together with `reference_label` to render
-    /// bible-style attributions like "Romans 13:2".
+    /// exists. For bibles this is the bible-book ("Romans"); for Milton
+    /// the work ("Paradise Lost"). Substituted into `{parent}` of a
+    /// citation template.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent_node_label: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<SourceContext>,
+    /// Resolved citation parts (ordered by `cite_priority`). Empty = no
+    /// default citation system; the card falls back to `s. N`.
+    pub citation: Vec<CitationPart>,
     pub sentences: Vec<SentenceData>,
 }
 

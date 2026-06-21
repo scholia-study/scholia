@@ -30,6 +30,13 @@ pub struct ReferenceSystemData {
     pub slug: String,
     pub label: String,
     pub ref_type: String,
+    /// Lowest-wins default-citation rank; `None` = not a default (see
+    /// migration 0008).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cite_priority: Option<i16>,
+    /// Citation render template (tokens `{parent}`/`{self}`/`{ref}`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cite_template: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

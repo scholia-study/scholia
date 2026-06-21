@@ -616,8 +616,8 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     // 2. Verse reference system (one per book, applies across all Bible-books loaded)
     let verse_system_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO reference_systems (book_id, slug, label, ref_type)
-         VALUES ($1, 'verse', 'Verse', 'inline')
+        "INSERT INTO reference_systems (book_id, slug, label, ref_type, cite_priority, cite_template)
+         VALUES ($1, 'verse', 'Verse', 'inline', 0, '{parent} {ref}')
          RETURNING id",
     )
     .bind(book_id)
