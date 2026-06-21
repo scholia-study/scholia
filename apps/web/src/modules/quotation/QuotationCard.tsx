@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import parse from "html-react-parser";
 import { batchSentences } from "../../api/sentences/sentences";
+import { formatPassageCitation } from "./citation";
 
 export interface QuotationCardProps {
     book: string;
@@ -99,19 +100,15 @@ export function QuotationCard({
             ? `${prefix} ${start}\u2013${end}`
             : `${prefix} ${start}`;
 
-    // Reference-style attribution: when the cited sentences carry an
-    // inline reference marker (e.g. Bible verses), present "Parent
-    // <start>[-<end>]" instead of "Book \u00b7 Chapter \u00b7 s. N". The parent
-    // node label is the bible-book ("Romans") and the marker is the
-    // chapter:verse string ("13:2").
-    const firstRef = item.sentences[0]?.reference_label;
-    const lastRef = item.sentences[item.sentences.length - 1]?.reference_label;
-    const useReferenceStyle = !!firstRef && !!item.parent_node_label;
-    const referenceLocation = useReferenceStyle
-        ? lastRef && lastRef !== firstRef
-            ? `${firstRef}\u2013${lastRef}`
-            : firstRef
-        : null;
+    // Passage locator (after the book title): the book's declared citation
+    // systems drive it (e.g. "Romans 13:2", "Paradise Lost \u00b7 Book I \u00b7 42"),
+    // falling back to "Node \u00b7 s. N" for books with no default system.
+    const passageLocation = formatPassageCitation({
+        citation: item.citation,
+        parentNodeLabel: item.parent_node_label,
+        nodeLabel: item.node_label,
+        sentenceLabel,
+    });
 
     const srcBook = item.source ?? {
         book_slug: book,
@@ -146,17 +143,7 @@ export function QuotationCard({
                 target="_blank"
                 className="!text-xs !text-stone-400 !no-underline hover:!underline !transition-colors"
             >
-                {useReferenceStyle ? (
-                    <>
-                        {item.book_title} &middot; {item.parent_node_label}{" "}
-                        {referenceLocation}
-                    </>
-                ) : (
-                    <>
-                        {item.book_title} &middot; {item.node_label} &middot;{" "}
-                        {sentenceLabel}
-                    </>
-                )}
+                {item.book_title} &middot; {passageLocation}
             </Link>
         </div>
     );
