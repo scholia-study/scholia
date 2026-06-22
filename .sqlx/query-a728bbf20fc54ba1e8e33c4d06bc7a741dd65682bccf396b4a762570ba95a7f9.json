@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT nodes_per_page FROM books WHERE slug = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "nodes_per_page",
+                "type_info": "Int2"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [true]
+    },
+    "hash": "a728bbf20fc54ba1e8e33c4d06bc7a741dd65682bccf396b4a762570ba95a7f9"
+}

@@ -16,7 +16,7 @@
         "db:shakespeare1": "bash scripts/db_shakespeare1.sh",
         "db:milton1": "bash scripts/db_milton1.sh",
         "db:kant3": "bash scripts/db_kant3.sh",
-        "db:reload": "pnpm db:reset && pnpm db:kant1 && pnpm db:kant3 && pnpm db:shakespeare1 && pnpm db:bible",
+        "db:reload": "bash scripts/db_reset.sh && pnpm db:kant1 && pnpm db:kant3 && pnpm db:shakespeare1 && pnpm db:bible && pnpm db:milton1",
         "db:schema": "bash scripts/db_schema_dump.sh",
         "db:dev:forward": "KUBECONFIG=~/.kube/scholia-dev.yaml kubectl port-forward -n scholia svc/postgres 55432:5432",
         "db:dev:run": "bash scripts/db_dev_run.sh",

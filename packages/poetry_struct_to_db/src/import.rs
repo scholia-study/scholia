@@ -147,20 +147,30 @@ pub async fn run(
     .fetch_one(&mut *tx)
     .await?;
 
-    // NB: the author is linked to each WORK source (in the node loop), not to
-    // this compilation source. An author-less compilation is what the library
-    // classifies as a Bible-shape "self" group (pills + grand TOC); an authored
-    // top-level source would group under the author instead (work cards, no pills).
+    // Standalone authored work: link the author to the book's own source so the
+    // library groups it under the author (work cards), like Kant — not a
+    // Bible-shape "self" group. (The per-node WorkSource branch below is generic
+    // infra and stays inert here, since no node carries its own source.)
+    sqlx::query(
+        "INSERT INTO source_persons (source_id, person_id, role, position)
+         VALUES ($1, $2, 'author', 0)
+         ON CONFLICT DO NOTHING",
+    )
+    .bind(bib_source_id)
+    .bind(person_id)
+    .execute(&mut *tx)
+    .await?;
 
     let book_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO books (slug, source_id, language, about_text)
-         VALUES ($1, $2, $3, $4)
+        "INSERT INTO books (slug, source_id, language, about_text, nodes_per_page)
+         VALUES ($1, $2, $3, $4, $5)
          RETURNING id",
     )
     .bind(&output.book.slug)
     .bind(bib_source_id)
     .bind(&output.book.language)
     .bind(&output.book.about_text)
+    .bind(output.book.nodes_per_page)
     .fetch_one(&mut *tx)
     .await?;
     eprintln!("Inserted book {:?} ({})", output.book.slug, book_id);

@@ -25,17 +25,3 @@ UPDATE reference_systems SET cite_template = 'AA III {ref}' WHERE slug = 'aa_iii
 UPDATE reference_systems SET cite_template = 'B {ref}'      WHERE slug = 'b_edition';
 UPDATE reference_systems SET cite_template = 'AA V {ref}'   WHERE slug = 'aa_v';
 UPDATE reference_systems SET cite_template = 'E {ref}'      WHERE slug = 'e1790';
-
--- Milton: cite by line, e.g. "Paradise Lost · Book I · 42"
--- ({parent}=work node "Paradise Lost", {self}="Book I").
-UPDATE reference_systems rs SET cite_priority = 0,
-    cite_template = '{parent} · {self} · {ref}'
-FROM books b
-WHERE b.id = rs.book_id AND rs.slug = 'line' AND b.slug = 'milton';
-
--- Shakespeare: cite by per-sonnet line, e.g. "Sonnet 18 · 1–4"
--- ({self}="Sonnet 18", {ref} resets 1–14 per sonnet).
-UPDATE reference_systems rs SET cite_priority = 0,
-    cite_template = '{self} · {ref}'
-FROM books b
-WHERE b.id = rs.book_id AND rs.slug = 'line' AND b.slug = 'shakespeare';

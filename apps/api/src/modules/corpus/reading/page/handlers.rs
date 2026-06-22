@@ -104,6 +104,65 @@ pub async fn get_node_page(
 
     let limit = params.limit.unwrap_or(20).clamp(1, 50);
 
+    // Per-book reader pagination directive: a small `nodes_per_page` (e.g.
+    // Paradise Lost = 1) makes the reader load that many nodes per page instead
+    // of the whole work. NULL leaves every existing text on the path below,
+    // unchanged. This branch sizes the page itself (and, for the anchor window,
+    // keeps the target node included even at sort_order 0) so it never has to
+    // touch the shared default-path math.
+    let nodes_per_page: Option<i16> =
+        sqlx::query_scalar!("SELECT nodes_per_page FROM books WHERE slug = $1", slug)
+            .fetch_optional(pool)
+            .await?
+            .flatten();
+
+    if let Some(p) = nodes_per_page {
+        let page_size = (p as i32).max(1);
+        if let Some(ref node_slug) = params.at {
+            // Small back-buffer that still leaves room for the target + a lead.
+            let back = params.back.unwrap_or(0).max(0).min(page_size - 1);
+            let target_sort: Option<i32> = sqlx::query_scalar!(
+                "SELECT tn.sort_order FROM toc_nodes tn
+                 JOIN books b ON b.id = tn.book_id
+                 WHERE b.slug = $1 AND tn.slug = $2",
+                slug,
+                node_slug,
+            )
+            .fetch_optional(pool)
+            .await?;
+            let page = match target_sort {
+                // `after` may go to -1 (sort_order > -1 includes node 0).
+                Some(ts) => {
+                    crate::modules::corpus::reading::page::db::get_node_page(
+                        pool,
+                        &slug,
+                        Some(ts - 1 - back),
+                        None,
+                        back + page_size,
+                        include_original,
+                    )
+                    .await?
+                }
+                None => NodePage {
+                    nodes: vec![],
+                    has_more: false,
+                    has_previous: false,
+                },
+            };
+            return Ok(Json(page));
+        }
+        let page = crate::modules::corpus::reading::page::db::get_node_page(
+            pool,
+            &slug,
+            params.after,
+            params.before,
+            page_size,
+            include_original,
+        )
+        .await?;
+        return Ok(Json(page));
+    }
+
     if let Some(ref node_slug) = params.at {
         let back = params.back.unwrap_or(0).max(0);
         let page = crate::modules::corpus::reading::page::db::get_node_page_at(

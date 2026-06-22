@@ -27,7 +27,9 @@ pub struct NodeSpec {
     pub depth: i16,
     pub label: String,
     pub parent_source_ref: Option<String>,
-    /// Work nodes carry a source — the Bible-shape sub-work anchor (pill).
+    /// A node carrying its own source becomes a Bible-shape sub-work anchor
+    /// (pill). The poetry corpora are standalone authored works, so this stays
+    /// `None`; the field is kept for the generic importer/struct shape.
     pub source: Option<NodeSource>,
     /// `None` = pure-navigation node (no file). `Some` = a leaf parsed from
     /// `filename` in both layer dirs.
@@ -42,20 +44,19 @@ pub struct NodeContentSpec {
     pub expected_lines: Option<usize>,
 }
 
-const COMPILATION_SOURCE: &str =
-    "A Scholia compilation; each work carries its own source provenance.";
+const SHAKESPEARE_SOURCE: &str = "Modern-spelling reading text from public-domain sources; the original-spelling \
+layer reproduces the 1609 Quarto via EEBO-TCP (CC0).";
+const SHAKESPEARE_ABOUT: &str = "Shakespeare's Sonnets. The modern-spelling \
+reading text is drawn from public-domain sources; the original-spelling layer \
+reproduces the 1609 Quarto via EEBO-TCP (released CC0). The digital edition on \
+Scholia is a community-driven project; corrections are welcome.";
 
-const SHAKESPEARE_ABOUT: &str = "The works of William Shakespeare. The modern-spelling \
-reading text is drawn from public-domain sources; original-spelling layers \
-reproduce the early editions (the Sonnets from the 1609 Quarto via EEBO-TCP, \
-released CC0). The digital edition on Scholia is a community-driven project; \
-corrections are welcome.";
-
-const MILTON_ABOUT: &str = "The works of John Milton. The modern-spelling \
-reading text is drawn from public-domain sources; original-spelling layers \
-reproduce the early editions (Paradise Lost from the 1674 second edition via \
-EEBO-TCP, released CC0). The digital edition on Scholia is a community-driven \
-project; corrections are welcome.";
+const MILTON_SOURCE: &str = "Modern-spelling reading text from public-domain sources; the original-spelling \
+layer reproduces the 1674 second edition via EEBO-TCP A50924 (CC0).";
+const MILTON_ABOUT: &str = "Paradise Lost by John Milton. The modern-spelling \
+reading text is drawn from public-domain sources; the original-spelling layer \
+reproduces the 1674 second edition via EEBO-TCP (released CC0). The digital \
+edition on Scholia is a community-driven project; corrections are welcome.";
 
 /// The `line` reference system. `cite_priority` decides whether lines are the
 /// *default* citation (Milton: `Some(0)`; the Sonnets stay sentence-cited:
@@ -81,44 +82,33 @@ pub fn by_name(name: &str) -> Option<Corpus> {
 }
 
 pub fn shakespeare() -> Corpus {
-    let mut nodes = vec![NodeSpec {
-        source_ref: sonnets::SONNETS_SOURCE_REF.into(),
-        slug: sonnets::SONNETS_SLUG.into(),
-        path: sonnets::SONNETS_PATH.into(),
-        depth: 0,
-        label: sonnets::SONNETS_LABEL.into(),
-        parent_source_ref: None,
-        source: Some(NodeSource {
-            title: sonnets::SONNETS_SOURCE_TITLE.into(),
-            publication_year: Some(sonnets::SONNETS_YEAR),
-        }),
-        content: None,
-    }];
-    for n in sonnets::sonnet_numbers() {
-        nodes.push(NodeSpec {
+    // 154 sonnets as flat top-level reading nodes.
+    let nodes = sonnets::sonnet_numbers()
+        .map(|n| NodeSpec {
             source_ref: sonnets::source_ref(n),
             slug: sonnets::slug(n),
             path: sonnets::path(n),
             depth: sonnets::DEPTH,
             label: sonnets::label(n),
-            parent_source_ref: Some(sonnets::SONNETS_SOURCE_REF.into()),
+            parent_source_ref: None,
             source: None,
             content: Some(NodeContentSpec {
                 filename: sonnets::filename(n),
                 expected_position: n,
                 expected_lines: None,
             }),
-        });
-    }
+        })
+        .collect();
     Corpus {
         book: BookData {
             slug: sonnets::BOOK_SLUG.into(),
             title: sonnets::BOOK_TITLE.into(),
             author: "William Shakespeare".into(),
             language: "en".into(),
-            source: COMPILATION_SOURCE.into(),
-            source_date: String::new(),
+            source: SHAKESPEARE_SOURCE.into(),
+            source_date: sonnets::YEAR.to_string(),
             about_text: SHAKESPEARE_ABOUT.into(),
+            nodes_per_page: None,
         },
         reference_systems: line_system(Some(0), "{self} · {ref}"),
         modernized_dir: "assets/shakespeare1/curated/md_modernized".into(),
@@ -129,37 +119,21 @@ pub fn shakespeare() -> Corpus {
 }
 
 pub fn milton() -> Corpus {
-    let mut nodes = vec![
-        // The "Paradise Lost" work — depth-0, source-anchored navigation node.
-        NodeSpec {
-            source_ref: milton1::PL_SOURCE_REF.into(),
-            slug: milton1::PL_SLUG.into(),
-            path: milton1::PL_PATH.into(),
-            depth: 0,
-            label: milton1::PL_LABEL.into(),
-            parent_source_ref: None,
-            source: Some(NodeSource {
-                title: milton1::PL_SOURCE_TITLE.into(),
-                publication_year: Some(milton1::PL_YEAR),
-            }),
-            content: None,
-        },
-        // "The Verse" prose preface — first child, prose-only (no verse guard).
-        NodeSpec {
-            source_ref: milton1::VERSE_SOURCE_REF.into(),
-            slug: milton1::VERSE_SLUG.into(),
-            path: milton1::VERSE_PATH.into(),
-            depth: milton1::DEPTH,
-            label: milton1::VERSE_LABEL.into(),
-            parent_source_ref: Some(milton1::PL_SOURCE_REF.into()),
-            source: None,
-            content: Some(NodeContentSpec {
-                filename: milton1::VERSE_FILENAME.into(),
-                expected_position: 0,
-                expected_lines: None,
-            }),
-        },
-    ];
+    // "The Verse" preface, then the 12 Books — all flat top-level reading nodes.
+    let mut nodes = vec![NodeSpec {
+        source_ref: milton1::VERSE_SOURCE_REF.into(),
+        slug: milton1::VERSE_SLUG.into(),
+        path: milton1::VERSE_PATH.into(),
+        depth: milton1::DEPTH,
+        label: milton1::VERSE_LABEL.into(),
+        parent_source_ref: None,
+        source: None,
+        content: Some(NodeContentSpec {
+            filename: milton1::VERSE_FILENAME.into(),
+            expected_position: 0,
+            expected_lines: None,
+        }),
+    }];
     for n in milton1::book_numbers() {
         nodes.push(NodeSpec {
             source_ref: milton1::source_ref(n),
@@ -167,7 +141,7 @@ pub fn milton() -> Corpus {
             path: milton1::path(n),
             depth: milton1::DEPTH,
             label: milton1::label(n),
-            parent_source_ref: Some(milton1::PL_SOURCE_REF.into()),
+            parent_source_ref: None,
             source: None,
             content: Some(NodeContentSpec {
                 filename: milton1::filename(n),
@@ -182,11 +156,14 @@ pub fn milton() -> Corpus {
             title: milton1::BOOK_TITLE.into(),
             author: "John Milton".into(),
             language: "en".into(),
-            source: COMPILATION_SOURCE.into(),
-            source_date: String::new(),
+            source: MILTON_SOURCE.into(),
+            source_date: milton1::YEAR.to_string(),
             about_text: MILTON_ABOUT.into(),
+            // Few but enormous nodes (a whole Book each) — load a couple per
+            // page so a Book-boundary is prefetched before it's reached.
+            nodes_per_page: Some(2),
         },
-        reference_systems: line_system(Some(0), "{parent} · {self} · {ref}"),
+        reference_systems: line_system(Some(0), "{self} · {ref}"),
         modernized_dir: "assets/milton1/curated/md_modernized".into(),
         reviewed_dir: "assets/milton1/curated/md_reviewed".into(),
         prose_headings: vec![

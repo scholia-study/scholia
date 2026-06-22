@@ -1,34 +1,22 @@
-//! Canonical structure of Milton's *Paradise Lost* as a Bible-shape compilation.
-//!
-//! One book, "John Milton". The work "Paradise Lost" is a depth-0,
-//! source-anchored `toc_node`; its depth-1 children are "The Verse" prose
-//! preface (first) then the 12 Books. Mirrors `common::shakespeare1`. The
-//! per-book verse-line counts below are the canonical 1674 figures and serve as
-//! the ingest guard — a curated book that parses to the wrong line count is an
-//! error. Source: EEBO-TCP A50924 (1674, CC0); see `assets/milton1/`.
+//! Canonical structure of Milton's *Paradise Lost* as a standalone authored
+//! work (a normal book grouped under its author, like Kant — not a Bible-shape
+//! compilation). Its reading nodes are flat top-level `toc_nodes`: "The Verse"
+//! prose preface first, then the 12 Books. The per-book verse-line counts below
+//! are the canonical 1674 figures and serve as the ingest guard — a curated book
+//! that parses to the wrong line count is an error. Source: EEBO-TCP A50924
+//! (1674, CC0); see `assets/milton1/`.
 
-/// The compilation book.
-pub const BOOK_SLUG: &str = "milton";
-/// Named after the author so the library heading reads simply "John Milton".
-pub const BOOK_TITLE: &str = "John Milton";
+pub const BOOK_SLUG: &str = "paradise-lost";
+pub const BOOK_TITLE: &str = "Paradise Lost";
+pub const YEAR: i16 = 1674;
 
-/// The "Paradise Lost" work — a depth-0 node anchored to its own source.
-pub const PL_SOURCE_REF: &str = "paradise-lost";
-pub const PL_SLUG: &str = "paradise-lost";
-/// ltree path root (no hyphens — ltree labels are alphanumeric/underscore).
-pub const PL_PATH: &str = "paradise_lost";
-pub const PL_LABEL: &str = "Paradise Lost";
-pub const PL_SOURCE_TITLE: &str = "Paradise Lost (1674)";
-pub const PL_YEAR: i16 = 1674;
-
-/// Books (and "The Verse") are depth-1 children of the work node.
-pub const DEPTH: i16 = 1;
+/// Reading nodes are flat (top-level); no work-wrapper node.
+pub const DEPTH: i16 = 0;
 pub const BOOK_COUNT: u32 = 12;
 
-/// "The Verse" — Milton's prose preface on blank verse; the first child node.
-pub const VERSE_SOURCE_REF: &str = "paradise-lost:the-verse";
+pub const VERSE_SOURCE_REF: &str = "the-verse";
 pub const VERSE_SLUG: &str = "the-verse";
-pub const VERSE_PATH: &str = "paradise_lost.verse";
+pub const VERSE_PATH: &str = "verse";
 pub const VERSE_LABEL: &str = "The Verse";
 pub const VERSE_FILENAME: &str = "000_the_verse.md";
 
@@ -67,14 +55,14 @@ pub fn slug(n: u32) -> String {
     format!("book-{n}")
 }
 
-/// Structure-stable id for book `n`, scoped under the Paradise Lost work.
+/// Structure-stable id for book `n`.
 pub fn source_ref(n: u32) -> String {
-    format!("paradise-lost:{n}")
+    format!("book-{n}")
 }
 
-/// ltree path for book `n` — a child of the `paradise_lost` work node.
+/// ltree path for book `n` — a flat top-level label.
 pub fn path(n: u32) -> String {
-    format!("paradise_lost.b{n}")
+    format!("book_{n}")
 }
 
 /// Curated MD filename, e.g. `001_book_1.md`.
