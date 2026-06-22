@@ -77,11 +77,20 @@ jobs:
                         - 'Cargo.lock'
                         - '.github/workflows/build.yml'
                       ingest_shakespeare1:
-                        - 'packages/shakespeare1_*/**'
+                        - 'packages/poetry_*/**'
                         - 'packages/common/**'
                         - 'packages/reconcile/**'
                         - 'packages/dataduct/**'
                         - 'jobs/ingest-shakespeare1/**'
+                        - 'Cargo.toml'
+                        - 'Cargo.lock'
+                        - '.github/workflows/build.yml'
+                      ingest_milton1:
+                        - 'packages/poetry_*/**'
+                        - 'packages/common/**'
+                        - 'packages/reconcile/**'
+                        - 'packages/dataduct/**'
+                        - 'jobs/ingest-milton1/**'
                         - 'Cargo.toml'
                         - 'Cargo.lock'
                         - '.github/workflows/build.yml'
@@ -106,6 +115,7 @@ jobs:
                   INGEST_BIBLE: ${{ steps.filter.outputs.ingest_bible }}
                   INGEST_KANT1: ${{ steps.filter.outputs.ingest_kant1 }}
                   INGEST_SHAKESPEARE1: ${{ steps.filter.outputs.ingest_shakespeare1 }}
+                  INGEST_MILTON1: ${{ steps.filter.outputs.ingest_milton1 }}
                   INGEST_KANT3: ${{ steps.filter.outputs.ingest_kant3 }}
               run: |
                   # Manual (workflow_dispatch) trigger = rebuild
@@ -114,7 +124,7 @@ jobs:
                   # in flight.
                   if [[ "$EVENT" == "workflow_dispatch" ]]; then
                       API=true; WEB=true; PROXY=true
-                      INGEST_BIBLE=true; INGEST_KANT1=true; INGEST_SHAKESPEARE1=true; INGEST_KANT3=true
+                      INGEST_BIBLE=true; INGEST_KANT1=true; INGEST_SHAKESPEARE1=true; INGEST_MILTON1=true; INGEST_KANT3=true
                   fi
 
                   matrix='[]'
@@ -130,6 +140,7 @@ jobs:
                   if [[ "$INGEST_BIBLE"  == "true" ]]; then add ingest-bible .          jobs/ingest-bible/Dockerfile; fi
                   if [[ "$INGEST_KANT1"  == "true" ]]; then add ingest-kant1 .          jobs/ingest-kant1/Dockerfile; fi
                   if [[ "$INGEST_SHAKESPEARE1" == "true" ]]; then add ingest-shakespeare1 . jobs/ingest-shakespeare1/Dockerfile; fi
+                  if [[ "$INGEST_MILTON1" == "true" ]]; then add ingest-milton1 .      jobs/ingest-milton1/Dockerfile; fi
                   if [[ "$INGEST_KANT3"  == "true" ]]; then add ingest-kant3 .          jobs/ingest-kant3/Dockerfile; fi
 
                   echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
