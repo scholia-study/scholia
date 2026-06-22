@@ -1,7 +1,7 @@
 ---
 position: 35
 label: "Sonnet 35"
-depth: 1
+depth: 0
 ---
 ## 35
 

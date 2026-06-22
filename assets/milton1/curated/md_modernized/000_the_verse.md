@@ -1,7 +1,7 @@
 ---
 position: 0
 label: "The Verse"
-depth: 1
+depth: 0
 ---
 ## THE VERSE.
 

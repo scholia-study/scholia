@@ -1,7 +1,7 @@
 ---
 position: 76
 label: "Sonnet 76"
-depth: 1
+depth: 0
 ---
 ## 76
 
