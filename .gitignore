@@ -25,6 +25,9 @@ assets/kant3/*
 assets/milton1/*
 !assets/milton1/curated/
 !assets/milton1/*.md
+!assets/ibsen1/
+assets/ibsen1/*
+!assets/ibsen1/curated/
 
 .env
 apps/web/node_modules/
