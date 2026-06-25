@@ -89,7 +89,7 @@ Hvilket? Hvad er sandt?
 Rygtet om de løndomsfulde kunster, som du her øver.
 
 @ Fyrst Julian.
-Ej, hvad kan ikke rygtet overdrive? – Men hvad siger rygtet om mig forresten? Jeg har ladet mig fortælle at der skal gå mange rygter om mig. Hvis jeg gad fæste lid til visses for‐ {{{ 107 }}} sikring, så måtte jeg tro, der gaves få mænd i riget, om hvem der tales så meget, som om mig.
+Ej, hvad kan ikke rygtet overdrive? – Men hvad siger rygtet om mig forresten? Jeg har ladet mig fortælle at der skal gå mange rygter om mig. Hvis jeg gad fæste lid til visses {{{ 107 }}} forsikring, så måtte jeg tro, der gaves få mænd i riget, om hvem der tales så meget, som om mig.
 
 @ Gregor fra Nazianz.
 Det kan du trygt tro.
@@ -173,7 +173,7 @@ Jeg skulde ikke tro på lykke-spående tegn, der allerede har bekræftet sig?
 
 *(han drager dem nærmere til sig og siger sagte:)*
 
-Jeg kan lade eder vide, I venner, at en stor omvæltning står for døren. Cæsar Gallos og jeg skal inden føje tid komme til at dele herredømmet over verden, – han som kejser, og jeg som –, ja, hvad skal jeg kalde det? det ufødte kan jo ikke nævnes ved navn; thi det har intet. Altså ikke mere om dette før tidens fylde. Men om Cæsar tør jeg vel tale. – Ved I noget om hint syn, for hvilket man har fængslet og pint borgeren Apollinaris i Sidon?
+Jeg kan lade eder vide, I venner, at en stor omvæltning står for døren. Cæsar Gallos og jeg skal inden føje tid komme til at dele herredømmet over verden, – han som kejser, og jeg som –, ja, hvad skal jeg kalde det? |||det ufødte kan jo ikke nævnes ved navn; thi det har intet. Altså ikke mere om dette før tidens fylde. Men om Cæsar tør jeg vel tale. – Ved I noget om hint syn, for hvilket man har fængslet og pint borgeren Apollinaris i Sidon?
 
 @ Basilios fra Cæsaræa.
 Nej, nej; hvor kan vi vide –?
