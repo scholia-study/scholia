@@ -39,19 +39,51 @@ write_files:
     permissions: "0644"
 
   # unattended-upgrades: apply Ubuntu security updates daily without
-  # human intervention. Default upstream config (already shipped in
-  # /etc/apt/apt.conf.d/50unattended-upgrades) tracks the "-security"
-  # apt suite only — feature/release updates still require a manual
-  # `apt upgrade`. We don't enable Automatic-Reboot for v0; a kernel
-  # CVE will land but not reboot the node, so kernel-level fixes need
-  # a manual reboot. Flip Automatic-Reboot to "true" + a maintenance
-  # window once we're confident k3s + the workload restart cleanly.
+  # human intervention.
   - path: /etc/apt/apt.conf.d/20auto-upgrades
     content: |
       APT::Periodic::Update-Package-Lists "1";
       APT::Periodic::Unattended-Upgrade "1";
       APT::Periodic::AutocleanInterval "7";
     permissions: "0644"
+
+  # Scheduled reboot.
+  - path: /usr/local/sbin/reboot-if-required.sh
+    permissions: "0755"
+    content: |
+      #!/bin/sh
+      set -eu
+      MIN_UPTIME_DAYS=%{ if environment == "prod" }20%{ else }6%{ endif }
+      [ -f /var/run/reboot-required ] || exit 0
+      up_days=$(awk '{print int($1/86400)}' /proc/uptime)
+      [ "$up_days" -ge "$MIN_UPTIME_DAYS" ] || {
+        logger -t scheduled-reboot "reboot pending but uptime $${up_days}d < $${MIN_UPTIME_DAYS}d; deferring"
+        exit 0
+      }
+      logger -t scheduled-reboot "reboot pending, uptime $${up_days}d; rebooting now"
+      systemctl reboot
+
+  - path: /etc/systemd/system/scheduled-reboot.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Apply a pending OS reboot if one is required
+      ConditionPathExists=/var/run/reboot-required
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/sbin/reboot-if-required.sh
+
+  - path: /etc/systemd/system/scheduled-reboot.timer
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Weekly maintenance-window check for a pending reboot
+      [Timer]
+      OnCalendar=Sun *-*-* 04:00:00
+      RandomizedDelaySec=600
+      Persistent=true
+      [Install]
+      WantedBy=timers.target
 
 runcmd:
   # --- Tailscale ----------------------------------------------------
@@ -88,6 +120,10 @@ runcmd:
   # Apply sysctl tweaks now (they're persisted via the file above for
   # future boots).
   - sysctl --system
+
+  # Enable the maintenance-window reboot timer (units written above).
+  - systemctl daemon-reload
+  - systemctl enable --now scheduled-reboot.timer
 
 # Once cloud-init has run, a marker file exists at
 # /var/lib/cloud/instance/boot-finished. To check the node from your
