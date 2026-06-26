@@ -1,7 +1,6 @@
 ## 🐞 BUGS
 - saving a range quotation wrongly shows "edit" icon
 - cannot save diagram
-- mobile layout broken
 - Bible layout comparison broken
 - purge being sent when editing a draft article?
   - @apps/api:dev: 2026-05-31T21:07:36.338507Z  WARN cache: PURGE /api/articles/kant-stop failed: error sending request for url (http://nginx-cache:8080/api/articles/kant-stop)
@@ -23,7 +22,6 @@
   in its Deployment env. Doesn't affect local at all, but easy to forget when writing manifests.
 
 ## 🏗️ INFRA / EXTERNAL SETUP
-- need proper resend setup
 - Auth callback       <domain>/api/auth/github/callback
 - Stripe webhook      <domain>/api/webhooks/stripe
 
