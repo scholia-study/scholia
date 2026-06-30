@@ -73,6 +73,11 @@ interface ResourcesPanelProps {
     onClose: () => void;
     activeView: string | undefined;
     onViewChange: (view: string | undefined) => void;
+    /**
+     * Desktop only: float over the margin instead of taking flex space (the
+     * default), so the reading text doesn't shift when there's room beside it.
+     */
+    overlay?: boolean;
 }
 
 export function ResourcesPanel({
@@ -87,6 +92,7 @@ export function ResourcesPanel({
     onClose,
     activeView,
     onViewChange,
+    overlay = false,
 }: ResourcesPanelProps) {
     const { user } = useAuth();
     const { startReaderTour } = useReaderTour();
@@ -438,9 +444,11 @@ export function ResourcesPanel({
     return (
         <aside
             data-tour="resources-panel"
-            className={`flex flex-col bg-white shrink-0 border-stone-200 w-full border-t shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:h-auto md:max-h-none md:w-80 md:border-t-0 md:border-l md:shadow-none ${
-                isMenu ? "h-auto max-h-[70vh]" : "h-[45vh]"
-            }`}
+            className={`flex flex-col bg-white shrink-0 border-stone-200 w-full border-t shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:h-auto md:max-h-none md:w-80 md:border-t-0 md:border-l ${
+                overlay
+                    ? "md:absolute md:right-0 md:top-0 md:bottom-0 md:z-20 md:shadow-[-8px_0_24px_rgba(0,0,0,0.08)]"
+                    : "md:shadow-none"
+            } ${isMenu ? "h-auto max-h-[70vh]" : "h-[45vh]"}`}
         >
             {/* Header - matches TextPanel toolbar height */}
             <div className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 flex items-center px-3">

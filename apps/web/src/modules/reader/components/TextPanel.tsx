@@ -58,6 +58,14 @@ import { ResourcesPanel } from "./ResourcesPanel";
 const getSentenceNumber = (s: { sentence_number?: number | null }) =>
     s.sentence_number;
 
+// Resource panel float: when a panel column is wide enough that the open
+// resources aside fits into the empty margin beside the centered reading
+// column, we float it there instead of pushing the text. RESOURCE_PANEL_PX
+// mirrors ResourcesPanel's `md:w-80`; OVERLAY_GUTTER_PX keeps breathing room
+// between the text and the floating panel.
+const RESOURCE_PANEL_PX = 320;
+const OVERLAY_GUTTER_PX = 24;
+
 function findNodeInTocBySourceRef(
     nodes: TocNodeResponse[],
     sourceRef: string,
@@ -182,6 +190,20 @@ export function TextPanel({
         }, [footnoteSentenceId, selectedSentence]);
 
     const scrollViewRef = useRef<PanelScrollViewHandle>(null);
+
+    // Width of this panel column, used to decide whether the open resources
+    // aside can float into the margin (overlay) or must push the text (narrow).
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const [panelWidth, setPanelWidth] = useState<number | null>(null);
+    useEffect(() => {
+        const el = wrapperRef.current;
+        if (!el || typeof ResizeObserver === "undefined") return;
+        const measure = () => setPanelWidth(el.getBoundingClientRect().width);
+        measure();
+        const ro = new ResizeObserver(measure);
+        ro.observe(el);
+        return () => ro.disconnect();
+    }, []);
 
     // Margin annotation settings
     const [marginSettings, setMarginSettings] = useState<MarginSettings>({
@@ -488,9 +510,30 @@ export function TextPanel({
         selectedSentence,
     ]);
 
+    // Float the resources aside into the margin (no text shift) only when the
+    // column is wide enough to fit it beside the centered reading width;
+    // otherwise it pushes the text, as before. Desktop only — on mobile the
+    // aside always docks to the bottom as a sheet.
+    const overlayResources = useMemo(() => {
+        if (panelWidth == null) return false;
+        const rem = Number.parseFloat(readingWidth);
+        if (!Number.isFinite(rem)) return false;
+        const rootFontPx =
+            Number.parseFloat(
+                getComputedStyle(document.documentElement).fontSize,
+            ) || 16;
+        const readerPx = rem * rootFontPx;
+        return (
+            panelWidth >= readerPx + 2 * (RESOURCE_PANEL_PX + OVERLAY_GUTTER_PX)
+        );
+    }, [panelWidth, readingWidth]);
+
     return (
         <SelectionProvider value={selectionCtx}>
-            <div className="flex flex-col md:flex-row flex-1 min-w-0 border-r border-stone-200 last:border-r-0">
+            <div
+                ref={wrapperRef}
+                className="relative flex flex-col md:flex-row flex-1 min-w-0 border-r border-stone-200 last:border-r-0"
+            >
                 {/* Main content area */}
                 <div className="flex-1 flex flex-col min-w-0 min-h-0">
                     {/* Toolbar */}
@@ -1291,6 +1334,7 @@ export function TextPanel({
                         onClose={onToggleResources}
                         activeView={resourceView}
                         onViewChange={onResourceViewChange}
+                        overlay={overlayResources}
                     />
                 )}
             </div>
