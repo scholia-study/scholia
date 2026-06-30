@@ -158,9 +158,12 @@ pub fn build_output(parsed_files: &[ParsedFile]) -> Output {
 
             TocNodeData {
                 source_ref: format!("{:03}", position_number(pf.flat_index)),
+                // URL slug is hyphen-separated; the filename and ltree path
+                // keep the underscore form from `slugify`.
                 slug: slug_override
                     .map(|s| s.to_string())
-                    .unwrap_or_else(|| slugify(&plain_label)),
+                    .unwrap_or_else(|| slugify(&plain_label))
+                    .replace('_', "-"),
                 path,
                 sort_order: position_number(pf.flat_index) as i32,
                 depth: depth as i16,
