@@ -124,6 +124,14 @@ sequence* is unchanged, so parity still holds.
 - røbed → røpet (røbe → røpe)
 - udørk → ødemark
 - tilorde → til orde
+- himlen → himmelen
+- imøte → i møte
+- iblinde → i blinde
+- slog → slo
+- forjob → fordrev
+- tilfals → til fals
+- opædt → oppspist
+- jertegn → jærtegn
 
 ## Verification (run after each act)
 
