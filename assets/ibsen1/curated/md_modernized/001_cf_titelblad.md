@@ -1,9 +1,9 @@
 ---
 position: 1
-label: "Cæsars Frafald"
+label: "Cæsars Frafall"
 depth: 0
 ---
 
 ## CÆSARS FRAFALL,
 
-SKUESPILL I FEM HANDLINGER.
+## SKUESPILL I FEM HANDLINGER.

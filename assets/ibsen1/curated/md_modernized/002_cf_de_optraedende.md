@@ -1,6 +1,6 @@
 ---
 position: 2
-label: "De optrædende"
+label: "De opptredende"
 depth: 1
 ---
 
