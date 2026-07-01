@@ -191,7 +191,7 @@ Syv dager senere døde Cæsars hustru i Bithynia. Konstantina har alltid vært h
 Selsomt. I Aten gikk andre rykter.
 
 @ Fyrst Julian.
-Jeg har sikker kunnskap. Det haster med purpurkledningen, Gregor! Og skulle jeg så tvile på de ting, Maximos har bebudet som nær forestående for *meg*? I natt faller det siste slør. Her inne skal den store gåte bli åpenbaret. O, bli hos meg, mine brødre, – bli hos meg i disse angstens og forventningens natte-timer! Når Maximos kommer, skal dere være vidne til –
+Jeg har sikker kunnskap. Det haster med purpurkledningen, Gregor! Og skulle jeg så tvile på de ting, Maximos har bebudet som nær forestående for *meg*? I natt faller det siste slør. Her inne skal den store gåte bli åpenbaret. O, bli hos meg, mine brødre, – bli hos meg i disse angstens og forventningens natte-timer! Når Maximos kommer, skal dere være vitne til –
 
 @ Basilios fra Cæsaræa.
 Aldri!
