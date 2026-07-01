@@ -922,6 +922,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
 
 [[package]]
+name = "drama_md_to_struct"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "regex",
+ "serde_json",
+ "text_struct",
+]
+
+[[package]]
 name = "dtoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2532,24 +2543,8 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "common",
- "regex",
- "serde",
  "serde_json",
-]
-
-[[package]]
-name = "poetry_struct_to_db"
-version = "0.1.0"
-dependencies = [
- "clap",
- "dataduct",
- "dotenvy",
- "poetry_md_to_struct",
- "reconcile",
- "serde_json",
- "sqlx",
- "tokio",
- "uuid",
+ "text_struct",
 ]
 
 [[package]]
@@ -3692,6 +3687,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
+name = "struct_to_db"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "dataduct",
+ "dotenvy",
+ "reconcile",
+ "serde_json",
+ "sqlx",
+ "text_struct",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3771,6 +3781,14 @@ dependencies = [
  "futf",
  "mac",
  "utf-8",
+]
+
+[[package]]
+name = "text_struct"
+version = "0.1.0"
+dependencies = [
+ "regex",
+ "serde",
 ]
 
 [[package]]

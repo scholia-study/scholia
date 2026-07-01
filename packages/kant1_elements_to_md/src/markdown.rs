@@ -58,7 +58,7 @@ fn insert_b_page_markers(text: &str, anchors: &[crate::stitch::BPageAnchor]) -> 
 
     // Sort by char_offset descending so we can insert right-to-left
     let mut sorted: Vec<_> = anchors.iter().collect();
-    sorted.sort_by(|a, b| b.char_offset.cmp(&a.char_offset));
+    sorted.sort_by_key(|b| std::cmp::Reverse(b.char_offset));
 
     let mut result = text.to_string();
     for anchor in sorted {

@@ -4,15 +4,21 @@ mod reconcile_input;
 use clap::Parser;
 
 #[derive(Parser)]
-#[command(about = "Import a poetry-corpus struct JSON into PostgreSQL")]
+#[command(about = "Import a structured-text struct JSON into PostgreSQL")]
 struct Cli {
-    /// Input struct JSON (output of poetry_md_to_struct).
+    /// Input struct JSON (output of a *_md_to_struct parser).
     #[arg(long)]
     input_file: String,
 
     /// PostgreSQL connection URL (overrides POSTGRES_*/DATABASE_URL env).
     #[arg(long)]
     database_url: Option<String>,
+
+    /// Import as a translation edition locked 1:1 to this existing source book
+    /// (slug). Each sentence links to its source counterpart by natural key for
+    /// quotation projection + side-by-side alignment. Omit for a standalone book.
+    #[arg(long)]
+    source_book_slug: Option<String>,
 
     /// Delete an existing book with the same slug (cascading) and re-insert
     /// fresh, instead of reconciling it in place.
@@ -43,6 +49,7 @@ fn main() {
         if let Err(e) = import::run(
             &cli.input_file,
             cli.database_url,
+            cli.source_book_slug,
             cli.replace,
             cli.dry_run,
             cli.force,

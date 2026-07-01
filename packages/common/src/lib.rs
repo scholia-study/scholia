@@ -1,5 +1,6 @@
 pub mod content;
 pub mod epub_reader;
+pub mod ibsen1;
 pub mod kant1;
 pub mod kant3;
 pub mod milton1;

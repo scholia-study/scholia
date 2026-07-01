@@ -1,15 +1,17 @@
-//! Glue between the poetry struct and the shared reconcile crate: build the
+//! Glue between the text struct and the shared reconcile crate: build the
 //! content-hash inputs from the struct (so the fresh-insert and
 //! reconcile paths hash *identical* content) and map the struct → the
 //! book-agnostic [`reconcile::ReconcileInput`] IR. The orchestration itself —
 //! alignment, split/merge, dependent migration, hash short-circuit, renumber —
 //! lives in `reconcile::orchestrate`.
 
-use poetry_md_to_struct::model::{ContentBlockData, Output, SentenceData, TocNodeData};
+use std::collections::HashMap;
+
 use reconcile::{
     BlockContent, BlockInput, MarkerContent, MarkerInput, NodeAnchor, NodeContent, NodeInput,
     ReconcileInput, SentenceContent, SentenceInput, node_hash, root_hash,
 };
+use text_struct::model::{ContentBlockData, Output, SentenceData, TocNodeData};
 use uuid::Uuid;
 
 // --- Content hashing (tier-2 incremental reconcile) ------------------------
@@ -81,24 +83,33 @@ pub(crate) fn compute_hashes(output: &Output) -> (Vec<(String, String)>, String)
 }
 
 // --- Struct → reconcile IR --------------------------------------------------
-// A node carrying its own `source` (a Bible-shape sub-work, e.g. "Sonnets")
-// becomes a `WorkSource` anchor: the orchestration creates a `source_type
-// 'chapter'` source under the book's compilation source and links the author.
-// The caller passes the book's bibliographic source + the upserted author + the
-// system user so the anchor can be built without re-querying. Shakespeare has no
-// translation layer and no footnotes.
+// A translation node (present in `source_node_map`) becomes a `SourceNode`
+// anchor: its `source_node_id` links to the source-book node. Otherwise a node
+// carrying its own `source` (a Bible-shape sub-work, e.g. "Sonnets") becomes a
+// `WorkSource` anchor; everything else is anchor-less. The caller passes the
+// book's bibliographic source + the upserted author + the system user so a
+// WorkSource anchor can be built without re-querying. No footnotes.
 
 pub(crate) fn to_input(
     output: &Output,
     bib_source_id: Uuid,
     author_person_id: Uuid,
     created_by: Uuid,
+    source_node_map: &HashMap<String, Uuid>,
 ) -> ReconcileInput {
     ReconcileInput {
         nodes: output
             .toc_nodes
             .iter()
-            .map(|n| node_input(n, bib_source_id, author_person_id, created_by))
+            .map(|n| {
+                node_input(
+                    n,
+                    bib_source_id,
+                    author_person_id,
+                    created_by,
+                    source_node_map,
+                )
+            })
             .collect(),
     }
 }
@@ -108,16 +119,20 @@ fn node_input(
     bib_source_id: Uuid,
     author_person_id: Uuid,
     created_by: Uuid,
+    source_node_map: &HashMap<String, Uuid>,
 ) -> NodeInput {
-    let anchor = match &node.source {
-        Some(src) => NodeAnchor::WorkSource {
+    let anchor = if let Some(&source_node_id) = source_node_map.get(&node.source_ref) {
+        NodeAnchor::SourceNode(source_node_id)
+    } else if let Some(src) = &node.source {
+        NodeAnchor::WorkSource {
             title: src.title.clone(),
             publication_year: src.publication_year,
             parent_source_id: bib_source_id,
             author_person_id,
             created_by,
-        },
-        None => NodeAnchor::None,
+        }
+    } else {
+        NodeAnchor::None
     };
     NodeInput {
         source_ref: node.source_ref.clone(),

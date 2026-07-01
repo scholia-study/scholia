@@ -83,6 +83,10 @@ runs `api migrate`. Dev resets via `pnpm db:reset` (uses `sqlx-cli`).
 - `packages/common` — shared parsers (epub, ncx, opf, kant1, sentences, content).
 - `packages/bible_to_db` — `--translation kjv|web|asv|bbe|darby`.
 - `packages/kant1_*` — multi-stage pipeline: OCR → lines → elements → MD → modernized/translated MD → struct → DB. See `README.md` and `assets/kant1/`, which splits into three tiers: `raw/` (pre-curation pipeline outputs — gitignored), `curated/` (human-reviewed MD — tracked), `derived/` (struct JSONs auto-generated from curated MD — gitignored).
+- `packages/text_struct` — genre-agnostic struct-JSON schema (`model`) + curated-markdown→HTML helpers (`html`) shared by the genre parsers and the importer, so their JSON is byte-compatible end to end. (Formerly baked into `poetry_md_to_struct`.)
+- `packages/struct_to_db` — shared importer for any `text_struct` JSON: reconcile-in-place (carries sentence UUIDs + anchored quotations across edits) + translation mode (`--source-book-slug`, 1:1-locked to a source book). Genre-agnostic (`block_type` is a pass-through string); used by poetry and drama. Parallels `kant1_struct_to_db` (a known duplication — see ADR 0005). Formerly `poetry_struct_to_db`.
+- `packages/poetry_md_to_struct` — shared verse parser (`--corpus shakespeare1|milton`), emitting the `text_struct` schema for `struct_to_db`. See ADR 0003.
+- `packages/drama_md_to_struct` — shared **drama** parser (`--corpus ibsen1`, or `--translation` for the single-layer English edition), tokenising the `@ speaker` / `@stage` / `| verse` / `{{{ N }}}` markup into the `text_struct` schema, also imported by the reused `struct_to_db`. Canonical TOC in `common::ibsen1`; `pnpm struct:ibsen1` builds both editions → `pnpm db:ibsen1` imports source then the English translation (`struct_to_db` is translation-capable via `--source-book-slug`, like `kant1_struct_to_db`). See `PLAN_DRAMA.md` + ADR 0005. Drama dialogue splits with `common::sentences::split_sentences_structural` (layer-consistent), not `split_sentences_en`.
 
 ### Docs
 

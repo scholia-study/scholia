@@ -457,10 +457,6 @@ fn tag_name_of(full_tag: &str) -> &str {
     full_tag.split_once(' ').map_or(full_tag, |(name, _)| name)
 }
 
-// ---------------------------------------------------------------------------
-// English sentence splitting
-// ---------------------------------------------------------------------------
-
 /// English single-word abbreviations that should NOT trigger a sentence split.
 static SINGLE_ABBREVS_EN: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
     vec![
@@ -610,9 +606,70 @@ fn is_multi_word_abbreviation_with(text: &str, match_start: usize, patterns: &[R
     false
 }
 
+/// A terminal-punctuation run followed by whitespace. Deliberately ignores the
+/// *case* of the following word and applies no abbreviation/initial filtering —
+/// so two parallel layers of the same text (e.g. a modernized reading layer and
+/// a faithful original whose 1873 orthography keeps a lower-case word after `?`)
+/// split into the **same** number of sentences. `split_sentences_en` cannot:
+/// its capital-after-punctuation rule desyncs the layers.
+static STRUCTURAL_SPLIT_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[.!?…]+\s+").unwrap());
+
+fn find_structural_split_positions(text: &str) -> Vec<usize> {
+    STRUCTURAL_SPLIT_RE
+        .find_iter(text)
+        .map(|m| m.end())
+        .filter(|&pos| pos < text.len())
+        .collect()
+}
+
+/// Split text into sentences purely on punctuation structure, returning
+/// `(text, html)` pairs. Reuses the same HTML mapping + inline-tag rebalancing as
+/// the language-specific splitters; only the boundary detection differs. Use
+/// this for two-layer texts that must pair sentence-for-sentence regardless of
+/// per-layer orthographic case (drama: `md_modernized` ↔ `md_reviewed`).
+pub fn split_sentences_structural(text: &str, html: &str) -> Vec<(String, String)> {
+    if text.is_empty() {
+        return vec![];
+    }
+    let split_positions = find_structural_split_positions(text);
+    if split_positions.is_empty() {
+        return vec![(text.to_string(), html.to_string())];
+    }
+    let text_parts = split_at_positions(text, &split_positions);
+    let html_split_positions = map_text_positions_to_html(text, html, &split_positions);
+    let html_parts = split_html_with_rebalance(html, &html_split_positions);
+    assert_eq!(text_parts.len(), html_parts.len());
+    text_parts
+        .into_iter()
+        .zip(html_parts)
+        .map(|(t, h)| (t.trim().to_string(), h.trim().to_string()))
+        .filter(|(t, _)| !t.is_empty())
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn structural_split_is_case_insensitive_across_layers() {
+        // The English splitter desyncs these (capital "Eller" splits, lower-case
+        // "eller" does not); the structural splitter gives both 2 sentences.
+        let modern = "Nevnte du mitt navn for noen? Eller at du søkte meg?";
+        let old = "Nævnte du mit navn for nogen? eller at du søgte mig?";
+        assert_eq!(split_sentences_structural(modern, modern).len(), 2);
+        assert_eq!(split_sentences_structural(old, old).len(), 2);
+    }
+
+    #[test]
+    fn structural_split_rebalances_italics() {
+        let text = "Take that. And that.";
+        let html = "<i>Take that. And that.</i>";
+        let parts = split_sentences_structural(text, html);
+        assert_eq!(parts.len(), 2);
+        assert_eq!(parts[0].1, "<i>Take that.</i>");
+        assert_eq!(parts[1].1, "<i>And that.</i>");
+    }
 
     #[test]
     fn test_single_sentence() {

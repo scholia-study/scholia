@@ -480,6 +480,7 @@ export function Block({
     onSelectSentence,
     marginSettings,
     nodeSourceRef,
+    inDrama,
 }: {
     block: ContentBlockResponse;
     selectedSentenceId: string | null;
@@ -488,6 +489,8 @@ export function Block({
     marginSettings?: MarginSettings;
     /** Forwarded to `Sentence` for verse-key marker projection. */
     nodeSourceRef?: string;
+    /** In a play node: indent dialogue under its flush-left speaker label. */
+    inDrama?: boolean;
 }) {
     const blockHtml =
         showOriginal && block.original_html ? block.original_html : block.html;
@@ -552,7 +555,11 @@ export function Block({
                 />
             );
             return (
-                <p className="relative pb-4 leading-[var(--reader-line-height)] text-stone-700">
+                <p
+                    className={`relative pb-4 leading-[var(--reader-line-height)] text-stone-700${
+                        inDrama ? " pl-6" : ""
+                    }`}
+                >
                     {groups.map((group, gi) =>
                         group.segment == null ? (
                             <Fragment key={`flow-${gi}`}>
@@ -585,7 +592,11 @@ export function Block({
             // under itself. Reuses the paragraph selection wiring, so lines
             // are individually clickable and shift-click range-selects.
             return (
-                <div className="relative pb-4 leading-[var(--reader-line-height)] text-stone-700">
+                <div
+                    className={`relative pb-4 leading-[var(--reader-line-height)] text-stone-700${
+                        inDrama ? " pl-6" : ""
+                    }`}
+                >
                     {block.sentences.map((s, i) => (
                         <span
                             key={s.id}
@@ -704,6 +715,70 @@ export function Block({
                     >
                         {parse(figureHtml)}
                     </div>
+                </div>
+            );
+        }
+        case "speaker":
+            // A character's speech label: its own flush-left line, bold +
+            // uppercase, muted like apparatus. The italic `*(opener)*` keeps
+            // its own case/weight. Inert (non-clickable), like a heading —
+            // routed through the markerful, span-based HeadingSentence.
+            return (
+                <p className="relative mt-5 mb-1 font-bold uppercase tracking-wide text-stone-500 leading-snug [&_i]:font-normal [&_i]:normal-case">
+                    {block.sentences.map((s) => (
+                        <HeadingSentence
+                            key={s.id}
+                            sentence={s}
+                            showOriginal={showOriginal}
+                            marginSettings={marginSettings}
+                        />
+                    ))}
+                </p>
+            );
+        case "stage": {
+            // Stage direction / dramatis-personae apparatus: italic, muted,
+            // full-width, non-selectable. Rendered as block html in a <div>
+            // (not the <span>-based HeadingSentence) so a cast-list <ul> nests
+            // validly; the <ul> gets its list styling back (Tailwind preflight
+            // strips it) and drops the italic. Page markers ride the margin.
+            const anchor = block.sentences[0];
+            let leftMarkers: PageMarkerResponse[] | undefined;
+            let rightMarkers: PageMarkerResponse[] | undefined;
+            if (
+                anchor &&
+                marginSettings &&
+                marginSettings.enabledSystems.size > 0
+            ) {
+                for (const pm of anchor.page_markers) {
+                    if (!marginSettings.enabledSystems.has(pm.system_slug))
+                        continue;
+                    if (
+                        lineMarkerHiddenByInterval(
+                            pm,
+                            marginSettings.lineNumberInterval ?? 1,
+                        )
+                    )
+                        continue;
+                    const side =
+                        marginSettings.systemSides[pm.system_slug] ?? "right";
+                    if (side === "left") {
+                        if (!leftMarkers) leftMarkers = [];
+                        leftMarkers.push(pm);
+                    } else {
+                        if (!rightMarkers) rightMarkers = [];
+                        rightMarkers.push(pm);
+                    }
+                }
+            }
+            return (
+                <div className="relative pb-3 italic text-stone-500 leading-[var(--reader-line-height)] [&_ul]:list-none [&_ul]:pl-0 [&_ul]:not-italic">
+                    {leftMarkers && (
+                        <MarginNotes markers={leftMarkers} side="left" />
+                    )}
+                    {rightMarkers && (
+                        <MarginNotes markers={rightMarkers} side="right" />
+                    )}
+                    {parse(blockHtml)}
                 </div>
             );
         }

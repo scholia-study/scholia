@@ -1,11 +1,11 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use poetry_md_to_struct::model::Output;
 use reconcile::{node_hash, root_hash};
+use text_struct::model::Output;
 
 use crate::reconcile_input::node_content;
 
@@ -23,9 +23,76 @@ fn sort_name(name: &str) -> Option<String> {
     }
 }
 
+/// A translation edition is locked 1:1 to its source book: every block must
+/// carry the same number of sentences as the source, or quotation projection +
+/// side-by-side alignment break (the extra/missing translation sentences end up
+/// with no `source_sentence_start_id`). The two editions are built independently,
+/// so a split/merge made in only one would otherwise pass silently. Check up
+/// front — before either the fresh-insert or reconcile path — listing every
+/// offender. (Block *type* may legitimately differ between editions; only the
+/// sentence count per (node, block position) must match.)
+fn validate_translation_parity(
+    output: &Output,
+    source_sentence_map: &HashMap<(String, i16, i16), Uuid>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let mut src_block_counts: HashMap<(String, i16), usize> = HashMap::new();
+    for (source_ref, block_pos, _sent_pos) in source_sentence_map.keys() {
+        *src_block_counts
+            .entry((source_ref.clone(), *block_pos))
+            .or_insert(0) += 1;
+    }
+
+    let mut problems: Vec<String> = Vec::new();
+    for node in &output.toc_nodes {
+        for block in &node.content_blocks {
+            let translated = block.sentences.len();
+            let source = src_block_counts
+                .get(&(node.source_ref.clone(), block.position))
+                .copied()
+                .unwrap_or(0);
+            if translated != source {
+                problems.push(format!(
+                    "  node {} / block {}: translation has {translated} sentence(s), source has {source}",
+                    node.source_ref, block.position
+                ));
+            }
+        }
+    }
+    let translated_keys: HashSet<(String, i16)> = output
+        .toc_nodes
+        .iter()
+        .flat_map(|n| {
+            n.content_blocks
+                .iter()
+                .map(move |b| (n.source_ref.clone(), b.position))
+        })
+        .collect();
+    for (source_ref, block_pos) in src_block_counts.keys() {
+        if !translated_keys.contains(&(source_ref.clone(), *block_pos)) {
+            problems.push(format!(
+                "  node {source_ref} / block {block_pos}: present in source but missing from translation"
+            ));
+        }
+    }
+
+    if !problems.is_empty() {
+        return Err(format!(
+            "translation is out of sync with the source edition ({} mismatch(es)) — fix the \
+             markdown so sentence splits match, then re-run (reconcile the source book first if \
+             you edited it too):\n{}",
+            problems.len(),
+            problems.join("\n")
+        )
+        .into());
+    }
+    Ok(())
+}
+
+#[allow(clippy::too_many_arguments)]
 pub async fn run(
     input_file: &str,
     database_url: Option<String>,
+    source_book_slug: Option<String>,
     replace: bool,
     dry_run: bool,
     force: bool,
@@ -40,6 +107,58 @@ pub async fn run(
     let mut tx = pool.begin().await?;
 
     let system_user_id = dataduct::seed::SYSTEM_USER_ID;
+    let is_translation = source_book_slug.is_some();
+
+    // Translation mode: resolve the source book and build the natural-key →
+    // source node / sentence maps that lock this edition 1:1 to it. These drive
+    // `source_node_id` / `source_sentence_start_id` in both the fresh-insert and
+    // reconcile paths.
+    let mut source_book_id: Option<Uuid> = None;
+    let mut translation_of_id: Option<Uuid> = None;
+    let mut source_node_map: HashMap<String, Uuid> = HashMap::new();
+    let mut source_sentence_map: HashMap<(String, i16, i16), Uuid> = HashMap::new();
+    if let Some(ref slug) = source_book_slug {
+        let (sbid, src_id): (Uuid, Uuid) =
+            sqlx::query_as("SELECT id, source_id FROM books WHERE slug = $1")
+                .bind(slug)
+                .fetch_optional(&mut *tx)
+                .await?
+                .ok_or_else(|| format!("Source book not found: {slug}"))?;
+        source_book_id = Some(sbid);
+        translation_of_id = Some(src_id);
+
+        let node_rows: Vec<(Uuid, String)> =
+            sqlx::query_as("SELECT id, source_ref FROM toc_nodes WHERE book_id = $1")
+                .bind(sbid)
+                .fetch_all(&mut *tx)
+                .await?;
+        for (id, source_ref) in node_rows {
+            source_node_map.insert(source_ref, id);
+        }
+
+        let sent_rows: Vec<(Uuid, String, i16, i16)> = sqlx::query_as(
+            "SELECT s.id, tn.source_ref, cb.position, s.position
+             FROM sentences s
+             JOIN content_blocks cb ON s.block_id = cb.id
+             JOIN toc_nodes tn ON cb.node_id = tn.id
+             WHERE s.book_id = $1 AND s.block_id IS NOT NULL",
+        )
+        .bind(sbid)
+        .fetch_all(&mut *tx)
+        .await?;
+        for (id, source_ref, block_pos, sent_pos) in sent_rows {
+            source_sentence_map.insert((source_ref, block_pos, sent_pos), id);
+        }
+
+        eprintln!(
+            "Source book {:?} ({}): {} nodes, {} sentences",
+            slug,
+            sbid,
+            source_node_map.len(),
+            source_sentence_map.len()
+        );
+        validate_translation_parity(&output, &source_sentence_map)?;
+    }
 
     // A book already in the DB is reconciled in place — matching the freshly
     // parsed struct against existing rows and carrying sentence UUIDs (and the
@@ -51,19 +170,42 @@ pub async fn run(
         .await?;
     if let Some(id) = existing {
         if replace {
+            eprintln!(
+                "Replacing book {:?} ({}) — deleting old rows…",
+                output.book.slug, id
+            );
+            // Drop the book AND its bibliographic source — deleting the book
+            // leaves the source row orphaned, and the fresh insert below would
+            // then collide on the sources (title, source_type, publication_year)
+            // unique key. (A translation edition's source carries
+            // translation_of_id, ON DELETE SET NULL, so dropping the source
+            // book's source just nulls a stale link the re-import resets.)
+            let old_source_id: Option<Uuid> =
+                sqlx::query_scalar("SELECT source_id FROM books WHERE id = $1")
+                    .bind(id)
+                    .fetch_optional(&mut *tx)
+                    .await?;
             sqlx::query("DELETE FROM books WHERE id = $1")
                 .bind(id)
                 .execute(&mut *tx)
                 .await?;
+            if let Some(sid) = old_source_id {
+                sqlx::query("DELETE FROM sources WHERE id = $1")
+                    .bind(sid)
+                    .execute(&mut *tx)
+                    .await?;
+            }
             eprintln!("Replaced existing book {:?} ({})", output.book.slug, id);
         } else {
-            // Reconcile-by-default: load the existing reference systems, then
+            // Reconcile-by-default: load the reference systems (the source
+            // book's, for a translation edition — it owns none of its own), then
             // update the book in place.
             eprintln!("Reconciling existing book {:?} ({})", output.book.slug, id);
+            let systems_book_id = source_book_id.unwrap_or(id);
             let mut system_ids: HashMap<String, Uuid> = HashMap::new();
             let rows: Vec<(Uuid, String)> =
                 sqlx::query_as("SELECT id, slug FROM reference_systems WHERE book_id = $1")
-                    .bind(id)
+                    .bind(systems_book_id)
                     .fetch_all(&mut *tx)
                     .await?;
             for (sys_id, slug) in rows {
@@ -94,8 +236,13 @@ pub async fn run(
 
             let (desired_node_hashes, desired_root) =
                 crate::reconcile_input::compute_hashes(&output);
-            let input =
-                crate::reconcile_input::to_input(&output, bib_source_id, person_id, system_user_id);
+            let input = crate::reconcile_input::to_input(
+                &output,
+                bib_source_id,
+                person_id,
+                system_user_id,
+                &source_node_map,
+            );
             let report = reconcile::reconcile_book(
                 &mut tx,
                 id,
@@ -103,8 +250,8 @@ pub async fn run(
                 &desired_node_hashes,
                 &desired_root,
                 &system_ids,
-                false,
-                &HashMap::new(),
+                is_translation,
+                &source_sentence_map,
                 &HashMap::new(),
                 force,
                 full_rewrite,
@@ -136,13 +283,16 @@ pub async fn run(
     .await?;
 
     let publication_year: Option<i16> = output.book.source_date.parse::<i16>().ok();
+    // A translation edition's source carries `translation_of_id` → the source
+    // book's source, the link the side-by-side companion view resolves.
     let bib_source_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO sources (source_type, title, publication_year, protected, created_by)
-         VALUES ('book', $1, $2, true, $3)
+        "INSERT INTO sources (source_type, title, publication_year, translation_of_id, protected, created_by)
+         VALUES ('book', $1, $2, $3, true, $4)
          RETURNING id",
     )
     .bind(&output.book.title)
     .bind(publication_year)
+    .bind(translation_of_id)
     .bind(system_user_id)
     .fetch_one(&mut *tx)
     .await?;
@@ -175,23 +325,39 @@ pub async fn run(
     .await?;
     eprintln!("Inserted book {:?} ({})", output.book.slug, book_id);
 
-    // 2. Reference systems.
+    // 2. Reference systems — a translation edition reuses the source book's
+    // systems (page markers map by slug); a standalone book inserts its own.
     let mut system_ids: HashMap<String, Uuid> = HashMap::new();
-    for sys in &output.reference_systems {
-        let sys_id: Uuid = sqlx::query_scalar(
-            "INSERT INTO reference_systems (book_id, slug, label, ref_type, cite_priority, cite_template)
-             VALUES ($1, $2, $3, $4, $5, $6)
-             RETURNING id",
-        )
-        .bind(book_id)
-        .bind(&sys.slug)
-        .bind(&sys.label)
-        .bind(&sys.ref_type)
-        .bind(sys.cite_priority)
-        .bind(&sys.cite_template)
-        .fetch_one(&mut *tx)
-        .await?;
-        system_ids.insert(sys.slug.clone(), sys_id);
+    if let Some(sbid) = source_book_id {
+        let rows: Vec<(Uuid, String)> =
+            sqlx::query_as("SELECT id, slug FROM reference_systems WHERE book_id = $1")
+                .bind(sbid)
+                .fetch_all(&mut *tx)
+                .await?;
+        for (sys_id, slug) in rows {
+            system_ids.insert(slug, sys_id);
+        }
+        eprintln!(
+            "Reusing {} reference systems from source book",
+            system_ids.len()
+        );
+    } else {
+        for sys in &output.reference_systems {
+            let sys_id: Uuid = sqlx::query_scalar(
+                "INSERT INTO reference_systems (book_id, slug, label, ref_type, cite_priority, cite_template)
+                 VALUES ($1, $2, $3, $4, $5, $6)
+                 RETURNING id",
+            )
+            .bind(book_id)
+            .bind(&sys.slug)
+            .bind(&sys.label)
+            .bind(&sys.ref_type)
+            .bind(sys.cite_priority)
+            .bind(&sys.cite_template)
+            .fetch_one(&mut *tx)
+            .await?;
+            system_ids.insert(sys.slug.clone(), sys_id);
+        }
     }
 
     // 3. Nodes -> blocks -> sentences -> page markers.
@@ -211,6 +377,13 @@ pub async fn run(
             .as_ref()
             .and_then(|r| node_ids.get(r).copied());
         let label_html = (node.label_html != node.label).then_some(&node.label_html);
+
+        // Translation node → link to its source-book node (`source_node_id`).
+        let source_node_id: Option<Uuid> = if is_translation {
+            source_node_map.get(&node.source_ref).copied()
+        } else {
+            None
+        };
 
         // Source-anchored work node (e.g. "Sonnets"): create its sub-work source
         // (source_type 'chapter', parented to the book's compilation source) and
@@ -244,13 +417,14 @@ pub async fn run(
         };
 
         let node_id: Uuid = sqlx::query_scalar(
-            "INSERT INTO toc_nodes (book_id, parent_id, source_id, source_ref, slug, path, sort_order, depth, label, label_html, content_hash)
-             VALUES ($1, $2, $3, $4, $5, $6::ltree, $7, $8, $9, $10, $11)
+            "INSERT INTO toc_nodes (book_id, parent_id, source_id, source_node_id, source_ref, slug, path, sort_order, depth, label, label_html, content_hash)
+             VALUES ($1, $2, $3, $4, $5, $6, $7::ltree, $8, $9, $10, $11, $12)
              RETURNING id",
         )
         .bind(book_id)
         .bind(parent_id)
         .bind(node_source_id)
+        .bind(source_node_id)
         .bind(&node.source_ref)
         .bind(&node.slug)
         .bind(&node.path)
@@ -288,9 +462,18 @@ pub async fn run(
                 let natural_key =
                     reconcile::natural_key(&node.source_ref, block.position, sent.position);
 
+                // Translation sentence → its source-book counterpart by key.
+                let source_sentence_start_id: Option<Uuid> = if is_translation {
+                    source_sentence_map
+                        .get(&(node.source_ref.clone(), block.position, sent.position))
+                        .copied()
+                } else {
+                    None
+                };
+
                 let sentence_id: Uuid = sqlx::query_scalar(
-                    "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, segment, indent, text, html, original_text, original_html, natural_key)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                    "INSERT INTO sentences (book_id, node_id, block_id, position, sentence_number, segment, indent, source_sentence_start_id, text, html, original_text, original_html, natural_key)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                      RETURNING id",
                 )
                 .bind(book_id)
@@ -300,6 +483,7 @@ pub async fn run(
                 .bind(sent.sentence_number)
                 .bind(sent.segment)
                 .bind(sent.indent)
+                .bind(source_sentence_start_id)
                 .bind(&sent.text)
                 .bind(&sent.html)
                 .bind(&sent.original_text)
@@ -351,6 +535,9 @@ pub async fn run(
 
     eprintln!();
     eprintln!("=== Import complete ===");
+    if is_translation {
+        eprintln!("  mode:           translation");
+    }
     eprintln!("  book:           1");
     eprintln!("  sources:        {source_count}");
     eprintln!("  ref_systems:    {}", system_ids.len());

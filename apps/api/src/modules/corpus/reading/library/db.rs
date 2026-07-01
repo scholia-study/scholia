@@ -568,9 +568,20 @@ fn build_work(
         })
         .collect();
 
+    // Library cards label a work by its English title: prefer the English
+    // edition's source title (e.g. "Emperor and Galilean" for the Norwegian
+    // "Keiser og Galileer"), falling back to the root/original title when the
+    // work has no English version.
+    let display_title = versions
+        .iter()
+        .find(|v| v.book_language == "en")
+        .and_then(|v| sources.get(&v.source_id))
+        .map(|s| s.title.clone())
+        .unwrap_or_else(|| root_source.title.clone());
+
     LibraryWork {
         work_id: work_id.to_string(),
-        title: root_source.title.clone(),
+        title: display_title,
         publication_year: root_source.publication_year,
         co_authors,
         editor_names,

@@ -1,10 +1,10 @@
 [package]
-name = "poetry_struct_to_db"
+name = "struct_to_db"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-poetry_md_to_struct = { path = "../poetry_md_to_struct" }
+text_struct = { path = "../text_struct" }
 reconcile = { path = "../reconcile" }
 dataduct = { path = "../dataduct" }
 serde_json = "1"

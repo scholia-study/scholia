@@ -1,6 +1,7 @@
-//! Struct-JSON schema for the poetry pipeline (shared by every verse corpus —
-//! Shakespeare's Sonnets, Milton's *Paradise Lost*, …). Mirrors the Kant
-//! `Output` tree (so the importer logic stays familiar) with one addition:
+//! Struct-JSON schema for the structured-text ingest pipeline, shared by every
+//! genre parser that feeds `struct_to_db` — verse (Shakespeare's Sonnets,
+//! Milton's *Paradise Lost*) and drama (Ibsen) alike. Mirrors the Kant `Output`
+//! tree (so the importer logic stays familiar) with one addition:
 //! `SentenceData.indent` for verse line indentation (ADR 0003).
 
 use serde::{Deserialize, Serialize};

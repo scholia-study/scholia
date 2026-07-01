@@ -1,10 +1,13 @@
 [package]
-name = "poetry_md_to_struct"
+name = "drama_md_to_struct"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
 common = { path = "../common" }
+# Reuse the shared struct schema (Output/ContentBlockData/...) and its md→html
+# helpers so the JSON is byte-compatible with `struct_to_db`.
 text_struct = { path = "../text_struct" }
 serde_json = "1"
+regex = "1"
 clap = { version = "4", features = ["derive"] }

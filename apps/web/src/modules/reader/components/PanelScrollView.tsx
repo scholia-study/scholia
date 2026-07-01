@@ -514,6 +514,11 @@ export const PanelScrollView = forwardRef<
                 </div>
                 {nodes.map((node) => {
                     const companion = companionNodeMap?.get(node.id);
+                    // A play node — detected by the presence of speaker labels —
+                    // indents its dialogue under the flush-left speaker column.
+                    const nodeIsDrama = node.blocks.some(
+                        (b) => b.block_type === "speaker",
+                    );
                     return (
                         <div
                             key={node.id}
@@ -563,6 +568,7 @@ export const PanelScrollView = forwardRef<
                                             onSelectSentence={onSelectSentence}
                                             marginSettings={marginSettings}
                                             nodeSourceRef={node.source_ref}
+                                            inDrama={nodeIsDrama}
                                         />
                                     ))
                                 )}

@@ -1,8 +1,9 @@
-//! Verse/prose markdown → HTML / plain text.
+//! Curated markdown → HTML / plain text.
 //!
 //! The only inline markup in the curated MD is `*word*` for italicised words
-//! (proper names in the Quarto/1674 originals). HTML metacharacters are escaped
-//! first so the only tags in the output are the ones we add.
+//! (proper names in the verse originals, stage directions in drama). HTML
+//! metacharacters are escaped first so the only tags in the output are the ones
+//! we add.
 
 use std::sync::LazyLock;
 
