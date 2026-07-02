@@ -26,6 +26,7 @@ RUN useradd --system --uid 10001 --no-create-home --shell /usr/sbin/nologin scho
 
 WORKDIR /app
 COPY --from=builder /build/target/release/bible_to_db /usr/local/bin/bible_to_db
+COPY scripts/lib.sh scripts/bible_import.sh /app/scripts/
 COPY jobs/ingest-bible/ingest_bible.sh /app/ingest_bible.sh
 
 RUN chmod +x /app/ingest_bible.sh

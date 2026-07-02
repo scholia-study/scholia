@@ -23,17 +23,19 @@ fn sort_name(name: &str) -> Option<String> {
     }
 }
 
-/// A translation edition is locked 1:1 to its source book: every block must
-/// carry the same number of sentences as the source, or quotation projection +
-/// side-by-side alignment break (the extra/missing translation sentences end up
-/// with no `source_sentence_start_id`). The two editions are built independently,
-/// so a split/merge made in only one would otherwise pass silently. Check up
-/// front — before either the fresh-insert or reconcile path — listing every
-/// offender. (Block *type* may legitimately differ between editions; only the
-/// sentence count per (node, block position) must match.)
+/// A translation edition is locked 1:1 to its source book: every block (and
+/// every footnote) must carry the same number of sentences as the source, or
+/// quotation projection + side-by-side alignment break (the extra/missing
+/// translation sentences end up with no `source_sentence_start_id`). The two
+/// editions are built independently, so a split/merge made in only one would
+/// otherwise pass silently. Check up front — before either the fresh-insert or
+/// reconcile path — listing every offender. (Block *type* may legitimately
+/// differ between editions; only the sentence count per (node, block position)
+/// must match.)
 fn validate_translation_parity(
     output: &Output,
     source_sentence_map: &HashMap<(String, i16, i16), Uuid>,
+    source_fn_sentence_counts: &HashMap<i32, i16>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut src_block_counts: HashMap<(String, i16), usize> = HashMap::new();
     for (source_ref, block_pos, _sent_pos) in source_sentence_map.keys() {
@@ -55,6 +57,20 @@ fn validate_translation_parity(
                     "  node {} / block {}: translation has {translated} sentence(s), source has {source}",
                     node.source_ref, block.position
                 ));
+            }
+            for footnote in block.sentences.iter().flat_map(|s| &s.footnotes) {
+                let translated = footnote.sentences.len();
+                match source_fn_sentence_counts.get(&footnote.number) {
+                    Some(source) if translated != *source as usize => problems.push(format!(
+                        "  footnote {}: translation has {translated} sentence(s), source has {source}",
+                        footnote.number
+                    )),
+                    None => problems.push(format!(
+                        "  footnote {}: present in translation but missing from source",
+                        footnote.number
+                    )),
+                    _ => {}
+                }
             }
         }
     }
@@ -78,8 +94,8 @@ fn validate_translation_parity(
     if !problems.is_empty() {
         return Err(format!(
             "translation is out of sync with the source edition ({} mismatch(es)) — fix the \
-             markdown so sentence splits match, then re-run (reconcile the source book first if \
-             you edited it too):\n{}",
+             markdown so sentence/footnote splits match, then re-run (reconcile the source book \
+             first if you edited it too):\n{}",
             problems.len(),
             problems.join("\n")
         )
@@ -117,6 +133,10 @@ pub async fn run(
     let mut translation_of_id: Option<Uuid> = None;
     let mut source_node_map: HashMap<String, Uuid> = HashMap::new();
     let mut source_sentence_map: HashMap<(String, i16, i16), Uuid> = HashMap::new();
+    // (footnote_number, sentence_position) → source footnote sentence id, and
+    // footnote_number → source footnote sentence count (parity check input).
+    let mut source_fn_sentence_map: HashMap<(i32, i16), Uuid> = HashMap::new();
+    let mut source_fn_sentence_counts: HashMap<i32, i16> = HashMap::new();
     if let Some(ref slug) = source_book_slug {
         let (sbid, src_id): (Uuid, Uuid) =
             sqlx::query_as("SELECT id, source_id FROM books WHERE slug = $1")
@@ -150,14 +170,30 @@ pub async fn run(
             source_sentence_map.insert((source_ref, block_pos, sent_pos), id);
         }
 
+        let fn_sent_rows: Vec<(Uuid, i32, i16)> = sqlx::query_as(
+            "SELECT s.id, f.number, s.position
+             FROM sentences s
+             JOIN footnotes f ON s.footnote_id = f.id
+             WHERE s.book_id = $1 AND s.footnote_id IS NOT NULL",
+        )
+        .bind(sbid)
+        .fetch_all(&mut *tx)
+        .await?;
+        for (id, fn_number, sent_pos) in &fn_sent_rows {
+            source_fn_sentence_map.insert((*fn_number, *sent_pos), *id);
+            let count = source_fn_sentence_counts.entry(*fn_number).or_insert(0);
+            *count = (*count).max(*sent_pos + 1);
+        }
+
         eprintln!(
-            "Source book {:?} ({}): {} nodes, {} sentences",
+            "Source book {:?} ({}): {} nodes, {} sentences, {} footnote sentences",
             slug,
             sbid,
             source_node_map.len(),
-            source_sentence_map.len()
+            source_sentence_map.len(),
+            fn_sent_rows.len()
         );
-        validate_translation_parity(&output, &source_sentence_map)?;
+        validate_translation_parity(&output, &source_sentence_map, &source_fn_sentence_counts)?;
     }
 
     // A book already in the DB is reconciled in place — matching the freshly
@@ -252,7 +288,7 @@ pub async fn run(
                 &system_ids,
                 is_translation,
                 &source_sentence_map,
-                &HashMap::new(),
+                &source_fn_sentence_map,
                 force,
                 full_rewrite,
             )
@@ -286,12 +322,13 @@ pub async fn run(
     // A translation edition's source carries `translation_of_id` → the source
     // book's source, the link the side-by-side companion view resolves.
     let bib_source_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO sources (source_type, title, publication_year, translation_of_id, protected, created_by)
-         VALUES ('book', $1, $2, $3, true, $4)
+        "INSERT INTO sources (source_type, title, publication_year, publisher, translation_of_id, protected, created_by)
+         VALUES ('book', $1, $2, $3, $4, true, $5)
          RETURNING id",
     )
     .bind(&output.book.title)
     .bind(publication_year)
+    .bind(&output.book.publisher)
     .bind(translation_of_id)
     .bind(system_user_id)
     .fetch_one(&mut *tx)
@@ -360,10 +397,14 @@ pub async fn run(
         }
     }
 
-    // 3. Nodes -> blocks -> sentences -> page markers.
+    // 3. Nodes -> blocks -> sentences -> page markers -> footnotes.
     let mut node_ids: HashMap<String, Uuid> = HashMap::new();
     let (mut node_count, mut block_count, mut sentence_count, mut marker_count) =
         (0u32, 0u32, 0u32, 0u32);
+    let (mut footnote_count, mut footnote_sentence_count) = (0u32, 0u32);
+    // Footnote sentences are numbered in one book-global sequence, separate
+    // from the block-sentence numbering.
+    let mut footnote_sentence_number = 1i32;
     let mut source_count = 1u32; // the compilation source; sub-work sources add on
     // Node content hashes accumulate as we insert; the root is stored on `books`
     // after the loop, so the first *reconcile* is already in the fast state.
@@ -510,6 +551,70 @@ pub async fn run(
                     .await?;
                     marker_count += 1;
                 }
+
+                // Footnotes anchored to this sentence; their sentences live in
+                // `sentences` with `block_id` NULL and `footnote_id` set.
+                // Footnote/sentence parity with the source edition is validated
+                // up front by validate_translation_parity.
+                for footnote in &sent.footnotes {
+                    let footnote_id: Uuid = sqlx::query_scalar(
+                        "INSERT INTO footnotes (book_id, number, anchor_sentence_id)
+                         VALUES ($1, $2, $3)
+                         RETURNING id",
+                    )
+                    .bind(book_id)
+                    .bind(footnote.number)
+                    .bind(sentence_id)
+                    .fetch_one(&mut *tx)
+                    .await?;
+                    footnote_count += 1;
+
+                    for fn_sent in &footnote.sentences {
+                        let source_fn_sentence_id: Option<Uuid> = if is_translation {
+                            Some(
+                                *source_fn_sentence_map
+                                    .get(&(footnote.number, fn_sent.position))
+                                    .ok_or_else(|| {
+                                        format!(
+                                            "Source footnote #{} sentence {} not found",
+                                            footnote.number, fn_sent.position
+                                        )
+                                    })?,
+                            )
+                        } else {
+                            None
+                        };
+
+                        let fn_sent_num = footnote_sentence_number;
+                        footnote_sentence_number += 1;
+
+                        let fn_natural_key = reconcile::footnote_natural_key(
+                            &node.source_ref,
+                            footnote.number,
+                            fn_sent.position,
+                        );
+
+                        sqlx::query(
+                            "INSERT INTO sentences (book_id, node_id, footnote_id, position, sentence_number, source_sentence_start_id, text, html, original_text, original_html, natural_key)
+                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+                        )
+                        .bind(book_id)
+                        .bind(node_id)
+                        .bind(footnote_id)
+                        .bind(fn_sent.position)
+                        .bind(fn_sent_num)
+                        .bind(source_fn_sentence_id)
+                        .bind(&fn_sent.text)
+                        .bind(&fn_sent.html)
+                        .bind(&fn_sent.original_text)
+                        .bind(&fn_sent.original_html)
+                        .bind(&fn_natural_key)
+                        .execute(&mut *tx)
+                        .await?;
+                        footnote_sentence_count += 1;
+                        sentence_count += 1;
+                    }
+                }
             }
         }
     }
@@ -544,6 +649,8 @@ pub async fn run(
     eprintln!("  toc_nodes:      {node_count}");
     eprintln!("  content_blocks: {block_count}");
     eprintln!("  sentences:      {sentence_count}");
+    eprintln!("  footnotes:      {footnote_count}");
+    eprintln!("  fn_sentences:   {footnote_sentence_count}");
     eprintln!("  page_markers:   {marker_count}");
     Ok(())
 }

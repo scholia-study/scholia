@@ -8,18 +8,19 @@
 use std::collections::HashMap;
 
 use reconcile::{
-    BlockContent, BlockInput, MarkerContent, MarkerInput, NodeAnchor, NodeContent, NodeInput,
-    ReconcileInput, SentenceContent, SentenceInput, node_hash, root_hash,
+    BlockContent, BlockInput, FootnoteContent, FootnoteInput, MarkerContent, MarkerInput,
+    NodeAnchor, NodeContent, NodeInput, ReconcileInput, SentenceContent, SentenceInput, node_hash,
+    root_hash,
 };
-use text_struct::model::{ContentBlockData, Output, SentenceData, TocNodeData};
+use text_struct::model::{ContentBlockData, FootnoteData, Output, SentenceData, TocNodeData};
 use uuid::Uuid;
 
 // --- Content hashing (tier-2 incremental reconcile) ------------------------
-// Build the book-agnostic `reconcile::NodeContent` from the Shakespeare struct so
-// the insert path and the reconcile path hash *identical* content. The field set
+// Build the book-agnostic `reconcile::NodeContent` from the struct so the
+// insert path and the reconcile path hash *identical* content. The field set
 // here must mirror what reconcile writes (text/html/original_*/segment, page
-// markers, block + label fields) — never the recomputed numbering/positional
-// fields. Shakespeare has no footnotes, so the footnote list is always empty.
+// markers, footnote content, block + label fields) — never the recomputed
+// numbering/positional fields.
 //
 // NOTE: `indent` is intentionally NOT part of the hash (the shared
 // `reconcile::SentenceContent` has no `indent` field). An indent-only edit is
@@ -60,7 +61,26 @@ fn sentence_content(s: &SentenceData) -> SentenceContent<'_> {
                 char_offset: Some(m.char_offset),
             })
             .collect(),
-        footnotes: Vec::new(),
+        footnotes: s.footnotes.iter().map(footnote_content).collect(),
+    }
+}
+
+fn footnote_content(f: &FootnoteData) -> FootnoteContent<'_> {
+    FootnoteContent {
+        number: f.number,
+        sentences: f
+            .sentences
+            .iter()
+            .map(|fs| SentenceContent {
+                text: &fs.text,
+                html: &fs.html,
+                original_text: fs.original_text.as_deref(),
+                original_html: fs.original_html.as_deref(),
+                segment: None,
+                markers: Vec::new(),
+                footnotes: Vec::new(),
+            })
+            .collect(),
     }
 }
 
@@ -88,7 +108,7 @@ pub(crate) fn compute_hashes(output: &Output) -> (Vec<(String, String)>, String)
 // carrying its own `source` (a Bible-shape sub-work, e.g. "Sonnets") becomes a
 // `WorkSource` anchor; everything else is anchor-less. The caller passes the
 // book's bibliographic source + the upserted author + the system user so a
-// WorkSource anchor can be built without re-querying. No footnotes.
+// WorkSource anchor can be built without re-querying.
 
 pub(crate) fn to_input(
     output: &Output,
@@ -182,6 +202,28 @@ fn sentence_input(s: &SentenceData) -> SentenceInput {
                 char_offset: m.char_offset,
             })
             .collect(),
-        footnotes: Vec::new(),
+        footnotes: s.footnotes.iter().map(footnote_input).collect(),
+    }
+}
+
+fn footnote_input(f: &FootnoteData) -> FootnoteInput {
+    FootnoteInput {
+        number: f.number,
+        sentences: f
+            .sentences
+            .iter()
+            .map(|fs| SentenceInput {
+                position: fs.position,
+                sentence_number: fs.sentence_number,
+                segment: None,
+                indent: None,
+                text: fs.text.clone(),
+                html: fs.html.clone(),
+                original_text: fs.original_text.clone(),
+                original_html: fs.original_html.clone(),
+                markers: Vec::new(),
+                footnotes: Vec::new(),
+            })
+            .collect(),
     }
 }

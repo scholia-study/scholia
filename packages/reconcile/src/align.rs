@@ -62,7 +62,7 @@ pub fn plan_block(label: &str, old: &[Existing], new: &[&str]) -> Result<BlockPl
                 if sim < SCRAMBLE_MIN_SIM {
                     return Err(format!(
                         "{label}: sentence {} changed too drastically to match safely \
-                         (similarity {sim:.2}); use `pnpm db:reset` + re-import",
+                         (similarity {sim:.2}); use `just db-reload`",
                         i + 1
                     ));
                 }
@@ -103,7 +103,7 @@ pub fn plan_block(label: &str, old: &[Existing], new: &[&str]) -> Result<BlockPl
             if sim < SPLIT_MERGE_MIN_SIM {
                 return Err(format!(
                     "{label}: ambiguous split of \"{}\" (similarity {sim:.2}); \
-                     edit one boundary at a time or `pnpm db:reset`",
+                     edit one boundary at a time or `just db-reload`",
                     trunc(&mid_old[0].text)
                 ));
             }
@@ -117,7 +117,7 @@ pub fn plan_block(label: &str, old: &[Existing], new: &[&str]) -> Result<BlockPl
             if sim < SPLIT_MERGE_MIN_SIM {
                 return Err(format!(
                     "{label}: ambiguous merge into \"{}\" (similarity {sim:.2}); \
-                     edit one boundary at a time or `pnpm db:reset`",
+                     edit one boundary at a time or `just db-reload`",
                     trunc(mid_new[0])
                 ));
             }
@@ -135,7 +135,7 @@ pub fn plan_block(label: &str, old: &[Existing], new: &[&str]) -> Result<BlockPl
         (mo, mn) => {
             return Err(format!(
                 "{label}: ambiguous change ({mo} old vs {mn} new sentences in the edited region); \
-                 edit one boundary at a time or `pnpm db:reset`"
+                 edit one boundary at a time or `just db-reload`"
             ));
         }
     }

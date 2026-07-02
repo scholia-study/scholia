@@ -25,7 +25,7 @@ aren't mistaken for errors.
 
 - A **Scholia Community Edition** English translation produced with LLM
   assistance, held to **1:1 sentence parity** with the modernized German
-  (enforced at build time by `kant3_md_translation_to_struct`).
+  (enforced at build time by `md_prose_to_struct --corpus kant3 --translation`).
 
 ## Sentence-splitter tuning (common::sentences)
 

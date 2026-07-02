@@ -19,7 +19,7 @@ provider "aws" {
 
 # Asset store for content ingested by the in-cluster Jobs (Bible
 # translations, Kant struct JSONs, etc.). Local `assets/` is the
-# canonical source; `pnpm assets:sync` mirrors it here. See
+# canonical source; `just assets-sync` mirrors it here. See
 # PLAN_DEVOPS.md § Ingest-as-Jobs.
 resource "aws_s3_bucket" "assets" {
   bucket = "scholia-assets"

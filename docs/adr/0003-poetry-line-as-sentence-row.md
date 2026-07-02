@@ -59,7 +59,7 @@ Specifically:
    blocks) but is **keyed/labelled via the `line` system**, Bible-style →
    "Sonnet 18, 1–4" / "Paradise Lost I.12–21".
 
-6. **Ingest** is a new **`poetry_md_to_struct`** parser emitting the
+6. **Ingest** is a new **`md_poetry_to_struct`** parser emitting the
    existing `packages/common` struct model, fed into the **reused**
    struct→DB importer. **One shared parser core + per-text config/hooks**
    (front matter + small per-work config; pluggable pre/post hooks for
@@ -149,7 +149,7 @@ No new tables. The `line` reference system is **data**
       `<br>` = forced break, leading whitespace → `indent`.
 
 **Rust — ingest**
-- [ ] New `packages/poetry_md_to_struct` (shared core + per-text
+- [ ] New `packages/md_poetry_to_struct` (shared core + per-text
       config/hooks; front matter incl. `line_numbering: reset|continue`).
 - [ ] Reuse struct→DB importer; consider renaming off the `kant1_` prefix.
 - [ ] Emit per-line `line`-system page_markers (poem-local, reset per leaf

@@ -1,3 +1,6 @@
+# On-demand ingest Job for the kant3 corpus — the shared struct-importer
+# image (jobs/ingest) parameterized by CORPUS. Not Argo-managed; run with:
+#   kubectl create -f infra/k8s/jobs/ingest-kant3.yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -16,7 +19,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: ingest-kant3
-          image: ghcr.io/scholia-study/scholia-ingest-kant3:main
+          image: ghcr.io/scholia-study/scholia-ingest:main
           imagePullPolicy: Always
           resources:
             requests:
@@ -25,6 +28,8 @@ spec:
             limits:
               memory: 1Gi
           env:
+            - name: CORPUS
+              value: kant3
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

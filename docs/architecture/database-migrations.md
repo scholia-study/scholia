@@ -122,7 +122,7 @@ server) two modes of one binary.
 
 ## Side-by-side
 
-| | Local dev (`pnpm db:reset`) | Production (init container) |
+| | Local dev (`scripts/db_reset.sh`) | Production (init container) |
 | --- | --- | --- |
 | Entry point | `sqlx migrate run` (external CLI) | `api migrate` (our binary) |
 | Reads migrations from | `db/migrations/` on disk | Embedded into binary via `sqlx::migrate!` |
@@ -147,7 +147,7 @@ Edit the new file with `CREATE TABLE` / `ALTER TABLE` / … as needed,
 then:
 
 ```bash
-pnpm db:reset      # drop schema + re-apply all migrations from scratch
+bash scripts/db_reset.sh   # drop schema + re-apply all migrations from scratch
 ```
 
 That's the inner loop for dev. The fresh schema includes the new

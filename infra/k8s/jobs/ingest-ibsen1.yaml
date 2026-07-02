@@ -1,0 +1,63 @@
+# On-demand ingest Job for the ibsen1 corpus — the shared struct-importer
+# image (jobs/ingest) parameterized by CORPUS. Not Argo-managed; run with:
+#   kubectl create -f infra/k8s/jobs/ingest-ibsen1.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: ingest-ibsen1-
+  namespace: scholia
+  labels:
+    ingest: ibsen1
+spec:
+  ttlSecondsAfterFinished: 86400 # 1 day
+  backoffLimit: 0 # Fail fast
+  template:
+    metadata:
+      labels:
+        ingest: ibsen1
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: ingest-ibsen1
+          image: ghcr.io/scholia-study/scholia-ingest:main
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 1Gi
+          env:
+            - name: CORPUS
+              value: ibsen1
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: database
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: CACHE_PURGE_URL
+              value: http://scholia-proxy:8080
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: assets-bucket
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: assets-bucket
+                  key: AWS_SECRET_ACCESS_KEY

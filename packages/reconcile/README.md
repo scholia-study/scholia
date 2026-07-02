@@ -33,7 +33,7 @@ the entire reconcile. This is what a standard prose/poetry book wants.
 
 | Importer | Uses |
 |---|---|
-| `kant1_struct_to_db` | Tier 2 (`reconcile_book`) |
+| `struct_to_db` (all corpora) | Tier 2 (`reconcile_book`) |
 | `shakespeare1_struct_to_db` | Tier 2 (`reconcile_book`) |
 | `bible_to_db` | Tier 1 primitives, under its own verse-shaped orchestration (does **not** use `reconcile_book`) |
 

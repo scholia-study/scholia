@@ -1,8 +1,10 @@
-//! Struct-JSON schema for the structured-text ingest pipeline, shared by every
-//! genre parser that feeds `struct_to_db` — verse (Shakespeare's Sonnets,
-//! Milton's *Paradise Lost*) and drama (Ibsen) alike. Mirrors the Kant `Output`
-//! tree (so the importer logic stays familiar) with one addition:
-//! `SentenceData.indent` for verse line indentation (ADR 0003).
+//! Struct-JSON schema for the structured-text ingest pipeline — the single
+//! `Output` tree every genre parser emits: annotated prose (Kant), verse
+//! (Shakespeare's Sonnets, Milton's *Paradise Lost*), and drama (Ibsen).
+//! Genre-specific features are optional fields that serialize only when
+//! present: `SentenceData.indent` for verse (ADR 0003),
+//! `SentenceData.footnotes` for annotated prose, `TocNodeData.source` for
+//! compilation-shape sub-works.
 
 use serde::{Deserialize, Serialize};
 
@@ -21,6 +23,10 @@ pub struct BookData {
     pub language: String,
     pub source: String,
     pub source_date: String,
+    /// Bibliographic publisher line → `sources.publisher`. `None` leaves it
+    /// unset (the poetry/drama corpora carry provenance in `source` only).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub publisher: Option<String>,
     /// Editorial "about this book" copy → `books.about_text`.
     #[serde(default)]
     pub about_text: String,
@@ -106,6 +112,27 @@ pub struct SentenceData {
     pub original_html: Option<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub page_markers: Vec<PageMarkerData>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub footnotes: Vec<FootnoteData>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FootnoteData {
+    pub number: i32,
+    pub sentences: Vec<FootnoteSentenceData>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FootnoteSentenceData {
+    pub position: i16,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sentence_number: Option<i32>,
+    pub text: String,
+    pub html: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_text: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_html: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

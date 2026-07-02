@@ -97,8 +97,8 @@ columns. The `1873` page system is **data** (`reference_systems` +
 
 ## Ingest
 
-- New **`packages/drama_md_to_struct`** parser (sibling of
-  `poetry_md_to_struct`): tokenises the drama markup into the shared
+- New **`packages/md_drama_to_struct`** parser (sibling of
+  `md_poetry_to_struct`): tokenises the drama markup into the shared
   `text_struct` schema (`block_type` free string → `speaker`/`stage` need no
   struct change), reusing `common::sentences` + `text_struct::html`.
 - New **`common::ibsen1`** module: canonical TOC (book + the `cf` part
@@ -111,7 +111,7 @@ columns. The `1873` page system is **data** (`reference_systems` +
   block types, verse-line counts, and prose sentence counts (the structural
   splitter makes the last hold); page-marker sequence is preserved.
 - **English translation edition** (`md_modernized_translated`): the same
-  `drama_md_to_struct --translation` parses it single-layer (English → text,
+  `md_drama_to_struct --translation` parses it single-layer (English → text,
   no original) into a separate book (`emperor-and-galilean`, dated to the
   present so it doesn't collide with the 1873 source on the `sources` unique
   key). `struct_to_db --source-book-slug keiser-og-galileer` imports
@@ -120,7 +120,7 @@ columns. The `1873` page system is **data** (`reference_systems` +
   source book by natural key, sets `translation_of_id` on its source, reuses
   the source's `1873` reference system, and validates that every block carries
   the same sentence count as the source. This drives the side-by-side companion
-  view and cross-edition quotation projection. `pnpm db:ibsen1` imports the
+  view and cross-edition quotation projection. `just db ibsen1` imports the
   source then the translation in one go.
 
 ## API / Frontend
@@ -146,14 +146,14 @@ columns. The `1873` page system is **data** (`reference_systems` +
   so a future poetry translation (e.g. a Milton modernization) gets the same
   path for free.
 - **Post-acceptance rename (2026-07-01):** the generic schema + md→html that
-  this reuse leaned on were extracted from `poetry_md_to_struct` into a
+  this reuse leaned on were extracted from `md_poetry_to_struct` into a
   neutrally named **`packages/text_struct`**, and the generic importer was
   renamed `poetry_struct_to_db` → **`packages/struct_to_db`** — the "poetry"
-  names lied once a second genre (drama) depended on them. `struct_to_db` and
-  the still-separate `kant1_struct_to_db` remain a **known duplication** (two
-  near-identical node→block→sentence importers with reconcile + translation);
-  folding them into one generic importer is a future additive change, deferred
-  until it earns itself.
+  names lied once a second genre (drama) depended on them. The then-separate
+  `kant1_struct_to_db`/`kant3_struct_to_db` duplication was resolved on
+  2026-07-02: the schema gained optional `footnotes`/`about_text`/`publisher`
+  and `struct_to_db` became the single importer for all struct-JSON corpora
+  (see ADR 0006).
 
 ## Amendment (2026-07-01): stage directions are quotable
 
@@ -182,7 +182,7 @@ labels, headings, and the dramatis-personae cast list.
   direction carrying its own sentence punctuation
   (`(…the lamp-bowl. The lamp lights itself…)`) stays one unit. (Sole caller is
   drama, so this is safe.)
-- **Parser (`drama_md_to_struct`).** `prose_block` tags parenthetical emphasis
+- **Parser (`md_drama_to_struct`).** `prose_block` tags parenthetical emphasis
   (`<i>(…)</i>` → `<i class="stage">…</i>`, leaving ordinary `*word*` emphasis
   alone) and **peels** any sentence that *opens* with a direction into a
   standalone numbered direction sentence + the remaining dialogue. A

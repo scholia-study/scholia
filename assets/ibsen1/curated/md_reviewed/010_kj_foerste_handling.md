@@ -202,7 +202,7 @@ Ja, med skamrødme over en så mangeårig utaknemmelighed.
 Nej, det var glædesrødme. De gik for at udbrede det store budskab i alle gader.
 
 @ Kejser Julian *(går fra alteret)*.
-Den uvidende hob ved aldrig at finde sig tilrette i det uvante. Jeg får et besværligt arbejde {{{ 255 }}} at gøre; men ingen møje skal fortryde mig Hvad er sømmeligere for en visdomsven, end at udrydde vildfarelser? I det øjemed regner jeg på eder, I oplyste venner! Dog, vore tanker må forlade dette for en kort stund. Følg mig; jeg går nu til andre pligter.
+Den uvidende hob ved aldrig at finde sig tilrette i det uvante. Jeg får et besværligt arbejde {{{ 255 }}} at gøre; men ingen møje skal fortryde mig. Hvad er sømmeligere for en visdomsven, end at udrydde vildfarelser? I det øjemed regner jeg på eder, I oplyste venner! Dog, vore tanker må forlade dette for en kort stund. Følg mig; jeg går nu til andre pligter.
 
 @stage (Han går hurtigt bort uden at gengælde borgernes hilsen; hofmændene og hans øvrige ledsagere følger ham.)
 

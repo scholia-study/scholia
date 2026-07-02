@@ -922,17 +922,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
 
 [[package]]
-name = "drama_md_to_struct"
-version = "0.1.0"
-dependencies = [
- "clap",
- "common",
- "regex",
- "serde_json",
- "text_struct",
-]
-
-[[package]]
 name = "dtoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1808,29 +1797,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kant1_md_to_struct"
-version = "0.1.0"
-dependencies = [
- "clap",
- "common",
- "regex",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "kant1_md_translation_to_struct"
-version = "0.1.0"
-dependencies = [
- "clap",
- "common",
- "kant1_md_to_struct",
- "regex",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "kant1_ocr_to_lines"
 version = "0.1.0"
 dependencies = [
@@ -1839,60 +1805,6 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "kant1_struct_to_db"
-version = "0.1.0"
-dependencies = [
- "clap",
- "common",
- "dataduct",
- "dotenvy",
- "kant1_md_to_struct",
- "reconcile",
- "serde_json",
- "sqlx",
- "tokio",
- "uuid",
-]
-
-[[package]]
-name = "kant3_md_to_struct"
-version = "0.1.0"
-dependencies = [
- "clap",
- "common",
- "kant1_md_to_struct",
- "regex",
- "serde_json",
-]
-
-[[package]]
-name = "kant3_md_translation_to_struct"
-version = "0.1.0"
-dependencies = [
- "clap",
- "common",
- "kant1_md_to_struct",
- "regex",
- "serde_json",
-]
-
-[[package]]
-name = "kant3_struct_to_db"
-version = "0.1.0"
-dependencies = [
- "clap",
- "common",
- "dataduct",
- "dotenvy",
- "kant1_md_to_struct",
- "reconcile",
- "serde_json",
- "sqlx",
- "tokio",
- "uuid",
 ]
 
 [[package]]
@@ -2111,6 +2023,38 @@ checksum = "d89e7ee0cfbedfc4da3340218492196241d89eefb6dab27de5df917a6d2e78cf"
 dependencies = [
  "cfg-if",
  "digest",
+]
+
+[[package]]
+name = "md_drama_to_struct"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "regex",
+ "serde_json",
+ "text_struct",
+]
+
+[[package]]
+name = "md_poetry_to_struct"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "serde_json",
+ "text_struct",
+]
+
+[[package]]
+name = "md_prose_to_struct"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "regex",
+ "serde_json",
+ "text_struct",
 ]
 
 [[package]]
@@ -2536,16 +2480,6 @@ name = "plain"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4596b6d070b27117e987119b4dac604f3c58cfb0b191112e24771b2faeac1a6"
-
-[[package]]
-name = "poetry_md_to_struct"
-version = "0.1.0"
-dependencies = [
- "clap",
- "common",
- "serde_json",
- "text_struct",
-]
 
 [[package]]
 name = "portable-atomic"

@@ -64,43 +64,23 @@ jobs:
                         - 'packages/common/**'
                         - 'packages/dataduct/**'
                         - 'jobs/ingest-bible/**'
+                        - 'scripts/bible_import.sh'
+                        - 'scripts/lib.sh'
                         - 'Cargo.toml'
                         - 'Cargo.lock'
                         - '.github/workflows/build.yml'
-                      ingest_kant1:
-                        - 'packages/kant1_*/**'
+                      # One struct-importer image for every corpus (CORPUS env
+                      # selects at run time); parser crates don't affect the
+                      # image (derived structs come from the assets bucket).
+                      ingest:
+                        - 'packages/struct_to_db/**'
+                        - 'packages/text_struct/**'
                         - 'packages/common/**'
                         - 'packages/reconcile/**'
                         - 'packages/dataduct/**'
-                        - 'jobs/ingest-kant1/**'
-                        - 'Cargo.toml'
-                        - 'Cargo.lock'
-                        - '.github/workflows/build.yml'
-                      ingest_shakespeare1:
-                        - 'packages/poetry_*/**'
-                        - 'packages/common/**'
-                        - 'packages/reconcile/**'
-                        - 'packages/dataduct/**'
-                        - 'jobs/ingest-shakespeare1/**'
-                        - 'Cargo.toml'
-                        - 'Cargo.lock'
-                        - '.github/workflows/build.yml'
-                      ingest_milton1:
-                        - 'packages/poetry_*/**'
-                        - 'packages/common/**'
-                        - 'packages/reconcile/**'
-                        - 'packages/dataduct/**'
-                        - 'jobs/ingest-milton1/**'
-                        - 'Cargo.toml'
-                        - 'Cargo.lock'
-                        - '.github/workflows/build.yml'
-                      ingest_kant3:
-                        - 'packages/kant3_*/**'
-                        - 'packages/common/**'
-                        - 'packages/reconcile/**'
-                        - 'packages/kant1_md_to_struct/**'
-                        - 'packages/dataduct/**'
-                        - 'jobs/ingest-kant3/**'
+                        - 'jobs/ingest/**'
+                        - 'scripts/ingest.sh'
+                        - 'scripts/lib.sh'
                         - 'Cargo.toml'
                         - 'Cargo.lock'
                         - '.github/workflows/build.yml'
@@ -113,10 +93,7 @@ jobs:
                   WEB: ${{ steps.filter.outputs.web }}
                   PROXY: ${{ steps.filter.outputs.proxy }}
                   INGEST_BIBLE: ${{ steps.filter.outputs.ingest_bible }}
-                  INGEST_KANT1: ${{ steps.filter.outputs.ingest_kant1 }}
-                  INGEST_SHAKESPEARE1: ${{ steps.filter.outputs.ingest_shakespeare1 }}
-                  INGEST_MILTON1: ${{ steps.filter.outputs.ingest_milton1 }}
-                  INGEST_KANT3: ${{ steps.filter.outputs.ingest_kant3 }}
+                  INGEST: ${{ steps.filter.outputs.ingest }}
               run: |
                   # Manual (workflow_dispatch) trigger = rebuild
                   # everything. paths-filter has no useful base to
@@ -124,7 +101,7 @@ jobs:
                   # in flight.
                   if [[ "$EVENT" == "workflow_dispatch" ]]; then
                       API=true; WEB=true; PROXY=true
-                      INGEST_BIBLE=true; INGEST_KANT1=true; INGEST_SHAKESPEARE1=true; INGEST_MILTON1=true; INGEST_KANT3=true
+                      INGEST_BIBLE=true; INGEST=true
                   fi
 
                   matrix='[]'
@@ -138,10 +115,7 @@ jobs:
                   if [[ "$WEB"           == "true" ]]; then add web          .          apps/web/Dockerfile;          fi
                   if [[ "$PROXY"         == "true" ]]; then add proxy        apps/proxy apps/proxy/Dockerfile;        fi
                   if [[ "$INGEST_BIBLE"  == "true" ]]; then add ingest-bible .          jobs/ingest-bible/Dockerfile; fi
-                  if [[ "$INGEST_KANT1"  == "true" ]]; then add ingest-kant1 .          jobs/ingest-kant1/Dockerfile; fi
-                  if [[ "$INGEST_SHAKESPEARE1" == "true" ]]; then add ingest-shakespeare1 . jobs/ingest-shakespeare1/Dockerfile; fi
-                  if [[ "$INGEST_MILTON1" == "true" ]]; then add ingest-milton1 .      jobs/ingest-milton1/Dockerfile; fi
-                  if [[ "$INGEST_KANT3"  == "true" ]]; then add ingest-kant3 .          jobs/ingest-kant3/Dockerfile; fi
+                  if [[ "$INGEST"        == "true" ]]; then add ingest       .          jobs/ingest/Dockerfile;       fi
 
                   echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
                   echo "Build matrix: $matrix"

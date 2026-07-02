@@ -355,7 +355,7 @@ pub async fn reconcile_book(
             {
                 return Err(format!(
                     "node {} / block {}: paragraph number {p} already exists — the added \
-                     paragraph would renumber existing ones; use `pnpm db:reset` + re-import",
+                     paragraph would renumber existing ones; use `just db-reload`",
                     node.source_ref, block.position
                 )
                 .into());
@@ -365,7 +365,7 @@ pub async fn reconcile_book(
             {
                 return Err(format!(
                     "node {} / block {}: figure number {f} already exists — the added \
-                     figure would renumber existing ones; use `pnpm db:reset` + re-import",
+                     figure would renumber existing ones; use `just db-reload`",
                     node.source_ref, block.position
                 )
                 .into());
@@ -723,7 +723,7 @@ pub async fn reconcile_book(
         if survivor.is_none() && !force && sentence_has_dependents(tx, *retired_id).await? {
             return Err(format!(
                 "sentence {retired_id} would be deleted but has quotations/resources/cross-references \
-                 anchored to it; aborting (pass --force to delete anyway, or `pnpm db:reset`)"
+                 anchored to it; aborting (pass --force to delete anyway, or `just db-reload`)"
             )
             .into());
         }
@@ -1239,7 +1239,7 @@ fn classify_added_nodes(
     if !removed.is_empty() {
         removed.sort();
         return Err(format!(
-            "TOC nodes removed ({}); not reconcilable — use `pnpm db:reset` + re-import",
+            "TOC nodes removed ({}); not reconcilable — use `just db-reload`",
             removed.join(", ")
         ));
     }
@@ -1252,7 +1252,7 @@ fn classify_added_nodes(
             Some(stored) if stored != sort_order => {
                 return Err(format!(
                     "node {sref}: sort_order changed ({stored} → {sort_order}); TOC reordered — \
-                     use `pnpm db:reset` + re-import"
+                     use `just db-reload`"
                 ));
             }
             Some(_) => {}
@@ -1273,7 +1273,7 @@ fn classify_added_block_positions(
 ) -> Result<Vec<i16>, String> {
     if existing.len() > desired.len() {
         return Err(format!(
-            "node {node_ref}: paragraphs removed; not reconcilable — use `pnpm db:reset` + re-import"
+            "node {node_ref}: paragraphs removed; not reconcilable — use `just db-reload`"
         ));
     }
     let mut desired_sorted = desired.to_vec();
@@ -1284,7 +1284,7 @@ fn classify_added_block_positions(
             None => {
                 return Err(format!(
                     "node {node_ref}: block positions shifted (existing blocks are not a prefix \
-                     of the desired ones); not reconcilable — use `pnpm db:reset` + re-import"
+                     of the desired ones); not reconcilable — use `just db-reload`"
                 ));
             }
             Some((stored_para, stored_fig)) => {
@@ -1292,7 +1292,7 @@ fn classify_added_block_positions(
                     return Err(format!(
                         "node {node_ref} / block {pos}: paragraph/figure numbering shifted \
                          (stored {stored_para:?}/{stored_fig:?}, desired {para:?}/{fig:?}); \
-                         use `pnpm db:reset` + re-import"
+                         use `just db-reload`"
                     ));
                 }
             }
@@ -1318,7 +1318,7 @@ fn classify_added_footnotes(
     if !removed.is_empty() {
         removed.sort();
         return Err(format!(
-            "footnotes removed ({removed:?}); not reconcilable — use `pnpm db:reset` + re-import"
+            "footnotes removed ({removed:?}); not reconcilable — use `just db-reload`"
         ));
     }
     let mut added = HashSet::new();
@@ -1331,7 +1331,7 @@ fn classify_added_footnotes(
                 return Err(format!(
                     "footnote {number}: anchor moved from node {stored_ref} / block {stored_pos} \
                      to node {sref} / block {block_pos} — footnote numbering shifted; \
-                     use `pnpm db:reset` + re-import"
+                     use `just db-reload`"
                 ));
             }
             Some(_) => {}

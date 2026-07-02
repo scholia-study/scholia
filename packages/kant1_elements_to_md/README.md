@@ -10,7 +10,7 @@ OCR images
   → kant1_ocr_to_lines      (raw OCR → lines with coordinates)
   → kant1_lines_to_elements  (lines → paragraphs, headings, footnotes per page)
   → kant1_elements_to_struct (per-page elements → structured book with TOC)  ← this package
-  → kant1_struct_to_db / api (JSON → Postgres → REST)
+  → struct_to_db / api (JSON → Postgres → REST)
 ```
 
 ## What it does

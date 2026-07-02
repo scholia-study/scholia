@@ -14,7 +14,8 @@ All JS package operations use **pnpm**, never npm (see auto-memory).
 - `pnpm validate` — runs `turbo lint ct test check:modules` across the workspace. This is what pre-commit runs.
 - `pnpm sanity` (`pnpm s`) — biome format + validate.
 - `pnpm codegen` — regenerates the API client. Runs `api#openapi` (Rust binary dumps `openapi.json` at repo root) → orval generates `apps/web/src/api/**` → biome formats. **Run this after any Rust handler/model change that affects the OpenAPI surface.**
-- `pnpm db:reset` — runs `scripts/db_reset.sh`, which drops + recreates the `public` schema then applies every migration in `db/migrations/` via `sqlx migrate run`. Always use this script for schema resets, never raw inline psql DROP/CREATE. Requires `cargo install sqlx-cli --no-default-features --features postgres,rustls`.
+- `just --list` — the operational front door: corpus struct/import (`just struct <corpus>`, `just db <corpus>`), `just db-reload`, `just assets-sync`, dev-cluster ops. Recipes delegate to `scripts/*.sh`; the JS pipeline stays with pnpm/turbo below.
+- `bash scripts/db_reset.sh` (also the first step of `just db-reload`) — drops + recreates the `public` schema then applies every migration in `db/migrations/` via `sqlx migrate run`. Always use this script for schema resets, never raw inline psql DROP/CREATE. Requires `cargo install sqlx-cli --no-default-features --features postgres,rustls`.
 - `pnpm stripe:listen` — forwards Stripe webhooks to `localhost:4000/api/webhooks/stripe` for local billing dev.
 
 Per-package:
@@ -24,11 +25,10 @@ Per-package:
 - `cargo test -p api` — Rust API tests. `cargo test -p api <name>` for a single test.
 - `cargo run -p api --bin openapi` — regenerate `openapi.json` directly without orval.
 
-Asset → DB ingestion (run in order against a fresh schema):
-- `pnpm db:reset` — wipe DB and re-apply migrations.
-- `scripts/db_bible.sh` — imports KJV, WEB, ASV, BBE, DARBY (KJV must run first; it seeds canonical verse counts).
-- `scripts/db_kant1.sh` — imports Kant's Kritik (German + English from `assets/`).
-- Or run the post-OCR/markdown pipeline binaries individually — see `README.md` and `dp:kant1` script in `package.json`.
+Asset → DB ingestion (`just db-reload` does all of this against a fresh schema):
+- `just db-bible` (`scripts/bible_import.sh`) — imports KJV, WEB, ASV, BBE, DARBY (KJV must run first; it seeds canonical verse counts).
+- `just db <corpus>` for every struct-importer corpus — all route through **`scripts/ingest.sh`**, the per-corpus import manifest shared verbatim with the ingest job image (`jobs/ingest`, CORPUS env). The corpus roster lives once, in `scripts/lib.sh` `SCHOLIA_CORPORA`; `just db-reload` iterates `ingest.sh --list`, so a new corpus can never fall out of it.
+- Struct regeneration first when curated MD changed: `just struct <corpus>` (`scripts/struct.sh`).
 
 Pre-commit (lefthook): formats staged JS/TS via biome, runs `cargo fmt`, then runs `pnpm validate`. Do not bypass with `--no-verify`.
 
@@ -75,18 +75,21 @@ Path alias `#/*` → `apps/web/src/*`. The active runtime config is selected per
 PostgreSQL 18+ with `ltree`. Append-only sqlx migrations named
 `NNNN_<semantic-name>.sql` (sequential, starting at `0000`). Embedded
 into the api binary via `sqlx::migrate!`; the cluster init container
-runs `api migrate`. Dev resets via `pnpm db:reset` (uses `sqlx-cli`).
+runs `api migrate`. Dev resets via `scripts/db_reset.sh` (uses `sqlx-cli`).
 ~35 tables grouped into: users + auth (users, sessions, oauth, password reset, email verification, released_handles), bibliography (persons, sources, books, source_persons, resources), text content (toc_nodes, content_blocks, sentences, footnotes, page_markers, facsimile_pages, reference_systems, cross_references, **cross_translation_alignments** — see `docs/architecture/cross-translation-alignment.md`), user content (quotations, articles, article_quotations, quotation_notes, tags, topics, editorial_labels, feedback), and billing (subscriptions, stripe_processed_events).
 
 ### Rust packages (ingest CLIs)
 
+See `packages/README.md` for the pipeline diagram (the "narrow waist": genre parsers → `text_struct` JSON → `struct_to_db`).
+
 - `packages/common` — shared parsers (epub, ncx, opf, kant1, sentences, content).
 - `packages/bible_to_db` — `--translation kjv|web|asv|bbe|darby`.
-- `packages/kant1_*` — multi-stage pipeline: OCR → lines → elements → MD → modernized/translated MD → struct → DB. See `README.md` and `assets/kant1/`, which splits into three tiers: `raw/` (pre-curation pipeline outputs — gitignored), `curated/` (human-reviewed MD — tracked), `derived/` (struct JSONs auto-generated from curated MD — gitignored).
-- `packages/text_struct` — genre-agnostic struct-JSON schema (`model`) + curated-markdown→HTML helpers (`html`) shared by the genre parsers and the importer, so their JSON is byte-compatible end to end. (Formerly baked into `poetry_md_to_struct`.)
-- `packages/struct_to_db` — shared importer for any `text_struct` JSON: reconcile-in-place (carries sentence UUIDs + anchored quotations across edits) + translation mode (`--source-book-slug`, 1:1-locked to a source book). Genre-agnostic (`block_type` is a pass-through string); used by poetry and drama. Parallels `kant1_struct_to_db` (a known duplication — see ADR 0005). Formerly `poetry_struct_to_db`.
-- `packages/poetry_md_to_struct` — shared verse parser (`--corpus shakespeare1|milton`), emitting the `text_struct` schema for `struct_to_db`. See ADR 0003.
-- `packages/drama_md_to_struct` — shared **drama** parser (`--corpus ibsen1`, or `--translation` for the single-layer English edition), tokenising the `@ speaker` / `@stage` / `| verse` / `{{{ N }}}` markup into the `text_struct` schema, also imported by the reused `struct_to_db`. Canonical TOC in `common::ibsen1`; `pnpm struct:ibsen1` builds both editions → `pnpm db:ibsen1` imports source then the English translation (`struct_to_db` is translation-capable via `--source-book-slug`, like `kant1_struct_to_db`). See `PLAN_DRAMA.md` + ADR 0005. Drama dialogue splits with `common::sentences::split_sentences_structural` (layer-consistent), not `split_sentences_en`.
+- `packages/kant1_*` — pre-curation pipeline (OCR → lines → elements → MD), run once per corpus. See `README.md` and `assets/kant1/`, which splits into three tiers: `raw/` (pre-curation pipeline outputs — gitignored), `curated/` (human-reviewed MD — tracked), `derived/` (struct JSONs auto-generated from curated MD — gitignored).
+- `packages/md_prose_to_struct` — shared **annotated-prose** parser (`--corpus kant1|kant3`, `--translation` for the single-layer English edition): footnotes, figures, separators, indented runs, dual page-marker systems. Corpus config assembled from `common::kant{1,3}` (TOC tables, filename rules, `meta` book/ref-system data). Absorbed `kant{1,3}_md_to_struct` + `kant{1,3}_md_translation_to_struct` (2026-07).
+- `packages/text_struct` — genre-agnostic struct-JSON schema (`model`) + curated-markdown→HTML helpers (`html`) shared by the genre parsers and the importer, so their JSON is byte-compatible end to end. (Formerly baked into `md_poetry_to_struct`.)
+- `packages/struct_to_db` — **the one importer** for every `text_struct` JSON (Kant, poetry, drama): reconcile-in-place (carries sentence UUIDs + anchored quotations across edits), translation mode (`--source-book-slug`, 1:1-locked to a source book, footnote-aware), footnotes, sub-work sources. Genre-agnostic (`block_type` is a pass-through string). Absorbed `kant1_struct_to_db`/`kant3_struct_to_db` (2026-07); formerly `poetry_struct_to_db`.
+- `packages/md_poetry_to_struct` — shared verse parser (`--corpus shakespeare1|milton`), emitting the `text_struct` schema for `struct_to_db`. See ADR 0003.
+- `packages/md_drama_to_struct` — shared **drama** parser (`--corpus ibsen1`, or `--translation` for the single-layer English edition), tokenising the `@ speaker` / `@stage` / `| verse` / `{{{ N }}}` markup into the `text_struct` schema, also imported by the reused `struct_to_db`. Canonical TOC in `common::ibsen1`; `just struct ibsen1` builds both editions → `just db ibsen1` imports source then the English translation (`struct_to_db --source-book-slug`). See ADR 0005. Drama dialogue splits with `common::sentences::split_sentences_structural` (layer-consistent), not `split_sentences_en`.
 
 ### Docs
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Requires, in another terminal:
-#   pnpm db:dev:forward
+#   just dev-forward
 # This shell:
 #   source ~/.config/scholia-infra.env
 

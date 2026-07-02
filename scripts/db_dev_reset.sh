@@ -7,7 +7,7 @@
 #   scripts/db_dev_reset.sh --yes
 #
 # Requires, in another terminal:
-#   pnpm db:dev:forward
+#   just dev-forward
 # This shell:
 #   source ~/.config/scholia-infra.env
 

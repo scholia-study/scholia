@@ -1,7 +1,7 @@
 # Spec: Tier-2 incremental reconcile via content hashes
 
 **Status:** proposed (not yet implemented)
-**Applies to:** `packages/reconcile`, `packages/kant1_struct_to_db`, `packages/bible_to_db`
+**Applies to:** `packages/reconcile`, `packages/struct_to_db`, `packages/bible_to_db`
 
 ## Motivation
 

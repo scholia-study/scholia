@@ -4,10 +4,12 @@
 //! primary reading layer) + `md_reviewed` (the faithful 1873 first edition).
 //!
 //! The whole work nests two depth-0 **part** title-pages (`cf` Cæsars Frafall,
-//! `kj` Keiser Julian), each parenting a cast list + five acts at depth 1. Only
-//! Part One (`cf`) is modernized so far, so only its seven nodes are listed
-//! here; Part Two slots in as a second depth-0 part once it is modernized. See
-//! `PLAN_DRAMA.md` and the `dano-norwegian-drama-modernize` skill.
+//! `kj` Keiser Julian), each parenting a cast list + five acts at depth 1.
+//! Part One (`cf`) is fully modernized; Part Two (`kj`) is listed as far as it
+//! is modernized (title-page, cast, act one so far) — its remaining acts slot
+//! in here as they land. Part Two child slugs carry a `kj-` prefix because act
+//! and cast names repeat across parts and node slugs are unique per book. See
+//! ADR 0005 and the `dano-norwegian-drama-modernize` skill.
 //!
 //! Node **labels are not declared here** — they come from each file's
 //! front-matter `label:` (the modernized spelling for the source book, the
@@ -67,10 +69,9 @@ pub struct DramaNode {
     pub position: u32,
 }
 
-/// Part One (`cf`, Cæsars Frafall): the part title-page (depth 0) parenting a
-/// cast list + five acts (depth 1). The canonical file set the parser validates
-/// the two curated layers against — a missing, extra, or misnamed file is an
-/// error.
+/// The part title-pages (depth 0), each parenting a cast list + acts
+/// (depth 1). The canonical file set the parser validates the two curated
+/// layers against — a missing, extra, or misnamed file is an error.
 pub fn nodes() -> Vec<DramaNode> {
     vec![
         DramaNode {
@@ -135,6 +136,33 @@ pub fn nodes() -> Vec<DramaNode> {
             parent_source_ref: Some("cf"),
             filename: "007_cf_femte_handling.md",
             position: 7,
+        },
+        DramaNode {
+            source_ref: "kj",
+            slug: "keiser-julian",
+            path: "keiser-julian",
+            depth: 0,
+            parent_source_ref: None,
+            filename: "008_kj_titelblad.md",
+            position: 8,
+        },
+        DramaNode {
+            source_ref: "kj-de-opptredende",
+            slug: "kj-de-opptredende",
+            path: "keiser-julian.de-opptredende",
+            depth: 1,
+            parent_source_ref: Some("kj"),
+            filename: "009_kj_de_optraedende.md",
+            position: 9,
+        },
+        DramaNode {
+            source_ref: "kj-foerste-handling",
+            slug: "kj-foerste-handling",
+            path: "keiser-julian.foerste-handling",
+            depth: 1,
+            parent_source_ref: Some("kj"),
+            filename: "010_kj_foerste_handling.md",
+            position: 10,
         },
     ]
 }

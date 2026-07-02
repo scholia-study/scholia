@@ -26,4 +26,4 @@ Three curated layers, 122 files each (one per TOC section, `NNN_slug.md`):
 
 The authoritative TOC (labels, depth, AA page, slug) lives in
 `packages/common/src/kant3/{toc,toc_mod}.rs`; front matter is validated against it
-by `kant3_md_to_struct`. See `KANT3_TEXTUAL_COMPROMISE.md` for fidelity notes.
+by `md_prose_to_struct --corpus kant3`. See `KANT3_TEXTUAL_COMPROMISE.md` for fidelity notes.

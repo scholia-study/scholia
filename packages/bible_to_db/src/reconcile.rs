@@ -233,11 +233,11 @@ pub async fn reconcile_translation(
                 .map_err(|e| format!("Failed to read {}: {}", path.display(), e))?;
             let chapter: Chapter = serde_json::from_str(&raw)?;
 
-            let node_id = *node_by_chapter
-                .get(&source_ref)
-                .ok_or_else(|| format!("chapter node {source_ref} missing; use `pnpm db:reset`"))?;
+            let node_id = *node_by_chapter.get(&source_ref).ok_or_else(|| {
+                format!("chapter node {source_ref} missing; use `just db-reload`")
+            })?;
             let block_id = *block_by_chapter.get(&source_ref).ok_or_else(|| {
-                format!("chapter block {source_ref} missing; use `pnpm db:reset`")
+                format!("chapter block {source_ref} missing; use `just db-reload`")
             })?;
 
             let mut verses = Vec::new();
@@ -290,9 +290,7 @@ pub async fn reconcile_translation(
     let desired_chapters: HashSet<&str> = desired.iter().map(|c| c.source_ref.as_str()).collect();
     let existing_chapters: HashSet<&str> = node_by_chapter.keys().map(|s| s.as_str()).collect();
     if desired_chapters != existing_chapters {
-        return Err(
-            "chapter set changed; not reconcilable — use `pnpm db:reset` + re-import".into(),
-        );
+        return Err("chapter set changed; not reconcilable — use `just db-reload`".into());
     }
 
     // --- Changed set (NULL stored hash ⇒ changed; `--full` ⇒ everything) ----
@@ -363,7 +361,7 @@ pub async fn reconcile_translation(
             .collect();
         if desired_verses != existing_verses {
             return Err(format!(
-                "chapter {}: verses added/removed; not reconcilable — use `pnpm db:reset` + re-import",
+                "chapter {}: verses added/removed; not reconcilable — use `just db-reload`",
                 chapter.source_ref
             )
             .into());
@@ -401,7 +399,7 @@ pub async fn reconcile_translation(
         if survivor.is_none() && !force && sentence_has_dependents(tx, *retired_id).await? {
             return Err(format!(
                 "sentence {retired_id} would be deleted but has quotations/resources anchored to it; \
-                 aborting (pass --force to delete anyway, or `pnpm db:reset`)"
+                 aborting (pass --force to delete anyway, or `just db-reload`)"
             )
             .into());
         }
