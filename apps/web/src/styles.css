@@ -70,6 +70,14 @@
   font-style: italic;
 }
 
+/* Inline stage directions in drama (`*(…)*`). Muted + italic so they read as
+   apparatus woven through dialogue, without muting ordinary emphasis. Applies
+   everywhere the run appears (paragraph flow, comparison views, stage block). */
+.stage {
+  color: var(--color-stone-500);
+  font-style: italic;
+}
+
 /* Article bibliography. Server-rendered markup carries no inline styles
    (sanitized server-side); presentation lives here. */
 .bibliography ul {

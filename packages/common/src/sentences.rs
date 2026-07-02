@@ -619,7 +619,27 @@ fn find_structural_split_positions(text: &str) -> Vec<usize> {
         .find_iter(text)
         .map(|m| m.end())
         .filter(|&pos| pos < text.len())
+        .filter(|&pos| !inside_parens(text, pos))
         .collect()
+}
+
+/// True if byte offset `pos` sits inside an unclosed `(` … `)` run. Drama stage
+/// directions are parenthetical and may carry their own sentence punctuation
+/// (`(…the lamp-bowl. The lamp lights itself…)`); a boundary must never fall
+/// inside one, or the direction is torn across two sentences.
+fn inside_parens(text: &str, pos: usize) -> bool {
+    let mut depth = 0i32;
+    for (i, c) in text.char_indices() {
+        if i >= pos {
+            break;
+        }
+        match c {
+            '(' => depth += 1,
+            ')' => depth = (depth - 1).max(0),
+            _ => {}
+        }
+    }
+    depth > 0
 }
 
 /// Split text into sentences purely on punctuation structure, returning
@@ -669,6 +689,19 @@ mod tests {
         assert_eq!(parts.len(), 2);
         assert_eq!(parts[0].1, "<i>Take that.</i>");
         assert_eq!(parts[1].1, "<i>And that.</i>");
+    }
+
+    #[test]
+    fn structural_split_never_breaks_inside_parens() {
+        // A parenthetical stage direction with its own internal sentence
+        // punctuation must stay whole: only the terminator outside the parens
+        // ("Look. ") is a boundary. The direction stays glued to the following
+        // clause here — the drama parser's peel step separates them.
+        let text = "Look. (he rises. He walks.) Now go.";
+        let parts = split_sentences_structural(text, text);
+        assert_eq!(parts.len(), 2);
+        assert_eq!(parts[0].0, "Look.");
+        assert_eq!(parts[1].0, "(he rises. He walks.) Now go.");
     }
 
     #[test]

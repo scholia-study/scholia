@@ -13,17 +13,22 @@
 //! Each speech is the implicit run `speaker` + following `paragraph`/`verse`/
 //! `stage` blocks until the next `speaker`/heading. Label blocks pair as a single
 //! sentence; verse pairs line-by-line; prose pairs sentence-by-sentence (the two
-//! layers must split into the same count). Speaker/stage/heading sentences are
-//! non-clickable (`sentence_number = None`); only dialogue is numbered. A
-//! missing/extra/misnamed file, front matter that doesn't match, a block-shape
-//! divergence, or a prose sentence-parity mismatch is a hard error.
+//! layers must split into the same count). Speaker/heading sentences and the
+//! dramatis-personae cast list are non-clickable (`sentence_number = None`);
+//! dialogue and stage directions are numbered (quotable). Inline `*(…)*`
+//! directions between sentences are peeled into their own numbered sentence;
+//! mid-sentence ones stay woven in. A missing/extra/misnamed file, front matter
+//! that doesn't match, a block-shape divergence, or a prose sentence-parity
+//! mismatch is a hard error.
 
 use std::collections::HashSet;
 use std::fs;
 use std::mem;
 use std::path::Path;
+use std::sync::LazyLock;
 
 use common::sentences::split_sentences_structural;
+use regex::Regex;
 use text_struct::html::{md_to_html, md_to_plain};
 use text_struct::model::*;
 
@@ -82,7 +87,7 @@ pub fn build(corpus: &Corpus) -> Result<Output, Err> {
     }
 
     let mut toc_nodes = Vec::with_capacity(corpus.nodes.len());
-    let mut sentence_number = 1i32; // global per-book dialogue enumeration
+    let mut sentence_number = 1i32; // global per-book quotable-sentence count (dialogue + stage directions)
 
     for (idx, spec) in corpus.nodes.iter().enumerate() {
         let sort_order = idx as i32;
@@ -155,13 +160,36 @@ fn build_node(
         let r_first = rb.map(|r| r.lines[0].as_str());
         let r_lines = rb.map(|r| r.lines.as_slice());
         let block = match mb.kind {
-            BlockKind::Heading => {
-                label_block("heading", &mb.lines[0], r_first, position, page_system)
+            BlockKind::Heading => label_block(
+                "heading",
+                &mb.lines[0],
+                r_first,
+                position,
+                page_system,
+                None,
+            ),
+            BlockKind::Speaker => label_block(
+                "speaker",
+                &mb.lines[0],
+                r_first,
+                position,
+                page_system,
+                None,
+            ),
+            // A stage direction is authored dramatic text: quotable, so it gets
+            // its own sentence_number (unlike the inert speaker/heading labels).
+            BlockKind::Stage => {
+                let n = *sentence_number;
+                *sentence_number += 1;
+                label_block(
+                    "stage",
+                    &mb.lines[0],
+                    r_first,
+                    position,
+                    page_system,
+                    Some(n),
+                )
             }
-            BlockKind::Speaker => {
-                label_block("speaker", &mb.lines[0], r_first, position, page_system)
-            }
-            BlockKind::Stage => label_block("stage", &mb.lines[0], r_first, position, page_system),
             BlockKind::List => list_block(&mb.lines, r_lines, position),
             BlockKind::Verse => verse_block(
                 label,
@@ -210,15 +238,18 @@ fn original_pair(r_raw: Option<&str>) -> (Option<String>, Option<String>) {
     }
 }
 
-/// A single-sentence, non-clickable block (heading / speaker / stage). Page
-/// markers ride through `md_to_plain`/`md_to_html` inert, so they're stripped
-/// off the *rendered* text and their offsets land in plain-text coordinates.
+/// A single-sentence label block (heading / speaker / stage). Page markers ride
+/// through `md_to_plain`/`md_to_html` inert, so they're stripped off the
+/// *rendered* text and their offsets land in plain-text coordinates. `num` sets
+/// the sentence's `sentence_number`: `None` for the inert speaker/heading
+/// apparatus, `Some(n)` for a stage direction (quotable dramatic text).
 fn label_block(
     block_type: &str,
     m_raw: &str,
     r_raw: Option<&str>,
     position: i16,
     page_system: &str,
+    num: Option<i32>,
 ) -> ContentBlockData {
     let (m_plain, m_markers) = strip_markers(&md_to_plain(m_raw));
     let (m_html, _) = strip_markers(&md_to_html(m_raw));
@@ -240,7 +271,7 @@ fn label_block(
         original_html: orig_html.clone(),
         sentences: vec![SentenceData {
             position: 0,
-            sentence_number: None,
+            sentence_number: num,
             segment: None,
             indent: None,
             text: m_plain,
@@ -299,6 +330,76 @@ fn list_block(m_items: &[String], r_items: Option<&[String]>, position: i16) -> 
     }
 }
 
+/// Wrap parenthetical emphasis runs (`*(…)*` → `<i>(…)</i>`) in a `stage` class
+/// so the reader mutes stage directions without also muting ordinary emphasis
+/// (`*word*` → `<i>word</i>`, left untouched). Matches an `<i>` whose content is
+/// wholly `(…)` with no nested tags.
+static STAGE_I_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<i>(\([^<]*\))</i>").unwrap());
+
+fn tag_stage_directions(html: &str) -> String {
+    STAGE_I_RE
+        .replace_all(html, r#"<i class="stage">$1</i>"#)
+        .into_owned()
+}
+
+const STAGE_OPEN: &str = "<i class=\"stage\">";
+
+/// Split any sentence that *opens* with a stage direction into a standalone
+/// direction sentence + the remaining dialogue. A between-sentence direction
+/// (`…stake. (draws aside.) Oh…`) lands at the head of the following sentence
+/// after structural splitting; peeling it off stops it from riding along when
+/// that dialogue line is selected. A mid-sentence direction never opens a
+/// sentence, so it stays woven in. Both edition layers peel identically (their
+/// `*(…)*` markers are parallel), preserving sentence parity.
+fn peel_directions(sents: Vec<(String, String)>) -> Vec<(String, String)> {
+    let mut out = Vec::with_capacity(sents.len());
+    for (text, html) in sents {
+        peel_one(text.trim(), html.trim(), &mut out);
+    }
+    out
+}
+
+fn peel_one(text: &str, html: &str, out: &mut Vec<(String, String)>) {
+    if html.starts_with(STAGE_OPEN)
+        && let (Some(pe), Some(he)) = (leading_paren_end(text), leading_i_end(html))
+    {
+        out.push((text[..pe].to_string(), html[..he].to_string()));
+        let rest_t = text[pe..].trim();
+        let rest_h = html[he..].trim();
+        if !rest_t.is_empty() {
+            peel_one(rest_t, rest_h, out);
+        }
+        return;
+    }
+    out.push((text.to_string(), html.to_string()));
+}
+
+/// Byte offset just past the `)` that closes a leading `(` at depth 0.
+fn leading_paren_end(text: &str) -> Option<usize> {
+    if !text.starts_with('(') {
+        return None;
+    }
+    let mut depth = 0i32;
+    for (i, c) in text.char_indices() {
+        match c {
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some(i + c.len_utf8());
+                }
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+/// Byte offset just past the first `</i>`.
+fn leading_i_end(html: &str) -> Option<usize> {
+    html.find("</i>").map(|i| i + "</i>".len())
+}
+
 /// A prose speech: join the lines, sentence-split each layer, pair by index.
 fn prose_block(
     label: &str,
@@ -311,16 +412,18 @@ fn prose_block(
 ) -> Result<ContentBlockData, Err> {
     let m_join = join_trimmed(m_lines);
     let (m_plain, m_markers) = strip_markers(&md_to_plain(&m_join));
-    let (m_html, _) = strip_markers(&md_to_html(&m_join));
-    let m_sents = split_sentences_structural(&m_plain, &m_html);
+    let (m_html_raw, _) = strip_markers(&md_to_html(&m_join));
+    let m_html = tag_stage_directions(&m_html_raw);
+    let m_sents = peel_directions(split_sentences_structural(&m_plain, &m_html));
 
     // Optional reviewed layer, split + parity-checked against the modernized.
     let reviewed = match r_lines {
         Some(rl) => {
             let r_join = join_trimmed(rl);
             let (r_plain, _) = strip_markers(&md_to_plain(&r_join));
-            let (r_html, _) = strip_markers(&md_to_html(&r_join));
-            let r_sents = split_sentences_structural(&r_plain, &r_html);
+            let (r_html_raw, _) = strip_markers(&md_to_html(&r_join));
+            let r_html = tag_stage_directions(&r_html_raw);
+            let r_sents = peel_directions(split_sentences_structural(&r_plain, &r_html));
             if m_sents.len() != r_sents.len() {
                 return Err(format!(
                     "{label} block {block_pos}: prose sentence parity mismatch — modernized {}, reviewed {} (reconcile the curated sentence boundaries)\n  MOD: {m_plain}\n  REV: {r_plain}",
@@ -723,5 +826,121 @@ mod tests {
         assert_eq!(b.original_text, None);
         assert_eq!(b.sentences[0].original_text, None);
         assert_eq!(sn, 3);
+    }
+
+    #[test]
+    fn tag_stage_directions_spares_emphasis() {
+        // Emphasis stays a bare <i>; only wholly-parenthesized runs get the class.
+        assert_eq!(tag_stage_directions("<i>word</i>"), "<i>word</i>");
+        assert_eq!(
+            tag_stage_directions("<i>(dir)</i>"),
+            "<i class=\"stage\">(dir)</i>"
+        );
+        assert_eq!(
+            tag_stage_directions("a <i>one</i> b <i>(x y)</i>"),
+            "a <i>one</i> b <i class=\"stage\">(x y)</i>"
+        );
+    }
+
+    #[test]
+    fn label_block_stage_is_numbered_others_inert() {
+        let stage = label_block("stage", "(Easter night.)", None, 0, "1873", Some(7));
+        assert_eq!(stage.block_type, "stage");
+        assert_eq!(stage.sentences[0].sentence_number, Some(7));
+        let head = label_block("heading", "ACT ONE", None, 0, "1873", None);
+        assert_eq!(head.sentences[0].sentence_number, None);
+    }
+
+    #[test]
+    fn prose_block_isolates_between_sentence_direction() {
+        let mut sn = 1;
+        let b = prose_block(
+            "Act",
+            0,
+            &["He shall pay at the stake. *(draws aside.)* Oh, let us hold.".into()],
+            None,
+            0,
+            &mut sn,
+            "1873",
+        )
+        .unwrap();
+        assert_eq!(b.sentences.len(), 3);
+        // Dialogue on either side stays clean and numbered.
+        assert_eq!(b.sentences[0].text, "He shall pay at the stake.");
+        assert_eq!(b.sentences[2].text, "Oh, let us hold.");
+        // The direction is its own numbered, muted sentence.
+        assert_eq!(b.sentences[1].text, "(draws aside.)");
+        assert_eq!(b.sentences[1].html, "<i class=\"stage\">(draws aside.)</i>");
+        assert_eq!(b.sentences[1].sentence_number, Some(2));
+        assert_eq!(sn, 4);
+    }
+
+    #[test]
+    fn prose_block_keeps_mid_sentence_direction_inline() {
+        let mut sn = 1;
+        let b = prose_block(
+            "Act",
+            0,
+            &["This man *(points toward Maximus)* is here.".into()],
+            None,
+            0,
+            &mut sn,
+            "1873",
+        )
+        .unwrap();
+        assert_eq!(b.sentences.len(), 1);
+        assert_eq!(
+            b.sentences[0].html,
+            "This man <i class=\"stage\">(points toward Maximus)</i> is here."
+        );
+        assert_eq!(b.sentences[0].sentence_number, Some(1));
+    }
+
+    #[test]
+    fn prose_block_keeps_multi_sentence_direction_whole() {
+        // A direction carrying its own sentence punctuation stays one unit.
+        let mut sn = 1;
+        let b = prose_block(
+            "Act",
+            0,
+            &["Look. *(he rises. He walks.)* Now go.".into()],
+            None,
+            0,
+            &mut sn,
+            "1873",
+        )
+        .unwrap();
+        assert_eq!(b.sentences.len(), 3);
+        assert_eq!(b.sentences[1].text, "(he rises. He walks.)");
+        assert_eq!(
+            b.sentences[1].html,
+            "<i class=\"stage\">(he rises. He walks.)</i>"
+        );
+    }
+
+    #[test]
+    fn prose_block_two_layer_isolation_keeps_parity_and_original() {
+        let mut sn = 1;
+        let b = prose_block(
+            "Act",
+            0,
+            &["Stop. *(he turns.)* Come here.".into()],
+            Some(&["Stopp. *(han vender seg.)* Kom hit.".into()]),
+            0,
+            &mut sn,
+            "1873",
+        )
+        .unwrap();
+        assert_eq!(b.sentences.len(), 3);
+        assert_eq!(b.sentences[1].text, "(he turns.)");
+        assert_eq!(
+            b.sentences[1].original_text.as_deref(),
+            Some("(han vender seg.)")
+        );
+        assert_eq!(
+            b.sentences[1].original_html.as_deref(),
+            Some("<i class=\"stage\">(han vender seg.)</i>")
+        );
+        assert_eq!(b.sentences[1].sentence_number, Some(2));
     }
 }

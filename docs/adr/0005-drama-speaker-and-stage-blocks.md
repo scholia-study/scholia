@@ -29,14 +29,18 @@ end to end (DB enum → importer bind → API `block_type` string → frontend
    speeches") is deferred; it is additive later. The speaker label (name +
    inline `*(opener)*`) is the block's single sentence.
 
-2. **Stage directions = non-selectable `stage` chrome.** `@stage (…)`,
-   own-line `*(…)*`, and the dramatis-personae `<ul>` are all `stage`
-   blocks, rendered italic/muted, never clickable.
+2. **Stage directions = `stage` chrome.** `@stage (…)`, own-line `*(…)*`,
+   and the dramatis-personae `<ul>` are all `stage` blocks, rendered
+   italic/muted. *(Amended 2026-07-01 — stage directions are now
+   selectable/quotable; see the Amendment below. The cast-list `<ul>` stays
+   inert.)*
 
-3. **Non-clickable = `sentence_number = NULL`.** `speaker`/`stage`/
-   `heading` sentences are unnumbered, so they are excluded from the
-   selection key and shift-click ranges (which ride on `sentence_number`);
-   only `paragraph`/`verse` dialogue is numbered. The parser controls this.
+3. **Non-clickable = `sentence_number = NULL`.** `speaker`/`heading`
+   sentences (and the cast-list `stage` block) are unnumbered, so they are
+   excluded from the selection key and shift-click ranges (which ride on
+   `sentence_number`); `paragraph`/`verse` dialogue is numbered. The parser
+   controls this. *(Amended 2026-07-01 — stage-direction `stage` blocks are
+   now numbered too; see the Amendment.)*
 
 4. **Citation by page.** The `{{{ N }}}` first-edition markers become a
    `1873` page **reference system** — drama's *default* citation
@@ -150,3 +154,51 @@ columns. The `1873` page system is **data** (`reference_systems` +
   near-identical node→block→sentence importers with reconcile + translation);
   folding them into one generic importer is a future additive change, deferred
   until it earns itself.
+
+## Amendment (2026-07-01): stage directions are quotable
+
+Decisions 2–3 treated **all** stage directions as inert chrome. In use this
+proved wrong on two counts:
+
+1. **Inline directions were glued to dialogue.** A `*(…)*` sitting *between*
+   two sentences of a speech (`…at the stake. *(draws aside.)* Oh, let us…`)
+   is not lifted to its own block — it flows inside the prose. The structural
+   splitter breaks on `. ` but not on `.)·`, so the direction rode at the head
+   of the *next* dialogue sentence and was swept into any selection/quotation
+   of that spoken line.
+2. **Directions weren't quotable at all.** A stage direction is authored
+   dramatic text a scholar may cite; making it inert (like a speaker label)
+   was the wrong altitude.
+
+**Amended decision.** Stage directions are **quotable dramatic text**: each is
+its own numbered, clickable sentence rendered muted/italic. This applies to
+inline directions *and* standalone `stage` blocks. **Still inert:** speaker
+labels, headings, and the dramatis-personae cast list.
+
+**Implementation (no schema change — `sentence_number` was already nullable):**
+
+- **Splitter (`common::sentences`).** `split_sentences_structural` is now
+  **paren-aware**: it never places a boundary inside a `(…)` run, so a
+  direction carrying its own sentence punctuation
+  (`(…the lamp-bowl. The lamp lights itself…)`) stays one unit. (Sole caller is
+  drama, so this is safe.)
+- **Parser (`drama_md_to_struct`).** `prose_block` tags parenthetical emphasis
+  (`<i>(…)</i>` → `<i class="stage">…</i>`, leaving ordinary `*word*` emphasis
+  alone) and **peels** any sentence that *opens* with a direction into a
+  standalone numbered direction sentence + the remaining dialogue. A
+  between-sentence direction opens a sentence after splitting (so it peels); a
+  **mid-sentence** direction (`But behold, Basil, *(he grasps him by the arm)*
+  they all lacked…`) never opens a sentence, so it stays woven in — quotable
+  only as part of its line, which grammar demands. Standalone `stage` blocks
+  (`label_block`) now receive a `sentence_number`; the cast list (`list_block`)
+  stays `NULL`. Both edition layers peel identically (their markers are
+  parallel), so the prose-sentence parity guard still holds.
+- **Frontend.** A global `.stage` rule (alongside `.antiqua`/`.sperrdruck`)
+  mutes the run everywhere it appears. The `BlockRenderer` `stage` case renders
+  a numbered direction through the clickable `<Sentence>` path and the
+  null-numbered cast list as inert block html. Selection/quotation needed no
+  change — they already key on `sentence_number`, which directions now carry.
+
+The migration `0010_drama_blocks.sql` comment ("stage sentences carry
+sentence_number = NULL") is now stale for directions but is left byte-identical
+(applied + checksummed); this Amendment is the authority.

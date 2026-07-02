@@ -132,6 +132,45 @@ sequence* is unchanged, so parity still holds.
 - tilfals → til fals
 - opædt → oppspist
 - jertegn → jærtegn
+- tag → tak
+- tak → takk
+- Mark Aurel → Markus Aurelius
+- end ikke → selv ikke
+- utaknemlig → utakknemlig
+- hadefuld → hatefull
+- spurgt → spurt
+- sandelig → sannelig
+- forbillede → forbilde
+- ven → venn
+- stadse → stase
+- løn → lønn
+- mindst → minst
+- trods → tross
+- sandt → sant
+- uduelige → udugelige
+- hade → hate
+- streg → strek
+- tilhånde → til hånde
+- hverv → verv
+- kerne → kjerne 
+- delagtig → delaktig
+- besked → beskjed
+- hede → hete
+- palatset → palasset
+- straf → straff
+- talrik → tallrik
+- betroede → betrodde
+- hensigter → hensikter
+- sigte → sikte (sigter → sikter)
+- vidne → vitne (vidnesbyrd → vitnesbyrd)
+- bever → skjelver
+- beven → skjelvelse
+- skrig → skrik
+- pønse → pønske (pønser → pønsker)
+- yndest → gunst
+- vild → vill (vildledende → villedende, vildfarelse → villfarelse)
+- forskel → forskjell (forskellen → forskjellen, forskellige → forskjellige)
+- fortabt → fortapt
 
 ## Verification (run after each act)
 

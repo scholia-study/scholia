@@ -736,12 +736,15 @@ export function Block({
                 </p>
             );
         case "stage": {
-            // Stage direction / dramatis-personae apparatus: italic, muted,
-            // full-width, non-selectable. Rendered as block html in a <div>
-            // (not the <span>-based HeadingSentence) so a cast-list <ul> nests
-            // validly; the <ul> gets its list styling back (Tailwind preflight
-            // strips it) and drops the italic. Page markers ride the margin.
+            // Italic, muted, full-width. Two shapes share this block type:
+            //  - a stage DIRECTION carries a numbered sentence → it's authored
+            //    dramatic text, so render it clickable/quotable via <Sentence>.
+            //  - the dramatis-personae cast list is a null-numbered <ul> → inert
+            //    block html in a <div> so the list nests validly (the <ul> gets
+            //    its list styling back and drops the italic).
+            // Page markers ride the margin in both cases.
             const anchor = block.sentences[0];
+            const isDirection = anchor?.sentence_number != null;
             let leftMarkers: PageMarkerResponse[] | undefined;
             let rightMarkers: PageMarkerResponse[] | undefined;
             if (
@@ -778,7 +781,20 @@ export function Block({
                     {rightMarkers && (
                         <MarginNotes markers={rightMarkers} side="right" />
                     )}
-                    {parse(blockHtml)}
+                    {isDirection ? (
+                        <Sentence
+                            sentence={anchor}
+                            isSelected={sentenceMatchesKey(
+                                anchor,
+                                selectedSentenceId,
+                            )}
+                            showOriginal={showOriginal}
+                            onSelect={onSelectSentence}
+                            nodeSourceRef={nodeSourceRef}
+                        />
+                    ) : (
+                        parse(blockHtml)
+                    )}
                 </div>
             );
         }
