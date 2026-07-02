@@ -15,6 +15,8 @@ pub struct Corpus {
     /// edition, which is single-layer (English only) — its node labels come from
     /// the file front matter, not the source-corpus `NodeSpec.label`.
     pub reviewed_dir: Option<String>,
+    /// Default derived-struct output path (CLI `--output-file` overrides).
+    pub output_file: String,
     pub nodes: Vec<NodeSpec>,
 }
 
@@ -84,6 +86,7 @@ pub fn ibsen1() -> Corpus {
         reference_systems: page_system(),
         modernized_dir: ibsen1::MODERNIZED_DIR.into(),
         reviewed_dir: Some(ibsen1::REVIEWED_DIR.into()),
+        output_file: ibsen1::OUTPUT_FILE.into(),
         nodes: ibsen1_nodes(),
     }
 }
@@ -107,6 +110,7 @@ pub fn ibsen1_translation() -> Corpus {
         reference_systems: page_system(),
         modernized_dir: ibsen1::TRANSLATED_DIR.into(),
         reviewed_dir: None,
+        output_file: ibsen1::TRANSLATION_OUTPUT_FILE.into(),
         nodes: ibsen1_nodes(),
     }
 }

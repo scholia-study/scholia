@@ -13,7 +13,7 @@
 # `just struct <corpus>`, then `just assets-sync`.
 set -euo pipefail
 
-: "${CORPUS:?Set CORPUS to one of: kant1 | kant3 | shakespeare1 | milton1 | ibsen1}"
+: "${CORPUS:?Set CORPUS to a struct-importer corpus (see SCHOLIA_CORPORA in scripts/lib.sh)}"
 
 cd /app
 source /app/scripts/lib.sh

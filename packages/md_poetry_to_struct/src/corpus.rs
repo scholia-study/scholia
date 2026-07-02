@@ -14,6 +14,8 @@ pub struct Corpus {
     pub reference_systems: Vec<ReferenceSystemData>,
     pub modernized_dir: String,
     pub reviewed_dir: String,
+    /// Default derived-struct output path (CLI `--output-file` overrides).
+    pub output_file: String,
     /// Heading texts (the `## ` stripped) that introduce a prose paragraph; the
     /// block immediately after such a heading is parsed as prose, not verse.
     pub prose_headings: Vec<String>,
@@ -114,6 +116,7 @@ pub fn shakespeare() -> Corpus {
         reference_systems: line_system(Some(0), "{self} · {ref}"),
         modernized_dir: "assets/shakespeare1/curated/md_modernized".into(),
         reviewed_dir: "assets/shakespeare1/curated/md_reviewed".into(),
+        output_file: "assets/shakespeare1/derived/output.json".into(),
         prose_headings: vec![],
         nodes,
     }
@@ -168,6 +171,7 @@ pub fn milton() -> Corpus {
         reference_systems: line_system(Some(0), "{self} · {ref}"),
         modernized_dir: "assets/milton1/curated/md_modernized".into(),
         reviewed_dir: "assets/milton1/curated/md_reviewed".into(),
+        output_file: "assets/milton1/derived/output.json".into(),
         prose_headings: vec![
             milton1::ARGUMENT_HEADING.into(),
             milton1::VERSE_NOTE_HEADING.into(),

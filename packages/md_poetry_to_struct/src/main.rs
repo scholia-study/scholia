@@ -45,10 +45,10 @@ fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(d) = &cli.reviewed_dir {
         corpus.reviewed_dir = d.clone();
     }
-    let output_file = cli
-        .output_file
-        .clone()
-        .unwrap_or_else(|| default_output(&cli.corpus));
+    if let Some(f) = &cli.output_file {
+        corpus.output_file = f.clone();
+    }
+    let output_file = corpus.output_file.clone();
 
     let output = parse::build(&corpus)?;
     let json = serde_json::to_string_pretty(&output)?;
@@ -68,12 +68,4 @@ fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("  sentences:      {sentences}");
     eprintln!("  wrote {output_file}");
     Ok(())
-}
-
-fn default_output(corpus: &str) -> String {
-    match corpus {
-        "shakespeare1" | "shakespeare" => "assets/shakespeare1/derived/output.json".into(),
-        "milton1" | "milton" => "assets/milton1/derived/output.json".into(),
-        _ => "output.json".into(),
-    }
 }

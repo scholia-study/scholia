@@ -46,9 +46,10 @@ Corollaries, and how they are realized:
    `assets/<corpus>/derived/output.json` (+ `translation_output.json`).
 5. **The new-text test.** Adding a text of an existing genre requires:
    curated MD, one `common::<corpus>` module, one `corpus.rs` builder arm,
-   one word in `SCHOLIA_CORPORA` + case arms in `scripts/{ingest,struct}.sh`.
-   Zero new crates, Dockerfiles, k8s manifests, CI filters, or front-door
-   entries. A new *genre capability* lands once in `text_struct` +
+   one word in `SCHOLIA_CORPORA` + case arms in `scripts/{ingest,struct}.sh`,
+   and one thin k8s Job manifest (the only per-corpus deploy artifact — it
+   points at the shared image). Zero new crates, Dockerfiles, CI filters, or
+   front-door entries. A new *genre capability* lands once in `text_struct` +
    `struct_to_db` and every genre inherits it.
 
 **Bible stays outside the waist, deliberately.** Its three special rules are

@@ -114,7 +114,8 @@ flowchart TB
 Adding a text of an existing genre (**the new-text test**): curated MD + one
 `common::<corpus>` module + one builder arm in the genre parser's `corpus.rs`
 + one word in `scripts/lib.sh` `SCHOLIA_CORPORA` with its case arms in
-`scripts/{ingest,struct}.sh`. Zero new crates, Dockerfiles, k8s manifests, CI
+`scripts/{ingest,struct}.sh` + one thin k8s Job manifest (the only per-corpus
+deploy artifact — same shared image). Zero new crates, Dockerfiles, CI
 filters, or front-door entries — `just db <corpus>` / `just struct <corpus>`
 parameterize, and `just db-reload` iterates `ingest.sh --list`. A genuinely new
 *genre capability* (a new block type, a new annotation kind) lands once in

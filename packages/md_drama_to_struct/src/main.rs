@@ -46,10 +46,10 @@ fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(d) = &cli.reviewed_dir {
         corpus.reviewed_dir = Some(d.clone());
     }
-    let output_file = cli
-        .output_file
-        .clone()
-        .unwrap_or_else(|| default_output(&cli.corpus, cli.translation));
+    if let Some(f) = &cli.output_file {
+        corpus.output_file = f.clone();
+    }
+    let output_file = corpus.output_file.clone();
 
     let output = parse::build(&corpus)?;
     let json = serde_json::to_string_pretty(&output)?;
@@ -76,12 +76,4 @@ fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("  page_markers:   {markers}");
     eprintln!("  wrote {output_file}");
     Ok(())
-}
-
-fn default_output(corpus: &str, translation: bool) -> String {
-    match (corpus, translation) {
-        ("ibsen1" | "ibsen", false) => "assets/ibsen1/derived/output.json".into(),
-        ("ibsen1" | "ibsen", true) => "assets/ibsen1/derived/translation_output.json".into(),
-        _ => "output.json".into(),
-    }
 }

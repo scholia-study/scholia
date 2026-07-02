@@ -27,6 +27,8 @@ pub const YEAR: i16 = 1873;
 
 pub const MODERNIZED_DIR: &str = "assets/ibsen1/curated/md_modernized";
 pub const REVIEWED_DIR: &str = "assets/ibsen1/curated/md_reviewed";
+pub const OUTPUT_FILE: &str = "assets/ibsen1/derived/output.json";
+pub const TRANSLATION_OUTPUT_FILE: &str = "assets/ibsen1/derived/translation_output.json";
 
 /// English translation layer — a separate "translation edition" book locked 1:1
 /// to the Norwegian source book (`BOOK_SLUG`) and shown as its side-by-side
