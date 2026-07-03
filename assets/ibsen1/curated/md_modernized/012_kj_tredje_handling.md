@@ -148,7 +148,7 @@ Ingenlunde, herre; jeg kan komme igjen en annen dag.
 Herre, kjenner du ikke denne utmerkede mann igjen? Det er veltalenhetslæreren Libanios.
 
 @ Keiser Julian.
-Hva? Libanios? Umuligt. Libanios – den uforlignelige Libanios – skulle være her? Hvor er det tenkelig?
+Hva? Libanios? Umuligt. Libanios – den uforliknelige Libanios – skulle være her? Hvor er det tenkelig?
 
 @ {{{ 350 }}} Taleren Libanios.
 Jeg trodde keiseren visste at borgerne i Antiokia hadde valgt meg til formann for stadsforstanderne.
@@ -202,7 +202,7 @@ Og jeg, min Libanios, har også fattet grunnen til at min ungdomslærer har latt
 Akk, min keiser, i fall jeg kunne tro at min tale rommet en sådan makt –
 
 @ Keiser Julian.
-Og det skulle du ikke kunne tro, du uforlignelige venn? O, gå fra meg. Jeg er vred på deg, Libanios! Men det er elskerens vrede imot den han elsker.
+Og det skulle du ikke kunne tro, du uforliknelige venn? O, gå fra meg. Jeg er vred på deg, Libanios! Men det er elskerens vrede imot den han elsker.
 
 @ Taleren Libanios.
 Er det virkelig så? O, min kronede bror, la meg da si deg at siden din hitkomst er ingen dag gått til ende uten at jeg har forbandet den standhaftighet, som ikke tillot meg å gjøre det første skridt. Mine venner lot – ikke uten et visst skin av rett – gi tilkjenne at du skulle ha foretatt denne lange reise nærmest for å se meg og høre meg tale. Men Julian selv lot ikke høre fra seg. Hva skulle jeg så gjøre? Skulle jeg smigre den keiser, hvem jeg elsket som menneske?
@@ -407,7 +407,7 @@ Og jeg sier dere, vær trøstige! Gud dør ikke. Det er ikke fra Julian at faren
 O, Gregor, hvor tør du kreve at vi skal bli standhaftige midt under disse redsler? – Brødre og søstre, – vet dere, hva der er hendt i Arethusa? De vantroende har mishandlet Markos, den gamle biskop, slept ham etter håret gjennom gatene, kastet ham i kloakerne, trukket ham besudlet og blødende opp igjen, oversmurt ham med honning og heiset ham opp i et tre, utsatt for stik av vepser og giftfluer.
 
 @ Gregor fra Nazianz.
-Og har da ikke Guds kraft just herlig åpenbaret seg i Markos? Hva var Markos tidligere? En mann av tvilsom tro. Ja, da uroligheterne brød ut i Arethusa, flyktet han endog av staden. Men se, – neppe hadde han i sitt skjul erfaret at de rasende mennesker hevnet biskoppens flukt på skyldløse brødre, før han frivillig vendte tilbake. Og hvordan bar han ikke de pinsler, som forferdet hans bødler selv slik at de, for å kunne trekke seg med et slags ære tilbake, tilbød å slippe ham imot å betale en ytterst ringe sum? Var ikke hans svar: nei, – og nei, og atter nei? Gud Herren var hos ham. Han hverken døde eller ga etter. Hans ansikt viste hverken forferdelse eller utålmodighet. I treet, hvor han hang, priste han seg lykkelig, fordi han var løftet noen trin nærmere imot himmelen, mens de andre, som han sa, kravlet om på den flate jord.
+Og har da ikke Guds kraft just herlig åpenbaret seg i Markos? Hva var Markos tidligere? En mann av tvilsom tro. Ja, da uroligheterne brød ut i Arethusa, flyktet han endog av staden. Men se, – neppe hadde han i sitt skjul erfaret at de rasende mennesker hevnet biskoppens flukt på skyldløse brødre, før han frivillig vendte tilbake. Og hvordan bar han ikke de pinsler, som forferdet hans bødler selv slik at de, for å kunne trekke seg med et slags ære tilbake, tilbød å slippe ham imot å betale en ytterst ringe sum? Var ikke hans svar: nei, – og nei, og atter nei? Gud Herren var hos ham. Han hverken døde eller ga etter. Hans ansikt viste hverken forferdelse eller utålmodighet. I treet, hvor han hang, priste han seg lykkelig, fordi han var løftet noen trinn nærmere imot himmelen, mens de andre, som han sa, kravlet om på den flate jord.
 
 @ {{{ 367 }}} Læreren Kyrillos.
 Der må være skjedd et under med denne standhaftige olding. Hadde du, likesom jeg, hørt skrikene fra fengslet den dag i sommer, da Hilarion og de andre pintes –! De lignet ingen andre skrik, – ufrivillig, brølende, blandende seg med hvislende lyd, hver gang jernet, hvitglødende, grov seg inn i det flåede kjøtt.
@@ -418,7 +418,7 @@ O, Kyrillos, glemmer du sangen, som løste skrikene av? Sang ikke Hilarion i dø
 Sannelig sier jeg dere, så lenge sangen runger over vår nød, så lenge skal ikke Satan seire!
 
 @ Gregor fra Nazianz.
-Vær trøstige. Elsk hverandre og lid for hverandre, slik som Serapion i Doristora nylig led for sine brødre, der han for deres skyld lot seg hudflette og kaste levende i smelteovnen.
+Vær trøstige. Elsk hverandre og lit for hverandre, slik som Serapion i Doristora nylig led for sine brødre, der han for deres skyld lot seg hudflette og kaste levende i smelteovnen.
 
 Se, se, – har ikke Herrens hevnende hånd allerede knyttet seg imot de ugudelige. Eller har dere ikke fornummet budskapet fra Heliopolis under fra Libanon?
 
@@ -454,7 +454,7 @@ Keiseren! Morderen! Gudsfienden!
 @ Gregor fra Nazianz.
 Stille! La ham dra forbi i taushet.
 
-@stage (En avdeling av de keiserlige hustropper kommer gjennom gaten. Deretter følger keiser Julian, ledsaget av hoffmenn og visdomsvenner, alle omgitte av vakt. En annen avdeling palass-soldater, anførte av høvedsmannen Fromentinos, slutter toget.)
+@stage (En avdeling av de keiserlige hustropper kommer gjennom gaten. Deretter følger keiser Julian, ledsaget av hoffmenn og visdomsvenner, alle omgitte av vakt. En annen avdeling palass-soldater, anførte av centurion Fromentinos, slutter toget.)
 
 @ En kvinne *(sagte til de andre)*.
 Se, se, han har hyllet seg i pjalter, som en tigger.
@@ -499,13 +499,13 @@ O, keiser, keiser, hvorfor har du tatt vår eiendom?
 Det spør dere om? Jeg skal si dere det, dere uvitende mennesker! Har man tatt deres eiendom fra dere, så er det skjedd av omsorg for deres sjeles vel. Har ikke galileeren sagt at dere ikke skal eie sølv eller gull? Har ikke deres mester {{{ 371 }}} lovet dere at dere engang skal oppfare til himmels? Burde dere da ikke takke meg fordi jeg gjør dere farten så lett som muligt?
 
 @ Visdomsvennerne.
-O, uforlignelig sagt!
+O, uforliknelig sagt!
 
 @ Salmedikteren Apollinaris.
 Herre, du har fratatt oss det, som er mer enn sølv og gull. Du har fratatt oss Guds eget ord. Du har fratatt oss våre hellige skrifter.
 
 @ Keiser Julian.
-Jeg kjenner deg nok, du huløyede salmesanger! Du er jo Apollinaris? Og jeg mener, at om jeg tar deres urimelige bøker fra dere, så vil du snart være mann for å dikte noe likeså urimelig ihop. Men jeg sier deg at du er en ussel bokskriver og versemaker! Ved Apollon, ingen rett Greker ville ta dine vers i sin munn. Det skrift, du nylig har sendt meg, og som du har vært frekk nok til å kalle «Sannheten», det kan jeg la deg vite at jeg har lest, forstått og fordømt.
+Jeg kjenner deg nok, du huløyede salmesanger! Du er jo Apollinaris? Og jeg mener, at om jeg tar deres urimelige bøker fra dere, så vil du snart være mann for å dikte noe likeså uriqmelig ihop. Men jeg sier deg at du er en ussel bokskriver og versemaker! Ved Apollon, ingen rett Greker ville ta dine vers i sin munn. Det skrift, du nylig har sendt meg, og som du har vært frekk nok til å kalle «Sannheten», det kan jeg la deg vite at jeg har lest, forstått og fordømt.
 
 @ Salmedikteren Apollinaris.
 Det er muligt at du har lest det; men du har ikke forstått det; for hadde du forstått, så hadde du ikke fordømt.
@@ -542,7 +542,7 @@ Dernest bærer jeg også navnet Kyrillos, og under det navn er jeg kjent mellom 
 Men bevarer jeg det første navn uplettet, da høster jeg et evigt liv til lønn.
 
 @ Keiser Julian.
-Du tar feil, Kyrillos! Du vet, jeg kjenner noe til de lønndomsfulle ting i deres lære. Tro meg, – han, du setter din lid til, er ikke en sådan, som du forestiller deg. Han er selv død, og virkelig død, på den tid da Romeren Pontius Pilatus var statholder i Jødeland.
+Du tar feil, Kyrillos! Du vet, jeg kjenner noe til de lønndomsfulle ting i deres lære. Tro meg, – han, du setter din lit til, er ikke en sådan, som du forestiller deg. Han er selv død, og virkelig død, på den tid da Romeren Pontius Pilatus var statholder i Jødeland.
 
 @ Læreren Kyrillos.
 Jeg tar ikke feil. Det er deg selv, keiser, der feiler i dette. Det er deg, som har gitt avkall på Kristus i det øyeblikk han skjenkte deg herredømmet over jorden.
@@ -558,7 +558,7 @@ Ja, likesom du har forglemt hans velgjerninger, slik skal han ikke gi sin kjærl
 @ Keiser Julian.
 Jeg ville gjerne skånet deg, Kyrillos! Gudene er mine vitner at jeg ikke hater deg for din tros skyld. Men du har forhånet min keiserlige makt og myndighet, og det må jeg straffe.
 
-*(til høvedsmannen for vakten.)*
+*(til centurion for vakten.)*
 
 Fromentinos, før denne mann i fengsel, og la bøddelen Tyfon gi ham så mange svøpeslag, som nødvendig, for å få ham til å utsi at keiseren og ikke galileeren har all velde på jorden.
 
@@ -582,7 +582,7 @@ Driv dem fra hinanden, disse rasende! La dem utjages av staden som opprørere. J
 Opp, opp; pak deg!
 
 @ Mannen *(ser opp)*.
-Tre under føtter dette sløve salt, som er vraget av Herrens hånd!
+Tre under føtter dette sløve salt, som er vraket av Herrens hånd!
 
 @ Keiser Julian.
 O, evige guder, – Hekebolios –!
@@ -591,7 +591,7 @@ O, evige guder, – Hekebolios –!
 Ah, i sannhet, – Hekebolios!
 
 @ Læreren Hekebolios.
-Jeg heter ikke så mer! Jeg er navnløs. Jeg har svigtet den dåb, som ga meg navn!
+Jeg heter ikke så mer! Jeg er navnløs. Jeg har sviktet den dåp, som ga meg navn!
 
 @ Keiser Julian.
 Reis deg, venn! Ditt sinn er sykt –
@@ -618,7 +618,7 @@ Vent! Innen et år er omme, skal Jødetemplet stå reist igjen på Zions berg, �
 
 @stage (Landevei utenfor staden. Til venstre ved veikanten står Kybeles billedstøtte mellom avhugne trestubber. Et stykke derfra, imot venstre, er en kilde med en steinkumme. Det er henimot solnedgang.)
 
-@stage (På et trin ved fotstykket av gudinnens billede sitter en gammel prest med en tildekket kurv på skjødet. Omkring steinkummen en flok menn og kvinner, der henter vann. Kommende og gående ses fra og til på veien. Fra venstre kommer fargeren Fokion, slet kledd, med en stor bylt på hodet. Han møter hårskjæreren Eunapios, der kommer fra staden.)
+@stage (På et trinn ved fotstykket av gudinnens billede sitter en gammel prest med en tildekket kurv på skjødet. Omkring steinkummen en flokk menn og kvinner, der henter vann. Kommende og gående ses fra og til på veien. Fra venstre kommer fargeren Fokion, slett kledd, med en stor bylt på hodet. Han møter hårskjæreren Eunapios, der kommer fra staden.)
 
 @ Fargeren Fokion.
 Ei, se, – min venn Eunapios i full hoffkledning!
@@ -630,7 +630,7 @@ Tvi deg, at du spotter en fattig mann.
 Kaller du det spot? Jeg mente, det var den høyeste ære.
 
 @ Hårskjæreren Eunapios.
-Du må så si. Det er blitt en ære nå å gå i pjalter, besynderlig hvis de har ligget brav lenge i en rendestein.
+Du må så si. Det er blitt en ære nå å gå i pjalter, besynderlig hvis de har ligget svært lenge i en rendestein.
 
 @ Fargeren Fokion.
 Hvordan tror du alt dette vil ende?
@@ -653,7 +653,7 @@ Ja, riktig; nå farves bare kristen-rygger. Men hva er det du sleper på?
 @ {{{ 378 }}} Fargeren Fokion.
 Et knippe pilebark. Jeg skal farve narrekapper til visdomsvennerne.
 
-@stage (En deling soldater kommer fra høyre og stiller seg opp ved Kybeles støtte.)
+@stage (En tropp soldater kommer fra høyre og stiller seg opp ved Kybeles støtte.)
 
 @ Fargeren Fokion *(til en av mennene ved vannkummen)*.
 Hva betyr dette?
@@ -674,7 +674,7 @@ Det er en ulykke for fattigfolk at den nye keiser holder så mye av gudene.
 Ei, Dione, si dog ikke så. Skal vi ikke allesammen holde av gudene?
 
 @ Den første kvinne.
-Jo, det kan være; men det er nå en ulykke alligevel –
+Jo, det kan være; men det er nå en ulykke allikevel –
 
 @ En av mennene *(peger ut til høyre)*.
 Vil dere se, – der kommer han.
@@ -682,10 +682,10 @@ Vil dere se, – der kommer han.
 @stage (Keiser Julian kommer i prestekledning og med offerkniv. Flere visdomslærere, tempelprester, tjenere og vakt omgiver ham. Etter dem følger en skare mennesker, dels spottende, dels forbittrede.)
 
 @ {{{ 379 }}} En av de kommende.
-Der borte står gudinnen. Nå skal dere få se løyer.
+Der borte står gudinnen. Nå skal dere få se løyner.
 
 @ En eldre mann.
-Kaller du det løyer? Hvor mange sultne munner kunne ikke mettes med det, som her går til spille?
+Kaller du det løyner? Hvor mange sultne munner kunne ikke mettes med det, som her går til spille?
 
 @ Keiser Julian *(går hen imot støtten)*.
 O, dette syn! Det fyller mitt hjerte med henrykkelse og mine øyne med vemods-tårer.
@@ -765,30 +765,30 @@ Ei, dere frekke skrålere! Dere med deres Chi og Kappa! Dere tror kanskje ikke j
 Dårlig talt; høyst urimelig!
 
 @ Keiser Julian.
-Men tror dere jeg lar disse spotterier gå hen uten å svare? Nei, nei, dere skal få annet å vite. Vent bare; dere skal høre fra meg snarere enn dere tenker. Jeg utarbeider i denne tid et skrift, som heter «Skjegg-haderen». Og vet dere, hvem dette skrift er rettet imot? Det er rettet imot dere, dere Antiokias borgere, – ja, imot dere, hvem jeg i skriftet kaller «de uvitende hunde». Der skal dere få mine grunner både for det ene og for det annet, som nå tykkes dere selsomt i min adferd.
+Men tror dere jeg lar disse spotterier gå hen uten å svare? Nei, nei, dere skal få annet å vite. Vent bare; dere skal høre fra meg snarere enn dere tenker. Jeg utarbeider i denne tid et skrift, som heter «Skjegg-hateren». Og vet dere, hvem dette skrift er rettet imot? Det er rettet imot dere, dere Antiokias borgere, – ja, imot dere, hvem jeg i skriftet kaller «de uvitende hunde». Der skal dere få mine grunner både for det ene og for det annet, som nå tykkes dere selsomt i min adferd.
 
-@ {{{ 383 }}} Høvedsmannen Fromentinos *(kommer fra høyre)*.
+@ {{{ 383 }}} Centurion Fromentinos *(kommer fra høyre)*.
 Høye keiser, jeg har et gledelig budskap å bringe. Kyrillos er allerede falt til føye –
 
 @ Keiser Julian.
 Ah, det tenkte jeg nok.
 
-@ Høvedsmannen Fromentinos.
+@ Centurion Fromentinos.
 Tyfon gjorde også sine saker fortreffelig. Fangen ble bundet naken ved håndledene så høyt under taget at hans tåspidser nettopp rørte jorden; derpå pisket Tyfon ham med en svøpe av okse-sener bakfra, slik at slagene traff rundt om brystet.
 
 @ Keiser Julian.
 O, de lastefulde, som tvinger oss til å bruke slike midler!
 
-@ Høvedsmannen Fromentinos.
+@ Centurion Fromentinos.
 For ikke å røve ham livet måtte vi til slut løslate den hardnakkede mann. Da var han en stund ganske stille og syntes å betenke seg; men pludselig begjærte han dog å fremstilles for keiseren.
 
 @ Keiser Julian.
 Dette er meg såre kjært. Og du bringer ham hit?
 
-@ Høvedsmannen Fromentinos.
+@ Centurion Fromentinos.
 Ja, herre, – der kommer de med ham.
 
-@stage (En deling soldater fører læreren Kyrillos mellom seg.)
+@stage (En tropp soldater fører læreren Kyrillos mellom seg.)
 
 @ {{{ 384 }}} Keiser Julian.
 Ah, min gode Kyrillos, – du er ikke fullt så kjepphøy som sist, ser jeg.
@@ -829,13 +829,13 @@ Hold denne vanvittige, at han ikke forgriper seg på oss!
 @ Keiser Julian.
 Se hist, Fromentinos, – hva er det for et selsomt opptog –?
 
-@ Høvedsmannen Fromentinos.
+@ Centurion Fromentinos.
 Nådigste keiser, det er salmesyngerskerne –
 
 @ Keiser Julian.
 Ah, hint forbund av rasende kvinner –
 
-@ Høvedsmannen Fromentinos.
+@ Centurion Fromentinos.
 Statholderen Alexandros har fratatt dem noen skrifter, som de holder for hellige. Nå {{{ 386 }}} utvandrer de av staden for å gråte på kristengravene.
 
 @ Keiser Julian *(med knyttede hender)*.
@@ -904,19 +904,19 @@ Herre, – skal jeg fortelle alt?
 Alt, alt, – fra først til sist!
 
 @ Krigsøversten Jovian.
-Jeg kom til Jerusalem med bygmesterne og soldaterne og de to tusen arbeidere. Vi gikk straks i verk med å rydde grunnen. Veldige rester av mure sto ennå igjen. De falt for våre hakker og brekkstenger, lett, som om en usynlig makt hjalp oss å utslette dem –
+Jeg kom til Jerusalem med byggmesterne og soldaterne og de to tusen arbeidere. Vi gikk straks i verk med å rydde grunnen. Veldige rester av mure sto ennå igjen. De falt for våre hakker og brekkstenger, lett, som om en usynlig makt hjalp oss å utslette dem –
 
 @ Keiser Julian.
 Ser dere; ser dere vel!
 
 @ Krigsøversten Jovian.
-Mens dette sto på, ble umådelige kalkdynger slept sammen til den nye bygning. Da oppsto ganske uventet en hvirvlende storm, som spredte kalken lik en sky ut over den ganske egn.
+Mens dette sto på, ble umåtelige kalkdynger slept sammen til den nye bygning. Da oppsto ganske uventet en hvirvlende storm, som spredte kalken lik en sky ut over den ganske egn.
 
 @ Keiser Julian.
 Videre; videre!
 
 @ Krigsøversten Jovian.
-Samme natt rystet jorden gentagne ganger.
+Samme natt rystet jorden gjentatte ganger.
 
 @ {{{ 389 }}} Stemmer i mengden.
 Hører dere? Jorden rystet.
@@ -925,7 +925,7 @@ Hører dere? Jorden rystet.
 Videre, sier jeg!
 
 @ Krigsøversten Jovian.
-Vi lot dog ikke vårt mod nedslå av dette selsomme tilfelle. Men da vi var trengt dypere ned i grunnen og hadde fått åpnet de underjordiske hvelvinger, og steinbryterne gikk inn i dem for å arbeide ved fakkelskinn –
+Vi lot dog ikke vårt mot nedslå av dette selsomme tilfelle. Men da vi var trengt dypere ned i grunnen og hadde fått åpnet de underjordiske hvelvinger, og steinbryterne gikk inn i dem for å arbeide ved fakkelskinn –
 
 @ Keiser Julian.
 Jovian, – hva så?
@@ -962,7 +962,7 @@ Du kan gå hjem, gamle mann! Og ta din gås med deg. Vi vil ikke foreta noen ofr
 
 *(vender seg til mengden.)*
 
-Jeg hørte noen her si at galileeren har seiret. Det kunne synes så; men jeg sier dere, det er en villfarelse. Dere uvitende; dere foraktelige dosmere, – dere kan tro meg: det skal ikke vare lenge før bladet har vendt seg! Jeg skal –; jeg skal –! Ja, bi bare! Jeg forbereder meg allerede på et skrift imot galileeren. Det skal være i syv kapitler; og når hans tilhengere får *det* å lese, – og når derhos «Skjegg-haderen» – –
+Jeg hørte noen her si at galileeren har seiret. Det kunne synes så; men jeg sier dere, det er en villfarelse. Dere uvitende; dere foraktelige dosmere, – dere kan tro meg: det skal ikke vare lenge før bladet har vendt seg! Jeg skal –; jeg skal –! Ja, bi bare! Jeg forbereder meg allerede på et skrift imot galileeren. Det skal være i syv kapitler; og når hans tilhengere får *det* å lese, – og når derhos «Skjegg-hateren» – –
 
 {{{ 391 }}} Ta meg under armen, Fromentinos! Denne modstand har trettet meg.
 
@@ -973,7 +973,7 @@ Gi Kyrillos fri!
 @stage (Han går med sitt følge tilbake til staden.)
 
 @ Mengden ved brønden *(roper etter ham under hånlatter)*.
-Der går offer-slagteren! – Der går den raggede bjørn! – Der går apekatten med de lange arme!
+Der går offer-slakteren! – Der går den raggede bjørn! – Der går apekatten med de lange arme!
 
 @stage (Måneskinnsnatt. På Apollon-templets ruiner.)
 
@@ -995,7 +995,7 @@ Er ikke den hele verden en grusdynge?
 Du har dog vist at det sunkne kan gjenoppreises.
 
 @ {{{ 392 }}} Keiser Julian.
-Spottefugl! I Aten så jeg en skoflikker, som hadde innrettet seg et lite verksted i Theseus-templet. I Rom, hører jeg, er et hjørne av den juliske basilika gjort brukelig til bøffelstald. Kald også *det* å gjenoppreise!
+Spottefugl! I Aten så jeg en skoflikker, som hadde innrettet seg et lite verksted i Theseus-templet. I Rom, hører jeg, er et hjørne av den juliske basilika gjort brukelig til bøffelstald. Kalt også *det* å gjenoppreise!
 
 @ Mystikeren Maximos.
 Hvorfor ikke? Skjer ikke alle ting stykkevis? Hva er helheten annet, enn den fulle sum av samtlige stykker?
@@ -1023,9 +1023,9 @@ Selsomt, Maximos, at der kan ligge styrke i villfarelsen. Se til galileerne. Og 
 Venn, – hvis villfarelsen er deg en fornødenhet, så gå tilbake til galileerne. De vil ta imot deg med åpne arme.
 
 @ Keiser Julian.
-Du vet godt at dette er ugjørlig. Keiser og galileer! Hvordan forene det modsigende?
+Du vet godt at dette er ugjørlig. Keiser og galileer! Hvordan forene det motsigende?
 
-Ja, denne Jesus Kristus er den største opprører, som noen tid har levet. Hva var Brutus, – hva var Kassius imot *ham*? *De* myrdet bare den ene Julius Cæsar; men *han* myrder Cæsar og Augustus overhovedet. Eller er der å tenke på forligelighet mellom galileeren og keiseren? Er der rom for de to til hope på jorden? Og han lever på jorden, Maximos, – galileeren lever, sier jeg, så grundig enn både Jøder og Romere bildte seg inn at de hadde dødet ham; – han lever i menneskenes oppsetsige sinn; han lever i deres tross og hån imot all synlig makt.
+Ja, denne Jesus Kristus er den største opprører, som noen tid har levet. Hva var Brutus, – hva var Kassius imot *ham*? *De* myrdet bare den ene Julius Cæsar; men *han* myrder Cæsar og Augustus overhovedet. Eller er der å tenke på forsoning mellom galileeren og keiseren? Er der rom for de to til hope på jorden? Og han lever på jorden, Maximos, – galileeren lever, sier jeg, så grundig enn både Jøder og Romere bildte seg inn at de hadde dødet ham; – han lever i menneskenes oppsetsige sinn; han lever i deres tross og hån imot all synlig makt.
 
 «Gi keiseren, hva keiserens er, – og Gud, hva Guds er!» – Aldri har menneskemunn uttalt et underfundigere ord enn dette. Hva ligger der bakved? Hva og hvor mye tilkommer keiseren? Dette ord er som en stridsklubbe, der slår kronen av keiserens hode.
 
@@ -1035,7 +1035,7 @@ Da visste dog den store Konstantin å komme til rette med galileeren, – og din
 @ Keiser Julian.
 Ja, den, der kunne være nøysom, lik hine. Men kaller du *det* å styre jordens rike? Konstantin utvidet sitt herredømmes grenser. Men dro han ikke grensene snevert sammen om sin ånd og om sin vilje? Dere stiller den mann for høyt, når dere kaller ham den store. Min forgjenger vil jeg ikke engang tale om; han var mer slave enn keiser, og jeg kan ikke bli stående ved navnet.
 
-Nei, nei, der er ikke å tenke på forlig i disse ting. Og dog – å skulle gi etter! O, Maximos, ovenpå disse nederlag kan jeg ikke vedbli å være keiser, – og jeg kan heller ikke gi avkall på å være det.
+Nei, nei, der er ikke å tenke på forlik i disse ting. Og dog – å skulle gi etter! O, Maximos, ovenpå disse nederlag kan jeg ikke vedbli å være keiser, – og jeg kan heller ikke gi avkall på å være det.
 
 Maximos, du, som kan tyde varsler, hvis gåtefulle mening er dulgt for alle andre, – du, som kan lese i de evige stjerners bok, – kan du si meg utgangen på denne strid?
 
@@ -1061,14 +1061,14 @@ Og hvem er den rette?
 Han, som skal oppsluke både keiseren og galileeren.
 
 @ Keiser Julian.
-Du løser gåden med en enn mørkere gåde.
+Du løser gåten med en enn mørkere gåte.
 
 @ Mystikeren Maximos.
 Hør meg, sannhetsvenn og bror! Jeg sier, de skal begge gå under – men ikke forgå.
 
 Går ikke barnet under i ynglingen, og ynglingen igjen i mannen? Men hverken barnet eller ynglingen forgår.
 
-O, du min mest elskede lærling, – har du glemt våre samtaler i Efesos om de tre riger?
+O, du min mest elskede lærling, – har du glemt våre samtaler i Efesos om de tre riker?
 
 @ Keiser Julian.
 Ah, Maximos, der ligger år imellom. Tal!
@@ -1098,7 +1098,7 @@ Keiser-gud; – gude-keiser. Keiser i åndens rike – og gud i kjødets.
 Ja, Maximos, *det* er det tredje rike.
 
 @ Mystikeren Maximos.
-I *det* rike er den foreløbiges opprørs-ord blitt sannhet.
+I *det* rike er den foreløpiges opprørs-ord blitt sannhet.
 
 @ Keiser Julian.
 «Gi keiseren, hva keiserens er, – og Gud, hva Guds er.» Ja, ja, – da er keiseren i Gud, og Gud i keiseren. – Ah, drømme, drømme; – hvo bryter galileerens makt!
