@@ -171,6 +171,27 @@ sequence* is unchanged, so parity still holds.
 - vild → vill (vildledende → villedende, vildfarelse → villfarelse)
 - forskel → forskjell (forskellen → forskjellen, forskellige → forskjellige)
 - fortabt → fortapt
+- sund → sunn (sundt → sunt)
+- misunde → misunne (misunder → misunner)
+- undtagelse → unntakelse
+- vidende → vitende
+- rigdom → rikdom
+- endvidere → dessuten
+- uge → uke (uger → uker)
+- stakkels → stakkars
+- innvånere → innbyggere
+- nydelse → nytelse
+- fratog → fratok
+- undskyldt → unnskyldt
+- tag → ta (imperative "take"; the noun tag → tak, above)
+- minde → minne
+- likervis → likevis
+- tilforn → tidligere
+- gem → gjem
+- frataget → fratatt
+- versemager → versemaker
+- modskrift → motskrift
+- tab → tap
 
 ## Verification (run after each act)
 

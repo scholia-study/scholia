@@ -160,7 +160,7 @@ Over det venstre lår. Er det så det skal brytes?
 Det må vel så være.
 
 @ Taleren Mamertinos.
-Den ild, du der tenner, o store keiser, i den skal granskningen og lærdommen lyse, ja, oppstå forynget, likervis som hin forunderlige fugl –
+Den ild, du der tenner, o store keiser, i den skal granskningen og lærdommen lyse, ja, oppstå forynget, likevis som hin forunderlige fugl –
 
 @ Krigsøversten Nevita.
 Denne ild vil herde de greske våpen. Jeg kjenner ikke mye til de galileiske påfund; men det har jeg merket at alle de, som henger ved dem, de er forsagte og ubrukelige til større ting.
@@ -305,7 +305,7 @@ Nådigste keiser og herre! Ikke mektige det edle tungemål, som så mange veltal
 Jeg er rede til å høre deg.
 
 @ Krigsøversten Nevita.
-Først nedlegger da kongen av Armenien for dine føtter denne rustning, som han ber deg bære i kampen mot rikets fiender, skjønt han vel vet at du, uovervindelige helt, står under gudenes skjermende øye, der ikke tillater noen dødeligs våpen å såre deg. – Her bringes deg kostelige tepper, telte og sadeltøy fra fyrstene hinsides Tigris-floden. De vil dermed gi tilkjenne, at når gudene har forundt hine lande en overvettes rigdom, så skjedde det i det øyemed at den skulle komme gudenes yndling til gode. – Kongen av Serandib, og likervis kongen av Diu, sender deg disse våpen, sverd, spyd og skjold, samt buer og pile; for, sier de, vi akter det rådeligst å stå vergeløse like overfor den seierherre, der, likesom en guddom, har vist seg mektig nok til å bryte enhver modstand. – Til gjengjeld ber de alle, som den høyeste nåde, om ditt vennskap, og navnlig ber de at du, hvis {{{ 261 }}} du, som et rykte har sagt dem, til våren akter å tilintetgjøre den forvovne Perser-konge, – at du da vil skåne deres lande for fiendtlig innfall.
+Først nedlegger da kongen av Armenien for dine føtter denne rustning, som han ber deg bære i kampen mot rikets fiender, skjønt han vel vet at du, uovervindelige helt, står under gudenes skjermende øye, der ikke tillater noen dødeligs våpen å såre deg. – Her bringes deg kostelige tepper, telte og sadeltøy fra fyrstene hinsides Tigris-floden. De vil dermed gi tilkjenne, at når gudene har forundt hine lande en overvettes rikdom, så skjedde det i det øyemed at den skulle komme gudenes yndling til gode. – Kongen av Serandib, og likevis kongen av Diu, sender deg disse våpen, sverd, spyd og skjold, samt buer og pile; for, sier de, vi akter det rådeligst å stå vergeløse like overfor den seierherre, der, likesom en guddom, har vist seg mektig nok til å bryte enhver modstand. – Til gjengjeld ber de alle, som den høyeste nåde, om ditt vennskap, og navnlig ber de at du, hvis {{{ 261 }}} du, som et rykte har sagt dem, til våren akter å tilintetgjøre den forvovne Perser-konge, – at du da vil skåne deres lande for fiendtlig innfall.
 
 @ Keiser Julian.
 Ikke kunne en sådan sendelse komme meg ganske uventet. De medbragte gaver skal nedlegges i mitt skattkammer, og gjennom dere lar jeg deres herskere vite at det er min akt å holde vennskap med alle de folkeslag, som ikke – det være seg med våpen eller med underfundighet – stiller seg mine hensigter i veien. – Hva det angår, at man i deres fjernt-liggende lande, forledet av mine lykkelige seiervinninger, har latt seg henrive til i meg å se en guddom, så vil jeg ikke videre innlate meg på den sak. Jeg akter gudene for høyt til at jeg skulle ville tilrane meg en upassende plass iblant dem, skjønt jeg vel vet at der oftere, og især i eldre tider, har levet helte og herskere, som har vært slik fremdragne av gudenes gunst og nåde, at det har vært vanskelig å si om de rettest var å regne til de dødelige eller til de udødelige. Om desslike ting er det imidlertid vovelig å dømme, selv for oss Grekere. Hvor mye mer da for dere? Altså, nok om dette. – Du, Eutherios, fører de fremmede til hvile og sørger for at intet fattes dem.
@@ -412,7 +412,7 @@ Der skal ingen forfølges for troens skyld. Men har jeg rett til å slå en stre
 Er det en brøde, at jeg har vært min herres tjener?
 
 @ Keiser Julian.
-Jeg bruker ikke desslike overdådige tjenere. Alle hine frekke halvmenn skal jages ut av palasset; og alle kokke og gjøglere og dansere likervis. En sømmelig tarvelighet skal innføres igjen.
+Jeg bruker ikke desslike overdådige tjenere. Alle hine frekke halvmenn skal jages ut av palasset; og alle kokke og gjøglere og dansere likevis. En sømmelig tarvelighet skal innføres igjen.
 
 *(til Themisteos og Mamertinos.)*
 
