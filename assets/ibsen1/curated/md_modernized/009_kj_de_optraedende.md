@@ -39,7 +39,7 @@ depth: 1
 - Læreren Kyrillos.
 - En gammel prest ved Kybeles helligdom.
 - Salmesyngerskerne i Antiokia.
-- Høvedsmannen Fromentinos.
+- Centurionen Fromentinos.
 - Krigsøversten Jovian.
 - Mystikeren Maximos.
 - Spåmannen Numa.
@@ -48,7 +48,7 @@ depth: 1
 - Livvaktsføreren Anatolos.
 - Visdomslæreren Priskos.
 - Visdomslæreren Kytron.
-- Høvedsmannen Ammian.
+- Centurionen Ammian.
 - Basilios fra Cæsaræa.
 - Hans søster Makrina.
 - En persisk overløper.

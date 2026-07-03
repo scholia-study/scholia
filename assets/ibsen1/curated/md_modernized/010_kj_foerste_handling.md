@@ -58,7 +58,7 @@ Liktoget var som en seierherres tog gjennom hele Lille-Asien. I alle byer, vi ko
 Godt, godt, godt! – Jeg gripes av en utrolig banghet ved tanken om å skulle ta styret etter en så stor og dydig og høyt elsket keiser. Hvi ble det meg ikke forundt å få leve i tilbaketrukken stillhet!
 
 @ Taleren Mamertinos.
-Og hvem skulle da gjort fyldest i det store vanskelige kald, slik som du, uforlignelige herre, vil gjøre det? Jeg tilroper dristig hine andre, der har attrådd keiserverdigheten: kom hit og ta rikets ror; men ta det slik, som Julian tar det. Våg natt og dag for alles velferd. Vær herrer i navnet og dog borgerfrihetens {{{ 244 }}} tjenere. Velg deres plass forrest i de kjempendes rekker og ikke ved gjestebudene. Ta intet for dere selv; men utøs gaver til alle. La deres rettferdighet være like fjernt fra føyelighet og fra grusomhet. Lev slik, at ingen jomfru på jordens kreds skal vride hendene over dere. By tross – både Galliens ufremkommelighet og Germaniens kulde. Hva ville de svare? Forferdede over så strenge fordringer ville de tilstoppe sine bløtaktige ører og rope: bare en Julian kan gjøre fyldest for alt dette!
+Og hvem skulle da gjort fyldest i det store vanskelige kald, slik som du, uforliknelige herre, vil gjøre det? Jeg tilroper dristig hine andre, der har attrådd keiserverdigheten: kom hit og ta rikets ror; men ta det slik, som Julian tar det. Våg natt og dag for alles velferd. Vær herrer i navnet og dog borgerfrihetens {{{ 244 }}} tjenere. Velg deres plass forrest i de kjempendes rekker og ikke ved gjestebudene. Ta intet for dere selv; men utøs gaver til alle. La deres rettferdighet være like fjernt fra føyelighet og fra grusomhet. Lev slik, at ingen jomfru på jordens kreds skal vride hendene over dere. By tross – både Galliens ufremkommelighet og Germaniens kulde. Hva ville de svare? Forferdede over så strenge fordringer ville de tilstoppe sine bløtaktige ører og rope: bare en Julian kan gjøre fyldest for alt dette!
 
 @ Keiser Julian.
 Den alt-styrende gi at så store forhåpninger ikke må skuffes. Men hvor mye fattes der meg ikke? En gysning overfaller meg. Å skulle sammenlignes med Alexander, med Markus Aurelius og med så mange andre fortreffelige menn! Har ikke Platon sagt, at bare en gud kan herske over menneskene? O, be med meg at jeg må gå fri for ærgjerrighetens snarer og for maktens fristelser. Aten, Aten! Dit går min lengsel! Jeg var som en mann, der for sin sunnhets skyld drev en gavnlig legemsøvelse; – og nå kommer man til meg og sier: tre frem på skueplassen og seir i de olympiske lege. Alle Grekere skal sitte som tilskuere! Må ikke mitt sinn gripes av skrekk allerede før jeg begynner på kampen?
@@ -166,7 +166,7 @@ Den ild, du der tenner, o store keiser, i den skal granskningen og lærdommen ly
 Denne ild vil herde de greske våpen. Jeg kjenner ikke mye til de galileiske påfund; men det har jeg merket at alle de, som henger ved dem, de er forsagte og ubrukelige til større ting.
 
 @ Taleren Themisteos.
-I denne ild, o du uforlignelige, ser jeg visdommen renset for all anklage og for alle {{{ 252 }}} beskyldninger. Den vin, som du utgyder, er lik et purpur, hvormed du pryder sannheten og setter den på et kongelig sete. Nå, da du opprekker dine hender –
+I denne ild, o du uforliknelige, ser jeg visdommen renset for all anklage og for alle {{{ 252 }}} beskyldninger. Den vin, som du utgyder, er lik et purpur, hvormed du pryder sannheten og setter den på et kongelig sete. Nå, da du opprekker dine hender –
 
 @ Taleren Mamertinos.
 Nå, da du opprekker dine hender, er det som om du hedrer vitenskapens panne med en gullkrans; og de tårer, du utgyder –
@@ -188,7 +188,7 @@ Nå har ingen Greker lenger nødig å leve på land eller vann uten å rådspør
 O, hvilken mann er ikke denne keiser, hvem vi skylder så store goder!
 
 @ Keiser Julian *(for alteret med opprakte arme)*.
-Så har jeg da åpenlyst og i ydmykhet utgydt olje og vin for dere, dere velgjørende guddomme, der så lenge har måttet savne denne for dere så høyst sømmelige ihukommelse. Jeg har oppsendt min takk til deg, o Apollon, hvem noen av vismennene – og især de fra østerlandene – tillegger navnet sol-kongen, fordi du bringer og fornyer det lys, hvori livet har sin grunn og sitt opphav. – Jeg har bragt mitt offer til deg, o Dionysos, du henrykkelsens gud, der løfter menneskenes sjeler ut av lavheten og bærer dem opp til et for ånden verdig samliv med høyere ånder. – Og, skjønt jeg nevner deg sist, har jeg dog ikke derfor minst ihukommet deg, o Fortuna! Sto jeg vel her uten din bistand? Visselig vet jeg, at du ikke lenger selv lar deg tilsyne, slik, som tilfellet var i den gylne tidsalder, hvorom hin uforlignelige blinde sanger har fortalt {{{ 254 }}} oss. Men det vet jeg dog – og deri er alle andre visdomsvenner enige med meg – at det er deg, som har en vesentlig andel i valget av den ledsagende ånd, god eller fordervelig, som skal følge ethvert menneske på hans livs-gang. Jeg har ingen årsak til å klage over deg, o Fortuna! Mye mer har jeg den høyeste oppfordring til å yde deg lov og pris. Denne for mitt hjerte så dyrebare plikt har jeg i dag underkastet meg. Jeg har ikke skyet end det ringeste arbeid. Her står jeg, ved høy lys dag; alle Grekeres øyne er rettede på meg; jeg forventer at alle Grekeres røster vil forene seg med min i et tilrop til dere, dere udødelige guder!
+Så har jeg da åpenlyst og i ydmykhet utgydt olje og vin for dere, dere velgjørende guddomme, der så lenge har måttet savne denne for dere så høyst sømmelige ihukommelse. Jeg har oppsendt min takk til deg, o Apollon, hvem noen av vismennene – og især de fra østerlandene – tillegger navnet sol-kongen, fordi du bringer og fornyer det lys, hvori livet har sin grunn og sitt opphav. – Jeg har bragt mitt offer til deg, o Dionysos, du henrykkelsens gud, der løfter menneskenes sjeler ut av lavheten og bærer dem opp til et for ånden verdig samliv med høyere ånder. – Og, skjønt jeg nevner deg sist, har jeg dog ikke derfor minst ihukommet deg, o Fortuna! Sto jeg vel her uten din bistand? Visselig vet jeg, at du ikke lenger selv lar deg tilsyne, slik, som tilfellet var i den gylne tidsalder, hvorom hin uforliknelige blinde sanger har fortalt {{{ 254 }}} oss. Men det vet jeg dog – og deri er alle andre visdomsvenner enige med meg – at det er deg, som har en vesentlig andel i valget av den ledsagende ånd, god eller fordervelig, som skal følge ethvert menneske på hans livs-gang. Jeg har ingen årsak til å klage over deg, o Fortuna! Mye mer har jeg den høyeste oppfordring til å yde deg lov og pris. Denne for mitt hjerte så dyrebare plikt har jeg i dag underkastet meg. Jeg har ikke skyet end det ringeste arbeid. Her står jeg, ved høy lys dag; alle Grekeres øyne er rettede på meg; jeg forventer at alle Grekeres røster vil forene seg med min i et tilrop til dere, dere udødelige guder!
 
 @stage (Under offertjenesten har de fleste kristne tilskuere etterhånden fjernet seg; bare en liten hob er blitt tilbake. Da keiser Julian holder inne, høres et svakt bifallsrop, blandet med sagte latter og en forundret hvisken.)
 
@@ -460,7 +460,7 @@ Nå ønsker jeg bare at de lykkebringendes velvilje må følge Nevita. Han har f
 Ganske visst; skjønt der vel turde finnes andre menn, som –
 
 @ Taleren Themisteos.
-Ikke vil jeg dermed ha sagt at det valg, som du, o uforlignelige keiser –
+Ikke vil jeg dermed ha sagt at det valg, som du, o uforliknelige keiser –
 
 @ Taleren Mamertinos.
 Nei, nei, på ingen måte!
@@ -573,7 +573,7 @@ Gud forbarme seg!
 Herren være lovet, jeg har en god samvittighet.
 
 @ Skriftlæreren Hekebolios.
-Jeg også, jeg også; men alligevel –; ah, så er det sagtens dog sant at keiseren har ofret til Apollon og Fortuna?
+Jeg også, jeg også; men allikevel –; ah, så er det sagtens dog sant at keiseren har ofret til Apollon og Fortuna?
 
 @ Hårskjæreren Eunapios.
 Ja visst; men hvem bryr seg om slike småting?
@@ -1039,7 +1039,7 @@ Lykkelige far, der har så ulykkelige sønner!
 Hvilken forvoven og høyst usømmelig tross!
 
 @ Keiser Julian.
-Mitt hjerte er såret til blods av dette og av mye annet. Du, min Hekebolios, skal følge meg. Jorden brenner under meg i denne forgiftede galileiske stad! Jeg vil skrive til hine visdomsvenner Kytron og Priskos, som har vunnet så stort ry i de senere år. Maximos kan jeg hver dag vente hit; han skal gå med oss. – Jeg sier deg, der forestår oss lykkelige seiersdage, Hekebolios! I Antiokia, venn, – der kommer vi til å møtes med den uforlignelige Libanios, – og der er vi Helios nærmere i hans oppstandelse. – O, denne dragende lengsel imot sol-kongen –!
+Mitt hjerte er såret til blods av dette og av mye annet. Du, min Hekebolios, skal følge meg. Jorden brenner under meg i denne forgiftede galileiske stad! Jeg vil skrive til hine visdomsvenner Kytron og Priskos, som har vunnet så stort ry i de senere år. Maximos kan jeg hver dag vente hit; han skal gå med oss. – Jeg sier deg, der forestår oss lykkelige seiersdage, Hekebolios! I Antiokia, venn, – der kommer vi til å møtes med den uforliknelige Libanios, – og der er vi Helios nærmere i hans oppstandelse. – O, denne dragende lengsel imot sol-kongen –!
 
 @ Skriftlæreren Hekebolios.
 Ja, ja, ja –!

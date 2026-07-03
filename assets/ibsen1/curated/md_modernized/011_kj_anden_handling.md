@@ -122,7 +122,7 @@ Priset være keiserens rettferdighet! O, hvor denne nidske kornpuger har fortjen
 Aha; jeg synes, jeg kjenner ditt ansikt. Var ikke du en av dem, som ropte foran min vogn da jeg dro inn i staden?
 
 @ Borgeren.
-Jeg var en av de ivrigste ropere, uforlignelige keiser! Jeg er skatteoppkreveren Malkos. Akk, ta deg av meg! Jeg fører en rettstrette med et ondt og gjerrig menneske –
+Jeg var en av de ivrigste ropere, uforliknelige keiser! Jeg er skatteoppkreveren Malkos. Akk, ta deg av meg! Jeg fører en rettstrette med et ondt og gjerrig menneske –
 
 @ Keiser Julian.
 Og derom kommer du til meg? Gis her ikke dommere –?
@@ -308,7 +308,7 @@ Gjengjeld, – gjengjeld, Gregor!
 @ Gregor fra Nazianz.
 Det være langt fra meg å ville forsvare alt, hva mine trosbrødre kan ha forøvet i utskeiende iver for kirkens sak. Men du, som er høyt opplyst, og som er alles hersker, du tør ikke tåle at de levende straffes for de dødes feil. Dette er dog skjedd i Kappadokia. De kristnes fiender, få i antall, men tørstende etter vinding og brennende av iver etter å være de nye embedsmenn til behag, har vakt uro og bekymring hos befolkningen både i stedene og på landet.
 
-Jeg tenker ikke her nærmest på de forhånelser, vi har måttet lide, ei heller på de krenkelser av vår vel ervervede eiendomsrett, som vi i den senere tid idelig har vært utsatte for. Hva der mest bekymrer meg og alle mine alvorlige brødre, det er den fare, som dette medfører for sjelene. Mange er ubefestede i troen og makter ikke ganske å se bort fra de jordiske {{{ 311 }}} goder. Den harde medfart, som nå må døyes av enhver den, der bærer kristennavnet, har allerede hatt mer enn *et* frafall til følge. Herre, dette er et sjeleran fra Guds rige.
+Jeg tenker ikke her nærmest på de forhånelser, vi har måttet lide, ei heller på de krenkelser av vår vel ervervede eiendomsrett, som vi i den senere tid idelig har vært utsatte for. Hva der mest bekymrer meg og alle mine alvorlige brødre, det er den fare, som dette medfører for sjelene. Mange er ubefestede i troen og makter ikke ganske å se bort fra de jordiske {{{ 311 }}} goder. Den harde medfart, som nå må døyes av enhver den, der bærer kristennavnet, har allerede hatt mer enn *et* frafall til følge. Herre, dette er et sjeleran fra Guds rike.
 
 @ Keiser Julian.
 O, min kloke Gregor, – hvor kan du tale så? Jeg forbauses! Skulle du ikke tvert om, som en god galileer, glede deg over at deres samfunn blir disse mennesker kvit?
@@ -656,7 +656,7 @@ Alle gode borgere anroper om din gunst for staden.
 @ Keiser Julian.
 Søk å vinne gudenes gunst, da har dere visselig min. Og er det ikke billig at Antiokia heri går foran? Er det ikke som om solgudens øye med særlig velbehag hvilte på denne stad? Forhør dere hos vidt bereiste menn, og dere skal erfare, i hvilket sørgelig overmål det annetsteds er lyktes villfarelsen å legge våre hellige steder øde. Hva står tilbake? En levning hist og her; og intet av det beste.
 
-Men hos dere, dere borgere av Antiokia! O, mine øyne fyltes med gledestårer, da jeg første gang så denne uforlignelige helligdom, Apollons eget hus, som man neppe skulle kunne tenke seg oppført av menneskehender. Står ikke den herliges billede derinne som før i ukrenket skjønnhet? Ikke en kant er avhakket eller smuldret på hans alter; ikke en revne er å se i de ranke bærende støtter.
+Men hos dere, dere borgere av Antiokia! O, mine øyne fyltes med gledestårer, da jeg første gang så denne uforliknelige helligdom, Apollons eget hus, som man neppe skulle kunne tenke seg oppført av menneskehender. Står ikke den herliges billede derinne som før i ukrenket skjønnhet? Ikke en kant er avhakket eller smuldret på hans alter; ikke en revne er å se i de ranke bærende støtter.
 
 O, når jeg betenker dette, – når jeg føler bindet om min panne, – når jeg ser nedad denne kledning, der er meg dyrebarere enn purpurkåpen, da fornemmer jeg gudens nærhet i en hellig isnen.
 
@@ -858,7 +858,7 @@ Så nær har jeg aldri følt meg i forbund med de udødelige guder.
 
 Buesvingeren er iblant oss. Jorden drønner under hans hæl, slik, som den drønnet fordum, da han i vrede trampet den trojanske strandbredd.
 
-Men det er ikke imot oss at han retter det rynkede bryn. Det er imot hine ulykkelige, som hater ham og hans solskinnende rige.
+Men det er ikke imot oss at han retter det rynkede bryn. Det er imot hine ulykkelige, som hater ham og hans solskinnende rike.
 
 Ja, – så visst, som lykkens eller ulykkens fylde gir den rette målestok for gudenes gunst imot de dødelige, – så visst åpenbarer seg her forskjellen imellom oss og hine.
 

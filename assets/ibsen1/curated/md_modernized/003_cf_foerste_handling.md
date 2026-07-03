@@ -914,7 +914,7 @@ Hvem var han, den gåtefulle mann?
 Hør meg, Julian –!
 
 @ Fyrst Julian *(i livfull bevegelse)*.
-*Han* forstod meg! Og Libanios selv; den store, uforlignelige Libanios –! Tenk deg, Agathon, Libanios har sagt – –. Å, hvor skarpt må dog ikke det hedenske øye være!
+*Han* forstod meg! Og Libanios selv; den store, uforliknelige Libanios –! Tenk deg, Agathon, Libanios har sagt – –. Å, hvor skarpt må dog ikke det hedenske øye være!
 
 @ Agathon.
 Dette var et fristelsens verk, tro meg!

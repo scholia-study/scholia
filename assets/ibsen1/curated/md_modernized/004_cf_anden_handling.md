@@ -70,7 +70,7 @@ Ja, ja, ja; fyrst Julian på dommersetet!
 Vekk med fyrsten, dere venner –
 
 @ Sallust fra Perusia.
-Stig opp, du uforlignelige!
+Stig opp, du uforliknelige!
 
 @ Fyrst Julian.
 Jeg skulle formaste meg –? Hist står mannen. Hvo er vel dreven i rettslæren, som Gregor fra Nazianz?
@@ -614,7 +614,7 @@ Hvorav kommer det, at alle troende i åndeløs forventning ser imot deg?
 @ Fyrst Julian *(går et par ganger opp og ned i søylegangen, standser og rekker etter brevet)*.
 Gi hit; la meg se. *(leser )* «Guds ånd være over ham i striden og alle dage». –
 
-O, Basilios, om jeg kunne –! Men jeg føler meg som hin Dædalos mellom himmel og hav. En svimlende høyde og et svelgende dyp –. Hva mening er der i disse røster, som roper til meg fra øst og vest at jeg skal frelse kristendommen? Hvor er den, denne kristendom, som skal frelses? Er den hos keiseren eller hos Cæsar? Jeg tenker, deres gjerninger skriker: nei, nei! Er den hos de mektige og fornemme, – hos disse hoffets lystne halvmenn, som folder hendene over den mette buk og piper: mon Guds sønn er skapt av intet? Eller er den hos de opplyste, hos dem, som, likesom du og jeg, har drukket skjønnhet og lærdom av de hedenske kilder? Heller ikke de fleste av disse våre brødre til det arianske kjetteri, som keiseren selv har så stor gunst for? Og nå den hele lurvede hop i riget, – alle de, som raser mot templene, som myrder hedninger og hedningers slekt! Er det for Kristi skyld? Ha-ha! bakefter slås de innbyrdes om de dreptes etterladenskaper. – Du kan spørre Makrina om kristendommen er å søke i ensomheten, – på søylen, hvor støtte-helgenen står på et ben. Eller {{{ 95 }}} er den i stedene? Kanskje hos hine bakere i Konstantinopel, som nylig kjempet med nevene for å klare det spørsmål om treenigheten består av tre personer eller av tre hypostaser! – Hvem av alle disse skulle Kristus ville ta i sin munn, om han steg ned til jorden igjen? – Frem med Diogenes-lykten, Basilios! Lys opp i dette nattemulm. – Hvor er kristendommen?
+O, Basilios, om jeg kunne –! Men jeg føler meg som hin Dædalos mellom himmel og hav. En svimlende høyde og et svelgende dyp –. Hva mening er der i disse røster, som roper til meg fra øst og vest at jeg skal frelse kristendommen? Hvor er den, denne kristendom, som skal frelses? Er den hos keiseren eller hos Cæsar? Jeg tenker, deres gjerninger skriker: nei, nei! Er den hos de mektige og fornemme, – hos disse hoffets lystne halvmenn, som folder hendene over den mette buk og piper: mon Guds sønn er skapt av intet? Eller er den hos de opplyste, hos dem, som, likesom du og jeg, har drukket skjønnhet og lærdom av de hedenske kilder? Heller ikke de fleste av disse våre brødre til det arianske kjetteri, som keiseren selv har så stor gunst for? Og nå den hele lurvede hop i riket, – alle de, som raser mot templene, som myrder hedninger og hedningers slekt! Er det for Kristi skyld? Ha-ha! bakefter slås de innbyrdes om de dreptes etterladenskaper. – Du kan spørre Makrina om kristendommen er å søke i ensomheten, – på søylen, hvor støtte-helgenen står på et ben. Eller {{{ 95 }}} er den i stedene? Kanskje hos hine bakere i Konstantinopel, som nylig kjempet med nevene for å klare det spørsmål om treenigheten består av tre personer eller av tre hypostaser! – Hvem av alle disse skulle Kristus ville ta i sin munn, om han steg ned til jorden igjen? – Frem med Diogenes-lykten, Basilios! Lys opp i dette nattemulm. – Hvor er kristendommen?
 
 @ Basilios fra Cæsaræa.
 Søk svaret der, hvor det var å finne i alle skrøpelige tider.

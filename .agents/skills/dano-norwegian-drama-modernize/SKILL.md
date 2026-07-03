@@ -192,6 +192,23 @@ sequence* is unchanged, so parity still holds.
 - versemager → versemaker
 - modskrift → motskrift
 - tab → tap
+- lid → lit
+- vraget → vraket (kaste vrag på → kaste vrak på; whole vrag/vrage family, g→k)
+- svigtet → sviktet (svigte → svikte, svigter → svikter)
+- dåb → dåp (dåben → dåpen)
+- trin → trinn (the *step*; trappetrin → trappetrinn — NOT opptrinn/fortrinlig)
+- flok → flokk (floken → flokken)
+- brav lenge → svært lenge
+- deling soldater → tropp soldater
+- alligevel → allikevel
+- løyer → løyner
+- høvedsmannen → centurion (definite "Høvedsmannen X" → "Centurionen X" in the cast list; address "høvedsmann" → "centurion")
+- gentagne → gjentatte (gentage → gjenta, gentagelse → gjentakelse)
+- modsigende → motsigende (modsige → motsi)
+- forligelighet → forsoning (semantic; cf. forliges → forlikes)
+- uforlignelig → uforliknelig (uforlignelige → uforliknelige)
+- gåde → gåte (gåden → gåten, gådefull → gåtefull)
+- rige → rike (riget → riket, kongerige → kongerike; NOT gjerrig/forrig/øvrig/ivrig/halsstarrig/krig-)
 
 ## Verification (run after each act)
 

@@ -1388,7 +1388,7 @@ Leve keiseren! Leve keiser Julian!
 @stage (Ropet forplanter seg i videre og videre kretser utenfor; alle taler i munnen på hverandre; Cæsar Julian kan i lang tid ikke komme til orde.)
 
 @ Cæsar Julian.
-O, jeg ber dere bønnlig –! Soldater, venner, kampfeller, – se, jeg utstrekker mine skjelvende armer –! Engst deg ikke, min Decentius! – O, at jeg måtte oppleve dette! Jeg legger dere intet til last, dere trofaste; det er fortvilelsen, som har drevet dere. Dere vil det. Godt; jeg underkaster meg hærens vilje. – Sintula, la mine krigsøverster samles. – Du, tribun, kan vitne for Konstanzios at jeg bare nødtvungen – *(vender seg til Varro.)* Gå, høvedsmann, og forkynd i leiren denne uventede forandring. Jeg selv vil uten opphold skrive til Rom –
+O, jeg ber dere bønnlig –! Soldater, venner, kampfeller, – se, jeg utstrekker mine skjelvende armer –! Engst deg ikke, min Decentius! – O, at jeg måtte oppleve dette! Jeg legger dere intet til last, dere trofaste; det er fortvilelsen, som har drevet dere. Dere vil det. Godt; jeg underkaster meg hærens vilje. – Sintula, la mine krigsøverster samles. – Du, tribun, kan vitne for Konstanzios at jeg bare nødtvungen – *(vender seg til Varro.)* Gå, centurion, og forkynd i leiren denne uventede forandring. Jeg selv vil uten opphold skrive til Rom –
 
 @ {{{ 201 }}} Ridderen Sallust.
 Herre, soldatene vil se deg.
