@@ -1,986 +1,986 @@
 ---
 position: 11
-label: "Anden handling"
+label: "Act Two"
 depth: 1
 ---
 
-## ANDEN HANDLING.
+## ACT TWO.
 
-@stage (En stor forhal i kejserens palats i Antiokia. Åben indgang i baggrunden; på den venstre væg er en dør, som fører ind til de indre værelser.)
+@stage (A great hall in the emperor's palace in Antioch. An open entrance in the background; on the left wall is a door leading into the inner rooms.)
 
-@stage (På et ophøjet sæde i forgrunden til højre sidder kejser Julian omgiven af sit hof. Dommere, talere, digtere og lærere, iblandt disse læreren Hekebolios, sidder på lavere sæder nedenfor ham. Lænet op imod væggen, nær ved udgangen, står en mand, klædt som kristen prest; han skjuler ansigtet i sine hænder og synes hensunken i bøn. En stor forsamling af stadens borgere fylder hallen. Ved udgangsdøren står vagt; ligeså ved døren til venstre.)
+@stage (On a raised seat in the foreground to the right sits Emperor Julian, surrounded by his court. Judges, orators, poets and teachers, among these Hecebolius the teacher, sit on lower seats below him. Leaning against the wall, near the exit, stands a man dressed as a Christian priest; he hides his face in his hands and seems sunk in prayer. A great assembly of the city's citizens fills the hall. At the exit-door stands a guard; likewise at the door on the left.)
 
-@ Kejser Julian *(taler til de forsamlede)*.
-Så stor fremgang har guderne forundt mig. Knapt en eneste stad har jeg nærmet mig på min rejse, uden at jo Galilæere i hele hobe har strømmet mig imøde på landevejen, jamrende over sine vildfarelser og givende sig ind under de guddommelige magters varetægt. Hvad er spotternes dårlige adfærd at regne imod dette? Er ikke spotterne nærmest at ligne med hunde, der i sin uvidenhed hyler op imod måneskiven? Dog vil jeg ikke nægte at det har fortørnet mig at erfare at enkelte af denne stads indbyggere har ladet falde hånlige ord om den levevis, som {{{ 296 }}} jeg har indskærpet Kybeles, den gode gudindes, prester at føre. Burde ikke ærefrygten for så ophøjet en guddom fritage hendes tjenere for at gøres til genstande for spot? Jeg tilråber hine dumdristige mennesker: er I barbarer, eftersom I ikke ved, hvem Kybele er? Skal jeg være nødt til alvorligen at minde eder om at dengang det romerske herredømme truedes så hårdt af hin puniske feltherre, hvis grav jeg for ikke lang tid siden har set i Libyssa, – da gav den kumæiske Sibylle det råd at tage Kybeles billedstøtte ud af templet i Pessinos og føre det til Rom? Hvad nu presternes levemåde vedkommer, da har nogle opholdt sig over at det er bleven dem forbudt at spise rødder og alt, hvad der gror langs henad jorden, medens det tillades dem at nyde urter og frugter, som har sin vækst i højden. O, I højst vankundige, – jeg ynker eder, at I ikke fatter dette! Kan da menneskets ånd nære sig af det, der kryber langs jorden? Lever ikke sjælen af alt det, som higer opad imod himlen og imod solen? Disse ting vil jeg ikke vidtløftigere omtale idag. Hvad mere derom er at sige, det vil I erfare af et skrift, som jeg arbejder på i mine vågende nætter, og som jeg håber om føje tid skal blive forelæst både i læresalene og på torvene.
+@ Emperor Julian *(speaks to the assembled)*.
+Such great success have the gods granted me. Scarcely a single city have I approached on my journey without Galileans thronging out to meet me on the highway in whole crowds, lamenting over their errors and giving themselves into the keeping of the divine powers. What is the ill conduct of the scoffers to be reckoned against this? Are not the scoffers most fitly likened to dogs that in their ignorance howl up at the disc of the moon? Yet I will not deny that it has angered me to learn that certain of this city's inhabitants have let fall scornful words about the manner of life which {{{ 296 }}} I have enjoined upon the priests of Cybele, the good goddess. Should not reverence for so exalted a deity exempt her servants from being made the objects of mockery? I cry out to those foolhardy men: are you barbarians, since you do not know who Cybele is? Must I be forced earnestly to remind you that when the Roman dominion was so hard threatened by that Punic general, whose grave I not long ago saw in Libyssa, – then the Cumaean Sibyl gave the counsel to take Cybele's image out of the temple in Pessinus and bring it to Rome? Now as concerns the priests' way of life, some have taken offence that it has been forbidden them to eat roots and all that grows along the ground, while they are permitted to enjoy herbs and fruits that have their growth on high. Oh, you most ignorant ones, – I pity you, that you do not grasp this! Can then the spirit of man nourish itself on what creeps along the ground? Does not the soul live on all that strives upward toward heaven and toward the sun? These things I will not discuss more at length today. What more there is to say of it, you shall learn from a writing that I am working on in my waking nights, and which I hope before long shall be read aloud both in the lecture-halls and in the market-places.
 
-*(han rejser sig.)*
+*(he rises.)*
 
-Og hermed, mine venner, hvis ingen har noget yderligere at foredrage –
+And herewith, my friends, if no one has anything further to bring forward –
 
-@ {{{ 297 }}} En borger *(trænger sig frem)*.
-O, nådigste kejser, lad mig ikke gå uhørt!
+@ {{{ 297 }}} A citizen *(presses forward)*.
+Oh, most gracious emperor, let me not go unheard!
 
-@ Kejser Julian *(sætter sig atter)*.
-Visst ikke, min ven! Hvem er du?
+@ Emperor Julian *(seats himself again)*.
+Indeed not, my friend! Who are you?
 
-@ Borgeren.
-Jeg er kornhandleren Medon. O, herre, hvis ikke min kærlighed til dig, du ophøjede og guddommelige –
+@ The citizen.
+I am Medon the corn-merchant. Oh, lord, did not my love for you, you exalted and divine one –
 
-@ Kejser Julian.
-Frem med din sag, mand!
-
-@ Medon.
-Jeg har en nabo, Alites, som nu i mange år har skadet mig på alle tænkelige måder; han handler nemlig også med korn og går mig på den skammeligste vis i næringen –
-
-@ Kejser Julian.
-Aha, min gode Medon, du ser dog velnæret nok ud.
+@ Emperor Julian.
+Out with your business, man!
 
 @ Medon.
-Det er heller ikke dette, allernådigste kejser! O, ved de ærværdige guder, hvem jeg lærer at elske og prise højere dag for dag, – de fornærmelser, han tilføjer *mig*, skulde jeg overse; men hvad jeg umuligt kan tåle –
+I have a neighbour, Alites, who now for many years has harmed me in every conceivable way; for he too deals in corn and undercuts me in my trade in the most shameful manner –
 
-@ Kejser Julian.
-Han håner dog ikke guderne?
+@ Emperor Julian.
+Aha, my good Medon, yet you look well-fed enough.
+
+@ Medon.
+Neither is it this, most gracious emperor! Oh, by the venerable gods, whom I learn to love and praise more highly day by day, – the affronts he offers *me* I could overlook; but what I cannot possibly endure –
+
+@ Emperor Julian.
+Surely he does not mock the gods?
 
 @ {{{ 298 }}} Medon.
-Han gør det, som værre er, – ja, i al fald det, som er ligeså forvovent; han – o, jeg ved knapt om harmen tillader mig at udsige det – han håner dig selv, allernådigste herre!
+He does what is worse, – yes, at any rate what is just as audacious; he – oh, I scarcely know whether my indignation permits me to utter it – he mocks you yourself, most gracious lord!
 
-@ Kejser Julian.
-Så? Hvilke ord har han brugt?
-
-@ Medon.
-Han har slet ingen ord brugt; han har brugt det, som værre er.
-
-@ Kejser Julian.
-Og hvad er værre?
+@ Emperor Julian.
+So? What words has he used?
 
 @ Medon.
-En purpurfarvet kåbe –
+He has used no words at all; he has used what is worse.
 
-@ Kejser Julian.
-Den bærer han? Ej, ej, det er dristigt.
-
-@ Medon.
-Ja, du store vingefodede Merkur, når jeg tænker på, hvorledes den kåbe vilde bekommet ham i din forgængers tid! Og dette hovmodets klædebon har jeg hver dag for øjne –
-
-@ Kejser Julian.
-Dette klædebon, købt for penge, som kunde været dine –
+@ Emperor Julian.
+And what is worse?
 
 @ Medon.
-O, nådigste kejser, – straf denne formastelige mand; lad ham udjages af staden; min kær‐ {{{ 299 }}} lighed til vor store ophøjede hersker tillader mig ikke at være vidne til en slig uforskammet anmasselse.
+A purple-coloured cloak –
 
-@ Kejser Julian.
-Sig mig, gode Medon, hvad slags klædningsstykker bærer Alites foruden purpurkåben?
-
-@ Medon.
-Det husker jeg sandelig ikke, herre; jeg tænker, de vanlige; jeg har kun lagt mærke til purpurkåben.
-
-@ Kejser Julian.
-Altså purpurkåbe og ugarvede såler –
+@ Emperor Julian.
+He wears that? Well, well, that is bold.
 
 @ Medon.
-Ja, herre; det ser ligeså latterligt som uforskammet ud.
+Yes, you great wing-footed Mercury, when I think how that cloak would have fared with him in your predecessor's time! And this garment of arrogance I have before my eyes every day –
 
-@ Kejser Julian.
-Den ting må vi bøde på, Medon!
+@ Emperor Julian.
+This garment, bought with money that could have been yours –
 
-@ Medon *(lykkelig)*.
-Ah, nådigste herre –!
+@ Medon.
+Oh, most gracious emperor, – punish this presumptuous man; let him be driven out of the city; my {{{ 299 }}} love for our great and exalted ruler does not permit me to be a witness to such insolent presumption.
 
-@ Kejser Julian.
-Imorgen tidlig kommer du hid i palatset –
+@ Emperor Julian.
+Tell me, good Medon, what sort of garments does Alites wear besides the purple cloak?
 
-@ Medon *(endnu lykkeligere)*.
-Jeg skal komme ganske tidligt, nådigste kejser!
+@ Medon.
+That I truly do not remember, lord; the usual ones, I suppose; I have only noticed the purple cloak.
 
-@ Kejser Julian.
-Du melder dig hos min husmester –
+@ Emperor Julian.
+So then, a purple cloak and untanned soles –
+
+@ Medon.
+Yes, lord; it looks as ridiculous as it is insolent.
+
+@ Emperor Julian.
+That thing we must remedy, Medon!
+
+@ Medon *(happy)*.
+Ah, most gracious lord –!
+
+@ Emperor Julian.
+Tomorrow morning you come here to the palace –
+
+@ Medon *(happier still)*.
+I shall come quite early, most gracious emperor!
+
+@ Emperor Julian.
+You report to my steward –
 
 @ {{{ 300 }}} Medon.
-Ja, ja, min allernådigste kejser!
+Yes, yes, my most gracious emperor!
 
-@ Kejser Julian.
-Af ham modtager du et par purpurstøvler, stukne med guld –
-
-@ Medon.
-Ak, ak, min gavmilde herre og kejser!
-
-@ Kejser Julian.
-Disse støvler bærer du hen til Alites, ifører ham dem og siger ham at han for al ting må tage dem på hver gang han herefter får i sinde at vise sig i purpurkåbe på gaden ved lys dag –
+@ Emperor Julian.
+From him you receive a pair of purple boots, stitched with gold –
 
 @ Medon.
-O!
+Alas, alas, my generous lord and emperor!
 
-@ Kejser Julian.
-– og når du det har gjort, kan du fortælle ham fra mig at han er en nar, hvis han tror sig hædret ved purpurkåben uden at eje purpurets magt. – Gå; og kom igen efter støvlerne imorgen!
+@ Emperor Julian.
+These boots you carry over to Alites, put them on him and tell him that he must by all means put them on every time he henceforth takes it into his head to show himself in a purple cloak on the street in broad daylight –
 
-@stage (Kornhandleren Medon går slukøret bort under borgernes latter; hofmændene, talerne, digterne samt de øvrige klapper i hænderne og tilråber kejseren bifald.)
+@ Medon.
+Oh!
 
-@ En anden borger *(træder frem af hoben)*.
-Priset være kejserens retfærdighed! O, hvor denne nidske kornpuger har fortjent at straffes således! O, hør mig og lad din nåde –
+@ Emperor Julian.
+– and when you have done that, you may tell him from me that he is a fool if he thinks himself honoured by the purple cloak without possessing the purple's power. – Go; and come again for the boots tomorrow!
 
-@ {{{ 301 }}} Kejser julian .
-Aha; jeg synes, jeg kender dit ansigt. Var ikke du en af dem, som råbte foran min vogn da jeg drog ind i staden?
+@stage (Medon the corn-merchant goes off crestfallen amid the citizens' laughter; the courtiers, the orators, the poets and the rest clap their hands and cheer the emperor.)
 
-@ Borgeren.
-Jeg var en af de ivrigste råbere, uforlignelige kejser! Jeg er skatteopkræveren Malkos. Ak, tag dig af mig! Jeg fører en retstrætte med et ondt og gærrigt menneske –
+@ Another citizen *(steps forward from the crowd)*.
+Praised be the emperor's justice! Oh, how this envious corn-hoarder has deserved to be punished thus! Oh, hear me and let your grace –
 
-@ Kejser Julian.
-Og derom kommer du til mig? Gives her ikke dommere –?
+@ {{{ 301 }}} Emperor Julian.
+Aha; I think I know your face. Were you not one of those who shouted before my chariot when I entered the city?
 
-@ Skatteopkræveren Malkos.
-Sagen er noget indviklet, høje kejser! Den drejer sig om en mark, som jeg har givet hin onde mand i forpagtning og som jeg for syv år siden lagde mig til, da en del af Apostel-kirkens jordegods blev solgt.
+@ The citizen.
+I was one of the most eager shouters, incomparable emperor! I am Malchus the tax-collector. Alas, take up my cause! I am pursuing a lawsuit with an evil and miserly person –
 
-@ Kejser Julian.
-Se, se; kirkegods altså?
+@ Emperor Julian.
+And about that you come to me? Are there not judges here –?
 
-@ Malkos.
-Redeligt erhvervet; men nu nægter dette menneske at svare mig afgift, og heller ikke vil han give ejendommen tilbage, alt under påskud af at denne mark engang skal have tilhørt Apollons tempel og, som han siger, uretteligen skal være bleven templet fratagen for mange år siden.
+@ Malchus the tax-collector.
+The matter is somewhat involved, noble emperor! It concerns a field which I have let to that evil man on lease and which I acquired seven years ago, when a part of the Church of the Apostles' landed estate was sold.
 
-@ {{{ 302 }}} Kejser Julian.
-Hør, sig mig, Malkos, – du er visst en af Galilæerens tilhængere?
+@ Emperor Julian.
+See, see; church-property, then?
 
-@ Malkos.
-Nådigste kejser, det er en gammel vane i vor slægt at bekende Kristus.
+@ Malchus.
+Honestly acquired; but now this fellow refuses to pay me the rent, nor will he give the property back, all on the pretext that this field once belonged to Apollo's temple and, as he says, was wrongfully taken from the temple many years ago.
 
-@ Kejser Julian.
-Og det siger du sådan lige til, uden sky?
+@ {{{ 302 }}} Emperor Julian.
+Hark, tell me, Malchus, – you are surely one of the Galilean's followers?
 
-@ Malkos.
-Min modstander er dristigere end jeg, herre! Han går ud og ind af sit hus, som før; han flygtede ikke fra staden da det rygtedes at du vilde komme.
+@ Malchus.
+Most gracious emperor, it is an old custom in our family to confess Christ.
 
-@ Kejser Julian.
-Flygtede ikke? Og hvorfor skulde han det, han, en mand, som står på gudernes bedste?
+@ Emperor Julian.
+And you say that so straight out, without shrinking?
 
-@ Malkos.
-Allernådigste kejser, du har uden tvivl hørt tale om bogføreren Thalassios?
+@ Malchus.
+My adversary is bolder than I, lord! He goes out and in of his house as before; he did not flee from the city when it was rumoured that you would come.
 
-@ Kejser Julian.
-Hvad! Hin Thalassios, som, for at indynde sig hos min forgænger, mens jeg stod bagtalt og faretruet i Gallien, her, i Antiokia, midt på torvet foreslog borgerne at de skulde bede kejseren sende dem Cæsar Julians hoved!
+@ Emperor Julian.
+Did not flee? And why should he, he, a man who is on the gods' side?
 
-@ Malkos.
-Herre, det er denne din dødsfiende, som foruretter mig.
+@ Malchus.
+Most gracious emperor, you have without doubt heard tell of Thalassius the book-keeper?
 
-@ {{{ 303 }}} Kejser Julian.
-Sandelig, Malkos, imod denne mand har jeg ligeså stor grund til klage, som du.
+@ Emperor Julian.
+What! That Thalassius who, to ingratiate himself with my predecessor, while I stood slandered and in peril in Gaul, here, in Antioch, in the middle of the marketplace proposed to the citizens that they should ask the emperor to send them Caesar Julian's head!
 
-@ Malkos.
-Tifold større, min nådige kejser!
+@ Malchus.
+Lord, it is this mortal enemy of yours who wrongs me.
 
-@ Kejser Julian.
-Og hvad mener du? Skal vi to slå vore sager sammen og forklage ham på en gang?
+@ {{{ 303 }}} Emperor Julian.
+Truly, Malchus, against this man I have as great cause for complaint as you.
 
-@ Malkos.
-O, hvilken overvættes nåde! Jeg tifold lykkelige mand!
+@ Malchus.
+Tenfold greater, my gracious emperor!
 
-@ Kejser Julian.
-Du tifold dårlige! Thalassios går ud og ind af sit hus som før, siger du? Han er ikke flygtet fra staden ved mit komme. Thalassios har kendt mig bedre end du. Væk med dig, menneske! Når jeg forklager Thalassios for mit hoved, kan du forklage ham for din mark.
+@ Emperor Julian.
+And what do you think? Shall we two join our causes together and accuse him at once?
 
-@ Malkos *(hændervridende)*.
-Jeg tifold ulykkelige!
+@ Malchus.
+Oh, what exceeding grace! I, tenfold happy man!
 
-@stage (Han går ud i baggrunden; de forsamlede tilklapper atter kejseren bifald.)
+@ Emperor Julian.
+You tenfold fool! Thalassius goes out and in of his house as before, you say? He has not fled from the city at my coming. Thalassius has known me better than you. Away with you, fellow! When I accuse Thalassius over my head, you may accuse him over your field.
 
-@ Kejser Julian.
-Ret så, mine venner; glæd eder over at det er lykkedes mig, ikke ganske uværdigt, at begynde denne dag, der særligt er viet til en højtid for den strålende Apollon. Thi er det ikke en visdomsven værdigt at overse de fornærmelser, {{{ 304 }}} der rettes imod ham selv, medens han strængt straffer den uret, som tilføjes de udødelige guder? Jeg mindes ikke om hin lærdommens kronede dyrker, Mark Aurel, nogensinde har været i et lignende tilfælde; men har han været det, da bør vi håbe at han har handlet ikke aldeles uligt mig, der sætter en ære i ydmygt at følge hans fodspor.
+@ Malchus *(wringing his hands)*.
+I, tenfold wretched!
 
-Lad dette tjene eder til rettesnor for, hvad I har at iagttage for fremtiden. I palatset, på torvet, ja, i theatret – hvis jeg ikke væmmedes ved at betræde et sådant dårskabens sted – kan det være sømmeligt at I hilser mig med tilråb og en glad klappen i hænderne. En slig hyldest, ved jeg, er bleven vel optagen både af den makedoniske Alexander og af Julius Cæsar, hvilke mænd det af lykkens gudinde også blev forundt at skinne fremfor andre dødelige.
+@stage (He goes out in the background; the assembled once more cheer the emperor.)
 
-Men ser I mig træde ind i et tempel, da er det en anden sag. Da vil jeg at I skal tie eller rette eders tilråb imod guderne og ikke imod mig, hvem I ser skride frem med nedslagne øjne og en sænket pande. Og allermest håber jeg at I vil iagttage dette idag, da jeg har at ofre til en så højst overordentlig og mægtig guddom, som han, hvem vi kender under navn af solkongen, og som bliver end større i vore øjne når vi betænker at han er den samme, hvem visse østerlandske folkeslag kalder Mithra.
+@ Emperor Julian.
+Rightly so, my friends; rejoice that it has been granted me, not quite unworthily, to begin this day, which is especially consecrated to a festival for the radiant Apollo. For is it not worthy of a friend of wisdom to overlook the affronts {{{ 304 }}} directed against himself, while he sternly punishes the wrong done to the immortal gods? I do not recall whether that crowned devotee of learning, Marcus Aurelius, was ever in a like case; but if he was, then we may hope that he acted not wholly unlike me, who set an honour in humbly following his footsteps.
 
-Og hermed, – hvis ellers ingen har noget at sige –
+Let this serve you as a rule for what you have to observe in future. In the palace, in the marketplace, yes, in the theatre – if I did not loathe to set foot in such a place of folly – it may be seemly that you greet me with acclamations and a glad clapping of hands. Such homage, I know, was well received both by Alexander the Macedonian and by Julius Caesar, men to whom the goddess of fortune also granted to shine above other mortals.
 
-@ {{{ 305 }}} Presten ved døren *(retter sig ivejret)*.
-I Gud Herrens navn!
+But if you see me step into a temple, then it is another matter. Then I would have you keep silent or direct your acclamations toward the gods and not toward me, whom you see stride forward with downcast eyes and a lowered brow. And most of all I hope you will observe this today, when I have to sacrifice to so exceedingly extraordinary and mighty a deity as he whom we know under the name of the Sun-King, and who grows even greater in our eyes when we consider that he is the same whom certain eastern peoples call Mithra.
 
-@ Kejser Julian.
-Hvo taler der?
+And herewith, – if no one else has anything to say –
 
-@ Presten.
-En Guds og kejserens tjener.
+@ {{{ 305 }}} The priest at the door *(draws himself up)*.
+In the name of the Lord God!
 
-@ Kejser Julian.
-Kom nærmere. Hvad vil du?
+@ Emperor Julian.
+Who speaks there?
 
-@ Presten.
-Tale til dit hjerte og til din samvittighed.
+@ The priest.
+A servant of God and of the emperor.
 
-@ Kejser Julian *(springer op)*.
-Hvilken røst! Hvad ser jeg! Trods skæg og klædning –! Gregor!
+@ Emperor Julian.
+Come closer. What do you want?
 
-@ Presten.
-Ja, min høje herre!
+@ The priest.
+To speak to your heart and to your conscience.
 
-@ Kejser Julian.
-Gregor! Gregor fra Nazianz!
+@ Emperor Julian *(springs up)*.
+What a voice! What do I see! Despite beard and garb –! Gregory!
 
-@ Gregor fra Nazianz.
-Ja, nådige kejser!
+@ The priest.
+Yes, my noble lord!
 
-@ Kejser Julian *(er stegen ned, har grebet hans hænder og ser længe på ham)*.
-Lidt ældet; brunere; førere. Nej; det var kun i første øjeblik; nu er du den samme, som da.
+@ Emperor Julian.
+Gregory! Gregory of Nazianzus!
 
-@ Gregor fra Nazianz.
-O, var det dog så med dig, herre!
+@ Gregory of Nazianzus.
+Yes, gracious emperor!
 
-@ {{{ 306 }}} Kejser Julian.
-Athen. Hin nat i buegangen. Ingen mand har ligget mit hjerte så nær som du.
+@ Emperor Julian *(has stepped down, has grasped his hands and gazes long at him)*.
+A little aged; browner; sturdier. No; that was only in the first moment; now you are the same as then.
 
-@ Gregor fra Nazianz.
-Dit hjerte? Ak, kejser, af dit hjerte har du udrevet en bedre ven end mig.
+@ Gregory of Nazianzus.
+Oh, were it but so with you, lord!
 
-@ Kejser Julian.
-Du mener Basilios?
+@ {{{ 306 }}} Emperor Julian.
+Athens. That night in the arcade. No man has lain so near my heart as you.
 
-@ Gregor fra Nazianz.
-Jeg mener en større end Basilios.
+@ Gregory of Nazianzus.
+Your heart? Alas, emperor, from your heart you have torn out a better friend than me.
 
-@ Kejser Julian *(formørket)*.
-Ah, så! Det er dette, du kommer for at sige mig? Og i denne klædning –
+@ Emperor Julian.
+You mean Basil?
 
-@ Gregor fra Nazianz.
-Jeg har ikke valgt denne klædning, herre!
+@ Gregory of Nazianzus.
+I mean a greater than Basil.
 
-@ Kejser Julian.
-Du ikke? Hvem da?
+@ Emperor Julian *(darkening)*.
+Ah, so! It is this you come to say to me? And in this garb –
 
-@ Gregor fra Nazianz.
-Han, der er større end kejseren.
+@ Gregory of Nazianzus.
+I have not chosen this garb, lord!
 
-@ Kejser Julian.
-Jeg kender disse galilæiske talemåder. For vort venskabs skyld, spring dette over.
+@ Emperor Julian.
+Not you? Who then?
 
-@ Gregor fra Nazianz.
-Lad mig da begynde med at sige dig hvorledes det er gåt til at du ser mig her, viet til prest i den kirke, som du forfølger.
+@ Gregory of Nazianzus.
+He who is greater than the emperor.
 
-@ {{{ 307 }}} Kejser Julian *(med et hvast blik)*.
-Forfølger!
+@ Emperor Julian.
+I know these Galilean turns of phrase. For our friendship's sake, pass this over.
 
-*(han stiger atter op på forhøjningen og sætter sig.)*
+@ Gregory of Nazianzus.
+Let me then begin by telling you how it has come about that you see me here, consecrated as a priest in the church which you persecute.
 
-Nu kan du tale videre.
+@ {{{ 307 }}} Emperor Julian *(with a sharp glance)*.
+Persecute!
 
-@ Gregor fra Nazianz.
-Du ved, hvad jeg mente om de guddommelige ting under vort glade samliv i Athen. Men fjernt lå det dengang fra min tanke at forsage jordens glæder. Ærelyst eller tørst efter rigdom, det tør jeg nok sige, har aldrig fristet mig; dog blev jeg neppe sandheden tro, hvis jeg vilde nægte at mit øje og mit sind hang undrende ved al den herlighed, som oplod sig for mig i Grækernes gamle videnskab og kunst. Kævlerierne, alle hine smålige stridigheder i vor kirke, bedrøvede mig dybt; men jeg tog ingen del i dem; jeg tjente mine landsmænd i verdslige ting; videre ikke. –
+*(he steps up again onto the platform and seats himself.)*
 
-Da kom tidender fra Konstantinopel. Det sagdes at Konstanzios var død af skræk over dine foretagender og havde indsat dig til sin arving. Modtagen som en overmenneskelig, og med sejersrygtet flyvende foran dig, var du, Galliens og Germaniens helt, uden sværdslag stegen op på Konstantins sæde. Verden lå for dine fødder.
+Now you may speak on.
 
-Da kom atter tidender. Verdens herre rusted sig til krig imod himlens herre –
+@ Gregory of Nazianzus.
+You know what I thought of the divine things during our glad life together in Athens. But far was it then from my thought to renounce the joys of the earth. Ambition or thirst for riches, that I may well say, has never tempted me; yet I should hardly be true to the truth if I would deny that my eye and my mind hung wondering upon all the glory that opened itself to me in the Greeks' ancient science and art. The wranglings, all those petty quarrels in our church, grieved me deeply; but I took no part in them; I served my countrymen in worldly matters; no further. –
 
-@ {{{ 308 }}} Kejser Julian.
-Gregor, hvad fordrister du dig –!
+Then came tidings from Constantinople. It was said that Constantius had died of terror at your undertakings and had appointed you his heir. Received as one more than human, and with the rumour of victory flying before you, you, the hero of Gaul and Germania, had without a sword-stroke ascended to Constantine's seat. The world lay at your feet.
 
-@ Gregor fra Nazianz.
-Legemernes herre rusted sig til krig imod sjælenes herre. Jeg står her for dig i kødets frygt og bæven; men jeg tør ikke lyve. Vil du høre sandheden, eller skal jeg tie?
+Then came tidings once more. The lord of the world was arming himself for war against the lord of heaven –
 
-@ Kejser Julian.
-Du skal tale, Gregor!
+@ {{{ 308 }}} Emperor Julian.
+Gregory, what do you dare –!
 
-@ Gregor fra Nazianz.
-Hvad har ikke mine troesfæller måttet lide allerede i disse få måneder? Hvor mange dødsdomme er ikke bleven afsagte og fuldbyrdede på den grusomste måde? Statsskriveren Gaudenzios, – Artemios, hin forhenværende statholder i Egypten, – begge tribunerne Romanos og Vinzenzios –
+@ Gregory of Nazianzus.
+The lord of bodies was arming himself for war against the lord of souls. I stand here before you in the fear and trembling of the flesh; but I dare not lie. Will you hear the truth, or shall I be silent?
 
-@ Kejser Julian.
-Du kender ikke disse ting. Jeg siger dig at retfærdighedens gudinde vilde have udgydt tårer, hvis hine forrædere havde sluppet med livet.
+@ Emperor Julian.
+You shall speak, Gregory!
 
-@ Gregor fra Nazianz.
-Lad så være, min kejser; men jeg siger dig at der er fældet *en* dødsdom, som retfærdighedens gud aldrig kan tilgive dig. Ursulos! Denne mand, som var dig en ven i trængselsfulde dage! Ursulos, som med fare for sit eget liv forstrakte dig med penge i Gallien; Ursulos, {{{ 309 }}} hvis hele brøde var hans kristentro og hans oprigtighed –
+@ Gregory of Nazianzus.
+What have my fellow-believers not had to suffer already in these few months? How many death-sentences have been pronounced and carried out in the cruellest manner? Gaudentius the secretary of state, – Artemius, that former governor of Egypt, – both the tribunes Romanus and Vincentius –
 
-@ Kejser Julian.
-Ah, dette har du fra din broder Cæsarios!
+@ Emperor Julian.
+You do not know these things. I tell you that the goddess of justice would have shed tears had those traitors escaped with their lives.
 
-@ Gregor fra Nazianz.
-Straf mig, herre; men skån min broder.
+@ Gregory of Nazianzus.
+Be that as it may, my emperor; but I tell you that one death-sentence has been passed which the god of justice can never forgive you. Ursulus! This man, who was a friend to you in days of tribulation! Ursulus, who at the risk of his own life supplied you with money in Gaul; Ursulus, {{{ 309 }}} whose whole crime was his Christian faith and his sincerity –
 
-@ Kejser Julian.
-Du ved godt at du intet vover, Gregor! For øvrigt vil jeg give dig ret i at Nevita har faret for strængt frem.
+@ Emperor Julian.
+Ah, this you have from your brother Caesarius!
 
-@ Gregor fra Nazianz.
-Ja, denne barbar, hvem det under Grækersminken ikke lykkes at fornægte sin herkomst –!
+@ Gregory of Nazianzus.
+Punish me, lord; but spare my brother.
 
-@ Kejser Julian.
-Nevita er nidkær for sit hverv, og jeg kan ikke selv være overalt. Over Ursulos har jeg oprigtigt sørget, og jeg beklager dybt at hverken tid eller omstændigheder tillod mig selv at undersøge hans sag. Jeg havde visselig skånet ham, Gregor! Jeg har også tænkt på at give hans arvinger tilbage, hvad han måtte have efterladt sig.
+@ Emperor Julian.
+You know well that you risk nothing, Gregory! For the rest, I will grant you that Nevita has proceeded too severely.
 
-@ Gregor fra Nazianz.
-Høje kejser, du skylder mig intet regnskab for dine handlinger. Jeg har kun villet sige dig at alle disse tidender slog ned som et lyn både i Cæsaræa og i Nazianz og i de øvrige kappadokiske stæder. Hvorledes skal jeg skildre dig virkningen? Vore indbyrdes tvistemål forstummede {{{ 310 }}} under den fælles fare. Mange af kirkens usunde lemmer faldt fra; men i mange ligegyldige hjerter tændtes Herrens lys i en aldrig før anet klarhed. Under alt dette brød trængslerne ind over Guds folk. Hedningerne – ja, min kejser, de, som *jeg* kalder hedninger – begyndte at true, at forurette, at forfølge os –
+@ Gregory of Nazianzus.
+Yes, this barbarian, who beneath the Greek veneer does not manage to disown his descent –!
 
-@ Kejser Julian.
-Gengæld, – gengæld, Gregor!
+@ Emperor Julian.
+Nevita is zealous for his office, and I cannot myself be everywhere. Over Ursulus I have sincerely grieved, and I deeply regret that neither time nor circumstances allowed me to examine his case myself. I should surely have spared him, Gregory! I have also thought of giving back to his heirs whatever he may have left behind.
 
-@ Gregor fra Nazianz.
-Det være langt fra mig at ville forsvare alt, hvad mine troesbrødre kan have forøvet i udskejende iver for kirkens sag. Men du, som er højt oplyst, og som er alles hersker, du tør ikke tåle at de levende straffes for de dødes fejl. Dette er dog sket i Kappadokia. De kristnes fiender, få i antal, men tørstende efter vinding og brændende af iver efter at være de nye embedsmænd til behag, har vakt uro og bekymring hos befolkningen både i stæderne og på landet.
+@ Gregory of Nazianzus.
+Noble emperor, you owe me no account for your actions. I have only wished to tell you that all these tidings struck down like lightning both in Caesarea and in Nazianzus and in the other Cappadocian places. How shall I depict for you the effect? Our mutual disputes fell silent {{{ 310 }}} under the common danger. Many of the church's unsound members fell away; but in many indifferent hearts the Lord's light was kindled in a clarity never before divined. Amid all this the tribulations broke in upon God's people. The heathens – yes, my emperor, those whom *I* call heathens – began to threaten, to wrong, to persecute us –
 
-Jeg tænker ikke her nærmest på de forhånelser, vi har måttet lide, ej heller på de krænkelser af vor vel erhvervede ejendomsret, som vi i den senere tid idelig har været udsatte for. Hvad der mest bekymrer mig og alle mine alvorlige brødre, det er den fare, som dette medfører for sjælene. Mange er ubefæstede i troen og mægter ikke ganske at se bort fra de jordiske {{{ 311 }}} goder. Den hårde medfart, som nu må døjes af enhver den, der bærer kristennavnet, har allerede havt mere end *et* frafald til følge. Herre, dette er et sjæleran fra Guds rige.
+@ Emperor Julian.
+Retribution, – retribution, Gregory!
 
-@ Kejser Julian.
-O, min kloge Gregor, – hvor kan du tale så? Jeg forbauses! Skulde du ikke tvert om, som en god Galilæer, glæde dig over at eders samfund vorder disse mennesker kvit?
+@ Gregory of Nazianzus.
+Far be it from me to defend all that my fellow-believers may have committed in extravagant zeal for the church's cause. But you, who are highly enlightened, and who are the ruler of all, you must not suffer the living to be punished for the faults of the dead. Yet this has happened in Cappadocia. The Christians' enemies, few in number, but thirsting for gain and burning with zeal to please the new officials, have stirred up unrest and anxiety among the population both in the towns and in the countryside.
 
-@ Gregor fra Nazianz.
-Nådige kejser, jeg er ikke af den mening. Jeg har selv været en ligegyldig i troen, og jeg holder enhver sådan for en syg, der har helbredens mulighed i sig så længe han blir i kirkens skød. Således tænkte også vor lille menighed i Nazianz. Bekymringsfulde brødre og søstre kom sammen for at rådslå om hjælp imod tidens nød. Med dem forenede sig udsendinger fra Cæsaræa og fra de andre stæder. Min fader er affældig, og – som han med sorg bekender – han har ikke det faste uryggelige sind, som i disse trængselens dage kræves af den, der sidder på bispesædet. Da vedtog forsamlingen, at der til hans medhjælper skulde udkåres en yngre mand, som kunde holde Herrens hjord sammen.
+I do not here think chiefly of the insults we have had to suffer, nor of the violations of our well-acquired right of property, to which we have of late continually been exposed. What most troubles me and all my earnest brethren is the danger which this brings for souls. Many are unstablished in the faith and cannot wholly look away from the earthly {{{ 311 }}} goods. The harsh treatment which must now be endured by everyone who bears the Christian name has already had more than *one* apostasy as its consequence. Lord, this is a robbery of souls from God's kingdom.
 
-Valget faldt på mig.
+@ Emperor Julian.
+Oh, my wise Gregory, – how can you speak so? I am astonished! Should you not rather, as a good Galilean, rejoice that your community is rid of these people?
 
-@ Kejser Julian.
+@ Gregory of Nazianzus.
+Gracious emperor, I am not of that opinion. I have myself been one indifferent in the faith, and I hold every such one to be a sick man who has the possibility of healing in him so long as he remains in the bosom of the church. So thought too our little congregation in Nazianzus. Anxious brothers and sisters came together to take counsel about help against the distress of the time. With them joined envoys from Caesarea and from the other places. My father is decrepit, and – as he with sorrow confesses – he has not the firm, unshakable spirit that in these days of tribulation is required of him who sits on the bishop's seat. Then the assembly resolved that a younger man should be chosen as his helper, one who could hold the Lord's flock together.
+
+The choice fell on me.
+
+@ Emperor Julian.
 Ah!
 
-@ {{{ 312 }}} Gregor fra Nazianz.
-Jeg var den tid fraværende på en rejse. Men i mit fravær, og uden at rådspørge mig, indviede min fader mig til prest og sendte mig den prestelige klædning.
+@ {{{ 312 }}} Gregory of Nazianzus.
+I was at that time absent on a journey. But in my absence, and without consulting me, my father consecrated me as a priest and sent me the priestly garb.
 
-Dette budskab traf mig i Tiberina, på min landgård, hvor jeg tilbragte nogle dage sammen med min broder og med min ungdomsven Cæsaræeren Basilios.
+This message reached me in Tiberina, at my country estate, where I spent some days together with my brother and with my youth-friend Basil of Caesarea.
 
-Herre, – var min dødsdom bleven mig forkyndt, det kunde ikke have forfærdet mig mere end dette.
+Lord, – had my death-sentence been proclaimed to me, it could not have terrified me more than this.
 
-Jeg prest! Jeg vilde det, og jeg vilde det ikke. Jeg måtte det, – og jeg turde det ikke. Jeg brødes med Gud Herren, således som patriarken brødes med ham i den gamle pagts dage. Hvad der foregik med mig i den nat, som fulgte på, det ved jeg ikke. Men det ved jeg, at før hanen gol, talte jeg ansigt til ansigt med den korsfæstede. – Da blev jeg hans.
+I a priest! I willed it, and I willed it not. I had to, – and I dared it not. I strove with the Lord God, as the patriarch strove with him in the days of the old covenant. What passed with me in the night that followed, I do not know. But this I know, that before the cock crowed, I spoke face to face with the crucified one. – Then I became his.
 
-@ Kejser Julian.
-Dårskab; dårskab! Jeg kender disse drømme.
+@ Emperor Julian.
+Folly; folly! I know these dreams.
 
-@ Gregor fra Nazianz.
-På hjemrejsen kom jeg gennem Cæsaræa. O, hvilken sørgelig tilstand fandt jeg ikke der! Jeg fandt staden fuld af flygtende landboere, som havde forladt hus og hjem, fordi tørken i denne sommer havde sviet sæden af og lagt alle vinberge, alle oljehaver øde. For at undgå hungers‐ {{{ 313 }}} døden havde de tyet til de hungrende. Der lå de – mænd, kvinder og børn – i klynger langs husvæggene; feber rysted dem, sulten grov i deres indvolde. Hvad havde Cæsaræa at byde dem, – denne udarmede ulykkelige stad, som endnu kun halvt har rejst sig efter det store jordskælv for to år siden? Og midt under dette, under brændende hede, under hyppige jordstød, måtte vi se ugudelige offerfester foregå ved dag og nat. De omstyrtede altere genopbyggedes i al hast; offerblodet randt i strømme; gøglere og skøger drev under sang og dans gennem stadens gader.
+@ Gregory of Nazianzus.
+On the homeward journey I came through Caesarea. Oh, what a sorrowful condition I found there! I found the city full of fleeing country-folk, who had left house and home because the drought this summer had scorched the crops and laid waste all the vineyards, all the olive-gardens. To escape {{{ 313 }}} death by famine they had taken refuge among the starving. There they lay – men, women and children – in clusters along the house-walls; fever shook them, hunger gnawed in their bowels. What had Caesarea to offer them, – this impoverished, unhappy city, which has still only half risen after the great earthquake two years ago? And amid all this, under burning heat, under frequent earth-tremors, we had to see ungodly sacrificial festivals go on by day and night. The overthrown altars were rebuilt in all haste; the sacrificial blood ran in streams; jugglers and harlots roamed with song and dance through the city's streets.
 
-Herre, – kan det undre dig, om mine hårdt prøvede brødre, i den hjemsøgelse, som overgik dem, troede at øjne en himlens straf fordi de så længe havde tålt vantroen og vantroens forargelige tegn iblandt sig?
+Lord, – can it astonish you if my sorely tried brethren, in the visitation that came upon them, believed they descried a punishment of heaven because they had so long tolerated unbelief and unbelief's offensive signs among them?
 
-@ Kejser Julian.
-Hvilke tegn sigter du til?
+@ Emperor Julian.
+What signs do you refer to?
 
-@ Gregor fra Nazianz.
-De opskræmtes, de febersyges råb blev stedse højere; de krævede at stadens forstandere skulde aflægge for Kristus et håndgribeligt vidnesbyrd ved at lade nedrive, hvad der endnu står som et minde om hedenskabets fordums magt i Cæsaræa.
+@ Gregory of Nazianzus.
+The cries of the terrified, of the fever-stricken, grew ever louder; they demanded that the city's magistrates should render to Christ a tangible testimony by having pulled down what still stands as a memorial of heathendom's former power in Caesarea.
 
-@ Kejser Julian.
-Du vil da vel ikke dermed sige at –?
+@ Emperor Julian.
+You surely do not mean thereby to say that –?
 
-@ {{{ 314 }}} Gregor fra Nazianz.
-Stadens styresmænd lod tillyse et møde, hvor også jeg var tilstede. Du ved, nådigste kejser, at alle templer er borgerskabets ejendom. Borgerne kan altså forføje over dem efter egen fri vilje.
+@ {{{ 314 }}} Gregory of Nazianzus.
+The city's rulers had a meeting proclaimed, at which I too was present. You know, most gracious emperor, that all temples are the property of the citizenry. The citizens may therefore dispose of them according to their own free will.
 
-@ Kejser Julian.
-Nu, nu? Og om så var?
+@ Emperor Julian.
+Well, well? And if that were so?
 
-@ Gregor fra Nazianz.
-I hint forfærdelige jordskælv, som overgik Cæsaræa for to år siden, ødelagdes alle templer på et nær.
+@ Gregory of Nazianzus.
+In that terrible earthquake which came upon Caesarea two years ago, all the temples were destroyed but one.
 
-@ Kejser Julian.
-Ja, ja; Fortunas tempel.
+@ Emperor Julian.
+Yes, yes; the temple of Fortuna.
 
-@ Gregor fra Nazianz.
-På det møde, jeg taler om, vedtog menigheden at fuldbyrde Guds straffende værk, som et vidnesbyrd om at de vilde holde sig helt og alene til ham og ikke længere tåle forargelsen i sin midte.
+@ Gregory of Nazianzus.
+At the meeting I speak of, the congregation resolved to complete God's punishing work, as a testimony that they would hold to him wholly and alone and no longer tolerate the offence in their midst.
 
-@ Kejser Julian *(hæst)*.
-Gregor – fordums ven, – har du dit liv kært?
+@ Emperor Julian *(hoarsely)*.
+Gregory – friend of old, – do you hold your life dear?
 
-@ Gregor fra Nazianz.
-Menigheden fattede da en beslutning, som jeg ikke kunde billige, men som fik næsten alle stemmer for sig. Men da vi frygtede for at sagen skulde komme i en forvansket skikkelse {{{ 315 }}} for dine ører, og måske optænde dig til vrede imod staden, så blev det vedtaget at en mand skulde begive sig hid for at lade dig vide, hvad vi har besluttet og hvad der nu vil ske.
+@ Gregory of Nazianzus.
+The congregation then took a decision which I could not approve, but which received almost all the votes. But since we feared that the matter might come in a distorted shape {{{ 315 }}} to your ears, and perhaps kindle you to wrath against the city, it was resolved that a man should betake himself here to let you know what we have decided and what will now happen.
 
-Ophøjede hersker, – der fandtes ingen anden, som var villig til at påtage sig dette hverv. Jeg måtte da påtage mig det. Det er derfor, herre, at jeg her i ydmyghed står for dig og lader dig vide at vi kristne i Cæsaræa har vedtaget at det tempel, hvori hedningerne i sin tid dyrkede en falsk guddom under navnet Fortuna, skal nedrives og jævnes med jorden.
+Exalted ruler, – there was found no other who was willing to take upon himself this charge. I had then to take it upon myself. It is therefore, lord, that I here in humility stand before you and let you know that we Christians in Caesarea have resolved that the temple, wherein the heathens in their time worshipped a false deity under the name of Fortuna, shall be pulled down and levelled with the ground.
 
-@ Kejser Julian *(springer op)*.
-Og dette må jeg fornemme med mine egne ører! Så uhørte ting vover en enkelt mand at sige mig!
+@ Emperor Julian *(springs up)*.
+And this I must hear with my own ears! Such unheard-of things a single man dares to say to me!
 
-@ Hofmænd, talere og digtere.
-O, fromme kejser, tål ikke dette! Straf denne forvovne!
+@ Courtiers, orators and poets.
+Oh, pious emperor, do not endure this! Punish this reckless man!
 
-@ Læreren Hekebolios.
-Han er afsindig, herre! Lad ham gå. Se, se, – vanvidet gnistrer ud af hans øjne.
+@ Hecebolius the teacher.
+He is insane, lord! Let him go. See, see, – the madness flashes out of his eyes.
 
-@ Kejser Julian.
-Ja, vel må dette kaldes vanvid. Men det er mere end vanvid. At ville nedrive dette udmærkede tempel, oprejst for en ligeså udmærket gudinde! Og er det ikke netop denne gudinde, hvis gunst jeg skylder de gerninger, hvorom selv {{{ 316 }}} de fjerneste folkeslag taler? Hvad håb om sejr og held skulde jeg efter denne dag kunne gøre mig, hvis jeg lod sligt ske? – Gregor, jeg befaler dig at rejse tilbage til Cæsaræa og lade borgerne vide at jeg forbyder dette formastelige værk.
+@ Emperor Julian.
+Yes, well may this be called madness. But it is more than madness. To want to pull down this excellent temple, raised for an equally excellent goddess! And is it not precisely this goddess to whose favour I owe the deeds of which even {{{ 316 }}} the most distant peoples speak? What hope of victory and fortune could I make for myself after this day, if I let such a thing happen? – Gregory, I command you to travel back to Caesarea and let the citizens know that I forbid this presumptuous work.
 
-@ Gregor fra Nazianz.
-Det er ikke gørligt, herre! Sagen er nu kommen dertil, at den er bleven os et valg imellem menneskefrygt og lydighed under Gud. Vi kan ikke vige.
+@ Gregory of Nazianzus.
+It is not feasible, lord! The matter has now come to this, that it has become for us a choice between fear of man and obedience to God. We cannot yield.
 
-@ Kejser Julian.
-Da skal I vel få føle, hvor langt kejserens arm rækker!
+@ Emperor Julian.
+Then you shall surely feel how far the emperor's arm reaches!
 
-@ Gregor fra Nazianz.
-Kejserens arm er vældig i de jordiske ting; og jeg, som andre, bæver under den.
+@ Gregory of Nazianzus.
+The emperor's arm is mighty in earthly things; and I, like others, tremble under it.
 
-@ Kejser Julian.
-Så vis det i gerning! Ah, I Galilæere, I stoler på mit langmod. Lid ikke på det; thi sandelig –
+@ Emperor Julian.
+Then show it in deed! Ah, you Galileans, you rely on my forbearance. Do not trust in it; for truly –
 
-@stage (Larm ved indgangen. Hårskæreren Eunapios, fulgt af flere borgere, styrter ind.)
+@stage (Noise at the entrance. Eunapius the barber, followed by several citizens, rushes in.)
 
-@ Kejser Julian.
-Hvad er dette? Eunapios, hvad er hændt dig?
+@ Emperor Julian.
+What is this? Eunapius, what has happened to you?
 
-@ Hårskæreren Eunapios.
-O, at mine øjne måtte være vidne til sligt syn!
+@ Eunapius the barber.
+Oh, that my eyes had to witness such a sight!
 
-@ {{{ 317 }}} Kejser Julian.
-Hvad syn har du havt?
+@ {{{ 317 }}} Emperor Julian.
+What sight have you had?
 
-@ Hårskæreren Eunapios.
-Se, allernådigste kejser, jeg kommer blodig, forslåt, og dog lykkelig over at være den første, som påkalder din straf –
+@ Eunapius the barber.
+See, most gracious emperor, I come bloody, beaten, and yet happy to be the first who calls down your punishment –
 
-@ Kejser Julian.
-Tal mand; – hvem har slåt dig?
+@ Emperor Julian.
+Speak, man; – who has struck you?
 
-@ Hårskæreren Eunapios.
-Tillad mig, herre, at bære min klage frem.
+@ Eunapius the barber.
+Permit me, lord, to bring forward my complaint.
 
-Jeg gik i denne morgenstund udenfor byen for at opsøge det lille Venus-tempel, som du nys har ladet sætte i stand. Da jeg kom derud, lød sang og fløjtespil mig imøde. Kvinder opførte skønne danse i forhallen, og indenfor fandt jeg det hele rum fyldt af en jublende skare, mens presterne foran alteret foretog de ofringer, du har påbudt.
+I went this morning outside the city to seek out the little temple of Venus which you have lately had put in order. When I came out there, song and flute-playing met me. Women performed lovely dances in the vestibule, and within I found the whole room filled with a jubilant throng, while the priests before the altar performed the sacrifices you have ordained.
 
-@ Kejser Julian.
-Ja, ja; og så?
+@ Emperor Julian.
+Yes, yes; and then?
 
-@ Hårskæreren Eunapios.
-Knapt havde jeg fåt tid til i andagt at vende mine tanker imod denne henrykkende gudinde, hvem jeg særligt ærer og dyrker, – da trængte en stor sværm af unge mænd ind i templet –
+@ Eunapius the barber.
+Scarcely had I had time in devotion to turn my thoughts toward this enrapturing goddess, whom I especially honour and worship, – when a great swarm of young men pressed into the temple –
 
-@ Kejser Julian.
-Dog ikke Galilæere?
+@ Emperor Julian.
+Surely not Galileans?
 
-@ {{{ 318 }}} Hårskæreren Eunapios.
-Jo, herre, – Galilæere.
+@ {{{ 318 }}} Eunapius the barber.
+Yes, lord, – Galileans.
 
-@ Kejser Julian.
+@ Emperor Julian.
 Ah!
 
-@ Hårskæreren Eunapios.
-Hvilket optrin fulgte så ikke på! Grædende under voldsmændenes skældsord og stokkeslag flygtede hine dansende piger fra forhallen ind til os. Galilæerne faldt over os alle, mishandlede os og forhånede os på den skændigste måde.
+@ Eunapius the barber.
+What a scene then followed! Weeping under the ruffians' abuse and blows of staves, those dancing girls fled from the vestibule in to us. The Galileans fell upon us all, maltreated us and reviled us in the most shameful manner.
 
-@ Kejser Julian *(stiger ned af forhøjningen)*.
-Vent, vent!
+@ Emperor Julian *(steps down from the platform)*.
+Wait, wait!
 
-@ Hårskæreren Eunapios.
-Ak, havde denne overlast blot rammet os alene! Men de utæmmelige gik videre. Ja, nådigste kejser, – med *et* ord: alteret er nedrevet, gudindens billedstøtte knust i stykker, offerdyrenes indvolde kastet udenfor til føde for hundene –
+@ Eunapius the barber.
+Alas, had this outrage struck only us alone! But the untamable ones went further. Yes, most gracious emperor, – in *one* word: the altar is torn down, the goddess's image shattered to pieces, the entrails of the sacrificial animals thrown outside as food for the dogs –
 
-@ Kejser Julian *(går op og ned)*.
-Vent, vent, vent!
+@ Emperor Julian *(walks up and down)*.
+Wait, wait, wait!
 
-@ Gregor fra Nazianz.
-Herre, denne ene mands ord er ikke nok –
+@ Gregory of Nazianzus.
+Lord, this one man's word is not enough –
 
-@ Kejser Julian.
-Ti!
+@ Emperor Julian.
+Silence!
 
-*(til Eunapios.)*
+*(to Eunapius.)*
 
-Kendte du nogen af disse tempelskændere?
+Did you know any of these temple-desecrators?
 
-@ {{{ 319 }}} Hårskæreren Eunapios.
-Jeg ikke, herre; men disse borgere kendte flere af dem.
+@ {{{ 319 }}} Eunapius the barber.
+Not I, lord; but these citizens knew several of them.
 
-@ Kejser Julian.
-Tag vagt med eder. Grib så mange af de skyldige, som I kan få fat på. Kast dem i fængsel. De fangne skal navngive de øvrige; og når jeg har dem alle i min magt –
+@ Emperor Julian.
+Take a guard with you. Seize as many of the guilty as you can lay hold of. Cast them into prison. The captured shall name the rest; and when I have them all in my power –
 
-@ Gregor fra Nazianz.
-Hvad da herre?
+@ Gregory of Nazianzus.
+What then, lord?
 
-@ Kejser Julian.
-Det vil bøddelen kunne sige dig. Både du og borgerne i Cæsaræa skal erfare, hvad I har at vente, dersom I med galilæisk stivsind holder fast ved eders forehavende.
+@ Emperor Julian.
+That the executioner will be able to tell you. Both you and the citizens of Caesarea shall learn what you have to expect, if with Galilean obstinacy you hold fast to your purpose.
 
-@stage (Kejseren går i heftig vrede ud til venstre; Eunapios og hans vidner fjerner sig med vagten; den øvrige forsamling skilles ad.)
+@stage (The emperor goes out to the left in violent wrath; Eunapius and his witnesses withdraw with the guard; the rest of the assembly disperses.)
 
-@stage (Et torv i Antiokia. I forgrunden til højre munder en gade ud på torvet; til venstre i baggrunden ser man ind i et trangt og bugtet stræde.)
+@stage (A square in Antioch. In the foreground to the right a street opens out onto the square; to the left in the background one looks into a narrow and winding alley.)
 
-@stage (En stor menneskemængde opfylder torvet. Sælgere råber med kramvarer. På flere steder er borgerne stimlet sammen i ivrigt talende klynger.)
+@stage (A great crowd of people fills the square. Vendors cry their wares. In several places the citizens are gathered together in eagerly talking clusters.)
 
-@ En borger.
-Men, du gode himmelens gud, hvad tid skede denne ulykke.
+@ A citizen.
+But, you good god of heaven, when did this misfortune happen?
 
-@ En anden borger.
-Imorges, siger jeg; ganske tidligt imorges.
+@ Another citizen.
+This morning, I tell you; quite early this morning.
 
-@ {{{ 320 }}} Farveren Fokion *(som er kommen gående fra gaden til højre)*.
-Kære mand, finder du det passende at kalde dette en ulykke? Jeg kalder det en forbrydelse, og det, til og med, en højst fræk forbrydelse.
+@ {{{ 320 }}} Phocion the dyer *(who has come walking from the street to the right)*.
+My dear man, do you find it fitting to call this a misfortune? I call it a crime, and, what is more, a most impudent crime.
 
-@ Den anden borger.
-Ja, ja; det er ganske sandt; det var højst frækt gjort.
+@ The other citizen.
+Yes, yes; that is quite true; it was most impudently done.
 
-@ Farveren Fokion.
-Tænke sig til – ja, er det ikke overfaldet i Venus-templet I taler om? Jo. Tænke sig til, siger jeg, på en tid, da kejseren selv er i staden –! Og så at vælge en dag, som denne, – en dag –
+@ Phocion the dyer.
+Just imagine – yes, is it not the assault in the temple of Venus you are speaking of? Yes. Just imagine, I say, at a time when the emperor himself is in the city –! And then to choose a day like this, – a day –
 
-@ En tredje borger *(nærmer sig de talende)*.
-Hør, sig mig, gode fremmede, hvad er det egentlig –?
+@ A third citizen *(approaches the speakers)*.
+Hark, tell me, good stranger, what is it really –?
 
-@ Farveren Fokion.
-Jeg siger, en dag som denne, da vor ophøjede hersker selv vil forrette ved Apollon-festen.
+@ Phocion the dyer.
+I say, a day like this, when our exalted ruler will himself officiate at the festival of Apollo.
 
-@ Den tredje borger.
-Ja, visst, det ved jeg; men hvorfor fængsler man disse kristne?
+@ The third citizen.
+Yes, indeed, that I know; but why are these Christians being imprisoned?
 
-@ Farveren Fokion.
-Hvad? Fængsler man dem? Er man virkelig kommen dem på spor?
+@ Phocion the dyer.
+What? Are they being imprisoned? Have they really been tracked down?
 
-*(høje skrig høres.)*
+*(loud cries are heard.)*
 
-Hyss; hvad er det? Ja, ved guderne, tror jeg ikke man har dem!
+Hush; what is that? Yes, by the gods, I do believe they have them!
 
-@stage {{{ 321 }}} (En gammel kvinde, forstyrret og med udslåt hår, baner sig vej gennem menneskemassen; hun er omringet af andre kvinder, som forgæves søger at holde hende tilbage.)
+@stage {{{ 321 }}} (An old woman, distraught and with disheveled hair, forces her way through the mass of people; she is surrounded by other women, who vainly try to hold her back.)
 
-@ Den gamle kvinde.
-Hold ikke på mig! Han er min eneste; han er min alderdoms barn! Slip mig; slip mig! Kan da ingen sige mig, hvor jeg skal finde kejseren?
+@ The old woman.
+Do not hold me! He is my only one; he is the child of my old age! Let me go; let me go! Can no one then tell me where I shall find the emperor?
 
-@ Farveren Fokion.
-Hvad vil du kejseren, gamle moder?
+@ Phocion the dyer.
+What do you want with the emperor, old mother?
 
-@ Den gamle kvinde.
-Jeg vil have min søn igen. Hjælp mig! Min søn! Hilarion! O, tænk, de tog ham fra mig! De brød ind i huset til os, – og så tog de ham!
+@ The old woman.
+I want my son back. Help me! My son! Hilarion! Oh, think, they took him from me! They broke into our house, – and then they took him!
 
-@ En af borgerne *(til Fokion)*.
-Hvem er den kvinde?
+@ One of the citizens *(to Phocion)*.
+Who is that woman?
 
-@ Farveren Fokion.
-Hvad? Kender du ikke enken Publia, – salmesyngersken?
+@ Phocion the dyer.
+What? Do you not know the widow Publia, – the hymn-singer?
 
-@ Borgeren.
-Ah, ja, ja, ja!
+@ The citizen.
+Ah, yes, yes, yes!
 
-@ Kvinden Publia.
-Hilarion! Mit barn! Hvad vil de gøre med ham? Ah, se, Fokion, – er du der? En Guds lykke at jeg traf en kristen broder –
+@ Publia the woman.
+Hilarion! My child! What will they do with him? Ah, see, Phocion, – are you there? A godsend that I have met a Christian brother –
 
-@ {{{ 322 }}} Farveren Fokion.
-Hyss, stille, stille; skrig ikke så; kejseren kommer.
+@ {{{ 322 }}} Phocion the dyer.
+Hush, quiet, quiet; do not cry out so; the emperor is coming.
 
-@ Kvinden Publia.
-O, den ugudelige kejser! Vredens Herre hjemsøger os for hans synders skyld; hungersnød hærjer landene; jorden skælver under os!
+@ Publia the woman.
+Oh, the ungodly emperor! The Lord of wrath visits us for the sake of his sins; famine ravages the lands; the earth trembles under us!
 
-@stage (En deling soldater kommer fra gaden til højre.)
+@stage (A troop of soldiers comes from the street to the right.)
 
-@ Delings-føreren.
-Til side; gør plads her!
+@ The troop-leader.
+Aside; make room here!
 
-@ Kvinden Publia.
-O, kom, gode Fokion; – hjælp mig for vort venskabs og vort broderskabs skyld –
+@ Publia the woman.
+Oh, come, good Phocion; – help me for the sake of our friendship and our brotherhood –
 
-@ Farveren Fokion.
-Er du gal, kvinde? Jeg kender dig ikke.
+@ Phocion the dyer.
+Are you mad, woman? I do not know you.
 
-@ Kvinden Publia.
-Hvad? Kender du mig ikke? Er du ikke farveren Fokion? Er du ikke søn af –?
+@ Publia the woman.
+What? Do you not know me? Are you not Phocion the dyer? Are you not the son of –?
 
-@ Farveren Fokion.
-Jeg er ikke søn af nogen. Gå fra mig, kvinde? Du er jo gal. Jeg kender dig ikke; jeg har aldrig set dig.
+@ Phocion the dyer.
+I am no one's son. Go away from me, woman! You are surely mad. I do not know you; I have never seen you.
 
-*(han skynder sig ind i trængselen.)*
+*(he hurries into the throng.)*
 
-@ En underfører *(med soldater fra højre.)*
-Gør ryddigt her!
+@ An under-officer *(with soldiers from the right.)*
+Clear the way here!
 
-@stage (Soldaterne trænger menneskemængden ind imod husvæggene. Den gamle Publia falder om i kvindernes arme til venstre. Alle stirrer forventningsfuldt henad gaden.)
+@stage (The soldiers press the crowd in toward the house-walls. Old Publia falls back into the women's arms on the left. All stare expectantly down the street.)
 
-@ {{{ 323 }}} Farveren Fokion. *(i klyngen bag vagtposterne til højre.)*
-Ja, ved solens gud, kommer han ikke der, den velsignede herre!
+@ {{{ 323 }}} Phocion the dyer. *(in the cluster behind the sentries to the right.)*
+Yes, by the god of the sun, is that not he coming there, the blessed lord!
 
-@ En soldat.
-Træng ikke så på der bag!
+@ A soldier.
+Do not press so there behind!
 
-@ Farveren Fokion.
-Kan I se ham? Den mand med det hvide bind om panden, det er kejseren.
+@ Phocion the dyer.
+Can you see him? The man with the white band about his brow, that is the emperor.
 
-@ En borger.
-Den mand, som er ganske hvidklædt?
+@ A citizen.
+The man who is dressed all in white?
 
-@ Farveren Fokion.
-Ja, ja, netop han.
+@ Phocion the dyer.
+Yes, yes, that very man.
 
-@ Borgeren.
-Men hvorfor er han hvidklædt?
+@ The citizen.
+But why is he dressed in white?
 
-@ Farveren Fokion.
-Rimeligvis for hedens skyld; – eller nej, bi lidt, jeg tænker det er som offerprest at han –
+@ Phocion the dyer.
+Probably for the heat's sake; – or no, wait a little, I think it is as sacrificial priest that he –
 
-@ En anden borger.
-Vil da kejseren ofre selv?
+@ Another citizen.
+Will the emperor then perform the sacrifice himself?
 
-@ Farveren Fokion.
-Ja, kejser Julian gør alting selv.
+@ Phocion the dyer.
+Yes, Emperor Julian does everything himself.
 
-@ En tredje borger.
-Han ser ikke så vældig ud som kejser Konstanzios.
+@ A third citizen.
+He does not look so mighty as Emperor Constantius.
 
-@ Farveren Fokion.
-Det synes jeg dog. Han er ikke så høj, som den forrige kejser; men så er hans arme {{{ 324 }}} længere end hins. Og så har han et blik, – o, I venner –! Ja, nu kan I ikke se det; han slår øjet ærbart ned under gangen. Ja, ærbar er han, det må I tro. Kvinder ser han ikke til. Jeg tør sværge på, at siden hans hustrus død har han ikke ret mange gange –; jeg skal sige eder, han skriver hele natten. Derfor er også hans fingre ofte så sorte som en farvers; ja, ligesom mine. Jeg er også farver. I må tro, jeg kender kejseren bedre end de fleste. Jeg er barnefødt her i staden; men jeg har levet femten år i Konstantinopel indtil nu for ganske nylig –
+@ Phocion the dyer.
+Yet I think he does. He is not so tall as the former emperor; but then his arms are {{{ 324 }}} longer than the other's. And then he has a look, – oh, you friends –! Yes, now you cannot see it; he casts his eyes down modestly as he walks. Yes, modest he is, you may believe it. Women he does not so much as look at. I dare swear that since his wife's death he has not many times –; I tell you, he writes all night long. That is why his fingers too are often as black as a dyer's; yes, just like mine. I am a dyer too. You may believe it, I know the emperor better than most. I was born here in the city; but I have lived fifteen years in Constantinople until quite recently –
 
-@ En borger.
-Skulde der være noget i det rygte at kejseren tænker at bo her stadigt?
+@ A citizen.
+Could there be anything in the rumour that the emperor thinks of living here permanently?
 
-@ Farveren Fokion.
-Jeg kender kejserens hårskærer, og han siger det. Gid nu bare ikke disse skammelige optøjer måtte ægge ham altfor meget.
+@ Phocion the dyer.
+I know the emperor's barber, and he says so. If only these shameful riots do not provoke him all too much.
 
-@ En borger.
-Ak, ak, det skulde være harmeligt!
+@ A citizen.
+Alas, alas, that would be vexing!
 
-@ En anden borger.
-Blev kejseren her, så faldt der lidt af til os alle.
+@ Another citizen.
+If the emperor stayed here, there would be a little something to fall to us all.
 
-@ Farveren Fokion.
-Det havde også jeg stolet på; derfor flytted jeg over. Men nu får vi gøre vort bedste, venner; når kejseren kommer forbi, vil vi opløfte glade tilråb både til ham og til Apollon.
+@ Phocion the dyer.
+On that too I had counted; that is why I moved over here. But now we must do our best, friends; when the emperor passes by, we will raise glad acclamations both to him and to Apollo.
 
-@ {{{ 325 }}} En borger *(til en anden)*.
-Hvad er det egentlig for en Apollon, som folk er begyndt at tale så meget om?
+@ {{{ 325 }}} A citizen *(to another)*.
+What sort of Apollo is it, really, that people have begun to talk so much about?
 
-@ Den anden borger.
-Ej, det er jo presten i Korinth, – han, som vandede, hvad den hellige Paulus havde plantet.
+@ The other citizen.
+Why, it is the priest in Corinth, – he who watered what the holy Paul had planted.
 
-@ Den første borger.
-Ja så; ja, nu synes jeg, jeg mindes det.
+@ The first citizen.
+Is that so; yes, now I think I remember it.
 
-@ Farveren Fokion.
-Ej, ej, ej, det er ikke *den* Apollon; det er en ganske anden; det er solkongen, – den store lyrespillende Apollon.
+@ Phocion the dyer.
+No, no, no, it is not *that* Apollo; it is quite another; it is the Sun-King, – the great lyre-playing Apollo.
 
-@ Den anden borger.
-Ah så; *den* Apollon! Er *han* bedre?
+@ The other citizen.
+Ah, so; *that* Apollo! Is *he* better?
 
-@ Farveren Fokion.
-Ja, det skulde jeg mene. – Se, se, der kommer han. O, den højst velsignede herre!
+@ Phocion the dyer.
+Yes, I should think so. – See, see, there he comes. Oh, the most blessed lord!
 
-@stage (Kejser Julian, klædt som yppersteprest, kommer omgiven af offerprester og tempeltjenere. Hofmænd og lærde, hvoriblandt læreren Hekebolios, har sluttet sig til toget; ligeså borgerfolk. Foran kejseren går fløjtespillere og harpeslagere. Soldater og stadstjenere med lange stokke gør ryddigt foran og på siderne.)
+@stage (Emperor Julian, dressed as high priest, comes surrounded by sacrificial priests and temple-servants. Courtiers and learned men, among them Hecebolius the teacher, have joined the procession; likewise townsfolk. Before the emperor go flute-players and harpists. Soldiers and city-servants with long staves clear the way in front and at the sides.)
 
-@ Mængden på torvet *(klapper i hænderne)*.
-Priset være kejseren! Lovet være Julian, helten og den lykkebringende!
+@ The crowd in the square *(clapping their hands)*.
+Praised be the emperor! Blessed be Julian, the hero and the bringer of fortune!
 
-@ Farveren Fokion.
-Hilset være Julian og solkongen! Leve Apollon!
+@ Phocion the dyer.
+Hail to Julian and the Sun-King! Long live Apollo!
 
-@ {{{ 326 }}} Borgerne *(i forgrunden til højre)*.
-Kejser, kejser, bliv længe iblandt os!
+@ {{{ 326 }}} The citizens *(in the foreground to the right)*.
+Emperor, emperor, stay long among us!
 
-@stage (Kejser Julian giver et tegn med hånden; toget standser.)
+@stage (Emperor Julian gives a sign with his hand; the procession halts.)
 
-@ Kejser Julian.
-Borgere af Antiokia! Ikke ved jeg i hast at nævne den ting, der skulde kunne fryde mit hjerte mere, end disse eders opmuntrende tilråb. Og vel kan mit hjerte tiltrænge denne vederkvægelse.
+@ Emperor Julian.
+Citizens of Antioch! I cannot on the instant name the thing that could gladden my heart more than these encouraging acclamations of yours. And well may my heart need this refreshment.
 
-Det var med åndens nedslagenhed at jeg tiltrådte denne vandring, der skulde være en glædens og en opløftelsens gang. Ja, jeg vil ikke lægge skjul på det, jeg var imorges ikke langt fra at bringes ud af den sindets ligevægt, som det for en visdomselsker er sømmeligst at bevare under alle tilskikkelser.
+It was with dejection of spirit that I set out on this procession, which should have been a walk of gladness and of elevation. Yes, I will not conceal it, I was this morning not far from being brought out of that equilibrium of mind which it is most seemly for a lover of wisdom to preserve under all dispensations.
 
-Men skulde nogen nænne at gå i rette med mig herfor? Jeg giver enhver at betænke, hvilke formasteligheder man andetsteds pønser på og her allerede har sat i værk.
+But should anyone have the heart to reproach me for this? I give everyone to consider what presumptuous deeds are elsewhere being plotted and here have already been set in motion.
 
-@ Kvinden Publia.
-Herre, herre!
+@ Publia the woman.
+Lord, lord!
 
-@ Farveren Fokion.
-O, fromme og retsindige kejser, straf disse forvovne!
+@ Phocion the dyer.
+Oh, pious and just-minded emperor, punish these reckless ones!
 
-@ Kvinden Publia.
-Herre, giv mig Hilarion igen!
+@ Publia the woman.
+Lord, give me Hilarion back!
 
-@ {{{ 327 }}} Farveren Fokion.
-Alle gode borgere anråber om din yndest for staden.
+@ {{{ 327 }}} Phocion the dyer.
+All good citizens implore your favour for the city.
 
-@ Kejser Julian.
-Søg at vinde gudernes yndest, da har I visselig min. Og er det ikke billigt at Antiokia heri går foran? Er det ikke som om solgudens øje med særligt velbehag hvilte på denne stad? Forhør eder hos vidt berejste mænd, og I skal erfare, i hvilket sørgeligt overmål det andetsteds er lykkedes vildfarelsen at lægge vore hellige steder øde. Hvad står tilbage? En levning hist og her; og intet af det bedste.
+@ Emperor Julian.
+Seek to win the gods' favour, then you shall surely have mine. And is it not just that Antioch should here go first? Is it not as though the sun-god's eye rested with especial pleasure upon this city? Inquire of widely travelled men, and you shall learn in what sorrowful excess error has elsewhere succeeded in laying waste our holy places. What remains? A relic here and there; and nothing of the best.
 
-Men hos eder, I borgere af Antiokia! O, mine øjne fyldtes med glædestårer, da jeg første gang så denne uforlignelige helligdom, Apollons eget hus, som man neppe skulde kunne tænke sig opført af menneskehænder. Står ikke den herliges billede derinde som før i ukrænket skønhed? Ikke en kant er afhakket eller smuldret på hans alter; ikke en revne er at se i de ranke bærende støtter.
+But among you, you citizens of Antioch! Oh, my eyes filled with tears of joy when I first saw this incomparable sanctuary, Apollo's own house, which one could scarcely imagine to have been raised by human hands. Does not the image of the glorious one stand within, as before, in inviolate beauty? Not an edge is chipped or crumbled on his altar; not a crack is to be seen in the slender bearing columns.
 
-O, når jeg betænker dette, – når jeg føler bindet om min pande, – når jeg ser nedad denne klædning, der er mig dyrebarere end purpurkåben, da fornemmer jeg gudens nærhed i en hellig isnen.
+Oh, when I consider this, – when I feel the band about my brow, – when I look down at this garb, which is dearer to me than the purple cloak, then I feel the god's nearness in a holy shudder.
 
-Se, se, lyset sittrer om os i herlighed!
+See, see, the light quivers about us in glory!
 
-Føl, føl, luften er svanger med friske kranses duft!
+Feel, feel, the air is heavy with the fragrance of fresh garlands!
 
-{{{ 328 }}} Skønne jord, lysets og livets hjem, glædens hjem, og lykkens og skønhedens hjem, – hvad du var, skal du vorde! – I solkongens favn! Mithra, Mithra!
+{{{ 328 }}} Fair earth, home of light and of life, home of gladness, and home of fortune and of beauty, – what you were, you shall become! – In the Sun-King's embrace! Mithra, Mithra!
 
-Fremad på vor sejersgang!
+Onward on our march of victory!
 
-@stage (Toget sætter sig atter, under mængdens bifaldsråb, i bevægelse, men de forreste standser ved indgangen til det trange stræde, hvorigennem et andet tog kommer ned imod torvet.)
+@stage (The procession sets itself once more in motion, amid the crowd's cheers, but those in front halt at the entrance to the narrow alley, through which another procession comes down toward the square.)
 
-@ Kejser Julian.
-Hvad hindrer os?
+@ Emperor Julian.
+What hinders us?
 
-@ Læreren Hekebolios.
-Nådigste herre, der er noget på færde oppe i gaden.
+@ Hecebolius the teacher.
+Most gracious lord, there is something afoot up in the street.
 
-@ Sang *(langt borte)*.
-| Saligt at lide, saligt at dødes;
-| saligt bag trængslernes dal at opstå.
+@ Song *(far away)*.
+| Blessed to suffer, blessed to be slain;
+| blessed beyond the vale of tribulation to rise again.
 
-@ Farveren Fokion.
-Galilæerne, herre! Man har dem!
+@ Phocion the dyer.
+The Galileans, lord! They have them!
 
-@ Kvinden Publia.
-Harilion!
+@ Publia the woman.
+Hilarion!
 
-@ Farveren Fokion.
-Man har dem! Jeg hører lænkerne –
+@ Phocion the dyer.
+They have them! I hear the chains –
 
-@ Kejser Julian.
-Forbi dem –!
+@ Emperor Julian.
+Past them –!
 
-@ Hårskæreren Eunapios *(ilsomt gennem mængden)*.
-Det er lykkedes over al måde, herre!
+@ Eunapius the barber *(hastily through the crowd)*.
+It has succeeded beyond all measure, lord!
 
-@ {{{ 329 }}} Kejser Julian.
-Hvem er de, disse skamløse?
+@ {{{ 329 }}} Emperor Julian.
+Who are they, these shameless ones?
 
-@ Hårskæreren Eunapios.
-Nogle af dem er borgere her af staden; men de fleste skal være flygtende landmænd fra Kappadokia.
+@ Eunapius the barber.
+Some of them are citizens here of the city; but most are said to be fleeing country-folk from Cappadocia.
 
-@ Kejser Julian.
-Jeg vil ikke se dem. Fremad, har jeg befalet!
+@ Emperor Julian.
+I will not see them. Onward, I have commanded!
 
-@ Fangernes sang *(nærmere)*.
-| Saligt, med henfarne blodvidner mødes;
-| saligt, martyriets krans at få.
+@ The prisoners' song *(nearer)*.
+| Blessed, to meet the blood-witnesses gone before;
+| blessed, to gain the martyr's crown.
 
-@ Kejser Julian.
-De afsindige. Ikke så nær til mig! Vagt, vagt!
+@ Emperor Julian.
+The frenzied ones. Not so near to me! Guard, guard!
 
-@stage (Begge tog er imidlertid stødt sammen i trængselen. Apollon-toget nødes til at gøre holdt, medens toget med fangerne, mænd i lænker, omgivne af soldater og ledsagede af en stor menneskemængde, skrider forbi.)
+@stage (The two processions have meanwhile collided in the throng. The Apollo procession is forced to halt, while the procession with the prisoners, men in chains, surrounded by soldiers and accompanied by a great crowd, passes by.)
 
-@ Kvinden Publia.
-Mit barn! Hilarion!
+@ Publia the woman.
+My child! Hilarion!
 
-@ Hilarion *(blandt fangerne)*.
-Glæd dig, min moder!
+@ Hilarion *(among the prisoners)*.
+Rejoice, my mother!
 
-@ Kejser Julian.
-I arme forvildede! Når jeg hører vanvidet således tale ud af eder, da tvivler jeg næsten på at jeg har ret til at straffe eder.
+@ Emperor Julian.
+You poor deluded ones! When I hear the madness speak thus out of you, I almost doubt whether I have the right to punish you.
 
-@ {{{ 330 }}} En anden stemme *(blandt fangerne)*.
-Til side; tag ikke tornekronen fra os.
+@ {{{ 330 }}} Another voice *(among the prisoners)*.
+Aside; do not take the crown of thorns from us.
 
-@ Kejser Julian.
-Nat og rædsel, – hvilken røst er det!
+@ Emperor Julian.
+Night and terror, – what a voice is that!
 
-@ Vagtføreren.
-Herre, det var denne, som talte.
+@ The captain of the guard.
+Lord, it was this one who spoke.
 
-*(han støder frem en af fangerne, en ung mand, der holder en halvvoksen yngling ved hånden.)*
+*(he thrusts forward one of the prisoners, a young man, who holds a half-grown youth by the hand.)*
 
-@ Kejser Julian *(med et skrig)*.
+@ Emperor Julian *(with a cry)*.
 Agathon!
 
-@ Fangen *(ser på ham og tier)*.
+@ The prisoner *(looks at him and keeps silent)*.
 
-@ Kejser Julian.
-Agathon, Agathon! Svar mig; er du ikke Agathon?
+@ Emperor Julian.
+Agathon, Agathon! Answer me; are you not Agathon?
 
-@ Fangen.
-Jo.
+@ The prisoner.
+Yes.
 
-@ Kejser Julian.
-Du imellem disse! Tal til mig!
-
-@ Agathon.
-Jeg kender dig ikke.
-
-@ Kejser Julian.
-Du kender mig ikke? Du ved ikke, hvem jeg er?
+@ Emperor Julian.
+You among these! Speak to me!
 
 @ Agathon.
-Jeg ved at du er jordens herre; derfor kendes jeg ikke ved dig.
+I do not know you.
 
-@ {{{ 331 }}} Kejser Julian.
-Og barnet –? Er det din unge broder?
-
-*(til vagtføreren.)*
-
-Denne mand må være uskyldig.
-
-@ Hårskæreren Eunapios.
-Herre, denne mand er just lederen af det hele. Han har selv tilståt det; ja, han har endog rost sig af sin gerning.
-
-@ Kejser Julian.
-Så sælsomt kan da hunger og sygdom og ulykke forvilde et menneskes sind.
-
-*(til fangerne.)*
-
-Sig blot med et ord at I angrer, og der skal intet ondt tilføjes eder.
-
-@ Kvinden Publia *(skriger)*.
-Sig det ikke, Hilarion!
+@ Emperor Julian.
+You do not know me? You do not know who I am?
 
 @ Agathon.
-Vær stærk, kære broder!
+I know that you are the lord of the earth; therefore I disown you.
 
-@ Kvinden Publia.
-Gå, gå til det, som venter dig, min eneste!
+@ {{{ 331 }}} Emperor Julian.
+And the child –? Is it your young brother?
 
-@ Kejser Julian.
-Hør og betænk jer, I andre –
+*(to the captain of the guard.)*
 
-@ Agathon *(til fangerne)*.
-Vælg mellem Kristus og kejseren!
+This man must be innocent.
 
-@ Fangerne.
-Lovet være Herren i det høje!
+@ Eunapius the barber.
+Lord, this man is the very leader of the whole thing. He has himself confessed it; yes, he has even boasted of his deed.
 
-@ {{{ 332 }}} Kejser Julian.
-Forfærdelig er Galilæerens vildledende magt. Dette må knækkes. Forbi dem, de vederstyggelige! De skygger for glæden; de mørkner dagen med sin rugende dødslængsel. – Fløjtespillere, – mænd, kvinder, – stem i! Sang, – sang til pris for liv og lys og lykke!
+@ Emperor Julian.
+So strangely, then, can hunger and sickness and misfortune derange a man's mind.
 
-@ Apollon-toget *(synger)*.
-| Dejligt at køles af rosernes krans;
-| dejligt at vugges i soldagens glans!
+*(to the prisoners.)*
 
-@ Fangetoget.
-| Saligt at sænkes i blodfyldte grave;
-| saligt at afdø mod himmelens have!
+Only say in a word that you repent, and no harm shall be done to you.
 
-@ Apollon-toget.
-| Dejligt at ånde i virakens flod.
+@ Publia the woman *(cries out)*.
+Do not say it, Hilarion!
 
-@ Fangetoget.
-| Saligt at kvæles i osende blod.
+@ Agathon.
+Be strong, dear brother!
 
-@ Apollon-toget.
-| Nydelsens fyldte flømmende skåler
-| rigt du, Apollon, din dyrker tilmåler.
+@ Publia the woman.
+Go, go to that which awaits you, my only one!
 
-@ Fangetoget.
-| Fræsende brandsår og flåede ben
-| heles af *En*!
+@ Emperor Julian.
+Hear and bethink yourselves, you others –
 
-@ Apollon-toget.
-| Dejligt at juble i solhåbs-gløden!
+@ Agathon *(to the prisoners)*.
+Choose between Christ and the emperor!
 
-@ {{{ 333 }}} Fangetoget.
-| Saligt at våndes i bloddåbs-døden!
+@ The prisoners.
+Blessed be the Lord on high!
 
-@stage (Begge tog har under sangen passeret hinanden. Mængden på torvet ser til i dump stilhed.)
+@ {{{ 332 }}} Emperor Julian.
+Terrible is the Galilean's deluding power. This must be broken. Past them, the abominable ones! They cast a shadow over joy; they darken the day with their brooding death-longing. – Flute-players, – men, women, – strike up! Song, – song in praise of life and light and fortune!
 
-@stage (Den hellige lund omkring Apollons tempel. Forhallen, båren af søjler, og hvortil en bred trappe fører op, ses mellem træerne i baggrunden til venstre.)
+@ The Apollo procession *(sings)*.
+| Lovely, cooled by the crown of the rose;
+| lovely, cradled where the sun-day glows!
 
-@stage (En mængde mennesker løber forskrækkede og under høje klageråb omkring i lunden. Langt borte høres musiken fra festtoget.)
+@ The prisoners' procession.
+| Blessed to sink in the blood-filled grave;
+| blessed to die toward the heavenly haven!
 
-@ Kvinder.
-Forbarmelse! Nu skalv jorden igen!
+@ The Apollo procession.
+| Lovely to breathe in the incense-flood.
 
-@ En flygtende mand.
-Hvilken rædsel! Tordenslag under fødderne –
+@ The prisoners' procession.
+| Blessed to choke in the reeking blood.
 
-@ En anden mand.
-Var det virkelig så? Var det jorden, som skalv?
+@ The Apollo procession.
+| The brimming, overflowing bowls of pleasure
+| richly, Apollo, you mete to your worshipper.
 
-@ En kvinde.
-Følte du det ikke? Træet *der* svajed så det suste i løvkronen.
+@ The prisoners' procession.
+| Searing burns and flayed-open bone
+| are healed by *One*!
 
-@ Mange stemmer.
-Hør, hør, hør!
+@ The Apollo procession.
+| Lovely to exult in the sun-hope's glow!
 
-@ Nogle.
-Det er vogne inde på brostenene.
+@ {{{ 333 }}} The prisoners' procession.
+| Blessed to writhe in the blood-baptism's throe!
 
-@ Andre.
-Det er trommer. Hør musiken –; kejseren kommer!
+@stage (During the song the two processions have passed each other. The crowd in the square looks on in dull silence.)
 
-@stage {{{ 334 }}} (Apollon-toget ses kommende fra højre side gennem lunden og opstiller sig under spil af fløjter og harper i en halvkreds foran templet.)
+@stage (The sacred grove around Apollo's temple. The portico, borne by columns, and to which a broad flight of steps leads up, is seen among the trees in the background to the left.)
 
-@ Kejser Julian *(vendt imod templet, med oprakte hænder)*.
-Jeg modtager varslet! –
+@stage (A crowd of people run about in the grove, terrified and with loud cries of lament. Far off is heard the music from the festival procession.)
 
-Så nær har jeg aldrig følt mig i forbund med de udødelige guder.
+@ Women.
+Mercy! Now the earth trembled again!
 
-Buesvingeren er iblandt os. Jorden drønner under hans hæl, således, som den drønnede fordum, da han i vrede tramped den trojanske strandbred.
+@ A fleeing man.
+What terror! Thunderclaps under our feet –
 
-Men det er ikke imod os at han retter det rynkede bryn. Det er imod hine ulykkelige, som hader ham og hans solskinnende rige.
+@ Another man.
+Was it really so? Was it the earth that trembled?
 
-Ja, – så visst, som lykkens eller ulykkens fylde giver den rette målestok for gudernes yndest imod de dødelige, – så visst åbenbarer sig her forskellen imellem os og hine.
+@ A woman.
+Did you not feel it? The tree *there* swayed so that it rustled in its leafy crown.
 
-Hvor er Galilæerne nu? Nogle under bøddelens hænder, andre flygtende i de trange stræder, askegrå af rædsel, med udspilte øjne, – et skrig mellem de halvåbne tænder –, og med håret rejsende sig i skræk eller afrevet i fortvivlelse.
+@ Many voices.
+Hark, hark, hark!
 
-Og hvor er *vi*? Her, i Dafnes friske lund, hvor dryaders duftende ånde køler vore tindinger, – her, foran den herliges herlige tempel, ombølget af lyrers og af fløjters klang, – her, i lys, i lykke, i tryghed, og med guden selv åbenbaret iblandt os.
+@ Some.
+It is wagons on the cobblestones.
 
-Hvor er Galilæernes gud? Hvor er Jøden, hin korsfæstede tømmermandssøn? Lad ham åbenbare sig. Han vogter sig nok!
+@ Others.
+It is drums. Hear the music –; the emperor is coming!
 
-{{{ 335 }}} Og derfor sømmer det sig vel at fylde helligdommen. Der vil jeg med egne hænder forrette den tjeneste, som så langt fra tykkes mig ringe og upassende, at jeg tvert om sætter den over enhver anden.
+@stage {{{ 334 }}} (The Apollo procession is seen coming from the right side through the grove and draws itself up, to the playing of flutes and harps, in a semicircle before the temple.)
 
-@stage (Han går i spidsen for toget gennem folkemængden hen imod templet.)
+@ Emperor Julian *(turned toward the temple, with uplifted hands)*.
+I receive the omen! –
 
-@ En stemme *(råber i trængselen)*.
-Stands, ugudelige!
+Never have I felt myself so near in league with the immortal gods.
 
-@ Kejser Julian.
-En Galilæer iblandt os?
+The Bow-bender is among us. The earth resounds under his heel, as it resounded of old when in wrath he trod the Trojan shore.
 
-@ Den samme stemme.
-Ikke videre, gudsfornægter!
+But it is not against us that he directs his frowning brow. It is against those unhappy ones who hate him and his sun-bright realm.
 
-@ Kejser Julian.
-Hvo er den mand, som taler?
+Yes, – as surely as the fullness of fortune or misfortune gives the right measure of the gods' favour toward mortals, – so surely does the difference between us and those others reveal itself here.
 
-@ Andre stemmer i hoben.
-En Galilæer-prest. En blind olding. Her står han.
+Where are the Galileans now? Some under the executioner's hands, others fleeing in the narrow alleys, ashen-grey with terror, with staring eyes, – a scream between their half-open teeth –, and with their hair standing on end in fright or torn out in despair.
 
-@ Atter andre.
-Væk, væk med den skamløse!
+And where are *we*? Here, in Daphne's fresh grove, where the fragrant breath of dryads cools our temples, – here, before the glorious one's glorious temple, surrounded by the sound of lyres and of flutes, – here, in light, in fortune, in safety, and with the god himself revealed among us.
 
-@stage (En gammel blind mand, i prestelig klædning, og støttet af to, ligeledes presteligt klædte, yngre mænd, stødes frem så han kommer til at stå nedenfor tempeltrappen og foran kejseren.)
+Where is the Galileans' god? Where is the Jew, that crucified carpenter's son? Let him reveal himself. He takes good care not to!
 
-@ Kejser Julian.
-Ah, hvad må jeg se! Sig mig, gamle mand, er ikke du biskop Maris af Kalkedon?
+{{{ 335 }}} And therefore it well befits us to fill the sanctuary. There will I with my own hands perform the service which, so far from seeming to me lowly and unfitting, I on the contrary set above every other.
 
-@ Den gamle mand.
-Jo, jeg er denne vor kirkes uværdigste tjener.
+@stage (He goes at the head of the procession through the crowd toward the temple.)
 
-@ {{{ 336 }}} Kejser Julian.
-Den uværdigste kalder du dig; og jeg tror ikke at du har så ganske uret. Hvis jeg ikke fejler, har du været en af dem, som ivrigst har sat splid imellem Galilæerne indbyrdes.
+@ A voice *(cries out in the throng)*.
+Halt, ungodly one!
 
-@ Biskop Maris.
-Jeg har gjort det, som tynger mig dybere ned i anger. Da du tog herredømmet, og dit sindelag rygtedes, da omspændtes mit hjerte af en usigelig angst. Alderdomssvækket, og blind, som jeg var, gav jeg ikke den tanke rum, at sætte mig op imod jordens mægtige herre. Ja, – Gud være mig nådig – jeg forlod den hjord, jeg var sat til at skærme, drog mig forsagt ud af alt det, som truende samlede sig om Herrens menighed, og søgte ly her i Syrien på min landgård –
+@ Emperor Julian.
+A Galilean among us?
 
-@ Kejser Julian.
-Se, se; yderst sælsomt! Og du, denne forsagte mand, som før har skattet kejserens yndest så højt, du træder nu frem for mig, som du nys har gjort, og kaster mig et forhånelsens tilråb lige i ansigtet!
+@ The same voice.
+No further, denier of God!
 
-@ Biskop Maris.
-Nu frygter jeg dig ikke længer; thi nu har Kristus helt og holdent mit hjerte. I kirkens trængsels-tid gik dens lys og herlighed op for mig. Alt det blod, du udgyder, – al den vold og uret, som du øver, skriger imod himlen, slår {{{ 337 }}} med vælde tilbage, runger for mit døve øre og viser mig i min blindheds nat, hvad vej jeg har at gå.
+@ Emperor Julian.
+Who is the man that speaks?
 
-@ Kejser Julian.
-Drag hjem, gamle mand!
+@ Other voices in the crowd.
+A Galilean priest. A blind old man. Here he stands.
 
-@ Biskop Maris.
-Ikke før du har lovet at afstå fra denne din djævelske fremfærd. Hvad tænker du på? Vil støvet rejse sig imod ånden? Vil jordens herre styrte himlens herre? Ser du da ikke at vredens dag er over os for dine synders skyld? Kilderne udtørres, ligesom øjne, der har grædt sig læns. Skyerne, der skulde lade frugtbarhedens manna falde over os, drager vore hoveder forbi og udgyder sig ikke. Den jord, som har været forbandet siden dagenes morgen, den skælver og bæver under kejserens blodskyld!
+@ Yet others.
+Away, away with the shameless one!
 
-@ Kejser Julian.
-Hvad gunst venter du af din gud for denne overvættes nidkærhed, tåbelige olding? Håber du på at din galilæiske mester, lig fordum, skal gøre et underværk og skænke dig dit syn igen?
+@stage (An old blind man, in priestly garb, and supported by two younger men, likewise priestly clad, is thrust forward so that he comes to stand below the temple-steps and before the emperor.)
 
-@ Biskop Maris.
-Jeg har det syn, jeg ønsker; og jeg takker Herren at han slukte mit legemlige øje, så jeg forskånes for at se den mand, der går i en grufuldere nat end jeg.
+@ Emperor Julian.
+Ah, what must I see! Tell me, old man, are you not Bishop Maris of Chalcedon?
 
-@ Kejser Julian.
-Plads for mig!
+@ The old man.
+Yes, I am the unworthiest servant of this our church.
 
-@ {{{ 338 }}} Biskop Maris.
-Hvorhen?
+@ {{{ 336 }}} Emperor Julian.
+The unworthiest you call yourself; and I do not think you are so wholly wrong. If I do not err, you have been one of those who most zealously sowed discord among the Galileans themselves.
 
-@ Kejser Julian.
-I solkongens hus.
+@ Bishop Maris.
+I have done that which weighs me down deeper in repentance. When you took the dominion, and your disposition became rumoured, then my heart was gripped by an unspeakable anguish. Weakened by age, and blind as I was, I gave no room to the thought of setting myself against the earth's mighty lord. Yes, – God be merciful to me – I forsook the flock I was set to shield, drew myself faint-heartedly out of all that gathered threateningly about the Lord's congregation, and sought shelter here in Syria at my country estate –
 
-@ Biskop Maris.
-Du går ikke. Jeg forbyder dig det i den enestes navn!
+@ Emperor Julian.
+See, see; most strange! And you, this faint-hearted man, who before prized the emperor's favour so highly, you now step forward before me, as you have just done, and cast a cry of scorn straight in my face!
 
-@ Kejser Julian.
-Vanvittige gubbe! – Væk med ham!
+@ Bishop Maris.
+Now I fear you no longer; for now Christ has my heart wholly and entirely. In the church's time of tribulation its light and glory dawned on me. All the blood you shed, – all the violence and wrong you commit, cries out toward heaven, strikes {{{ 337 }}} back with force, resounds for my deaf ear and shows me in the night of my blindness what way I have to go.
 
-@ Biskop Maris.
-Ja, læg hånd på mig! Men hvo der vover det, hans hånd skal visne. Vredens Gud skal åbenbare sig i sin vælde –
+@ Emperor Julian.
+Go home, old man!
 
-@ Kejser Julian.
-Din gud er ingen vældig gud. Jeg skal vise dig at kejseren er stærkere end han –
+@ Bishop Maris.
+Not before you have promised to desist from this your devilish conduct. What are you thinking of? Will the dust rise against the spirit? Will the lord of the earth overthrow the lord of heaven? Do you not then see that the day of wrath is upon us for the sake of your sins? The springs dry up, like eyes that have wept themselves empty. The clouds, that should let the manna of fruitfulness fall upon us, pass by over our heads and pour not themselves out. The earth, which has been cursed since the morning of days, trembles and trembles under the emperor's blood-guilt!
 
-@ Biskop Maris.
-Fortabt! – Så lyser jeg da forbandelsen over dig, du kirkens frafaldne søn!
+@ Emperor Julian.
+What favour do you expect from your god for this excessive zeal, foolish old man? Do you hope that your Galilean master, as of old, will work a miracle and give you your sight again?
 
-@ Læreren Hekebolios *(bleg)*.
-Herre og kejser, lad ikke dette ske!
+@ Bishop Maris.
+I have the sight I wish; and I thank the Lord that he quenched my bodily eye, so that I am spared from seeing the man who walks in a more dreadful night than I.
 
-@ Biskop Maris *(med høj røst)*.
-Forbandet være du, Julianos Apostata! Forbandet være du, kejser Julian! Gud Herren har udspyttet dig af sin mund! Forbandet være dine øjne og dine hænder! Forbandet være dit hoved og al din gerning!
+@ Emperor Julian.
+Make way for me!
 
-Ve, ve, ve over apostaten! Ve, ve, ve – –
+@ {{{ 338 }}} Bishop Maris.
+Whither?
 
-@stage {{{ 339 }}} (Et hult rullende drøn fornemmes. Templets tag og søjler vakler og synes at styrte sammen under et tordnende brag medens hele bygningen indhylles i en støvsky. Mængden udstøder et forfærdelsens skrig; mange flygter, andre falder til jorden. En stund er der åndeløs stilhed. Lidt efter lidt synker støvskyen og man ser Apollons tempel i ruiner.)
+@ Emperor Julian.
+Into the Sun-King's house.
 
-@ Biskop Maris *(hvis begge ledsagere er flygtede, står alene og siger dæmpet)*:
-Gud talte.
+@ Bishop Maris.
+You shall not go. I forbid it you in the name of the only One!
 
-@ Kejser Julian *(bleg og med dæmpet røst)*.
-Apollon talte. Hans tempel var besmittet; derfor knuste han det.
+@ Emperor Julian.
+Mad greybeard! – Away with him!
 
-@ Biskop Maris.
-Og jeg siger dig, det var den Herre, som lagde Jerusalems tempel i grus.
+@ Bishop Maris.
+Yes, lay hands on me! But whoever dares it, his hand shall wither. The God of wrath shall reveal himself in his might –
 
-@ Kejser Julian.
-Hvis så er, da skal Galilæerens kirker stænges, og hans prester skal under svøbeslag piskes til at rejse dette tempel igen.
+@ Emperor Julian.
+Your god is no mighty god. I shall show you that the emperor is stronger than he –
 
-@ Biskop Maris.
-Prøv, afmægtige! Hvo mægted at rejse Jerusalems tempel, da Golgatas fyrste havde lyst forstyrrelsen over det?
+@ Bishop Maris.
+Lost man! – Then I pronounce the curse over you, you apostate son of the church!
 
-@ Kejser Julian.
-Jeg skal mægte det! Kejseren skal mægte det! Eders gud skal gøres til løgner. Sten på sten skal jeg opbygge hint Jerusalems tempel, i dragt og herlighed, som det var i Salomos dage.
+@ Hecebolius the teacher *(pale)*.
+Lord and emperor, do not let this happen!
 
-@ {{{ 340 }}} Biskop Maris.
-Ikke sten skal det lykkes dig at føje til sten; thi det er forbandet af Herren.
+@ Bishop Maris *(in a loud voice)*.
+Cursed be you, Julianus Apostata! Cursed be you, Emperor Julian! The Lord God has spat you out of his mouth! Cursed be your eyes and your hands! Cursed be your head and all your work!
 
-@ Kejser Julian.
-Vent, vent; du skal få se – ifald du *kunde* se – du, som står der forladt og hjælpeløs, famlende ud i natten uden at vide hvorhen du skal flytte din fod.
+Woe, woe, woe upon the apostate! Woe, woe, woe – –
 
-@ Biskop Maris.
-For mig lyser det lyn, som engang skal slå dig og dine.
+@stage {{{ 339 }}} (A hollow rolling rumble is felt. The temple's roof and columns totter and seem to crash together amid a thundering peal while the whole building is wrapped in a cloud of dust. The crowd utters a scream of horror; many flee, others fall to the ground. For a while there is breathless silence. Little by little the dust-cloud sinks and one sees Apollo's temple in ruins.)
 
-@stage (Han famler sig ud. Kejser Julian står tilbage, omringet af en liden bleg og skrækslagen skare.)
+@ Bishop Maris *(whose two attendants have fled, stands alone and says in a subdued voice)*:
+God has spoken.
+
+@ Emperor Julian *(pale and with subdued voice)*.
+Apollo has spoken. His temple was defiled; therefore he shattered it.
+
+@ Bishop Maris.
+And I tell you, it was the Lord who laid the temple of Jerusalem in ruins.
+
+@ Emperor Julian.
+If that is so, then the Galilean's churches shall be closed, and his priests shall under the lash be whipped to raise this temple again.
+
+@ Bishop Maris.
+Try, powerless one! Who was able to raise the temple of Jerusalem, when the prince of Golgotha had pronounced its destruction over it?
+
+@ Emperor Julian.
+I shall be able to do it! The emperor shall be able to do it! Your god shall be made a liar. Stone upon stone I shall build up that temple of Jerusalem, in raiment and glory, as it was in the days of Solomon.
+
+@ {{{ 340 }}} Bishop Maris.
+Not a stone shall you succeed in joining to a stone; for it is cursed by the Lord.
+
+@ Emperor Julian.
+Wait, wait; you shall see – if you *could* see – you who stand there forsaken and helpless, groping out into the night without knowing whither you shall move your foot.
+
+@ Bishop Maris.
+For me shines the lightning that shall one day strike you and yours.
+
+@stage (He gropes his way out. Emperor Julian remains behind, surrounded by a small, pale and terror-stricken company.)
