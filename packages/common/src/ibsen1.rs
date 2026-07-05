@@ -5,11 +5,10 @@
 //!
 //! The whole work nests two depth-0 **part** title-pages (`cf` Cæsars Frafall,
 //! `kj` Keiser Julian), each parenting a cast list + five acts at depth 1.
-//! Part One (`cf`) is fully modernized; Part Two (`kj`) is listed as far as it
-//! is modernized (title-page, cast, act one so far) — its remaining acts slot
-//! in here as they land. Part Two child slugs carry a `kj-` prefix because act
-//! and cast names repeat across parts and node slugs are unique per book. See
-//! ADR 0005 and the `dano-norwegian-drama-modernize` skill.
+//! Both parts are fully modernized and listed. Part Two child slugs carry a
+//! `kj-` prefix because act and cast names repeat across parts and node slugs
+//! are unique per book. See ADR 0005 and the `dano-norwegian-drama-modernize`
+//! skill.
 //!
 //! Node **labels are not declared here** — they come from each file's
 //! front-matter `label:` (the modernized spelling for the source book, the
@@ -165,6 +164,42 @@ pub fn nodes() -> Vec<DramaNode> {
             parent_source_ref: Some("kj"),
             filename: "010_kj_foerste_handling.md",
             position: 10,
+        },
+        DramaNode {
+            source_ref: "kj-annen-handling",
+            slug: "kj-annen-handling",
+            path: "keiser-julian.annen-handling",
+            depth: 1,
+            parent_source_ref: Some("kj"),
+            filename: "011_kj_anden_handling.md",
+            position: 11,
+        },
+        DramaNode {
+            source_ref: "kj-tredje-handling",
+            slug: "kj-tredje-handling",
+            path: "keiser-julian.tredje-handling",
+            depth: 1,
+            parent_source_ref: Some("kj"),
+            filename: "012_kj_tredje_handling.md",
+            position: 12,
+        },
+        DramaNode {
+            source_ref: "kj-fjerde-handling",
+            slug: "kj-fjerde-handling",
+            path: "keiser-julian.fjerde-handling",
+            depth: 1,
+            parent_source_ref: Some("kj"),
+            filename: "013_kj_fjerde_handling.md",
+            position: 13,
+        },
+        DramaNode {
+            source_ref: "kj-femte-handling",
+            slug: "kj-femte-handling",
+            path: "keiser-julian.femte-handling",
+            depth: 1,
+            parent_source_ref: Some("kj"),
+            filename: "014_kj_femte_handling.md",
+            position: 14,
         },
     ]
 }
