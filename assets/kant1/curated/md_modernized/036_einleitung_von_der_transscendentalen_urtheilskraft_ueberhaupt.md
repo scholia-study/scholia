@@ -1,6 +1,6 @@
 ---
 position: 36
-label: "Einleitung. Von der transscendentalen Urtheilskraft überhaupt"
+label: "Einleitung. Von der transzendentalen Urteilskraft überhaupt"
 depth: 5
 aa_page: 131
 ---

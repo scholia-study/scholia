@@ -1,6 +1,6 @@
 ---
 position: 79
-label: "8. Abschnitt. Regulatives Princip der reinen Vernunft in Ansehung der kosmologischen Ideen"
+label: "8. Abschnitt. Regulatives Prinzip der reinen Vernunft in Ansehung der kosmologischen Ideen"
 depth: 6
 aa_page: 348
 ---

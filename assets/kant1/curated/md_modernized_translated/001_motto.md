@@ -5,8 +5,8 @@ depth: 1
 aa_page: 2
 ---
 
-## {{{ 2 }}} {{ II }} BACON OF VERULAM.
+## {{{ 2 }}} {{ II }} BACO DE VERULAMIO.
 
-_The Great Instauration. Preface._
+_Instauratio magna. Praefatio._
 
-Of our own person we will say nothing; but as to the subject matter with which we are concerned, we ask: that men think of it not as an opinion, but as a work; and consider it for certain that we are not laying the foundations of any sect or dogma, but of human utility and power. Next, that they deal fairly by their own interests – consult the common good – and themselves step forward to take part. Moreover, that they be of good hope, and not imagine and conceive of our instauration as something infinite and beyond mortal capacity; when in truth it is the end and legitimate termination of infinite error.
+De nobis ipsis silemus; de re autem, quae agitur, petimus: ut homines eam non opinionem, sed opus esse cogitent; ac pro certo habeant, non sectae nos alicuius, aut placiti, sed utilitatis et amplitudinis humanae fundamenta moliri. Deinde ut suis commodis aequi – in commune consulant – et ipsi in partem veniant. Praeterea ut bene sperent, neque instaurationem nostram ut quiddam infinitum et ultra mortale fingant, et animo concipiant; cum revera sit infiniti erroris finis et terminus legitimus.

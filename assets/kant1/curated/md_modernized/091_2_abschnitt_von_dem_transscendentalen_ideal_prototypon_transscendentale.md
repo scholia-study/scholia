@@ -1,11 +1,11 @@
 ---
 position: 91
-label: "2. Abschnitt. Von dem transscendentalen Ideal (Prototypon transscendentale)"
+label: "2. Abschnitt. Von dem transzendentalen Ideal (Prototypon transzendentale)"
 depth: 6
 aa_page: 385
 ---
 
-## 2. Abschnitt. Von dem transzendentalen Ideal (Prototypon transscendentale).
+## 2. Abschnitt. Von dem transzendentalen Ideal (Prototypon transzendentale).
 
 Ein jeder ***Begriff*** ist in Ansehung dessen, was in ihm selbst nicht enthalten ist, unbestimmt und steht unter dem Grundsatze der ***Bestimmbarkeit***: dass nur eines von ***jeden zwei*** einander kontradiktorisch entgegengesetzten Prädikaten ihm zukommen könne, welcher auf dem Satze des Widerspruchs beruht und daher ein bloß logisches Prinzip ist, das von allem Inhalte der Erkenntnis abstrahiert und nichts als die logische Form derselben vor Augen hat.
 

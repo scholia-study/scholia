@@ -3,9 +3,8 @@
 // ---------------------------------------------------------------------------
 //
 // Modernized German orthography (e.g. ß→ss, th→t, C→K/Z where appropriate).
-// Entries 1–14 have been modernized. The remaining entries still use the
-// original orthography from toc.rs and will be updated as modernization
-// progresses.
+// All entries are modernized; keep in sync with the frontmatter labels in
+// assets/kant1/curated/md_modernized/.
 
 struct FlatEntry {
     aa_page: u16,
@@ -109,10 +108,6 @@ const TOC: &[FlatEntry] = &[
         label: "Einleitung",
         slug_override: Some("einleitung-aesthetik"),
     },
-    // -----------------------------------------------------------------------
-    // NOT YET MODERNIZED — entries below use original orthography from toc.rs.
-    // These will be updated as modernization of the source texts progresses.
-    // -----------------------------------------------------------------------
     FlatEntry {
         aa_page: 51,
         depth: 3,
@@ -128,27 +123,27 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 65,
         depth: 3,
-        label: "Allgemeine Anmerkungen zur transscendentalen Ästhetik",
+        label: "Allgemeine Anmerkungen zur transzendentalen Ästhetik",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 73,
         depth: 3,
-        label: "Beschluß der transscendentalen Ästhetik",
+        label: "Beschluss der transzendentalen Ästhetik",
         slug_override: None,
     },
     // -- Zweiter Theil: Transscendentale Logik --
     FlatEntry {
         aa_page: 74,
         depth: 2,
-        label: "Zweiter Theil. Die transscendentale Logik",
+        label: "Zweiter Teil. Die transzendentale Logik",
         slug_override: None,
     },
     // Einleitung zur transscendentalen Logik
     FlatEntry {
         aa_page: 74,
         depth: 3,
-        label: "Einleitung. Idee einer transscendentalen Logik",
+        label: "Einleitung. Idee einer transzendentalen Logik",
         slug_override: None,
     },
     FlatEntry {
@@ -160,26 +155,26 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 77,
         depth: 4,
-        label: "II. Von der transscendentalen Logik",
+        label: "II. Von der transzendentalen Logik",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 79,
         depth: 4,
-        label: "III. Von der Eintheilung der allgemeinen Logik in Analytik und Dialektik",
+        label: "III. Von der Einteilung der allgemeinen Logik in Analytik und Dialektik",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 81,
         depth: 4,
-        label: "IV. Von der Eintheilung der transscendentalen Logik in die transscendentale Analytik und Dialektik",
+        label: "IV. Von der Einteilung der transzendentalen Logik in die transzendentale Analytik und Dialektik",
         slug_override: None,
     },
     // -- Erste Abtheilung: Transscendentale Analytik --
     FlatEntry {
         aa_page: 83,
         depth: 3,
-        label: "Erste Abtheilung. Die transscendentale Analytik",
+        label: "Erste Abteilung. Die transzendentale Analytik",
         slug_override: None,
     },
     // Erstes Buch: Analytik der Begriffe
@@ -204,13 +199,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 86,
         depth: 6,
-        label: "2. Abschnitt. Von der logischen Function des Verstandes in Urtheilen. \u{00A7}9",
+        label: "2. Abschnitt. Von der logischen Funktion des Verstandes in Urteilen. §9",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 90,
         depth: 6,
-        label: "3. Abschnitt. Von den reinen Verstandesbegriffen oder Kategorien. \u{00A7}10\u{2013}12",
+        label: "3. Abschnitt. Von den reinen Verstandesbegriffen oder Kategorien. §10–12",
         slug_override: None,
     },
     FlatEntry {
@@ -222,19 +217,19 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 99,
         depth: 6,
-        label: "1. Abschnitt. Von den Prinzipien einer transzendentalen Deduktion überhaupt. \u{00A7}13",
+        label: "1. Abschnitt. Von den Prinzipien einer transzendentalen Deduktion überhaupt. §13",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 104,
         depth: 6,
-        label: "Übergang zur transzendentalen Deduktion der Kategorien. \u{00A7}14",
+        label: "Übergang zur transzendentalen Deduktion der Kategorien. §14",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 107,
         depth: 6,
-        label: "2. Abschnitt. Transzendentale Deduktion der reinen Verstandesbegriffe. \u{00A7}15\u{2013}27",
+        label: "2. Abschnitt. Transzendentale Deduktion der reinen Verstandesbegriffe. §15–27",
         slug_override: None,
     },
     // Zweites Buch: Analytik der Grundsätze
@@ -247,7 +242,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 131,
         depth: 5,
-        label: "Einleitung. Von der transscendentalen Urtheilskraft überhaupt",
+        label: "Einleitung. Von der transzendentalen Urteilskraft überhaupt",
         slug_override: None,
     },
     FlatEntry {
@@ -265,13 +260,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 141,
         depth: 6,
-        label: "1. Abschnitt. Von dem obersten Grundsatze aller analytischen Urtheile",
+        label: "1. Abschnitt. Von dem obersten Grundsatze aller analytischen Urteile",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 143,
         depth: 6,
-        label: "2. Abschnitt. Von dem obersten Grundsatze aller synthetischen Urtheile",
+        label: "2. Abschnitt. Von dem obersten Grundsatze aller synthetischen Urteile",
         slug_override: None,
     },
     FlatEntry {
@@ -289,7 +284,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 151,
         depth: 7,
-        label: "2. Anticipationen der Wahrnehmung",
+        label: "2. Antizipationen der Wahrnehmung",
         slug_override: None,
     },
     FlatEntry {
@@ -307,7 +302,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 166,
         depth: 8,
-        label: "Zweite Analogie. Grundsatz der Zeitfolge nach dem Gesetze der Causalität",
+        label: "Zweite Analogie. Grundsatz der Zeitfolge nach dem Gesetze der Kausalität",
         slug_override: None,
     },
     FlatEntry {
@@ -344,7 +339,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 234,
         depth: 3,
-        label: "Zweite Abtheilung. Die transscendentale Dialektik",
+        label: "Zweite Abteilung. Die transzendentale Dialektik",
         slug_override: None,
     },
     // Einleitung zur Dialektik
@@ -357,13 +352,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 234,
         depth: 5,
-        label: "I. Vom transscendentalen Schein",
+        label: "I. Vom transzendentalen Schein",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 237,
         depth: 5,
-        label: "II. Von der reinen Vernunft als dem Sitze des transscendentalen Scheins",
+        label: "II. Von der reinen Vernunft als dem Sitze des transzendentalen Scheins",
         slug_override: None,
     },
     FlatEntry {
@@ -479,19 +474,19 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 330,
         depth: 6,
-        label: "4. Abschnitt. Von den transscendentalen Aufgaben der reinen Vernunft, in so fern sie schlechterdings müssen aufgelöset werden können",
+        label: "4. Abschnitt. Von den transzendentalen Aufgaben der reinen Vernunft, insofern sie schlechterdings müssen aufgelöst werden können",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 335,
         depth: 6,
-        label: "5. Abschnitt. Sceptische Vorstellung der kosmologischen Fragen durch alle vier transscendentalen Ideen",
+        label: "5. Abschnitt. Skeptische Vorstellung der kosmologischen Fragen durch alle vier transzendentalen Ideen",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 338,
         depth: 6,
-        label: "6. Abschnitt. Der transscendentale Idealismus als der Schlüssel zu Auflösung der kosmologischen Dialektik",
+        label: "6. Abschnitt. Der transzendentale Idealismus als der Schlüssel zur Auflösung der kosmologischen Dialektik",
         slug_override: None,
     },
     FlatEntry {
@@ -503,13 +498,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 348,
         depth: 6,
-        label: "8. Abschnitt. Regulatives Princip der reinen Vernunft in Ansehung der kosmologischen Ideen",
+        label: "8. Abschnitt. Regulatives Prinzip der reinen Vernunft in Ansehung der kosmologischen Ideen",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 353,
         depth: 6,
-        label: "9. Abschnitt. Von dem empirischen Gebrauche des regulativen Princips der Vernunft in Ansehung aller kosmologischen Ideen",
+        label: "9. Abschnitt. Von dem empirischen Gebrauche des regulativen Prinzips der Vernunft in Ansehung aller kosmologischen Ideen",
         slug_override: None,
     },
     FlatEntry {
@@ -527,7 +522,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 360,
         depth: 8,
-        label: "Schlußanmerkung zur Auflösung der mathematischtranszendentalen, und Vorerinnerung zur Auflösung der dynamisch-transzendentalen Ideen",
+        label: "Schlussanmerkung zur Auflösung der mathematischtranszendentalen, und Vorerinnerung zur Auflösung der dynamisch-transzendentalen Ideen",
         slug_override: None,
     },
     FlatEntry {
@@ -557,7 +552,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 381,
         depth: 7,
-        label: "Schlußanmerkung zur ganzen Antinomie der reinen Vernunft",
+        label: "Schlussanmerkung zur ganzen Antinomie der reinen Vernunft",
         slug_override: None,
     },
     FlatEntry {
@@ -575,13 +570,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 385,
         depth: 6,
-        label: "2. Abschnitt. Von dem transscendentalen Ideal (Prototypon transscendentale)",
+        label: "2. Abschnitt. Von dem transzendentalen Ideal (Prototypon transzendentale)",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 392,
         depth: 6,
-        label: "3. Abschnitt. Von den Beweisgründen der speculativen Vernunft auf das Dasein eines höchsten Wesens zu schließen",
+        label: "3. Abschnitt. Von den Beweisgründen der spekulativen Vernunft auf das Dasein eines höchsten Wesens zu schließen",
         slug_override: None,
     },
     FlatEntry {
@@ -611,14 +606,14 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 420,
         depth: 6,
-        label: "7. Abschnitt. Kritik aller Theologie aus speculativen Principien der Vernunft",
+        label: "7. Abschnitt. Kritik aller Theologie aus spekulativen Prinzipien der Vernunft",
         slug_override: None,
     },
     // Anhang zur transscendentalen Dialektik
     FlatEntry {
         aa_page: 426,
         depth: 6,
-        label: "Anhang zur transscendentalen Dialektik",
+        label: "Anhang zur transzendentalen Dialektik",
         slug_override: None,
     },
     FlatEntry {
@@ -639,7 +634,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 463,
         depth: 1,
-        label: "II. Transscendentale Methodenlehre",
+        label: "II. Transzendentale Methodenlehre",
         slug_override: None,
     },
     FlatEntry {
@@ -651,19 +646,19 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 466,
         depth: 2,
-        label: "Erstes Hauptstück. Die Disciplin der reinen Vernunft",
+        label: "Erstes Hauptstück. Die Disziplin der reinen Vernunft",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 468,
         depth: 3,
-        label: "1. Abschnitt. Die Disciplin der reinen Vernunft im dogmatischen Gebrauche",
+        label: "1. Abschnitt. Die Disziplin der reinen Vernunft im dogmatischen Gebrauche",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 484,
         depth: 3,
-        label: "2. Abschnitt. Die Disciplin der reinen Vernunft in Ansehung ihres polemischen Gebrauchs",
+        label: "2. Abschnitt. Die Disziplin der reinen Vernunft in Ansehung ihres polemischen Gebrauchs",
         slug_override: None,
     },
     FlatEntry {
@@ -675,13 +670,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 502,
         depth: 3,
-        label: "3. Abschnitt. Die Disciplin der reinen Vernunft in Ansehung der Hypothesen",
+        label: "3. Abschnitt. Die Disziplin der reinen Vernunft in Ansehung der Hypothesen",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 509,
         depth: 3,
-        label: "4. Abschnitt. Die Disciplin der reinen Vernunft in Ansehung ihrer Beweise",
+        label: "4. Abschnitt. Die Disziplin der reinen Vernunft in Ansehung ihrer Beweise",
         slug_override: None,
     },
     FlatEntry {

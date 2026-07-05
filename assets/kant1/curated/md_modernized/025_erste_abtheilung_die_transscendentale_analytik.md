@@ -1,6 +1,6 @@
 ---
 position: 25
-label: "Erste Abtheilung. Die transscendentale Analytik"
+label: "Erste Abteilung. Die transzendentale Analytik"
 depth: 3
 aa_page: 83
 ---

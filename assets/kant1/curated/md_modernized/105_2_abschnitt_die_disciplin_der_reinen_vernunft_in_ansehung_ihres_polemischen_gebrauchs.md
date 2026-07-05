@@ -1,11 +1,11 @@
 ---
 position: 105
-label: "2. Abschnitt. Die Disciplin der reinen Vernunft in Ansehung ihres polemischen Gebrauchs"
+label: "2. Abschnitt. Die Disziplin der reinen Vernunft in Ansehung ihres polemischen Gebrauchs"
 depth: 3
 aa_page: 484
 ---
 
-## {{{ 484 }}} 2. Abschnitt. Die Disciplin der reinen Vernunft in Ansehung ihres polemischen Gebrauchs
+## {{{ 484 }}} 2. Abschnitt. Die Disziplin der reinen Vernunft in Ansehung ihres polemischen Gebrauchs
 
 Die Vernunft muss sich in allen ihren Unternehmungen der Kritik unterwerfen und kann der Freiheit derselben durch kein Verbot Abbruch tun, ohne sich selbst zu schaden und einen ihr nachteiligen Verdacht auf sich zu ziehen. Da ist nun nichts so wichtig in Ansehung des Nutzens, nichts so heilig, das sich dieser prüfenden und musternden Durchsuchung, die kein Ansehen der Person kennt, entziehen dürfte. Auf dieser Freiheit beruht sogar die Existenz der Vernunft, die kein diktatorisches Ansehen hat, sondern deren Ausspruch jederzeit nichts als die Einstimmung freier Bürger {{ 767 }} ist, deren jeglicher seine Bedenklichkeiten, ja sogar sein _veto_ ohne Zurückhalten muss äußern können.
 

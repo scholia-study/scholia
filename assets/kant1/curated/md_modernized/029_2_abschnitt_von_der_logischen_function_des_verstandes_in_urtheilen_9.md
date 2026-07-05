@@ -1,6 +1,6 @@
 ---
 position: 29
-label: "2. Abschnitt. Von der logischen Function des Verstandes in Urtheilen. §9"
+label: "2. Abschnitt. Von der logischen Funktion des Verstandes in Urteilen. §9"
 depth: 6
 aa_page: 86
 ---

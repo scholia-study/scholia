@@ -1,6 +1,6 @@
 ---
 position: 19
-label: "Zweiter Theil. Die transscendentale Logik"
+label: "Zweiter Teil. Die transzendentale Logik"
 depth: 2
 aa_page: 74
 ---

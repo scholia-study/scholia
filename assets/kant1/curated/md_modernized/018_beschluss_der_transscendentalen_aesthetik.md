@@ -1,6 +1,6 @@
 ---
 position: 18
-label: "Beschluß der transscendentalen Ästhetik"
+label: "Beschluss der transzendentalen Ästhetik"
 depth: 3
 aa_page: 73
 ---

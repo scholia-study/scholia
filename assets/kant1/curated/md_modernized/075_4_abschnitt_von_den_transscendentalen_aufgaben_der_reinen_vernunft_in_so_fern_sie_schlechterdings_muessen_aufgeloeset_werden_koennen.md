@@ -1,6 +1,6 @@
 ---
 position: 75
-label: "4. Abschnitt. Von den transscendentalen Aufgaben der reinen Vernunft, in so fern sie schlechterdings müssen aufgelöset werden können"
+label: "4. Abschnitt. Von den transzendentalen Aufgaben der reinen Vernunft, insofern sie schlechterdings müssen aufgelöst werden können"
 depth: 6
 aa_page: 330
 ---

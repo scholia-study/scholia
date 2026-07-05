@@ -1,6 +1,6 @@
 ---
 position: 80
-label: "9. Abschnitt. Von dem empirischen Gebrauche des regulativen Princips der Vernunft in Ansehung aller kosmologischen Ideen"
+label: "9. Abschnitt. Von dem empirischen Gebrauche des regulativen Prinzips der Vernunft in Ansehung aller kosmologischen Ideen"
 depth: 6
 aa_page: 353
 ---

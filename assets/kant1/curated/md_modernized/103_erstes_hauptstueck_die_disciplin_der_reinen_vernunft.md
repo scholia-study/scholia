@@ -1,11 +1,11 @@
 ---
 position: 103
-label: "Erstes Hauptstück. Die Disciplin der reinen Vernunft"
+label: "Erstes Hauptstück. Die Disziplin der reinen Vernunft"
 depth: 2
 aa_page: 466
 ---
 
-## Erstes Hauptstück. Die Disciplin der reinen Vernunft
+## Erstes Hauptstück. Die Disziplin der reinen Vernunft
 
 Die negativen Urteile, die es nicht bloß der logischen Form, sondern auch dem Inhalte nach sind, stehen bei der Wissbegierde der Menschen in keiner sonderlichen Achtung; man sieht sie wohl gar als neidische Feinde {{ 737 }} unseres unablässig zur Erweiterung strebenden Erkenntnistriebes an, und es bedarf beinahe einer Apologie, um ihnen nur Duldung, und noch mehr, um ihnen Gunst und Hochschätzung zu verschaffen.
 

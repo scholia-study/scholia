@@ -1,6 +1,6 @@
 ---
 position: 24
-label: "IV. Von der Eintheilung der transscendentalen Logik in die transscendentale Analytik und Dialektik"
+label: "IV. Von der Einteilung der transzendentalen Logik in die transzendentale Analytik und Dialektik"
 depth: 4
 aa_page: 81
 ---

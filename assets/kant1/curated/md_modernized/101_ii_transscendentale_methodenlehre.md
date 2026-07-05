@@ -1,8 +1,8 @@
 ---
 position: 101
-label: "II. Transscendentale Methodenlehre"
+label: "II. Transzendentale Methodenlehre"
 depth: 1
 aa_page: 463
 ---
 
-## {{{ 463 }}} II. Transscendentale Methodenlehre
+## {{{ 463 }}} II. Transzendentale Methodenlehre

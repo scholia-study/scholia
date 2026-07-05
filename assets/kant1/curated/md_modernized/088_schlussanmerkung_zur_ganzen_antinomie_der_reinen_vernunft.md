@@ -1,6 +1,6 @@
 ---
 position: 88
-label: "Schlußanmerkung zur ganzen Antinomie der reinen Vernunft"
+label: "Schlussanmerkung zur ganzen Antinomie der reinen Vernunft"
 depth: 7
 aa_page: 381
 ---

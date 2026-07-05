@@ -1,11 +1,11 @@
 ---
 position: 104
-label: "1. Abschnitt. Die Disciplin der reinen Vernunft im dogmatischen Gebrauche"
+label: "1. Abschnitt. Die Disziplin der reinen Vernunft im dogmatischen Gebrauche"
 depth: 3
 aa_page: 468
 ---
 
-## 1. Abschnitt. Die Disciplin der reinen Vernunft im dogmatischen Gebrauche
+## 1. Abschnitt. Die Disziplin der reinen Vernunft im dogmatischen Gebrauche
 
 Die Mathematik gibt das glänzendste Beispiel einer sich ohne Beihilfe der Erfahrung von selbst glücklich erweiternden reinen Vernunft. Beispiele sind ansteckend, vornehmlich für dasselbe Vermögen, welches sich natürlicherweise schmeichelt, eben dasselbe Glück in anderen Fällen zu haben, welches ihm in einem Falle zu Teil worden. Daher hofft reine {{ 741 }} Vernunft im transzendentalen Gebrauche sich ebenso glücklich und gründlich {{{ 469 }}} erweitern zu können, als es ihr im mathematischen gelungen ist, wenn sie vornehmlich dieselbe Methode dort anwendet, die hier von so augenscheinlichem Nutzen gewesen ist. Es liegt uns also viel daran, zu wissen: ob die Methode, zur apodiktischen Gewissheit zu gelangen, die man in der letzteren Wissenschaft mathematisch nennt, mit derjenigen einerlei sei, womit man eben dieselbe Gewissheit in der Philosophie sucht, und die daselbst dogmatisch genannt werden müsste.
 

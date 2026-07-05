@@ -1,6 +1,6 @@
 ---
 position: 22
-label: "II. Von der transscendentalen Logik"
+label: "II. Von der transzendentalen Logik"
 depth: 4
 aa_page: 77
 ---

@@ -1,6 +1,6 @@
 ---
 position: 23
-label: "III. Von der Eintheilung der allgemeinen Logik in Analytik und Dialektik"
+label: "III. Von der Einteilung der allgemeinen Logik in Analytik und Dialektik"
 depth: 4
 aa_page: 79
 ---

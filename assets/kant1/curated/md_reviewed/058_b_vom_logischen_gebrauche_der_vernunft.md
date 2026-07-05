@@ -1,12 +1,12 @@
 ---
 position: 58
-label: "B. Vom logichen Gebrauche der Vernunft"
+label: "B. Vom logischen Gebrauche der Vernunft"
 depth: 6
 aa_page: 240
 ---
 
 
-## {{{ 240 }}} B. Vom logichen Gebrauche der Vernunft
+## {{{ 240 }}} B. Vom logischen Gebrauche der Vernunft
 
 Man macht einen Unterschied zwiſchen dem, was unmittelbar erkannt, und dem, was nur geſchloſſen wird. Daß in einer Figur, die durch drei gerade Linien begrenzt iſt, drei Winkel ſind, wird unmittelbar erkannt; daß dieſe Winkel aber zuſammen zwei rechten gleich ſind, iſt nur geſchloſſen. Weil wir des Schließens beſtändig bedürfen, und es dadurch endlich ganz gewohnt werden, ſo bemerken wir zuleßt dieſen Unterſchied nicht mehr und halten oft, wie bei dem sogenannten Betruge der Sinne, etwas für unmittelbar wahrgenommen, was wir doch nur geſchloſſen haben. {{ 360 }} Bei jedem Schluſſe iſt ein Saß, der zum Grunde liegt, und ein anderer, nämlich die Folgerung, die aus jenem gezogen wird, und endlich die Schlußfolge (Conſequenz), nach welcher die Wahrheit des leßteren unausbleiblich mit der Wahrheit des erſteren verknüpft iſt. Liegt das geſchloſſene Urtheil ſchon ſo in dem erſten, daß es ohne Vermittelung einer dritten Vorstellung daraus abgeleitet werden kann, ſo heißt der Schluß unmittelbar (_consequentia immediata_); ich möchte ihn lieber den Verſtandeſſchluß nennen. Iſt aber außer der zum Grunde gelegten Erkenntniß noch ein anderes Urtheil nöthig, um die Folge zu bewirken, ſo heißt der Schluß ein Vernunftſchluß. In dem Saße: ***alle Menſchen ſind ſterblich***, liegen ſchon die Säße: einige Menſchen ſind ſterblich, einige Sterbliche ſind Menſchen, nichts, was unſterblich iſt, iſt ein Menſch, und dieſe ſind alſo unmittelbare Folgerungen aus dem erſteren. Dagegen liegt der Saß: alle Gelehrte ſind ſterblich, nicht in dem untergelegten Urtheile (denn der Begriff der Gelehrten kommt in ihm gar nicht vor), und er kann nur vermittelſt eines Zwischenurtheils aus dieſem gefolgert werden.
 

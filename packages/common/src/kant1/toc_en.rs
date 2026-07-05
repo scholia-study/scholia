@@ -47,13 +47,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 27,
         depth: 2,
-        label: "I. Of the difference between pure and empirical cognition",
+        label: "I. On the difference between pure and empirical cognition",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 28,
         depth: 2,
-        label: "II. We are in possession of certain _a priori_ cognitions, and even the common understanding is never without them",
+        label: "II. We are in possession of certain cognitions _a priori_, and even the common understanding is never without them",
         slug_override: None,
     },
     FlatEntry {
@@ -65,7 +65,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 33,
         depth: 2,
-        label: "IV. Of the difference between analytic and synthetic judgments",
+        label: "IV. On the difference between analytic and synthetic judgments",
         slug_override: None,
     },
     FlatEntry {
@@ -111,13 +111,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 51,
         depth: 3,
-        label: "Section 1. Of Space",
+        label: "Section 1. On Space",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 57,
         depth: 3,
-        label: "Section 2. Of Time",
+        label: "Section 2. On Time",
         slug_override: None,
     },
     FlatEntry {
@@ -149,25 +149,25 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 74,
         depth: 4,
-        label: "I. Of Logic in General",
+        label: "I. On Logic in General",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 77,
         depth: 4,
-        label: "II. Of Transcendental Logic",
+        label: "II. On Transcendental Logic",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 79,
         depth: 4,
-        label: "III. Of the Division of General Logic into Analytic and Dialectic",
+        label: "III. On the Division of General Logic into Analytic and Dialectic",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 81,
         depth: 4,
-        label: "IV. Of the Division of Transcendental Logic into Transcendental Analytic and Dialectic",
+        label: "IV. On the Division of Transcendental Logic into Transcendental Analytic and Dialectic",
         slug_override: None,
     },
     // -- First Division: Transcendental Analytic --
@@ -187,49 +187,49 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 84,
         depth: 5,
-        label: "Chapter 1. Of the clue to the discovery of all pure concepts of the understanding",
+        label: "Chapter 1. On the clue to the discovery of all pure concepts of the understanding",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 85,
         depth: 6,
-        label: "Section 1. Of the logical use of the understanding in general",
+        label: "Section 1. On the logical use of the understanding in general",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 86,
         depth: 6,
-        label: "Section 2. Of the logical function of the understanding in judgments. \u{00A7}9",
+        label: "Section 2. On the logical function of the understanding in judgments. §9",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 90,
         depth: 6,
-        label: "Section 3. Of the pure concepts of the understanding, or categories. \u{00A7}10\u{2013}12",
+        label: "Section 3. On the pure concepts of the understanding, or categories. §10–12",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 99,
         depth: 5,
-        label: "Chapter 2. Of the Deduction of the Pure Concepts of Understanding",
+        label: "Chapter 2. On the Deduction of the Pure Concepts of Understanding",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 99,
         depth: 6,
-        label: "Section 1. Of the principles of a transcendental deduction in general. \u{00A7}13",
+        label: "Section 1. On the principles of a transcendental deduction in general. §13",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 104,
         depth: 6,
-        label: "Transition to the transcendental deduction of the categories. \u{00A7}14",
+        label: "Transition to the transcendental deduction of the categories. §14",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 107,
         depth: 6,
-        label: "Section 2. Transcendental deduction of the pure concepts of the understanding. \u{00A7}15\u{2013}27",
+        label: "Section 2. Transcendental deduction of the pure concepts of the understanding. §15–27",
         slug_override: None,
     },
     // Book II: Analytic of Principles
@@ -242,13 +242,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 131,
         depth: 5,
-        label: "Introduction. Of the transcendental power of judgment in general",
+        label: "Introduction. On the transcendental power of judgment in general",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 133,
         depth: 5,
-        label: "Chapter 1. Of the schematism of the pure concepts of the understanding",
+        label: "Chapter 1. On the schematism of the pure concepts of the understanding",
         slug_override: None,
     },
     FlatEntry {
@@ -260,13 +260,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 141,
         depth: 6,
-        label: "Section 1. Of the highest principle of all analytic judgments",
+        label: "Section 1. On the highest principle of all analytic judgments",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 143,
         depth: 6,
-        label: "Section 2. Of the highest principle of all synthetic judgments",
+        label: "Section 2. On the highest principle of all synthetic judgments",
         slug_override: None,
     },
     FlatEntry {
@@ -332,7 +332,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 214,
         depth: 5,
-        label: "Appendix. Of the amphiboly of concepts of reflection",
+        label: "Appendix. On the amphiboly of concepts of reflection",
         slug_override: None,
     },
     // -- Second Division: Transcendental Dialectic --
@@ -352,50 +352,50 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 234,
         depth: 5,
-        label: "I. Of transcendental illusion",
+        label: "I. On transcendental illusion",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 237,
         depth: 5,
-        label: "II. Of pure reason as the seat of transcendental illusion",
+        label: "II. On pure reason as the seat of transcendental illusion",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 237,
         depth: 6,
-        label: "A. Of reason in general",
+        label: "A. On reason in general",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 240,
         depth: 6,
-        label: "B. Of the logical use of reason",
+        label: "B. On the logical use of reason",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 241,
         depth: 6,
-        label: "C. Of the pure use of reason",
+        label: "C. On the pure use of reason",
         slug_override: None,
     },
     // Book I of Dialectic
     FlatEntry {
         aa_page: 244,
         depth: 4,
-        label: "Book I. Of the Concepts of Pure Reason",
+        label: "Book I. On the Concepts of Pure Reason",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 245,
         depth: 5,
-        label: "Section 1. Of ideas in general",
+        label: "Section 1. On ideas in general",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 250,
         depth: 5,
-        label: "Section 2. Of transcendental ideas",
+        label: "Section 2. On transcendental ideas",
         slug_override: None,
     },
     FlatEntry {
@@ -408,13 +408,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 261,
         depth: 4,
-        label: "Book II. Of the Dialectical Inferences of Pure Reason",
+        label: "Book II. On the Dialectical Inferences of Pure Reason",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 262,
         depth: 5,
-        label: "Chapter 1. Of the Paralogisms of Pure Reason",
+        label: "Chapter 1. On the Paralogisms of Pure Reason",
         slug_override: None,
     },
     FlatEntry {
@@ -468,13 +468,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 322,
         depth: 6,
-        label: "Section 3. Of the interest of reason in these its conflicts",
+        label: "Section 3. On the interest of reason in these its conflicts",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 330,
         depth: 6,
-        label: "Section 4. Of the transcendental problems of pure reason, in so far as they absolutely must be capable of a solution",
+        label: "Section 4. On the transcendental problems of pure reason, in so far as they absolutely must be capable of a solution",
         slug_override: None,
     },
     FlatEntry {
@@ -504,7 +504,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 353,
         depth: 6,
-        label: "Section 9. Of the empirical use of the regulative principle of reason, in respect of all cosmological ideas",
+        label: "Section 9. On the empirical use of the regulative principle of reason, in respect of all cosmological ideas",
         slug_override: None,
     },
     FlatEntry {
@@ -564,43 +564,43 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 383,
         depth: 6,
-        label: "Section 1. Of the ideal in general",
+        label: "Section 1. On the ideal in general",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 385,
         depth: 6,
-        label: "Section 2. Of the transcendental ideal (Prototypon transcendentale)",
+        label: "Section 2. On the transcendental ideal (Prototypon transcendentale)",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 392,
         depth: 6,
-        label: "Section 3. Of the arguments of speculative reason in inferring the existence of a supreme being",
+        label: "Section 3. On the arguments of speculative reason in inferring the existence of a supreme being",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 397,
         depth: 6,
-        label: "Section 4. Of the impossibility of an ontological proof of the existence of God",
+        label: "Section 4. On the impossibility of an ontological proof of the existence of God",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 403,
         depth: 6,
-        label: "Section 5. Of the impossibility of a cosmological proof of the existence of God",
+        label: "Section 5. On the impossibility of a cosmological proof of the existence of God",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 410,
         depth: 7,
-        label: "Discovery and explanation of the dialectical illusion in all transcendental proofs of the existence of a necessary being",
+        label: "Discovery and explanation of the dialectical illusion in all transcendental proofs of a necessary being's existence",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 413,
         depth: 6,
-        label: "Section 6. Of the impossibility of the physico-theological proof",
+        label: "Section 6. On the impossibility of the physico-theological proof",
         slug_override: None,
     },
     FlatEntry {
@@ -619,13 +619,13 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 426,
         depth: 7,
-        label: "Of the regulative use of the ideas of pure reason",
+        label: "On the regulative use of the ideas of pure reason",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 442,
         depth: 7,
-        label: "Of the ultimate end of the natural dialectic of human reason",
+        label: "On the ultimate end of the natural dialectic of human reason",
         slug_override: None,
     },
     // -----------------------------------------------------------------------
@@ -664,7 +664,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 495,
         depth: 4,
-        label: "Of the impossibility of a skeptical satisfaction of pure reason in conflict with itself",
+        label: "On the impossibility of a skeptical satisfaction of pure reason in conflict with itself",
         slug_override: None,
     },
     FlatEntry {
@@ -688,19 +688,19 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 518,
         depth: 3,
-        label: "Section 1. Of the ultimate end of the pure use of our reason",
+        label: "Section 1. On the ultimate end of the pure use of our reason",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 522,
         depth: 3,
-        label: "Section 2. Of the ideal of the highest good, as a determining ground of the ultimate end of pure reason",
+        label: "Section 2. On the ideal of the highest good, as a ground determining the ultimate end of pure reason",
         slug_override: None,
     },
     FlatEntry {
         aa_page: 531,
         depth: 3,
-        label: "Section 3. Of opining, knowing, and believing",
+        label: "Section 3. On opining, knowing, and believing",
         slug_override: None,
     },
     FlatEntry {

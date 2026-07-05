@@ -1,6 +1,6 @@
 ---
 position: 92
-label: "3. Abschnitt. Von den Beweisgründen der speculativen Vernunft auf das Dasein eines höchsten Wesens zu schließen"
+label: "3. Abschnitt. Von den Beweisgründen der spekulativen Vernunft auf das Dasein eines höchsten Wesens zu schließen"
 depth: 6
 aa_page: 392
 ---

@@ -1,6 +1,6 @@
 ---
 position: 77
-label: "6. Abschnitt. Der transscendentale Idealismus als der Schlüssel zu Auflösung der kosmologischen Dialektik"
+label: "6. Abschnitt. Der transzendentale Idealismus als der Schlüssel zur Auflösung der kosmologischen Dialektik"
 depth: 6
 aa_page: 338
 ---

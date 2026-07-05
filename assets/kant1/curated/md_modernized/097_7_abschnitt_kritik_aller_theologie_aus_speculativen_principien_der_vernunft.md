@@ -1,6 +1,6 @@
 ---
 position: 97
-label: "7. Abschnitt. Kritik aller Theologie aus speculativen Principien der Vernunft"
+label: "7. Abschnitt. Kritik aller Theologie aus spekulativen Prinzipien der Vernunft"
 depth: 6
 aa_page: 420
 ---

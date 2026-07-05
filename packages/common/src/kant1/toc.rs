@@ -370,7 +370,7 @@ const TOC: &[FlatEntry] = &[
     FlatEntry {
         aa_page: 240,
         depth: 6,
-        label: "B. Vom logichen Gebrauche der Vernunft",
+        label: "B. Vom logischen Gebrauche der Vernunft",
         slug_override: None,
     },
     FlatEntry {

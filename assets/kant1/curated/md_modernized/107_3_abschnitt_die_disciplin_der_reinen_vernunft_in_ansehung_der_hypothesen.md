@@ -1,11 +1,11 @@
 ---
 position: 107
-label: "3. Abschnitt. Die Disciplin der reinen Vernunft in Ansehung der Hypothesen"
+label: "3. Abschnitt. Die Disziplin der reinen Vernunft in Ansehung der Hypothesen"
 depth: 3
 aa_page: 502
 ---
 
-## {{ 797 }} 3. Abschnitt. Die Disciplin der reinen Vernunft in Ansehung der Hypothesen
+## {{ 797 }} 3. Abschnitt. Die Disziplin der reinen Vernunft in Ansehung der Hypothesen
 
 Weil wir denn durch Kritik unserer Vernunft endlich soviel wissen, dass wir in ihrem reinen und spekulativen Gebrauche in der Tat gar nichts wissen können: sollte sie nicht ein desto weiteres Feld zu ***Hypothesen*** eröffnen, da es wenigstens vergönnt ist, zu dichten und zu meinen, wenn gleich nicht zu behaupten?
 

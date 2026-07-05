@@ -1,6 +1,6 @@
 ---
 position: 43
-label: "2. Anticipationen der Wahrnehmung"
+label: "2. Antizipationen der Wahrnehmung"
 depth: 7
 aa_page: 151
 ---

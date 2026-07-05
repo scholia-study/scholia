@@ -1,6 +1,6 @@
 ---
 position: 17
-label: "Allgemeine Anmerkungen zur transscendentalen Ästhetik"
+label: "Allgemeine Anmerkungen zur transzendentalen Ästhetik"
 depth: 3
 aa_page: 65
 ---
