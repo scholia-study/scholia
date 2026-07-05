@@ -765,7 +765,7 @@ Ej, I frække skrålere! I med eders Chi og Kappa! I tror kanske ikke jeg ved, h
 Dårligt talt; højst urimeligt!
 
 @ Kejser Julian.
-Men tror I jeg lader disse spotterier gå hen uden at svare? Nej, nej, I skal få andet at vide Vent kun; I skal høre fra mig snarere end I tænker. Jeg udarbejder i denne tid et skrift, som heder «Skæg-haderen». Og ved I, hvem dette skrift er rettet imod? Det er rettet imod eder, I Antiokias borgere, – ja, imod eder, hvem jeg i skriftet kalder «de uvidende hunde». Der skal I få mine grunde både for det ene og for det andet, som nu tykkes eder sælsomt i min adfærd.
+Men tror I jeg lader disse spotterier gå hen uden at svare? Nej, nej, I skal få andet at vide. Vent kun; I skal høre fra mig snarere end I tænker. Jeg udarbejder i denne tid et skrift, som heder «Skæg-haderen». Og ved I, hvem dette skrift er rettet imod? Det er rettet imod eder, I Antiokias borgere, – ja, imod eder, hvem jeg i skriftet kalder «de uvidende hunde». Der skal I få mine grunde både for det ene og for det andet, som nu tykkes eder sælsomt i min adfærd.
 
 @ {{{ 383 }}} Høvedsmanden Fromentinos *(kommer fra højre)*.
 Høje kejser, jeg har et glædeligt budskab at bringe. Kyrillos er allerede falden til føje –

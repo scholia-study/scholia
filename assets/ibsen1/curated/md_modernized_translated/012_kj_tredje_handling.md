@@ -765,7 +765,7 @@ Fie, you impudent bawlers! You with your Chi and Kappa! You perhaps do not think
 Ill spoken; most unreasonable!
 
 @ Emperor Julian.
-But do you think I let these mockeries pass without answering? No, no, you shall come to know otherwise. Only wait; you shall hear from me sooner than you think. I am at this time working out a writing which is called «The Beard-Hater.» And do you know against whom this writing is directed? It is directed against you, you citizens of Antioch, – yes, against you, whom in the writing I call «the ignorant dogs.» There you shall get my reasons both for the one thing and for the other which now seems strange to you in my conduct.
+But do you think I let these mockeries pass without answering? No, no, you shall come to know otherwise. Only wait; you shall hear from me sooner than you think. I am at this time working out a writing which is called «The Beard-Hater». And do you know against whom this writing is directed? It is directed against you, you citizens of Antioch, – yes, against you, whom in the writing I call «the ignorant dogs». There you shall get my reasons both for the one thing and for the other which now seems strange to you in my conduct.
 
 @ {{{ 383 }}} Fromentinus the captain *(comes from the right)*.
 Noble emperor, I have a joyful message to bring. Cyril has already given in –
