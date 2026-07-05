@@ -78,11 +78,14 @@ gresk) · sten → stein · udørk → ødemark.
 
 **Titles / roles.** Quæstoren → Kvestoren · Staldmesteren → Stallmesteren · Lægen → Legen ·
 Prætorian → Pretorian · Fyrstinde → Fyrstinne · Slavinden → Slavinnen.
-(Husmesteren, Hærføreren, Ridderen, Underføreren, Fanebæreren, and Latin proper
-names like Cæsar/Cæsaræa stay.)
+(Husmesteren, Hærføreren, Ridderen, Underføreren, Fanebæreren, Høvedsmannen
+(Høvedsmanden → Høvedsmannen — do NOT swap to Centurion/Kommandant; the
+English translation layer renders it "captain"),
+Krigsøversten/krigsøverster, and Latin proper names like Cæsar/Cæsaræa stay.)
 
 **Kept literary words** (don't over-modernize; flag for the reviewer):
-hin/hint/hine, stundom, visselig, sikkerlig, frende, hvo, endog, fattedes,
+hin/hint/hine, stundom, visselig, sikkerlig, frende, hvo, hvi, endog, fattedes,
+turde/turdet, ad (preposition: "opp ad trappen", "frem ad hin vei"),
 **isinde** (NOT "i sinne" — false friend = anger).
 
 **Typos / OCR sics are FIXED in md_modernized** (e.g. `JuIian` → `Julian`). The
@@ -202,13 +205,36 @@ sequence* is unchanged, so parity still holds.
 - deling soldater → tropp soldater
 - alligevel → allikevel
 - løyer → løyner
-- høvedsmannen → centurion (definite "Høvedsmannen X" → "Centurionen X" in the cast list; address "høvedsmann" → "centurion")
 - gentagne → gjentatte (gentage → gjenta, gentagelse → gjentakelse)
 - modsigende → motsigende (modsige → motsi)
 - forligelighet → forsoning (semantic; cf. forliges → forlikes)
 - uforlignelig → uforliknelig (uforlignelige → uforliknelige)
 - gåde → gåte (gåden → gåten, gådefull → gåtefull)
 - rige → rike (riget → riket, kongerige → kongerike; NOT gjerrig/forrig/øvrig/ivrig/halsstarrig/krig-)
+- Matthæus → Matteus
+- Mailand → Milano
+- Syrien → Syria (Indien → India)
+- Armenierne → Armenerne
+- forhverve/forverve → erverve
+- bundsforvandte → forbundsfeller ("de bundsforvandte" → "forbundsfellene")
+- etterhånden → etter hvert
+- trossig → trassig
+- uheldsvanger → uhellsvanger (adjective uheldig stays)
+- Eja → Eia
+- kjævleri → kjekleri
+- trindt → rundt
+- tvende → to
+- dragne → dratt (ptc.; "De er alt dragne" → "dratt")
+- etterladne → etterlatte
+- henad → bortover ("langs henad jorden" → "langsetter jorden")
+- vove → våge (vover → våger, vovet/voved → våget, vovelig → vågelig)
+- megen(quantity) → mye (like meget; intensifier meget stays)
+- hinanden/hinannen → hverandre
+- derhos → dessuten (cf. endvidere → dessuten)
+- Ak → Akk
+- tyve → tjue (syv stays)
+- Danish plurals in -e → modern: dage → dager, breve → brev, lande → land, lærlinge → lærlinger, egne → egner, arme(noun) → armer
+- -erne definite plurals → -ene ONLY when the noun is not an -er agent/nationality noun (fangerne → fangene, presterne → prestene, barbarerne → barbarene; but borgerne/lærerne/galileerne/perserne stay)
 
 ## Verification (run after each act)
 

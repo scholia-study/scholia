@@ -6,7 +6,7 @@ depth: 1
 
 ## TREDJE HANDLING.
 
-@stage (I Efesos. Opplyst sal i fyrst Julians bolig. Inngangen fra forhallen er på høyre side; lengere tilbake en mindre dør, dekket av et forheng. På venstre side en dør, som fører til husets indre rom. Bakgrunnen i salen dannes av en gjennombrutt vegg, utenfor hvilken man ser en liten innelukket gårdsplass, smykket med små statuer.)
+@stage (I Efesos. Opplyst sal i fyrst Julians bolig. Inngangen fra forhallen er på høyre side; lenger tilbake en mindre dør, dekket av et forheng. På venstre side en dør, som fører til husets indre rom. Bakgrunnen i salen dannes av en gjennombrutt vegg, utenfor hvilken man ser en liten innelukket gårdsplass, smykket med små statuer.)
 
 @stage (Tjenere bereder et festlig aftensmåltid og legger hynder om bordet. Husmesteren Eutherios står ved inngangen og nøder under mange høfligheter Gregor fra Nazianz og Basilios fra Cæsaræa å tre inn.)
 
@@ -17,7 +17,7 @@ Jo, jo; jeg forsikrer, det er alt sammen riktig.
 Umulig! Driv dog ikke spott med oss.
 
 @ Basilios fra Cæsaræa.
-Du spøker, venn! Hvordan kan din herre vente oss? Intet menneske har visst vår avreise fra Aten; intet opphold har sinket oss underveis; vi har seilet ikapp med skyene og de ville traner.
+Du spøker, venn! Hvordan kan din herre vente oss? Intet menneske har visst vår avreise fra Aten; intet opphold har sinket oss underveis; vi har seilet i kapp med skyene og de ville traner.
 
 @ Husmesteren Eutherios.
 Se dere om; se bordet der. Til daglig lever han av urter og brød.
@@ -73,7 +73,7 @@ Hva tid på natten hadde du hint syn?
 @ Fyrst Julian.
 En time etter midnatt.
 
-@ Gregor fra Nazianz *(med et blik til Basilios)*.
+@ Gregor fra Nazianz *(med et blikk til Basilios)*.
 Forunderlig.
 
 @ Fyrst Julian *(gnir hendene; opp og ned ad gulvet)*.
@@ -107,7 +107,7 @@ Jeg kan ikke tyde det annerledes, gode Gregor! Fra alle kanter akter de det råd
 Og så –?
 
 @ Fyrst Julian.
-Jeg forsømmer ikke lettelig noen morgenandakt i kirken. Også henregner jeg blodvitnerne til de utmerkede mennesker; for det er i sannhet ingen ringe sak å lide så store smerter, {{{ 108 }}} ja, endog døden, for sine meningers skyld. I det hele tror jeg nok at Aëzios var vel tilfreds med meg da han reiste.
+Jeg forsømmer ikke lettelig noen morgenandakt i kirken. Også henregner jeg blodvitnene til de utmerkede mennesker; for det er i sannhet ingen ringe sak å lide så store smerter, {{{ 108 }}} ja, endog døden, for sine meningers skyld. I det hele tror jeg nok at Aëzios var vel tilfreds med meg da han reiste.
 
 @ Basilios fra Cæsaræa *(griper hans hånd)*.
 Julian, – for vårt inderlige vennskaps skyld, – tal åpent om din stilling.
@@ -147,9 +147,9 @@ Ve over denne ugudelige Maximos! Ve over denne til djevelen hjemfalne hedenske g
 @ {{{ 110 }}} Fyrst Julian.
 Blindhet, blindhet! Maximos hyller sin forutgangne broder; han hyller begge hine store brødre, både lovgiveren fra Sinai og seeren fra Nazareth. – –
 
-Vet du, hvordan erkjennelsens ånd fylte meg? – Det skjedde en natt under bønn og faste. Da fornam jeg at jeg ble rykket vidt – vidt ut i rommet og ut av tiden; for det var høy sol-sittrende dag om meg, og jeg stod ensom på et skip med slappe seil midt i det blanke strålende Greker-hav. Øyene tårnet seg, lik lette festnede skylag, langt borte, og skipet lå tungt, som om det sov, på den vinblå flate. –
+Vet du, hvordan erkjennelsens ånd fylte meg? – Det skjedde en natt under bønn og faste. Da fornam jeg at jeg ble rykket vidt – vidt ut i rommet og ut av tiden; for det var høy sol-sitrende dag om meg, og jeg stod ensom på et skip med slappe seil midt i det blanke strålende Greker-hav. Øyene tårnet seg, lik lette festnede skylag, langt borte, og skipet lå tungt, som om det sov, på den vinblå flate. –
 
-Se, da ble denne flate mer og mer gjennomsiktig, lettere, tynnere; til sist var den der ikke mer, og mitt skip hang over et tomt forferdelig dyp. Intet grønt, ingen sol dernede, – bare den døde, slimede, sorte havbunn i all sin avskylige nøkenhet. –
+Se, da ble denne flate mer og mer gjennomsiktig, lettere, tynnere; til sist var den der ikke mer, og mitt skip hang over et tomt forferdelig dyp. Intet grønt, ingen sol dernede, – bare den døde, slimede, sorte havbunn i all sin avskyelige nakenhet. –
 
 Men ovenover, i det uendelige hvelv, som før hadde syntes meg tomhet, – *der* var livet; der tok det usynlige former og stillheten tok toner. – Da fattet jeg den store forløsende erkjennelse.
 
@@ -163,7 +163,7 @@ Det, som er, det er ikke; og det, som ikke er, det er.
 O, du forspilles og fortapes i dette spinn av lys og tåker!
 
 @ Fyrst Julian.
-Jeg? Skjer det ikke jertegn? Forkynner ikke både varsler og visse selsomme forekomster imellom stjernene at den guddommelige vilje har noe ennå uoppklaret i sinne med meg?
+Jeg? Skjer det ikke jærtegn? Forkynner ikke både varsler og visse selsomme forekomster imellom stjernene at den guddommelige vilje har noe ennå uoppklaret i sinne med meg?
 
 @ Gregor fra Nazianz.
 Tro ikke desslike tegn; du kan ikke vite, hvis verk de er.
@@ -179,7 +179,7 @@ Jeg kan la dere vite, dere venner, at en stor omveltning står for døren. Cæsa
 Nei, nei; hvor kan vi vite –?
 
 @ Fyrst Julian.
-Apollinaris har utsagt at han hørte noen banke gjentagne ganger på døren ved nattetid. {{{ 112 }}} Han stod da opp og gikk utenfor huset; og se, – derute fikk han øye på en skikkelse, – mann eller kvinne –, det visste han ikke. Og skikkelsen talte til ham og bød ham skaffe tilveie en purpurkledning, slik, som nyvalgte herskere bærer dem. Men da Apollinaris i skrekk ville vegre seg for så farlige ting, var skikkelsen der ikke mer, og bare en røst ropte: gå, gå, Apollinaris, og få purpurkledningen hurtig ferdig!
+Apollinaris har utsagt at han hørte noen banke gjentatte ganger på døren ved nattetid. {{{ 112 }}} Han stod da opp og gikk utenfor huset; og se, – derute fikk han øye på en skikkelse, – mann eller kvinne –, det visste han ikke. Og skikkelsen talte til ham og bød ham skaffe tilveie en purpurkledning, slik, som nyvalgte herskere bærer dem. Men da Apollinaris i skrekk ville vegre seg for så farlige ting, var skikkelsen der ikke mer, og bare en røst ropte: gå, gå, Apollinaris, og få purpurkledningen hurtig ferdig!
 
 @ Gregor fra Nazianz.
 Var det dette tegn, du nettopp sa, hadde bekreftet seg?
@@ -200,7 +200,7 @@ Aldri!
 Kan ikke skje; vi er på hjemreisen til Kappadokia.
 
 @ Fyrst Julian.
-Og hva har så brat forjaget dere fra Hellas?
+Og hva har så brått forjaget dere fra Hellas?
 
 @ Basilios fra Cæsaræa.
 Min moder er enke, Julian!
@@ -227,7 +227,7 @@ Minnes du hin flod, Strabon skriver om, – hin flod, som har sine kilder på de
 Du higer dog ikke mot døden, Julian!
 
 @ Fyrst Julian.
-Hva dere trældomsfullt håper på bak døden, det er det just den store hemmelighets mål å forhverve alle medvitende her i vårt jordiske liv. Det er gjenoppreisning, som Maximos og hans lærlinger søker, – det er den forspilte likhet med guddommen. Hvorfor så tvilende, dere brødre? Hvorfor står dere der, likesom foran noe uoverstigelig? Jeg vet, hva jeg vet. I hvert av de skiftende slekts-ledd har det vært *en* sjel, hvori den rene Adam gjenfødtes; han var sterk i lovgiveren Moses; han hadde evnen til å gjøre seg jorden underdanig i den makedoniske Alexander; han var nesten fullkommen i Jesus fra Nazareth. {{{ 115 }}} Men se, Basilios, *(han griper ham i armen)* dem alle fattedes, hva som er *meg* lovet, – den rene kvinne!
+Hva dere trelldomsfullt håper på bak døden, det er det just den store hemmelighets mål å erverve alle medvitende her i vårt jordiske liv. Det er gjenoppreisning, som Maximos og hans lærlinger søker, – det er den forspilte likhet med guddommen. Hvorfor så tvilende, dere brødre? Hvorfor står dere der, likesom foran noe uoverstigelig? Jeg vet, hva jeg vet. I hvert av de skiftende slekts-ledd har det vært *en* sjel, hvori den rene Adam gjenfødtes; han var sterk i lovgiveren Moses; han hadde evnen til å gjøre seg jorden underdanig i den makedoniske Alexander; han var nesten fullkommen i Jesus fra Nazareth. {{{ 115 }}} Men se, Basilios, *(han griper ham i armen)* dem alle fattedes, hva som er *meg* lovet, – den rene kvinne!
 
 @ Basilios fra Cæsaræa *(river seg løs)*.
 Julian, Julian!
@@ -254,7 +254,7 @@ Vet du, hvor *din* vei stanser?
 Hvor veien og målet er *et*. – For siste gang, Gregor, Basilios, – jeg bønnfaller dere, bli hos meg. Det syn, jeg hadde siste natt, – både det og mye annet, tyder på et gåtefullt bånd imellom oss. Deg, min Basilios, hadde jeg så mye å si. Du er jo din slekts hode; og hvo vet, om ikke alt det lokkende, som er meg tilsagt –; om ikke gjennom deg og i ditt hus –
 
 @ {{{ 117 }}} Basilios fra Cæsaræa.
-Aldri! Med min vilje skal ingen ledes inn i ditt avsind og i dine ville drømme.
+Aldri! Med min vilje skal ingen ledes inn i ditt avsinn og i dine ville drømme.
 
 @ Fyrst Julian.
 Ah, hva taler du om vilje? Jeg øyner en skrivende hånd på veggen; snart skal jeg tyde skriften.
@@ -271,9 +271,9 @@ Mellom oss er et skille fra denne dag.
 *(han drar Basilios med seg; begge går ut til høyre.)*
 
 @ Fyrst Julian *(ser en stund etter dem)*.
-Ja, gå! Gå, gå! – Hva vet dere to lærde menn! Hva bringer dere med fra visdommens stad? Du, min sterke trossige Gregor, – og du, Basilios, mer pike enn mann, – dere kjenner bare to gater i Aten, gaten til skolen og gaten til kirken; den tredje gate, over Eleusis og videre, den kjenner dere ikke, og enn mindre –. Ah!
+Ja, gå! Gå, gå! – Hva vet dere to lærde menn! Hva bringer dere med fra visdommens stad? Du, min sterke trassige Gregor, – og du, Basilios, mer pike enn mann, – dere kjenner bare to gater i Aten, gaten til skolen og gaten til kirken; den tredje gate, over Eleusis og videre, den kjenner dere ikke, og enn mindre –. Ah!
 
-@stage (Forhenget på høyre side dras til side. To tjenere i østerlandske klær bringer inn en høy tilhyllet gjenstand, som de stiller i hjørnet bak bordet. Litt etter kommer mystikeren Maximos gjennom den samme dør. Han er en mager middelshøy mann med et brunt høkaktig ansikt; hans hår og skjegg er sterkt gråsprengt med unntagelse av de tykke øyenbryn og skjegget over munnen, som ennå har sin begsorte farge. Han bærer en spiss hue og en lang sort kledning; i hånden har han en hvit stav.)
+@stage (Forhenget på høyre side dras til side. To tjenere i østerlandske klær bringer inn en høy tilhyllet gjenstand, som de stiller i hjørnet bak bordet. Litt etter kommer mystikeren Maximos gjennom den samme dør. Han er en mager middelshøy mann med et brunt haukaktig ansikt; hans hår og skjegg er sterkt gråsprengt med unntagelse av de tykke øyenbryn og skjegget over munnen, som ennå har sin beksorte farge. Han bærer en spiss hue og en lang sort kledning; i hånden har han en hvit stav.)
 
 @ {{{ 118 }}} Mystikeren Maximos *(går, uten å akte på Julian, hen til den tilhyllede gjenstand, stanser og gir tjenerne et vink; de fjerner seg lydløst)*.
 
@@ -303,7 +303,7 @@ Maximos, – hva er dette?
 Roser i håret! Perlende vin! Se, se hist de skjønne lemmer i lek!
 
 @ Fyrst Julian.
-Og midt under denne sansernes tummel vil du –?
+Og midt under denne sansenes tummel vil du –?
 
 @ {{{ 119 }}} Mystikeren Maximos.
 Synden *er* bare i ditt syn på det syndige.
@@ -311,7 +311,7 @@ Synden *er* bare i ditt syn på det syndige.
 @ Fyrst Julian.
 Roser i håret! Perlende vin!
 
-*(han kaster seg ned på et av hynderne ved bordet, tømmer en fylt skål, setter den hurtig fra seg og spør:)*
+*(han kaster seg ned på et av hyndene ved bordet, tømmer en fylt skål, setter den hurtig fra seg og spør:)*
 
 Ah, hva var det i vinen?
 
@@ -345,9 +345,9 @@ Søte gåte; fristende lokkende –! Hva var det? Hvi lo du?
 Jeg?
 
 @ Fyrst Julian.
-Det hvisker ved min venstre side! Silkehyndet knittrer –
+Det hvisker ved min venstre side! Silkehyndet knitrer –
 
-*(blek; springer halvt iveiret:)*
+*(blek; springer halvt i været:)*
 
 Maximos, vi er ikke alene!
 
@@ -355,10 +355,10 @@ Maximos, vi er ikke alene!
 Vi er fem tilbords!
 
 @ Fyrst Julian.
-Symposion med ånderne!
+Symposion med åndene!
 
 @ Mystikeren Maximos.
-Med skyggerne.
+Med skyggene.
 
 @ Fyrst Julian.
 Nevn mine gjester!
@@ -579,7 +579,7 @@ Kan du, så tal til meg!
 Hva vil du vite?
 
 @ Fyrst Julian.
-Hva var ditt hverv i livet?
+Hva var ditt verv i livet?
 
 @ Stemmen.
 Min brøde.
@@ -609,7 +609,7 @@ Og hvorfor måtte du?
 Jeg var *meg*.
 
 @ Fyrst Julian.
-Du er ordknap.
+Du er ordknapp.
 
 @ Mystikeren Maximos *(uten å se opp)*.
 In vino veritas.
@@ -619,7 +619,7 @@ Du traff det, Maximos!
 
 *(han heller en fylt skål ut foran det tomme sete.)*
 
-Bad deg i vinduften, min bleke gjest! Kveg deg. Kjenn, kjenn, – den stiger tilveirs som en offerrøk.
+Bad deg i vinduften, min bleke gjest! Kveg deg. Kjenn, kjenn, – den stiger til værs som en offerrøk.
 
 @ Stemmen.
 Offerrøk *stiger* ikke alltid.
@@ -643,7 +643,7 @@ Hva kaller du den herligste?
 Livet.
 
 @ Fyrst Julian.
-Og livets grund?
+Og livets grunn?
 
 @ Stemmen.
 Døden.
@@ -819,7 +819,7 @@ Ah, lyn i natten! Jeg ser det; – all kunst er forgjeves.
 Hvorfor? Tal, tal!
 
 @ Mystikeren Maximos.
-Den tredje er ikke iblant skyggerne ennå.
+Den tredje er ikke iblant skyggene ennå.
 
 @ Fyrst Julian.
 Han lever?
@@ -837,13 +837,13 @@ Her, eller hist, eller blant de ufødte; – jeg vet ikke –
 Du lyver! Du bedrar meg! *Her*, her, sa du –!
 
 @ Mystikeren Maximos.
-Slip min kappe!
+Slipp min kappe!
 
 @ Fyrst Julian.
 Altså du eller jeg! Men hvem av oss?
 
 @ Mystikeren Maximos.
-Slip kappen, Julian!
+Slipp kappen, Julian!
 
 @ Fyrst Julian.
 Hvem av oss? Hvem? Alt henger i dette ene!
@@ -974,7 +974,7 @@ Gregor, broder, – så kom du dog igjen!
 Er det sant, hva ryktet kaster som en pileregn over staden?
 
 @ Fyrst Julian.
-Jeg er selv som rammet av ryktets pile. Tør jeg tro på denne blanding av lykke og ulykke?
+Jeg er selv som rammet av ryktets piler. Tør jeg tro på denne blanding av lykke og ulykke?
 
 @ Gregor fra Nazianz.
 For Kristi skyld, vis fristeren fra deg!
@@ -1007,16 +1007,16 @@ Cæsar Gallos er falt på sine gjerninger.
 Myrdet; – hvo myrdet ham?
 
 @ Kvestoren Leontes.
-Hva som er skjedd, var en nødvendighet, høye herre! Cæsar Gallos har misbrukt makten som en rasende her i Østerlandene. Hans stilling som Cæsar var ham ikke lenger nok. Hans ferd, både i Konstantinopel og annetsteds underveis, viste til fulle, hva han pønset på.
+Hva som er skjedd, var en nødvendighet, høye herre! Cæsar Gallos har misbrukt makten som en rasende her i Østerlandene. Hans stilling som Cæsar var ham ikke lenger nok. Hans ferd, både i Konstantinopel og annetsteds underveis, viste til fulle, hva han pønsket på.
 
 @ Fyrst Julian.
 Jeg spør ikke om hans brøde; det andre vil jeg vite.
 
 @ Kvestoren Leontes.
-O, la meg skåne dine broderlige øren.
+O, la meg skåne dine broderlige ører.
 
 @ Fyrst Julian.
-Mine broderlige øren kan tåle, hva mine sønnlige øren har tålt. Hvo drepte ham?
+Mine broderlige ører kan tåle, hva mine sønnlige ører har tålt. Hvo drepte ham?
 
 @ Kvestoren Leontes.
 Tribunen Skudilo, som ledsaget ham, fant det rådelig å la ham henrette.
@@ -1070,7 +1070,7 @@ Si nei, Julian! Det er fordervelsens vinger de vil hefte til dine skuldre.
 Hvo er du, som trosser keiseren?
 
 @ Gregor fra Nazianz.
-Mitt navn er Gregor; jeg er sønn av biskoppen i Nazianz; – gjør med meg, hva dere vil.
+Mitt navn er Gregor; jeg er sønn av biskopen i Nazianz; – gjør med meg, hva dere vil.
 
 @ Fyrst Julian.
 Han er min venn og broder; ingen røre ham!
@@ -1102,7 +1102,7 @@ Kristi rike?
 Keiserens store skjønne rike.
 
 @ Basilios fra Cæsaræa.
-Var det keiserens rike, som stod i lys for ditt syn, da du som barn forkynte læren fra de kappadokiske blodvitners grave? Var det keiserens rike, du dro fra Konstantinopel for å grunnfeste på jorden? Var det keiserens rike –
+Var det keiserens rike, som stod i lys for ditt syn, da du som barn forkynte læren fra de kappadokiske blodvitners graver? Var det keiserens rike, du dro fra Konstantinopel for å grunnfeste på jorden? Var det keiserens rike –
 
 @ Fyrst Julian.
 Tåker, tåker; – alt hint ligger bak meg som en vill drøm.
@@ -1130,7 +1130,7 @@ Det spør jeg ikke om. Hvor fører du meg hen; til lykken og makten, – eller t
 O, herre, en så hånende mistro –
 
 @ Fyrst Julian.
-Gallos's legeme er knapt rådnet ennå.
+Gallos's legeme er knapt råtnet ennå.
 
 @ Kvestoren Leontes.
 Jeg kan heve alle tvil. *(tar et papir frem.)* Dette brev fra keiseren, som jeg helst hadde rakt deg i enerom –
@@ -1149,7 +1149,7 @@ Keiseren skjenker deg henne, herre! Han skjenker deg denne elskede søster, som 
 Helena til meg! Det uoppnåelige vunnet! – Men hun, Leontes –?
 
 @ Kvestoren Leontes.
-Ved avskjeden tok han fyrstinnen ved hånden og ledte henne hen til meg. En strøm av jomfruelig blod skjøt opp i hennes skjønne kinner, hun slo sine øyne ned og sa: hils min kjære frende, og la ham vite at han alltid har vært den mann, som – –
+Ved avskjeden tok han fyrstinnen ved hånden og ledet henne hen til meg. En strøm av jomfruelig blod skjøt opp i hennes skjønne kinner, hun slo sine øyne ned og sa: hils min kjære frende, og la ham vite at han alltid har vært den mann, som – –
 
 @ Fyrst Julian.
 Videre, Leontes!
@@ -1182,7 +1182,7 @@ Her står ikke tegn imot tegn. Maximos, Maximos, du har vært blind, du seende! 
 Det er skjedd!
 
 @ Mystikeren Maximos *(mumler for seg selv, med opprakte hender)*.
-Seir og lys over den *villende*!
+Seier og lys over den *villende*!
 
 @ Kvestoren Leontes.
 Og nå til statholderens bolig; folket vil hilse Cæsar.

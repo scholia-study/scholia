@@ -6,7 +6,7 @@ depth: 1
 
 ## ACT FOUR.
 
-@stage (At Lutetia in Gaul. A hall in Caesar's palace «The Warm Baths» outside the city. Entrance door at the background; to the right another, smaller door; in front, on the left side, is a window with a curtain.)
+@stage (At Lutetia in Gaul. A hall in Caesar's palace «The Warm Baths» outside the city. Entrance door at the back; to the right another, smaller door; in front, on the left side, is a window with a curtain.)
 
 @stage (Princess Helena, richly adorned, with pearls in her hair, sits in an armchair and looks out through the window. Myrrha the slave-girl stands above her and holds the curtain aside.)
 
@@ -71,7 +71,7 @@ No, my lord; but an envoy is expected.
 @ Caesar Julian.
 Go, go! *(to the slave-girl)* Away with you.
 
-@stage (Eutherius and Myrrha go out at the background.)
+@stage (Eutherius and Myrrha go out at the back.)
 
 @ {{{ 148 }}} Princess Helena *(sinks down into the armchair)*.
 So it is all over with us, then!
@@ -368,7 +368,7 @@ He can bear no agitations of the mind. What, then, is there to shrink back from?
 Do you forget the invisible bodyguard about the anointed one?
 
 @ {{{ 162 }}} Princess Helena.
-Christ is good. Oh, be pious, Julian, and he will forgive much. I will help. Prayers shall be sent up for you. Praised be the holy men! Praised be the blood-witnesses! Believe me, we shall atone for everything afterward. Grant me the Alemanni for conversion; I will send out priests among them; they shall bow down beneath the grace of the cross.
+Christ is good. Oh, be pious, Julian, and he will forgive much. I will help. Prayers shall be sent up for you. Praised be the holy men! Praised be the martyrs! Believe me, we shall atone for everything afterward. Grant me the Alemanni for conversion; I will send out priests among them; they shall bow down beneath the grace of the cross.
 
 @ Caesar Julian.
 The Alemanni do not bow down under it.
@@ -424,7 +424,7 @@ I will see him at once. And listen; one thing more. The generals and the command
 @ Eutherius the steward.
 Good, most gracious sire!
 
-*(he goes out at the background.)*
+*(he goes out at the back.)*
 
 @ Caesar Julian.
 Now, my Helena, now it will show itself –
@@ -522,7 +522,7 @@ Hm –! Homesickness? Indeed!
 
 *(To Sintula the master of the horse, who comes from the background.)*
 
-Are you there, old faun? Tempt me no more. *(to Decentius.)* Ever since the battle of Argentoratum he is always talking to me of the victory-chariot and the white team. *(to Sintula.)* It became Phaethon's ride with {{{ 168 }}} the bright sun-horses. How did it end? Have you forgotten – have you forgotten your heathenism, I was about to say. – Forgive me, Decentius, that I wound your pious ear.
+Are you there, old faun? Tempt me no more. *(to Decentius.)* Ever since the battle of Argentoratum he is always talking to me of the victory-chariot and the white team. *(to Sintula.)* It became Phaethon's ride with {{{ 168 }}} the Libyan sun-horses. How did it end? Have you forgotten – have you forgotten your heathenism, I was about to say. – Forgive me, Decentius, that I wound your pious ear.
 
 @ Decentius the tribune.
 Caesar tickles his servant's ear; but he does not wound it.
@@ -608,7 +608,7 @@ No, in truth, I think –. And the battle of Argentoratum? Was I not there? It h
 Exalted Caesar, is there any man so insane that he would dispute you this honour?
 
 @ {{{ 172 }}} Severus the general *(to Decentius)*.
-I praise fate, which granted me in my old days to follow so fortunate a leader.
+I praise fate, which granted me in my old age to follow so fortunate a leader.
 
 @ Florentius the praetorian prefect *(likewise to the tribune)*.
 What turn the Alemannic assault might have taken without Caesar's valour and prudence, I scarcely dare to think of.
@@ -636,7 +636,7 @@ More, more! Here it is reported that it is the *emperor* who has fought and conq
 Exalted Caesar, your word is enough.
 
 @ Caesar Julian.
-And where, then, are you driving at with your deluding talk, you friends? Will you, out of excessive love for me, make me a parasite whom you feed with the abundance you pilfered from my kinsman's table? – What do you think, Decentius? What do you say to this? You see that in my own camp I must keep an eye on adherents who at times {{{ 174 }}} in their blindness are on the way to stray beyond the boundary-stakes of rebellion.
+And what, then, are you driving at with your deluding talk, you friends? Will you, out of excessive love for me, make me a parasite whom you feed with the abundance you pilfered from my kinsman's table? – What do you think, Decentius? What do you say to this? You see that in my own camp I must keep an eye on adherents who at times {{{ 174 }}} in their blindness are on the way to stray beyond the boundary-stakes of rebellion.
 
 @ Florentius the praetorian prefect *(quickly to the tribune)*.
 In truth, my words have been grossly misinterpreted, if –
@@ -645,9 +645,9 @@ In truth, my words have been grossly misinterpreted, if –
 It could never come into my mind in *that* way to –
 
 @ Caesar Julian.
-So shall it be, you brothers in battle; let us all together eat our pride within us. I asked before what was lacking in Caesar's fortune. Now you know it. It was the recognition of truth that was lacking in Caesar's fortune. Your silver helmet will not come to be covered by the dust of the triumphal procession, brave Florentius! The emperor has held a victory-entry for us in Rome. He finds, therefore, that all solemnities here are superfluous. Go, Sintula, and see to it that the intended processions are called off. The emperor wishes to grant his soldiers a beneficial rest. It is his will that they shall remain in the camp outside the walls.
+So shall it be, you brothers in battle; let us all together swallow our pride. I asked before what was lacking in Caesar's fortune. Now you know it. It was the recognition of truth that was lacking in Caesar's fortune. Your silver helmet will not come to be covered by the dust of the triumphal procession, brave Florentius! The emperor has held a victory-entry for us in Rome. He finds, therefore, that all solemnities here are superfluous. Go, Sintula, and see to it that the intended processions are called off. The emperor wishes to grant his soldiers a beneficial rest. It is his will that they shall remain in the camp outside the walls.
 
-@stage (Sintula the master of the horse goes out at the background.)
+@stage (Sintula the master of the horse goes out at the back.)
 
 @ Caesar Julian.
 Was I not once a friend of wisdom? So they said, at least, both in Athens and in Ephesus. So weak is the human mind in prosperity. I was near becoming unfaithful to wisdom. The emperor {{{ 175 }}} has reminded me. Thank him most humbly, Decentius! Have you more to report?
@@ -686,7 +686,7 @@ It is necessary that it be complied with this very day.
 @ Caesar Julian.
 This very day; of course. Come here, Sintula! Now, where is he? Ah, so! – Fetch Sintula back!
 
-@stage (A courtier goes out at the background; Caesar Julian goes over to the window and reads the papers through anew.)
+@stage (A courtier goes out at the back; Caesar Julian goes over to the window and reads the papers through anew.)
 
 @ Florentius the praetorian prefect *(in a subdued voice to the tribune)*.
 I beg most earnestly, do not misinterpret what I said before. When I ascribed the honour to Caesar, it was of course not thereby meant that –
@@ -718,7 +718,7 @@ Without my intervention?
 @ Decentius the tribune.
 The emperor has charged me to spare his precious kinsman.
 
-*(He goes out at the background, followed by the others, except Sintula, who remains standing by the door.)*
+*(He goes out at the back, followed by the others, except Sintula, who remains standing by the door.)*
 
 @ Caesar Julian *(looks at him for a while)*.
 Sintula!
@@ -831,7 +831,7 @@ Sickness or madness –; help, help!
 @ Caesar Julian.
 Helena ill! The physician! Oribases shall come, Sintula! Fetch him!
 
-@stage (Sintula the master of the horse goes out at the background. Caesar Julian is about to hasten out to the right, but meets in the doorway Princess Helena surrounded by slave-girls. Her face is wild and distraught, her hair and clothes in disorder.)
+@stage (Sintula the master of the horse goes out at the back. Caesar Julian is about to hasten out to the right, but meets in the doorway Princess Helena surrounded by slave-girls. Her face is wild and distraught, her hair and clothes in disorder.)
 
 @ Princess Helena.
 Loosen the comb! Loosen the comb, I say! It is red-hot. Fire in my hair; I burn, I burn!
@@ -968,7 +968,7 @@ Are you angry with me, you glorious one? Gallus is dead, after all. Beheaded. Wh
 Not nearer, Oribases!
 
 @ Princess Helena.
-Kill the priest too! I will not see him after this, You know our sweet secret, after all. {{{ 186 }}} Oh, you longing of my days, rapture of my nights! It was you yourself, after all, – in the shape of your servant – in the prayer-chamber; yes, yes, you were there; it was you – in the darkness, in the air, in the veiling clouds of incense, that night when the Caesar-to-be beneath my heart –
+Kill the priest too! I will not see him after this, you know our sweet secret, after all. {{{ 186 }}} Oh, you longing of my days, rapture of my nights! It was you yourself, after all, – in the shape of your servant – in the prayer-chamber; yes, yes, you were there; it was you – in the darkness, in the air, in the veiling clouds of incense, that night when the Caesar-to-be beneath my heart –
 
 @ Caesar Julian *(recoils with a cry)*.
 Ah!
@@ -981,7 +981,7 @@ My lover and lord! Mine, mine –!
 @ Caesar Julian *(stands for a moment motionless; then he clenches his hand in the air and cries out)*:
 Galilean!
 
-@stage (The slave-girls carry the princess out to the right; at the same moment Sallust the knight comes quickly in through the door at the background.)
+@stage (The slave-girls carry the princess out to the right; at the same moment Sallust the knight comes quickly in through the door at the back.)
 
 @ Sallust the knight.
 The princess in a swoon! Oh, so it was true after all!
@@ -1173,7 +1173,7 @@ Like Gallus! *(cries through the window.)* Help, help!
 @ Sallust the knight.
 Flee, my Caesar! Flee, flee!
 
-@stage (Wild cries are heard outside. Roman legionaries, Batavian auxiliary troops and other confederates climb in through the window. At the same time another swarm presses in through the door at the background. Among the foremost is Maurus the standard-bearer; women, some with children in their arms, follow the intruders.)
+@stage (Wild cries are heard outside. Roman legionaries, Batavian auxiliary troops and other confederates climb in through the window. At the same time another swarm presses in through the door at the back. Among the foremost is Maurus the standard-bearer; women, some with children in their arms, follow the intruders.)
 
 @ Cries among the soldiers.
 Caesar, Caesar!
@@ -1236,7 +1236,7 @@ Caesar remembers that?
 His promises he does not remember!
 
 @ Caesar Julian.
-Was it not the dauntless Varro's voice that I caught there? There we have him! Your wound is healed, I see. Oh, you well-deserving warrior, – that it should yet be denied me to make you a commander!
+Was it not the dauntless Varro's voice that I caught there? There we have him! Your wound is healed, I see. Oh, you well-deserving warrior, – that it should yet be denied me to make you a captain!
 
 @ Varro the under-officer.
 Have you really wished it?
@@ -1254,7 +1254,7 @@ We have nothing to do with the emperor.
 Caesar shall render us account!
 
 @ Caesar Julian.
-What power, then, has your unhappy Caesar, you friends? They mean to lead me to Rome. They refuse me the management of even my own affairs. They lay claim to my share of the spoils of war. Five gold pieces and a pound of silver I had meant to grant each soldier, but –
+What power, then, has your unhappy Caesar, you friends? They mean to lead me to Rome. They refuse me the management of even my own affairs. They seize my share of the spoils of war. Five gold pieces and a pound of silver I had meant to grant each soldier, but –
 
 @ {{{ 196 }}} The soldiers.
 What does he say?
@@ -1281,7 +1281,7 @@ With Caesar, who has been more a friend than a lord to us! Or has he perhaps not
 Yes, yes, he has!
 
 @ Varro the under-officer.
-Should not Caesar, the victor, be able to choose for commander whom he will?
+Should not Caesar, the victor, be able to choose as captains whom he will?
 
 @ Maurus the standard-bearer.
 Should he not have free disposal over the booty that has fallen to him?
@@ -1402,7 +1402,7 @@ Such an ornament I have never owned.
 @ Maurus the standard-bearer.
 This one can do it.
 
-*(he takes off his necklace and winds it manifoldly about Caesar's brow.)*
+*(he takes off his necklace and winds it in many coils about Caesar's brow.)*
 
 @ Shouts outside.
 The emperor; the emperor! We want to see the emperor!
@@ -1428,7 +1428,7 @@ We will establish ourselves firmly in Vienna. That city is the strongest in Gaul
 That he will not do, my lord!
 
 @ Caesar Julian *(with uplifted hands)*.
-Divine wisdom, shine into his darkened soul and lead him to the best! Be with me, you fortune, that has never failed me before!
+Divine wisdom, shine into his darkened soul and lead him to the best! Be with me, you fortune, that have never failed me before!
 
 @ Myrrha *and* the women *(wailing outside to the right)*.
 Dead, dead, dead!

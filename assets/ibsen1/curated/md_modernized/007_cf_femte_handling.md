@@ -8,7 +8,7 @@ depth: 1
 
 @stage (I Vienna. Et hvelvet rom i katakombene. Til venstre snor seg en buktet gang oppad. Gjennom bergsiden i bakgrunnen er uthugget en trapp, som ender oppe ved en lukket dør. Foran til høyre fører en mengde trinn ned til de dypere liggende ganger. Rommet er svakt opplyst av en brennende hengelampe.)
 
-@stage (Cæsar Julian, med uraget skjegg og i smussige klær, står ludende over åpningen til høyre. Dempet salmesang lyder igjennom døren fra den utenfor tilbyggede kirke.)
+@stage (Cæsar Julian, med uraket skjegg og i smussige klær, står lutende over åpningen til høyre. Dempet salmesang lyder igjennom døren fra den utenfor tilbygde kirke.)
 
 @ Cæsar Julian *(taler nedad)*.
 Ennå intet tegn?
@@ -89,7 +89,7 @@ Ingen drepte henne, Sallust! Hun var for ren for dette syndens rike; derfor steg
 Jeg, herre?
 
 @ Cæsar Julian.
-Natt og dag har jeg hørt bryllupssangene siden. Hør, hør; i forherligelse løftes hun oppad. Ja, hun var tilvisse en ekte kristen-kvinne. Hun holdt seg budet etterrettelig; – hun gav Cæsar, hva Cæsars var, og den annen gav hun –; nå, det var ikke *det*, vi skulle tale om; du er ikke innviet i lærens hemmeligheter, Sallust! – Hva nytt, spurte jeg om?
+Natt og dag har jeg hørt bryllupssangene siden. Hør, hør; i forherligelse løftes hun oppad. Ja, hun var til visse en ekte kristen-kvinne. Hun holdt seg budet etterrettelig; – hun ga Cæsar, hva Cæsars var, og den annen ga hun –; nå, det var ikke *det*, vi skulle tale om; du er ikke innviet i lærens hemmeligheter, Sallust! – Hva nytt, spurte jeg om?
 
 @ Ridderen Sallust.
 Det viktigste, jeg vet, er at keiseren ved budskapet om, hva som i Lutetia gikk for seg, skyndsomt skal være flyktet over til Antiokia.
@@ -131,7 +131,7 @@ Hvorav vet du –?
 Ved et tilfelle, herre! Jeg bønnfaller deg, tro meg –!
 
 @ Cæsar Julian.
-Godt, godt; når det skjer, vil jeg gå Konstanzios imøte, – ikke med sverd i hånd –
+Godt, godt; når det skjer, vil jeg gå Konstanzios i møte, – ikke med sverd i hånd –
 
 @ Ridderen Sallust.
 Ikke? Hvordan tenker du da å møte ham?
@@ -158,13 +158,13 @@ Cæsar, ta mitt liv; jeg vil heller dø på ditt enn på keiserens bud.
 Reis deg, venn!
 
 @ Ridderen Sallust.
-Nei; la meg ligge for min Cæsars føtter og tilstå alt. O, dyrebare herre, – at måtte {{{ 209 }}} si deg dette! – Da jeg oppsøkte deg i leiren ved Rhin, – da jeg minnet deg om vårt fordums vennskap under samværet i Hellas, – da jeg ba om å måtte dele krigens farer med deg, – da, o, Cæsar, da kom jeg som en lønnlig speider i keiserens tjenste –
+Nei; la meg ligge for min Cæsars føtter og tilstå alt. O, dyrebare herre, – at måtte {{{ 209 }}} si deg dette! – Da jeg oppsøkte deg i leiren ved Rhin, – da jeg minnet deg om vårt fordums vennskap under samværet i Hellas, – da jeg ba om å måtte dele krigens farer med deg, – da, o, Cæsar, da kom jeg som en lønnlig speider i keiserens tjeneste –
 
 @ Cæsar Julian.
 Du –!
 
 @ Ridderen Sallust.
-Mitt sinn hadde i noen tid vært opptent av harm imot deg; du minnes hin ringe tvist i Mailand, – dog ikke ringe for meg, som hadde håpet at Cæsar skulle hjelpe min sviktende lykke på fote igjen. Alt dette drog man fordel av i Rom; man holdt meg for den rette mann til å etterspore dine veier.
+Mitt sinn hadde i noen tid vært opptent av harm imot deg; du minnes hin ringe tvist i Milano, – dog ikke ringe for meg, som hadde håpet at Cæsar skulle hjelpe min sviktende lykke på fote igjen. Alt dette dro man fordel av i Rom; man holdt meg for den rette mann til å etterspore dine veier.
 
 @ Cæsar Julian.
 Og til slikt kunne du selge deg? Så sort et bedrag!
@@ -176,7 +176,7 @@ Jeg var ødelagt, herre; og jeg syntes at Cæsar hadde slått hånden av meg. Ja
 Disse brev var fra *deg*? O, Sallust!
 
 @ Ridderen Sallust.
-De inneholdt intet til skade for deg, herre! Hva andre kan ha skrevet, vet jeg ikke; jeg vet bare at jeg titt nok våndet meg i kval under en nødtvungen og forhatt taushet. Jeg voved meg så langt frem, som jeg på noen måte turde. Hin skrivelse, stilet til en unavngitt mann i din leir, hvori meldes om keiserens seiers-inntog i Rom, og som du en morgen, underveis til Lutetia, fant innstukken under ditt telt –; ja, du fant den dog, herre?
+De inneholdt intet til skade for deg, herre! Hva andre kan ha skrevet, vet jeg ikke; jeg vet bare at jeg titt nok våndet meg i kval under en nødtvungen og forhatt taushet. Jeg våget meg så langt frem, som jeg på noen måte turde. Hin skrivelse, stilet til en unavngitt mann i din leir, hvori meldes om keiserens seiers-inntog i Rom, og som du en morgen, underveis til Lutetia, fant innstukket under ditt telt –; ja, du fant den dog, herre?
 
 @ Cæsar Julian.
 Ja, ja –?
@@ -203,7 +203,7 @@ Ja, ved solens lys og makt –!
 O, hadde jeg dog turdet tale før!
 
 @ Cæsar Julian *(fremdeles lesende)*
-Han tar en kvinne til ekte. Konstanzios, – denne svinnende menneske-skygge –! Faustina –, hva står der? ung – knapt nitten år gammel –, en datter av – ah! en datter av hin overmodige slekt. En ivrig kristen-kvinne altså *(folder papirene sammen.)* Du har rett, Sallust; hans avfeldighet rommer intet håp. Om han er avfeldig, døende, – hva vil det si? Er ikke Faustina from? En bebudelsens engel vil åpenbare seg; eller også –; ha-ha! kort og godt, – på en eller annen vis –, det vil skaffes en ung Cæsar tilveie, og så –
+Han tar en kvinne til ekte. Konstanzios, – denne svinnende menneske-skygge –! Faustina –, hva står der? ung – knapt nitten år gammel –, en datter av – ah! en datter av hin overmodige slekt. En ivrig kristen-kvinne altså *(folder papirene sammen.)* Du har rett, Sallust; hans avfeldighet rommer intet håp. Om han er avfeldig, døende, – hva vil det si? Er ikke Faustina from? En bebudelsens engel vil åpenbare seg; eller også –; ha-ha! kort og godt, – på en eller annen vis –, det vil skaffes en ung Cæsar til veie, og så –
 
 @ {{{ 212 }}} Ridderen Sallust.
 Å nøle er å gå til grunne.
@@ -215,10 +215,10 @@ Dette har vært forberedt lenge og i all stillhet, Sallust! Ja, når så er, da 
 Nei, herre!
 
 @ Cæsar Julian.
-– man har tenkt, – man har trodd at –; o, uutgrunnelige utjevnende rettferd! Derfor måtte hun avveien.
+– man har tenkt, – man har trodd at –; o, uutgrunnelige utjevnende rettferd! Derfor måtte hun av veien.
 
 @ Ridderen Sallust.
-Ja, derfor; jeg var den, man i Rom først kastet sine øyne på. O, herre, du drager dog ikke i tvil at jeg avslo det? Jeg skjøt meg inn under umuligheten av å finne en leilighet; man forsikret meg at det brødefulle forehavende var oppgitt, og da –!
+Ja, derfor; jeg var den, man i Rom først kastet sine øyne på. O, herre, du drar dog ikke i tvil at jeg avslo det? Jeg skjøt meg inn under umuligheten av å finne en leilighet; man forsikret meg at det brødefulle forehavende var oppgitt, og da –!
 
 @ Cæsar Julian.
 De stanser ikke ved – ved dobbelt-liket i steinkisten der oppe. Konstanzios tar til ekte. Derfor var det at jeg skulle avvæpnes i Lutetia.
@@ -227,10 +227,10 @@ De stanser ikke ved – ved dobbelt-liket i steinkisten der oppe. Konstanzios ta
 Bare *ett* kan frelse deg, min Cæsar; du må handle før keiseren kommer til krefter.
 
 @ {{{ 213 }}} Cæsar Julian.
-Om jeg frivillig drog meg tilbake i ensomheten, hengivende meg til den visdom, jeg her har vært nødt til å forsømme? Ville de nye makthavere tåle en slik tilværelse? Ville ikke bare det, at de visste meg i live, være som et hengende sverd over deres hoder?
+Om jeg frivillig dro meg tilbake i ensomheten, hengivende meg til den visdom, jeg her har vært nødt til å forsømme? Ville de nye makthavere tåle en slik tilværelse? Ville ikke bare det, at de visste meg i live, være som et hengende sverd over deres hoder?
 
 @ Ridderen Sallust.
-Den vordende keiserinnes slektninger er de menn, som omgav Cæsar Gallos i hans siste timer.
+Den vordende keiserinnes slektninger er de menn, som omga Cæsar Gallos i hans siste timer.
 
 @ Cæsar Julian.
 Tribunen Skudilo. Tro meg, venn, – jeg har ikke glemt det. Og for denne blodige keiser skal jeg vike og falle! Ham skal jeg skåne, ham, som i lange år har stolpret omkring mellom mine nærmestes lik!
@@ -277,7 +277,7 @@ Og er jeg ikke hærens fader, Sallust?
 Soldatenes fader; deres hustruers og barns skjold og verge.
 
 @ Cæsar Julian.
-Og hva ble rikets lodd, om jeg vakler nå? En avfeldig keiser, og etter ham et umyndig barn i herskersetet; splid og opprør; alles hånd imot alles for å rane makten. – For ikke mange netter siden hadde jeg et syn. Det åpenbaret seg for meg en skikkelse med en lyskrets om hodet; den så vredt på meg og sa: velg! Dermed løste den seg opp, likesom en stigende morgendamp. Hittil har jeg utlagt dette syn, som siktende til ganske andre ting; men nå, da jeg vet om keiserens forestående giftermål – –
+Og hva ble rikets lodd, om jeg vakler nå? En avfeldig keiser, og etter ham et umyndig barn i herskersetet; splid og opprør; alles hånd imot alles for å rane makten. – For ikke mange netter siden hadde jeg et syn. Det åpenbarte seg for meg en skikkelse med en lyskrets om hodet; den så vredt på meg og sa: velg! Dermed løste den seg opp, likesom en stigende morgendamp. Hittil har jeg utlagt dette syn, som siktende til ganske andre ting; men nå, da jeg vet om keiserens forestående giftermål – –
 
 Ja, det gjelder i sannhet å velge, før ulykken velter inn over riket. Jeg tenker ikke på egen fordel; men *tør* jeg skyte valget fra meg, Sallust? Og er det ikke min plikt imot keiseren å verge mitt liv? Har jeg rett til å stå med hengende armer og vente på de mordere, som han i sin {{{ 216 }}} vanvittige angst tinger til å støte meg ned? Har jeg rett til å gi den ulykkelige Konstanzios leilighet til å velte en ny blodskyld over sitt syndbetyngede hode? Er det ikke bedre for ham, – som det står i skriftene, – at han lider urett enn at han øver urett? Hvis derfor *det*, jeg tilføyer min frende, kan kalles en urett, så mener jeg at denne min urett utjevnes derved at den forhindrer min frende fra å tilføye *meg* en urett. Jeg tror at både Platon og Markus Aurelius, hin Sofias kronede brudgom, skulle gi meg medhold i dette. Det ville i alle fall ikke være en ganske uverdig oppgave for visdomsvennene, min kjære Sallust! – O, hadde jeg dog Libanios her!
 
@@ -285,7 +285,7 @@ Ja, det gjelder i sannhet å velge, før ulykken velter inn over riket. Jeg tenk
 Herre, du er jo selv så vidt forfremmet i visdom at du –
 
 @ Cæsar Julian.
-Sant, sant; men jeg gad dog gjerne høre visse andres mening. Ikke fordi jeg vakler. Tro ikke det! Og heller ikke finner jeg at vi har noen grunn til å mistvile om et heldig utfall. For hine varslende hendelser bør ingenlunde avskrekke oss. At jeg beholdt håndtaket igjen, da mitt skjold brast under kamplekene, det tykkes meg med full føye å kunne utlegges slik, at det skal lykkes meg å beholde, hva min hånd har fattet tak i. Og når jeg, svingende meg opp {{{ 217 }}} på min hest, rev til jorden den mann, som hjalp meg i sadelen, så synes det som om dette bebuder et bratt fall for Konstanzios, hvem jeg skylder min opphøyelse. Hvorom alting er, min Sallust, så akter jeg å avfatte et skrift, som hel tydelig skal rettferdiggjøre at –
+Sant, sant; men jeg gadd dog gjerne høre visse andres mening. Ikke fordi jeg vakler. Tro ikke det! Og heller ikke finner jeg at vi har noen grunn til å mistvile om et heldig utfall. For hine varslende hendelser bør ingenlunde avskrekke oss. At jeg beholdt håndtaket igjen, da mitt skjold brast under kamplekene, det tykkes meg med full føye å kunne utlegges slik, at det skal lykkes meg å beholde, hva min hånd har fattet tak i. Og når jeg, svingende meg opp {{{ 217 }}} på min hest, rev til jorden den mann, som hjalp meg i sadelen, så synes det som om dette bebuder et bratt fall for Konstanzios, hvem jeg skylder min opphøyelse. Hvorom alting er, min Sallust, så akter jeg å avfatte et skrift, som helt tydelig skal rettferdiggjøre at –
 
 @ Ridderen Sallust.
 Såre vel, nådige herre; men soldatene er utålmodige; de ønsker å se deg og høre sin skjebne av din egen munn.
@@ -398,13 +398,13 @@ Har han ikke i all sin ferd imot meg vært som et skipsvrak uten ror, – snart 
 Var Konstanzios og døden din verste angst? Tenk deg om.
 
 @ Cæsar Julian.
-Ja, du har vel rett. Prestene –! Hele min ungdom har vært *en* sammenhengende redsel for keiseren og for Kristus. O, han er forferdelig, denne gåtefulle, – dette skånselløse gudemenneske! Overalt, hvor jeg ville frem, trådte han meg stor og streng iveien med sitt ubetingede ubønnhørlige krav.
+Ja, du har vel rett. Prestene –! Hele min ungdom har vært *en* sammenhengende redsel for keiseren og for Kristus. O, han er forferdelig, denne gåtefulle, – dette skånselløse gudemenneske! Overalt, hvor jeg ville frem, trådte han meg stor og streng i veien med sitt ubetingede ubønnhørlige krav.
 
 @ Mystikeren Maximos.
 Og dette krav, – var det i deg?
 
 @ Cæsar Julian.
-Alltid utenfor. Jeg *skulle*! Krøp min sjel sammen i gravende og tærende hat til min slekts morder, så lød budet: elsk din fiende! Tørstet mitt skjønnhetsbetatte sinn imot seder og bilder fra den forgangne Greker-verden, så slo kristenkravet ned i meg med sitt: søk det ene fornødne! Fornam jeg legemets søte lyst og begjær imot dette eller hint, så skremte forsagelsens fyrste meg med sitt: avdø her for å leve hisset! – Det {{{ 222 }}} menneskelige er blitt ulovlig etter den dag, da seeren fra Galilæa tok verdens-styret. Å leve er ved ham blitt å dø. Å elske og å hate, det er å synde. Har han da forvandlet menneskets kjød og blod? Eller er ikke det jordbundne menneske blitt ved å være, hva det var? Vår sunne innerste sjel reiser seg imot dette; – og dog skal vi *ville* tvert imot vår egen vilje! Vi skal, skal, skal!
+Alltid utenfor. Jeg *skulle*! Krøp min sjel sammen i gravende og tærende hat til min slekts morder, så lød budet: elsk din fiende! Tørstet mitt skjønnhetsbetatte sinn imot seder og bilder fra den forgangne Greker-verden, så slo kristenkravet ned i meg med sitt: søk det ene fornødne! Fornam jeg legemets søte lyst og begjær imot dette eller hint, så skremte forsakelsens fyrste meg med sitt: avdø her for å leve hisset! – Det {{{ 222 }}} menneskelige er blitt ulovlig etter den dag, da seeren fra Galilea tok verdens-styret. Å leve er ved ham blitt å dø. Å elske og å hate, det er å synde. Har han da forvandlet menneskets kjød og blod? Eller er ikke det jordbundne menneske blitt ved å være, hva det var? Vår sunne innerste sjel reiser seg imot dette; – og dog skal vi *ville* tvert imot vår egen vilje! Vi skal, skal, skal!
 
 @ Mystikeren Maximos.
 Og videre, enn som så, er du ikke kommet? Skam deg!
@@ -416,7 +416,7 @@ Jeg?
 Ja, du, mannen fra Aten og fra Efesos.
 
 @ Cæsar Julian.
-Akk, hine tider, Maximos! Dengang var det lett å velge. Hva var det, vi syslet med igrunnen? En visdoms-bygning; hverken mer eller mindre.
+Akk, hine tider, Maximos! Dengang var det lett å velge. Hva var det, vi syslet med i grunnen? En visdoms-bygning; hverken mer eller mindre.
 
 @ Mystikeren Maximos.
 Står det ikke et sted i deres skrifter: enten med oss eller mot oss?
@@ -446,16 +446,16 @@ Alle dem, som er under den åpenbaredes redsel.
 Skyggeredsel!
 
 @ Cæsar Julian.
-Det være, som det vil. Men ser du ikke at denne lammende redsel har tetnet og tårnet seg til en mur om keiseren? O, jeg skjønner vel hvorfor den store Konstantin førte en slik viljebindende lære til seier og makt i riket. Ingen livvakt med spyd og skjold slutter slik opp om keisersetet, som denne betagende tro, som alltid peker ut over jordlivet. Har du sett riktig på dem, disse kristne? Huløyde, blekkinnede, flatbrystede er de alle til hope; de ligner linnedveverne i Byssos; intet æreshåp får lov til å spire i denne henrugende tilværelse; solen lyser for dem, og de ser den ikke; jorden byr dem sin fylde og de begjærer den ikke; – alt, hva de begjærer, er å forsake og lide for å komme til å dø.
+Det være, som det vil. Men ser du ikke at denne lammende redsel har tetnet og tårnet seg til en mur om keiseren? O, jeg skjønner vel hvorfor den store Konstantin førte en slik viljebindende lære til seier og makt i riket. Ingen livvakt med spyd og skjold slutter slik opp om keisersetet, som denne betagende tro, som alltid peker ut over jordlivet. Har du sett riktig på dem, disse kristne? Huløyde, blekkinnede, flatbrystede er de alle til hope; de ligner linveverne i Byssos; intet æreshåp får lov til å spire i denne henrugende tilværelse; solen lyser for dem, og de ser den ikke; jorden byr dem sin fylde og de begjærer den ikke; – alt, hva de begjærer, er å forsake og lide for å komme til å dø.
 
 @ Mystikeren Maximos.
-Så bruk dem, som de er; men da må du selv stå utenfor. Keiser eller Galilæer; – *det* er valget. Vær trell under redselen eller hersker i dagens og lysets og gledens land! Du kan ikke ville det motsigende; og dog er det *det* du vil. Du vil forene det uforenlige, – forlike de to, som ikke står til å forlike; derfor er det at du ligger her og råtner i mørket.
+Så bruk dem, som de er; men da må du selv stå utenfor. Keiser eller Galileer; – *det* er valget. Vær trell under redselen eller hersker i dagens og lysets og gledens land! Du kan ikke ville det motsigende; og dog er det *det* du vil. Du vil forene det uforenlige, – forlike de to, som ikke står til å forlike; derfor er det at du ligger her og råtner i mørket.
 
 @ Cæsar Julian.
 Kan du, så lys for meg!
 
 @ {{{ 225 }}} Mystikeren Maximos.
-Er du den Akilleus, som din moder drømte at hun skulle skjenke verden? En ømskinnet hæl gjør ingen mann til Akilleus. Reis deg, herre! Seiersmodig, som en rytter på sin velige hest, må du sette over Galilæeren, hvis du skal vinne frem til keisersetet –
+Er du den Akilleus, som din moder drømte at hun skulle skjenke verden? En ømskinnet hæl gjør ingen mann til Akilleus. Reis deg, herre! Seiersmodig, som en rytter på sin velige hest, må du sette over Galileeren, hvis du skal vinne frem til keisersetet –
 
 @ Cæsar Julian.
 Maximos!
@@ -467,19 +467,19 @@ Min elskede Julian, se deg dog om i verden! Hine kristne med dødslengselen, som
 Slik er de ikke alle; tenk på den veldige Athanasios i Alexandria –
 
 @ Mystikeren Maximos.
-Athanasios var også den eneste. Og hvor er Athanasios nå? Fordrev de ham ikke, fordi han ikke var til fals etter keiserens vilje? Måtte {{{ 226 }}} han ikke ty inn i den libyske ørken, hvor han er blitt oppspist av løver? Og kan du så nevne meg *en* til, som Athanasios? Tenk på biskop Maris av Kalkedon, som nå tre ganger har skiftet sinn i de arianske stridigheter. Tenk på den gamle biskop Markos i Arethusa; ham kjenner du jo fra din ungdom. Har han ikke nylig, tvert imot lov og billighet, fratatt borgerskapet all felles eiendom og lagt den inn under kirken? Og tenk så på den avfeldige viljeløse biskop i Nazianz, som går til spot for sin egen menighet, fordi han svarer ja og nei til den samme sak og fordi han vil tekkes alle de stridende.
+Athanasios var også den eneste. Og hvor er Athanasios nå? Fordrev de ham ikke, fordi han ikke var til fals etter keiserens vilje? Måtte {{{ 226 }}} han ikke ty inn i den libyske ørken, hvor han er blitt oppspist av løver? Og kan du så nevne meg *en* til, som Athanasios? Tenk på biskop Maris av Kalkedon, som nå tre ganger har skiftet sinn i de arianske stridigheter. Tenk på den gamle biskop Markos i Arethusa; ham kjenner du jo fra din ungdom. Har han ikke nylig, tvert imot lov og billighet, fratatt borgerskapet all felles eiendom og lagt den inn under kirken? Og tenk så på den avfeldige viljeløse biskop i Nazianz, som går til spott for sin egen menighet, fordi han svarer ja og nei til den samme sak og fordi han vil tekkes alle de stridende.
 
 @ Cæsar Julian.
 Sant, sant, sant!
 
 @ Mystikeren Maximos.
-Disse er dine våpenbrødre, min Julian; bedre finner du dem ikke. Eller kanskje du regner på hine to forventede store galilæiske lys fra Kappadokia? Ha-ha; bispesønnen Gregor fører rettssaker i sin fødeby, og Basilios gransker verdslige vismenns skrifter på sitt landgods i de østlige egner.
+Disse er dine våpenbrødre, min Julian; bedre finner du dem ikke. Eller kanskje du regner på hine to forventede store galileiske lys fra Kappadokia? Ha-ha; bispesønnen Gregor fører rettssaker i sin fødeby, og Basilios gransker verdslige vismenns skrifter på sitt landgods i de østlige egner.
 
 @ Cæsar Julian.
 Ja, jeg vet det vel. Frafall på alle kanter! Hekebolios, min fordums lærer, er blitt en rik mann på sin iver i troen og på sin skrift-utlegning; og siden den tid –! Maximos, – det er ikke langt fra at jeg står alene i alvoret.
 
 @ {{{ 227 }}} Mystikeren Maximos.
-Du *står* alene. Hele din hær er på vill flukt eller den ligger slagen rundt omkring deg. Blås til kamp, – og ingen vil høre deg; gå frem, – og ingen vil følge deg etter! Bild deg ikke inn at du kan fremme den sak, som har oppgitt seg selv. Du bukker under, sier jeg deg! Og hvor vil du så hen? Forstøtt av Konstanzios vil du være forstøtt av alle makter på jorden – og over jorden. Eller vil du ty til Galilæerens favn? Hvordan står det mellom deg og ham? Har du ikke selv sagt at du er under redselen? Har du hans krav i deg? Elsker du din fiende, Konstanzios, fordi om du ikke slår ham? Hater du kjødets lyst og jordens lokkende ferd, fordi om du ikke, som en het svømmer, dukker deg ned deri? Forsaker du verden, fordi om du ikke har mot til å eie den? Og vet du så visst at – om du avdør her – du da skal leve hisset?
+Du *står* alene. Hele din hær er på vill flukt eller den ligger slagen rundt omkring deg. Blås til kamp, – og ingen vil høre deg; gå frem, – og ingen vil følge deg etter! Bild deg ikke inn at du kan fremme den sak, som har oppgitt seg selv. Du bukker under, sier jeg deg! Og hvor vil du så hen? Forstøtt av Konstanzios vil du være forstøtt av alle makter på jorden – og over jorden. Eller vil du ty til Galileerens favn? Hvordan står det mellom deg og ham? Har du ikke selv sagt at du er under redselen? Har du hans krav i deg? Elsker du din fiende, Konstanzios, fordi om du ikke slår ham? Hater du kjødets lyst og jordens lokkende ferd, fordi om du ikke, som en het svømmer, dukker deg ned deri? Forsaker du verden, fordi om du ikke har mot til å eie den? Og vet du så visst at – om du avdør her – du da skal leve hisset?
 
 @ Cæsar Julian *(går frem og tilbake)*.
 Hva har han gjort for meg, denne store fordringsfulle? Holder han verdens-vognens tøyler i sin hånd, så måtte han jo ha kunnet –
@@ -513,7 +513,7 @@ Hele staden er i opprør. Det bæres syke og vanføre inn til fyrstinnens kiste;
 Og det har du selv sett?
 
 @ Husmesteren Eutherios.
-Ja, herre; jeg har sett en fallsyk kvinne gå sunn ut av kirken prisende Galilæernes gud.
+Ja, herre; jeg har sett en fallsyk kvinne gå sunn ut av kirken prisende Galileernes gud.
 
 @ Cæsar Julian.
 Ah, Maximos, Maximos!

@@ -20,7 +20,7 @@ depth: 1
 - Borgerfolk i Konstantinopel.
 - Utsendinger fra de østerlandske konger.
 - Husmesteren Eutherios.
-- Tjenere i palatset.
+- Tjenere i palasset.
 - Dommere,
 - Kornhandleren Medon.
 - Skatteoppkreveren Malkos.
@@ -38,8 +38,8 @@ depth: 1
 - Salmedikteren Apollinaris.
 - Læreren Kyrillos.
 - En gammel prest ved Kybeles helligdom.
-- Salmesyngerskerne i Antiokia.
-- Centurionen Fromentinos.
+- Salmesyngerskene i Antiokia.
+- Høvedsmannen Fromentinos.
 - Krigsøversten Jovian.
 - Mystikeren Maximos.
 - Spåmannen Numa.
@@ -48,11 +48,11 @@ depth: 1
 - Livvaktsføreren Anatolos.
 - Visdomslæreren Priskos.
 - Visdomslæreren Kytron.
-- Centurionen Ammian.
+- Høvedsmannen Ammian.
 - Basilios fra Cæsaræa.
 - Hans søster Makrina.
 - En persisk overløper.
 - Romerske og greske soldater.
 - Persiske krigsfolk.
 
-@stage (Første handling foregår i Konstantinopel, annen handling i Antiokia, tredje handling likeledes i Antiokia, fjerde handling i og omkring de østlige egne av keiserriket og femte handling på slettene hinsides Tigris. Begivenheten omfatter tidsrommet fra desember måned i året 361 til slutningen av juni i året 363.)
+@stage (Første handling foregår i Konstantinopel, annen handling i Antiokia, tredje handling likeledes i Antiokia, fjerde handling i og omkring de østlige egner av keiserriket og femte handling på slettene hinsides Tigris. Begivenheten omfatter tidsrommet fra desember måned i året 361 til slutten av juni i året 363.)

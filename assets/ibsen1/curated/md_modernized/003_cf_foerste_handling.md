@@ -27,7 +27,7 @@ Vet ikke.
 @ {{{ 12 }}} Fargeren Fokion *(vender hodet i trengselen)*.
 Keiseren? Jeg synes det var noen som spurte om keiseren? Keiseren kommer litt før midnatt. Ganske litt før. Jeg har det fra Memnon selv.
 
-@ Hårskjæreren Eunapios *(kommer ilfærdig løpende og støter en frukthandler til side)*.
+@ Hårskjæreren Eunapios *(kommer ilferdig løpende og støter en frukthandler til side)*.
 Av veien, hedning!
 
 @ Frukthandleren.
@@ -111,7 +111,7 @@ Hold munn; vik langt ifra meg. Nå kjenner jeg deg; – du er manikeeren Potamon
 En manikeer? En stinkende kjetter! Tvi, tvi!
 
 @ Gullsmeden Potamon *(holder sin papirlykt frem)*.
-Eja! Det er jo fargeren Fokion fra Antiokia! Kainitten!
+Eia! Det er jo fargeren Fokion fra Antiokia! Kainitten!
 
 @ Hårskjæreren Eunapios.
 Ve meg, som er kommet i løgnens samkvem!
@@ -275,7 +275,7 @@ Be for meg, du Herrens salvede, at jeg får mitt syn igjen!
 @ Keiser Konstanzios.
 Vær trøstig, sønn! – Memnon, strø sølvpenger for dem. Inn, inn!
 
-@stage (Hoffet beveger seg inn i kirken, hvis port lukkes; menneskesvermen adspreder seg etterhånden; bare fyrst Julian blir tilbake i en av alléene.)
+@stage (Hoffet beveger seg inn i kirken, hvis port lukkes; menneskesvermen atsprer seg etter hvert; bare fyrst Julian blir tilbake i en av alléene.)
 
 @ {{{ 21 }}} Fyrst Julian *(ser mot kirken)*.
 Hva vil han Gallos? I denne hellige natt kan han da ikke tenke på å –! Å, den, som visste – – *(vender seg og støter imot den bortgående blinde.)* Se deg for, venn!
@@ -372,7 +372,7 @@ Nei, nei, nei –!
 Å, la meg ligge så!
 
 @ Fyrst Julian.
-Akk, Agathon, det er synd og bespottelse å knele for meg. Du skulle vite, hvor skyldbetynget jeg er blitt. Hekebolios, min dyrebare lærer, har megen sorg av meg, Agathon. Han kunne fortelle deg – – –
+Akk, Agathon, det er synd og bespottelse å knele for meg. Du skulle vite, hvor skyldbetynget jeg er blitt. Hekebolios, min dyrebare lærer, har mye sorg av meg, Agathon. Han kunne fortelle deg – – –
 
 Hvor ditt hår er blitt fyldig og fuktig. Og hvor lokket det er. – Men Mardonios, – hvordan går det ham? Nå er han vel nesten hvithåret?
 
@@ -386,7 +386,7 @@ Hvor Mardonios forstod å tyde Homer! Jeg tror ikke min gamle Mardonios har sin 
 Dengang stod ditt sinn til å bli en stor og lykkelig kriger.
 
 @ Fyrst Julian.
-Det var glade år, hine seks i Kappadokia. Var årene lengere i den tid, enn nå? Det tykkes så når jeg drages til minne alt, hva de rommer. – –
+Det var glade år, hine seks i Kappadokia. Var årene lengre i den tid, enn nå? Det tykkes så når jeg drages til minne alt, hva de rommer. – –
 
 Ja, det var glade år. Vi ved våre bøker, og Gallos på sin persiske hest. Som skyggen av en sky jaget han over sletten. – Å, men *en* ting må du dog si meg. Kirken –?
 
@@ -406,7 +406,7 @@ Ja visst; ja visst. Jeg gjorde dem urett da jeg mente at de var ukyndige. Nå ve
 Var den hellige Mamas?
 
 @ Fyrst Julian.
-Hin Mamas har aldri vært noe blodvitne. Det hele sagn om ham var en selsom villfarelse. Hekebolios har med overmåte megen lærdom utfunnet den rette sammenheng, og jeg selv har for nylig avfattet et ringe skrift om denne sak, et skrift, min Agathon, som visse visdomsvenner, ubegripelig nok, skal ha omtalt med ros i læresalene. –
+Hin Mamas har aldri vært noe blodvitne. Det hele sagn om ham var en selsom villfarelse. Hekebolios har med overmåte mye lærdom utfunnet den rette sammenheng, og jeg selv har for nylig avfattet et ringe skrift om denne sak, et skrift, min Agathon, som visse visdomsvenner, ubegripelig nok, skal ha omtalt med ros i læresalene. –
 
 Herren holde mitt hjerte rent for all forfengelighet! Den onde frister har tallløse snikveier; en kan aldri vite –.
 
@@ -440,7 +440,7 @@ Stjernen, som falt; *der*, bak de to sypressene. *(tier litt og slår plutselig 
 Det minnes jeg ikke.
 
 @ Fyrst Julian.
-Nei, nei, det er sant, jeg erfor det først senere.
+Nei, nei, det er sant, jeg erfarte det først senere.
 
 @ Agathon.
 Hva drømte hun?
@@ -536,11 +536,11 @@ Maximos! Tal ikke om denne gjøgler. Hvem vet noe pålitelig om Maximos?
 Han sier seg å ha sovet tre år i en hule hinsides Jordan.
 
 @ Fyrst Julian.
-Hekebolios holder ham for en bedrager, og deri har han visselig ikke megen urett. – –
+Hekebolios holder ham for en bedrager, og deri har han visselig ikke mye urett. – –
 
 Nei, nei, Agathon, – Libanios er den farligste. Vår syndige jord har likesom våndet seg under denne svøpe. Det gikk tegn forut for hans ankomst. En pestaktig syke myrdet mennesker for fote i staden. Og så, da den var over, i november måned, regnet her ild hver natt fra himmelen. Du må ikke tvile, Agathon! Jeg har selv sett stjernene løsne seg fra sine ringer, dale ned imot jorden og slukne underveis. –
 
-Siden har han lært her, han, visdomselskeren, taleren. Alle kaller ham veltalenhetslærernes konge. Ja, det må de vel. Jeg sier deg, han er forferdelig. Ynglinger og menn flokkes om ham; han binder deres sjeler, så de *må* følge ham; fornektelsen flyter dårende fra hans leber, lik dikt og sang om trojanere og grekere –
+Siden har han lært her, han, visdomselskeren, taleren. Alle kaller ham veltalenhetslærernes konge. Ja, det må de vel. Jeg sier deg, han er forferdelig. Ynglinger og menn flokkes om ham; han binder deres sjeler, så de *må* følge ham; fornektelsen flyter dårende fra hans lepper, lik dikt og sang om trojanere og grekere –
 
 @ Agathon *(i skrekk)*.
 Å, du har også søkt ham, Julian!
@@ -552,7 +552,7 @@ Jeg! – Gud skjerme meg mot slikt! Skulle visse rykter komme deg for øre, så 
 Men hvor er det mulig at keiseren tåler dette? Hvor kan vår fromme troende keiser –?
 
 @ Fyrst Julian.
-Keiseren? Priset være keiserens tro og fromhet! Men keiseren har ikke tanke for annet, enn den ulykkelige perserkrig. Den fyller alles sinn. Ingen akter den krig, som her føres imot Golgatas fyrste. Ah, min Agathon, det er ikke nå {{{ 33 }}} som for to år siden. Dengang måtte mystikeren Maximos' tvende brødre bøte med livet for sine vrange lærdommer. Du vet ikke hvilke mektige støtter Libanios har. En eller annen av de ringere visdomslærere utjages stundom av staden. *Ham* våger ingen å røre ved. Jeg har trygget, jeg har bønnfalt både Hekebolios og keiserinnen om å virke for hans utvisning. Men nei, nei! – Hva hjelper det at de andre fjernes? Dette ene menneske forgifter luften for oss alle. Å, du min frelser, om jeg kunne flykte fra all denne hedenske vederstyggelighet! Å leve her, er å leve i løvens hule –
+Keiseren? Priset være keiserens tro og fromhet! Men keiseren har ikke tanke for annet, enn den ulykkelige perserkrig. Den fyller alles sinn. Ingen akter den krig, som her føres imot Golgatas fyrste. Ah, min Agathon, det er ikke nå {{{ 33 }}} som for to år siden. Dengang måtte mystikeren Maximos' to brødre bøte med livet for sine vrange lærdommer. Du vet ikke hvilke mektige støtter Libanios har. En eller annen av de ringere visdomslærere utjages stundom av staden. *Ham* våger ingen å røre ved. Jeg har tryglet, jeg har bønnfalt både Hekebolios og keiserinnen om å virke for hans utvisning. Men nei, nei! – Hva hjelper det at de andre fjernes? Dette ene menneske forgifter luften for oss alle. Å, du min frelser, om jeg kunne flykte fra all denne hedenske vederstyggelighet! Å leve her, er å leve i løvens hule –
 
 @ Agathon *(livfullt)*.
 Julian, – hva sa du der!
@@ -592,7 +592,7 @@ Med tillatelse, – gis det noe håndfast gode, som er mer verd, enn gull?
 Kan du kjøpe ditt livs frukter igjen for gull?
 
 @ Fyrst Julian.
-Sant; sant. Men når så er, skulle du ikke lide på de troløse vann.
+Sant; sant. Men når så er, skulle du ikke lite på de troløse vann.
 
 @ Visdomslæreren.
 Menneskegunst er troløsere.
@@ -732,7 +732,7 @@ Hør, jeg står denne unge fyrste så temmelig nær. Det skulle være meg kjært
 
 *(vender seg.)*
 
-Gå lengere til side, Agathon; jeg må tale i enrom med denne mann.
+Gå lenger til side, Agathon; jeg må tale i enrom med denne mann.
 
 *(fjerner seg noen skritt med den fremmede.)*
 
@@ -771,7 +771,7 @@ Ja, vel kunne han bli oss en motstander, som vi både måtte frykte for og lengt
 Å, sant; ustridig sant!
 
 @ Visdomslæreren.
-Og hva gaver har så denne Hekebolios i sammenligning med de gaver, der så underfullt åpenbarte seg hos hint fyrstelige barn, som, etter hva der sies, i Kappadokia, på de henrettede galileeres graver, forkynte en lære, hvilken jeg holder for villfarende og som derfor desto vanskeligere vinner inngang, men som han dog forkynte med en sådan åndens henrevethet, at – i fall jeg tør tro et såre utbredt rykte – mangfoldige barn av hans egen alder ga seg under ham og fulgte ham som lærlinger! Ah, Hekebolios {{{ 42 }}} er, som dere andre, – mer nidsyk enn nidkjær; derfor har Libanios ventet forgjeves.
+Og hva gaver har så denne Hekebolios i sammenligning med de gaver, der så underfullt åpenbarte seg hos hint fyrstelige barn, som, etter hva der sies, i Kappadokia, på de henrettede galileeres graver, forkynte en lære, hvilken jeg holder for villfarende og som derfor desto vanskeligere vinner inngang, men som han dog forkynte med en slik åndens henrevethet, at – i fall jeg tør tro et såre utbredt rykte – mangfoldige barn av hans egen alder ga seg under ham og fulgte ham som lærlinger! Ah, Hekebolios {{{ 42 }}} er, som dere andre, – mer nidsyk enn nidkjær; derfor har Libanios ventet forgjeves.
 
 @ Fyrst Julian *(griper ham om armen)*.
 Hva har Libanios sagt? For Gud – jeg besverger deg, la meg vite det!
@@ -903,7 +903,7 @@ Ah!
 @ Visdomslæreren.
 Se hine glade ynglinger der borte. Det er galileere iblant dem. Villfarelser i de guddommelige ting volder ingen splid imellom oss. –
 
-{{{ 47 }}} Lev vel! Dere galileere har gjort sannheten landflyktig. Se nå du, hvordan vi bærer skjebnens slag. Se oss med løv om de løftede panner. Således går *vi* bort, – kortende natten med sang, og forventende Helios.
+{{{ 47 }}} Lev vel! Dere galileere har gjort sannheten landflyktig. Se nå du, hvordan vi bærer skjebnens slag. Se oss med løv om de løftede panner. Slik går *vi* bort, – kortende natten med sang, og forventende Helios.
 
 *(han stiger ned av trappen, hvor lærlingene har biet på ham; deretter hører man båten ro bort med dem.)*
 
@@ -926,7 +926,7 @@ Jeg holder det ikke lenger ut imellom disse mennesker. Fra dem kom altså hine v
 Å, du vet det ikke, – just du er særlig under nåden.
 
 @ Fyrst Julian *(går opp og ned ved rekkverket)*.
-*Jeg* er den, som Libanios gad kjempe med. Hvilket selsomt ønske! Libanios holder *meg* for sin likemann. Det er *meg* han venter på –
+*Jeg* er den, som Libanios gadd kjempe med. Hvilket selsomt ønske! Libanios holder *meg* for sin likemann. Det er *meg* han venter på –
 
 @ Agathon.
 Hør og lyd; Kristus venter på deg!
@@ -972,7 +972,7 @@ Brytes med løvene? Å, selsomt, selsomt! – Ah, om det var –! Møtet med hin
 Det er du visselig.
 
 @ Fyrst Julian.
-Brytes med løvene! – Ja, jeg ser det; – således er det, min Agathon! Det er Guds vilje at jeg skal søke Libanios –
+Brytes med løvene! – Ja, jeg ser det; – slik er det, min Agathon! Det er Guds vilje at jeg skal søke Libanios –
 
 @ Agathon.
 Nei, nei, hør meg til ende!
@@ -981,7 +981,7 @@ Nei, nei, hør meg til ende!
 – liste ham hans kunst og hans lærdom av, – felle de vantro med deres egne våpen, – slå, slå, som Paulus, – seire, som Paulus, i Herrens sak!
 
 @ Agathon.
-Nei, nei, det er ikke således ment.
+Nei, nei, det er ikke slik ment.
 
 @ Fyrst Julian.
 Kan du tvile? Libanios, – er ikke han veldig som fjellenes løve, og er ikke læresalen –?
@@ -1022,7 +1022,7 @@ Nå? I natt?
 Ja, ja; han vil tale med deg. Han syntes å være i den ytterste vrede.
 
 @ Fyrst Gallos.
-Hvoraf vet du det? Hva sa han?
+Hvorav vet du det? Hva sa han?
 
 @ Fyrst Julian.
 Jeg forstod det ikke. Han ville vite, hva et orakel hadde svart.
@@ -1046,7 +1046,7 @@ Hva ante jeg ikke! Dog nei, keiserinnen var trøstig. Å, men tal, tal!
 Hva skal jeg tale? Vet jeg mer, enn du? Har keiseren ymtet om et orakel, så må et visst sendebud være fengslet, eller noen har forrådt meg –
 
 @ {{{ 53 }}} Fyrst Julian.
-Sendebud? – Gallos, hva er det, du har voget!
+Sendebud? – Gallos, hva er det, du har våget!
 
 @ Fyrst Gallos.
 Å, kunne jeg da lenger leve dette liv i uvisshet og angst? La ham handle med meg, som han vil; alt annet er bedre, enn dette –
@@ -1150,7 +1150,7 @@ Er det deg, min Julian? Akk, jeg har atter hatt en tung stund for din skyld.
 Dessverre; det har du visst altfor ofte.
 
 @ Skriftlæreren Hekebolios.
-Kristus er fortørnet på deg, min sønn! Det er ditt trossige sinnelag, som han vredes over; det er dine kjærlighetsløse tanker, all denne verdslige forfengelighet –
+Kristus er fortørnet på deg, min sønn! Det er ditt trassige sinnelag, som han vredes over; det er dine kjærlighetsløse tanker, all denne verdslige forfengelighet –
 
 @ Fyrst Julian.
 Jeg vet det, min Hekebolios! Du sier meg det så tidt.
@@ -1243,7 +1243,7 @@ Min arving og min etterfølger. Innen tre dager drar du til hæren i Asia. Perse
 Å, min nådigste herre –!
 
 @ Keiser Konstanzios.
-Takk meg i gjerning, elskede Gallos! Kong Sapores står vest for Eufrat. Jeg vet jo, hvor bekymret du er for mitt liv; la det altså være ditt hverv å slå ham.
+Takk meg i gjerning, elskede Gallos! Kong Sapores står vest for Eufrat. Jeg vet jo, hvor bekymret du er for mitt liv; la det altså være ditt verv å slå ham.
 
 *(han vender seg om, griper Julian med begge hender om hodet og kysser ham.)*
 
@@ -1325,7 +1325,7 @@ Føy ham, herre; det vil holde ham fra å pønske på større ting.
 Jeg ber deg, Konstanzios, – stå ikke denne dragende lengsel imot.
 
 @ Skriftlæreren Hekebolios *(sakte)*.
-Høye keiser, la ham reise til Pergamon. Jeg mistviler om å bøye ham her, og nå ligger der jo ikke så megen makt på –
+Høye keiser, la ham reise til Pergamon. Jeg mistviler om å bøye ham her, og nå ligger der jo ikke så mye makt på –
 
 @ Keiser Konstanzios.
 Hvor skulle jeg kunne nekte deg noe i denne stund? Gå med Gud, Julian!

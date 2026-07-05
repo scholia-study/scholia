@@ -61,7 +61,7 @@ Du, som vi andre, venn!
 Som dere andre? Som dere andre! Ja, det er en god tale. Med dere er det en annen sak. Dere er krigsmenn. Det er deres kall å utholde visse besværligheter, som jeg slett ikke er vant til. Jeg har ikke fulgt med keiseren for å døye så mye ondt. Her pines jeg av mygg og giftfluer; – se, hvordan mine hender ser ut!
 
 @ Visdomslæreren Priskos.
-Til visse er vi ikke kommen her for dette. Vi påtok oss å følge hæren for å avfatte lovtaler over de seire, som keiseren aktet å vinne. Hvor er der blitt av disse seire? Hva har man utrettet i de seks møysommelige uker siden flådens brann? Man har ødelagt noen forlatte byer av det usleste slag. Man har fremvist i leiren noen fanger, som fortroppene skulle ha tatt. Jeg vet riktignok ikke i hvilke slag det skulle være skjedd! Og jeg synes også at hine fanger så likere ut til å være oppsnappede hyrder og bønder –
+Til visse er vi ikke kommen her for dette. Vi påtok oss å følge hæren for å avfatte lovtaler over de seire, som keiseren aktet å vinne. Hvor er der blitt av disse seire? Hva har man utrettet i de seks møysommelige uker siden flåtens brann? Man har ødelagt noen forlatte byer av det usleste slag. Man har fremvist i leiren noen fanger, som fortroppene skulle ha tatt. Jeg vet riktignok ikke i hvilke slag det skulle være skjedd! Og jeg synes også at hine fanger så likere ut til å være oppsnappede hyrder og bønder –
 
 @ {{{ 464 }}} Visdomslæreren Kytron.
 Og så at man kunne brenne flåten! Sa jeg ikke straks at dette ville bli en kilde til ulykker?
@@ -73,13 +73,13 @@ Det hørte jeg dog ikke.
 Hva? Sa jeg det ikke? Hørte ikke du, o Priskos, at jeg sa det?
 
 @ Visdomslæreren Priskos.
-Jeg vet sannelig ikke, venn; men jeg vet at jeg selv til ingen nytte ivret imot dette ulykkesalige foretak. Ja, jeg kan si at jeg har vært imot det hele krigstog på denne årstid. Hvilken overilelse! Hvor har dog keiseren hatt sine øyne? Er det den samme helt, der fektet så overmåte heldig ved Rhin-strømmen? Skulle man ikke tro at han var slått med blindhet eller med en åndelig sykdom?
+Jeg vet sannelig ikke, venn; men jeg vet at jeg selv til ingen nytte ivret imot dette ulykksalige foretak. Ja, jeg kan si at jeg har vært imot det hele krigstog på denne årstid. Hvilken overilelse! Hvor har dog keiseren hatt sine øyne? Er det den samme helt, der fektet så overmåte heldig ved Rhin-strømmen? Skulle man ikke tro at han var slått med blindhet eller med en åndelig sykdom?
 
 @ Livvaktsføreren Anatolos
 Hyss, hyss; – hva tale er det?
 
 @ Visdomslæreren Kytron.
-Ja, det var visst nok lite sømmelig sagt av vår Priskos. Men heller ikke jeg kan nekte at jeg sporer en sørgelig mangel på visdom i flere av den kronede visdomselskers senere handlinger. Hvor overilet, å stille sitt billede opp i leiren og la seg dyrke, som om han var en {{{ 465 }}} gud! Hvor uklokt, så åpenbart å håne hin selsomme lærer fra Nazareth, hvilken dog må sies å råde over en særdeles makt, der ellers kanskje kunne kommet oss alle til gode under disse farefulle omstendigheter.
+Ja, det var visst nok lite sømmelig sagt av vår Priskos. Men heller ikke jeg kan nekte at jeg sporer en sørgelig mangel på visdom i flere av den kronede visdomselskers senere handlinger. Hvor overilet, å stille sitt bilde opp i leiren og la seg dyrke, som om han var en {{{ 465 }}} gud! Hvor uklokt, så åpenbart å håne hin selsomme lærer fra Nazareth, hvilken dog må sies å råde over en særdeles makt, der ellers kanskje kunne kommet oss alle til gode under disse farefulle omstendigheter.
 
 Ah, der kommer Nevita selv. Nå får vi høre –
 
@@ -146,7 +146,7 @@ O, disse krigsmenn! En visdomselskers sinnsro gjelder intet for dem. Ah!
 Gled dere nå, mine venner! Nå vil snart alt bli godt.
 
 @ Visdomslæreren Kytron.
-Ak, velsignede herre, har du funnet en utvei?
+Akk, velsignede herre, har du funnet en utvei?
 
 @ Keiser Julian.
 Vi har utveier nok, Kytron; det gjelder bare å velge den beste. Nå vil vi endre noe ved hærens fremrykning –
@@ -185,18 +185,18 @@ Når jeg fører Perser-kongen som fange gjennom Antiokia og de andre steder, så
 *(ut til høyre.)*
 
 @ Keiser Julian *(følger dem med øynene)*.
-Galileerne synger alltid. Sange om død og sår og smerte. Hine kvinner, jeg tok med som {{{ 469 }}} sykepleiersker, – de har gjort oss mer skade enn gavn. De har lært soldatene selsomme sanger, hvilke jeg ikke før har hørt.
+Galileerne synger alltid. Sanger om død og sår og smerte. Hine kvinner, jeg tok med som {{{ 469 }}} sykepleiersker, – de har gjort oss mer skade enn gagn. De har lært soldatene selsomme sanger, hvilke jeg ikke før har hørt.
 
-Dog vil jeg ikke heretter straffe noen for slikt. Det leder bare til dess større forvillelse. Vet du, Priskos, hva der hendte med de opprørske, som nylig nektet å vise de keiserlige billeder den skyldige ærefrykt?
+Dog vil jeg ikke heretter straffe noen for slikt. Det leder bare til dess større forvillelse. Vet du, Priskos, hva der hendte med de opprørske, som nylig nektet å vise de keiserlige bilder den skyldige ærefrykt?
 
 @ Visdomslæreren Priskos.
 *Nylig*, herre?
 
 @ Keiser Julian.
-Da jeg, for å inngyde likesinnede en gavnlig skrekk, ville la noen av disse mennesker avlive, så trådte den eldste frem og bad, under høye gledesrop, om å måtte få lov til å dø først. – Ser du, Priskos, – da jeg i går erfarte dette –
+Da jeg, for å inngyte likesinnede en gagnlig skrekk, ville la noen av disse mennesker avlive, så trådte den eldste frem og bad, under høye gledesrop, om å måtte få lov til å dø først. – Ser du, Priskos, – da jeg i går erfarte dette –
 
 @ Visdomslæreren Priskos.
-I går? O herre, du feiler. Dette er skjedd for førti dage siden.
+I går? O herre, du feiler. Dette er skjedd for førti dager siden.
 
 @ Keiser Julian.
 Så lenge? Ja, ja, ja! Hebreerne måtte vandre førti år i ørken. Alle de gamle måtte utdø. Der måtte vokse opp en ny slekt; men *den* – merk dere det – *den* slapp inn i det land, som var dem alle lovet.
@@ -205,7 +205,7 @@ Så lenge? Ja, ja, ja! Hebreerne måtte vandre førti år i ørken. Alle de gaml
 Det er høyt på dagen, herre; – vil du ikke tenke på måltidet?
 
 @ {{{ 470 }}} Keiser Julian.
-Ikke ennå, min Eutherios! Kjødets spekelse tør være til gavn for alle mennesker.
+Ikke ennå, min Eutherios! Kjødets spekelse tør være til gagn for alle mennesker.
 
 Ja, jeg sier dere, vi må legge vinn på å bli en ny slekt. Jeg kan ikke gjøre noe med dere, slik, som dere nå er. Vil dere ut av ørken, så må dere vandre i et rent levnet. Se til galileerne. Vi kunne lære visse ting av de mennesker. Der gis ingen nødlidende og hjelpeløse iblant dem; de lever som brødre og søstre innbyrdes, – og mest nå, da deres gjenstridighet har tvunget meg til å tugte dem. Disse galileere, skal dere vite, har noe i hjertet, som jeg høylig skulle ønske at dere ville beflitte dere på. Dere kaller dere etterfølgere av Sokrates, av Platon, av Diogenes. Er der noen av dere, som ville gå glad i døden for Platons skyld? Mon vår Priskos ville ofre sin venstre hånd for Sokrates? Mon Kytron ville for Diogenes la sitt øre avhugge? Dere gjorde det sannelig ikke! Jeg kjenner dere, dere kalkede graver! Gå fra mine øyne; – jeg kan ikke bruke dere!
 
@@ -230,7 +230,7 @@ Og hvem er det, som har holdt det sammen til denne dag? Kvinner og ukyndige for 
 Ja, ja, herre; men nå vil snart en lykkelig vending av krigstoget –
 
 @ Keiser Julian.
-Meget sant, Oribases; så snart lykken har vendt seg, så vil alt bli godt. Tømmermannssønnens rike faller innen føye tid; det vet vi nok. Så mange år, som året har dage, så lenge skal han herske; og nå har vi jo –
+Meget sant, Oribases; så snart lykken har vendt seg, så vil alt bli godt. Tømmermannssønnens rike faller innen føye tid; det vet vi nok. Så mange år, som året har dager, så lenge skal han herske; og nå har vi jo –
 
 @ Husmesteren Eutherios.
 Min elskede herre, ville ikke et bad gjøre deg godt?
@@ -300,10 +300,10 @@ Etter de gamles mening pleier desslike syner – – Hvor blir dog Maximos av? M
 
 *(hen for seg.)*
 
-Her? Det er jo ikke her at det faretruende uvær trekker opp. Det skulle jo være i de frygiske egne –
+Her? Det er jo ikke her at det faretruende uvær trekker opp. Det skulle jo være i de frygiske egner –
 
 @ Livlegen Oribases.
-Hvilke egne, herre, – og hvilket uvær?
+Hvilke egner, herre, – og hvilket uvær?
 
 @ Keiser Julian.
 O, intet – intet.
@@ -314,7 +314,7 @@ Nå, min keiser, er hæren satt i gang –
 @ Keiser Julian.
 Nordover?
 
-@ Hærføreren Nevita *(studser)*.
+@ Hærføreren Nevita *(stusser)*.
 Forstår seg, herre!
 
 @ Keiser Julian.
@@ -327,10 +327,10 @@ Hva skal det si, min keiser? Her er intet å vente etter. Vi står uten levnetsm
 Ja, ja, vi *må* frem, – nordover. Nå kommer Maximos straks. Jeg har latt de etruskiske spåmenn hente fra baktroppen; de skal ennå {{{ 475 }}} engang forsøke – – Noen Magere har jeg også fått fatt på, og de sier seg å være vel forfarne i de kaldeiske hemmeligheter. Våre egne prester tar varsler på ni forskjellige steder –
 
 @ Hærføreren Nevita.
-Herre, hvordan varslerne enn faller ut, så sier jeg deg, vi må frem. Soldatene er ikke lenger å stole på; de skjønner godt, vår eneste redning er å nå de armeniske berg.
+Herre, hvordan varslene enn faller ut, så sier jeg deg, vi må frem. Soldatene er ikke lenger å stole på; de skjønner godt, vår eneste redning er å nå de armeniske berg.
 
 @ Keiser Julian.
-Dit vil vi, Nevita, – hvordan så varslerne faller ut. Men det er dog en stor trygghet å vite at man handler likesom etter samråd med hine uutgrunnelige makter, der, når de vil, kan gripe så overordentlig dypt inn i et menneskes skjebne.
+Dit vil vi, Nevita, – hvordan så varslene faller ut. Men det er dog en stor trygghet å vite at man handler likesom etter samråd med hine uutgrunnelige makter, der, når de vil, kan gripe så overordentlig dypt inn i et menneskes skjebne.
 
 @ Hærføreren Nevita *(går fra ham og sier kort og bydende)*.
 Anatolos, ta keiserens telt ned!
@@ -338,7 +338,7 @@ Anatolos, ta keiserens telt ned!
 *(han hvisker noen ord til livvaktsføreren og går ut til høyre.)*
 
 @ Keiser Julian.
-Alle varsler har i disse førti dage vært ulykkespående; og det viser just at man tør sette lit til dem; for i all denne tid er vår sak bare lite fremmet. Men ser du vel, min Oribases, – nå, da jeg har et nytt foretagende for øye –
+Alle varsler har i disse førti dager vært ulykkespående; og det viser just at man tør sette lit til dem; for i all denne tid er vår sak bare lite fremmet. Men ser du vel, min Oribases, – nå, da jeg har et nytt foretagende for øye –
 
 Ah, Maximos!
 
@@ -346,10 +346,10 @@ Ah, Maximos!
 Hæren er alt underveis, herre; stig til hest!
 
 @ Keiser Julian.
-Varslerne – varslerne?
+Varslene – varslene?
 
 @ Mystikeren Maximos.
-Ei, hva – varslerne! Spør ikke om varslerne.
+Ei, hva – varslene! Spør ikke om varslene.
 
 @ Keiser Julian.
 Tal! Jeg vil vite, hva de har svart.
@@ -361,7 +361,7 @@ Alle varsler tier.
 De tier?
 
 @ Mystikeren Maximos.
-Jeg var hos prestene; offerdyrenes innvolde gav intet tegn. Jeg var hos de etruskiske gjøglere; fuglens flukt og skrik sa dem intet. Hos Magerne var jeg også; deres skrifter hadde intet svar å gi. Og jeg selv –
+Jeg var hos prestene; offerdyrenes innvoller ga intet tegn. Jeg var hos de etruskiske gjøglere; fuglens flukt og skrik sa dem intet. Hos Magerne var jeg også; deres skrifter hadde intet svar å gi. Og jeg selv –
 
 @ Keiser Julian.
 Du selv, min Maximos?
@@ -418,7 +418,7 @@ Kom, dere dyrebare venner!
 Hyss! Hører dere? Der borte synger de galileiske kvinner.
 
 @ En annen soldat.
-De synger som ugler og natteravne.
+De synger som ugler og natteravner.
 
 @ {{{ 479 }}} En tredje soldat.
 Da ville jeg dog gjerne være hos dem. Det er tryggere hos galileerne enn hos oss. Galileernes gud er sterkere enn våre.
@@ -427,7 +427,7 @@ Da ville jeg dog gjerne være hos dem. Det er tryggere hos galileerne enn hos os
 Keiseren har fortørnet gudene, det er saken. Hvor kunne han falle på å sette seg i gudenes sted?
 
 @ Den tredje soldat.
-Det er verre at han har fortørnet galileernes gud. Vet dere ikke, det sies for ganske sikkert at han og hans heksemester en av de siste netter har skåret buken opp på en svanger kvinne for å ta varsler av hennes innvolde?
+Det er verre at han har fortørnet galileernes gud. Vet dere ikke, det sies for ganske sikkert at han og hans heksemester en av de siste netter har skåret buken opp på en svanger kvinne for å ta varsler av hennes innvoller?
 
 @ Den første soldat.
 Ja, men jeg tror ikke på det. I alle fall har det ikke vært noen gresk kvinne; det må ha vært en barbarkvinne.
@@ -454,13 +454,13 @@ Jeg skulle ønske jeg var over hos galileerne.
 Vil *du* også falle fra?
 
 @ Den tredje soldat.
-Der faller jo så mange fra. I de siste dage har –
+Der faller jo så mange fra. I de siste dager har –
 
 @ Den første soldat *(roper ut i mørket)*.
 Stå – stå! Hvem kommer der?
 
 @ En røst.
-Venner fra forposterne!
+Venner fra forpostene!
 
 @stage (Noen soldater kommer frem mellom trærne med Kappadokieren Agathon imellom seg)
 
@@ -468,12 +468,12 @@ Venner fra forposterne!
 Ho-ho; en, som har villet løpe bort.
 
 @ En av de kommende.
-Nei, han er gått fra vid og samling.
+Nei, han er gått fra vidd og samling.
 
 @ Soldaten Agathon.
-Jeg *er* ikke fra vid og samling. O, for Guds store barmhjertighets skyld, – slipp meg løs!
+Jeg *er* ikke fra vidd og samling. O, for Guds store barmhjertighets skyld, – slipp meg løs!
 
-@ {{{ 481 }}} Soldaten fra forposterne.
+@ {{{ 481 }}} Soldaten fra forpostene.
 Han sier, han vil drepe et dyr med syv hoder.
 
 @ Soldaten Agathon.
@@ -598,7 +598,7 @@ Og hva vinner den seirende? Er det møyen verd å seire? Hva har den makedoniske
 
 Hvor er han nå? – Er han virksom annetsteds etter den tid, da hint gikk for seg på Golgata?
 
-Jeg drømte nylig om ham. Jeg drømte at jeg hadde lagt hele jorden under meg. Jeg bød at galileerens minne skulle være utslettet på jorden; og så var det utslettet. – Da kom åndene og tjente meg, og bandt vinger til mine skuldre, og jeg svinget meg ut i det endeløse rum, til jeg festet min fot på en annen jord.
+Jeg drømte nylig om ham. Jeg drømte at jeg hadde lagt hele jorden under meg. Jeg bød at galileerens minne skulle være utslettet på jorden; og så var det utslettet. – Da kom åndene og tjente meg, og bandt vinger til mine skuldre, og jeg svinget meg ut i det endeløse rom, til jeg festet min fot på en annen jord.
 
 Det *var* en annen jord enn min. Dens runding var større, den hadde et gulere lysskjær, og flere måneskiver dreiet seg om den.
 
@@ -611,7 +611,7 @@ Hvor er han nå? Om *hint* på Golgata ved Jerusalem bare var en landsby-gjernin
 O, om jeg kunne legge verden øde! Maximos, – gis der ingen gift, ingen fortærende ild, der kan legge det skapte øde, som det var på hin dag, da den ensomme ånd svevde over vannene?
 
 @ Mystikeren Maximos.
-Jeg hører larm fra vaktposterne. Kom, Julian –
+Jeg hører larm fra vaktpostene. Kom, Julian –
 
 @ Keiser Julian.
 Å tenke seg at der skal følge århundre på århundre, og at der i dem alle skal leve mennesker, vitende at det var meg, som bukket under, og ham, som seiret!
@@ -666,7 +666,7 @@ Følg med til teltet, jeg besverger deg!
 Krigsrop! Perserne overfaller oss –
 
 @ Husmesteren Eutherios.
-Forposterne er alt i full kamp!
+Forpostene er alt i full kamp!
 
 @ Livlegen Oribases.
 Fienden er i leiren! Ah, herre, du er våpenløs –
@@ -695,15 +695,15 @@ Keiser, keiser, – kjemp ikke i denne natt!
 
 @stage (Åpen slette med en landsby langt borte. Daggry og tåket luft.)
 
-@stage (Slagtummel. Skrik og våpenlarm ute på sletten. I forgrunnen romerske spydbærere under centurionen Ammian i kamp med persiske bueskytter. Disse drives etterhånden tilbake mot venstre.)
+@stage (Slagtummel. Skrik og våpenlarm ute på sletten. I forgrunnen romerske spydbærere under høvedsmannen Ammian i kamp med persiske bueskyttere. Disse drives etter hvert tilbake mot venstre.)
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Rett så! Inn på dem! Stikk dem ned! Gi dem ikke tid til å skyte!
 
 @ Hærføreren Nevita *(med følge fra høyre)*.
 Godt kjempet, Ammian!
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 O, herre, hvorfor kommer ikke rytterne til hjelp?
 
 @ Hærføreren Nevita.
@@ -716,7 +716,7 @@ O, at jeg skulle komme midt inn i disse redsler!
 Har du sett keiseren, venn?
 
 @ Visdomslæreren Kytron.
-Ja, men han enser meg ikke. O, jeg ber ydmygst om en avdeling krigsknekter, som kan beskytte meg!
+Ja, men han enser meg ikke. O, jeg ber ydmykst om en avdeling krigsknekter, som kan beskytte meg!
 
 @ Hærføreren Nevita *(til sine ledsagere)*.
 De viker. Skjoldbærerne skal rykke frem.
@@ -735,26 +735,26 @@ Trenger de frem? O, denne blodige mordlyst! En pil! Den hadde nær truffet meg! 
 @ {{{ 492 }}} Hærføreren Nevita.
 Kampen står. Det går hverken frem eller tilbake.
 
-*(til centurionen Fromentinos, som kommer med en ny skare fra høyre.)*
+*(til høvedsmannen Fromentinos, som kommer med en ny skare fra høyre.)*
 
-Hei, centurion, – har du set keiseren?
+Hei, høvedsmann, – har du sett keiseren?
 
-@ Centurion Fromentinos.
+@ Høvedsmannen Fromentinos.
 Ja, herre; han kjemper i spissen for de hvitkledte ryttere.
 
 @ Hærføreren Nevita.
 Ikke såret?
 
-@ Centurion Fromentinos.
-Han synes usårlig. Pile og kastespyd bøyer av, hvor han viser seg.
+@ Høvedsmannen Fromentinos.
+Han synes usårlig. Piler og kastespyd bøyer av, hvor han viser seg.
 
-@ Centurion Ammian *(roper tilbake fra kamptrengselen.)*
+@ Høvedsmannen Ammian *(roper tilbake fra kamptrengselen.)*
 Til hjelp; vi kan ikke holde det lenger!
 
 @ Hærføreren Nevita.
 Frem, min kjekke Fromentinos!
 
-@ Centurion Fromentinos *(til soldatene)*.
+@ Høvedsmannen Fromentinos *(til soldatene)*.
 Tett sammen, og inn på dem, Grekere!
 
 *(han iler Ammian til hjelp; kampen trekker seg noe tilbake.)*
@@ -786,7 +786,7 @@ Godt, at jeg fant deg, Nevita!
 Ah, herre, – uten våpenkledning; hvor uforsiktig –!
 
 @ Keiser Julian.
-I disse egne biter intet våpen på meg. Men gå, Nevita; ta hele anførselen; hesten ble skutt under meg og –
+I disse egner biter intet våpen på meg. Men gå, Nevita; ta hele anførselen; hesten ble skutt under meg og –
 
 @ Hærføreren Nevita.
 Min keiser, så er du dog kommen til skade?
@@ -881,13 +881,13 @@ Det er Perserne, herre! Våre rekker viker –
 @ Keiser Julian.
 De *skal* ikke vike. – Dere *skal* ikke! Stå fast, Grekere! Stå, stå, Romere! I dag skal vi frigjøre verden!
 
-@stage (Kampen har imidlertid trukket seg fremover sletten igjen. Keiser Julian styrter seg med hevet sverd inn i den villeste slagtummel. Allminnelig forvirring.)
+@stage (Kampen har imidlertid trukket seg fremover sletten igjen. Keiser Julian styrter seg med hevet sverd inn i den villeste slagtummel. Alminnelig forvirring.)
 
 @ Livvaktsføreren Anatolos *(roper ut til høyre)*.
 Til hjelp! Keiseren er i den ytterste fare!
 
 @ Keiser Julian *(mellom de kjempende)*.
-Jeg ser ham; jeg ser ham! Et lengere sverd! Hvem har et lengere sverd å låne meg?
+Jeg ser ham; jeg ser ham! Et lengre sverd! Hvem har et lengre sverd å låne meg?
 
 @ Fremstormende soldater *(fra høyre)*.
 Med Kristus for keiseren!
@@ -900,7 +900,7 @@ Med Kristus for Kristus!
 @ {{{ 498 }}} Keiser Julian.
 Ah!
 
-*(han griper i spyd-jernet for å dra det ut, men sønderskjærer derved sin hånd, utstøder et høyt skrik og faller.)*
+*(han griper i spyd-jernet for å dra det ut, men sønderskjærer derved sin hånd, utstøter et høyt skrik og faller.)*
 
 @ Soldaten Agathon *(roper i trengselen)*.
 Romer-lansen fra Golgata!
@@ -940,10 +940,10 @@ Galileernes gud er iblant oss! Tett om ham! Han er den sterkeste!
 
 @stage (Keiserens telt med tildekket inngang i bakgrunnen. Lys dag.)
 
-@stage (Keiser Julian ligger bevisstløs på sitt leie. Sårene i hans høyre side, arm og hånd er forbundne. Tett ved ham står livlegen Oribases og Makrina samt husmesteren Eutherios. Lengere tilbake Basilios fra Cæsaræa og visdomslæreren Priskos. Ved foten av sengen står mystikeren Maximos.)
+@stage (Keiser Julian ligger bevisstløs på sitt leie. Sårene i hans høyre side, arm og hånd er forbundne. Tett ved ham står livlegen Oribases og Makrina samt husmesteren Eutherios. Lenger tilbake Basilios fra Cæsaræa og visdomslæreren Priskos. Ved foten av sengen står mystikeren Maximos.)
 
 @ Makrina.
-Han bløder igjen. Jeg må legge bindet fastere.
+Han blør igjen. Jeg må legge bindet fastere.
 
 @ Livlegen Oribases.
 Takk skje deg, du milde kvinne; dine varlige hender kom oss vel tilpass.
@@ -960,36 +960,36 @@ Men han ånder jo ikke.
 @ Livlegen Oribases.
 Han ånder dog.
 
-@stage (Centurionen Ammian kommer sagte inn med keiserens sverd og skjold, som han legger fra seg, og blir stående ved forhenget.)
+@stage (Høvedsmannen Ammian kommer sagte inn med keiserens sverd og skjold, som han legger fra seg, og blir stående ved forhenget.)
 
 @ Visdomslæreren Priskos.
-Ak, gode centurion, hvordan står sakene derute?
+Akk, gode høvedsmann, hvordan står sakene derute?
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Bedre enn her. Er han allerede –?
 
 @ Visdomslæreren Priskos.
 Nei, nei, – ennå ikke. Men er det visst at vi har drevet Perserne tilbake?
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Ja, fullstendig. Det var krigsøversten Jovian, som slo dem på flukt. Nettopp kom tre fornemme utsendinger fra kong Sapores til leiren for å be om våpenstillstand.
 
 @ Visdomslæreren Priskos.
 Og tror du Nevita går inn på det?
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Nevita har overgitt anførselen til Jovian. Alle flokker seg om Jovian. Alle ser i ham den eneste redningsmann –
 
 @ Livlegen Oribases.
 Tal sagte; han rører seg.
 
-@ {{{ 501 }}} Centurion Ammian.
+@ {{{ 501 }}} Høvedsmannen Ammian.
 Rører seg? Våkner kanskje til samling? O, om han skulle få oppleve dette!
 
 @ Husmesteren Eutherios.
 Hvilket, Ammian?
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Både soldater og førere rådslår om valget av den nye keiser.
 
 @ Visdomslæreren Priskos.
@@ -998,7 +998,7 @@ Hva sier du!
 @ Husmesteren Eutherios.
 O, hvilken skamløs utålmodighet!
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Hærens farefulle stilling unnskylder det tildels; og dog –
 
 @ Makrina.
@@ -1032,7 +1032,7 @@ Har han virkelig? Dette er meg såre kjært. – *Ham* seiret jeg dog altså ove
 
 Men ingen våpenstillstand. Jeg vil slå ham helt til jorden. – Ah, hvor har jeg mitt skjold? Skulle jeg ha mistet skjoldet?
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Nei, min keiser, – her er både ditt skjold og ditt sverd.
 
 @ Keiser Julian.
@@ -1044,7 +1044,7 @@ O, herre, det er deg for tungt nå!
 @ {{{ 503 }}} Keiser Julian.
 Ah, – *du*? Du har rett, fromme Makrina; det er litt for tungt. – Legg det foran meg, så jeg kan se det. Hva? Er det deg, Ammian? Holder *du* vakt hos meg? Hvor er Anatolos?
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Herre, han er nå salig.
 
 @ Keiser Julian.
@@ -1062,15 +1062,15 @@ Mine sår vil snart være legte. Ikke sant, Oribases, – lover du meg ikke –?
 For all ting ro, herre!
 
 @ Keiser Julian.
-Hvilken høyst uheldig hendelse! Og det just nå, da så mange viktige saker strømmer inn {{{ 504 }}} på meg. Jeg kan ikke legge disse saker i Nevitas hender. I slikt har jeg ikke tillit hverken til ham eller til de andre; alt dette må jeg selv – Jeg føler meg virkelig noe mat. Høyst fortredelig! – Si meg, Ammian, hva heter hint uheldsvangre sted?
+Hvilken høyst uheldig hendelse! Og det just nå, da så mange viktige saker strømmer inn {{{ 504 }}} på meg. Jeg kan ikke legge disse saker i Nevitas hender. I slikt har jeg ikke tillit hverken til ham eller til de andre; alt dette må jeg selv – Jeg føler meg virkelig noe matt. Høyst fortredelig! – Si meg, Ammian, hva heter hint uhellsvangre sted?
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Hvilket sted, min nådige keiser?
 
 @ Keiser Julian.
 Hint sted, hvor det persiske kastespyd traff meg.
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Det kalles etter landsbyen Frygia –
 
 @ Mystikeren Maximos.
@@ -1079,7 +1079,7 @@ Ah!
 @ Keiser Julian.
 Hva kalles –? Hva sa du egnen het?
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Herre, den heter, etter landsbyen dernede, den frygiske egn.
 
 @ Keiser Julian.
@@ -1098,7 +1098,7 @@ Intet, – intet. –
 
 Frygia? Ja så? – Nevita og de andre får *dog* ta sakene i sine hender. Gå, og si dem –
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Herre, de har nok allerede på dine vegne –
 
 @ Keiser Julian.
@@ -1127,9 +1127,9 @@ Julian – Julian!
 *(han kaster seg gråtende ned ved sengen.)*
 
 @ {{{ 506 }}} Keiser Julian.
-Basilios, – venn, broder, – vi to har levet skjønne dage sammen. – –
+Basilios, – venn, broder, – vi to har levd skjønne dager sammen. – –
 
-Dere skal ikke gråte fordi jeg går fra dere i så ung en alder. Det er ikke sted se et tegn på skjebnemaktenes mishag at de rykker et menneske bort i hans tidlige år. Hva er vel det, å dø? Er det annet, enn å betale sin gjeld til støvets evig vekslende rike? Ingen klager! Elsker vi ikke alle visdommen? Og lærer ikke visdommen oss, at den høyeste lykkesalighet er bundet til sjelens liv og ikke til legemets? For så vidt har galileerne rett, selv om –; dog, derom vil vi ikke tale. Hadde livets og dødens makter forundt meg å få et visst skrift ferdig, så tror jeg nok det skulle lyktes meg å –
+Dere skal ikke gråte fordi jeg går fra dere i så ung en alder. Det er ikke stedse et tegn på skjebnemaktenes mishag at de rykker et menneske bort i hans tidlige år. Hva er vel det, å dø? Er det annet, enn å betale sin gjeld til støvets evig vekslende rike? Ingen klager! Elsker vi ikke alle visdommen? Og lærer ikke visdommen oss, at den høyeste lykksalighet er bundet til sjelens liv og ikke til legemets? For så vidt har galileerne rett, selv om –; dog, derom vil vi ikke tale. Hadde livets og dødens makter forundt meg å få et visst skrift ferdig, så tror jeg nok det skulle lyktes meg å –
 
 @ Livlegen Oribases.
 O, min keiser, matter det deg ikke å tale så lenge?
@@ -1147,16 +1147,16 @@ Jeg vet i sannhet ikke, hva *det* skulle være.
 Angrer du intet, Julian?
 
 @ Keiser Julian.
-Jeg har intet å angre. Den makt, som omstendighetene lagde i min hånd, og som er en utstråling av det guddommelige, den vet jeg med meg selv at jeg har brukt etter beste evne. Jeg har aldri villet forurette noen. Dette krigstog hadde gode og gyldige grunne for seg; og dersom enkelte skulle mene at jeg ikke har fyldestgjort alle forventninger, så bør de billig betenke, at der er en hemmelighetsfull makt utenfor oss, og at denne i vesentlig grad råder for utfallet av de menneskelige foretagender.
+Jeg har intet å angre. Den makt, som omstendighetene lagde i min hånd, og som er en utstråling av det guddommelige, den vet jeg med meg selv at jeg har brukt etter beste evne. Jeg har aldri villet forurette noen. Dette krigstog hadde gode og gyldige grunner for seg; og dersom enkelte skulle mene at jeg ikke har fyllestgjort alle forventninger, så bør de billig betenke, at der er en hemmelighetsfull makt utenfor oss, og at denne i vesentlig grad råder for utfallet av de menneskelige foretagender.
 
 @ Makrina *(sagte til Oribases)*.
-O, hør – hør, han drager ånden så tungt.
+O, hør – hør, han drar ånden så tungt.
 
 @ Livlegen Oribases.
 Stemmen svikter ham snart.
 
 @ Keiser Julian.
-Om valget av en etterfølger drister jeg meg ikke til å gi noe råd. – Du, Eutherios, skal skifte mine eiendele mellom dem, som stod meg nærmest. Jeg etterlater ikke mye; for jeg har alltid holdt for at en rett visdomselsker – –
+Om valget av en etterfølger drister jeg meg ikke til å gi noe råd. – Du, Eutherios, skal skifte mine eiendeler mellom dem, som stod meg nærmest. Jeg etterlater ikke mye; for jeg har alltid holdt for at en rett visdomselsker – –
 
 Hva er *det*? Går solen allerede ned?
 
@@ -1182,12 +1182,12 @@ En drikk vann, herre!
 *(hun holder en skål til hans lepper.)*
 
 @ Livlegen Oribases *(hvisker til Makrina)*.
-Hans sår bløder innvendig.
+Hans sår blør innvendig.
 
 @ Keiser Julian.
 Gråt ikke. Ingen Grekere skal gråte for meg; jeg stiger til stjernene. – –
 
-Skjønne templer. – Billeder. – Men så langt borte.
+Skjønne templer. – Bilder. – Men så langt borte.
 
 @ Makrina.
 Hva taler han om?
@@ -1223,7 +1223,7 @@ Leve keiser Jovian!
 @ Livlegen Oribases.
 O, hørte dere dette rop?
 
-@ Centurion Ammian.
+@ Høvedsmannen Ammian.
 Krigsøversten Jovian er utropt til keiser.
 
 @ {{{ 510 }}} Mystikeren Maximos *(ler)*.
@@ -1246,7 +1246,7 @@ Verdensviljen skal stå til regnskap for Julians sjel.
 @ Makrina.
 Bespott ikke; skjønt du visselig har elsket denne døde –
 
-@ Mystikeren Maximos *(nærmere ved liget)*.
+@ Mystikeren Maximos *(nærmere ved liket)*.
 Elsket og forlokket ham. – Nei, ikke *jeg*!
 
 Forlokket som Kain. Forlokket som Judas. – – Deres gud er en ødsel gud, galileere! Han bruker mange sjeler.
@@ -1282,6 +1282,6 @@ Står det ikke skrevet: der eltes kar til vanære og kar til forherligelse?
 @ Makrina.
 O, broder, la oss ikke tenke denne avgrunn til bunns.
 
-*(hun bøyer seg over liget og tildekker dets ansikt.)*
+*(hun bøyer seg over liket og tildekker dets ansikt.)*
 
 Villfarende menneskesjel, – *måtte* du fare vill, da skal det visselig regnes deg til gode på hin store dag, når den veldige kommer i skyen for å si dommen over de levende døde og over de døde levende! – –

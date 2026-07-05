@@ -8,7 +8,7 @@ depth: 1
 
 @stage (At Vienna. A vaulted chamber in the catacombs. To the left a winding passage twists upward. Through the rock-face in the background a stair has been hewn, which ends above at a closed door. In front to the right, a number of steps lead down to the deeper-lying passages. The chamber is faintly lit by a burning hanging-lamp.)
 
-@stage (Caesar Julian, with unshaven beard and in soiled clothes, stands stooping over the opening to the right. Muffled hymn-singing sounds through the door from the church built on outside.)
+@stage (Caesar Julian, with unshaven beard and in soiled clothes, stands stooping over the opening to the right. Muffled hymn-singing sounds through the door from the adjoining church outside.)
 
 @ Caesar Julian *(speaks downward)*.
 Still no sign?
@@ -89,7 +89,7 @@ No one killed her, Sallust! She was too pure for this realm of sin; therefore an
 I, my lord?
 
 @ Caesar Julian.
-Night and day I have heard the wedding-songs since. Hear, hear; in glorification she is lifted upward. Yes, she was assuredly a true Christian woman. She kept the commandment faithfully; – she gave to Caesar what was Caesar's, and to the other she gave –; well, that was not *what* we were to speak of; you are not initiated into the mysteries of the doctrine, Sallust! – What news, I asked?
+Night and day I have heard the wedding-songs since. Hear, hear; in glorification she is lifted upward. Yes, she was assuredly a true Christian woman. She kept the commandment faithfully; – she gave to Caesar what was Caesar's, and to the other she gave –; well, it was not *that* we were to speak of; you are not initiated into the mysteries of the doctrine, Sallust! – What news, I asked?
 
 @ Sallust the knight.
 The most important thing I know is that the emperor, at the tidings of what took place in Lutetia, is said to have fled in haste over to Antioch.
@@ -176,7 +176,7 @@ I was ruined, my lord; and I felt that Caesar had cast me off. Yes, my Caesar, I
 These letters were from *you*? Oh, Sallust!
 
 @ Sallust the knight.
-They contained nothing to your harm, my lord! What others may have written, I do not know; I know only that often enough I writhed in anguish under a forced and hateful silence. I ventured myself as far forward as I in any way dared. That writing, addressed to an unnamed man in your camp, in which is reported the emperor's triumphal entry in Rome, and which you one morning, on the way to Lutetia, found thrust in under your tent –; yes, you did find it, my lord?
+They contained nothing to your harm, my lord! What others may have written, I do not know; I know only that often enough I writhed in anguish under a forced and hateful silence. I ventured myself as far forward as I in any way dared. That writing, addressed to an unnamed man in your camp, in which is reported the emperor's triumphal entry into Rome, and which you one morning, on the way to Lutetia, found thrust in under your tent –; yes, you did find it, my lord?
 
 @ Caesar Julian.
 Yes, yes –?
@@ -185,7 +185,7 @@ Yes, yes –?
 It was directed to me, and a lucky chance favoured me, so that it came into your hands. Speak I dared not, of course. I *wanted* to speak; but I could not; I put off from day to day betraying my disgrace. Oh, punish me, my lord; see, here I lie!
 
 @ Caesar Julian.
-Stand up; you are dearer to me thus, – won against my will and against your own. Stand up, you friend of my soul; no one shall bend a hair on your head.
+Stand up; you are dearer to me thus, – won against my will and against your own. Stand up, you friend of my soul; no one shall harm a hair of your head.
 
 @ Sallust the knight.
 Take rather the life that you will not, after all, long have power to shield. You say the emperor {{{ 211 }}} is decrepit. *(rises.)* My Caesar, what I have sworn to keep silent, that I now reveal. The emperor's decrepitude holds no hope for you. The emperor is taking a new wife in marriage.
@@ -277,7 +277,7 @@ And am I not the father of the army, Sallust?
 The soldiers' father; the shield and protector of their wives and children.
 
 @ Caesar Julian.
-And what would be the realm's lot, if I waver now? A decrepit emperor, and after him a minor child on the throne; discord and revolt; every man's hand against every other's to plunder the power. – Not many nights ago I had a vision. There revealed itself to me a figure with a circle of light about its head; it looked wrathfully at me and said: choose! Then it dissolved, like a rising morning mist. Until now I have interpreted this vision as pointing to quite other things; but now, when I know of the emperor's impending marriage – –
+And what would be the realm's lot, if I waver now? A decrepit emperor, and after him a minor child on the throne; discord and revolt; every man's hand against every other's to seize the power. – Not many nights ago I had a vision. There revealed itself to me a figure with a circle of light about its head; it looked wrathfully at me and said: choose! Then it dissolved, like a rising morning mist. Until now I have interpreted this vision as pointing to quite other things; but now, when I know of the emperor's impending marriage – –
 
 Yes, it truly is a matter of choosing, before disaster pours in over the realm. I am not thinking of my own advantage; but *dare* I push the choice from me, Sallust? And is it not my duty toward the emperor to guard my life? Have I the right to stand with hanging arms and wait for the murderers whom he, in his {{{ 216 }}} mad dread, hires to strike me down? Have I the right to give the unhappy Constantius occasion to heap a new blood-guilt upon his sin-laden head? Is it not better for him, – as it stands in the scriptures, – that he suffer wrong than that he do wrong? If therefore *that* which I inflict upon my kinsman can be called a wrong, then I hold that this wrong of mine is balanced out by the fact that it prevents my kinsman from inflicting a wrong upon *me*. I believe that both Plato and Marcus Aurelius, that crowned bridegroom of Sophia, would side with me in this. It would in any case not be a wholly unworthy task for the friends of wisdom, my dear Sallust! – Oh, had I but Libanius here!
 
@@ -392,7 +392,7 @@ In truth, what is he, then, this Constantius, – this fury-scourged sinner, thi
 The gravestone over him, emperor Julian!
 
 @ Caesar Julian.
-Has he not, in all his conduct toward me, been like a shipwreck without a rudder, – now drifting to the left on the stream of distrust, now flung to the right by the storm-gust of remorse? Did he not reel up onto the imperial throne, terror-stricken, with the purple robe dripping with my father's blood? Perhaps with my mother's too. – Did not all my kinsmen have to fall, so that he could sit secure? No, not all; Gallus was spared, and I; – a couple of lives had to be left over, on which he could buy himself a little forgiveness. Then he drifted for the current of distrust again. {{{ 221 }}} Remorse wrung from him a Caesar's name for Gallus; then fear wrung from him a death-sentence over Caesar. And I? Do I owe him thanks for the life he has hitherto granted me? One by one; first Gallus and then –; every night I have sweated under the dread that the day just gone should be my last.
+Has he not, in all his conduct toward me, been like a shipwreck without a rudder, – now drifting to the left on the stream of distrust, now flung to the right by the storm-gust of remorse? Did he not reel up onto the imperial throne, terror-stricken, with the purple robe dripping with my father's blood? Perhaps with my mother's too. – Did not all my kinsmen have to fall, so that he could sit secure? No, not all; Gallus was spared, and I; – a couple of lives had to be left over, on which he could buy himself a little forgiveness. Then he drifted before the current of distrust again. {{{ 221 }}} Remorse wrung from him a Caesar's name for Gallus; then fear wrung from him a death-sentence over Caesar. And I? Do I owe him thanks for the life he has hitherto granted me? One by one; first Gallus and then –; every night I have sweated under the dread that the day just gone should be my last.
 
 @ Maximus the mystic.
 Were Constantius and death your worst dread? Think again.
@@ -404,7 +404,7 @@ Yes, you are probably right. The priests –! My whole youth has been *one* cont
 And this demand, – was it within you?
 
 @ Caesar Julian.
-Always outside. I *had to*! When my soul crouched together in gnawing and consuming hatred toward my kindred's murderer, then sounded the commandment: love your enemy! When my beauty-enraptured mind thirsted toward the customs and images of the bygone Greek world, then the Christian demand struck down into me with its: seek the one thing needful! When I felt the body's sweet desire and longing toward this or that, then the prince of renunciation frightened me with his: die away here in order to live yonder! – The {{{ 222 }}} human has become unlawful since the day when the seer from Galilee took over the governance of the world. To live has, through him, become to die. To love and to hate, that is to sin. Has he then transformed man's flesh and blood? Or has the earthbound human not remained what it was? Our sound innermost soul rises up against this; – and yet we shall *will* contrary to our own will! We shall, shall, shall!
+Always outside. I *had to*! When my soul crouched together in gnawing and consuming hatred toward my kindred's murderer, then sounded the commandment: love your enemy! When my beauty-enraptured mind thirsted toward the customs and images of the bygone Greek world, then the Christian demand struck down into me with its: seek the one thing needful! When I felt the body's sweet desire and longing toward this or that, then the prince of renunciation frightened me with his: die to the world here in order to live yonder! – The {{{ 222 }}} human has become unlawful since the day when the seer from Galilee took over the governance of the world. To live has, through him, become to die. To love and to hate, that is to sin. Has he then transformed man's flesh and blood? Or has the earthbound human not remained what it was? Our sound innermost soul rises up against this; – and yet we shall *will* contrary to our own will! We shall, shall, shall!
 
 @ Maximus the mystic.
 And no further than this have you come? Shame on you!
@@ -422,7 +422,7 @@ Alas, those times, Maximus! Then it was easy to choose. What was it that we were
 Does it not stand somewhere in your scriptures: either with us or against us?
 
 @ Caesar Julian.
-Did not Libanius remain what he was, whether in a war of words he stood on the side of the accusation or of the defence? This here lies deeper. Here it is a deed that I am to get across. «Give to the emperor {{{ 223 }}} what is the emperor's». In Athens I once made play of it; – but it lies deeper. You cannot grasp it, you who have never been under the god-man's power. It is more than a doctrine that he has spread out over the world; it is a sorcery that takes the minds captive. He who has once been under him, – I do not believe he ever comes wholly free.
+Did not Libanius remain what he was, whether in a war of words he stood on the side of the accusation or of the defence? This here lies deeper. Here it is a deed that I must get through. «Give to the emperor {{{ 223 }}} what is the emperor's». In Athens I once made play of it; – but it lies deeper. You cannot grasp it, you who have never been under the god-man's power. It is more than a doctrine that he has spread out over the world; it is a sorcery that takes the minds captive. He who has once been under him, – I do not believe he ever comes wholly free.
 
 @ Maximus the mystic.
 Because you do not *will* it wholly.
@@ -449,7 +449,7 @@ Shadow-terror!
 Be that as it may. But do you not see that this paralysing terror has thickened and towered itself into a wall about the emperor? Oh, I understand well why the great Constantine led such a will-binding doctrine to victory and power in the realm. No bodyguard with spear and shield closes so about the imperial throne as this captivating faith that always points out beyond the earthly life. Have you looked rightly at them, these Christians? Hollow-eyed, pale-cheeked, flat-chested are they one and all; they resemble the linen-weavers in Byssos; no hope of honour is allowed to sprout in this brooding existence; the sun shines for them, and they do not see it; the earth offers them its fullness, and they do not desire it; – all that they desire is to renounce and to suffer in order to come to die.
 
 @ Maximus the mystic.
-Then use them as they are; but then you yourself must stand outside. Emperor or Galilean; – *that* is the choice. Be a thrall under the terror or a ruler in the land of day and light and gladness! You cannot will the contradictory; and yet it is *that* which you will. You want to unite the unjoinable, – to reconcile the two that cannot be reconciled; that is why you lie here and rot in the darkness.
+Then use them as they are; but then you yourself must stand outside. Emperor or Galilean; – *that* is the choice. Be a thrall under the terror or a ruler in the land of day and light and gladness! You cannot will the contradictory; and yet it is *that* which you will. You want to unite the irreconcilable, – to reconcile the two that cannot be reconciled; that is why you lie here and rot in the darkness.
 
 @ Caesar Julian.
 If you can, then light my way!
@@ -461,7 +461,7 @@ Are you the Achilles whom your mother dreamed that she would give to the world? 
 Maximus!
 
 @ Maximus the mystic.
-My beloved Julian, do look about you in the world! Those Christians with the death-longing whom you just named, they are the fewest. But how does it stand with all the others? Do the minds not fall away from the master, one by one? Yes, answer me, – what has become of this strange doctrine of love? Do not community against community rage among themselves? And now the bishops, those gold-bedizened lords who call themselves the chief shepherds of the church! Do they yield even to the magnates of the court at all in greed and lust for power and grovelling –?
+My beloved Julian, do look about you in the world! Those Christians with the death-longing whom you just named, they are the fewest. But how does it stand with all the others? Do the minds not fall away from the master, one by one? Yes, answer me, – what has become of this strange doctrine of love? Does not community rage against community among themselves? And now the bishops, those gold-bedizened lords who call themselves the chief shepherds of the church! Do they yield even to the magnates of the court at all in greed and lust for power and grovelling –?
 
 @ Caesar Julian.
 They are not all so; think of the mighty Athanasius in Alexandria –
@@ -473,13 +473,13 @@ Athanasius was also the only one. And where is Athanasius now? Did they not driv
 True, true, true!
 
 @ Maximus the mystic.
-These are your brothers-in-arms, my Julian; better than these you will not find them. Or perhaps you are counting on those two expected great Galilean lights from Cappadocia? Ha-ha; the bishop's son Gregory conducts lawsuits in his native town, and Basil studies the writings of worldly sages on his country estate in the eastern parts.
+These are your brothers-in-arms, my Julian; better than these you will not find. Or perhaps you are counting on those two expected great Galilean lights from Cappadocia? Ha-ha; the bishop's son Gregory conducts lawsuits in his native town, and Basil studies the writings of worldly sages on his country estate in the eastern parts.
 
 @ Caesar Julian.
-Yes, I know it well. Apostasy on all sides! Hecebolius, my former teacher, has become a rich man on his zeal in the faith and on his scripture-exposition; and since that time –! Maximus, – it is well-nigh come to this, that I stand alone in earnest.
+Yes, I know it well. Apostasy on all sides! Hecebolius, my former teacher, has become a rich man on his zeal in the faith and on his scripture-exposition; and since that time –! Maximus, – it is well-nigh come to this, that I stand alone in earnestness.
 
 @ {{{ 227 }}} Maximus the mystic.
-You *stand* alone. Your whole army is in wild flight or lies beaten all around you. Sound the call to battle, – and no one will hear you; advance, – and no one will follow after you! Do not imagine that you can advance the cause that has given itself up. You are going under, I tell you! And where will you go then? Cast off by Constantius, you will be cast off by all powers on earth – and above the earth. Or will you take refuge in the Galilean's embrace? How does it stand between you and him? Have you not yourself said that you are under the terror? Have you his demand within you? Do you love your enemy, Constantius, merely because you do not strike him? Do you hate the flesh's lust and the earth's alluring ways, merely because you do not, like a hot swimmer, plunge yourself down into them? Do you renounce the world, merely because you have not the courage to possess it? And do you know so surely that – if you die away here – you shall then live yonder?
+You *stand* alone. Your whole army is in wild flight or lies beaten all around you. Sound the call to battle, – and no one will hear you; advance, – and no one will follow after you! Do not imagine that you can advance the cause that has given itself up. You are going under, I tell you! And where will you go then? Cast off by Constantius, you will be cast off by all powers on earth – and above the earth. Or will you take refuge in the Galilean's embrace? How does it stand between you and him? Have you not yourself said that you are under the terror? Have you his demand within you? Do you love your enemy, Constantius, merely because you do not strike him? Do you hate the flesh's lust and the earth's alluring ways, merely because you do not, like a hot swimmer, plunge yourself down into them? Do you renounce the world, merely because you have not the courage to possess it? And do you know so surely that – if you die to the world here – you shall then live yonder?
 
 @ Caesar Julian *(walks back and forth)*.
 What has he done for me, this great demanding one? If he holds the reins of the world's chariot in his hand, then surely he must have been able to –
@@ -610,13 +610,13 @@ Through darkness to light. Ah –!
 So it came after all.
 
 @ {{{ 232 }}} Eutherius the steward.
-Speak, speak; what do these secret arts mean?
+Speak, speak; what do those secret arts mean?
 
 @ Oribases the physician.
 And that now, when every moment is precious –
 
 @ Maximus the mystic *(whispers uneasily as he changes place)*:
-These gliding, moist shadows! Fie; this slimy creeping about my feet –!
+These gliding, moist shadows! Fie; this slimy vermin about my feet –!
 
 @ Oribases the physician *(listens)*.
 The din rises, Eutherius! It is the soldiers; hear, hear!
@@ -654,13 +654,13 @@ Helios! Helios!
 Set free!
 
 @ Choral song up in the church.
-Our Father, you who are in heaven!
+Our Father, who art in heaven!
 
 @ Sallust the knight.
 Where is he? Eutherius, Oribases, – what is going on here?
 
 @ The chorus *(in the church)*.
-Hallowed be your name!
+Hallowed be thy name!
 
 @ Caesar Julian *(climbs up the stair; he has blood on his brow, on his breast and on his hands)*.
 Accomplished!
@@ -675,10 +675,10 @@ Bloody –! What have you done?
 Cleft the mists of terror.
 
 @ Maximus the mystic.
-The created is in your hand.
+Creation is in your hand.
 
 @ {{{ 234 }}} The chorus *(in the church)*.
-Your will be done in heaven, as also on earth!
+Thy will be done in heaven, as also on earth!
 
 *(the song continues during the following.)*
 
@@ -713,7 +713,7 @@ Free, free! Mine is the kingdom!
 And the power and the glory!
 
 @ The chorus *(in the church)*.
-Yours is the kingdom and the power and the glory –
+Thine is the kingdom and the power and the glory –
 
 @ Caesar Julian *(blinded by the light)*.
 Ah!

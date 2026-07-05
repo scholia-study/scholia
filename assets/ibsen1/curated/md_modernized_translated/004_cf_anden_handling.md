@@ -8,7 +8,7 @@ depth: 1
 
 @stage (In Athens. An open square, surrounded by colonnades. In the square, statues and fountains. In one corner, to the left, a narrow street opens out. Sunset.)
 
-@stage (Basil of Caesarea, a finely built young man, sits reading by a pedestal. Gregory of Nazianzus and others of the high school's disciples stroll in scattered clusters up and down in the colonnades. A larger throng runs noisily across the square out to the right; clamour far away.)
+@stage (Basil of Caesarea, a finely built young man, sits reading by a pedestal. Gregory of Nazianzus and others of the academy's disciples stroll in scattered clusters up and down in the colonnades. A larger throng runs noisily across the square out to the right; clamour far away.)
 
 @ Basil of Caesarea *(looks up from his book)*.
 What mean those wild cries?
@@ -58,7 +58,7 @@ Long live the light of Athens! Long live the lover of wisdom and eloquence!
 All flattery is wasted. Not one verse more shall you have today.
 
 @ Sallust of Perusia.
-When our leader falls silent, we feel it empty, like the morning after a nightly feast.
+When our leader falls silent, we feel it empty, like the morning after a night's feast.
 
 @ Prince Julian.
 If it must be, then let it be something new. Let it be a trial-game.
@@ -106,7 +106,7 @@ Here I am led forth; shoved by the neck; with bound hands –
 Blind judge – yes, I mean, inasmuch as justice is blind –, behold this audacious man; he has refused to render the emperor tribute.
 
 @ Prince Julian.
-Allow me to cast a word into the scales of deliberation. I am a Greek citizen. How much is a Greek citizen owing to the emperor?
+Allow me to cast a word into the scales of deliberation. I am a Greek citizen. How much does a Greek citizen owe the emperor?
 
 @ {{{ 71 }}} Gregory of Nazianzus.
 What the emperor demands.
@@ -148,7 +148,7 @@ I will not answer. This is unseemly both toward God and the emperor. Let me get 
 Form a ring about him!
 
 @ Prince Julian.
-Hold him fast! What, you most hapless judge, you have muddled the emperor's cause, and now you would escape it? You would flee? Whither, whither? To the Scythians? Forth before me! Answer me, you coming servants of the emperor and of wisdom, – has he not sought to withdraw himself from the emperor's power?
+Hold him fast! What, you most hapless judge, you have muddled the emperor's cause, and now you would escape it? You would flee? Whither, whither? To the Scythians? Forth before me! Answer me, you budding servants of the emperor and of wisdom, – has he not sought to withdraw himself from the emperor's power?
 
 @ The disciples.
 Yes, yes!
@@ -172,7 +172,7 @@ That I should think. But to seek to withdraw from the limitless, o you friends, 
 Yes, yes; the Cappadocian is mad!
 
 @ Prince Julian.
-And what, then, is madness? What did our forefathers judge of that condition? What did the Egyptian priests teach? And what does Maximus the mystic and the other friends of wisdom in the eastern lands say? They say that the heavenly riddle reveals itself in the madman. Our Gregory – inasmuch as he sets himself up against the emperor – is therefore in especial league with the heavenly. – Pour out wine for the Cappadocian; sing songs in our Gregory's praise; – a monument of honour for Gregory of Nazianzus!
+And what, then, is madness? What did our forefathers judge of that condition? What did the Egyptian priests teach? And what do Maximus the mystic and the other friends of wisdom in the eastern lands say? They say that the heavenly riddle reveals itself in the madman. Our Gregory – inasmuch as he sets himself up against the emperor – is therefore in especial league with the heavenly. – Pour out wine for the Cappadocian; sing songs in our Gregory's praise; – a monument of honour for Gregory of Nazianzus!
 
 @ The disciples *(amid laughter and jubilation)*.
 Praised be the Cappadocian! Praised be the Cappadocian's judge!
@@ -218,10 +218,10 @@ Hear, then, if it so please you. It was said here that certain men have in haste
 Oh, my Libanius, when I hear you with closed eyes, then I sink down into a sweet dream that Diogenes is reborn among us.
 
 @ {{{ 76 }}} Libanius the teacher of wisdom.
-Your mouth is princely lavish, my heartily dear one!
+Your mouth is princely lavish, my dearly beloved!
 
 @ Prince Julian.
-Nothing less. And yet I was near to breaking off your speech; for this time at least *one* of your fellow brothers will hardly feel disappointed.
+Nothing less. And yet I was near to breaking off your speech; for this time at least *one* of your brethren will hardly feel disappointed.
 
 @ Libanius the teacher of wisdom.
 My friend jests.
@@ -233,7 +233,7 @@ Your friend assures you that the governor Milon's two sons are aboard.
 What do you say?
 
 @ Prince Julian.
-That successor of Diogenes who gets *them* to bring up will hardly have need, for poverty's sake, to drink from the hollow hand.
+That successor of Diogenes who has *them* to bring up will hardly have need, for poverty's sake, to drink from the hollow hand.
 
 @ Libanius the teacher of wisdom.
 The governor Milon's sons! That noble Milon, who sent the emperor seven Persian horses with saddle-gear sewn with pearls –
@@ -295,10 +295,10 @@ Is it true, what rumour says, – that you spend your nights exploring the heath
 Ah, what! I can assure you, there is little to be gained from those riddle-loving dreamers. Let us speak no more of it.
 
 @ Gregory of Nazianzus.
-So true after all! Oh, Julian, how could you seek this shameful intercourse!
+So it is true after all! Oh, Julian, how could you seek this shameful intercourse!
 
 @ Prince Julian.
-I must live, Gregory, – and this here at the school of wisdom, it is not life. This Libanius! I shall never forgive him that I have loved him so dearly! How did I not, on my arrival, go humble and trembling with joy before that man, bow before him, kiss him and call him my great brother.
+I must live, Gregory, – and this here at the school of wisdom, it is not life. This Libanius! I shall never forgive him that I have loved him so dearly! Did I not, on my arrival, go humble and trembling with joy before that man, bow before him, kiss him and call him my great brother.
 
 @ {{{ 80 }}} Gregory of Nazianzus.
 Yes, it was all Christians' opinion that you carried it too far.
@@ -310,7 +310,7 @@ And yet I came here with solemnity in my soul. I saw in the spirit a mighty stru
 Yet all enlightened Hellas cries out that he is.
 
 @ Prince Julian.
-And yet he is no great man, I tell you. A single time have I seen Libanius great; it was that night in Constantinople. Then he was great, because he had suffered a great wrong, and because a lofty wrath filled him. But here! Oh, what have I not here been witness to! Libanius has great learning, but he is no great man. Libanius is greedy; he is vain; he is inflamed with envy. Or do you think he could have endured the renown that I, – doubtless in great part through my friends' indulgence – have been so fortunate as to acquire? Come to Libanius, and he can reckon up for you the essence and {{{ 81 }}} marks of all the virtues. He has them ready to hand, just as he has the books in his book-hall. But does he practise these virtues? Is his life like his teaching? He a successor of Socrates and of Plato, – ha-ha! Did he not flatter the emperor before he was driven out? Did he not flatter me at our meeting in Constantinople, that meeting which he has since made a most unfortunate attempt to set in a ridiculous light! And what am I to him now? Now he writes letters to Gallus, to Caesar Gallus, to the emperor's heir, and wishes him joy of his progress against the Persians, although this progress has hitherto been paltry enough and although Caesar Gallus distinguishes himself neither by learning nor by any notable eloquence. – And this Libanius the Greeks persist in calling the king of the lovers of wisdom! Ah, I will not deny that this vexes me. I did think, to tell the truth, that the Greeks should have been able to make a better choice, if they fixed their eyes a little more on those cultivators of wisdom and eloquence who in later years –
+And yet he is no great man, I tell you. A single time have I seen Libanius great; it was that night in Constantinople. Then he was great, because he had suffered a great wrong, and because a lofty wrath filled him. But here! Oh, what have I not here been witness to! Libanius has great learning, but he is no great man. Libanius is greedy; he is vain; he is inflamed with envy. Or do you think he could have endured the renown that I, – admittedly in great part through my friends' indulgence – have been so fortunate as to acquire? Come to Libanius, and he can reckon up for you the essence and {{{ 81 }}} marks of all the virtues. He has them ready to hand, just as he has the books in his book-hall. But does he practise these virtues? Is his life like his teaching? He a successor of Socrates and of Plato, – ha-ha! Did he not flatter the emperor before he was driven out? Did he not flatter me at our meeting in Constantinople, that meeting which he has since made a most unfortunate attempt to set in a ridiculous light! And what am I to him now? Now he writes letters to Gallus, to Caesar Gallus, to the emperor's heir, and wishes him joy of his progress against the Persians, although this progress has hitherto been paltry enough and although Caesar Gallus distinguishes himself neither by learning nor by any notable eloquence. – And this Libanius the Greeks persist in calling the king of the lovers of wisdom! Ah, I will not deny that this vexes me. I did think, to tell the truth, that the Greeks should have been able to make a better choice, if they fixed their eyes a little more on those cultivators of wisdom and eloquence who in recent years –
 
 @ Basil of Caesarea *(comes from the right side)*.
 Letters! Letters from Cappadocia!
@@ -357,7 +357,7 @@ What is it, friend?
 Does Macrina mention nothing of what is going on in Antioch?
 
 @ Basil of Caesarea.
-Nothing closer. What is it? You are pale –
+Nothing more particular. What is it? You are pale –
 
 @ Gregory of Nazianzus.
 You knew, surely, the noble Clematius, the Alexandrian?
@@ -378,7 +378,7 @@ I call it murdered; – they have executed him without law or judgment.
 Who? Who has executed him?
 
 @ Gregory of Nazianzus.
-Yes, who? How can I say who? My mother tells the connection thus: Clematius's mother-in-law had been inflamed with an impure love for her daughter's husband; but when she could get {{{ 84 }}} nowhere with him, she gained for herself, through a back door, admittance to the palace –
+Yes, who? How can I say who? My mother relates the circumstances thus: Clematius's mother-in-law had been inflamed with an impure love for her daughter's husband; but when she could get {{{ 84 }}} nowhere with him, she gained for herself, through a back door, admittance to the palace –
 
 @ Prince Julian.
 Which palace?
@@ -462,7 +462,7 @@ As long as he was only my brother. But now –; is he not Caesar? Gregory, – B
 Why did you come to Athens? You had it proclaimed with great pomp over the lands: Prince Julian travels from Constantinople to fight against the false wisdom, – to uphold the Christian truth against the lie of heathendom. What have you accomplished in that respect?
 
 @ Prince Julian.
-Oh, it was not here either that the battle was to stand.
+Oh, it was not here either that the battle was to be fought.
 
 @ Gregory of Nazianzus.
 No, it was not here; – not with phrase against phrase, not with book against book, not with the word's fencing game in the lecture-hall! No, Julian, it is out in life that you shall come forth, with life in your hands –
@@ -494,7 +494,7 @@ Julian!
 @ Prince Julian.
 To the bacchanal, you friends!
 
-@stage (Gregory of Nazianzus looks at him a moment; thereupon he goes away through the colonnade to the left. Great throngs of the high school's disciples, with the newcomers among them, storm with clamour and cries into the marketplace.)
+@stage (Gregory of Nazianzus looks at him a moment; thereupon he goes away through the colonnade to the left. Great throngs of the academy's disciples, with the newcomers among them, storm with clamour and cries into the marketplace.)
 
 @ Basil of Caesarea *(nearer)*.
 Julian, will you hear me?
@@ -520,25 +520,25 @@ Tell me, Basil, why was the heathen sin so beautiful?
 You err, friend; the heathen sin has been beautifully sung and told of; but it *was* not beautiful.
 
 @ Prince Julian.
-Oh, what do you say? Was Alcibiades not beautiful when, hot with wine, he stormed like a young god through the streets of Athens at night-time? Was he not beautiful in his defiance, when he mocked Hermes and hammered on the citizens' doors, – when he called out for their wives and daughters, while the women within trembled and in sighing breathless silence wished nothing rather than to –
+Oh, what do you say? Was Alcibiades not beautiful when, hot with wine, he stormed like a young god through the streets of Athens at night-time? Was he not beautiful in his defiance, when he mocked Hermes and hammered on the citizens' doors, – when he called out for their wives and daughters, while the women within trembled and in sighing breathless silence wished for nothing so much as to –
 
 @ Basil of Caesarea.
 Oh, I beg you imploringly, lend me your ear.
 
 @ {{{ 90 }}} Prince Julian.
-Was Socrates not beautiful at the symposium? And Plato and all the merry carousing brothers! And yet they did things that those Christian half-swine over there would swear themselves away from God upon, if anyone accused them of it. And think besides of Oedipus, Medea, Leda –
+Was Socrates not beautiful at the symposium? And Plato and all the merry carousing brothers! And yet they did things that those Christian half-swine over there would swear before God they were innocent of, if anyone accused them of it. And think besides of Oedipus, Medea, Leda –
 
 @ Basil of Caesarea.
 Poetry, poetry; – you mix poetry and truth together.
 
 @ Prince Julian.
-Have not the minds and wills of poetry the conditions of created beings? And look then to our holy scriptures, both the older and the new. Was sin beautiful in Sodom and Gomorrah? Did not Jehovah's fire avenge what Socrates did not shrink back from? – Oh, when I live this life in storm and swarm, then I often think on whether truth might be beauty's enemy.
+Have not the minds and wills of poetry the conditions of created beings? And look then to our holy scriptures, both the older and the new. Was sin beautiful in Sodom and Gomorrah? Did not Jehovah's fire avenge what Socrates did not shrink back from? – Oh, when I live this life in storm and revel, then I often think on whether truth might be beauty's enemy.
 
 @ Basil of Caesarea.
 And in such an hour can you sigh after beauty? Have you so easily forgotten what you lately heard –?
 
 @ Prince Julian *(covers his ears)*.
-Not a word more of those horrors! All that from Antioch we will shake off ourselves. – –
+Not a word more of those horrors! All that from Antioch we will shake off. – –
 
 Tell me, what does Macrina write further? There was something else; I think you said –; what did you call the other tidings?
 
@@ -570,7 +570,7 @@ Yes, yes, yes! – Hear, Basil, she must surely be a rare woman, your sister.
 In truth, she is.
 
 @ Prince Julian.
-When you impart to me from her letter, then it is as if I perceived something whole and full, that I had long sighed after. Tell me, does her thought still stand to turn away from the world and to live in a desolate region?
+When you impart to me from her letter, then it is as if I perceived something whole and full, that I had long sighed after. Tell me, is she still minded to turn away from the world and to live in a desolate region?
 
 @ Basil of Caesarea.
 That thought stands always firm with her.
@@ -614,7 +614,7 @@ Whence comes it that all believers in breathless expectation look toward you?
 @ Prince Julian *(walks a couple of times up and down in the colonnade, stops and reaches for the letter)*.
 Give it here; let me see. *(reads )* «God's spirit be over him in the strife and all his days». –
 
-Oh, Basil, if I could –! But I feel myself like that Daedalus between heaven and sea. A dizzying height and an engulfing depth –. What meaning is there in these voices that cry to me from east and west that I shall save Christianity? Where is it, this Christianity that is to be saved? Is it with the emperor or with Caesar? I think their deeds cry out: no, no! Is it with the mighty and the distinguished, – with these lustful half-men of the court, who fold their hands over the sated belly and pipe: is the Son of God then created out of nothing? Or is it with the enlightened, with those who, like you and I, have drunk beauty and learning from the heathen springs? Are not most of these our brothers too in the Arian heresy, for which the emperor himself has so great a fondness? And now the whole ragged rabble in the realm, – all those who rage against the temples, who murder heathens and heathens' kin! Is it for Christ's sake? Ha-ha! afterward they fall to blows among themselves over the slain ones' leavings. – You may ask Macrina whether Christianity is to be sought in the solitude, – on the pillar, where the pillar-saint stands on one leg. Or {{{ 95 }}} is it in the cities? Perhaps with those bakers in Constantinople, who lately fought with their fists to settle the question whether the Trinity consists of three persons or of three hypostases! – Which of all these would Christ care to take into his mouth, if he descended to earth again? – Forth with the lantern of Diogenes, Basil! Light up in this gloom of night. – Where is Christianity?
+Oh, Basil, if I could –! But I feel myself like that Daedalus between heaven and sea. A dizzying height and an engulfing depth –. What meaning is there in these voices that cry to me from east and west that I shall save Christianity? Where is it, this Christianity that is to be saved? Is it with the emperor or with Caesar? I think their deeds cry out: no, no! Is it with the mighty and the distinguished, – with these lustful half-men of the court, who fold their hands over the sated belly and pipe: is the Son of God then created out of nothing? Or is it with the enlightened, with those who, like you and me, have drunk beauty and learning from the heathen springs? Do not most of these our brothers incline to the Arian heresy, for which the emperor himself has so great a fondness? And now the whole ragged rabble in the realm, – all those who rage against the temples, who murder heathens and heathens' kin! Is it for Christ's sake? Ha-ha! afterward they fall to blows among themselves over the slain ones' leavings. – You may ask Macrina whether Christianity is to be sought in the solitude, – on the pillar, where the pillar-saint stands on one leg. Or {{{ 95 }}} is it in the cities? Perhaps with those bakers in Constantinople, who lately fought with their fists to settle the question whether the Trinity consists of three persons or of three hypostases! – Which of all these would Christ care to take into his mouth, if he descended to earth again? – Forth with the lantern of Diogenes, Basil! Light up in this gloom of night. – Where is Christianity?
 
 @ Basil of Caesarea.
 Seek the answer there, where it was to be found in all frail times.
@@ -632,7 +632,7 @@ The same answer of despair. Books, – always books! Came I to Libanius, then it
 Do you forget the vision and the voice that that Agathon from Macellum –?
 
 @ {{{ 96 }}} Prince Julian.
-An enigmatic message; an oracle-cry that I cannot interpret. Was *I* the chosen one? The realm's heir, it said. And which realm –? A thousand doubts brood over that matter. This only I know: in Athens is not the lion's den. But where, where? Oh, I grope like Saul in the night. If Christ wants something of me, then he must speak plainly. The finger in the nail-wound –
+An enigmatic message; an oracle-cry that I cannot interpret. Was *I* the chosen one? The realm's heir, it said. And which realm –? A thousand doubts brood over that matter. This only I know: the lion's den is not in Athens. But where, where? Oh, I grope like Saul in the night. If Christ wants something of me, then he must speak plainly. The finger in the nail-wound –
 
 @ Basil of Caesarea.
 And yet it is written –
@@ -709,7 +709,7 @@ He has declared that he can command spirits and shades.
 Libanius!
 
 @ Libanius the teacher of wisdom.
-All on the ship were full of the most wondrous tales, and here *(brings forth a letter)* here my fellow brother Eusebius writes in detail of the matter.
+All on the ship were full of the most wondrous tales, and here *(brings forth a letter)* here my brother Eusebius writes in detail of the matter.
 
 @ Prince Julian.
 Spirits and shades –
@@ -733,7 +733,7 @@ What more?
 Terror gripped the minds of most. All rushed toward the exit. Many have lain in sickness or delirium afterward. But he himself, – would you believe it, Julian? – in spite of the fate that struck both his brothers in Constantinople, presses on along his dangerous and offensive way.
 
 @ Prince Julian.
-Offensive? Do you call this way an offensive way? Does not the goal of all wisdom run out into this? Communion between spirit and spirit –
+Offensive? Do you call this way an offensive way? Does not the goal of all wisdom issue in this? Communion between spirit and spirit –
 
 @ Basil of Caesarea.
 Oh, precious erring friend –!
@@ -751,13 +751,13 @@ I will not let you go; I hold you fast!
 No one holds me; – kick not against the pricks –
 
 @ Libanius the teacher of wisdom.
-What a fit of madness! Friend, brother, fellow brother, where would you go?
+What a fit of madness! Friend, brother, brother in the faith, where would you go?
 
 @ Prince Julian.
 There, there, where torches kindle and where statues smile!
 
 @ Libanius the teacher of wisdom.
-And that you could do! You, Julian, you, our pride, our light, our hope, – you would hasten to this blinded Ephesus to give yourself into a mountebank's power! Know that in the same moment that you abase yourself so deeply, in the same moment you have stripped from yourself the glorious renown for learning and for eloquence which you in these years both in Pergamon and in Nicomedia and especially here at the high school of Athens –
+And that you could do! You, Julian, you, our pride, our light, our hope, – you would hasten to this blinded Ephesus to give yourself into a mountebank's power! Know that in the same moment that you abase yourself so deeply, in the same moment you have stripped from yourself the glorious renown for learning and for eloquence which you in these years both in Pergamon and in Nicomedia and especially here at the academy of Athens –
 
 @ {{{ 102 }}} Prince Julian.
 Oh, school, school! Stay you with your books; – now you have pointed out the man I was seeking.

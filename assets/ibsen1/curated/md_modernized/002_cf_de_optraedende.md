@@ -42,4 +42,4 @@ depth: 1
 - Soldater, kirkegjengere, hedenske tilskuere, hoffolk, prester, lærlinger ved visdomsskolene, danserinner, tjenere, kvestorens følge, galliske krigsfolk.
 - Syner og røster.
 
-@stage (1ste handling foregår i Konstantinopel, 2den handling i Athen, 3die handling i Efesos, 4de handling ved Lutetia i Gallien, og 5te handling i Vienna sammesteds. Tiden omfatter mellomrommet mellom året 351 og året 361.)
+@stage (1ste handling foregår i Konstantinopel, 2den handling i Aten, 3die handling i Efesos, 4de handling ved Lutetia i Gallien, og 5te handling i Vienna sammesteds. Tiden omfatter mellomrommet mellom året 351 og året 361.)

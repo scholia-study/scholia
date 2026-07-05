@@ -278,7 +278,7 @@ Be of good cheer, son! – Memnon, scatter silver coins for them. In, in!
 @stage (The court moves into the church, whose door closes; the throng of people gradually disperses; only Prince Julian remains behind in one of the avenues.)
 
 @ {{{ 21 }}} Prince Julian *(looks toward the church)*.
-What does Gallus want? On this holy night he surely cannot be thinking of –! Oh, would that one knew – – *(turns and bumps into the departing blind man.)* Watch where you go, friend!
+What does he want with Gallus? On this holy night he surely cannot be thinking of –! Oh, would that one knew – – *(turns and bumps into the departing blind man.)* Watch where you go, friend!
 
 @ The blind man.
 I am blind, sir!
@@ -333,7 +333,7 @@ Look at me; look closely –
 Friend of my childhood! Playmate! You dearest of them all! And you are here? What a wonder! You have travelled the long way over the mountains, and then over the sea, – all that long way from Cappadocia!
 
 @ Agathon.
-I came two days ago by a ship from Ephesus. Oh, how vainly have I not sought you {{{ 23 }}} in these two days. At the palace gates the guard would not let me in, and –
+I came two days ago by a ship from Ephesus. Oh, how vainly I have sought you {{{ 23 }}} in these two days. At the palace gates the guard would not let me in, and –
 
 @ Prince Julian.
 Did you name my name to anyone? Or that you sought me?
@@ -576,7 +576,7 @@ A vision, you say!
 A holy revelation –
 
 @ Prince Julian.
-Oh, for the sake of God's grace, speak! – Hush; speak not. Wait; someone is coming. Stand here; quite indifferent; – pretend nothing.
+Oh, for the sake of God's grace, speak! – Hush; speak not. Wait; someone is coming. Stand here; quite indifferent; – act as if nothing were amiss.
 
 *(they both remain standing by the railing.)*
 
@@ -695,7 +695,7 @@ And what of that?
 @ The teacher of wisdom *(more softly)*.
 Have you yourself the audacity to praise the emperor's successor?
 
-@ Prince Julian *(shaken through)*.
+@ Prince Julian *(deeply shaken)*.
 Ah!
 
 @ {{{ 38 }}} The teacher of wisdom *(quickly)*.
@@ -1040,7 +1040,7 @@ It is a matter of death or banishment.
 Merciful saviour!
 
 @ Prince Julian.
-What did I not suspect! Yet no, the empress was reassuring. Oh, but speak, speak!
+What did I not suspect! Yet no, the empress was of good cheer. Oh, but speak, speak!
 
 @ Prince Gallus.
 What shall I say? Do I know more than you? If the emperor has hinted at an oracle, then a certain messenger must be imprisoned, or someone has betrayed me –
@@ -1079,7 +1079,7 @@ And what if it were so? What lies closer to both our hearts than this?
 Be still, you madman!
 
 @ Prince Gallus.
-Away from me! Crawl you before him, like a dog; – I am not minded to endure it any longer. I will scream it out in every marketplace – *(cries to Agathon.)* Have you seen him, Cappadocian? Have you seen the murderer?
+Away from me! Go on and crawl before him, like a dog; – I am not minded to endure it any longer. I will scream it out in every marketplace – *(cries to Agathon.)* Have you seen him, Cappadocian? Have you seen the murderer?
 
 @ Prince Julian.
 Gallus! Brother!
@@ -1180,7 +1180,7 @@ Well then, my heartily dear one, since you know it, then –
 Ah, Hecebolius! Deceit and lies and falsehood –
 
 @ Hecebolius the scripture-scholar.
-See, you precious one, so dearly do I love you! Anything can I do for the soul of the man whom the Lord shall one day anoint. If I have deceived and lied out of care for you, then I know that a merciful God has looked down with favour upon my course and stretched his approving hand over it.
+See, you precious one, so dearly do I love you! I can do anything for the soul of the man whom the Lord shall one day anoint. If I have deceived and lied out of care for you, then I know that a merciful God has looked down with favour upon my course and stretched his approving hand over it.
 
 @ Prince Julian.
 I, blind one! Let me press these perjured fingers –
@@ -1230,7 +1230,7 @@ Ah!
 
 *(he grasps, as if in joy, for the emperor's hands.)*
 
-@ Emperor Constantius *(strikes him back warding-off)*.
+@ Emperor Constantius *(makes a warding-off gesture toward him)*.
 Come not near! What would you? Is not Gallus the elder? What hope have you conceived? What rumours have you, in your blinded pride –? Away; away!
 
 @ Prince Gallus.
@@ -1322,7 +1322,7 @@ This night you yourself were his instrument without knowing it. Oh, let me go an
 Indulge him, sire; it will keep him from scheming after greater things.
 
 @ Empress Eusebia.
-I beg you, Constantius, – do not stand against this drawing longing.
+I beg you, Constantius, – do not stand against this pull of longing.
 
 @ Hecebolius the scripture-scholar *(softly)*.
 Exalted emperor, let him travel to Pergamon. I despair of bending him here, and now, after all, there is not so much at stake –

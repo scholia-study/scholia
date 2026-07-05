@@ -37,7 +37,7 @@ Yet he has grown sturdy of limb. When I saw him last, he was slight and lean; �
 Yes, he has done great deeds in those years.
 
 @ A woman.
-And all the dangers he has hovered in, ever since he was a child!
+And all the dangers he has passed through, ever since he was a child!
 
 @ A priest.
 Wondrously saved from them all; the divine protection is over him.
@@ -64,7 +64,7 @@ And who, then, could have done justice to the great and difficult calling, as yo
 May the All-Ruler grant that hopes so great be not disappointed. But how much is not lacking in me? A shudder comes over me. To be compared with Alexander, with Marcus Aurelius, and with so many other excellent men! Has not Plato said that only a god can rule over men? Oh, pray with me that I may go free of ambition's snares and of power's temptations. Athens, Athens! Thither goes my longing! I was like a man who, for his health's sake, took some wholesome bodily exercise; – and now they come to me and say: step forth on the stage and conquer in the Olympic games. All the Greeks shall sit as spectators! Must not my mind be seized with terror even before I begin the contest?
 
 @ Themistius the orator.
-What terror, O emperor? *Have* you not already the Greeks' applause before the contest? Have you not {{{ 245 }}} come to reinstate all the exiled virtues in their ancient right? Is there not gathered in you, in *one* man, all that victory-winning power which Heracles, which Dionysus, which Solon –?
+What terror, O emperor? *Have* you not already the Greeks' applause before the contest? Have you not {{{ 245 }}} come to reinstate all the exiled virtues in their ancient right? Is there not gathered in you, in *one* man, all that victory-winning power which Heracles, which Dionysus, which Solon, which –?
 
 @ Emperor Julian.
 Silence! Only the praise of the dead shall be heard today. There they put in to land. Take the brow-band and my chains; I will not wear imperial adornments at an hour like this.
@@ -211,7 +211,7 @@ The ignorant crowd never knows how to find its way in what is unaccustomed. I ha
 @stage (Emperor Julian surrounded by his court and high officials, among them Ursulus the treasurer, and the orators Themistius *and* Mamertinus.)
 
 @ Emperor Julian.
-Thus far the gods have helped. Now the work will roll forward, like the billows of a spring-flood. The mute defiance that I trace from certain quarters, where I should least expect it, shall not throw my mind off its balance. It is indeed the very mark of true wisdom to show forbearance. We all know that by fitting means one can heal the body's ills; – but can one, with fire and sword, annihilate errors concerning divine things? And what does it profit me that your hand sacrifices, if your souls condemn what the hand does?
+Thus far the gods have helped. Now the work will roll forward, like the billows of a storm-flood. The mute defiance that I trace from certain quarters, where I should least expect it, shall not throw my mind off its balance. It is indeed the very mark of true wisdom to show forbearance. We all know that by fitting means one can heal the body's ills; – but can one, with fire and sword, annihilate errors concerning divine things? And what does it profit me that your hand sacrifices, if your souls condemn what the hand does?
 
 So shall we live in concord with one another. My court shall be open to all {{{ 256 }}} distinguished men, whatever opinions they may hold. Let us show the world the unusual and exalted spectacle of a court without hypocrisy – assuredly the only court of its kind – a court where flattery is reckoned among the most dangerous enemies. We will accuse and censure one another, when such may be timely, yet without therefore loving one another the less.
 
@@ -406,7 +406,7 @@ That I have promised; but neither will I bear that you tread too near upon us. T
 Then all the Christians will say that it is their faith you are persecuting.
 
 @ Emperor Julian.
-No one shall be persecuted for his faith's sake. But have I the right to draw a line through whatever you may make yourselves guilty of, merely because you are Christians? Shall your errors shield your faults? What have you foolhardy men not long been doing, both here at the court and elsewhere? How have you not flattered every vice and bowed to every whim? Yes, what have you not, Ursulus, yourself looked at through your fingers? I am thinking of that shamelessly bedecked barber, that reeking, pomaded fool, who just now filled me with disgust here. Are you not treasurer? How could you give way to his shameless demands?
+No one shall be persecuted for his faith's sake. But have I the right to draw a line through whatever you may make yourselves guilty of, merely because you are Christians? Shall your errors shield your faults? What have you foolhardy men not long been doing, both here at the court and elsewhere? How have you not flattered every vice and bowed to every whim? Yes, what have you not, Ursulus, yourself turned a blind eye to? I am thinking of that shamelessly bedecked barber, that reeking, pomaded fool, who just now filled me with disgust here. Are you not treasurer? How could you give way to his shameless demands?
 
 @ Ursulus the treasurer.
 Is it a crime that I have been my lord's servant?
@@ -498,7 +498,7 @@ Praised be all the exalted gods, who in concord have cast their enamoured eyes u
 @ Emperor Julian.
 There you struck the heart of the matter, my Themistius! It is to the gods that we shall lift up our hands and our hearts. I do not say this in order to {{{ 272 }}} instruct you, but to remind you of what has for so long been neglected at this court. Far be it from me to wish to compel anyone. But am I to be blamed, because I would gladly make others partakers in the sweet rapture that flows through me as I feel myself cradled in the communion of the immortals? Praised, praised be you, vine-leaf-crowned Dionysus! For it is you above all who work such great and mysterious things. Go now, each of you, to his own task. I, for my part, have proclaimed a festive procession through the streets of the city. It shall be no banquet for my courtiers, nor yet a feast within four walls. Freely may the citizens join themselves to me, or keep away; I will sift the pure from the impure, the pious from the erring. –
 
-O sun-king, cast light and beauty over the day! O Dionysus, sink your swelling glory over the minds of men; fill the souls with your holy storm-rush, fill them until all bonds burst and the freed rejoicing draws breath in dance and song! – Life, life, life in beauty!
+O sun-king, cast light and beauty over the day! O Dionysus, let your swelling glory sink upon the minds of men; fill the souls with your holy storm-rush, fill them until all bonds burst and the freed rejoicing draws breath in dance and song! – Life, life, life in beauty!
 
 @stage (He goes hastily out to the right. The courtiers gather in whispering knots and withdraw by degrees.)
 
@@ -537,13 +537,13 @@ You will soon be in the mood. Come, handsome Eunapius; the day before yesterday 
 Oh, you sinful world! *(tries to get past.)* Make way, make way, in Satan's name; let me get forward!
 
 @ Hecebolius the scripture-scholar *(dressed for travel and followed by a couple of laden slaves, comes from a side street)*.
-Has the city become a madhouse? All are shouting each other down, and no one can give me any information. Ah, see, – Eunapius, my pious brother!
+Has the city become a madhouse? All are shouting over one another, and no one can give me any information. Ah, see, – Eunapius, my pious brother!
 
 @ Eunapius the barber.
 Greeting and salutation, venerable sir! So you have come back to the city?
 
 @ Hecebolius the scripture-scholar.
-This very moment; – I have consecrated the hot autumn months to quiet devotion on my estate in Crete. But tell me, for all the world, what is going on here?
+This very moment; – I have consecrated the hot autumn months to quiet devotion on my estate in Crete. But tell me, I beg you, what is going on here?
 
 @ Eunapius the barber.
 Calamity and confusion. The new emperor –
@@ -650,7 +650,7 @@ All irregular collections –! An inquiry! Oh, thunderbolt of terror!
 Make way! Clear the road, you citizens! Draw reverently aside; not for us, but for him whom we honour!
 
 @ {{{ 278 }}} A voice in the crowd.
-The emperor in the company of harlots and mountebanks!
+The emperor in the company of harlots and jugglers!
 
 @ Emperor Julian.
 Shame on you, that I must content myself with such as these. Are you not ashamed to find greater piety and more zeal in these than in yourselves?
@@ -661,7 +661,7 @@ May Christ enlighten you, lord!
 @ Emperor Julian.
 Aha, you are a Galilean! And you will have your say? Did not your great master sit at table with sinners? Did he not go in and out of houses that were held to be little seemly? Answer me that.
 
-@ Eunapius the barber. *(surrounded by girls in the doorway of Barbara the woman.)*
+@ Eunapius the barber. *(surrounded by girls in the doorway of the woman Barbara.)*
 Yes, answer, answer, if you can, you fool!
 
 @ Emperor Julian.
@@ -743,7 +743,7 @@ The same, and yet another.
 My old teacher. What do you want? Stand up!
 
 @ Hecebolius the scripture-scholar.
-No, no, let me lie. And be not angry that I make use of my former right to go in and out with you.
+No, no, let me lie. And be not angry that I make use of my former right to go in and out of your quarters.
 
 @ Emperor Julian *(coldly)*.
 I asked what you wanted of me.
@@ -850,7 +850,7 @@ See here, – the wreath still sits in my hair. Amid the crowd's glad acclamatio
 And I, who have not divined such great things!
 
 @ Emperor Julian.
-Now we will gather about us all friends of truth and lovers of wisdom, all seemly and honourable worshippers of the gods; – there are already some, – though not right many –
+Now we will gather about us all friends of truth and lovers of wisdom, all seemly and honourable worshippers of the gods; – there are already some, – though not very many –
 
 @stage (Caesarius the Royal Physician, attended by several officials and gentlemen of the former court, comes in from the left.)
 
@@ -892,7 +892,7 @@ You do not know it, then? Nevita the Commander – the general, as he now calls 
 Inquiries, most necessary inquiries, my Caesarius!
 
 @ Caesarius the Royal Physician.
-Oh, but, lord, forbid him to proceed so violently. The Scribe Pentadius is being hunted by soldiers, {{{ 288 }}} and likewise a certain praetorian commander whose name you have forbidden to be spoken; you know whom I mean, lord, – that unhappy man, who already with his whole household keeps hidden in dread of you.
+Oh, but, lord, forbid him to proceed so violently. The bookkeeper Pentadius is being hunted by soldiers, {{{ 288 }}} and likewise a certain praetorian commander whose name you have forbidden to be spoken; you know whom I mean, lord, – that unhappy man, who already with his whole household keeps hidden in dread of you.
 
 @ Emperor Julian.
 You do not know this man. In Gaul he entertained most foolhardy thoughts.
@@ -1001,7 +1001,7 @@ I had great designs for you, Caesarius! It would be very dear to me if you could
 God knows what I might have done a month ago; – now I cannot.
 
 @ Emperor Julian.
-A marriage into one of the mightiest families should stand open to you. Do you not reconsider?
+A marriage into one of the mightiest families should stand open to you. Will you not think it over?
 
 @ Caesarius the Royal Physician.
 No, most gracious lord!
@@ -1039,7 +1039,7 @@ Happy father, who has such unhappy sons!
 What foolhardy and most unseemly defiance!
 
 @ Emperor Julian.
-My heart is wounded to the blood by this and by much else. You, my Hecebolius, shall follow me. The earth burns under me in this poisoned Galilean city! I will write to those friends of wisdom, Cytron and Priscus, who have won such great renown in these latter years. Maximus I may look for hither any day; he shall go with us. – I tell you, happy days of victory lie ahead of us, Hecebolius! In Antioch, friend, – there we shall meet with the incomparable Libanius, – and there we are nearer to Helios in his resurrection. – Oh, this drawing longing toward the sun-king –!
+My heart is wounded to the blood by this and by much else. You, my Hecebolius, shall follow me. The earth burns under me in this poisoned Galilean city! I will write to those friends of wisdom, Cytron and Priscus, who have won such great renown in these latter years. Maximus I may look for hither any day; he shall go with us. – I tell you, happy days of victory lie ahead of us, Hecebolius! In Antioch, friend, – there we shall meet with the incomparable Libanius, – and there we are nearer to Helios in his resurrection. – Oh, this pull of longing toward the sun-king –!
 
 @ Hecebolius the scripture-scholar.
 Yes, yes, yes –!

@@ -146,7 +146,7 @@ Most gracious emperor, it is an old custom in our family to confess Christ.
 And you say that so straight out, without shrinking?
 
 @ Malchus.
-My adversary is bolder than I, lord! He goes out and in of his house as before; he did not flee from the city when it was rumoured that you would come.
+My adversary is bolder than I, lord! He goes in and out of his house as before; he did not flee from the city when it was rumoured that you would come.
 
 @ Emperor Julian.
 Did not flee? And why should he, he, a man who is on the gods' side?
@@ -173,7 +173,7 @@ And what do you think? Shall we two join our causes together and accuse him at o
 Oh, what exceeding grace! I, tenfold happy man!
 
 @ Emperor Julian.
-You tenfold fool! Thalassius goes out and in of his house as before, you say? He has not fled from the city at my coming. Thalassius has known me better than you. Away with you, fellow! When I accuse Thalassius over my head, you may accuse him over your field.
+You tenfold fool! Thalassius goes out and in of his house as before, you say? He has not fled from the city at my coming. Thalassius has known me better than you. Away with you, fellow! When I accuse Thalassius on account of my head, you may accuse him on account of your field.
 
 @ Malchus *(wringing his hands)*.
 I, tenfold wretched!
@@ -181,7 +181,7 @@ I, tenfold wretched!
 @stage (He goes out in the background; the assembled once more cheer the emperor.)
 
 @ Emperor Julian.
-Rightly so, my friends; rejoice that it has been granted me, not quite unworthily, to begin this day, which is especially consecrated to a festival for the radiant Apollo. For is it not worthy of a friend of wisdom to overlook the affronts {{{ 304 }}} directed against himself, while he sternly punishes the wrong done to the immortal gods? I do not recall whether that crowned devotee of learning, Marcus Aurelius, was ever in a like case; but if he was, then we may hope that he acted not wholly unlike me, who set an honour in humbly following his footsteps.
+Rightly so, my friends; rejoice that it has been granted me, not quite unworthily, to begin this day, which is especially consecrated to a festival for the radiant Apollo. For is it not worthy of a friend of wisdom to overlook the affronts {{{ 304 }}} directed against himself, while he sternly punishes the wrong done to the immortal gods? I do not recall whether that crowned devotee of learning, Marcus Aurelius, was ever in a like case; but if he was, then we may hope that he acted not wholly unlike me, who count it an honour humbly to follow in his footsteps.
 
 Let this serve you as a rule for what you have to observe in future. In the palace, in the marketplace, yes, in the theatre – if I did not loathe to set foot in such a place of folly – it may be seemly that you greet me with acclamations and a glad clapping of hands. Such homage, I know, was well received both by Alexander the Macedonian and by Julius Caesar, men to whom the goddess of fortune also granted to shine above other mortals.
 
@@ -217,7 +217,7 @@ Gregory! Gregory of Nazianzus!
 Yes, gracious emperor!
 
 @ Emperor Julian *(has stepped down, has grasped his hands and gazes long at him)*.
-A little aged; browner; sturdier. No; that was only in the first moment; now you are the same as then.
+A little aged; browner; portlier. No; that was only in the first moment; now you are the same as then.
 
 @ Gregory of Nazianzus.
 Oh, were it but so with you, lord!
@@ -300,7 +300,7 @@ Yes, this barbarian, who beneath the Greek veneer does not manage to disown his 
 Nevita is zealous for his office, and I cannot myself be everywhere. Over Ursulus I have sincerely grieved, and I deeply regret that neither time nor circumstances allowed me to examine his case myself. I should surely have spared him, Gregory! I have also thought of giving back to his heirs whatever he may have left behind.
 
 @ Gregory of Nazianzus.
-Noble emperor, you owe me no account for your actions. I have only wished to tell you that all these tidings struck down like lightning both in Caesarea and in Nazianzus and in the other Cappadocian places. How shall I depict for you the effect? Our mutual disputes fell silent {{{ 310 }}} under the common danger. Many of the church's unsound members fell away; but in many indifferent hearts the Lord's light was kindled in a clarity never before divined. Amid all this the tribulations broke in upon God's people. The heathens – yes, my emperor, those whom *I* call heathens – began to threaten, to wrong, to persecute us –
+Noble emperor, you owe me no account for your actions. I have only wished to tell you that all these tidings struck like lightning both in Caesarea and in Nazianzus and in the other Cappadocian places. How shall I depict for you the effect? Our mutual disputes fell silent {{{ 310 }}} under the common danger. Many of the church's unsound members fell away; but in many indifferent hearts the Lord's light was kindled in a clarity never before divined. Amid all this the tribulations broke in upon God's people. The heathens – yes, my emperor, those whom *I* call heathens – began to threaten, to wrong, to persecute us –
 
 @ Emperor Julian.
 Retribution, – retribution, Gregory!
@@ -308,7 +308,7 @@ Retribution, – retribution, Gregory!
 @ Gregory of Nazianzus.
 Far be it from me to defend all that my fellow-believers may have committed in extravagant zeal for the church's cause. But you, who are highly enlightened, and who are the ruler of all, you must not suffer the living to be punished for the faults of the dead. Yet this has happened in Cappadocia. The Christians' enemies, few in number, but thirsting for gain and burning with zeal to please the new officials, have stirred up unrest and anxiety among the population both in the towns and in the countryside.
 
-I do not here think chiefly of the insults we have had to suffer, nor of the violations of our well-acquired right of property, to which we have of late continually been exposed. What most troubles me and all my earnest brethren is the danger which this brings for souls. Many are unstablished in the faith and cannot wholly look away from the earthly {{{ 311 }}} goods. The harsh treatment which must now be endured by everyone who bears the Christian name has already had more than *one* apostasy as its consequence. Lord, this is a robbery of souls from God's kingdom.
+I do not here think chiefly of the insults we have had to suffer, nor of the violations of our well-acquired right of property, to which we have of late continually been exposed. What most troubles me and all my earnest brethren is the danger which this brings for souls. Many are unconfirmed in the faith and cannot wholly look away from the earthly {{{ 311 }}} goods. The harsh treatment which must now be endured by everyone who bears the Christian name has already had more than *one* apostasy as its consequence. Lord, this is a robbery of souls from God's kingdom.
 
 @ Emperor Julian.
 Oh, my wise Gregory, – how can you speak so? I am astonished! Should you not rather, as a good Galilean, rejoice that your community is rid of these people?
@@ -324,7 +324,7 @@ Ah!
 @ {{{ 312 }}} Gregory of Nazianzus.
 I was at that time absent on a journey. But in my absence, and without consulting me, my father consecrated me as a priest and sent me the priestly garb.
 
-This message reached me in Tiberina, at my country estate, where I spent some days together with my brother and with my youth-friend Basil of Caesarea.
+This message reached me in Tiberina, at my country estate, where I spent some days together with my brother and with the friend of my youth Basil of Caesarea.
 
 Lord, – had my death-sentence been proclaimed to me, it could not have terrified me more than this.
 
@@ -342,7 +342,7 @@ Lord, – can it astonish you if my sorely tried brethren, in the visitation tha
 What signs do you refer to?
 
 @ Gregory of Nazianzus.
-The cries of the terrified, of the fever-stricken, grew ever louder; they demanded that the city's magistrates should render to Christ a tangible testimony by having pulled down what still stands as a memorial of heathendom's former power in Caesarea.
+The cries of the terrified, of the fever-stricken, grew ever louder; they demanded that the city's magistrates should render to Christ a tangible testimony by causing to be pulled down what still stands as a memorial of heathendom's former power in Caesarea.
 
 @ Emperor Julian.
 You surely do not mean thereby to say that –?
@@ -380,7 +380,7 @@ Oh, pious emperor, do not endure this! Punish this reckless man!
 He is insane, lord! Let him go. See, see, – the madness flashes out of his eyes.
 
 @ Emperor Julian.
-Yes, well may this be called madness. But it is more than madness. To want to pull down this excellent temple, raised for an equally excellent goddess! And is it not precisely this goddess to whose favour I owe the deeds of which even {{{ 316 }}} the most distant peoples speak? What hope of victory and fortune could I make for myself after this day, if I let such a thing happen? – Gregory, I command you to travel back to Caesarea and let the citizens know that I forbid this presumptuous work.
+Yes, well may this be called madness. But it is more than madness. To want to pull down this excellent temple, raised for an equally excellent goddess! And is it not precisely this goddess to whose favour I owe the deeds of which even {{{ 316 }}} the most distant peoples speak? What hope of victory and fortune could I entertain after this day, if I let such a thing happen? – Gregory, I command you to travel back to Caesarea and let the citizens know that I forbid this presumptuous work.
 
 @ Gregory of Nazianzus.
 It is not feasible, lord! The matter has now come to this, that it has become for us a choice between fear of man and obedience to God. We cannot yield.
@@ -529,12 +529,12 @@ Hilarion! My child! What will they do with him? Ah, see, Phocion, – are you th
 Hush, quiet, quiet; do not cry out so; the emperor is coming.
 
 @ Publia the woman.
-Oh, the ungodly emperor! The Lord of wrath visits us for the sake of his sins; famine ravages the lands; the earth trembles under us!
+Oh, the ungodly emperor! The Lord of wrath visits us because of his sins; famine ravages the lands; the earth trembles under us!
 
 @stage (A troop of soldiers comes from the street to the right.)
 
 @ The troop-leader.
-Aside; make room here!
+Stand aside; make room here!
 
 @ Publia the woman.
 Oh, come, good Phocion; – help me for the sake of our friendship and our brotherhood –
@@ -574,7 +574,7 @@ Yes, yes, that very man.
 But why is he dressed in white?
 
 @ Phocion the dyer.
-Probably for the heat's sake; – or no, wait a little, I think it is as sacrificial priest that he –
+Probably because of the heat; – or no, wait a little, I think it is as sacrificial priest that he –
 
 @ Another citizen.
 Will the emperor then perform the sacrifice himself?
@@ -607,7 +607,7 @@ On that too I had counted; that is why I moved over here. But now we must do our
 What sort of Apollo is it, really, that people have begun to talk so much about?
 
 @ The other citizen.
-Why, it is the priest in Corinth, – he who watered what the holy Paul had planted.
+Why, it is the priest in Corinth, – he who watered what Saint Paul had planted.
 
 @ The first citizen.
 Is that so; yes, now I think I remember it.
@@ -656,7 +656,7 @@ All good citizens implore your favour for the city.
 @ Emperor Julian.
 Seek to win the gods' favour, then you shall surely have mine. And is it not just that Antioch should here go first? Is it not as though the sun-god's eye rested with especial pleasure upon this city? Inquire of widely travelled men, and you shall learn in what sorrowful excess error has elsewhere succeeded in laying waste our holy places. What remains? A relic here and there; and nothing of the best.
 
-But among you, you citizens of Antioch! Oh, my eyes filled with tears of joy when I first saw this incomparable sanctuary, Apollo's own house, which one could scarcely imagine to have been raised by human hands. Does not the image of the glorious one stand within, as before, in inviolate beauty? Not an edge is chipped or crumbled on his altar; not a crack is to be seen in the slender bearing columns.
+But among you, you citizens of Antioch! Oh, my eyes filled with tears of joy when I first saw this incomparable sanctuary, Apollo's own house, which one could scarcely imagine to have been raised by human hands. Does not the image of the glorious one stand within, as before, in inviolate beauty? Not an edge is chipped or crumbled on his altar; not a crack is to be seen in the slender supporting pillars.
 
 Oh, when I consider this, – when I feel the band about my brow, – when I look down at this garb, which is dearer to me than the purple cloak, then I feel the god's nearness in a holy shudder.
 
@@ -705,7 +705,7 @@ Some of them are citizens here of the city; but most are said to be fleeing coun
 I will not see them. Onward, I have commanded!
 
 @ The prisoners' song *(nearer)*.
-| Blessed, to meet the blood-witnesses gone before;
+| Blessed, to meet the martyrs gone before;
 | blessed, to gain the martyr's crown.
 
 @ Emperor Julian.
@@ -723,7 +723,7 @@ Rejoice, my mother!
 You poor deluded ones! When I hear the madness speak thus out of you, I almost doubt whether I have the right to punish you.
 
 @ {{{ 330 }}} Another voice *(among the prisoners)*.
-Aside; do not take the crown of thorns from us.
+Stand aside; do not take the crown of thorns from us.
 
 @ Emperor Julian.
 Night and terror, – what a voice is that!
@@ -800,7 +800,7 @@ Terrible is the Galilean's deluding power. This must be broken. Past them, the a
 
 @ The prisoners' procession.
 | Blessed to sink in the blood-filled grave;
-| blessed to die toward the heavenly haven!
+| blessed to die toward heaven's garden!
 
 @ The Apollo procession.
 | Lovely to breathe in the incense-flood.
@@ -902,7 +902,7 @@ Yes, I am the unworthiest servant of this our church.
 The unworthiest you call yourself; and I do not think you are so wholly wrong. If I do not err, you have been one of those who most zealously sowed discord among the Galileans themselves.
 
 @ Bishop Maris.
-I have done that which weighs me down deeper in repentance. When you took the dominion, and your disposition became rumoured, then my heart was gripped by an unspeakable anguish. Weakened by age, and blind as I was, I gave no room to the thought of setting myself against the earth's mighty lord. Yes, – God be merciful to me – I forsook the flock I was set to shield, drew myself faint-heartedly out of all that gathered threateningly about the Lord's congregation, and sought shelter here in Syria at my country estate –
+I have done that which weighs me down deeper in repentance. When you took the dominion, and your disposition was rumoured abroad, then my heart was gripped by an unspeakable anguish. Weakened by age, and blind as I was, I gave no room to the thought of setting myself against the earth's mighty lord. Yes, – God be merciful to me – I forsook the flock I was set to shield, drew myself faint-heartedly out of all that gathered threateningly about the Lord's congregation, and sought shelter here in Syria at my country estate –
 
 @ Emperor Julian.
 See, see; most strange! And you, this faint-hearted man, who before prized the emperor's favour so highly, you now step forward before me, as you have just done, and cast a cry of scorn straight in my face!
@@ -914,7 +914,7 @@ Now I fear you no longer; for now Christ has my heart wholly and entirely. In th
 Go home, old man!
 
 @ Bishop Maris.
-Not before you have promised to desist from this your devilish conduct. What are you thinking of? Will the dust rise against the spirit? Will the lord of the earth overthrow the lord of heaven? Do you not then see that the day of wrath is upon us for the sake of your sins? The springs dry up, like eyes that have wept themselves empty. The clouds, that should let the manna of fruitfulness fall upon us, pass by over our heads and pour not themselves out. The earth, which has been cursed since the morning of days, trembles and trembles under the emperor's blood-guilt!
+Not before you have promised to desist from this your devilish conduct. What are you thinking of? Will the dust rise against the spirit? Will the lord of the earth overthrow the lord of heaven? Do you not then see that the day of wrath is upon us because of your sins? The springs dry up, like eyes that have wept themselves empty. The clouds, that should let the manna of fruitfulness fall upon us, pass by over our heads and do not pour themselves out. The earth, which has been cursed since the morning of days, trembles and trembles under the emperor's blood-guilt!
 
 @ Emperor Julian.
 What favour do you expect from your god for this excessive zeal, foolish old man? Do you hope that your Galilean master, as of old, will work a miracle and give you your sight again?
@@ -954,7 +954,7 @@ Cursed be you, Julianus Apostata! Cursed be you, Emperor Julian! The Lord God ha
 
 Woe, woe, woe upon the apostate! Woe, woe, woe – –
 
-@stage {{{ 339 }}} (A hollow rolling rumble is felt. The temple's roof and columns totter and seem to crash together amid a thundering peal while the whole building is wrapped in a cloud of dust. The crowd utters a scream of horror; many flee, others fall to the ground. For a while there is breathless silence. Little by little the dust-cloud sinks and one sees Apollo's temple in ruins.)
+@stage {{{ 339 }}} (A hollow rolling rumble is felt. The temple's roof and columns totter and seem to collapse amid a thundering peal while the whole building is wrapped in a cloud of dust. The crowd utters a scream of horror; many flee, others fall to the ground. For a while there is breathless silence. Little by little the dust-cloud sinks and one sees Apollo's temple in ruins.)
 
 @ Bishop Maris *(whose two attendants have fled, stands alone and says in a subdued voice)*:
 God has spoken.

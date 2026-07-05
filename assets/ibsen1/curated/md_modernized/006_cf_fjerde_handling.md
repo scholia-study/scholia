@@ -6,7 +6,7 @@ depth: 1
 
 ## FJERDE HANDLING.
 
-@stage (Ved Lutetia i Gallien. En sal i Cæsars palass «De varme bade» utenfor staden. Inngangsdør i bakgrunnen; til høyre en annen mindre dør; foran på venstre side er et vindu med forheng.)
+@stage (Ved Lutetia i Gallien. En sal i Cæsars palass «De varme bad» utenfor staden. Inngangsdør i bakgrunnen; til høyre en annen mindre dør; foran på venstre side er et vindu med forheng.)
 
 @stage (Fyrstinne Helena, rikt smykket, med perler i håret, sitter i en armstol og ser ut gjennom vinduet. Slavinnen Myrrha står ovenfor henne og holder forhenget til side.)
 
@@ -29,7 +29,7 @@ Ja, før; etter alle de mindre sammenstøt. Men denne gang, Myrrha! Dette store 
 O, du vet jo, herskerinne, hvor lite din høye husbond trakter etter slike ting.
 
 @ Fyrstinne Helena.
-Ja, ja, det er vel sant. Og hvis han hadde lidt noe nederlag – i Rom måtte man jo vite det – mon keiseren da hadde skikket oss denne utsending, som må kunne være her ennå i dag, og hvis ilbud har brakt meg alle disse rike smykker og gaver? Ah, Eutherios! Nå, nå?
+Ja, ja, det er vel sant. Og hvis han hadde lidd noe nederlag – i Rom måtte man jo vite det – mon keiseren da hadde skikket oss denne utsending, som må kunne være her ennå i dag, og hvis ilbud har brakt meg alle disse rike smykker og gaver? Ah, Eutherios! Nå, nå?
 
 @ Husmesteren Eutherios *(fra bakgrunnen)*.
 Min fyrstinne, det er ganske umulig å erfare noe pålitelig –
@@ -119,7 +119,7 @@ Hvilken forandring med deg i disse måneder! Helena, har du vært syk?
 Nei, nei; men si meg –?
 
 @ Cæsar Julian.
-Jo, du har vært syk! Du må være syk ennå; – disse feberhete tinninger, disse blåbrune ringe om øynene –
+Jo, du har vært syk! Du må være syk ennå; – disse feberhete tinninger, disse blåbrune ringer om øynene –
 
 @ Fyrstinne Helena.
 O, intet, min elskede! Se ikke på meg, Julian! Bare angst og nattevåken for din skyld; brennende bønner til den høyt velsignede på korsets tre –
@@ -131,13 +131,13 @@ Skån deg, du dyrebare; det er jo dog hel usikkert om denne nidkjærhet frukter 
 Fy; ditt sinn er ikke fromt. – Men tal om dine egne saker, Julian! Jeg ber deg, dølg intet for meg.
 
 @ {{{ 150 }}} Cæsar Julian.
-Der *kan* intet dølges lenger. Siden keiserinnens død har jeg ikke kunnet gjøre et skritt her i Gallien, uten at det er blitt tydet ille ved hoffet. Gikk jeg forsiktig tilverks imot Alemanerne, så het det at jeg var fryktaktig og uvirksom. Man spottet over visdomselskeren, som ikke rett kunne venne seg til å bære krigsrustning. Vant jeg en fordel over barbarerne, så måtte jeg høre at jeg burde kunnet oppnå mer.
+Der *kan* intet dølges lenger. Siden keiserinnens død har jeg ikke kunnet gjøre et skritt her i Gallien, uten at det er blitt tydet ille ved hoffet. Gikk jeg forsiktig tilverks imot Alemanerne, så het det at jeg var fryktaktig og uvirksom. Man spottet over visdomselskeren, som ikke rett kunne venne seg til å bære krigsrustning. Vant jeg en fordel over barbarene, så måtte jeg høre at jeg burde kunnet oppnå mer.
 
 @ Fyrstinne Helena.
 Men alle dine venner i hæren –
 
 @ Cæsar Julian.
-Hvem tror du er mine venner i hæren? Ikke *en*, min elskede Helena! Jo, en eneste, – hin perusiske ridder, Sallust, som jeg under vår bryllupshøytid i Mailand måtte gi avslag på en billig bønn. Han er edelmodig kommet til meg i leiren, har minnet meg om vårt gamle vennskap i Aten og bedt om å måtte følge meg i alle farer. Men hva gjelder vel Sallust ved keiserhoffet? Han er jo en av dem, man der kaller hedninger. Han kan intet gavne meg. – Og nå de andre! Krigsøversten Arbetio, som lot meg i stikken, da jeg lå innesluttet i Sennones! Den gamle Severus, som tynges under følelsen av sin egen udyktighet, og som dog ikke kan forlike seg med min nye krigsførsel! Eller tror du jeg kan støtte meg til {{{ 151 }}} Florentius, – pretorian-høvdingen? Jeg sier deg, denne urolige mann trakter etter de høyeste ting.
+Hvem tror du er mine venner i hæren? Ikke *en*, min elskede Helena! Jo, en eneste, – hin perusiske ridder, Sallust, som jeg under vår bryllupshøytid i Milano måtte gi avslag på en billig bønn. Han er edelmodig kommet til meg i leiren, har minnet meg om vårt gamle vennskap i Aten og bedt om å måtte følge meg i alle farer. Men hva gjelder vel Sallust ved keiserhoffet? Han er jo en av dem, man der kaller hedninger. Han kan intet gagne meg. – Og nå de andre! Krigsøversten Arbetio, som lot meg i stikken, da jeg lå innesluttet i Sennones! Den gamle Severus, som tynges under følelsen av sin egen udyktighet, og som dog ikke kan forlike seg med min nye krigsførsel! Eller tror du jeg kan støtte meg til {{{ 151 }}} Florentius, – pretorian-høvdingen? Jeg sier deg, denne urolige mann trakter etter de høyeste ting.
 
 @ Fyrstinne Helena.
 Ah, Julian!
@@ -157,13 +157,13 @@ Men det store slag –? Fortell meg dog, – har ryktet overdrevet –?
 @ Cæsar Julian.
 Ryktet har ikke *kunnet* overdrive. – Hyss; hva var det? *(lytter mot døren.)* Nei, nei; jeg syntes bare –.
 
-{{{ 152 }}} Jeg tør si at jeg i disse måneder har utrettet alt, hva som stod i menneskelig makt. Skritt for skritt, og tross alle hindringer i min egen leir, drev jeg barbarerne tilbake mot den østlige grense. Foran Argentoratum, med Rhinen i ryggen, trakk kong Knodomar alle sine stridskrefter sammen. Fem konger og ti ringere fyrster støtte til ham. Men forinnen han hadde fått samlet de nødvendige båter til overgang i nødsfall, lot jeg min hær rykke frem til angrep.
+{{{ 152 }}} Jeg tør si at jeg i disse måneder har utrettet alt, hva som stod i menneskelig makt. Skritt for skritt, og tross alle hindringer i min egen leir, drev jeg barbarene tilbake mot den østlige grense. Foran Argentoratum, med Rhinen i ryggen, trakk kong Knodomar alle sine stridskrefter sammen. Fem konger og ti ringere fyrster støtte til ham. Men forinnen han hadde fått samlet de nødvendige båter til overgang i nødsfall, lot jeg min hær rykke frem til angrep.
 
 @ Fyrstinne Helena.
 Min helt, min Julian!
 
 @ Cæsar Julian.
-Lupicin med spydkasterne og de lettbevæpnede omgikk fienden i nord; de gamle legioner under Severus drev barbarerne mer og mer østlig imot floden; Bataverne, våre bundsforvandte, under den trofaste Bainabaudes, stod legionerne ærlig bi, og da Knodomar merket at det var all fare, søkte han å unnkomme imot syd for å nå over til øyene. Men før det kunne skje lot jeg Florentius møte ham med pretorianerne og hestfolket. Helena, jeg gidder ikke si det høyt, men visst er det at forræderi eller misunnelse nær hadde røvet meg seierens frukter. De romerske ryttere vek gang etter gang for barbarerne, som kastet seg til jorden og stakk hestene i buken. Jeg så vårt nederlag for øynene –
+Lupicin med spydkasterne og de lettbevæpnede omgikk fienden i nord; de gamle legioner under Severus drev barbarene mer og mer østlig imot floden; Bataverne, våre forbundsfeller, under den trofaste Bainabaudes, stod legionene ærlig bi, og da Knodomar merket at det var all fare, søkte han å unnkomme imot syd for å nå over til øyene. Men før det kunne skje lot jeg Florentius møte ham med pretorianerne og hestfolket. Helena, jeg gidder ikke si det høyt, men visst er det at forræderi eller misunnelse nær hadde røvet meg seierens frukter. De romerske ryttere vek gang etter gang for barbarene, som kastet seg til jorden og stakk hestene i buken. Jeg så vårt nederlag for øynene –
 
 @ {{{ 153 }}} Fyrstinne Helena.
 Men slagenes Gud var med deg!
@@ -175,7 +175,7 @@ Jeg grep en fane, ildnet de keiserlige hustropper med mine tilrop, holdt i all s
 Julian! O, du elsker meg ikke!
 
 @ Cæsar Julian.
-I det øyeblikk var du ikke i mine tanker. Jeg ville dø; annen utvei visste jeg ikke. Men det kom, min elskede! Det var som om en lynslående redsel blinket ut av våre lanse-spisser. Jeg så Knodomar, hin forferdelige kriger – ja, du har jo selv sett ham – jeg så ham flykte tilfots av slaget, og med ham flyktet hans broder Vestralp og kongerne Hortar og Suomar og alle, som ikke lå under for våre sverd.
+I det øyeblikk var du ikke i mine tanker. Jeg ville dø; annen utvei visste jeg ikke. Men det kom, min elskede! Det var som om en lynslående redsel blinket ut av våre lanse-spisser. Jeg så Knodomar, hin forferdelige kriger – ja, du har jo selv sett ham – jeg så ham flykte tilfots av slaget, og med ham flyktet hans broder Vestralp og kongene Hortar og Suomar og alle, som ikke lå under for våre sverd.
 
 @ Fyrstinne Helena.
 O, jeg ser det; jeg ser det! Velsignede frelser; det var deg, som atter utsendte mordenglene fra den mulviske bro!
@@ -199,7 +199,7 @@ Jeg vil helst kalle det så. I Aten grublet vi så mye over Nemesis. – Min sei
 O, tal dog; du engster meg!
 
 @ Cæsar Julian.
-Det var en ubetydelighet, sier jeg deg. Jeg lot den fangne Knodomar føre for meg i hærens påsyn. Før slaget hadde han truet med at jeg {{{ 155 }}} skulle flåes levende når jeg falt i hans hender. Nå gikk han meg imøte med usikre skritt, skjelvende over hele legemet; knekket av ulykken, slik, som det er barbarers vis, kastet han seg ned for meg, omklamret mine knær, utgjøt tårer og bad for livet.
+Det var en ubetydelighet, sier jeg deg. Jeg lot den fangne Knodomar føre for meg i hærens påsyn. Før slaget hadde han truet med at jeg {{{ 155 }}} skulle flås levende når jeg falt i hans hender. Nå gikk han meg imøte med usikre skritt, skjelvende over hele legemet; knekket av ulykken, slik, som det er barbarers vis, kastet han seg ned for meg, omklamret mine knær, utgjøt tårer og bad for livet.
 
 @ Fyrstinne Helena.
 Med redsels gysning gjennom de kraftfulle lemmer. Jeg ser den liggende Knodomar. – Drepte du ham, min elskede?
@@ -211,13 +211,13 @@ Jeg kunne ikke drepe denne mann. Jeg tilsa ham sikkerhet og lovet å sende ham s
 Uten å pine ham?
 
 @ Cæsar Julian.
-Klokskap bød meg å handle mildt. Men da, – jeg fatter ikke hvordan det gikk til, – i overstrømmende glede, og med et hyl på sine leber, sprang barbaren opp, strakte sine bundne hender iveiret og, lite kyndig, som han var i vårt språk, ropte han med høy røst: priset være du, Julian, du mektige keiser!
+Klokskap bød meg å handle mildt. Men da, – jeg fatter ikke hvordan det gikk til, – i overstrømmende glede, og med et hyl på sine lepper, sprang barbaren opp, strakte sine bundne hender iveiret og, lite kyndig, som han var i vårt språk, ropte han med høy røst: priset være du, Julian, du mektige keiser!
 
 @ Fyrstinne Helena.
 Ah!
 
 @ Cæsar Julian.
-Mine ledsagere ville til å le; men barbarkongens rop slo ned som et tennende lyn iblant {{{ 156 }}} soldatenes klynger. «Leve keiser Julian», ropte de omstående; og ropet forplantet seg i videre og videre ringe til det fjerneste fjerne; – det var som om en Titan hadde slynget et berg ut i verdenshavet; – o, min elskede, tilgi meg denne hedenske lignelse, men –
+Mine ledsagere ville til å le; men barbarkongens rop slo ned som et tennende lyn iblant {{{ 156 }}} soldatenes klynger. «Leve keiser Julian», ropte de omstående; og ropet forplantet seg i videre og videre ringer til det fjerneste fjerne; – det var som om en Titan hadde slynget et berg ut i verdenshavet; – o, min elskede, tilgi meg denne hedenske lignelse, men –
 
 @ Fyrstinne Helena.
 Keiser Julian! Han sa: keiser Julian!
@@ -244,7 +244,7 @@ Er du viss på det? Og av hvem?
 Ja, av hvem? Av hvem? Jeg selv skrev skyndsomt til keiseren og fortalte ham det hele, men –
 
 @ Fyrstinne Helena.
-Nå, – og hva har han svaret?
+Nå, – og hva har han svart?
 
 @ Cæsar Julian.
 Som vanlig. Du kjenner denne ulykke-spående taushet når han vil ramme noen.
@@ -263,7 +263,7 @@ Siden, siden.
 
 *(han går opp og ned.)*
 
-Og alt dette etter de tjenester jeg har vist ham! Her har jeg kastet Alemanernes angrep til jorden for lange tider, mens han selv har lidt nederlag på nederlag ved Donau og mens hæren i Asien ikke synes å vinne ett skritts fremgang {{{ 158 }}} imot Perserne. Skam og uhell på alle kanter, unntatt her, hvor man satte en motstrebende visdomsvenn i spissen for sakene. Og dog hånes jeg likefullt ved hoffet. Ja, selv etter den siste store seier har man gjort et spottedikt over meg og kalt meg Viktorinus! Dette må ha en ende.
+Og alt dette etter de tjenester jeg har vist ham! Her har jeg kastet Alemanernes angrep til jorden for lange tider, mens han selv har lidd nederlag på nederlag ved Donau og mens hæren i Asien ikke synes å vinne ett skritts fremgang {{{ 158 }}} imot Perserne. Skam og uhell på alle kanter, unntatt her, hvor man satte en motstrebende visdomsvenn i spissen for sakene. Og dog hånes jeg likefullt ved hoffet. Ja, selv etter den siste store seier har man gjort et spottedikt over meg og kalt meg Viktorinus! Dette må ha en ende.
 
 @ Fyrstinne Helena.
 Ja, jeg tror det også.
@@ -308,7 +308,7 @@ Julian, – hvordan hilste barbar-kongen deg?
 Helena!
 
 @ Fyrstinne Helena *(atter nærmere)*.
-Hva var det for et navn, som gav gjenlyd i soldatenes rekker?
+Hva var det for et navn, som ga gjenlyd i soldatenes rekker?
 
 @ Cæsar Julian.
 Uforsiktige; her står kanskje en lytter utenfor hver dør!
@@ -368,7 +368,7 @@ Han tåler ingen sinnsrystelser. Hva er det så å vike tilbake for? Jeg mener j
 Glemmer du den usynlige livvakt om den salvede?
 
 @ {{{ 162 }}} Fyrstinne Helena.
-Kristus er god. O, vær from, Julian, så tilgir han mye. Jeg skal hjelpe. Bønner skal oppsendes for deg. Lovet være de hellige menn! Lovet være blodvitnerne! Tro meg, vi skal sone alting siden. Skjenk meg Alemanerne til omvendelse; jeg vil utsende prester iblant dem; de skal bøye seg inn under korsets nåde.
+Kristus er god. O, vær from, Julian, så tilgir han mye. Jeg skal hjelpe. Bønner skal oppsendes for deg. Lovet være de hellige menn! Lovet være blodvitnene! Tro meg, vi skal sone alting siden. Skjenk meg Alemanerne til omvendelse; jeg vil utsende prester iblant dem; de skal bøye seg inn under korsets nåde.
 
 @ Cæsar Julian.
 Alemanerne bøyer seg ikke dit under.
@@ -386,7 +386,7 @@ Er det en brøde å forbryte seg for din skyld?
 Du skjønne, du eneste!
 
 @ {{{ 163 }}} Fyrstinne Helena *(bøyer seg ned over hans hender)*.
-Min herre for Gud og mennesker! – Vik ikke denne gang, Julian! Min helt, min keiser! Jeg ser himlen åpen. Prestene skal lovsynge Kristus; mine kvinner skal samles i bønn. *(med opprakte armer.)* O, du velsignede! O, du hærskarenes Gud, – du, som har nåden og seieren i din hånd –
+Min herre for Gud og mennesker! – Vik ikke denne gang, Julian! Min helt, min keiser! Jeg ser himmelen åpen. Prestene skal lovsynge Kristus; mine kvinner skal samles i bønn. *(med opprakte armer.)* O, du velsignede! O, du hærskarenes Gud, – du, som har nåden og seieren i din hånd –
 
 @ Cæsar Julian *(med et blikk mot døren, roper)*:
 Helena!
@@ -545,7 +545,7 @@ Ja, i sannhet, det er der. Kan dere si meg, – hva fattedes i Cæsars lykke?
 Hva skulle vel fattes i Cæsars lykke?
 
 @ Cæsar Julian.
-*Nå* ingenting. *(til Decentius.)* Hæren har forlangt at jeg skulle holde seiers-inntog i staden. I spissen {{{ 169 }}} for legionerne ville man at jeg skulle dra inn gjennom Lutetias porte. Fangne barbar-fyrster med bundne hender skulle gå ved vognhjulene; kvinner og slaver fra tyve overvunne folkeslag skulle følge etter, tett sammentrengte, hode ved hode – *(bryter plutselig av.)* Gled dere, mine tapre medkjempere; her ser dere tribunen Decentius, keiserens fortrolige venn og rådgiver. Han kom denne morgenstund med gaver og hilsninger fra Rom.
+*Nå* ingenting. *(til Decentius.)* Hæren har forlangt at jeg skulle holde seiers-inntog i staden. I spissen {{{ 169 }}} for legionene ville man at jeg skulle dra inn gjennom Lutetias porter. Fangne barbar-fyrster med bundne hender skulle gå ved vognhjulene; kvinner og slaver fra tyve overvunne folkeslag skulle følge etter, tett sammentrengte, hode ved hode – *(bryter plutselig av.)* Gled dere, mine tapre medkjempere; her ser dere tribunen Decentius, keiserens fortrolige venn og rådgiver. Han kom denne morgenstund med gaver og hilsninger fra Rom.
 
 @ Pretorianhøvdingen Florentius.
 Ah, så fattes visselig intet i Cæsars lykke.
@@ -584,7 +584,7 @@ Men hva har så ikke også Cæsar utrettet i disse få år i Gallien?
 En årlang drøm, dere dyrebare venner! Jeg har slett intet utrettet. Intet, intet!
 
 @ Pretorianhøvdingen Florentius.
-Og det regner din beskedenhet for intet? Hva var hæren, da du overtok den? En uordnet hop –
+Og det regner din beskjedenhet for intet? Hva var hæren, da du overtok den? En uordnet hop –
 
 @ Hærføreren Severus.
 – uten sammenheng, uten lydighet, uten ledelse –
@@ -596,13 +596,13 @@ Overdrivelse, Severus!
 Og var det ikke med denne utøylede hop at du gikk imot Alemanerne; slo du dem ikke med disse bander, som du gjennom seiervinninger omskapte til en hær av seierherrer; tok du ikke Colonia Agrippina tilbake –?
 
 @ Cæsar Julian.
-Ei, ei, du ser med vennskapets øye, min Florentius! – Eller er det virkelig sant? Er det så, at jeg jog barbarerne bort fra øyene i Rhin? At jeg satte det forfalne Tres Tabernæ i forsvarstilstand til fromme for rikets sikkerhet? Er det virkelig så?
+Ei, ei, du ser med vennskapets øye, min Florentius! – Eller er det virkelig sant? Er det så, at jeg jog barbarene bort fra øyene i Rhin? At jeg satte det forfalne Tres Tabernæ i forsvarstilstand til fromme for rikets sikkerhet? Er det virkelig så?
 
 @ Pretorianhøvdingen Florentius.
 Hvordan, herre? Kan du tvile om så store ting?
 
 @ Cæsar Julian.
-Nei, i sannhet, jeg synes –. Og slaget ved Argentoratum? Var jeg ikke med der? Det svever meg så visst for, at jeg seiret over Knodomar. Og etter seieren –; Florentius, har jeg drømt; eller bygde jeg ikke Trajans kastell opp igjen, da vi rykket inn i de germaniske egne?
+Nei, i sannhet, jeg synes –. Og slaget ved Argentoratum? Var jeg ikke med der? Det svever meg så visst for, at jeg seiret over Knodomar. Og etter seieren –; Florentius, har jeg drømt; eller bygde jeg ikke Trajans kastell opp igjen, da vi rykket inn i de germaniske egner?
 
 @ Pretorianhøvdingen Florentius.
 Høye Cæsar, fins det noen så avsinnig mann, at han vil gjøre deg denne ære stridig?
@@ -611,7 +611,7 @@ Høye Cæsar, fins det noen så avsinnig mann, at han vil gjøre deg denne ære 
 Jeg priser skjebnen, som forunte meg på mine gamle dager å følge så lykkelig en fører.
 
 @ Pretorianhøvdingen Florentius *(likeledes til tribunen)*.
-Hva vending det alemanske overfall uten Cæsars tapperhet og klokskap kunne ha tatt, det vover jeg knapt å tenke på.
+Hva vending det alemanske overfall uten Cæsars tapperhet og klokskap kunne ha tatt, det våger jeg knapt å tenke på.
 
 @ Flere hoffmenn *(trenger seg frem).*
 Ja, herre, Cæsar er stor!
@@ -630,13 +630,13 @@ Her står ganske andre ting! Hør etter, og sug det inn som en erkjennelsens les
 Alle rikets saker nyter fremgang under keiserens forvarsler.
 
 @ Cæsar Julian.
-Mer, mer! Her berettes det, at det er *keiseren*, som har kjempet og seiret ved Rhin; det er keiseren, som har løftet opp den ydmykt bedende Alemaner-konge, som kastet seg ned for ham. *Mitt* navn lykkes det meg ikke å finne noensteds i dette skriftstykke, – og ikke ditt, Florentius, og heller ikke ditt, Severus! Og her, i skildringen av slaget ved Argentoratum –; hvor var det jeg hadde det? jo her; her står det; det var keiseren, som påbød slagordningen; det var keiseren selv, som med livsfare hugg sitt sverd sløvt, kjempende i de forreste rekker; det var keiseren, som, ved sin nærværelses redsel, jog barbarerne på hodekulls flukt –; les; les, sier jeg!
+Mer, mer! Her berettes det, at det er *keiseren*, som har kjempet og seiret ved Rhin; det er keiseren, som har løftet opp den ydmykt bedende Alemaner-konge, som kastet seg ned for ham. *Mitt* navn lykkes det meg ikke å finne noensteds i dette skriftstykke, – og ikke ditt, Florentius, og heller ikke ditt, Severus! Og her, i skildringen av slaget ved Argentoratum –; hvor var det jeg hadde det? jo her; her står det; det var keiseren, som påbød slagordningen; det var keiseren selv, som med livsfare hugg sitt sverd sløvt, kjempende i de forreste rekker; det var keiseren, som, ved sin nærværelses redsel, jog barbarene på hodekulls flukt –; les; les, sier jeg!
 
 @ Hærføreren Severus.
 Høye Cæsar, ditt ord er nok.
 
 @ Cæsar Julian.
-Og hvor vil dere så hen med deres dårende tale, dere venner? Vil dere, av overdreven kjærlighet til meg, gjøre meg til en snyltegjest, hvem dere mader med den overflod, dere rapset fra min frendes bord? – Hva tykkes deg, Decentius? Hva sier du til dette? Du ser at jeg i min egen leir må holde øye med tilhengere, som stundom {{{ 174 }}} i blindhet er på vei til å forville seg hinsides opprørets grensepæle.
+Og hvor vil dere så hen med deres dårende tale, dere venner? Vil dere, av overdreven kjærlighet til meg, gjøre meg til en snyltegjest, hvem dere mater med den overflod, dere rapset fra min frendes bord? – Hva tykkes deg, Decentius? Hva sier du til dette? Du ser at jeg i min egen leir må holde øye med tilhengere, som stundom {{{ 174 }}} i blindhet er på vei til å forville seg hinsides opprørets grensepæler.
 
 @ Pretorianhøvdingen Florentius *(hurtig til tribunen)*.
 I sannhet, mine ord er blitt høylig mistydede, ifall –
@@ -645,7 +645,7 @@ I sannhet, mine ord er blitt høylig mistydede, ifall –
 Det kunne aldri komme meg isinde på *den* vis å –
 
 @ Cæsar Julian.
-Så skal det være, dere kampbrødre; la oss alle til hope ete vårt hovmod i oss. Jeg spurte før, hva som manglet i Cæsars lykke. Nå vet dere det. Det var sannhets-erkjennelsen, som manglet i Cæsars lykke. Din sølvhjelm vil ikke komme til å dekkes av seierstogets støv, tapre Florentius! Keiseren har holdt seiers-inntog for oss i Rom. Han finner derfor at alle høytideligheter her er overflødige. Gå, Sintula, og sørg for at de påtenkte opptog avsiges. Keiseren ønsker å forunde sine soldater en gavnlig ro. Det er hans vilje at de skal forbli i leiren utenfor murene.
+Så skal det være, dere kampbrødre; la oss alle til hope ete vårt hovmod i oss. Jeg spurte før, hva som manglet i Cæsars lykke. Nå vet dere det. Det var sannhets-erkjennelsen, som manglet i Cæsars lykke. Din sølvhjelm vil ikke komme til å dekkes av seierstogets støv, tapre Florentius! Keiseren har holdt seiers-inntog for oss i Rom. Han finner derfor at alle høytideligheter her er overflødige. Gå, Sintula, og sørg for at de påtenkte opptog avsiges. Keiseren ønsker å forunde sine soldater en gagnlig ro. Det er hans vilje at de skal forbli i leiren utenfor murene.
 
 @stage (Stallmesteren Sintula går ut i bakgrunnen.)
 
@@ -707,7 +707,7 @@ Ennå i dag! La et ord være sagt, Decentius! Det var mitt høyeste ønske, i fa
 Det skal bli keiseren meldt.
 
 @ Cæsar Julian.
-Jeg krever himlen til vitne på at jeg aldri –; ah, der er Sintula; så kan vi altså – *(til tribunen.)* Du går?
+Jeg krever himmelen til vitne på at jeg aldri –; ah, der er Sintula; så kan vi altså – *(til tribunen.)* Du går?
 
 @ Tribunen Decentius.
 Jeg har å forhandle med hærførerne, høye Cæsar!
@@ -748,10 +748,10 @@ Oppløser –?
 Ja, hva er det annet enn en oppløsning? Keiseren trenger til å forsterke seg, både i Donau-egnen og imot Perserne. Våre bataviske og æruliske hjelpetropper skal avgå i all skynding for å kunne stå i Asien til våren.
 
 @ Stallmesteren Sintula.
-Men dette er jo umulige ting, herre! Du har jo høytidelig tilsvoret nettopp disse våre bundsforvandte at de på ingen vis må brukes hinsides Alperne.
+Men dette er jo umulige ting, herre! Du har jo høytidelig tilsvoret nettopp disse våre forbundsfeller at de på ingen vis må brukes hinsides Alpene.
 
 @ Cæsar Julian.
-Just det, Sintula! Keiseren skriver at jeg gav hint tilsagn i overilelse og uten hans samtykke. Det har jeg riktignok aldri visst; men slik står det. Jeg skal tvinges til å bryte mitt ord, vanære meg i hærens øyne, vende barbarernes utøylede harm, kanskje deres dødbringende våpen, imot meg.
+Just det, Sintula! Keiseren skriver at jeg ga hint tilsagn i overilelse og uten hans samtykke. Det har jeg riktignok aldri visst; men slik står det. Jeg skal tvinges til å bryte mitt ord, vanære meg i hærens øyne, vende barbarenes utøylede harm, kanskje deres dødbringende våpen, imot meg.
 
 @ {{{ 179 }}} Stallmesteren Sintula.
 Det vil slå feil, herre! De romerske legioner vil by deg sitt bryst til skjold.
@@ -796,13 +796,13 @@ Så stor en keiserlig nåde! Herre, må jeg se –
 Hva vil du se? Du vil jo ikke la deg bruke til dette.
 
 @ Stallmesteren Sintula.
-Gud forbyde at jeg skulle nekte keiseren lydighet!
+Gud forby at jeg skulle nekte keiseren lydighet!
 
 @ Cæsar Julian.
 Sintula, – du kunne avvæpne din Cæsar!
 
 @ Stallmesteren Sintula.
-Cæsar har alle dage satt liten pris på meg. Cæsar har aldri kunnet tilgi meg, at han måtte tåle om seg en stallmester, som var valgt av keiseren.
+Cæsar har alle dager satt liten pris på meg. Cæsar har aldri kunnet tilgi meg, at han måtte tåle om seg en stallmester, som var valgt av keiseren.
 
 @ Cæsar Julian.
 Keiseren er stor og vis; han forstår å velge.
@@ -935,7 +935,7 @@ Gallos?
 Gå, høye Cæsar; det er ikke tjenlig –
 
 @ Fyrstinne Helena.
-Hvor ditt tette krøllede hår runder seg trossig om nakken. O, denne korte kjødfulle nakke –
+Hvor ditt tette krøllede hår runder seg trassig om nakken. O, denne korte kjødfulle nakke –
 
 @ Cæsar Julian.
 Alle avgrunders avgrunn –!
@@ -999,7 +999,7 @@ Og du har intet sagt meg, Oribases!
 Hvordan, min Cæsar?
 
 @ Cæsar Julian.
-Hvor kunne du vove å fortie slikt!
+Hvor kunne du våge å fortie slikt!
 
 @ Legen Oribases.
 Herre, det var *et*, vi alle var uvitende om.
@@ -1054,13 +1054,13 @@ O, men det er redning. Oribases vil –
 Fyrstinnen dør.
 
 @ Ridderen Sallust.
-O, om jeg turde tale! Om jeg turde etterspore de lønlige tråder i dette fordervelsens spinn!
+O, om jeg turde tale! Om jeg turde etterspore de lønnlige tråder i dette fordervelsens spinn!
 
 @ Cæsar Julian.
 Vær trøstig, venn; alle trådene skal komme for en dag, og så –
 
 @ Tribunen Decentius *(kommer fra bakgrunnen)*.
-Hvordan skal jeg nærme meg Cæsars åsyn! Hvor urandsakelige er ikke Guds veier! {{{ 189 }}} Sønderknust –; gid du kunne lese i mine innvoller! Jeg sorgens og ulykkens bud –!
+Hvordan skal jeg nærme meg Cæsars åsyn! Hvor uransakelige er ikke Guds veier! {{{ 189 }}} Sønderknust –; gid du kunne lese i mine innvoller! Jeg sorgens og ulykkens bud –!
 
 @ Cæsar Julian.
 Ja, det må du si to ganger, edle Decentius! Og hvordan skal jeg vel utfinne ord, bløte og slørende nok, for å bringe dette i en tålelig fremstilling for keiserens broderlige øre!
@@ -1084,7 +1084,7 @@ Kall meg en ilsinnet mann, høye Cæsar; men min kjærlighet til keiseren og til
 Du har latt begge slavene drepe?
 
 @ Tribunen Decentius.
-Hadde de ikke syvfold fortjent døden, de etterladne? Det var to hedenske villmenn, herre! Deres vitnesbyrd ville ikke ha tjent til noe; det var meg umulig å få presset annet ut av dem, enn at de hadde latt hine viktige ting henstå en temmelig lang tid i forsalen uten bevoktning, tilgjengelige for alle og enhver –
+Hadde de ikke syvfold fortjent døden, de etterlatte? Det var to hedenske villmenn, herre! Deres vitnesbyrd ville ikke ha tjent til noe; det var meg umulig å få presset annet ut av dem, enn at de hadde latt hine viktige ting henstå en temmelig lang tid i forsalen uten bevoktning, tilgjengelige for alle og enhver –
 
 @ Cæsar Julian.
 Aha! Ja så, Decentius!
@@ -1093,10 +1093,10 @@ Aha! Ja så, Decentius!
 Jeg anklager ingen. O, men, dyrebare Cæsar, jeg varer deg ad; for du er omgitt av utro tjenere. Ditt hoff – hvilken usalig misforståelse! – man har trodd å skimte et slags unåde, eller hva jeg skal kalle det, bak de forholdsregler, som keiseren nødtvungen har måttet treffe her; kort og godt –
 
 @ Stallmesteren Sintula *(kommer fra bakgrunnen)*.
-Herre, du har gitt meg et hverv, som jeg på ingen måte makter.
+Herre, du har gitt meg et verv, som jeg på ingen måte makter.
 
 @ {{{ 191 }}} Cæsar Julian.
-Keiseren har gitt deg hvervet, gode Sintula!
+Keiseren har gitt deg vervet, gode Sintula!
 
 @ Stallmesteren Sintula.
 Ta det fra meg, herre; jeg er det i sannhet ikke voksen.
@@ -1105,7 +1105,7 @@ Ta det fra meg, herre; jeg er det i sannhet ikke voksen.
 Hva er hendt?
 
 @ Stallmesteren Sintula.
-Leiren er i vilt opprør. Legionstroppene og de bundsforvandte rotter seg sammen –
+Leiren er i vilt opprør. Legionstroppene og forbundsfellene rotter seg sammen –
 
 @ Tribunen Decentius.
 Tross imot keiserens vilje!
@@ -1173,7 +1173,7 @@ Som Gallos! *(roper gjennom vinduet.)* Hjelp, hjelp!
 @ Ridderen Sallust.
 Flykt, min Cæsar! Flykt, flykt!
 
-@stage (Ville skrik høres utenfor. Romerske legionssoldater, bataviske hjelpetropper og andre bundsforvandte stiger inn gjennom vinduet. På samme tid trenger en annen sverm inn gjennom døren i bakgrunnen. Blant de forreste er fanebæreren Mauros; kvinner, tildels med barn på armene, følger de inntrengende.)
+@stage (Ville skrik høres utenfor. Romerske legionssoldater, bataviske hjelpetropper og andre forbundsfeller stiger inn gjennom vinduet. På samme tid trenger en annen sverm inn gjennom døren i bakgrunnen. Blant de forreste er fanebæreren Mauros; kvinner, tildels med barn på armene, følger de inntrengende.)
 
 @ Skrik blant soldatene.
 Cæsar, Cæsar!
@@ -1197,7 +1197,7 @@ Ned med Cæsar! Slå Cæsar ned!
 Slutt krets om meg; dra deres sverd!
 
 @ Fanebæreren Mauros.
-De er alt dragne!
+De er alt dratt!
 
 @ {{{ 194 }}} Kvinner.
 Hugg ham; hugg ham!
@@ -1208,8 +1208,8 @@ Takk, at dere kom! Mauros! Ærlige Mauros! Ja, ja; på deg kan jeg stole.
 @ Bataviske soldater.
 Hvor tør du sende oss til jordens grenser? Var det *det*, du tilsvor oss?
 
-@ Andre bundsforvandte.
-Ikke over Alperne! Det plikter vi ikke!
+@ Andre forbundsfeller.
+Ikke over Alpene! Det plikter vi ikke!
 
 @ Cæsar Julian.
 Ikke til Rom! Jeg går ikke; de vil myrde meg, som de myrdet min broder Gallos!
@@ -1236,7 +1236,7 @@ Det minnes Cæsar?
 Sine løfter minnes han ikke!
 
 @ Cæsar Julian.
-Var det ikke den uforferdede Varros røst, jeg der fornam? Der har vi ham jo! Ditt sår er leget, ser jeg. O, du velfortjente kriger, – at det dog skulle nektes meg å gjøre deg til kommandant!
+Var det ikke den uforferdede Varros røst, jeg der fornam? Der har vi ham jo! Ditt sår er leget, ser jeg. O, du velfortjente kriger, – at det dog skulle nektes meg å gjøre deg til høvedsmann!
 
 @ Underføreren Varro.
 Har du virkelig villet det?
@@ -1260,7 +1260,7 @@ Hva makt har vel deres ulykkelige Cæsar, dere venner? Man vil føre meg til Rom
 Hva sier han?
 
 @ Cæsar Julian.
-Det er ikke keiseren, som forbyder det; det er onde og misunnelige rådgivere. Keiseren er god, dere kjære venner! O, men keiseren er syk; han kan intet utrette –
+Det er ikke keiseren, som forbyr det; det er onde og misunnelige rådgivere. Keiseren er god, dere kjære venner! O, men keiseren er syk; han kan intet utrette –
 
 @ Mange soldater.
 Fem gullstykker og et pund sølv!
@@ -1281,7 +1281,7 @@ Med Cæsar, som mer har vært oss en venn enn en herre! Eller har han kanskje ik
 Jo, jo, det har han!
 
 @ Underføreren Varro.
-Bør ikke Cæsar, seierherren, kunne velge til kommandant, hvem han vil?
+Bør ikke Cæsar, seierherren, kunne velge til høvedsmenn, hvem han vil?
 
 @ Fanebæreren Mauros.
 Bør han ikke ha fri rådighet over det bytte, som er tilfalt ham?
@@ -1290,13 +1290,13 @@ Bør han ikke ha fri rådighet over det bytte, som er tilfalt ham?
 Jo, jo, jo!
 
 @ Cæsar Julian.
-Akk, hva ville det vel gavne dere? Hva bruk kan dere gjøre av jordiske goder, dere, som skal føres bort til de fjerneste lande for å gå en uviss skjebne imøte –
+Akk, hva ville det vel gagne dere? Hva bruk kan dere gjøre av jordiske goder, dere, som skal føres bort til de fjerneste land for å gå en uviss skjebne imøte –
 
 @ Soldatene.
 Vi går ikke!
 
 @ Cæsar Julian.
-Se ikke på meg; jeg skammer meg; for jeg er nær ved å utgyde en tårestrøm når jeg tenker på at dere innen få måneder skal gis til pris for sykdommer, for hunger og for en blodtørstig fiendes våpen.
+Se ikke på meg; jeg skammer meg; for jeg er nær ved å utgyte en tårestrøm når jeg tenker på at dere innen få måneder skal gis til pris for sykdommer, for hunger og for en blodtørstig fiendes våpen.
 
 @ Mange soldater *(stimler om ham)*.
 Cæsar! Gode Cæsar!
@@ -1314,17 +1314,17 @@ Hva er Cæsar? Hva makter den falne Cæsar?
 Skriv til keiseren og la ham vite –
 
 @ Cæsar Julian.
-Akk, hva er keiseren? Keiseren er syk på sinn og legem; han er nedbrutt av omhu for rikets vel. Ikke sant, Decentius?
+Akk, hva er keiseren? Keiseren er syk på sinn og legeme; han er nedbrutt av omhu for rikets vel. Ikke sant, Decentius?
 
 @ Tribunen Decentius.
 Jo, visselig; men –
 
 @ Cæsar Julian.
-Hvor skar det meg ikke i hjertet, da jeg erfor – –
+Hvor skar det meg ikke i hjertet, da jeg erfarte – –
 
 *(han trykker de omståendes hender.)*
 
-Bed for hans sjel, dere, som dyrker den gode Kristus! Bring offer for hans helse, dere, som er forblevne trofaste imot deres fedrene guder! – – Vet dere vel at keiseren har holdt seiersinntog i Rom?
+Be for hans sjel, dere, som dyrker den gode Kristus! Bring offer for hans helse, dere, som er forblitt trofaste imot deres fedrene guder! – – Vet dere vel at keiseren har holdt seiersinntog i Rom?
 
 @ Fanebæreren Mauros.
 Har keiseren?
@@ -1339,7 +1339,7 @@ Som han kom fra Donau har han holdt seiersinntog for våre seiervinninger –
 Høye Cæsar, betenk –!
 
 @ {{{ 199 }}} Cæsar Julian.
-Ja, det er sant, som tribunen sier; betenk, hvordan keiserens sinn må være omsløret, når slikt kan skje? O, min hardt hjemsøkte frende! Da han i Rom red igjennom Konstantins veldige bue, trodde han seg så stor at han krummet ryggen og ludet sitt hode ned imot sadelknappen.
+Ja, det er sant, som tribunen sier; betenk, hvordan keiserens sinn må være omsløret, når slikt kan skje? O, min hardt hjemsøkte frende! Da han i Rom red igjennom Konstantins veldige bue, trodde han seg så stor at han krummet ryggen og lutet sitt hode ned imot sadelknappen.
 
 @ Fanebæreren Mauros.
 Som en hane i en porthvelving!
@@ -1388,7 +1388,7 @@ Leve keiseren! Leve keiser Julian!
 @stage (Ropet forplanter seg i videre og videre kretser utenfor; alle taler i munnen på hverandre; Cæsar Julian kan i lang tid ikke komme til orde.)
 
 @ Cæsar Julian.
-O, jeg ber dere bønnlig –! Soldater, venner, kampfeller, – se, jeg utstrekker mine skjelvende armer –! Engst deg ikke, min Decentius! – O, at jeg måtte oppleve dette! Jeg legger dere intet til last, dere trofaste; det er fortvilelsen, som har drevet dere. Dere vil det. Godt; jeg underkaster meg hærens vilje. – Sintula, la mine krigsøverster samles. – Du, tribun, kan vitne for Konstanzios at jeg bare nødtvungen – *(vender seg til Varro.)* Gå, centurion, og forkynd i leiren denne uventede forandring. Jeg selv vil uten opphold skrive til Rom –
+O, jeg ber dere bønnlig –! Soldater, venner, kampfeller, – se, jeg utstrekker mine skjelvende armer –! Engst deg ikke, min Decentius! – O, at jeg måtte oppleve dette! Jeg legger dere intet til last, dere trofaste; det er fortvilelsen, som har drevet dere. Dere vil det. Godt; jeg underkaster meg hærens vilje. – Sintula, la mine krigsøverster samles. – Du, tribun, kan vitne for Konstanzios at jeg bare nødtvungen – *(vender seg til Varro.)* Gå, høvedsmann, og forkynn i leiren denne uventede forandring. Jeg selv vil uten opphold skrive til Rom –
 
 @ {{{ 201 }}} Ridderen Sallust.
 Herre, soldatene vil se deg.
@@ -1397,7 +1397,7 @@ Herre, soldatene vil se deg.
 En gyllen ring om ditt hode, keiser!
 
 @ Cæsar Julian.
-Et slikt smykke har jeg aldri eiet.
+Et slikt smykke har jeg aldri eid.
 
 @ Fanebæreren Mauros.
 Denne kan gjøre det.
@@ -1419,7 +1419,7 @@ Hærens vilje skje! Jeg bøyer meg for det uunngåelige og fornyer alle tilsagn 
 Fem gullstykker og et pund sølv!
 
 @ Bataver.
-Ikke over Alperne!
+Ikke over Alpene!
 
 @ Cæsar Julian.
 Vi vil sette oss fast i Vienna. Den stad er Galliens sterkeste og dessuten rik på allehånde forråd. Der er det min akt å vente inntil vi ser, om min nedbøyde frende billiger, hva vi her, til rikets tarv, har vedtatt –

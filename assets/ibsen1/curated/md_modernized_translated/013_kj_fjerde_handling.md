@@ -60,21 +60,21 @@ I interpret it thus: the augury counsels you to subdue all the land you pass thr
 So it is. We must give close heed to such wondrous signs; for there lies most often a double meaning in them. Yes, it seems at times as though mysterious powers set a joy in leading men astray, especially in great undertakings. Were there not also some who would interpret it to our hurt that the colonnade in Hierapolis fell together and buried half a hundred soldiers, just as we passed through the city? But I say that this proclaims a double fortune. For first it augurs that the Persian realm shall crash {{{ 403 }}} together, and next it heralds to us the doom of the wretched Galileans. For those soldiers who were killed, – who were they, then? They were Galilean penal soldiers, who went most unwillingly to the war and therefore were dealt by fate an end at once so sudden and so dishonourable.
 
 @ Jovian the Commander.
-Most gracious emperor, yonder comes a centurion from the vanguard.
+Most gracious emperor, yonder comes a captain from the vanguard.
 
-@ Centurion Ammian *(comes from the right)*.
+@ Ammian the captain *(comes from the right)*.
 Lord, you have commanded me to report if anything strange should happen at the march-out.
 
 @ Emperor Julian.
 Well then! Has anything of the kind happened this morning?
 
-@ Centurion Ammian.
+@ Ammian the captain.
 Yes, lord, a double augury.
 
 @ Emperor Julian.
 Why, Ammian, – tell it, then!
 
-@ Centurion Ammian.
+@ Ammian the captain.
 First, lord, it came to pass, when we had come some way past the village of Zaita, that a lion of enormous bodily size broke out of the thicket and went straight at our soldiers, who killed it with many arrow-shots.
 
 @ Emperor Julian.
@@ -99,8 +99,8 @@ Turn back after this? As the lion yonder before Zaita, so shall the lion of the 
 
 But now the other –? I thought you spoke of two signs.
 
-@ Centurion Ammian.
-The other is more doubtful, lord! Your war-horse Babylonios was, as you had commanded, led forth fully saddled to await you at the descent beyond the mountain. But see, at that same moment a detachment of the Galilean {{{ 405 }}} penal soldiers was driven past. Heavily laden as they were, and not particularly willing, it became needful to use whip-strokes against them. None the less they raised their arms, as if in joy, and struck up a loud song in honour of their deity. At this sudden clamour Babylonios grew shy, reared in terror, fell backward, and as it rolled on the ground, the gold-adorned harness was bespattered and befouled with the mire of the road.
+@ Ammian the captain.
+The other is more doubtful, lord! Your war-horse Babylonios was, as you had commanded, led forth fully saddled to await you at the descent beyond the mountain. But see, at that same moment a detachment of the Galilean {{{ 405 }}} penal soldiers was driven past. Heavily laden as they were, and not particularly willing, it became needful to use whip-strokes against them. None the less they raised their arms, as if in joy, and struck up a loud song in honour of their deity. At this sudden clamour Babylonios shied, reared in terror, fell backward, and as it rolled on the ground, the gold-adorned harness was bespattered and befouled with the mire of the road.
 
 @ Numa the soothsayer *(at the altar)*.
 Emperor Julian, – turn back, turn back!
@@ -127,7 +127,7 @@ But as concerns you, you Etruscan jugglers, whom at such great cost I have let c
 @stage (Some of the body-guard drive the soothsayers out to the left.)
 
 @ Emperor Julian.
-Babylonios fell. The lion lay low before my soldiers. Yet we do not therefore know what unseen help we dare rely on. The gods, whose nature is far from sufficiently explored, seem at times – if I may so say – to slumber or to intervene at all but little in human things. We, my dear friends, find ourselves, alas, in such a time. Yes, we have even been witness that certain gods have neglected to support well-meant endeavours aimed at their own advantage and honour.
+Babylonios fell. The lion lay low before my soldiers. Yet we do not therefore know what unseen help we dare rely on. The gods, whose nature is far from sufficiently explored, seem at times – if I may so say – to slumber or to intervene but little in human things. We, my dear friends, find ourselves, alas, in such a time. Yes, we have even been witness that certain gods have neglected to support well-meant endeavours aimed at their own advantage and honour.
 
 Yet we dare not judge further of this. It might be conceived that the immortals, who govern and uphold the world, at certain times lay their power in human hands, – whereby the gods are surely in no way diminished; for it is due to them, after all, that one so especially favoured – if such be found – has been able to arise on earth.
 
@@ -155,7 +155,7 @@ Moreover I dreamed that the youth fell asleep on a stone under the open sky.
 
 Then Hermes descended to the field in the shape of a young man and said: come; I will show you the way that leads to the highest god's dwelling! – So he led the youth to the foot of an exceeding steep mountain. There he left him.
 
-Then the youth broke out in weeping and lament and called with a loud voice on Zeus. See, then Minerva and the sun-king, who rules over the earth, descended into his nearness, lifted him up to the mountain's summit, pointed out for him and showed him the whole inheritance of his race.
+Then the youth broke out in weeping and lament and called with a loud voice on Zeus. See, then Minerva and the sun-king, who rules over the earth, descended near to him, lifted him up to the mountain's summit, pointed out for him and showed him the whole inheritance of his race.
 
 But this inheritance was the round of the earth from sea to sea, and beyond the sea.
 
@@ -216,7 +216,7 @@ Tell me, – yesterday evening, when I took auguries for the coming night, you s
 Yes, my emperor!
 
 @ Emperor Julian.
-Hasty as I was, I chanced to sprinkle some drops of water on your cloak. Then you {{{ 412 }}} sharply gave a step backward and shook the water off, as though the cloak had been defiled.
+Hasty as I was, I chanced to sprinkle some drops of water on your cloak. Then you {{{ 412 }}} sharply took a step backward and shook the water off, as though the cloak had been defiled.
 
 @ Jovian the Commander.
 My emperor, – it escaped you not, then?
@@ -246,11 +246,11 @@ How much –?
 Life and blood.
 
 @ Emperor Julian.
-Life and blood are not enough. He who shall rule must be able to rule over the wills, over the minds of men. In this it is that that Jesus of Nazareth stands against me and makes the power a matter of strife with me.
+Life and blood are not enough. He who shall rule must be able to rule over the wills, over the minds of men. In this it is that that Jesus of Nazareth stands against me and disputes the power with me.
 
-Imagine not that I will punish you, Jovian! Those you belong to yearn after such things as after a happiness. And then one calls you blood-witnesses afterward. Or what? Has one not thus exalted those I was forced to chastise for their stubbornness' sake?
+Imagine not that I will punish you, Jovian! Those you belong to yearn after such things as after a happiness. And then one calls you martyrs afterward. Or what? Has one not thus exalted those I was forced to chastise for their stubbornness' sake?
 
-Go to the vanguard! I will loathe to see you again. – O, this deceit against me, which you veil with phrases about a double duty and a double kingdom! This shall become otherwise. There are other kings than the Persian king who shall come to feel my foot on their necks.
+Go to the vanguard! I would rather not see you again. – O, this deceit against me, which you veil with phrases about a double duty and a double kingdom! This shall become otherwise. There are other kings than the Persian king who shall come to feel my foot on their necks.
 
 To the vanguard, Jovian!
 
@@ -286,7 +286,7 @@ How deep below us! How vanishingly small they wind their way forward among brush
 
 When we stood before this narrows, the leaders, one and all, made straight into the strait. It was an hour's road to shorten, a little toil to spare – on the wandering toward death.
 
-And the flocks followed them so willingly. No thought of laying the way above; no longing for the free air up here, that widens the breast and makes the breath roomy. There they go, and go and go, and see not that they have a narrow heaven over them – and know not that there are heights where it is greater. – Is it not, Maximus, as though men lived in order to come to die? The Galilean's spirit is in this. If it is true, as is said, that his father created the world, then the son despises the father's work. And just for this presumptuous madness it is that he is praised so highly!
+And the flocks followed them so willingly. No thought of taking the way up above; no longing for the free air up here, that widens the breast and makes the breath roomy. There they go, and go and go, and see not that they have a narrow heaven over them – and know not that there are heights where it is greater. – Is it not, Maximus, as though men lived in order to come to die? The Galilean's spirit is in this. If it is true, as is said, that his father created the world, then the son despises the father's work. And just for this presumptuous madness it is that he is praised so highly!
 
 What was Socrates, then, against him! Did not Socrates love enjoyment and happiness and beauty? And yet he renounced. – But what a bottomless gulf between this – on the one side not to desire, – and on the other side to desire and yet renounce.
 
@@ -312,7 +312,7 @@ Alas, my Maximus, who thirsts? Name me a single one, outside our brotherhood, wh
 Blame not the age. Had the age been greater, then you had become less. The world-soul is like a rich man who has innumerable sons. Does he divide his wealth equally among all the sons, then they all become well-to-do, but none of them rich. Does he, on the other hand, make them all disinherited save *one*, and bestow all on this one, then this one stands as a rich man in a circle of the poor.
 
 @ Emperor Julian.
-No likeness fits less than this. – Or do I stand so? Is there not precisely, divided among many hands, that which the world's ruler should possess in richer measure than all others; yes, I dare well say – which he alone should possess! O, how is the power not divided! Has not Libanius the power of eloquence in so full a measure that one has called him the king of orators? Have not you, my Maximus, the power of enigmatic wisdom? {{{ 418 }}} Has not that raging Apollinaris in Antioch the power of song and rapture in such a fullness as I might well envy him! And now the Cappadocian Gregory! Has not he the unbending power of will in such excess that manifold men give him the – for a subject unbecoming – surname: the great! Yes, – what is stranger still, – the same surname is given to Gregory's friend, Basil, the man with the soft mind and the maidenlike eye. And yet he steps not forth into the world; *here* he lives, this Basil, – just in this remote region, clad in a hermit's garb, in communion only with his disciples, and with his sister Macrina and other women who are called pious and holy. And how do not both he and the sister work through the letters that at times go forth from them? All, even renunciation and withdrawnness, becomes power against my power. But worst of them all is yet the crucified Jew.
+No likeness fits less than this. – Or do I stand so? Is there not precisely, divided among many hands, that which the world's ruler should possess in richer measure than all others; yes, I dare well say – which he alone should possess! O, how is the power not divided! Has not Libanius the power of eloquence in so full a measure that one has called him the king of orators? Have not you, my Maximus, the power of enigmatic wisdom? {{{ 418 }}} Has not that raging Apollinaris in Antioch the power of song and rapture in such a fullness as I might well envy him! And now the Cappadocian Gregory! Has not he the unbending power of will in such excess that manifold men give him the surname – unbecoming for a subject –: the great! Yes, – what is stranger still, – the same surname is given to Gregory's friend, Basil, the man with the soft mind and the maidenlike eye. And yet he steps not forth into the world; *here* he lives, this Basil, – just in this remote region, clad in a hermit's garb, in communion only with his disciples, and with his sister Macrina and other women who are called pious and holy. And how do not both he and the sister work through the letters that at times go forth from them? All, even renunciation and withdrawnness, becomes power against my power. But worst of them all is yet the crucified Jew.
 
 @ Maximus the mystic.
 Then break with all this scattered authority! But think not that you can crush the rebels if you come upon them as a general, sent out by a ruler whom they do not know. In your *own* name must you come, Julian! Came Jesus of Nazareth as envoy from another? Said he not himself to *be* the one who sent him? Truly, in you is the fulfilment of the time, and you see it not. Do not all signs and auguries point with an {{{ 419 }}} unerring finger straight to you? Shall I remind you of your mother's dream –?
@@ -321,7 +321,7 @@ Then break with all this scattered authority! But think not that you can crush t
 She dreamed that she gave birth to Achilles.
 
 @ Maximus the mystic.
-Shall I remind you that fortune has borne you, as on strong wings, through a stirred and perilous life? Who are you, lord? Are you the Alexander come again, at that time unfinished, now full-borne and armed to complete the work?
+Shall I remind you that fortune has borne you, as on strong wings, through a stirred and perilous life? Who are you, lord? Are you the Alexander come again, at that time unfinished, now full-born and armed to complete the work?
 
 @ Emperor Julian.
 Maximus!
@@ -406,7 +406,7 @@ O, strike him not!
 @ The soldier.
 Let them strike; – I suffer so gladly.
 
-@ Centurion Ammian *(comes)*.
+@ Ammian the captain *(comes)*.
 Again a stoppage! – Now, it is he. Can he really no more?
 
 @ The under-officer.
@@ -415,19 +415,19 @@ I know not what to say, lord; he falls every moment.
 @ Macrina.
 O, be patient! Who is this unhappy one? – See here; suck the juice of these fruits. – Who is he, lord?
 
-@ Centurion Ammian.
+@ Ammian the captain.
 A Cappadocian, – one of the erring ones, who was among those who profaned the Venus-temple in Antioch.
 
 @ Macrina.
-O, one of those blood-witnesses –!
+O, one of those martyrs –!
 
-@ {{{ 424 }}} Centurion Ammian.
+@ {{{ 424 }}} Ammian the captain.
 Try to raise yourself, Agathon! I pity this man. They chastised him more violently than he could bear. He has not been in his right mind since.
 
 @ Agathon *(raises himself)*.
 I can well bear it. And I am fully in my right mind, lord! Strike, strike, strike; – I suffer so gladly.
 
-@ Centurion Ammian *(to the under-officer)*.
+@ Ammian the captain *(to the under-officer)*.
 Forward; here is no time to lose.
 
 @ The under-officer *(to the soldiers)*.
@@ -438,7 +438,7 @@ Babylonios fell; – soon shall the Babylonian whoremonger fall. Zaita's lion wa
 
 @stage (The soldiers are driven out to the right.)
 
-@ Centurion Ammian *(to Basil and Macrina.)*
+@ Ammian the captain *(to Basil and Macrina.)*
 You strange people; – you go astray and yet do the good. Thanks, that you have refreshed the exhausted; and would that the emperor's interest allowed me to deal as mildly with your brothers as I would gladly do.
 
 *(he goes out to the right.)*
@@ -465,7 +465,7 @@ Yes, it is he.
 @stage (Emperor Julian with several commanders, accompanied by Anatolus the captain of the body-guard and a guard-detachment, comes from the left.)
 
 @ Emperor Julian *(to his companions)*.
-Why, what weary? Should a horse's fall bring me to halt? Or should it be less seemly to go on foot than to bestride a meaner beast? Weary! My forefather has declared that it befits an emperor to die standing. I say that it befits an emperor, in his whole life – not only in the hour of death – to show a perseverance worthy of imitation; I say – – Ah, by heaven's great light, do I not see there before my eyes the Caesarean Basil!
+What – weary? Should a horse's fall bring me to halt? Or should it be less seemly to go on foot than to bestride a meaner beast? Weary! My forefather has declared that it befits an emperor to die standing. I say that it befits an emperor, in his whole life – not only in the hour of death – to show a perseverance worthy of imitation; I say – – Ah, by heaven's great light, do I not see there before my eyes the Caesarean Basil!
 
 @ Basil of Caesarea *(bows deeply)*.
 Your humble servant, O most mighty lord!
@@ -508,7 +508,7 @@ Ay so! Equipped with all eloquence's weapons you send your army against me. And 
 Know you well, Basil, that I am not minded to tolerate this unseemliness longer? I will strike this weapon out of your hands. Hold you to Matthew and Luke and other such uncouth book-writers. But you shall not henceforth be allowed to interpret our old poets, nor yet our old teachers of wisdom; for I hold it unfair that you suck knowledge and profit from these sources, in whose truth you have no faith at all. Likewise it shall be forbidden to all Galilean disciples to come into our lecture-halls; for what will they there? To steal from us our art in order to use it against ourselves.
 
 @ Basil of Caesarea.
-Lord, I have already before heard this strange purpose spoken of. And I must give Gregory my assent when he writes that you have no exclusive right to the Greek learning, nor yet to the Greek art of speech. I must give him my assent when he says that *you* indeed use the letter-writing, which is nevertheless invented among the Egyptians, and that you clothe yourself in the purple, though it first came into use among the peoples of Tyre.
+Lord, I have already before heard this strange purpose spoken of. And I must give Gregory my assent when he writes that you have no exclusive right to the Greek learning, nor yet to the Greek art of speech. I must give him my assent when he says that *you* indeed use alphabetic script, which was after all invented among the Egyptians, and that you clothe yourself in the purple, though it first came into use among the peoples of Tyre.
 
 {{{ 429 }}} Yes, lord, – more than that. You subdue lands and make yourself ruler over peoples whose tongue you understand not and whose customs you know not. And to that you have a right. But the same right you have in the visible world, the same right has he whom you call the Galilean, in the invisible –
 
@@ -533,7 +533,7 @@ What is it you hate and persecute? Not him but your faith in him. And lives he n
 @ Emperor Julian.
 I know your twisted phrases. You Galileans say *one* thing and mean thereby another. And such you call the art of speech! O, you mediocre spirits! What folly! I should feel that the crucified Jew lives? O, what a sunken time, that can content itself with such! But men are no better nowadays. Madness is counted for wisdom. How have I not in unspeakably many nights waked and searched to find the true ground of things? But where are they who follow after me? Many praise my speech; but few or none let themselves be convinced.
 
-Yet, truly, the end is not yet. There shall come something over you like a surprise. {{{ 431 }}} You shall feel whither all the scattered strives, in order to unite itself in *one*. You shall learn that all that which you now despise, that has the glory in it, – and that cross whereon you hang your trust, that will I timber over into a ladder for him whom you do not know.
+Yet, truly, the end is not yet. There shall come something over you like a surprise. {{{ 431 }}} You shall feel whither all the scattered strives, in order to unite itself in *one*. You shall learn that all that which you now despise, that has the glory in it, – and that cross whereon you hang your trust, that will I fashion over into a ladder for him whom you do not know.
 
 @ Macrina.
 And I tell you, emperor, that you are nothing other than a scourge in God's hand, – a scourge that *must* strike us for our sins' sake. Woe to us, that this should come! Woe to us, that we, discordant and loveless, turned aside from the right way!
@@ -595,7 +595,7 @@ Sinking sun over the home; sinking hope and sinking light of the world! O, Basil
 The light *is*.
 
 @ Emperor Julian.
-The light remains. Back to the sunset-glow, Galileans! The eye toward the east, toward the east, where Helios dreams. Truly, I say to you, you shall see the earth's sun-king.
+The light shall be. Your backs to the sunset-glow, Galileans! The eye toward the east, toward the east, where Helios dreams. Truly, I say to you, you shall see the earth's sun-king.
 
 @stage (He goes out to the right; all follow him.)
 
@@ -604,7 +604,7 @@ The light remains. Back to the sunset-glow, Galileans! The eye toward the east, 
 @stage (Soldiers and war-folk of all kinds are busy pitching camp on the plain. All manner of stores are brought from the ships. Watch-fires far off. Nevita the general, Jovian the Commander and several chiefs come from the fleet.)
 
 @ Nevita the general.
-See now whether the emperor did not choose the right. Here we stand without sword-stroke on the enemy's ground; none has made the crossing of the rivers a matter of strife with us; not so much as a single Persian horseman is to be spied.
+See now whether the emperor did not choose the right. Here we stand without sword-stroke on the enemy's ground; none has disputed the crossing of the rivers with us; not so much as a single Persian horseman is to be spied.
 
 @ Jovian the Commander.
 No, lord, by this way the enemy has surely not expected us.
@@ -659,9 +659,9 @@ I also find that the most venturesome thing here would be to lay concealment on 
 
 I tell you, Oribases, and I tell you others, – if there otherwise be any other here who thus will stake out borders for the imperial power, – that just this would be the real ungodliness, and that I therefore am forced to strive against it.
 
-Has not already Plato proclaimed the truth that only a god can rule over men? What meant he by this utterance? Answer me on it, – what meant he? Far be it from me to want to assert that Plato – this otherwise matchless sage, – thereby, as in a prophecy, should have aimed at any single man, even not the foremost. But I think, we all have been witness to the disorders that flow from the highest power being as it were cloven and divided among several hands.
+Has not already Plato proclaimed the truth that only a god can rule over men? What meant he by this utterance? Answer me on it, – what meant he? Far be it from me to want to assert that Plato – this otherwise matchless sage, – thereby, as in a prophecy, should have aimed at any single man, not even the foremost. But I think, we all have been witness to the disorders that flow from the highest power being as it were cloven and divided among several hands.
 
-Enough of this. I have already ordered that the imperial images shall be set to show in the camp.
+Enough of this. I have already ordered that the imperial images shall be put on show in the camp.
 
 Ah, what seek you so hastily, Eutherius?
 
@@ -676,13 +676,13 @@ Ah, let me see, then! Light hither!
 @stage (A torch is brought; the emperor opens the letter and reads.)
 
 @ Emperor Julian.
-Can this be possible! Light better! Yes, it stands there; – and here –; what now? – This goes in truth beyond all I could have imagined!
+Can this be possible! More light! Yes, it stands there; – and here –; what now? – This goes in truth beyond all I could have imagined!
 
 @ Nevita the general.
 Bad news from the western lands, lord?
 
 @ Emperor Julian.
-Nevita, tell me, how long a time do we use to reach Ctesiphon?
+Nevita, tell me, how long a time do we need to reach Ctesiphon?
 
 @ Nevita the general.
 It cannot possibly be done in less time than thirty days.
@@ -691,10 +691,10 @@ It cannot possibly be done in less time than thirty days.
 It *must* be done in less time! Thirty days! A whole month! And while we creep forward here, should I let these raging –
 
 @ Nevita the general.
-You know yourself, lord, we must for the ships' sake follow all the river's windings. The current is strong, and therewith both shallow and stony. I hold it unfeasible to reach forward more swiftly.
+You know yourself, lord, we must for the ships' sake follow all the river's windings. The stream is swift, and moreover both shallow and stony. I hold it unfeasible to reach forward more swiftly.
 
 @ {{{ 439 }}} Emperor Julian.
-Thirty days! And thereafter the city shall be taken, – the Persian army shall be put to flight, – the peace shall be concluded. How long a time will not all this require? And still there were some among you who worse counseled me to make a yet longer roundabout way. Ha-ha, one plots my downfall!
+Thirty days! And thereafter the city shall be taken, – the Persian army shall be put to flight, – the peace shall be concluded. How long a time will not all this require? And still there were some among you who, worse still, counselled me to make a yet longer roundabout way. Ha-ha, one plots my downfall!
 
 @ Nevita the general.
 Lord, be secure; the march shall be furthered with all might.
@@ -706,7 +706,7 @@ It is indeed needful. Can you imagine what Alexandros reports? The Galileans' ma
 What does that mean, lord? What are they about?
 
 @ Emperor Julian.
-What are they about? Pray, preach, sing, proclaim the world's last day. O, were it only nothing else; – but they sweep our adherents with them and draw them into their rebellious league. In Caesarea the congregation has chosen the judge {{{ 440 }}} Eusebius for bishop, – Eusebius, an unbaptized man, – and this deluded one has accepted such a call, which is even invalid after their own church-laws.
+What are they about? Pray, preach, sing, proclaim the world's last day. O, if only that were all; – but they sweep our adherents with them and draw them into their rebellious league. In Caesarea the congregation has chosen the judge {{{ 440 }}} Eusebius for bishop, – Eusebius, an unbaptized man, – and this deluded one has accepted such a call, which is even invalid after their own church-laws.
 
 Yet, this is far from the worst. Worse, worse, tenfold worse is it that Athanasius is come back to Alexandria.
 
@@ -725,13 +725,13 @@ Yes, will you imagine, – now this raging fanatic is come back to Alexandria. H
 But, lord, how could it come so far? Where then was the governor Artemius?
 
 @ {{{ 441 }}} Emperor Julian.
-You may well ask where Artemius was. I shall tell you it. Artemius is gone over to the Galileans! Artemius has himself with armed hand forced his way into the Serapeion, that world's most glorious temple, – has shattered the statues, – has plundered the altars and destroyed those immeasurable book-treasures, which we just in this erring and ignorant time had such high use for, and which I would bewail, like a friend snatched away by death, if my wrath allowed me to pour out tears.
+You may well ask where Artemius was. I shall tell you it. Artemius is gone over to the Galileans! Artemius has himself with armed hand forced his way into the Serapeion, that most glorious temple in the world, – has shattered the statues, – has plundered the altars and destroyed those immeasurable book-treasures, which we just in this erring and ignorant time had such high use for, and which I would bewail, like a friend snatched away by death, if my wrath allowed me to pour out tears.
 
 @ Cytron the teacher of wisdom.
 Truly, this goes beyond all conception!
 
 @ Emperor Julian.
-And not to be able to reach these wretches in order to chastise them! To have to be witness that such excesses reach further and further about! – Thirty days, you say! Why does one tarry? Why does one pitch camp? Why does one sleep? Do my commanders not know what is here at stake? We must hold counsel. When I think what the Macedonian Alexander achieved in thirty days –
+And not to be able to reach these wretches in order to chastise them! To have to be witness that such excesses spread further and further! – Thirty days, you say! Why does one tarry? Why does one pitch camp? Why does one sleep? Do my commanders not know what is here at stake? We must hold counsel. When I think what the Macedonian Alexander achieved in thirty days –
 
 @stage (Jovian the Commander, accompanied by a man in Persian dress, without weapons, comes from the camp.)
 
@@ -763,7 +763,7 @@ See these arms, you ruler of the earth, – bloody from rusty chain-rings. Feel 
 Ah, – you have fled from King Sapor?
 
 @ The Persian.
-Yes, you mighty one, you who know all! I stood high in favour with King Sapor until I, driven by dread at your approach, dared to foretell him that this war would cause his downfall. Know you, lord, how he has rewarded me? My wife he gave as a prize to his archers from the mountains; my children he had sold {{{ 443 }}} as slaves; all my possessions he let his servants divide among themselves; myself he had tortured for nine days. Thereupon he bade me ride out and die like a beast on the plains.
+Yes, you mighty one, you who know all! I stood high in favour with King Sapor until I, driven by dread at your approach, dared to foretell him that this war would cause his downfall. Know you, lord, how he has rewarded me? My wife he gave over to his archers from the mountains; my children he had sold {{{ 443 }}} as slaves; all my possessions he let his servants divide among themselves; myself he had tortured for nine days. Thereupon he bade me ride out and die like a beast on the plains.
 
 @ Emperor Julian.
 And what would you of me?
@@ -865,10 +865,10 @@ But will you forth by that way, you mighty one, then is there no time to lose. T
 Know you that with certainty?
 
 @ The Persian.
-Do you tarry, you will yourself learn it.
+If you tarry, you will yourself learn it.
 
 @ Emperor Julian.
-How many days do your countrymen use to reach thither?
+How many days do your countrymen need to reach thither?
 
 @ {{{ 447 }}} The Persian.
 Four days, lord!
@@ -901,7 +901,7 @@ Comes the Persian army a day later to the clefts than we, then will it – thoug
 Could we leave twenty thousand men at the ships, then would they be secured –
 
 @ Emperor Julian.
-What think you on! Twenty thousand? Almost the third part of all the weapon-bearing crew. Where then were the fighting force wherewith I should conquer? Split, scattered, divided. Not a single man can I spare to such a purpose.
+What think you on! Twenty thousand? Almost the third part of all the men fit to bear arms. Where then were the fighting force wherewith I should conquer? Split, scattered, divided. Not a single man can I spare to such a purpose.
 
 No, no, Nevita; but there might well be a third means –
 
@@ -918,7 +918,7 @@ Know you whether the citizens in Ctesiphon have stores of corn and oil?
 In Ctesiphon are abundant stores of all kinds.
 
 @ {{{ 449 }}} Emperor Julian.
-And have we first the city within, then lies the whole rich region open for us.
+And once we have the city, then lies the whole rich region open for us.
 
 @ The Persian.
 The citizens will open their gates for you, lord! I am not the only one who hates King Sapor. They will rise against him and fall at your feet, if you come unexpectedly upon them, in the might of terror, and with all your gathered force.
@@ -948,7 +948,7 @@ Lord, if it really is your will –
 My will, – my will? O, on an evening like this – storm-full and tempestuous –; why could not a lightning-bolt strike down and –
 
 @ Maximus the mystic *(comes hastily from the left)*.
-You sun's chosen son, – hear, hear!
+You chosen son of the sun, – hear, hear!
 
 @ Emperor Julian.
 Not now, my Maximus!
@@ -1023,19 +1023,19 @@ Lord, is *that* your firm, irrevocable will –?
 @ Emperor Julian.
 Burn them! Tarry not. There threaten us hidden dangers behind.
 
-{{{ 453 }}} *(to one of the centurions.)*
+{{{ 453 }}} *(to one of the captains.)*
 
-Give close heed to this stranger. He shall serve us as guide. Refresh him with food and drink, and let him rest well out.
+Give close heed to this stranger. He shall serve us as guide. Refresh him with food and drink, and let him rest his fill.
 
 @ Jovian the Commander.
 My emperor, I beseech you, – build not too surely on such a deserter's utterance.
 
 @ Emperor Julian.
-Aha, – you seem shaken, my Galilean counselor! All this is surely not to your mind. Perhaps you know more than you care to say.
+Aha, – you seem shaken, my Galilean counsellor! All this is surely not to your mind. Perhaps you know more than you care to say.
 
 Go, Nevita, – and burn the ships!
 
-@stage (Nevita the general bows and goes out to the left. The centurion leads the Persian away among the tents.)
+@stage (Nevita the general bows and goes out to the left. The captain leads the Persian away among the tents.)
 
 @ Emperor Julian.
 Traitors in my own camp! Wait, wait, – I shall well come to the bottom of these subtleties.
@@ -1059,7 +1059,7 @@ Knew Alexander where the danger threatened?
 @ Emperor Julian.
 True; true! *I* know it. All victory-bringing powers are in league with me. Auguries and signs unfold their mysterious knowledge to the profit of my realm.
 
-Is it not said of the Galilean that the spirits came and served him? – Who serves the spirits now?
+Is it not said of the Galilean that the spirits came and served him? – Whom do the spirits serve now?
 
 What would the Galilean say, if he were invisibly present among us?
 
@@ -1069,7 +1069,7 @@ He would say: the third kingdom is near.
 @ Emperor Julian.
 The third kingdom is come, Maximus! I feel that the world's Messiah is living in me. The spirit is become flesh, and the flesh spirit. All created lies within my will and my might.
 
-See, see, – yonder the first sparks fly into the air. The flames lick in the ropework and in the dense mast-clusters.
+See, see, – yonder the first sparks fly into the air. The flames lick at the rigging and in the dense mast-clusters.
 
 *(cries toward the fire.)*
 
@@ -1081,55 +1081,55 @@ The wind divines your will. It grows and serves you.
 @ Emperor Julian *(bids with clenched hand)*.
 Become storm! More westerly! I will it!
 
-@ {{{ 455 }}} Centurion Fromentinus *(comes from the right)*.
+@ {{{ 455 }}} Fromentinus the captain *(comes from the right)*.
 Most gracious lord, – allow me to warn you. There has broken out a perilous unrest in the camp.
 
 @ Emperor Julian.
 I tolerate no more unrest. The army shall push forward.
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 Yes, my emperor, – but the stubborn Galileans –
 
 @ Emperor Julian.
 The Galileans? What of them?
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 When the treasurers lately were to deal out pay to the soldiers, they had set up your high image before the pay-tables –
 
 @ Emperor Julian.
 So shall it ever be henceforth.
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 It was laid upon each man, as he stepped forth, to cast some incense into the braziers –
 
 @ Emperor Julian.
 Well, yes, yes?
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 Many of the Galilean soldiers did it without thinking further of it; but others refused –
 
 @ {{{ 456 }}} Emperor Julian.
 What! They refused?
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 At first, lord; but when the treasurers represented to them that it was an old custom which should again be introduced and which had nothing to do with the divine –
 
 @ Emperor Julian.
 Aha; what then?
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 – then they gave way and did as they were bidden.
 
 @ Emperor Julian.
 See you well; they gave way!
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 But afterward, lord, our own men smiled at them and mocked and said thoughtlessly that now they did best to efface the sign of the cross and the fish, which they are wont to inscribe on their arms; for now they had worshipped the divine emperor.
 
 @ Emperor Julian.
 Yes, yes! And the Galileans?
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 They broke out in loud lamentations – –; hear, hear, lord; it is impossible to reason with them.
 
 @stage (Wild cries are heard outside among the tents.)
@@ -1157,7 +1157,7 @@ The god-denier is not our ruler! We will home! Home!
 @ Emperor Julian.
 Fromentinus, seize these madmen! Cut them down!
 
-@stage (Fromentinus and several among the bystanders will rush in upon the Christian soldiers. At the same moment a strongly luminous glow spreads; flames shoot into the air from the ships.)
+@stage (Fromentinus and several among the bystanders are about to rush in upon the Christian soldiers. At the same moment a strongly luminous glow spreads; flames shoot into the air from the ships.)
 
 @ Leaders and soldiers *(terror-struck)*.
 The fleet burns!
@@ -1177,13 +1177,13 @@ Quench, quench, quench!
 @ Emperor Julian.
 Burn, burn!
 
-@ Centurion Ammian *(from the camp.)*
+@ Ammian the captain *(from the camp.)*
 Lord, you are betrayed! That Persian deserter was a deceiver –
 
 @ Emperor Julian.
 You lie, man! Where is he?
 
-@ Centurion Ammian.
+@ Ammian the captain.
 Fled!
 
 @ Jovian the Commander.
@@ -1195,7 +1195,7 @@ Fled!
 @ Jovian the Commander.
 Those who accompanied him declare that he became as it were lost between their hands.
 
-@ Centurion Ammian.
+@ Ammian the captain.
 His horse is also gone from the enclosure where it stood; the stranger must have fled off across the plains.
 
 @ Emperor Julian.

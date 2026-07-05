@@ -226,7 +226,7 @@ Oh, Libanius, you wicked friend, – how could you find it in your heart to with
 Alas, you were yet better placed than I; for you had at least some with whom you could speak of your absent friend.
 
 @ Emperor Julian.
-Do not say so. I had only the poor comfort of lovers; namely, sorrowfully to repeat your name and cry out: Libanius, Libanius!
+Do not say so. I had only the poor lovers' comfort; namely, sorrowfully to repeat your name and cry out: Libanius, Libanius!
 
 @ Libanius the orator.
 Ah, while you spoke thus to the empty air, I spoke to the four walls of my chamber. Most of the day's hours I spent in bed, picturing to myself who was now with you, – now this one, now that. Of old it was otherwise, {{{ 355 }}} I said to myself, – then it was I who had Julian's ear.
@@ -310,9 +310,9 @@ But say, O friend, – can you hope to find this way of seeing among the crowd, 
 {{{ 360 }}} Now it has become otherwise. People have begun to dispute doctrine against doctrine. Discord has come between the nearest kinsfolk. Yes, lately a citizen, whose name I would rather not mention, has disinherited his son, because the young man renounced the Galileans' community. Trade and daily life suffer under all this, doubly perceptibly now, when high prices prevail and famine stands at the door.
 
 @ Emperor Julian.
-Enough, enough, – more than enough, Libanius! You complain of high prices. But tell me whether extravagance has ever flourished more than now? Does the theatre stand empty any day, when it is rumoured that a new lion has come from Africa? When last week there was talk of expelling from the city, for the sake of the dearth, all idlers and loafers, did not the citizens demand with loud cries that an exception should be made for the gladiators and the dancing-girls; for them, it was held, one could not do without!
+Enough, enough, – more than enough, Libanius! You complain of high prices. But tell me whether extravagance has ever flourished more than now? Does the theatre stand empty any day, when it is rumoured that a new lion has come from Africa? When last week there was talk of expelling from the city, because of the high prices, all idlers and loafers, did not the citizens demand with loud cries that an exception should be made for the gladiators and the dancing-girls; for them, it was held, one could not do without!
 
-Alas, well may the gods withdraw their hand from you in wrath at your folly! There are teachers of wisdom enough in this city; but where is wisdom? Why do so few tread in my footsteps? Why do people stop at Socrates? Why do people not go a little further and follow Diogenes or – if I may so dare to say – me, since we lead you to happiness? For is not happiness the aim of all teaching of wisdom? And what is happiness {{{ 361 }}} other than to be in agreement with oneself? Does the eagle crave feathers of gold? Does the lion wish itself claws of silver? Or does the pomegranate-tree covet to bear fruits of sparkling stones? I tell you that no man has the right to enjoy before he has shown himself hardened enough to bear the lack of enjoyment. Yes, he may not even touch enjoyment with his fingertip before he is able to tread it under foot.
+Alas, well may the gods withdraw their hand from you in wrath at your folly! There are teachers of wisdom enough in this city; but where is wisdom? Why do so few tread in my footsteps? Why do people stop at Socrates? Why do people not go a little further and follow Diogenes or – if I may dare say so – me, since we lead you to happiness? For is not happiness the aim of all teaching of wisdom? And what is happiness {{{ 361 }}} other than to be in agreement with oneself? Does the eagle crave feathers of gold? Does the lion wish itself claws of silver? Or does the pomegranate-tree covet to bear fruits of sparkling stones? I tell you that no man has the right to enjoy before he has shown himself hardened enough to bear the lack of enjoyment. Yes, he may not even touch enjoyment with his fingertip before he is able to tread it under foot.
 
 Ah, truly, there is a long way to go. But I will lay all my strength on this. For the sake of these things I will give up others which are also important. The Persian king has – alarmed at my approach – made me offers of peace. These I think of accepting so as to get free hands to enlighten and improve you, you unteachable ones! As for the rest, it stays as it is. Alexander you shall keep. See to it that you come to terms with him.
 
@@ -328,7 +328,7 @@ You spoke with a certain bitterness of my having given Themistius and Mamertinus
 Alas, what do you say, my exalted brother!
 
 @ Emperor Julian.
-I do not intend to give you gold or silver. So foolish was I only in the first time, until I saw how people thronged about me, like thirsty harvesters about a spring, all pushing and jostling one another, all holding out the hollow hand to have it filled first and filled highest to the brim. I have grown wiser since. In particular I think it must be said that the goddess of wisdom has not withheld from me her assistance in the actions I have undertaken for this city's good.
+I do not intend to give you gold or silver. So foolish was I only at first, until I saw how people thronged about me, like thirsty harvesters about a spring, all pushing and jostling one another, all holding out the hollow hand to have it filled first and filled highest to the brim. I have grown wiser since. In particular I think it must be said that the goddess of wisdom has not withheld from me her assistance in the actions I have undertaken for this city's good.
 
 @ Libanius the orator.
 Surely, surely!
@@ -407,10 +407,10 @@ And I tell you, be comforted! God does not die. It is not from Julian that the d
 Oh, Gregory, how dare you demand that we should be steadfast in the midst of these horrors? – Brothers and sisters, – do you know what has happened in Arethusa? The unbelievers have maltreated Marcus, the old bishop, dragged him by the hair through the streets, cast him into the sewers, hauled him up again befouled and bleeding, smeared him over with honey and hoisted him up in a tree, exposed to the stings of wasps and venomous flies.
 
 @ Gregory of Nazianzus.
-And has not God's power revealed itself precisely and gloriously in Marcus? What was Marcus formerly? A man of doubtful faith. Yes, when the disturbances broke out in Arethusa, he even fled from the city. But see, – scarcely had he in his hiding-place learned that the frenzied people were avenging the bishop's flight upon guiltless brethren, before he returned of his own free will. And how did he not bear the torments, which so appalled his own tormentors that they, in order to be able to withdraw with a kind of honour, offered to release him in return for paying an utterly trifling sum? Was not his answer: no, – and no, and again no? The Lord God was with him. He neither died nor gave in. His face showed neither horror nor impatience. In the tree where he hung, he counted himself happy, because he was raised some steps nearer toward heaven, while the others, as he said, crawled about on the flat earth.
+And has not God's power revealed itself right gloriously in Marcus? What was Marcus formerly? A man of doubtful faith. Yes, when the disturbances broke out in Arethusa, he even fled from the city. But see, – scarcely had he in his hiding-place learned that the frenzied people were avenging the bishop's flight upon guiltless brethren, before he returned of his own free will. And how did he not bear the torments, which so appalled his own tormentors that they, in order to be able to withdraw with a kind of honour, offered to release him in return for paying an utterly trifling sum? Was not his answer: no, – and no, and again no? The Lord God was with him. He neither died nor gave in. His face showed neither horror nor impatience. In the tree where he hung, he counted himself happy, because he was raised some steps nearer toward heaven, while the others, as he said, crawled about on the flat earth.
 
 @ {{{ 367 }}} Cyril the teacher.
-A miracle must have happened with this steadfast old man. Had you, like me, heard the screams from the prison that day in summer, when Hilarion and the others were tortured –! They resembled no other screams, – involuntary, roaring, mingling with a hissing sound, each time the iron, white-hot, dug itself into the flayed flesh.
+A miracle must have happened to this steadfast old man. Had you, like me, heard the screams from the prison that day in summer, when Hilarion and the others were tortured –! They resembled no other screams, – involuntary, roaring, mingling with a hissing sound, each time the iron, white-hot, dug itself into the flayed flesh.
 
 @ Apollinaris the hymn-writer.
 Oh, Cyril, do you forget the song that took over from the screams? Did not Hilarion sing in death? Did not that heroic Cappadocian lad sing, until he gave up his spirit under the torturers' hands? Did not Agathon, this child's brother, sing, until a swoon overcame him and he woke up in madness?
@@ -418,7 +418,7 @@ Oh, Cyril, do you forget the song that took over from the screams? Did not Hilar
 Truly I say to you, as long as the song resounds over our distress, so long shall Satan not triumph!
 
 @ Gregory of Nazianzus.
-Be comforted. Love one another and suffer for one another, as Serapion in Doristora lately suffered for his brethren, when for their sake he let himself be flayed and cast alive into the smelting-furnace.
+Be comforted. Love one another and suffer for one another, as Serapion in Doristora lately suffered for his brethren, when for their sake he let himself be scourged and cast alive into the smelting-furnace.
 
 See, see, – has not the Lord's avenging hand already clenched itself against the ungodly? Or have you not heard the tidings from Heliopolis under Lebanon?
 
@@ -429,7 +429,7 @@ I know it. In the midst of the festival of Aphrodite's indecencies the heathens 
 Woe, woe!
 
 @ Apollinaris the hymn-writer.
-– yes, there were some of the wretches who opened one of the blood-witnesses' bodies, tore out the entrails and ate the liver raw!
+– yes, there were some of the wretches who opened one of the martyrs' bodies, tore out the entrails and ate the liver raw!
 
 @ The women.
 Woe, woe, woe!
@@ -437,7 +437,7 @@ Woe, woe, woe!
 @ Gregory of Nazianzus.
 The God of wrath seasoned the meal. How has it agreed with them? Travel to Heliopolis, and you may see those men with the poison of putrefaction in all their veins, with their eyes and teeth fallen out, robbed of the use of speech and of reason. Terror has struck the city. Many heathens have converted since that night.
 
-Therefore I do not fear this ill-boding beast either, which has risen against the church; I do not fear this crowned hireling of hell, who plots to complete the arch-enemy's work. Let him fall upon us with fire, with sword, with wild beasts in the arena! Yes, should his madness drive him even further than has happened to this day, – what does that matter to the case? Against all this there is a remedy and a way to victory!
+Therefore I do not fear this ill-boding beast either, which has risen against the church; I do not fear this crowned hireling of hell, who plots to complete the arch-enemy's work. Let him fall upon us with fire, with sword, with wild beasts in the arena! Yes, should his madness drive him even further than has happened to this day, – what does that matter? Against all this there is a remedy and a way to victory!
 
 @ The women.
 Christ, Christ!
@@ -454,7 +454,7 @@ The emperor! The murderer! The enemy of God!
 @ Gregory of Nazianzus.
 Quiet! Let him pass by in silence.
 
-@stage (A detachment of the imperial household troops comes through the street. After them follows Emperor Julian, accompanied by courtiers and friends of wisdom, all surrounded by a guard. Another detachment of palace-soldiers, led by Centurion Fromentinus, closes the procession.)
+@stage (A detachment of the imperial household troops comes through the street. After them follows Emperor Julian, accompanied by courtiers and friends of wisdom, all surrounded by a guard. Another detachment of palace-soldiers, led by Fromentinus the captain, closes the procession.)
 
 @ A woman *(softly to the others)*.
 See, see, he has wrapped himself in rags, like a beggar.
@@ -478,7 +478,7 @@ You have closed our churches; therefore we stand outside and praise the Lord our
 See, it is you, Gregory? Yes, you still roam about here. But beware; I shall not endure it long.
 
 @ Gregory of Nazianzus.
-I do not seek the death of blood; yes, I do not even desire it; but if it is allotted to me, then I set my honour in dying for Christ.
+I do not seek death by blood; nay, I do not even desire it; but if it is allotted to me, then I set my honour in dying for Christ.
 
 @ Emperor Julian.
 Your turns of phrase weary me. I will not see you here. Why do you not keep to your stinking dens? Go home, I say!
@@ -529,7 +529,7 @@ So it shall come to pass!
 Oh, you fools! At this moment Jovian the Commander stands with two thousand workers in Jerusalem and raises the temple in all its glory. Wait, wait, you stiff-necked doubters, – you shall learn who is mightiest, the emperor or the Galilean.
 
 @ Cyril the teacher.
-Lord, that you shall to your terror learn for yourself. I kept silent until you blasphemed the holy one and called him a liar; but now I will tell you that not a mote can you do against the crucified one!
+Lord, that you shall to your terror learn for yourself. I kept silent until you blasphemed the holy one and called him a liar; but now I will tell you that not a whit can you avail against the crucified one!
 
 @ Emperor Julian *(controlling himself)*.
 Who are you, and what is your name?
@@ -542,7 +542,7 @@ Next I bear also the name Cyril, and under that name I am known among brothers a
 But if I keep the first name unstained, then I reap an eternal life as my reward.
 
 @ Emperor Julian.
-You are mistaken, Cyril! You know I am acquainted with something of the mysterious things in your doctrine. Believe me, – he in whom you put your trust is not such as you imagine. He is himself dead, and really dead, at the time when the Roman Pontius Pilate was governor in Judea.
+You are mistaken, Cyril! You know I am acquainted with something of the mysterious things in your doctrine. Believe me, – he in whom you put your trust is not such as you imagine. He himself died, and truly died, at the time when the Roman Pontius Pilate was governor in Judea.
 
 @ Cyril the teacher.
 I am not mistaken. It is you yourself, emperor, who err in this. It is you who have renounced Christ in the very moment he gave you the dominion over the earth.
@@ -558,7 +558,7 @@ Yes, as you have forgotten his benefactions, so shall he not give his love free 
 @ Emperor Julian.
 I would gladly have spared you, Cyril! The gods are my witnesses that I do not hate you for your faith's sake. But you have insulted my imperial power and authority, and that I must punish.
 
-*(to the centurion of the guard.)*
+*(to the captain of the guard.)*
 
 Fromentinus, take this man to prison, and let the executioner Typhon give him as many lashes as are needful to make him declare that the emperor and not the Galilean has all power on earth.
 
@@ -659,7 +659,7 @@ A bundle of willow-bark. I am to dye fools' cloaks for the friends of wisdom.
 What does this mean?
 
 @ The man.
-The stone image is to be watched over again.
+The stone image is to be fed again.
 
 @ Phocion the dyer.
 Will the emperor sacrifice here this evening?
@@ -695,13 +695,13 @@ Yes, verily I must weep when I think that the image of this awe-inspiring goddes
 @stage (Suppressed laughter among the curious.)
 
 @ Emperor Julian *(turns sternly)*.
-But I feel no less rapture when I consider that it was *me* to whom it was granted to deliver the divine mother from so unworthy a condition.
+But I feel no less rapture when I consider that it was *I* to whom it was granted to deliver the divine mother from so unworthy a condition.
 
 And should I not be enraptured by this thought? – People say of me that I have won some battles against the barbarians and praise me for it. As for me, I set greater store by what I accomplish for the gods' good; for to them we owe all our powers and all our care.
 
 {{{ 380 }}} *(to those at the water-basin.)*
 
-For the rest, it is dear to me that there are yet some in this stubborn city who do not show themselves deaf to my exhortations, but present themselves, as seemly piety enjoins, – and I do not doubt that you have brought decent offerings with you.
+For the rest, it gratifies me that there are yet some in this stubborn city who do not show themselves deaf to my exhortations, but present themselves, as seemly piety enjoins, – and I do not doubt that you have brought decent offerings with you.
 
 *(goes over to the old priest.)*
 
@@ -759,7 +759,7 @@ Give the citizens to eat; the gods must help themselves as they can.
 We were better off here under Chi and Kappa!
 
 @ Emperor Julian.
-Fie, you impudent bawlers! You with your Chi and Kappa! You perhaps do not think I know whom you mean by Chi and Kappa? Ho-ho, I know it well. It has become a common byword among you. You mean Christ and Constantius. But their {{{ 382 }}} dominion is over, and I shall surely find means to bend the defiance and the ingratitude which you show both toward the gods and toward me. You take offence that I render the gods the due sacrifices. You mock at my putting on a plain garment and letting my beard grow uncut. Yes, this beard is truly a thorn in your eye! You call it, without all reverence, a goat's beard. But I tell you, you fools, that it is a sage's beard. Yes, I am not ashamed to let you know that this beard harbours vermin, even as the willow-thicket harbours game, – and yet I bear this scorned beard of mine with greater honour than you your smooth-shaven chins!
+Fie, you impudent bawlers! You with your Chi and Kappa! You perhaps do not think I know whom you mean by Chi and Kappa? Ho-ho, I know it well. It has become a common byword among you. You mean Christ and Constantius. But their {{{ 382 }}} dominion is over, and I shall surely find means to bend the defiance and the ingratitude which you show both toward the gods and toward me. You take offence that I render the gods the due sacrifices. You mock at my putting on a plain garment and letting my beard grow uncut. Yes, this beard is truly a thorn in your side! You call it, without all reverence, a goat's beard. But I tell you, you fools, that it is a sage's beard. Yes, I am not ashamed to let you know that this beard harbours vermin, even as the willow-thicket harbours game, – and yet I bear this scorned beard of mine with greater honour than you your smooth-shaven chins!
 
 @ Eunapius the barber *(half aloud)*.
 Ill spoken; most unreasonable!
@@ -767,25 +767,25 @@ Ill spoken; most unreasonable!
 @ Emperor Julian.
 But do you think I let these mockeries pass without answering? No, no, you shall come to know otherwise. Only wait; you shall hear from me sooner than you think. I am at this time working out a writing which is called «The Beard-Hater.» And do you know against whom this writing is directed? It is directed against you, you citizens of Antioch, – yes, against you, whom in the writing I call «the ignorant dogs.» There you shall get my reasons both for the one thing and for the other which now seems strange to you in my conduct.
 
-@ {{{ 383 }}} Centurion Fromentinus *(comes from the right)*.
+@ {{{ 383 }}} Fromentinus the captain *(comes from the right)*.
 Noble emperor, I have a joyful message to bring. Cyril has already given in –
 
 @ Emperor Julian.
-Ah, that I thought.
+Ah, I thought as much.
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 Typhon also did his work excellently. The prisoner was bound naked by the wrists so high beneath the roof that his toe-tips just touched the ground; then Typhon whipped him from behind with a scourge of ox-sinews, so that the blows struck round about his breast.
 
 @ Emperor Julian.
 Oh, the vicious ones, who compel us to use such means!
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 In order not to rob him of his life we had at last to release the obstinate man. Then he was for a while quite still and seemed to reflect; but suddenly he nevertheless demanded to be brought before the emperor.
 
 @ Emperor Julian.
-This is very dear to me. And you bring him here?
+This is most welcome to me. And you bring him here?
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 Yes, lord, – there they come with him.
 
 @stage (A troop of soldiers leads Cyril the teacher between them.)
@@ -806,7 +806,7 @@ Do not imagine such a thing. Your gods are powerless; and if you hold fast to th
 Cyril, – is this what you have to say?
 
 @ Cyril the teacher.
-No; I come to thank you. Before, I trembled for you and your torments. But in the hour of anguish I won the spirit's victory over the corruptible. Yes, emperor, when your hirelings thought I hung in agony beneath the prison-roof, – then I lay, blessed as a child, in my saviour's arms; and when your executioners fancied that they tore strips from my body, then the Lord stroked with his soothing hand {{{ 385 }}} over the wounds, took away the crown of thorns and set upon me the crown of life.
+No; I come to thank you. Before, I trembled before you and your torments. But in the hour of anguish I won the spirit's victory over the corruptible. Yes, emperor, when your hirelings thought I hung in agony beneath the prison-roof, – then I lay, blessed as a child, in my saviour's arms; and when your executioners fancied that they tore strips from my body, then the Lord stroked with his soothing hand {{{ 385 }}} over the wounds, took away the crown of thorns and set upon me the crown of life.
 
 Therefore I thank you; for no man has shown me so great a benefaction as you.
 
@@ -829,13 +829,13 @@ Hold this madman, that he lay not hands on us!
 @ Emperor Julian.
 See yonder, Fromentinus, – what strange procession is that –?
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 Most gracious emperor, it is the women hymn-singers –
 
 @ Emperor Julian.
 Ah, that league of frenzied women –
 
-@ Centurion Fromentinus.
+@ Fromentinus the captain.
 The governor Alexander has taken from them some writings which they hold to be holy. Now {{{ 386 }}} they are marching out of the city to weep on the Christian graves.
 
 @ Emperor Julian *(with clenched hands)*.
@@ -862,7 +862,7 @@ There he stands! Woe upon the ungodly one who has burned the Lord's word! Do you
 
 *(she snatches a knife from one of the sacrificial priests, cuts open her breast and tears at the wound.)*
 
-Here burns the word. Burn you our books. The word shall burn in the hearts of men until the last day!
+Here burns the word. Burn our books, then. The word shall burn in the hearts of men until the last day!
 
 *(she throws the knife from her.)*
 
@@ -907,7 +907,7 @@ Everything, everything, – from first to last!
 I came to Jerusalem with the master-builders and the soldiers and the two thousand workers. We set to work at once clearing the ground. Mighty remnants of walls still stood. They fell before our picks and crowbars, easily, as though an invisible power helped us to efface them –
 
 @ Emperor Julian.
-You see; you see well!
+You see; do you see!
 
 @ Jovian the Commander.
 While this was going on, immense heaps of lime were dragged together for the new building. Then quite unexpectedly a whirling storm arose, which scattered the lime like a cloud out over the whole region.
@@ -1064,7 +1064,11 @@ He who shall swallow up both the emperor and the Galilean.
 You solve the riddle with a yet darker riddle.
 
 @ Maximus the mystic.
-Hear me, friend of truth and brother! I say, they shall both go under – but not perish. Does not the child go under in the youth, and the youth again in the man? But neither the child nor the youth perishes. Oh, you my most beloved pupil, – have you forgotten our conversations in Ephesus about the three empires?
+Hear me, friend of truth and brother! I say, they shall both go under – but not perish.
+
+Does not the child go under in the youth, and the youth again in the man? But neither the child nor the youth perishes.
+
+Oh, you my most beloved pupil, – have you forgotten our conversations in Ephesus about the three empires?
 
 @ Emperor Julian.
 Ah, Maximus, there lie years between. Speak!

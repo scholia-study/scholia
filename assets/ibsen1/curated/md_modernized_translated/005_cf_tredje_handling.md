@@ -53,7 +53,7 @@ I have been like a languishing lover for your handclasp. The court-vermin, covet
 But explain –; your servants meet us with flute-playing before the house-door, would lead us to the bath, would anoint our hair and adorn us with roses –
 
 @ Prince Julian.
-I saw you last night. It was full moon, you know, – and then the spirit is always so wondrously active in me. In at my table I sat in the book-hall and had fallen asleep, weary, oh, you friends, so weary of searching and writing. Then the house was filled as if by a storm; the curtain lifted fluttering upward, and I looked out into the night, far over the sea. I heard sweet song; but those from whom the song came were two great birds with women's faces. They cut in slanting flight toward the coast; there they sank gently down; the bird-shapes dissolved like a whitish mist, and in a soft dawning gleam I saw you two.
+I saw you last night. It was full moon, you know, – and then the spirit is always so wondrously active in me. Within, at my table, I sat in the book-hall and had fallen asleep, weary, oh, you friends, so weary of searching and writing. Then the house was filled as if by a storm; the curtain lifted fluttering upward, and I looked out into the night, far over the sea. I heard sweet song; but those from whom the song came were two great birds with women's faces. They cut in slanting flight toward the coast; there they sank gently down; the bird-shapes dissolved like a whitish mist, and in a soft dawning gleam I saw you two.
 
 @ Gregory of Nazianzus.
 Are you sure of all this?
@@ -134,10 +134,10 @@ And it has fallen to your lot?
 Almost. I stand close beside it. This very night Maximus has promised me –
 
 @ Gregory of Nazianzus.
-Maximus is a dreamer, or he deceives you –!
+Maximus is a visionary, or he deceives you –!
 
 @ Prince Julian.
-How dare you judge of the hidden things? This is not for *your* learning, my Gregory! The way into the great glory is terrible. Those dreamers in Eleusis were near the right track; Maximus found the track, and I after him – by his hand. I have wandered through dark ravines. A heavy swampy water was on my left side; – I believe it was a stream that had forgotten to flow. Sharp voices spoke confusedly, suddenly, and as if without any cause in the night. Now and then I saw a bluish light; terrible figures brushed past me; – I went and went in the terror of death; but I withstood the trial. –
+How dare you judge of the hidden things? This is not for *your* learning, my Gregory! The way into the great glory is terrible. Those dreamers in Eleusis were near the right track; Maximus found the track, and I after him – by his hand. I have wandered through dark ravines. A heavy swampy water was on my left side; – I believe it was a stream that had forgotten to flow. Sharp voices spoke confusedly, suddenly, and as if without any cause in the night. Now and then I saw a bluish light; terrible figures brushed past me; – I walked on and on in the terror of death; but I withstood the trial. –
 
 Since, since, – oh, you precious ones – with this my body transformed into spirit I have been far within the regions of paradise; the angels have sung their hymns of praise for me; I have beheld the midmost light –
 
@@ -147,7 +147,7 @@ Woe upon this ungodly Maximus! Woe upon this heathen mountebank forfeited to the
 @ {{{ 110 }}} Prince Julian.
 Blindness, blindness! Maximus reveres his brother who went before; he reveres both those great brothers, both the lawgiver from Sinai and the seer from Nazareth. – –
 
-Do you know how the spirit of knowledge filled me? – It happened one night during prayer and fasting. Then I perceived that I was caught up far – far out into space and out of time; for it was high sun-quivering day about me, and I stood alone upon a ship with slack sails in the midst of the bright radiant Greek sea. The islands towered, like light fastened cloud-layers, far away, and the ship lay heavy, as if it slept, upon the wine-blue plain. –
+Do you know how the spirit of knowledge filled me? – It happened one night during prayer and fasting. Then I perceived that I was caught up far – far out into space and out of time; for it was high sun-quivering day about me, and I stood alone upon a ship with slack sails in the midst of the bright radiant Greek sea. The islands towered, like thin, congealed layers of cloud, far away, and the ship lay heavy, as if it slept, upon the wine-blue plain. –
 
 Behold, then this plain grew more and more transparent, lighter, thinner; at last it was there no more, and my ship hung over an empty terrible abyss. No green, no sun down there, – only the dead, slimy, black sea-bottom in all its loathsome nakedness. –
 
@@ -169,7 +169,7 @@ I? Do not signs and wonders happen? Do not both omens and certain strange occurr
 Believe not such signs; you cannot know whose work they are.
 
 @ Prince Julian.
-Should I not believe in fortune-boding signs that have already confirmed themselves?
+Should I not believe in auspicious signs that have already confirmed themselves?
 
 *(he draws them nearer to himself and says softly:)*
 
@@ -191,7 +191,7 @@ Seven days later Caesar's wife died in Bithynia. Constantina has always been his
 Strange. In Athens other rumours were abroad.
 
 @ Prince Julian.
-I have sure knowledge. There is haste with the purple robe, Gregory! And should I then doubt the things Maximus has foretold as near at hand for *me*? Tonight the last veil falls. Here within, the great riddle shall be revealed. Oh, stay with me, my brothers, – stay with me in these night-hours of dread and expectation! When Maximus comes, you shall be witness to –
+I have sure knowledge. There is urgent need of the purple robe, Gregory! And should I then doubt the things Maximus has foretold as near at hand for *me*? Tonight the last veil falls. Here within, the great riddle shall be revealed. Oh, stay with me, my brothers, – stay with me in these night-hours of dread and expectation! When Maximus comes, you shall be witness to –
 
 @ Basil of Caesarea.
 Never!
@@ -239,7 +239,7 @@ You blasphemer, – thither has your heart's pride drawn you!
 Oh, Gregory, he is sick and deluded!
 
 @ Prince Julian.
-Why all this scornful doubt? Is it my slender growth that bears witness against me? Ha-ha; I tell you, this coarse fleshly race shall pass away. That which is to come shall be conceived more of the spirit than of the body. In the first Adam there was equilibrium, as in those images of the god Apollo. Since then there has been no equilibrium. Had not Moses a stammering tongue? Did not his arms have to be supported when he was to hold them up in exhortation yonder by the Red Sea? Did not the Macedonian regularly need to be fired by means of certain strong drinks and other artificial aids? And now Jesus of Nazareth? Had he not a frail body? Did he not fall asleep on the ship, while the others yet kept awake? Did he not sink down under the cross, that cross which the Jew Simon bore with ease? The two robbers did not sink down. – You call yourselves believers, and yet have so little faith in {{{ 116 }}} the revealing power of the wondrous. Wait, wait, – you shall see; – the bride shall surely be granted me, and then –, hand in hand we will go toward the east, thither where some say that Helios is born, – into the solitude, hide ourselves, as the godhead hides itself, seek the grove by the banks of the Euphrates, find it, and *there* –, oh, glorification – from there a new race in beauty and equilibrium shall go out over the earth; there, you scripture-bound doubters, *there* shall the empire of the spirit be founded!
+Why all this scornful doubt? Is it my slender stature that bears witness against me? Ha-ha; I tell you, this coarse fleshly race shall pass away. That which is to come shall be conceived more of the spirit than of the body. In the first Adam there was equilibrium, as in those images of the god Apollo. Since then there has been no equilibrium. Had not Moses a stammering tongue? Did not his arms have to be supported when he was to hold them up in exhortation yonder by the Red Sea? Did not the Macedonian regularly need to be fired by means of certain strong drinks and other artificial aids? And now Jesus of Nazareth? Had he not a frail body? Did he not fall asleep on the ship, while the others yet kept awake? Did he not sink down under the cross, that cross which the Jew Simon bore with ease? The two robbers did not sink down. – You call yourselves believers, and yet have so little faith in {{{ 116 }}} the revealing power of the wondrous. Wait, wait, – you shall see; – the bride shall surely be granted me, and then –, hand in hand we will go toward the east, thither where some say that Helios is born, – into the solitude, hide ourselves, as the godhead hides itself, seek the grove by the banks of the Euphrates, find it, and *there* –, oh, glorification – from there a new race in beauty and equilibrium shall go out over the earth; there, you scripture-bound doubters, *there* shall the empire of the spirit be founded!
 
 @ Basil of Caesarea.
 Oh, I must indeed wring my hands in sorrow over you. Are you that same Julian who three years ago departed from Constantinople!
@@ -251,7 +251,7 @@ In that time I was blind, as you are now; I knew only the way that stops at doct
 Do you know where *your* way stops?
 
 @ Prince Julian.
-Where the way and the goal are *one*. – For the last time, Gregory, Basil, – I implore you, stay with me. The vision I had last night, – both it and much else, points to an enigmatic bond between us. To you, my Basil, I had so much to say. You are, after all, the head of your kindred; and who knows whether all that alluring thing promised to me –; whether not through you and in your house –
+Where the way and the goal are *one*. – For the last time, Gregory, Basil, – I implore you, stay with me. The vision I had last night, – both it and much else, points to an enigmatic bond between us. To you, my Basil, I had so much to say. You are, after all, the head of your kindred; and who knows whether all that is alluring promised to me –; whether not through you and in your house –
 
 @ {{{ 117 }}} Basil of Caesarea.
 Never! With my will none shall be led into your madness and into your wild dreams.
@@ -300,7 +300,7 @@ Then the night's festival may begin!
 Maximus, – what is this?
 
 @ Maximus the mystic.
-Roses in the hair! Pearling wine! See, see yonder the fair limbs at play!
+Roses in the hair! Sparkling wine! See, see yonder the fair limbs at play!
 
 @ Prince Julian.
 And in the very midst of this tumult of the senses you would –?
@@ -429,7 +429,7 @@ Dare I?
 Speak; speak!
 
 @ Prince Julian *(nearer)*.
-Why was I made?
+Why did I come to be?
 
 @ A voice in the light.
 To serve the spirit.
@@ -462,7 +462,7 @@ And by what way?
 By the way of freedom.
 
 @ Prince Julian.
-Speak full out! What is the way of freedom?
+Speak out fully! What is the way of freedom?
 
 @ The voice in the light.
 The way of necessity.
@@ -498,7 +498,7 @@ Gone?
 Gone.
 
 @ Maximus the mystic.
-Are you *now* knowing?
+Do you *now* know?
 
 @ Prince Julian.
 Now least of all. I hang over the rampart of the engulfing abyss, – midway between light and darkness.
@@ -619,7 +619,7 @@ You hit it, Maximus!
 
 *(he pours out a filled bowl before the empty seat.)*
 
-Bathe yourself in the wine-scent, my pale guest! Refresh yourself. Feel, feel, – it rises into the air like a sacrificial smoke.
+Bathe yourself in the wine-scent, my pale guest! Refresh yourself. Breathe it in, breathe it in, – it rises into the air like a sacrificial smoke.
 
 @ The voice.
 Sacrificial smoke does not always *rise*.
@@ -694,7 +694,7 @@ The next, I say! You have sworn to me to get to the bottom of certain things. Th
 
 Come forth and show yourself, you willing slave, you who helped at the next great world-turning!
 
-@ Prince Julian *(stares a moment into the empty space; suddenly he stretches his hand out warding-off toward the seat right beside him and says in a muted voice)*:
+@ Prince Julian *(stares a moment into the empty space; suddenly he stretches out his hand in a warding gesture toward the seat right beside him and says in a muted voice)*:
 No nearer!
 
 @ Maximus the mystic *(turned away)*.
@@ -876,7 +876,7 @@ I defy necessity! I will not serve it. I am free, free, free!
 What terror and cries –?
 
 @ Prince Julian.
-Strange people are pressing into the house –
+Strangers are pressing into the house –
 
 @ Maximus the mystic.
 Your servants are being maltreated; they mean to murder us!
@@ -891,7 +891,7 @@ Lord, lord!
 Who causes that noise outside?
 
 @ Eutherius the steward.
-Strange men have surrounded the house; they have set guards at all the exits; they are breaking in – almost by force. There they come, lord! There they are!
+Strangers have surrounded the house; they have set guards at all the exits; they are breaking in – almost by force. There they come, lord! There they are!
 
 @stage (Leontes the quaestor with a great and splendid retinue comes in from the right.)
 
@@ -917,7 +917,7 @@ To me? What does the emperor want with me? I am truly conscious of no crime. I a
 Permit me, gracious lord –!
 
 @ Prince Julian.
-Why does one force violently in to me? What is it the emperor wants?
+Why does one force one's way violently in to me? What is it the emperor wants?
 
 @ Leontes the quaestor.
 He would gladden you, lord, with a great and important message.
@@ -956,7 +956,7 @@ Caesar Gallus is with his beloved wife.
 Dead!
 
 @ Leontes the quaestor.
-Blessed with his wife.
+In bliss with his wife.
 
 @ Prince Julian.
 Dead; dead! Gallus dead! Dead in the midst of his triumphal march! But when, – and where?
@@ -1001,7 +1001,7 @@ Ah, who is this audacious one –?
 Murdered; murdered! *(to Leontes.)* He lies, surely?
 
 @ Leontes the quaestor.
-Caesar Gallus has fallen for his deeds.
+Caesar Gallus has fallen by his deeds.
 
 @ Prince Julian.
 Murdered; – who murdered him?
@@ -1067,7 +1067,7 @@ To me too certain things have been foretold; but this –
 Say no, Julian! It is the wings of perdition that they would fasten to your shoulders.
 
 @ Leontes the quaestor.
-Who are you, that defies the emperor?
+Who are you, who defy the emperor?
 
 @ Gregory of Nazianzus.
 My name is Gregory; I am the son of the bishop of Nazianzus; – do with me what you will.
@@ -1084,7 +1084,7 @@ Do not take the purple, Julian!
 You too, my faithful Basil!
 
 @ Basil of Caesarea.
-Take it not! For God the Lord's sake –
+Do not take it! For God the Lord's sake –
 
 @ Prince Julian.
 What terrifies you in this?
@@ -1133,7 +1133,7 @@ Oh, lord, such a scornful mistrust –
 Gallus's body is scarcely rotted yet.
 
 @ Leontes the quaestor.
-I can lift all doubt. *(takes out a paper.)* This letter from the emperor, which I would rather have handed you in private –
+I can dispel all doubt. *(takes out a paper.)* This letter from the emperor, which I would rather have handed you in private –
 
 @ Prince Julian.
 A letter? What does he write? –

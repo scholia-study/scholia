@@ -32,7 +32,7 @@ Se dit. Er *det* et lysteligere syn?
 Fyrst Julian –; med roser i håret, med blussende ansikt –
 
 @ Gregor fra Nazianz.
-Ja, og bakefter ham denne ravende tin-øyde flokk. Hør, hvor de lamme tunger laller av vin! De har sittet hele dagen i Lykons skjenkestue.
+Ja, og bakefter ham denne ravende tinn-øyde flokk. Hør, hvor de lamme tunger laller av vin! De har sittet hele dagen i Lykons skjenkestue.
 
 @ Basilios fra Cæsaræa.
 Og mange iblant dem er våre egne, Gregor; det er kristne ynglinger –
@@ -41,7 +41,7 @@ Og mange iblant dem er våre egne, Gregor; det er kristne ynglinger –
 Så kaller de seg. Kalte ikke Lampon seg kristen, – han, som krenket oljehandleren Zenons datter? Og Hilarion fra Agrigent, og de to andre, som bedrev det, jeg vemmes ved å nevne –
 
 @ Fyrst Julian *(høres ropende utenfor til venstre)*.
-Eja, se, se, – Kastor og Pollux fra Kappadokia!
+Eia, se, se, – Kastor og Pollux fra Kappadokia!
 
 @ Basilios fra Cæsaræa.
 Han har fått øye på oss. Jeg vil gå; jeg tåler ikke å se ham slik.
@@ -172,7 +172,7 @@ Det skulle jeg mene. Men å ville unndra seg det grenseløse, o dere venner, er 
 Jo, jo; Kappadokieren er gal!
 
 @ Fyrst Julian.
-Og hva er så vanvidd? Hva dømte våre forfedre om den tilstand? Hva lærte de egyptiske prester? Og hva sier mystikeren Maximos og de andre visdomsvenner i østerlandene? De sier at den himmelske gåte åpenbarer seg i den vanvittige. Vår Gregor – idet han setter seg opp imot keiseren – er altså i særlig forbund med det himmelske. – Utgyd vin for Kappadokieren; syng sanger til vår Gregors pris; – en æresstøtte for Gregor fra Nazianz!
+Og hva er så vanvidd? Hva dømte våre forfedre om den tilstand? Hva lærte de egyptiske prester? Og hva sier mystikeren Maximos og de andre visdomsvenner i østerlandene? De sier at den himmelske gåte åpenbarer seg i den vanvittige. Vår Gregor – idet han setter seg opp imot keiseren – er altså i særlig forbund med det himmelske. – Utgyt vin for Kappadokieren; syng sanger til vår Gregors pris; – en æresstøtte for Gregor fra Nazianz!
 
 @ Lærlingene *(under latter og jubel)*.
 Priset være Kappadokieren! Priset være Kappadokierens dommer!
@@ -210,9 +210,9 @@ Det kommer jo fra Efesos!
 Er ikke gullet like vektig, hvor det kommer fra?
 
 @ Visdomslæreren Libanios.
-Gull? Ha-ha! De gylne beholder Maximos for seg selv; dem slipper han ikke. Hva er det for slags lærlinger, som vanligvis kommer hit fra Efesos? Kremmersønner, håndverkeres førstefødte. Gull, sier du, min Julian? Jeg sier mangel på gull. Men denne gullmangel vil jeg utnytte, til derav å prege en ekte vektig gullmynt for dere, dere unge! Eller er kanskje ikke en gavnlig lære for livet, – når den fremsettes i en {{{ 75 }}} sinnrik og tiltrekkende form – å ligne med en fullvektig gullmynt? –
+Gull? Ha-ha! De gylne beholder Maximos for seg selv; dem slipper han ikke. Hva er det for slags lærlinger, som vanligvis kommer hit fra Efesos? Kremmersønner, håndverkeres førstefødte. Gull, sier du, min Julian? Jeg sier mangel på gull. Men denne gullmangel vil jeg utnytte, til derav å prege en ekte vektig gullmynt for dere, dere unge! Eller er kanskje ikke en gagnlig lære for livet, – når den fremsettes i en {{{ 75 }}} sinnrik og tiltrekkende form – å ligne med en fullvektig gullmynt? –
 
-Hør da, hvis det så synes dere. Her ble sagt, at visse menn i hast er ilet ned til Piræos? Hvem er de, disse ilsomme? Det være langt fra meg å nevne navne; selv kaller de seg visdomselskere og visdomslærere. Flytt dere nå i tanken ned til Piræos. Hva går *der* for seg i denne stund, mens jeg står her i deres velvillig lyttende klynge? Jeg skal si dere, hva der går for seg. Hine menn, som holder seg selv for å elske og å forkynne visdommen, de stimler sammen på landgangsbroen; de puffes, de munnhugges, bites, glemmer all sømmelighet og setter all anstand til side. Og hvorfor? For å være den første på tofterne, – for å rive de mest velkledde ynglinger til seg, føre dem til sine hus, oppta dem deri, håpende, siden å skulle dra fordel av dem på allehånde måter. – Hvilken skamfullhet, hvilken oppvåkning i tomhet, likesom etter en rus, når det om føye tid viser seg – ha-ha-ha! – at hine ynglinger knapt førte med seg det fornødne til å betale ankomstgildet! – Lær herav, dere unge, hvor ille det kler en visdomselsker, og hvor ringe det lønner seg, å ettertrakte de goder, som ligger utenfor sannheten.
+Hør da, hvis det så synes dere. Her ble sagt, at visse menn i hast er ilet ned til Piræos? Hvem er de, disse ilsomme? Det være langt fra meg å nevne navne; selv kaller de seg visdomselskere og visdomslærere. Flytt dere nå i tanken ned til Piræos. Hva går *der* for seg i denne stund, mens jeg står her i deres velvillig lyttende klynge? Jeg skal si dere, hva der går for seg. Hine menn, som holder seg selv for å elske og å forkynne visdommen, de stimler sammen på landgangsbroen; de puffes, de munnhugges, bites, glemmer all sømmelighet og setter all anstand til side. Og hvorfor? For å være den første på toftene, – for å rive de mest velkledde ynglinger til seg, føre dem til sine hus, oppta dem deri, håpende, siden å skulle dra fordel av dem på allehånde måter. – Hvilken skamfullhet, hvilken oppvåkning i tomhet, likesom etter en rus, når det om føye tid viser seg – ha-ha-ha! – at hine ynglinger knapt førte med seg det fornødne til å betale ankomstgildet! – Lær herav, dere unge, hvor ille det kler en visdomselsker, og hvor ringe det lønner seg, å ettertrakte de goder, som ligger utenfor sannheten.
 
 @ Fyrst Julian.
 O, min Libanios, når jeg hører deg med lukkede øyne, da hensynker jeg i en søt drøm om at Diogenes er gjenfødt iblant oss.
@@ -248,7 +248,7 @@ Meget sant. Milon burde sendt et dikt; eller han skulle sendt en vel avfattet ta
 Mest de to ynglinger.
 
 @ Visdomslæreren Libanios.
-Det vil jeg tro. Gudene gi, for den velgjørende og gavmilde faders skyld, at de må falle i gode hender! Så hadde du dog rett, o Julian; skipet brakte virkelig gull fra Efesos. For er ikke åndens gaver det ekte gull? Men jeg har ingen ro på meg; disse unge menns velferd er i sannhet en viktig sak; det avhenger så mye av, hvem som først får fatt i dem. Mine unge venner, hvis dere synes som jeg, da rekker vi disse to fremmede en veiledende hånd, hjelper dem å treffe det gavnligste valg av lærer og bolig og –
+Det vil jeg tro. Gudene gi, for den velgjørende og gavmilde faders skyld, at de må falle i gode hender! Så hadde du dog rett, o Julian; skipet brakte virkelig gull fra Efesos. For er ikke åndens gaver det ekte gull? Men jeg har ingen ro på meg; disse unge menns velferd er i sannhet en viktig sak; det avhenger så mye av, hvem som først får fatt i dem. Mine unge venner, hvis dere synes som jeg, da rekker vi disse to fremmede en veiledende hånd, hjelper dem å treffe det gagnligste valg av lærer og bolig og –
 
 @ Sallust fra Perusia.
 Jeg er med!
@@ -268,7 +268,7 @@ Se, hvor de boltrer seg, lik en flokk fauner. Hvor de slikker seg om munnkrokene
 Julian –
 
 @ Fyrst Julian.
-Se kun på meg; jeg er edru.
+Se bare på meg; jeg er edru.
 
 @ Gregor fra Nazianz.
 Jeg vet det. Du er måteholden i alle ting. Og dog lever du dette liv med.
@@ -280,7 +280,7 @@ Hvorfor ikke? Vet du eller jeg når lynet slår ned? Hvorfor så ikke leve en ly
 Du skal tyde det i kjærlighet, Julian!
 
 @ {{{ 79 }}} Fyrst Julian.
-O, du vet ikke –! Jeg hater denne makt utenfor meg, forferdende når den handler, – end mer forferdende når den hviler.
+O, du vet ikke –! Jeg hater denne makt utenfor meg, forferdende når den handler, – enda mer forferdende når den hviler.
 
 @ Gregor fra Nazianz.
 Vær ærlig, venn, og si meg om det er bare dette, som har ledt deg inn på alle de selsomme veier.
@@ -295,7 +295,7 @@ Er det sant, hva ryktet sier, – at du tilbringer dine netter med å utforske d
 Ah, hva! Jeg kan forsikre deg, der er ringe utbytte å hente hos hine gåtelystne drømmere. La oss ikke tale mer derom.
 
 @ Gregor fra Nazianz.
-Altså dog sant! O, Julian, hvor kunne du søke dette skjendselsfulle samkvem!
+Altså dog sant! O, Julian, hvor kunne du søke dette skjenselsfulle samkvem!
 
 @ Fyrst Julian.
 Jeg må leve, Gregor, – og dette her ved visdoms-skolen, det er ikke liv. Denne Libanios! Jeg tilgir ham aldri, at jeg har elsket ham så høyt! Hvordan gikk jeg ikke ved ankomsten ydmyk og skjelvende av glede frem for det menneske, bøyde meg for ham, kysset ham og kalte ham min store broder.
@@ -310,7 +310,7 @@ Og dog kom jeg hit med høytid i sjelen. Jeg så i ånden en veldig kamp imellom
 Da roper dog hele det opplyste Hellas at han er det.
 
 @ Fyrst Julian.
-Og dog er han ingen stor mann, sier jeg deg. En eneste gang har jeg sett Libanios stor; det var hin natt i Konstantinopel. Da var han stor, fordi han hadde lidt en stor urett, og fordi en høy vrede fylte ham. Men her! O, hva har jeg ikke her vært vitne til! Libanios har stor lærdom, men han er ingen stor mann. Libanios er grisk; han er forfengelig; han er opptent av misunnelse. Eller tror du han har kunnet tåle det ry, som jeg, – visstnok for en stor del ved mine venners overbærenhet – har vært så heldig å forhverve meg? Kommer du til Libanios, så kan han regne deg opp alle dyders vesen og {{{ 81 }}} kjennetegn. Han har dem på rede hånd, likesom han har bøkene i sin boksal. Men øver han disse dyder? Er hans liv som hans lære? Han en etterfølger av Sokrates og av Platon, – ha-ha! Smigret han ikke keiseren innen han ble forjaget? Smigret han ikke meg ved vårt sammentreff i Konstantinopel, dette sammentreff, som han siden har gjort et ytterst uheldig forsøk på å stille i et latterlig lys! Og hva er jeg ham nå? Nå skriver han brev til Gallos, til Cæsar Gallos, til keiserens arving, og ønsker ham til lykke med hans fremgang imot Perserne, skjønt denne fremgang hittil har vært tarvelig nok og skjønt Cæsar Gallos hverken utmerker seg ved lærdom eller ved noen synderlig veltalenhet. – Og denne Libanios vedblir Grekerne å kalle for visdomselskernes konge! Ah, jeg vil ikke nekte at dette harmer meg. Jeg trodde dog, sant å si, at Grekerne måtte kunne treffe et bedre valg, hvis de festet sine øyne litt mer på de visdommens og veltalenhetens dyrkere, som i de senere år –
+Og dog er han ingen stor mann, sier jeg deg. En eneste gang har jeg sett Libanios stor; det var hin natt i Konstantinopel. Da var han stor, fordi han hadde lidt en stor urett, og fordi en høy vrede fylte ham. Men her! O, hva har jeg ikke her vært vitne til! Libanios har stor lærdom, men han er ingen stor mann. Libanios er grisk; han er forfengelig; han er opptent av misunnelse. Eller tror du han har kunnet tåle det ry, som jeg, – visstnok for en stor del ved mine venners overbærenhet – har vært så heldig å erverve meg? Kommer du til Libanios, så kan han regne deg opp alle dyders vesen og {{{ 81 }}} kjennetegn. Han har dem på rede hånd, likesom han har bøkene i sin boksal. Men øver han disse dyder? Er hans liv som hans lære? Han en etterfølger av Sokrates og av Platon, – ha-ha! Smigret han ikke keiseren innen han ble forjaget? Smigret han ikke meg ved vårt sammentreff i Konstantinopel, dette sammentreff, som han siden har gjort et ytterst uheldig forsøk på å stille i et latterlig lys! Og hva er jeg ham nå? Nå skriver han brev til Gallos, til Cæsar Gallos, til keiserens arving, og ønsker ham til lykke med hans fremgang imot Perserne, skjønt denne fremgang hittil har vært tarvelig nok og skjønt Cæsar Gallos hverken utmerker seg ved lærdom eller ved noen synderlig veltalenhet. – Og denne Libanios vedblir Grekerne å kalle for visdomselskernes konge! Ah, jeg vil ikke nekte at dette harmer meg. Jeg trodde dog, sant å si, at Grekerne måtte kunne treffe et bedre valg, hvis de festet sine øyne litt mer på de visdommens og veltalenhetens dyrkere, som i de senere år –
 
 @ Basilios fra Cæsaræa *(kommer fra høyre side)*.
 Brev! Brev fra Kappadokia!
@@ -345,7 +345,7 @@ Ja, Gallos er hard. – Skriver Makrina «strengt herredømme»?
 Makrina skriver «blodig» –
 
 @ Fyrst Julian.
-Ah, jeg tenkte det! Hvorfor gav dog keiseren ham denne ryggesløse enke, denne Konstantina, til ekte!
+Ah, jeg tenkte det! Hvorfor ga dog keiseren ham denne ryggesløse enke, denne Konstantina, til ekte!
 
 @ Gregor fra Nazianz *(lesende)*.
 O, hvilken uhørt skjendighet!
@@ -405,7 +405,7 @@ O, Jesus!
 Forferdelig! Og Klemazios –?
 
 @ Gregor fra Nazianz.
-Dødsdommen ble sendt til statholderen Honoratos. Denne svake mann vovet ikke å motsette seg så høy befaling. Klemazios ble fengslet og henrettet tidlig neste morgen, uten at han, som min moder skriver, fikk åpne sin munn til forsvar.
+Dødsdommen ble sendt til statholderen Honoratos. Denne svake mann våget ikke å motsette seg så høy befaling. Klemazios ble fengslet og henrettet tidlig neste morgen, uten at han, som min moder skriver, fikk åpne sin munn til forsvar.
 
 @ {{{ 85 }}} Fyrst Julian *(sagte og blek)*.
 Brenn disse farlige brev; de kan bringe oss alle i ulykke.
@@ -429,7 +429,7 @@ Godt; men så?
 Jeg forstår deg ikke –
 
 @ Gregor fra Nazianz.
-Så hør. Du må ikke tro det er nok med mordet på Klemazios. Denne uhørte skjendselsdåd har slått ned som en pest over Antiokia. Alt ondt våkner opp og myldrer frem av sine smutthull. Min moder skriver at det er som {{{ 86 }}} om en stinkende avgrunn hadde åpnet seg. Hustruer angir sine menn, sønner angir sine fedre, prestene sine egne menighets-lemmer –
+Så hør. Du må ikke tro det er nok med mordet på Klemazios. Denne uhørte skjenselsdåd har slått ned som en pest over Antiokia. Alt ondt våkner opp og myldrer frem av sine smutthull. Min moder skriver at det er som {{{ 86 }}} om en stinkende avgrunn hadde åpnet seg. Hustruer angir sine menn, sønner angir sine fedre, prestene sine egne menighets-lemmer –
 
 @ Fyrst Julian.
 Dette vil gripe videre om seg. Vederstyggeligheten vil forderve oss alle. – O, Gregor, om jeg kunne flykte til verdens grense –!
@@ -441,7 +441,7 @@ Din plass er på verdens navle, fyrst Julian!
 Hva krever du?
 
 @ Gregor fra Nazianz.
-Du er denne blodige Cæsars broder. Tred frem for ham, – han kaller seg jo en kristen. Kast ham hans gjerning i ansiktet; slå ham til jorden i redsel og nag –
+Du er denne blodige Cæsars broder. Tre frem for ham, – han kaller seg jo en kristen. Kast ham hans gjerning i ansiktet; slå ham til jorden i redsel og nag –
 
 @ Fyrst Julian *(vikende)*.
 Avsindige, hva tenker du!
@@ -555,7 +555,7 @@ Hun skriver om Maximos i Efesos –
 Mystikeren?
 
 @ Basilios fra Cæsaræa.
-Ja, denne gåtefulle mann. Nå er han dukket opp igjen; denne gang i Efesos. Alle de omliggende landskaper er i gjæring. Maximos nevnes på alles leber. Enten er han en gjøgler, eller han står i en uheldsvanger pakt med visse ånder. Selv kristne dras underlig hen av hans bespottelige tegn og gjerninger.
+Ja, denne gåtefulle mann. Nå er han dukket opp igjen; denne gang i Efesos. Alle de omliggende landskaper er i gjæring. Maximos nevnes på alles lepper. Enten er han en gjøgler, eller han står i en uhellsvanger pakt med visse ånder. Selv kristne dras underlig hen av hans bespottelige tegn og gjerninger.
 
 @ Fyrst Julian.
 Mer, mer; jeg ber deg!
@@ -603,7 +603,7 @@ Du vil det; – les; det begynner *der*.
 «Hver gang du skriver om keiserens unge slektning, som er din venn, da fylles mitt sinn av en stor og strålende glede –». O, Basilios, vær du mitt øye; les videre for meg.
 
 @ Basilios fra Cæsaræa *(leser)*.
-«Din fortelling om all den tillitsfulle visshet, hvormed han kom til Aten, var meg som et bilde fra de gamle skrifters tid. Ja, jeg tror han er den gjenfødte David, som skal nedslå hedningenes kjemper. Guds ånd være over ham i striden og alle dage».
+«Din fortelling om all den tillitsfulle visshet, hvormed han kom til Aten, var meg som et bilde fra de gamle skrifters tid. Ja, jeg tror han er den gjenfødte David, som skal nedslå hedningenes kjemper. Guds ånd være over ham i striden og alle dager».
 
 @ Fyrst Julian *(griper ham om armen)*.
 La det være nok med dette! Hun også? Hva er det, dere alle, likesom med *en* munn, krever av meg? Har jeg gitt dere noe skyldbrev på å brytes med maktens løver –?
@@ -611,8 +611,8 @@ La det være nok med dette! Hun også? Hva er det, dere alle, likesom med *en* m
 @ {{{ 94 }}} Basilios fra Cæsaræa.
 Hvorav kommer det, at alle troende i åndeløs forventning ser imot deg?
 
-@ Fyrst Julian *(går et par ganger opp og ned i søylegangen, standser og rekker etter brevet)*.
-Gi hit; la meg se. *(leser )* «Guds ånd være over ham i striden og alle dage». –
+@ Fyrst Julian *(går et par ganger opp og ned i søylegangen, stanser og rekker etter brevet)*.
+Gi hit; la meg se. *(leser )* «Guds ånd være over ham i striden og alle dager». –
 
 O, Basilios, om jeg kunne –! Men jeg føler meg som hin Dædalos mellom himmel og hav. En svimlende høyde og et svelgende dyp –. Hva mening er der i disse røster, som roper til meg fra øst og vest at jeg skal frelse kristendommen? Hvor er den, denne kristendom, som skal frelses? Er den hos keiseren eller hos Cæsar? Jeg tenker, deres gjerninger skriker: nei, nei! Er den hos de mektige og fornemme, – hos disse hoffets lystne halvmenn, som folder hendene over den mette buk og piper: mon Guds sønn er skapt av intet? Eller er den hos de opplyste, hos dem, som, likesom du og jeg, har drukket skjønnhet og lærdom av de hedenske kilder? Heller ikke de fleste av disse våre brødre til det arianske kjetteri, som keiseren selv har så stor gunst for? Og nå den hele lurvede hop i riket, – alle de, som raser mot templene, som myrder hedninger og hedningers slekt! Er det for Kristi skyld? Ha-ha! bakefter slås de innbyrdes om de dreptes etterladenskaper. – Du kan spørre Makrina om kristendommen er å søke i ensomheten, – på søylen, hvor støtte-helgenen står på et ben. Eller {{{ 95 }}} er den i stedene? Kanskje hos hine bakere i Konstantinopel, som nylig kjempet med nevene for å klare det spørsmål om treenigheten består av tre personer eller av tre hypostaser! – Hvem av alle disse skulle Kristus ville ta i sin munn, om han steg ned til jorden igjen? – Frem med Diogenes-lykten, Basilios! Lys opp i dette nattemulm. – Hvor er kristendommen?
 
@@ -715,7 +715,7 @@ Alle på skipet var oppfylt av de forunderligste fortellinger, og her *(viser et
 Ånder og skygger –
 
 @ Visdomslæreren Libanios.
-I Efesos har Maximos nylig, i en stor forsamling, både av tilhengere og av motstandere, øvet forbudne kunster med Hekates bildestøtte. Det skjedde i gudinnens tempel. Eusebios skriver, at han selv var tilstede, og var vitne til alt, fra først til sist. Det var ravnsvart natt omkring dem. Maximos talte selsomme besvergelser; derpå avsang han en hymne, som ingen forstod. Da tente marmorfaklen seg i støttens hånd –
+I Efesos har Maximos nylig, i en stor forsamling, både av tilhengere og av motstandere, øvet forbudne kunster med Hekates bildestøtte. Det skjedde i gudinnens tempel. Eusebios skriver, at han selv var tilstede, og var vitne til alt, fra først til sist. Det var ravnsvart natt omkring dem. Maximos talte selsomme besvergelser; derpå avsang han en hymne, som ingen forstod. Da tente marmorfakkelen seg i støttens hånd –
 
 @ Basilios fra Cæsaræa.
 Ugudelig verk!
@@ -739,7 +739,7 @@ Forargelig? Kaller du denne vei en forargelig vei? Løper ikke all visdoms mål 
 O, dyrebare forvillede venn –!
 
 @ Visdomslæreren Libanios.
-Mer enn forargelig, sier jeg! Hva er Hekate? Hva er gudene overhodet for de oppklaredes erkjennelse? Heldigvis lever vi dog ikke i hin gamle blinde sangers tid. Maximos burde dog vite bedre, enn som så. Har ikke Platon – og etter ham vi andre – kastet fortolkningens lys over det hele? Er det ikke forargelig, nå, i disse våre egne dager, igjen å ville hylle inn i gåter og tåkefulle drømme denne beundringsverdige, håndgripelige og, jeg tør vel si, møysommelig oppførte bygning av begrep {{{ 101 }}} og av uttydning, som vi, som visdommens elskere, som skolen, som –
+Mer enn forargelig, sier jeg! Hva er Hekate? Hva er gudene overhodet for de oppklaredes erkjennelse? Heldigvis lever vi dog ikke i hin gamle blinde sangers tid. Maximos burde dog vite bedre, enn som så. Har ikke Platon – og etter ham vi andre – kastet fortolkningens lys over det hele? Er det ikke forargelig, nå, i disse våre egne dager, igjen å ville hylle inn i gåter og tåkefulle drømmer denne beundringsverdige, håndgripelige og, jeg tør vel si, møysommelig oppførte bygning av begrep {{{ 101 }}} og av uttydning, som vi, som visdommens elskere, som skolen, som –
 
 @ Fyrst Julian *(stormende)*.
 Farvel, Basilios! Jeg øyner et lys på min vei!
@@ -751,7 +751,7 @@ Jeg slipper deg ikke; jeg holder deg fast!
 Ingen holder meg; – stamp ikke mot brodden –
 
 @ Visdomslæreren Libanios.
-Hvilket anfall av avsind! Venn, broder, medbroder, hvor vil du hen?
+Hvilket anfall av avsinn! Venn, broder, medbroder, hvor vil du hen?
 
 @ Fyrst Julian.
 Dit, dit hen, hvor fakler tennes og hvor støtter smiler!
