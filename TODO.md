@@ -1,5 +1,6 @@
 ## 🐞 BUGS
 - saving a range quotation wrongly shows "edit" icon
+- membership page doesnt show info navbar
 - cannot save diagram
 - Bible layout comparison broken
 - purge being sent when editing a draft article?
