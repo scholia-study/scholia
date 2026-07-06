@@ -19,6 +19,14 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[3]
 CONTROL_DIR = REPO / "assets/kant1/control/text"
 
+
+def control_dir_for(files: list) -> Path:
+    # kant3 files gate against the kant3 control corpus (Bernard 1892, PD,
+    # plus any later-acquired copyrighted control dropped into the same dir).
+    if files and "kant3" in str(files[0]):
+        return REPO / "assets/kant3/control"
+    return CONTROL_DIR
+
 N = 8
 MAX_OVERLAP = 0.03
 MAX_RUN = 15
@@ -47,11 +55,11 @@ def md_tokens(path: Path) -> list[str]:
     return tokenize(text)
 
 
-def control_tokens() -> list[str]:
-    if not CONTROL_DIR.is_dir():
-        sys.exit(f"control text not found: {CONTROL_DIR}")
+def control_tokens(control_dir: Path = CONTROL_DIR) -> list[str]:
+    if not control_dir.is_dir():
+        sys.exit(f"control text not found: {control_dir}")
     tokens: list[str] = []
-    for f in sorted(CONTROL_DIR.rglob("*")):
+    for f in sorted(control_dir.rglob("*")):
         if f.suffix.lower() not in (".html", ".xhtml", ".htm", ".txt"):
             continue
         raw = f.read_text(encoding="utf-8", errors="ignore")
@@ -62,7 +70,7 @@ def control_tokens() -> list[str]:
             p.feed(raw)
             tokens.extend(tokenize(" ".join(p.parts)))
     if not tokens:
-        sys.exit(f"no text extracted from {CONTROL_DIR}")
+        sys.exit(f"no text extracted from {control_dir}")
     return tokens
 
 
@@ -92,7 +100,7 @@ def main():
     files = [Path(a) for a in sys.argv[1:]]
     if not files:
         sys.exit(__doc__)
-    control = control_tokens()
+    control = control_tokens(control_dir_for(files))
     control_grams = set(ngrams(control, N))
     failed = False
     for f in files:

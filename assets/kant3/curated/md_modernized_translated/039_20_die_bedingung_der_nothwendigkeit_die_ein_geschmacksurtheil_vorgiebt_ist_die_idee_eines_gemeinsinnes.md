@@ -1,12 +1,12 @@
 ---
 position: 39
-label: "§ 20. The condition of the necessity that a judgment of taste alleges is the idea of a common sense"
+label: "§ 20. The condition of the necessity that a judgment of taste asserts is the idea of a common sense"
 depth: 5
 aa_page: 237
 ---
 
-## § 20. The condition of the necessity that a judgment of taste alleges is the idea of a common sense
+## § 20. The condition of the necessity that a judgment of taste asserts is the idea of a common sense
 
-If judgments of taste (like cognitive judgments) had a determinate objective principle, then the one who makes them according to the {{{ 238 }}} latter would lay claim to unconditioned necessity of his judgment. If they were without any principle, like those of mere taste of sense, then one would let no necessity of them come into one's thoughts at all. Thus they must have a subjective principle that determines, only through feeling and not through concepts, yet nevertheless with universal validity, what pleases or displeases. But such a principle could only be regarded as a ***common sense***, which is essentially distinct from the common understanding that one sometimes also calls common sense (_sensus communis_): in that the latter judges not according to feeling but always according to concepts, although commonly only as according to obscurely represented principles.
+Had judgments of taste (as judgments of cognition do) a determinate objective principle, then anyone who pronounced them by following the {{{ 238 }}} latter would claim unconditional necessity for his judgment. If, on the other hand, they rested on no principle whatever, as is the case with the taste belonging simply to sensation, the very thought of any necessity in them would never so much as arise. A subjective principle they must accordingly possess — one that settles by feeling alone, and not by any concept, and yet universally valid, whatever pleases or displeases. But a principle of this kind admits of being taken only for a ***common sense***, one essentially distinct from that common understanding which now and then also goes by the name of common sense (_sensus communis_): for this latter judges never through feeling, but invariably through concepts, even if usually through such as amount to no more than obscurely represented principles.
 
-Thus only under the presupposition that there is a common sense (by which, however, we understand no outer sense but the effect from the free play of our powers of cognition), only under the presupposition, {{ 65 }} I say, of such a common sense can the judgment of taste be made.
+It is therefore solely upon the assumption that a common sense exists (whereby we intend no outward sense, but rather what results when our cognitive powers are set in free interplay), solely upon the assumption, {{ 65 }} I say, of such a common sense that a judgment of taste can be pronounced.
