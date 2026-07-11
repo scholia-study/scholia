@@ -35,6 +35,8 @@ apps/web/dist/
 .turbo
 node_modules
 .venv
+__pycache__/
+*.pyc
 .claude/projects/
 .antigravitycli
 
