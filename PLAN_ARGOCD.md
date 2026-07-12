@@ -273,7 +273,7 @@ Zero public surface beyond Tailscale itself.
 
 ## Implementation checklist
 
-- [ ] **Prereqs**: history/secret audit → ~~repo public~~ (done) →
+- [x] **Prereqs**: history/secret audit → ~~repo public~~ (done) →
       branch protection + PAT bypass → GHCR packages public.
 - [x] `build.yml`: `bump` job (per-service tag write-back via PAT).
 - [x] Overlay: add `images:` block (placeholder tags), drop
@@ -285,8 +285,8 @@ Zero public surface beyond Tailscale itself.
 - [x] `infra/argo/README.md` (bootstrap runbook above).
 - [x] Pin versions: argo-cd chart 9.5.20 (ArgoCD v3.4.3), ksops v4.5.1
       (checked 2026-06-07). Re-verify before install.
-- [ ] Bootstrap dev cluster; verify Synced/Healthy.
-- [ ] One end-to-end test: push a trivial app change → CI builds → bump
+- [x] Bootstrap dev cluster; verify Synced/Healthy.
+- [x] One end-to-end test: push a trivial app change → CI builds → bump
       commit → Argo auto-syncs → pod rolls.
 
 ## Deferred to prod / later

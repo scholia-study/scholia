@@ -54,10 +54,10 @@ deferral. The #315 sweep also covers the other ꝛc. renderings still in the tex
 
 ### Restore checklist
 
-- [ ] Add `"ꝛc."` and `"etc."` to `SINGLE_ABBREVS` in `packages/common/src/sentences.rs`.
-- [ ] Add `|||` after the abbreviation at the sentence-ending sites: REV 051/078, MOD 051/065/078/104.
-- [ ] Restore the period: `ꝛc Jahrhundert` → `ꝛc. Jahrhundert` (REV 113), `etc Jahrhundert` → `etc. Jahrhundert` (MOD 113).
-- [ ] `just struct kant1` passes (both source and translation modes); no `|||` in the output JSON.
+- Add `"ꝛc."` and `"etc."` to `SINGLE_ABBREVS` in `packages/common/src/sentences.rs`.
+- Add `|||` after the abbreviation at the sentence-ending sites: REV 051/078, MOD 051/065/078/104.
+- Restore the period: `ꝛc Jahrhundert` → `ꝛc. Jahrhundert` (REV 113), `etc Jahrhundert` → `etc. Jahrhundert` (MOD 113).
+- `just struct kant1` passes (both source and translation modes); no `|||` in the output JSON.
 
 ### Other
 

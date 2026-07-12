@@ -132,46 +132,31 @@ migration.
 No new tables. The `line` reference system is **data**
 (`reference_systems` + `page_markers` rows per poetry book), not schema.
 
-## Implementation checklist
+## Implementation (landed)
 
-**DB**
-- [ ] `0006_verse_block_and_indent.sql` — `ALTER TYPE block_type ADD VALUE
-      'verse'` + `ALTER TABLE sentences ADD COLUMN indent SMALLINT` (one
-      transaction; neither uses the new enum value).
-- [ ] `0007_per_language_fts.sql` — stored `tsv` column + GIN on
-      `sentences`/`content_blocks`; backfill from book `language`; drop the
-      old german expression indexes; re-index and verify Bible/Kant search.
+Everything above shipped: migrations `0006_verse_block_and_indent.sql`
+and `0007_per_language_fts.sql`; the verse-aware splitter (newline
+lines, `.!?` bypassed, `<br>` forced break, leading whitespace →
+`indent`); `packages/md_poetry_to_struct` as the shared core with
+per-corpus config (`--corpus shakespeare1|milton`); per-line
+`line`-system page_markers + a `line` `reference_systems` row per
+book; `verse`/`indent` through the API response models; the
+`BlockRenderer` verse branch with line-marker margin rendering and the
+display-interval reader setting; line-keyed citation. Content went
+past the proof-corpus goal: the full Sonnets (two layers) and all of
+*Paradise Lost* are ingested.
 
-**Rust — `packages/common`**
-- [ ] Add `Verse` to `BlockType`; add `indent: Option<i16>` to the
-      sentence struct model.
-- [ ] Verse-aware splitter path: newline-delimited, `.!?` bypassed,
-      `<br>` = forced break, leading whitespace → `indent`.
+Where reality diverged from the sketch, deliberately:
 
-**Rust — ingest**
-- [ ] New `packages/md_poetry_to_struct` (shared core + per-text
-      config/hooks; front matter incl. `line_numbering: reset|continue`).
-- [ ] Reuse struct→DB importer; consider renaming off the `kant1_` prefix.
-- [ ] Emit per-line `line`-system page_markers (poem-local, reset per leaf
-      node) and a `line` `reference_systems` row per book.
-- [ ] `scripts/db_poetry.sh` + `dp:poetry` package.json script.
-
-**API**
-- [ ] Surface `block_type: "verse"` and `indent` through the node/page
-      response models; `pnpm codegen`.
-
-**Frontend — `apps/web`**
-- [ ] `BlockRenderer` `verse` branch: one line per row (no reflow),
-      `indent` → padding, per-line selection/quotation preserved, stanza
-      spacing between verse blocks.
-- [ ] `line`-marker margin rendering + reader display setting (interval
-      5/10/off, margin side) on the existing margin-settings surface.
-- [ ] `keys.ts`/citation: line-number projection via the `line` system
-      (Bible-style), ranges crossing stanza blocks.
-
-**Content**
-- [ ] Curate one sonnet + one *PL* book as the proof corpus; verify
-      numbering reset, indentation, quotation labels, search.
+- The struct model the parsers emit lives in **`packages/text_struct`**
+  (extracted later as the shared "narrow waist", ADR 0006), not
+  `packages/common`.
+- The importer rename went further than dropping the `kant1_` prefix:
+  **`struct_to_db`** is now the single genre-agnostic importer for
+  every struct JSON (poetry, Kant, drama).
+- No `scripts/db_poetry.sh` / `dp:poetry` script — superseded by the
+  unified per-corpus manifest (`scripts/ingest.sh`, `just db
+  <corpus>`), which the poetry corpora simply joined.
 
 ## Consequences
 
