@@ -31,6 +31,20 @@ Rules, non-negotiable:
 4. The control text is for **QC agents only** (emphasis arbitration, fidelity spot-checks), in sessions that do not write translation prose.
 5. **Do not "paraphrase away" overlap.** Rewording a Guyer/Wood-derived text still yields a derivative work no matter what the gate measures; provenance is what counts, and git history documents provenance. Fresh generation from the German is the only clean path.
 
+### kant3 from-memory-leakage incident (2026-07-11) and the real control
+
+The kant3 clean-room retranslation of 2026-07-06 passed the gate against Bernard (the only control then available) — but when the Cambridge/Guyer–Matthews PDF was acquired (`assets/kant3/control/kant_critique_of_the_power_of_judgment_cambridge.pdf`, extracted to `guyer_matthews_2000_cambridge.txt`, both gitignored), a direct audit found **96 of 116 measurable files failing** (mean 12.1% 8-gram overlap, identical runs up to 47 words). Lesson: **a clean-room process does not prevent the model reproducing a copyrighted translation from training memory — the gate must measure against the actual copyrighted edition, not a PD proxy.** Remediated 2026-07-11 by fresh re-translation from the German of every flagged sentence (Opus agents, one file each; the control never in a translating agent's context — the orchestrator alone ran the gate and passed back flagged runs as text from *our own* file). Two follow-up gotchas from that sweep:
+
+- Replacement sentences can *newly* converge with the control from memory (several did, at up to 21 words). Always re-gate after every fix round; iterate until PASS.
+- Runs can cross sentence boundaries and chain off headings; breaking them may require re-rendering both flanking sentences.
+
+**Gate exemptions (kant3), documented — the gate prints FAIL for these and that is accepted:**
+- Heading-only stub files whose sole content is a section title matching G/M through shared literal terminology ("power of judgment"): 013, 014, 027, 080, 087, 089, 097, 108 (runs 8–12 < 15; the percentage is meaningless at ≤12 grams). Files 002, 015, 043, 046, 050, 054 are too short to measure at all.
+- Heading-dominated tiny files whose *body* is gate-clean but whose exempt title dominates the percentage: 012 (division-of-the-work list of part titles), 036 (moment heading), 038 (§19, body-only 0.0%).
+- Long section titles are NOT exempt when they alone carry a run ≥ 15: those were reworded (label + `##` heading together, identically): 026 (§9), 041 (§22), 060 (§35 "in general"→"as such"), 111 (§81). Short/stem title matches (< 15 words) stay — terminology-locked titles are unprotectable and must match the frontmatter label.
+
+kant3 heading/label note: kant3 has no `toc_en.rs` — English labels live in frontmatter only, and `##` heading must equal the `label:` line; when a title must be reworded, change both identically and keep the "§ N." prefix.
+
 ### Terminology standard
 
 Erkenntnis = cognition (NOT knowledge; knowledge renders Wissen/Kenntnis). Anschauung = intuition, Verstand = understanding, Vernunft = reason, Vorstellung = representation, Grundsatz = principle, Vorschrift = precept, Willkür = free choice. Selbsterkenntnis = self-knowledge (corpus convention, exception to the Erkenntnis rule).
