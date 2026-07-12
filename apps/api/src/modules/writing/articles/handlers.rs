@@ -156,7 +156,16 @@ pub async fn update_article(
     )
     .await?;
 
-    cache::invalidate(&state, article_cache_paths(&slug));
+    // Drafts have no public presence — nothing cached to purge. For a
+    // published article, purge the old slug's paths (the URL caches
+    // know) and, after a title-driven slug change, the new one too.
+    if article.status == "published" {
+        let mut paths = article_cache_paths(&slug);
+        if article.slug != slug {
+            paths.extend(article_cache_paths(&article.slug));
+        }
+        cache::invalidate(&state, paths);
+    }
 
     Ok(Json(article))
 }
@@ -189,7 +198,9 @@ pub async fn publish_article(
         &user.roles,
     )
     .await?;
-    cache::invalidate(&state, article_cache_paths(&slug));
+    let mut paths = article_cache_paths(&slug);
+    paths.extend(sitemap_cache_paths());
+    cache::invalidate(&state, paths);
     Ok(Json(()))
 }
 
@@ -225,24 +236,30 @@ pub async fn archive_article(
     }
 
     crate::modules::writing::articles::db::archive_article(&state.pool, &slug, user.id).await?;
-    cache::invalidate(&state, article_cache_paths(&slug));
+    let mut paths = article_cache_paths(&slug);
+    paths.extend(sitemap_cache_paths());
+    cache::invalidate(&state, paths);
     Ok(Json(()))
 }
 
 /// Cache paths to invalidate when a published article appears, changes,
 /// or is removed. Listings get short-TTL'd already, but PURGEing them
 /// makes the change visible immediately rather than after the TTL.
+/// Draft-only changes purge nothing — no public URL serves a draft.
 fn article_cache_paths(slug: &str) -> Vec<String> {
     vec![
         format!("/articles/{slug}"),
         "/articles".to_string(),
         format!("/api/articles/{slug}"),
         "/api/articles".to_string(),
-        // Sitemaps list published articles and author profiles, so a
-        // publish/unpublish must show up before the 1h TTL elapses.
-        "/sitemap.xml".to_string(),
-        "/sitemaps/site.xml".to_string(),
     ]
+}
+
+/// Sitemap paths change only when the set of published articles (or
+/// qualifying author profiles) changes — publish/archive, not content
+/// edits, whose lastmod drift can ride out the 1h TTL.
+fn sitemap_cache_paths() -> Vec<String> {
+    vec!["/sitemap.xml".to_string(), "/sitemaps/site.xml".to_string()]
 }
 
 // ── Public article endpoints ──────────────────────────────
