@@ -1,3 +1,6 @@
-# https://www.robotstxt.org/robotstxt.html
+# Prod robots. The dev cluster never serves this file: its nginx
+# overlay answers /robots.txt directly with "Disallow: /".
 User-agent: *
-Disallow:
+Allow: /
+
+Sitemap: https://scholia.study/sitemap.xml

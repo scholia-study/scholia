@@ -1,8 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { StaticMDRenderer } from "../components/StaticMDRenderer";
 import privacyMd from "../content/privacy.md?raw";
+import { SEO_COPY, seoHead } from "../modules/seo";
 
 export const Route = createFileRoute("/privacy")({
+    head: () =>
+        seoHead({
+            title: SEO_COPY.privacy.title,
+            description: SEO_COPY.privacy.description,
+            path: "/privacy",
+        }),
     component: PrivacyPage,
 });
 

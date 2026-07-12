@@ -1,8 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useForgotPassword } from "../api/auth/auth";
+import { SEO_COPY, seoHead } from "../modules/seo";
 
 export const Route = createFileRoute("/forgot-password")({
+    head: () =>
+        seoHead({
+            title: SEO_COPY.auth.forgotPassword,
+            path: "/forgot-password",
+            noindex: true,
+        }),
     component: ForgotPasswordPage,
 });
 

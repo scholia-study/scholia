@@ -29,5 +29,6 @@ pub fn public_router() -> OpenApiRouter<AppState> {
         .routes(utoipa_axum::routes!(library::handlers::get_library))
         .routes(utoipa_axum::routes!(toc::handlers::get_toc))
         .routes(utoipa_axum::routes!(nodes::handlers::get_node))
+        .routes(utoipa_axum::routes!(nodes::handlers::get_node_meta))
         .routes(utoipa_axum::routes!(page::handlers::get_node_page))
 }

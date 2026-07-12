@@ -41,6 +41,8 @@ interface EnvConfig {
     PROFILE: Profile;
     /** Base URL for API calls. Empty string = same-origin (cluster). */
     API_BASE_URL: string;
+    /** Public origin for canonical URLs, Open Graph tags and JSON-LD. */
+    SITE_ORIGIN: string;
     STRIPE_PUBLISHABLE_KEY: string;
 }
 
@@ -53,6 +55,7 @@ const envConfigs = {
     local: {
         PROFILE: "local",
         API_BASE_URL: "http://localhost:4000",
+        SITE_ORIGIN: "http://localhost:3000",
         STRIPE_PUBLISHABLE_KEY: _stripePubKeyTest,
     },
     "local-proxy": {
@@ -63,16 +66,19 @@ const envConfigs = {
         // into the rendered HTML.
         PROFILE: "local-proxy",
         API_BASE_URL: "",
+        SITE_ORIGIN: "http://localhost:8000",
         STRIPE_PUBLISHABLE_KEY: _stripePubKeyTest,
     },
     dev: {
         PROFILE: "dev",
         API_BASE_URL: "",
+        SITE_ORIGIN: "https://dev.scholia.study",
         STRIPE_PUBLISHABLE_KEY: _stripePubKeyTest,
     },
     prod: {
         PROFILE: "prod",
         API_BASE_URL: "",
+        SITE_ORIGIN: "https://scholia.study",
         STRIPE_PUBLISHABLE_KEY: _stripePubKeyLive,
     },
 } as const satisfies Record<Profile, EnvConfig>;
@@ -89,3 +95,20 @@ const config = {
 } as const;
 
 export default config;
+
+/**
+ * Public site origin for canonical URLs, Open Graph tags and JSON-LD.
+ *
+ * A function rather than a constant: the module-level `config` freezes
+ * the profile at import time, which on the server is always "local"
+ * (see getActiveProfile). SEO head() calls run at render time, where
+ * `process.env.APP_PROFILE` reflects the actual deployment — mirror the
+ * runtime resolution `__root.tsx` uses for `window.__ENV__` injection.
+ */
+export function getSiteOrigin(): string {
+    const profile: Profile =
+        typeof window !== "undefined"
+            ? (window.__ENV__?.APP_PROFILE ?? "local")
+            : ((process.env.APP_PROFILE as Profile | undefined) ?? "local");
+    return envConfigs[profile].SITE_ORIGIN;
+}

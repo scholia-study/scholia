@@ -719,21 +719,29 @@ Two more hardening steps deferred:
   app tables (no DDL, no DROP). Currently the api uses the Postgres
   superuser. Limits blast radius if api credentials leak.
 
-### Dev lockdown landed (2026-05-18)
+### Dev lockdown landed (2026-05-18; Basic Auth → cookie gate later)
 
 Public visitors can no longer accidentally find dev.scholia.study.
-Three layers:
+Originally HTTP Basic Auth (`scholia`/`loves2study` htpasswd); since
+replaced by a **cookie gate**. Current layers:
 
-1. **HTTP Basic Auth** at the proxy (`scholia` / `loves2study`).
-   Bcrypt-hashed htpasswd in
-   `infra/k8s/overlays/dev/secrets/proxy-htpasswd.yaml`
-   (SOPS-encrypted), mounted via overlay patch at
-   `/etc/nginx/auth/htpasswd`.
-2. **robots.txt** served inline by the proxy (no auth needed so
-   crawlers can read the Disallow) + `X-Robots-Tag: noindex, nofollow,
-   noarchive` on every other response.
+1. **`dev_gate` cookie gate** at the proxy: `auth_request
+   /__gate_check` on every request; no cookie (or wrong token) → 403
+   "Restricted" page. One-time unlock per browser via
+   `/__unlock?key=<token>`, which sets a year-long HttpOnly cookie
+   and redirects to `/`. The token lives in the SOPS-encrypted
+   `infra/k8s/overlays/dev/secrets/proxy-dev-gate.yaml`; a
+   `render-gate` initContainer envsubsts it into the fragment at pod
+   start so the plaintext ConfigMap never contains it.
+2. **robots.txt** served inline by the proxy (`Disallow: /`, no gate
+   needed so crawlers can read it) + `X-Robots-Tag: noindex,
+   nofollow, noarchive` on every response. (Note: the base image now
+   ships a real prod robots.txt in `apps/web/public/` advertising the
+   sitemap — the overlay's exact-match `location = /robots.txt` keeps
+   overriding it on dev, which is why the base must never add its own
+   robots location.)
 3. **Stripe webhook carve-out**: `location ^~ /api/webhooks/` has
-   `auth_basic off;` so Stripe's servers reach the handler. Stripe-
+   `auth_request off;` so Stripe's servers reach the handler. Stripe-
    Signature header still authenticates.
 
 Structurally clean: the base proxy stays prod-ready (public, no auth).
@@ -742,17 +750,19 @@ Dev opts in via:
 - `apps/proxy/templates/default.conf.template` —
   `include /etc/nginx/conf.d/security/*.conf;` at server scope (no-op
   in base; dir is created empty by the Dockerfile).
-- `infra/k8s/overlays/dev/proxy-security.conf` — the lockdown
-  fragment (auth + robots + webhook carve-out).
+- `infra/k8s/overlays/dev/proxy-security.conf.template` — the
+  lockdown fragment (gate + robots + webhook carve-out), rendered by
+  the `render-gate` initContainer.
 - `infra/k8s/overlays/dev/proxy-lockdown-patch.yaml` — strategic
-  merge that mounts both the ConfigMap (generated from the fragment)
-  and the htpasswd Secret onto the proxy pod.
+  merge that mounts the fragment ConfigMap + wires the initContainer
+  and the `proxy-dev-gate` Secret onto the proxy pod.
 - `configMapGenerator` in `overlays/dev/kustomization.yaml` —
   content-hashed ConfigMap name so editing the fragment auto-restarts
   the pod.
 
 When prod overlay is built, no proxy changes needed — base is already
-public-by-default.
+public-by-default (and for SEO it MUST stay that way: see the SEO
+launch checklist in §8).
 
 ### Dev DB content + ergonomics (2026-05-18)
 
@@ -1009,7 +1019,7 @@ emergency wipes, but the primary content path is Jobs. The old
      pointing the Stripe Dashboard webhook at
      `https://dev.scholia.study/api/webhooks/stripe` and using the
      dev test-mode keys already in the api Secret. Carve-out
-     already in place (`/api/webhooks/` bypasses Basic Auth).
+     already in place (`/api/webhooks/` bypasses the dev gate).
 
 3. **Deferred hardening** (from earlier security review):
    - NetworkPolicy on Postgres ✅ done.
@@ -1082,23 +1092,80 @@ emergency wipes, but the primary content path is Jobs. The old
 - [ ] Sentry integration in API + frontend
 - [ ] Capacity-aware UX (warn at 80% of free-tier limits)
 
-### v1 — SEO infrastructure
+### v1 — SEO infrastructure — landed 2026-07-12
 
-Orthogonal to bringup; lands once the cache + PURGE pipeline is live
-in at least dev. Reuses the same invalidation plumbing so re-ingests
-and content writes don't strand stale crawler payloads.
+Shipped as a full layer (per-route meta + JSON-LD + sitemaps +
+crawler config), wider than the original sketch. Implementation
+notes where it diverged:
 
-- [ ] Sitemap: Rust handler at `/sitemap.xml` (and shard files
-      `/sitemap-bible-1.xml`, etc.) that enumerates canonical URLs
-      from the DB. Cacheable like everything else; PURGEd via the
-      ingest pipeline once that wiring lands.
-- [ ] JSON-LD breadcrumbs: rendered in `__root.tsx` (or the route
-      component) so they land in the SSR HTML. Reads a `breadcrumb`
-      field on `NodeDetail` — add server-side alongside the existing
-      `book_prefixed_label`.
-- [ ] OG images: lazy per-URL generator. Rust endpoint producing a
-      1200×630 PNG from book title + chapter label. Cache aggressively.
-      Punt until crawler data shows it matters.
+- [x] **Per-route head/meta**: every public route emits title,
+      description, canonical (pathname only — search params stripped),
+      OG/Twitter tags via `apps/web/src/modules/seo/` (`seoHead`
+      helper; ALL SEO prose centralized in `copy.ts`). Reader titles
+      carry TOC-trail context ("Genesis, Chapter 1 — King James
+      Bible"). Auth pages + archived articles + non-author profiles
+      are `noindex`. Public origin = `SITE_ORIGIN` per profile in
+      `apps/web/src/config.ts` (`getSiteOrigin()` resolves at render
+      time, not import time).
+- [x] **Excerpt meta descriptions**: lightweight
+      `GET /api/books/{slug}/nodes/{node_slug}/meta` returns the
+      node's opening text (first content blocks, heading/separator
+      excluded, 300-char word-boundary truncation); reader loader
+      awaits it in parallel with book+toc. Cached identity-free at
+      the proxy (regex widened to exactly this path).
+- [x] **Sitemap**: Rust module `apps/api/src/modules/seo/` (plain
+      axum routes outside OpenAPI, merged in `main.rs` like the
+      Stripe webhook). `/sitemap.xml` index → per-book files
+      `/sitemaps/books/{slug}.xml` + `/sitemaps/site.xml` (statics,
+      published articles, author-only profiles) — not the
+      `/sitemap-bible-1.xml` shard scheme (per-book ≤ ~1.3k URLs,
+      nowhere near the 50k limit). ~7k URLs total, `lastmod` from
+      `updated_at`. nginx routes + caches them in `api_cache`; the
+      :8080 PURGE listener mirrors the path split; article
+      publish/archive purges `/sitemap.xml` + `/sitemaps/site.xml`.
+      Ingest-pipeline purge of book sitemaps still TODO if re-ingests
+      while the cache is hot ever matter (1h TTL covers it today).
+- [x] **JSON-LD**: Book / Chapter (isPartOf) / BreadcrumbList /
+      Article / ProfilePage, built in `modules/seo/jsonld.ts` from
+      loader scalars — NOT a `breadcrumb` field on `NodeDetail`
+      (the TOC trail the loader already has covers it; no API change
+      needed). Escaped against `</script>` breakout (user-authored
+      bios/titles). `workTranslation`/`translationOfWork` cross-link
+      Kant DE↔EN editions; Bible siblings deliberately unlinked
+      (KJV is not a translation *of* WEB).
+- [x] **robots.txt / manifest.json**: prod robots advertises
+      `https://scholia.study/sitemap.xml` (dev overlay keeps
+      overriding with `Disallow: /`); manifest branded.
+- [x] **SSR correctness**: `/users/{handle}` now truly SSRs
+      (suspense + loader prefetch); both `by-id` resolver routes are
+      real 301s (the old `"isRedirect" in err` check silently
+      swallowed redirects under the current router version).
+- [x] **turbo env fix**: `dev` task `passThroughEnv: ["APP_PROFILE"]`
+      — turbo v2 strict env mode was silently dropping the profile,
+      so `pnpm dev:all` SSR'd with `local` config through the proxy.
+- [x] OG image, static default (2026-07-12):
+      `apps/web/public/images/og-default.png` (1200×630 — logo,
+      wordmark, "Study the world's classics, sentence by sentence"),
+      emitted on every page via the `OG_IMAGE` const in
+      `modules/seo/head.ts`; twitter:card = `summary_large_image`.
+      Served from `/images/` (30-day proxy cache).
+- [ ] OG images, per-URL generator: Rust endpoint producing a
+      1200×630 PNG from book title + chapter label. Cache
+      aggressively. Punt until share/crawler data shows it matters —
+      the static default covers all pages meanwhile.
+
+**SEO launch checklist** (blocks indexing going live, belongs with
+prod bringup):
+
+- [ ] Prod ingress: replace `PLACEHOLDER.example.com` host with
+      `scholia.study`.
+- [ ] Prod overlay must NOT include the dev lockdown fragment
+      (X-Robots-Tag noindex / gate / robots override) — shipping it
+      would zero out the whole SEO layer.
+- [ ] Prod env: `FRONTEND_URL=https://scholia.study` on the API
+      (sitemap URL base) and `APP_PROFILE=prod` on web (canonicals).
+- [ ] Submit `/sitemap.xml` in Google Search Console; run one reader
+      URL + one article through the Rich Results Test.
 
 ### v2 — Observability + scale
 

@@ -1,39 +1,90 @@
 import Avatar from "@mui/material/Avatar";
-import { createFileRoute } from "@tanstack/react-router";
-import { useGetPublicProfile } from "../api/users/users";
+import { createFileRoute, notFound } from "@tanstack/react-router";
+import { FetchError } from "../api/fetcher";
+import {
+    getGetPublicProfileSuspenseQueryOptions,
+    useGetPublicProfileSuspense,
+} from "../api/users/users";
 import { ArticleCard } from "../modules/article";
+import {
+    metaDescription,
+    profileJsonLd,
+    SEO_COPY,
+    seoHead,
+} from "../modules/seo";
 import { MemberChips } from "../modules/user";
 
 export const Route = createFileRoute("/users/$handle")({
+    loader: async ({ context, params }) => {
+        try {
+            const res = await context.queryClient.ensureQueryData(
+                getGetPublicProfileSuspenseQueryOptions(params.handle, {}),
+            );
+            const profile = res.data;
+            return {
+                displayName: profile.display_name,
+                bio: profile.bio ?? null,
+                hasPublishedArticles: profile.article_total > 0,
+            };
+        } catch (err) {
+            if (err instanceof FetchError && err.status === 404) {
+                throw notFound();
+            }
+            throw err;
+        }
+    },
+    head: ({ loaderData, params }) => {
+        if (!loaderData) return {};
+        const path = `/users/${params.handle}`;
+        return seoHead({
+            title: SEO_COPY.profile.title(
+                loaderData.displayName,
+                params.handle,
+            ),
+            description: metaDescription(
+                loaderData.bio ??
+                    SEO_COPY.profile.description(loaderData.displayName),
+            ),
+            path,
+            ogType: "profile",
+            // Thin-content guard: only author profiles (≥1 published
+            // article) are worth a search result.
+            noindex: !loaderData.hasPublishedArticles,
+            jsonLd: [
+                profileJsonLd(
+                    {
+                        displayName: loaderData.displayName,
+                        handle: params.handle,
+                        bio: loaderData.bio,
+                    },
+                    path,
+                ),
+            ],
+        });
+    },
     component: PublicProfilePage,
+    notFoundComponent: UserNotFound,
 });
+
+function UserNotFound() {
+    const { handle } = Route.useParams();
+    return (
+        <div className="w-full max-w-3xl mx-auto px-8 py-16">
+            <h1 className="text-2xl font-bold text-stone-900 mb-2">
+                User not found
+            </h1>
+            <p className="text-sm text-stone-500">
+                No user with the handle{" "}
+                <span className="font-mono">{handle}</span>.
+            </p>
+        </div>
+    );
+}
 
 function PublicProfilePage() {
     const { handle } = Route.useParams();
-    const { data, isLoading, isError } = useGetPublicProfile(handle, {});
-    const profile = data?.data;
-
-    if (isLoading) {
-        return (
-            <div className="w-full max-w-3xl mx-auto px-8 py-16">
-                <p className="text-sm text-stone-400">Loading…</p>
-            </div>
-        );
-    }
-
-    if (isError || !profile) {
-        return (
-            <div className="w-full max-w-3xl mx-auto px-8 py-16">
-                <h1 className="text-2xl font-bold text-stone-900 mb-2">
-                    User not found
-                </h1>
-                <p className="text-sm text-stone-500">
-                    No user with the handle{" "}
-                    <span className="font-mono">{handle}</span>.
-                </p>
-            </div>
-        );
-    }
+    const { data } = useGetPublicProfileSuspense(handle, {});
+    const profile = data.data;
 
     const memberSince = new Date(profile.created_at).toLocaleDateString(
         undefined,

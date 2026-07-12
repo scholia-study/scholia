@@ -68,6 +68,7 @@ export * from "./listUserArticlesParams.ts";
 export * from "./loginRequest.ts";
 export * from "./messageResponse.ts";
 export * from "./nodeDetail.ts";
+export * from "./nodeMetaResponse.ts";
 export * from "./nodePage.ts";
 export * from "./noteLimitsResponse.ts";
 export * from "./noteListResponse.ts";

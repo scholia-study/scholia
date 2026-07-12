@@ -238,6 +238,10 @@ fn article_cache_paths(slug: &str) -> Vec<String> {
         "/articles".to_string(),
         format!("/api/articles/{slug}"),
         "/api/articles".to_string(),
+        // Sitemaps list published articles and author profiles, so a
+        // publish/unpublish must show up before the 1h TTL elapses.
+        "/sitemap.xml".to_string(),
+        "/sitemaps/site.xml".to_string(),
     ]
 }
 

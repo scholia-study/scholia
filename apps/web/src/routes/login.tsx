@@ -4,6 +4,7 @@ import { useState } from "react";
 import { getMeQueryKey, useLogin } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import config from "../config";
+import { SEO_COPY, seoHead } from "../modules/seo";
 
 interface LoginSearch {
     verified?: string;
@@ -17,6 +18,12 @@ export const Route = createFileRoute("/login")({
         password_reset: search.password_reset as string | undefined,
         error: search.error as string | undefined,
     }),
+    head: () =>
+        seoHead({
+            title: SEO_COPY.auth.login,
+            path: "/login",
+            noindex: true,
+        }),
     component: LoginPage,
 });
 

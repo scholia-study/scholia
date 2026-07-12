@@ -3,8 +3,15 @@ import { useState } from "react";
 import { useRegister } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import config from "../config";
+import { SEO_COPY, seoHead } from "../modules/seo";
 
 export const Route = createFileRoute("/register")({
+    head: () =>
+        seoHead({
+            title: SEO_COPY.auth.register,
+            path: "/register",
+            noindex: true,
+        }),
     component: RegisterPage,
 });
 

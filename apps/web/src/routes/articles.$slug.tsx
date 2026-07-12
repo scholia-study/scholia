@@ -16,12 +16,62 @@ import {
     ArticleSentences,
     QuotationCard,
 } from "../modules/quotation";
+import {
+    articleJsonLd,
+    breadcrumbJsonLd,
+    metaDescription,
+    SEO_COPY,
+    seoHead,
+    stripHtml,
+} from "../modules/seo";
 
 export const Route = createFileRoute("/articles/$slug")({
-    loader: ({ context, params }) => {
-        context.queryClient.prefetchQuery(
+    loader: async ({ context, params }) => {
+        const res = await context.queryClient.ensureQueryData(
             getGetPublishedArticleSuspenseQueryOptions(params.slug),
         );
+        const article = res.data;
+        return {
+            title: article.title,
+            description: article.description
+                ? metaDescription(article.description)
+                : metaDescription(stripHtml(article.html)),
+            archived: article.status === "archived",
+            authorName: article.author_display_name,
+            authorHandle: article.author_handle ?? null,
+            publishedAt: article.published_at ?? null,
+            updatedAt: article.updated_at,
+        };
+    },
+    head: ({ loaderData, params }) => {
+        if (!loaderData) return {};
+        const path = `/articles/${params.slug}`;
+        return seoHead({
+            title: SEO_COPY.article.title(loaderData.title),
+            description: loaderData.description,
+            path,
+            ogType: "article",
+            noindex: loaderData.archived,
+            jsonLd: [
+                articleJsonLd(
+                    {
+                        title: loaderData.title,
+                        description: loaderData.description,
+                        authorName: loaderData.authorName,
+                        authorPath: loaderData.authorHandle
+                            ? `/users/${loaderData.authorHandle}`
+                            : null,
+                        publishedAt: loaderData.publishedAt,
+                        updatedAt: loaderData.updatedAt,
+                    },
+                    path,
+                ),
+                breadcrumbJsonLd([
+                    { name: "Articles", path: "/articles" },
+                    { name: loaderData.title, path },
+                ]),
+            ],
+        });
     },
     component: PublishedArticlePage,
     pendingComponent: () => <ArticlePageUI kind="loading" />,

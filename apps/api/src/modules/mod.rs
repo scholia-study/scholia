@@ -8,4 +8,5 @@ pub mod billing;
 pub mod corpus;
 pub mod feedback;
 pub mod identity;
+pub mod seo;
 pub mod writing;

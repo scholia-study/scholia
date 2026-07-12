@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT cb.text\n           FROM content_blocks cb\n           JOIN toc_nodes tn ON tn.id = cb.node_id\n           JOIN books b ON b.id = tn.book_id\n           WHERE b.slug = $1 AND tn.slug = $2 AND cb.text <> ''\n             AND cb.block_type NOT IN ('heading', 'separator')\n           ORDER BY cb.position\n           LIMIT 3",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "text",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Text"]
+        },
+        "nullable": [false]
+    },
+    "hash": "8ab7a5c73ff564b63bf31c674fb0309ac60961e2b26cb986a36926e8bf4acf72"
+}

@@ -2,8 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { StaticMDRenderer } from "../components/StaticMDRenderer";
 import { CONTACT_EMAIL } from "../constants";
 import contributeMd from "../content/contribute.md?raw";
+import { SEO_COPY, seoHead } from "../modules/seo";
 
 export const Route = createFileRoute("/contribute")({
+    head: () =>
+        seoHead({
+            title: SEO_COPY.contribute.title,
+            description: SEO_COPY.contribute.description,
+            path: "/contribute",
+        }),
     component: ContributePage,
 });
 

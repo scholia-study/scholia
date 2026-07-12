@@ -1,31 +1,35 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { ArticlePageUI } from "#/modules/article";
-import {
-    getGetArticleByIdSuspenseQueryOptions,
-    useGetArticleByIdSuspense,
-} from "../api/articles/articles";
+import { getArticleById } from "../api/articles/articles";
+import { FetchError } from "../api/fetcher";
 
+/**
+ * Durable redirect from a UUID-keyed article URL to the slug URL.
+ * Resolved in the loader so SSR answers with a real 301 (crawlers and
+ * link equity follow it) instead of a client-side <Navigate> shell.
+ */
 export const Route = createFileRoute("/articles/by-id/$id")({
-    loader: ({ context, params }) => {
-        context.queryClient.prefetchQuery(
-            getGetArticleByIdSuspenseQueryOptions(params.id),
-        );
+    loader: async ({ params }) => {
+        let slug: string | undefined;
+        try {
+            const res = await getArticleById(params.id);
+            if (res.status === 200) slug = res.data?.slug;
+        } catch (err) {
+            if (!(err instanceof FetchError && err.status === 404)) {
+                throw err;
+            }
+        }
+        if (slug) {
+            throw redirect({
+                to: "/articles/$slug",
+                params: { slug },
+                statusCode: 301,
+                replace: true,
+            });
+        }
+        throw notFound();
     },
-    component: ArticleByIdRedirect,
     pendingComponent: () => <ArticlePageUI kind="loading" />,
     errorComponent: () => <ArticlePageUI kind="error" />,
+    notFoundComponent: () => <ArticlePageUI kind="error" />,
 });
-
-function ArticleByIdRedirect() {
-    const { id } = Route.useParams();
-    const { data } = useGetArticleByIdSuspense(id);
-    const article = data?.data;
-
-    return (
-        <Navigate
-            to="/articles/$slug"
-            params={{ slug: article.slug }}
-            replace
-        />
-    );
-}

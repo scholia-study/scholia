@@ -1,6 +1,14 @@
 use serde::Serialize;
 use utoipa::ToSchema;
 
+/// Lightweight per-node metadata for SEO: the opening text of the
+/// node's content, for meta descriptions and social previews. `null`
+/// for structural nodes without content blocks.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct NodeMetaResponse {
+    pub excerpt: Option<String>,
+}
+
 #[derive(Debug, Serialize, ToSchema)]
 pub struct NodeDetail {
     pub id: String,

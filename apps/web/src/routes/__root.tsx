@@ -66,7 +66,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
                 },
                 { title: "Scholia" },
             ],
-            links: [{ rel: "stylesheet", href: appCss }],
+            links: [
+                { rel: "stylesheet", href: appCss },
+                { rel: "icon", href: "/favicon.ico" },
+                { rel: "manifest", href: "/manifest.json" },
+            ],
             scripts: [
                 {
                     children: `window.__ENV__ = { APP_PROFILE: ${JSON.stringify(profile)} };`,

@@ -12,6 +12,7 @@ import {
     useListTopicsSuspense,
 } from "../api/topics/topics";
 import { ArticleCard } from "../modules/article";
+import { SEO_COPY, seoHead } from "../modules/seo";
 
 type ArticlesSearch = {
     page?: number;
@@ -21,10 +22,24 @@ type ArticlesSearch = {
 
 export const Route = createFileRoute("/articles/")({
     component: ArticlesListingPage,
+    // Canonical stays at the unfiltered list — page/topic/label filters
+    // are views of the same collection, not distinct documents.
+    head: () =>
+        seoHead({
+            title: SEO_COPY.articles.title,
+            description: SEO_COPY.articles.description,
+            path: "/articles",
+        }),
     validateSearch: (search: Record<string, unknown>): ArticlesSearch => {
         const parsedPage = Number(search.page);
         return {
-            page: !Number.isNaN(parsedPage) && parsedPage > 0 ? parsedPage : 1,
+            // Absent = page 1. Keeping the default OUT of the URL means
+            // /articles serves 200 directly instead of 307-redirecting
+            // to /articles?page=1 (bad for crawlers and link equity).
+            page:
+                !Number.isNaN(parsedPage) && parsedPage > 1
+                    ? parsedPage
+                    : undefined,
             topic_slug:
                 typeof search.topic_slug === "string"
                     ? search.topic_slug
@@ -215,7 +230,7 @@ function SuspendedArticleList({
                                     })
                                 }
                                 className={`px-3 py-1 text-sm rounded ${
-                                    p === page
+                                    p === (page ?? 1)
                                         ? "bg-stone-800 text-white"
                                         : "text-stone-500 hover:bg-stone-100"
                                 }`}

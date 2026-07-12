@@ -17,12 +17,19 @@ import {
     LOC_STORAGE_KEYS,
     setLocalStorage,
 } from "../hooks/local-storage";
+import { SEO_COPY, seoHead } from "../modules/seo";
 import { libraryHasBook, TOUR_BOOK_SLUG, useReaderTour } from "../modules/tour";
 
 export const Route = createFileRoute("/")({
     loader: ({ context }) => {
         context.queryClient.prefetchQuery(getGetLibrarySuspenseQueryOptions());
     },
+    head: () =>
+        seoHead({
+            title: SEO_COPY.library.title,
+            description: SEO_COPY.library.description,
+            path: "/",
+        }),
     component: IndexPage,
 });
 

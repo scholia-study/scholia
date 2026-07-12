@@ -2,8 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { StaticMDRenderer } from "../components/StaticMDRenderer";
 import { CONTACT_EMAIL } from "../constants";
 import licenceMd from "../content/licence.md?raw";
+import { SEO_COPY, seoHead } from "../modules/seo";
 
 export const Route = createFileRoute("/licence")({
+    head: () =>
+        seoHead({
+            title: SEO_COPY.licence.title,
+            description: SEO_COPY.licence.description,
+            path: "/licence",
+        }),
     component: LicencePage,
 });
 

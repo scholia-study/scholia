@@ -18,6 +18,52 @@ struct NodeRow {
     source_node_id: Option<Uuid>,
 }
 
+/// Opening plain text of a node's content, for SEO excerpts: the first
+/// few non-empty content blocks in position order. Returns `None` for
+/// a node that exists but has no content blocks, `NotFound` when the
+/// book/node pair is unknown.
+pub async fn get_node_opening_text(
+    pool: &PgPool,
+    book_slug: &str,
+    node_slug: &str,
+) -> Result<Option<Vec<String>>, AppError> {
+    let node_exists = sqlx::query_scalar!(
+        r#"SELECT EXISTS(
+               SELECT 1 FROM toc_nodes tn
+               JOIN books b ON b.id = tn.book_id
+               WHERE b.slug = $1 AND tn.slug = $2
+           ) AS "exists!""#,
+        book_slug,
+        node_slug,
+    )
+    .fetch_one(pool)
+    .await?;
+    if !node_exists {
+        return Err(AppError::NotFound(format!(
+            "Node not found: {book_slug}/{node_slug}"
+        )));
+    }
+
+    // Headings echo the node label and separators carry no prose —
+    // neither makes a useful search snippet.
+    let texts = sqlx::query_scalar!(
+        r#"SELECT cb.text
+           FROM content_blocks cb
+           JOIN toc_nodes tn ON tn.id = cb.node_id
+           JOIN books b ON b.id = tn.book_id
+           WHERE b.slug = $1 AND tn.slug = $2 AND cb.text <> ''
+             AND cb.block_type NOT IN ('heading', 'separator')
+           ORDER BY cb.position
+           LIMIT 3"#,
+        book_slug,
+        node_slug,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(if texts.is_empty() { None } else { Some(texts) })
+}
+
 struct BlockRow {
     id: Uuid,
     position: i16,

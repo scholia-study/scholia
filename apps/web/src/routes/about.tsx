@@ -1,8 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { StaticMDRenderer } from "../components/StaticMDRenderer";
 import aboutMd from "../content/about.md?raw";
+import { SEO_COPY, seoHead } from "../modules/seo";
 
 export const Route = createFileRoute("/about")({
+    head: () =>
+        seoHead({
+            title: SEO_COPY.about.title,
+            description: SEO_COPY.about.description,
+            path: "/about",
+        }),
     component: AboutPage,
 });
 

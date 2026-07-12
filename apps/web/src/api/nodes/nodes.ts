@@ -35,6 +35,7 @@ import type {
     GetNodePageParams,
     GetNodeParams,
     NodeDetail,
+    NodeMetaResponse,
     NodePage,
 } from "../model";
 
@@ -1118,6 +1119,343 @@ export function useGetNodeSuspense<
         slug,
         nodeSlug,
         params,
+        options,
+    );
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export type getNodeMetaResponse200 = {
+    data: NodeMetaResponse;
+    status: 200;
+};
+
+export type getNodeMetaResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type getNodeMetaResponseSuccess = getNodeMetaResponse200 & {
+    headers: Headers;
+};
+export type getNodeMetaResponseError = getNodeMetaResponse404 & {
+    headers: Headers;
+};
+
+export const getGetNodeMetaUrl = (slug: string, nodeSlug: string) => {
+    return `/api/books/${slug}/nodes/${nodeSlug}/meta`;
+};
+
+/**
+ * @summary Get node metadata (SEO excerpt)
+ */
+export const getNodeMeta = async (
+    slug: string,
+    nodeSlug: string,
+    options?: RequestInit,
+): Promise<getNodeMetaResponseSuccess> => {
+    return customFetch<getNodeMetaResponseSuccess>(
+        getGetNodeMetaUrl(slug, nodeSlug),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
+};
+
+export const getGetNodeMetaQueryKey = (slug: string, nodeSlug: string) => {
+    return [`/api/books/${slug}/nodes/${nodeSlug}/meta`] as const;
+};
+
+export const getGetNodeMetaQueryOptions = <
+    TData = Awaited<ReturnType<typeof getNodeMeta>>,
+    TError = void,
+>(
+    slug: string,
+    nodeSlug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getNodeMeta>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getGetNodeMetaQueryKey(slug, nodeSlug);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNodeMeta>>> = ({
+        signal,
+    }) => getNodeMeta(slug, nodeSlug, { signal, ...requestOptions });
+
+    return {
+        queryKey,
+        queryFn,
+        enabled:
+            slug !== null &&
+            slug !== undefined &&
+            nodeSlug !== null &&
+            nodeSlug !== undefined,
+        ...queryOptions,
+    } as UseQueryOptions<
+        Awaited<ReturnType<typeof getNodeMeta>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetNodeMetaQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getNodeMeta>>
+>;
+export type GetNodeMetaQueryError = void;
+
+export function useGetNodeMeta<
+    TData = Awaited<ReturnType<typeof getNodeMeta>>,
+    TError = void,
+>(
+    slug: string,
+    nodeSlug: string,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getNodeMeta>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getNodeMeta>>,
+                    TError,
+                    Awaited<ReturnType<typeof getNodeMeta>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetNodeMeta<
+    TData = Awaited<ReturnType<typeof getNodeMeta>>,
+    TError = void,
+>(
+    slug: string,
+    nodeSlug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getNodeMeta>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof getNodeMeta>>,
+                    TError,
+                    Awaited<ReturnType<typeof getNodeMeta>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetNodeMeta<
+    TData = Awaited<ReturnType<typeof getNodeMeta>>,
+    TError = void,
+>(
+    slug: string,
+    nodeSlug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getNodeMeta>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get node metadata (SEO excerpt)
+ */
+
+export function useGetNodeMeta<
+    TData = Awaited<ReturnType<typeof getNodeMeta>>,
+    TError = void,
+>(
+    slug: string,
+    nodeSlug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof getNodeMeta>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetNodeMetaQueryOptions(slug, nodeSlug, options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getGetNodeMetaSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof getNodeMeta>>,
+    TError = void,
+>(
+    slug: string,
+    nodeSlug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getNodeMeta>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getGetNodeMetaQueryKey(slug, nodeSlug);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNodeMeta>>> = ({
+        signal,
+    }) => getNodeMeta(slug, nodeSlug, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getNodeMeta>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetNodeMetaSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof getNodeMeta>>
+>;
+export type GetNodeMetaSuspenseQueryError = void;
+
+export function useGetNodeMetaSuspense<
+    TData = Awaited<ReturnType<typeof getNodeMeta>>,
+    TError = void,
+>(
+    slug: string,
+    nodeSlug: string,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getNodeMeta>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetNodeMetaSuspense<
+    TData = Awaited<ReturnType<typeof getNodeMeta>>,
+    TError = void,
+>(
+    slug: string,
+    nodeSlug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getNodeMeta>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetNodeMetaSuspense<
+    TData = Awaited<ReturnType<typeof getNodeMeta>>,
+    TError = void,
+>(
+    slug: string,
+    nodeSlug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getNodeMeta>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get node metadata (SEO excerpt)
+ */
+
+export function useGetNodeMetaSuspense<
+    TData = Awaited<ReturnType<typeof getNodeMeta>>,
+    TError = void,
+>(
+    slug: string,
+    nodeSlug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getNodeMeta>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGetNodeMetaSuspenseQueryOptions(
+        slug,
+        nodeSlug,
         options,
     );
 

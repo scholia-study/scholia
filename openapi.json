@@ -1150,6 +1150,48 @@
                 }
             }
         },
+        "/api/books/{slug}/nodes/{node_slug}/meta": {
+            "get": {
+                "tags": ["nodes"],
+                "summary": "Get node metadata (SEO excerpt)",
+                "operationId": "get_node_meta",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Book slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "node_slug",
+                        "in": "path",
+                        "description": "Node slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Node metadata",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NodeMetaResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Node not found"
+                    }
+                }
+            }
+        },
         "/api/books/{slug}/quotations": {
             "get": {
                 "tags": ["quotations"],
@@ -3997,6 +4039,15 @@
                     },
                     "source_ref": {
                         "type": "string"
+                    }
+                }
+            },
+            "NodeMetaResponse": {
+                "type": "object",
+                "description": "Lightweight per-node metadata for SEO: the opening text of the\nnode's content, for meta descriptions and social previews. `null`\nfor structural nodes without content blocks.",
+                "properties": {
+                    "excerpt": {
+                        "type": ["string", "null"]
                     }
                 }
             },

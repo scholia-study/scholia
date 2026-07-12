@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT EXISTS(\n               SELECT 1 FROM toc_nodes tn\n               JOIN books b ON b.id = tn.book_id\n               WHERE b.slug = $1 AND tn.slug = $2\n           ) AS \"exists!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "exists!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Text"]
+        },
+        "nullable": [null]
+    },
+    "hash": "7feb72d1d58afba629facfd037cb0931f55248783a2848d298a3932e249846dc"
+}

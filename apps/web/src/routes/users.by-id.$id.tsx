@@ -1,33 +1,35 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { FetchError } from "../api/fetcher";
 import { getHandleById } from "../api/users/users";
 
 /**
  * Durable redirect from a UUID-keyed profile URL to the user's current
- * handle URL. Mirrors `/articles/by-id/<id>` for articles.
- *
- * Resolved during `beforeLoad` so the URL bar lands on the canonical
- * `/users/<handle>` form (good for sharing and bookmarking).
+ * handle URL. Mirrors `/articles/by-id/<id>` for articles. Resolved in
+ * the loader so SSR answers with a real 301 (crawlers and link equity
+ * follow it) instead of rendering a shell.
  */
 export const Route = createFileRoute("/users/by-id/$id")({
-    beforeLoad: async ({ params }) => {
+    loader: async ({ params }) => {
+        let handle: string | undefined;
         try {
             const res = await getHandleById(params.id);
-            if (res.status === 200 && res.data?.handle) {
-                throw redirect({
-                    to: "/users/$handle",
-                    params: { handle: res.data.handle },
-                });
-            }
+            if (res.status === 200) handle = res.data?.handle;
         } catch (err) {
-            // Re-throw redirects (TanStack uses thrown errors as the
-            // navigation primitive). Anything else means the lookup
-            // failed; let the component show the not-found state.
-            if (err && typeof err === "object" && "isRedirect" in err) {
+            if (!(err instanceof FetchError && err.status === 404)) {
                 throw err;
             }
         }
+        if (handle) {
+            throw redirect({
+                to: "/users/$handle",
+                params: { handle },
+                statusCode: 301,
+                replace: true,
+            });
+        }
+        throw notFound();
     },
-    component: NotFound,
+    notFoundComponent: NotFound,
 });
 
 function NotFound() {

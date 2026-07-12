@@ -111,6 +111,9 @@ async fn main() {
         .layer(session_layer)
         .layer(cors)
         .merge(api::modules::billing::webhook_routes())
+        // Sitemaps: undocumented GET-only XML routes at the site root,
+        // proxied+cached by nginx. Session/CORS layers are irrelevant.
+        .merge(api::modules::seo::routes())
         .with_state(app_state)
         // Outermost: turn any handler panic into a 500 instead of a dropped
         // connection. Wraps every route, including the merged Stripe webhook.

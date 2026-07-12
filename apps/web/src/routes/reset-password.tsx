@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useResetPassword } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
+import { SEO_COPY, seoHead } from "../modules/seo";
 
 interface ResetSearch {
     token?: string;
@@ -11,6 +12,12 @@ export const Route = createFileRoute("/reset-password")({
     validateSearch: (search: Record<string, unknown>): ResetSearch => ({
         token: search.token as string | undefined,
     }),
+    head: () =>
+        seoHead({
+            title: SEO_COPY.auth.resetPassword,
+            path: "/reset-password",
+            noindex: true,
+        }),
     component: ResetPasswordPage,
 });
 

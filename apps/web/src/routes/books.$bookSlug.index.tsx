@@ -8,15 +8,48 @@ import {
     useGetTocSuspense,
 } from "../api/toc/toc";
 import { BibleShapeFullToc, PanelToc } from "../modules/reader";
+import {
+    bookJsonLd,
+    breadcrumbJsonLd,
+    metaDescription,
+    SEO_COPY,
+    seoHead,
+    toBookMeta,
+} from "../modules/seo";
 
 export const Route = createFileRoute("/books/$bookSlug/")({
-    loader: ({ context, params }) => {
-        context.queryClient.prefetchQuery(
-            getGetBookSuspenseQueryOptions(params.bookSlug),
-        );
+    loader: async ({ context, params }) => {
         context.queryClient.prefetchQuery(
             getGetTocSuspenseQueryOptions(params.bookSlug),
         );
+        const bookRes = await context.queryClient.ensureQueryData(
+            getGetBookSuspenseQueryOptions(params.bookSlug),
+        );
+        return { bookMeta: toBookMeta(bookRes.data) };
+    },
+    head: ({ loaderData, params }) => {
+        if (!loaderData) return {};
+        const { bookMeta } = loaderData;
+        const path = `/books/${params.bookSlug}`;
+        return seoHead({
+            title: SEO_COPY.bookToc.title(bookMeta.title),
+            description: metaDescription(
+                SEO_COPY.bookToc.description(
+                    bookMeta.title,
+                    bookMeta.publicationYear,
+                    bookMeta.author,
+                ),
+            ),
+            path,
+            ogType: "book",
+            jsonLd: [
+                bookJsonLd(bookMeta, path),
+                breadcrumbJsonLd([
+                    { name: "Library", path: "/" },
+                    { name: bookMeta.title, path },
+                ]),
+            ],
+        });
     },
     component: BookPage,
 });

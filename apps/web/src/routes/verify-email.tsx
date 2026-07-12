@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SEO_COPY, seoHead } from "../modules/seo";
 
 interface VerifyEmailSearch {
     success?: string;
@@ -8,6 +9,12 @@ export const Route = createFileRoute("/verify-email")({
     validateSearch: (search: Record<string, unknown>): VerifyEmailSearch => ({
         success: search.success as string | undefined,
     }),
+    head: () =>
+        seoHead({
+            title: SEO_COPY.auth.verifyEmail,
+            path: "/verify-email",
+            noindex: true,
+        }),
     component: VerifyEmailPage,
 });
 
