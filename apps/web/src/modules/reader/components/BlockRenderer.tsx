@@ -495,6 +495,8 @@ export function Block({
     const blockHtml =
         showOriginal && block.original_html ? block.original_html : block.html;
 
+    const { showBookmarks, isFigureSaved } = useQuotationContext();
+
     // Per-sentence display-marker lists: drop a page_marker whose
     // ref_value matches the previous sentence's for the same system.
     // Bible verses now segment to multiple sentences sharing a verse
@@ -686,6 +688,14 @@ export function Block({
 
             return (
                 <div className="relative py-4">
+                    {showBookmarks && isFigureSaved(block.figure_number) && (
+                        <span
+                            className="absolute right-full mr-1 text-stone-300 select-none pointer-events-none"
+                            title="Saved quotation"
+                        >
+                            <EditNoteOutlined sx={{ fontSize: 14 }} />
+                        </span>
+                    )}
                     {leftMarkers && (
                         <MarginNotes markers={leftMarkers} side="left" />
                     )}

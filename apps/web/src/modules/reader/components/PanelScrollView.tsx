@@ -279,7 +279,9 @@ export const PanelScrollView = forwardRef<
                     if (
                         sentence.id === key ||
                         (sentence.sentence_number != null &&
-                            String(sentence.sentence_number) === key)
+                            String(sentence.sentence_number) === key) ||
+                        (sentence.figure_number != null &&
+                            `fig${sentence.figure_number}` === key)
                     ) {
                         onSelectSentence(sentence, false);
                         break;

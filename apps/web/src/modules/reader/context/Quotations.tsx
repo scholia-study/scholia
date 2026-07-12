@@ -23,12 +23,17 @@ interface QuotationContextValue {
         nodeSourceRef: string | null | undefined,
         pageMarkers: PageMarkerResponse[] | null | undefined,
     ) => boolean;
+    /** Whether a figure block carries a saved-quotation marker. Figures are
+     *  addressed by figure_number (kind 'figure'), a numbering space separate
+     *  from body sentences. */
+    isFigureSaved: (figureNumber: number | null | undefined) => boolean;
 }
 
 const QuotationContext = createContext<QuotationContextValue>({
     quotations: [],
     showBookmarks: true,
     isSentenceSaved: () => false,
+    isFigureSaved: () => false,
 });
 
 /** Parse a verse `ref_value` like "5:10" into [chapter, verse]. */
@@ -104,12 +109,23 @@ export function QuotationProvider({
                 if (q.projected_verse_start ?? q.anchor_verse_start) {
                     return false;
                 }
+                // Figure quotations carry the figure_number, which lives in
+                // a different numbering space than body sentences.
+                if (q.sentence_kind === "figure") return false;
                 const start = q.anchor_sentence_start_number;
                 const end = q.anchor_sentence_end_number ?? start;
                 return sentenceNumber >= start && sentenceNumber <= end;
             });
         };
-        return { quotations, showBookmarks, isSentenceSaved };
+        const isFigureSaved = (figureNumber: number | null | undefined) => {
+            if (figureNumber == null) return false;
+            return quotations.some(
+                (q) =>
+                    q.sentence_kind === "figure" &&
+                    q.anchor_sentence_start_number === figureNumber,
+            );
+        };
+        return { quotations, showBookmarks, isSentenceSaved, isFigureSaved };
     }, [quotations, showBookmarks]);
 
     return (

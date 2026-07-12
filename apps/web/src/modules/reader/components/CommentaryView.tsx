@@ -54,6 +54,16 @@ export function getSentenceRange(
         return { start, end, kind };
     }
 
+    // Figure anchors sit outside the body enumeration (sentence_number is
+    // null); they are addressed by the block's figure_number instead.
+    if (
+        "figure_number" in selectedSentence &&
+        selectedSentence.figure_number != null
+    ) {
+        const fig = selectedSentence.figure_number;
+        return { start: fig, end: fig, kind: "figure" };
+    }
+
     const num = selectedSentence.sentence_number;
     if (num == null) return null;
     const kind = "page_markers" in selectedSentence ? "body" : "footnote";

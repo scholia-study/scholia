@@ -27,7 +27,7 @@ import {
     useListNotes,
     useListQuotations,
 } from "../../../api/quotations/quotations";
-import { parseRangeKey } from "../keys";
+import { parseFigureKey, parseRangeKey } from "../keys";
 import { getSentenceRange } from "./CommentaryView";
 
 interface NotesViewProps {
@@ -45,6 +45,7 @@ interface NotesViewProps {
 function quotationLabel(q: QuotationResponse): string {
     const start = q.anchor_sentence_start_number;
     const end = q.anchor_sentence_end_number;
+    if (q.sentence_kind === "figure") return `Figure ${start}`;
     if (end == null || end === start) return `Sentence ${start}`;
     return `Sentences ${start}–${end}`;
 }
@@ -63,6 +64,10 @@ export function NotesView({
         const fromSentence = getSentenceRange(selectedSentence);
         if (fromSentence) return fromSentence;
         if (!selectedSentenceId) return null;
+        const fig = parseFigureKey(selectedSentenceId);
+        if (fig != null) {
+            return { start: fig, end: fig, kind: "figure" as const };
+        }
         const parsed = parseRangeKey(selectedSentenceId);
         if (parsed) {
             return { start: parsed[0], end: parsed[1], kind: "body" as const };
@@ -182,9 +187,11 @@ export function NotesView({
     }
 
     const rangeLabel =
-        range.start === range.end
-            ? `Sentence ${range.start}`
-            : `Sentences ${range.start}–${range.end}`;
+        range.kind === "figure"
+            ? `Figure ${range.start}`
+            : range.start === range.end
+              ? `Sentence ${range.start}`
+              : `Sentences ${range.start}–${range.end}`;
 
     return (
         <div className="flex-1 overflow-y-auto flex flex-col">

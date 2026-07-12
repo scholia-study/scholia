@@ -44,6 +44,7 @@ type ArticleQuotation = Extract<
 function sentenceLabel(q: BookQuotation): string {
     const start = q.anchor_sentence_start_number;
     const end = q.anchor_sentence_end_number;
+    if (q.sentence_kind === "figure") return `Figure ${start}`;
     const isFootnote = q.sentence_kind === "footnote";
     const single = isFootnote ? "Footnote sentence" : "Sentence";
     const plural = isFootnote ? "Footnote sentences" : "Sentences";
@@ -63,6 +64,13 @@ function quotationLinkSearch(q: BookQuotation): {
         q.anchor_sentence_end_number !== q.anchor_sentence_start_number
             ? `${q.anchor_sentence_start_number}-${q.anchor_sentence_end_number}`
             : startStr;
+    if (q.sentence_kind === "figure") {
+        return {
+            s: `fig${q.anchor_sentence_start_number}`,
+            r: "1",
+            rv: "notes",
+        };
+    }
     if (q.sentence_kind === "footnote" && q.anchor_main_sentence_number) {
         return {
             s: String(q.anchor_main_sentence_number),

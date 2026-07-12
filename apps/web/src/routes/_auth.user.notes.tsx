@@ -30,6 +30,7 @@ export const Route = createFileRoute("/_auth/user/notes")({
 function sentenceLabel(n: NoteWithContextResponse): string {
     const start = n.anchor_sentence_start_number;
     const end = n.anchor_sentence_end_number;
+    if (n.sentence_kind === "figure") return `Figure ${start}`;
     const isFootnote = n.sentence_kind === "footnote";
     const single = isFootnote ? "Footnote sentence" : "Sentence";
     const plural = isFootnote ? "Footnote sentences" : "Sentences";
@@ -49,6 +50,13 @@ function noteLinkSearch(n: NoteWithContextResponse): {
         n.anchor_sentence_end_number !== n.anchor_sentence_start_number
             ? `${n.anchor_sentence_start_number}-${n.anchor_sentence_end_number}`
             : startStr;
+    if (n.sentence_kind === "figure") {
+        return {
+            s: `fig${n.anchor_sentence_start_number}`,
+            r: "1",
+            rv: "notes",
+        };
+    }
     if (n.sentence_kind === "footnote" && n.anchor_main_sentence_number) {
         return {
             s: String(n.anchor_main_sentence_number),

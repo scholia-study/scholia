@@ -276,7 +276,11 @@ export function ResourcesPanel({
         if (!sentenceRange) return undefined;
         const { start, end } = sentenceRange;
         const label =
-            start === end ? `Sentence ${start}` : `Sentences ${start}–${end}`;
+            sentenceRange.kind === "figure"
+                ? `Figure ${start}`
+                : start === end
+                  ? `Sentence ${start}`
+                  : `Sentences ${start}–${end}`;
         // Try to get a text snippet from selected sentences
         if (!selectedSentence) return label;
         const sentences = Array.isArray(selectedSentence)

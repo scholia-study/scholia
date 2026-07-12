@@ -15,6 +15,12 @@ export function footnoteSentenceKey(s: FootnoteSentenceResponse): string {
     return s.sentence_number != null ? String(s.sentence_number) : s.id;
 }
 
+/** Parse a figure key like "fig3" into the figure number, or null. */
+export function parseFigureKey(key: string): number | null {
+    const m = /^fig(\d+)$/.exec(key);
+    return m ? Number(m[1]) : null;
+}
+
 /** Parse a range key like "12-21" into [start, end] or null. */
 export function parseRangeKey(key: string): [number, number] | null {
     const dashIdx = key.indexOf("-");

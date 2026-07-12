@@ -127,27 +127,43 @@ async fn resolve_sentence(
     sentence_number: i32,
     sentence_kind: &str,
 ) -> Result<SentenceLookup, AppError> {
-    let is_body = sentence_kind == "body";
-    let sent = if is_body {
-        sqlx::query_as!(
-            SentenceLookup,
-            r#"SELECT id, node_id FROM sentences
-               WHERE book_id = $1 AND sentence_number = $2 AND block_id IS NOT NULL"#,
-            book_id,
-            sentence_number,
-        )
-        .fetch_one(pool)
-        .await
-    } else {
-        sqlx::query_as!(
-            SentenceLookup,
-            r#"SELECT id, node_id FROM sentences
-               WHERE book_id = $1 AND sentence_number = $2 AND footnote_id IS NOT NULL"#,
-            book_id,
-            sentence_number,
-        )
-        .fetch_one(pool)
-        .await
+    let sent = match sentence_kind {
+        "body" => {
+            sqlx::query_as!(
+                SentenceLookup,
+                r#"SELECT id, node_id FROM sentences
+                   WHERE book_id = $1 AND sentence_number = $2 AND block_id IS NOT NULL"#,
+                book_id,
+                sentence_number,
+            )
+            .fetch_one(pool)
+            .await
+        }
+        // Figure anchors have no sentence_number (they sit outside the body
+        // enumeration); they are addressed by the block's figure_number.
+        "figure" => {
+            sqlx::query_as!(
+                SentenceLookup,
+                r#"SELECT s.id, s.node_id FROM sentences s
+                   JOIN content_blocks cb ON cb.id = s.block_id
+                   WHERE s.book_id = $1 AND cb.figure_number = $2"#,
+                book_id,
+                sentence_number,
+            )
+            .fetch_one(pool)
+            .await
+        }
+        _ => {
+            sqlx::query_as!(
+                SentenceLookup,
+                r#"SELECT id, node_id FROM sentences
+                   WHERE book_id = $1 AND sentence_number = $2 AND footnote_id IS NOT NULL"#,
+                book_id,
+                sentence_number,
+            )
+            .fetch_one(pool)
+            .await
+        }
     }
     .map_err(|_| {
         AppError::BadRequest(format!(
@@ -240,7 +256,7 @@ pub async fn list_quotations_for_node(
                WHERE rs.slug = 'verse'
            )
            SELECT q.id,
-                  ss.sentence_number AS "start_number?",
+                  COALESCE(ss.sentence_number, cbs.figure_number) AS "start_number?",
                   se.sentence_number AS "end_number?",
                   q.sentence_kind::TEXT AS "sentence_kind!",
                   COUNT(qn.id) AS "note_count?",
@@ -280,6 +296,8 @@ pub async fn list_quotations_for_node(
            JOIN books qb ON qb.id = qtn.book_id
            JOIN sources qs ON qs.id = qb.source_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
+           -- Figure anchors carry their number on the block, not the sentence
+           LEFT JOIN content_blocks cbs ON cbs.id = ss.block_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
            -- Peer's verse markers (if the peer book has a 'verse' system)
            LEFT JOIN page_markers pm_start
@@ -342,10 +360,11 @@ pub async fn list_quotations_for_node(
                   AND tv_start.local_ref IS NOT NULL)
              )
            GROUP BY q.id, ss.id, se.id, ss.sentence_number, se.sentence_number,
+                    cbs.figure_number,
                     qb.id, qb.slug, qb.language, qs.publisher, qtn.source_ref,
                     pm_start.ref_value, pm_end.ref_value,
                     tv_start.local_ref, tv_end.local_ref
-           ORDER BY ss.sentence_number"#,
+           ORDER BY COALESCE(ss.sentence_number, cbs.figure_number)"#,
         user_id,
         node_id,
     )
@@ -424,17 +443,18 @@ pub async fn create_quotation(
     let row = sqlx::query_as!(
         QuotationRow,
         r#"SELECT q.id,
-                  ss.sentence_number AS "start_number?",
+                  COALESCE(ss.sentence_number, cbs.figure_number) AS "start_number?",
                   se.sentence_number AS "end_number?",
                   q.sentence_kind::TEXT AS "sentence_kind!",
                   COUNT(qn.id) AS "note_count?",
                   q.created_at
            FROM quotations q
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
+           LEFT JOIN content_blocks cbs ON cbs.id = ss.block_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.id = $1
-           GROUP BY q.id, ss.sentence_number, se.sentence_number"#,
+           GROUP BY q.id, ss.sentence_number, cbs.figure_number, se.sentence_number"#,
         quotation_id,
     )
     .fetch_one(pool)
@@ -772,7 +792,7 @@ pub async fn list_all_quotations(
                   COALESCE(parent.title_display, parent.title) AS "parent_compilation_title?",
                   n.label AS "node_label!",
                   n.slug AS "node_slug!",
-                  ss.sentence_number AS "start_number?",
+                  COALESCE(ss.sentence_number, cbs.figure_number) AS "start_number?",
                   se.sentence_number AS "end_number?",
                   q.sentence_kind::TEXT AS "sentence_kind!",
                   ms.sentence_number AS "main_number?",
@@ -800,13 +820,14 @@ pub async fn list_all_quotations(
            LEFT JOIN sources parent ON parent.id = s.parent_source_id
            JOIN toc_nodes n ON n.id = q.anchor_node_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
+           LEFT JOIN content_blocks cbs ON cbs.id = ss.block_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
            LEFT JOIN footnotes fn ON fn.id = ss.footnote_id
            LEFT JOIN sentences ms ON ms.id = fn.anchor_sentence_id
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.user_id = $1
              AND ($2::TEXT IS NULL OR b.slug = $2)
-           GROUP BY q.id, b.slug, b.language, bs.publisher, bs.translation_of_id, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, se.sentence_number, ss.text, se.text, ms.sentence_number
+           GROUP BY q.id, b.slug, b.language, bs.publisher, bs.translation_of_id, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, cbs.figure_number, se.sentence_number, ss.text, se.text, ms.sentence_number
            ORDER BY q.created_at DESC"#,
         user_id,
         book_slug,
@@ -879,7 +900,7 @@ pub async fn list_all_notes(
                   COALESCE(parent.title_display, parent.title) AS "parent_compilation_title?",
                   n.label AS "node_label!",
                   n.slug AS "node_slug!",
-                  ss.sentence_number AS "start_number?",
+                  COALESCE(ss.sentence_number, cbs.figure_number) AS "start_number?",
                   se.sentence_number AS "end_number?",
                   q.sentence_kind::TEXT AS "sentence_kind!",
                   ms.sentence_number AS "main_number?",
@@ -892,6 +913,7 @@ pub async fn list_all_notes(
            LEFT JOIN sources parent ON parent.id = s.parent_source_id
            JOIN toc_nodes n ON n.id = q.anchor_node_id
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
+           LEFT JOIN content_blocks cbs ON cbs.id = ss.block_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
            LEFT JOIN footnotes fn ON fn.id = ss.footnote_id
            LEFT JOIN sentences ms ON ms.id = fn.anchor_sentence_id
