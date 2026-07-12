@@ -1,0 +1,23 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT s.id, s.node_id FROM sentences s\n                   JOIN content_blocks cb ON cb.id = s.block_id\n                   WHERE s.book_id = $1 AND cb.figure_number = $2",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "node_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Int4"]
+        },
+        "nullable": [false, false]
+    },
+    "hash": "2bb10fc43b3a1541c338b9c3d9b8e0c2a107a008b8c6e1af8cf05e1c41550afa"
+}

@@ -171,7 +171,7 @@
                     "Custom": {
                         "name": "sentence_kind",
                         "kind": {
-                            "Enum": ["body", "footnote"]
+                            "Enum": ["body", "footnote", "figure"]
                         }
                     }
                 },

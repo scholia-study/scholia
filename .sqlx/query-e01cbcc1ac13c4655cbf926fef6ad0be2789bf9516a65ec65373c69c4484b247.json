@@ -1,0 +1,110 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT q.id,\n                  b.slug AS \"book_slug!\",\n                  COALESCE(s.title_display, s.title) AS \"book_title!\",\n                  CASE\n                      WHEN bs.publisher IS NOT NULL AND char_length(bs.publisher) <= 6\n                          THEN bs.publisher\n                      ELSE UPPER(b.language)\n                  END AS \"translation_label?\",\n                  COALESCE(parent.title_display, parent.title) AS \"parent_compilation_title?\",\n                  n.label AS \"node_label!\",\n                  n.slug AS \"node_slug!\",\n                  COALESCE(ss.sentence_number, cbs.figure_number) AS \"start_number?\",\n                  se.sentence_number AS \"end_number?\",\n                  q.sentence_kind::TEXT AS \"sentence_kind!\",\n                  ms.sentence_number AS \"main_number?\",\n                  ss.text AS \"start_text?\",\n                  se.text AS \"end_text?\",\n                  -- True iff this book is a translation AND the original\n                  -- work is itself a hosted text (has a `books` row).\n                  -- Bible translations point at the canonical \"The Bible\"\n                  -- bibliographic root, which has no books row → false.\n                  -- Hegel/Kant translations point at the imported original\n                  -- work → true.\n                  EXISTS (\n                      SELECT 1 FROM books orig_b\n                      WHERE orig_b.source_id = bs.translation_of_id\n                  ) AS \"has_source_view?\",\n                  COUNT(qn.id) AS \"note_count?\",\n                  q.created_at\n           FROM quotations q\n           JOIN books b ON b.id = q.book_id\n           -- The book's own root source (carries language + publisher\n           -- of the translation itself), distinct from `s` which is the\n           -- effective citation source resolved per quotation.\n           JOIN sources bs ON bs.id = b.source_id\n           JOIN sources s ON s.id = q.source_id\n           LEFT JOIN sources parent ON parent.id = s.parent_source_id\n           JOIN toc_nodes n ON n.id = q.anchor_node_id\n           JOIN sentences ss ON ss.id = q.anchor_sentence_start_id\n           LEFT JOIN content_blocks cbs ON cbs.id = ss.block_id\n           LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id\n           LEFT JOIN footnotes fn ON fn.id = ss.footnote_id\n           LEFT JOIN sentences ms ON ms.id = fn.anchor_sentence_id\n           LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id\n           WHERE q.user_id = $1\n             AND ($2::TEXT IS NULL OR b.slug = $2)\n           GROUP BY q.id, b.slug, b.language, bs.publisher, bs.translation_of_id, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, cbs.figure_number, se.sentence_number, ss.text, se.text, ms.sentence_number\n           ORDER BY q.created_at DESC",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "book_slug!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "book_title!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "translation_label?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "parent_compilation_title?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "node_label!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "node_slug!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "start_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 8,
+                "name": "end_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 9,
+                "name": "sentence_kind!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 10,
+                "name": "main_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 11,
+                "name": "start_text?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 12,
+                "name": "end_text?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 13,
+                "name": "has_source_view?",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 14,
+                "name": "note_count?",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 15,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Text"]
+        },
+        "nullable": [
+            false,
+            false,
+            null,
+            null,
+            null,
+            false,
+            false,
+            null,
+            true,
+            null,
+            true,
+            false,
+            false,
+            null,
+            null,
+            false
+        ]
+    },
+    "hash": "e01cbcc1ac13c4655cbf926fef6ad0be2789bf9516a65ec65373c69c4484b247"
+}

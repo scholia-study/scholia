@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT q.id,\n                  ss.sentence_number AS \"start_number?\",\n                  se.sentence_number AS \"end_number?\",\n                  q.sentence_kind::TEXT AS \"sentence_kind!\",\n                  COUNT(qn.id) AS \"note_count?\",\n                  q.created_at\n           FROM quotations q\n           JOIN sentences ss ON ss.id = q.anchor_sentence_start_id\n           LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id\n           LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id\n           WHERE q.id = $1\n           GROUP BY q.id, ss.sentence_number, se.sentence_number",
+    "query": "SELECT q.id,\n                  COALESCE(ss.sentence_number, cbs.figure_number) AS \"start_number?\",\n                  se.sentence_number AS \"end_number?\",\n                  q.sentence_kind::TEXT AS \"sentence_kind!\",\n                  COUNT(qn.id) AS \"note_count?\",\n                  q.created_at\n           FROM quotations q\n           JOIN sentences ss ON ss.id = q.anchor_sentence_start_id\n           LEFT JOIN content_blocks cbs ON cbs.id = ss.block_id\n           LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id\n           LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id\n           WHERE q.id = $1\n           GROUP BY q.id, ss.sentence_number, cbs.figure_number, se.sentence_number",
     "describe": {
         "columns": [
             {
@@ -37,7 +37,7 @@
         "parameters": {
             "Left": ["Uuid"]
         },
-        "nullable": [false, true, true, null, null, false]
+        "nullable": [false, null, true, null, null, false]
     },
-    "hash": "11b5c36c04b3ec75a572c0e014fdcd058b9fb57da23349bd8cb375736121d946"
+    "hash": "50b8e2eab130078e572c2726842bbf8956d5e643abeb4497f203cbbaa1a8db03"
 }
