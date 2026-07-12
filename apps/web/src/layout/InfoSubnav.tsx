@@ -6,7 +6,7 @@ const INFO_PATHS = INFO_LINKS.map((r) => r.to);
 export function InfoSubnav() {
     const matches = useMatches();
     const isInfoRoute = matches.some((m) =>
-        INFO_PATHS.some((p) => m.fullPath === p),
+        INFO_PATHS.some((p) => m.fullPath.replace(/\/$/, "") === p),
     );
 
     if (!isInfoRoute) return null;
