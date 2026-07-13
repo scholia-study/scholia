@@ -25,9 +25,28 @@ resource "aws_s3_bucket" "assets" {
   bucket = "scholia-assets"
 }
 
+# CI-owned counterpart for auto-ingest. Kept separate
+# from scholia-assets because `just assets-sync` mirrors with delete
+# semantics and would wipe CI-only prefixes.
+#
+# Its 30-day expiry lifecycle rule is NOT managed here: the provider's
+# post-PUT read-back poll expects fields Hetzner never echoes, so the
+# resource times out on every apply — with filter {}, with legacy
+# prefix, and with neither (tested on v5.100.0; see
+# aws/aws-sdk-go-v2#3285). The rule is applied by
+# `just assets-lifecycle` instead.
+resource "aws_s3_bucket" "assets_auto" {
+  bucket = "scholia-assets-auto"
+}
+
 output "assets_bucket_name" {
   description = "Asset bucket name. Wire into rclone configs and Job manifests."
   value       = aws_s3_bucket.assets.id
+}
+
+output "assets_auto_bucket_name" {
+  description = "Auto-ingest bucket name. Wire into build.yml and the ingest Job manifests."
+  value       = aws_s3_bucket.assets_auto.id
 }
 
 output "assets_endpoint" {

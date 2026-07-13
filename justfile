@@ -33,6 +33,11 @@ db-reload:
 assets-sync *flags:
     bash scripts/assets_sync.sh {{ flags }}
 
+# (re)apply bucket lifecycle rules (idempotent; currently scholia-assets-auto)
+[group("assets")]
+assets-lifecycle:
+    bash scripts/assets_lifecycle.sh
+
 # kant1 OCR pre-curation stages (raw → lines → elements)
 [group("assets")]
 elem-kant1:
