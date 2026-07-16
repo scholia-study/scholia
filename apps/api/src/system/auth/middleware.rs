@@ -48,14 +48,18 @@ pub async fn set_session_user(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    if let Some(session_id) = session.id() {
-        let _ = sqlx::query(
+    if let Some(session_id) = session.id()
+        && let Err(e) = sqlx::query(
             "INSERT INTO user_sessions (session_id, user_id) VALUES ($1, $2) ON CONFLICT (session_id) DO NOTHING",
         )
         .bind(session_id.to_string())
         .bind(user_id)
         .execute(pool)
-        .await;
+        .await
+    {
+        // The session still works, but it won't be reachable by
+        // invalidate_user_sessions; sessions_invalidated_at is the backstop.
+        tracing::error!("failed to record user_sessions mapping: {e}");
     }
 
     Ok(())
@@ -63,28 +67,37 @@ pub async fn set_session_user(
 
 /// Delete all sessions for a user from both user_sessions and tower_sessions.
 pub async fn invalidate_user_sessions(pool: &PgPool, user_id: Uuid) {
-    // Get all session IDs for this user
     let session_ids: Vec<String> =
-        sqlx::query_scalar("SELECT session_id FROM user_sessions WHERE user_id = $1")
+        match sqlx::query_scalar("SELECT session_id FROM user_sessions WHERE user_id = $1")
             .bind(user_id)
             .fetch_all(pool)
             .await
-            .unwrap_or_default();
+        {
+            Ok(ids) => ids,
+            Err(e) => {
+                tracing::error!("failed to list sessions for user {user_id} to invalidate: {e}");
+                Vec::new()
+            }
+        };
 
     if !session_ids.is_empty() {
-        // Delete from tower_sessions store
         for id in &session_ids {
-            let _ = sqlx::query("DELETE FROM tower_sessions.session WHERE id = $1")
+            if let Err(e) = sqlx::query("DELETE FROM tower_sessions.session WHERE id = $1")
                 .bind(id)
                 .execute(pool)
-                .await;
+                .await
+            {
+                tracing::error!("failed to delete session {id}: {e}");
+            }
         }
 
-        // Delete from our mapping table
-        let _ = sqlx::query("DELETE FROM user_sessions WHERE user_id = $1")
+        if let Err(e) = sqlx::query("DELETE FROM user_sessions WHERE user_id = $1")
             .bind(user_id)
             .execute(pool)
-            .await;
+            .await
+        {
+            tracing::error!("failed to clear user_sessions for user {user_id}: {e}");
+        }
     }
 }
 
@@ -177,22 +190,32 @@ async fn load_auth_user(
     user_id: Uuid,
     session_created_at: Option<i64>,
 ) -> Option<AuthUser> {
-    let row = sqlx::query(
+    let row = match sqlx::query(
         "SELECT id, email, display_name, avatar_url, email_verified_at, sessions_invalidated_at FROM users WHERE id = $1",
     )
     .bind(user_id)
     .fetch_optional(pool)
     .await
-    .ok()
-    .flatten()?;
+    {
+        Ok(Some(row)) => row,
+        Ok(None) => return None,
+        Err(e) => {
+            // A DB failure here must not silently look like "logged out";
+            // log it so an outage is visible rather than mass-401s.
+            tracing::error!("auth: failed to load user {user_id}: {e}");
+            return None;
+        }
+    };
 
     let email_verified_at: Option<OffsetDateTime> = row.get("email_verified_at");
     email_verified_at?;
 
-    // Reject sessions created before the last password change
+    // Reject any session that predates the last invalidation (e.g. a password
+    // reset). Fail closed when the session carries no creation time — an
+    // unknown age can't be proven newer than the invalidation.
     let sessions_invalidated_at: Option<OffsetDateTime> = row.get("sessions_invalidated_at");
-    if let (Some(changed), Some(created)) = (sessions_invalidated_at, session_created_at)
-        && created < changed.unix_timestamp()
+    if let Some(changed) = sessions_invalidated_at
+        && session_created_at.is_none_or(|created| created < changed.unix_timestamp())
     {
         return None;
     }
