@@ -30,6 +30,23 @@ impl IntoResponse for AppError {
     }
 }
 
+/// Map a missing row to a caller-chosen `AppError`, while letting real
+/// database failures (connection loss, pool timeout, …) surface as `Internal`
+/// — which is logged — instead of masquerading as a 404/400 with no trace.
+/// Replaces `.on_missing(|| AppError::NotFound(...))`, which swallows every error.
+pub trait SqlxResultExt<T> {
+    fn on_missing(self, f: impl FnOnce() -> AppError) -> Result<T, AppError>;
+}
+
+impl<T> SqlxResultExt<T> for Result<T, sqlx::Error> {
+    fn on_missing(self, f: impl FnOnce() -> AppError) -> Result<T, AppError> {
+        self.map_err(|e| match e {
+            sqlx::Error::RowNotFound => f(),
+            other => AppError::from(other),
+        })
+    }
+}
+
 impl From<sqlx::Error> for AppError {
     fn from(err: sqlx::Error) -> Self {
         if let sqlx::Error::RowNotFound = err {

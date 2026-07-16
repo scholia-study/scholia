@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::system::auth::handle::MAX_HANDLE_LEN;
 use crate::system::auth::permissions::filter_public_roles;
-use crate::system::error::AppError;
+use crate::system::error::{AppError, SqlxResultExt};
 
 /// Returns true if `handle` is currently held by a *different* user, or
 /// was previously released by a different user. Per the no-recycle rule
@@ -125,14 +125,14 @@ pub async fn get_public_profile_by_handle(
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("User not found".into()))
+    .on_missing(|| AppError::NotFound("User not found".into()))
 }
 
 pub async fn get_handle_by_id(pool: &PgPool, user_id: Uuid) -> Result<String, AppError> {
     let h = sqlx::query_scalar!(r#"SELECT handle FROM users WHERE id = $1"#, user_id,)
         .fetch_one(pool)
         .await
-        .map_err(|_| AppError::NotFound("User not found".into()))?;
+        .on_missing(|| AppError::NotFound("User not found".into()))?;
     h.ok_or_else(|| AppError::NotFound("User has no handle".into()))
 }
 

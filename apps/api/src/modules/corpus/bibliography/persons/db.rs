@@ -2,7 +2,7 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::modules::corpus::bibliography::models::PersonResponse;
-use crate::system::error::AppError;
+use crate::system::error::{AppError, SqlxResultExt};
 
 pub async fn search_persons(pool: &PgPool, query: &str) -> Result<Vec<PersonResponse>, AppError> {
     let pattern = format!("%{query}%");
@@ -62,7 +62,7 @@ pub async fn get_person(pool: &PgPool, person_id: Uuid) -> Result<PersonResponse
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Person not found".into()))?;
+    .on_missing(|| AppError::NotFound("Person not found".into()))?;
 
     Ok(row_to_response(row))
 }

@@ -6,7 +6,7 @@ use crate::modules::corpus::bibliography::models::{
     ParentSourceResponse, ResourceResponse, SourcePersonResponse, SourceResponse,
 };
 use crate::modules::corpus::bibliography::sources::db::fetch_source_persons;
-use crate::system::error::AppError;
+use crate::system::error::{AppError, SqlxResultExt};
 
 struct ResourceRow {
     id: Uuid,
@@ -433,7 +433,7 @@ pub async fn update_resource(
             .fetch_one(pool)
             .await
         }
-        .map_err(|_| AppError::BadRequest(format!("Sentence {start} not found")))?;
+        .on_missing(|| AppError::BadRequest(format!("Sentence {start} not found")))?;
 
         let end_sent_id = if patch.sentence_end.is_some() {
             let end_sent = if is_body {
@@ -457,7 +457,7 @@ pub async fn update_resource(
                 .fetch_one(pool)
                 .await
             }
-            .map_err(|_| AppError::BadRequest(format!("Sentence {end} not found")))?;
+            .on_missing(|| AppError::BadRequest(format!("Sentence {end} not found")))?;
             Some(end_sent.id)
         } else {
             None

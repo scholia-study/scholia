@@ -8,7 +8,7 @@ use crate::modules::writing::articles::models::{
     CitationPart, EditorialLabelResponse, SentenceData, SourceContext, TopicResponse,
 };
 use crate::system::auth::permissions::{Permission, resolve_permissions};
-use crate::system::error::AppError;
+use crate::system::error::{AppError, SqlxResultExt};
 use crate::system::validation::{
     MAX_ARTICLE_DESCRIPTION, MAX_ARTICLE_MARKDOWN, MAX_ARTICLE_TITLE, check_max_len,
 };
@@ -792,7 +792,7 @@ pub async fn get_user_article_by_slug(
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Article not found".into()))?;
+    .on_missing(|| AppError::NotFound("Article not found".into()))?;
 
     let topics = load_article_topics(pool, row.id).await?;
     let labels =
@@ -820,7 +820,7 @@ pub async fn get_published_article_by_slug(
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Article not found".into()))?;
+    .on_missing(|| AppError::NotFound("Article not found".into()))?;
 
     let topics = load_article_topics(pool, row.id).await?;
     let labels =
@@ -845,7 +845,7 @@ pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailR
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Article not found".into()))?;
+    .on_missing(|| AppError::NotFound("Article not found".into()))?;
 
     let topics = load_article_topics(pool, row.id).await?;
     let labels =
@@ -1085,7 +1085,7 @@ pub async fn update_article(
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Article not found".into()))?;
+    .on_missing(|| AppError::NotFound("Article not found".into()))?;
 
     if row.status == "archived" {
         return Err(AppError::BadRequest(
@@ -1504,7 +1504,7 @@ pub async fn batch_get_sentences(
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Book or node not found".into()))?;
+    .on_missing(|| AppError::NotFound("Book or node not found".into()))?;
 
     let rows = if is_body {
         sqlx::query_as!(

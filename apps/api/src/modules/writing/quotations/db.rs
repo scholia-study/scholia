@@ -7,7 +7,7 @@ use crate::modules::writing::quotations::models::{
     QuotationResponse, QuotationWithContextResponse, TagResponse,
 };
 use crate::system::auth::permissions::{Permission, resolve_permissions};
-use crate::system::error::AppError;
+use crate::system::error::{AppError, SqlxResultExt};
 
 // Free tier: 50 quotations / 50 notes. Paid / staff: 10 000 of each
 // (a hard cap to prevent abuse, not a usage target).
@@ -491,7 +491,7 @@ pub async fn get_quotation_owner(
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Quotation not found".to_string()))?;
+    .on_missing(|| AppError::NotFound("Quotation not found".to_string()))?;
 
     Ok((row.user_id, row.book_id))
 }
@@ -604,7 +604,7 @@ pub async fn update_note(
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Note not found".to_string()))?;
+    .on_missing(|| AppError::NotFound("Note not found".to_string()))?;
 
     if owner != user_id {
         return Err(AppError::Forbidden("Not your note".to_string()));

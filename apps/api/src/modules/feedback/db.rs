@@ -4,7 +4,7 @@ use uuid::Uuid;
 use crate::modules::feedback::models::{
     FeedbackHandler, FeedbackListResponse, FeedbackResponse, FeedbackStatus, FeedbackSubmitter,
 };
-use crate::system::error::AppError;
+use crate::system::error::{AppError, SqlxResultExt};
 
 fn fmt_time(t: time::OffsetDateTime) -> String {
     t.format(&time::format_description::well_known::Rfc3339)
@@ -127,7 +127,7 @@ pub async fn get_feedback(pool: &PgPool, id: Uuid) -> Result<FeedbackResponse, A
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Feedback not found".into()))?;
+    .on_missing(|| AppError::NotFound("Feedback not found".into()))?;
     Ok(feedback_from_row(row))
 }
 

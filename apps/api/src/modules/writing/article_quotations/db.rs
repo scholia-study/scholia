@@ -5,7 +5,7 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::modules::writing::article_quotations::models::ArticleQuotationResponse;
-use crate::system::error::AppError;
+use crate::system::error::{AppError, SqlxResultExt};
 
 /// Normalize text for lenient quote-containment matching: drop HTML tags and
 /// entity references, keep only alphanumerics, lowercase. A faithful
@@ -116,7 +116,7 @@ pub async fn create_article_quotation(
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Article not found or not published".into()))?;
+    .on_missing(|| AppError::NotFound("Article not found or not published".into()))?;
 
     // Reject fabricated quotes: the text must actually occur in the cited
     // article. Without this a user could attribute arbitrary text to another
@@ -253,7 +253,7 @@ async fn fetch_article_quotation_row(
     )
     .fetch_one(pool)
     .await
-    .map_err(|_| AppError::NotFound("Article quotation not found".into()))
+    .on_missing(|| AppError::NotFound("Article quotation not found".into()))
 }
 
 #[cfg(test)]
