@@ -370,6 +370,35 @@ pub async fn check_source_references(
     })
 }
 
+/// Whether the source is referenced by content the given user does not own:
+/// any book-page resource (editor-curated, public), a child source created
+/// by someone else, or another user's article. Used to stop a non-editor
+/// creator from mutating a source once it is woven into content they don't
+/// control.
+pub async fn source_used_by_others(
+    pool: &PgPool,
+    source_id: Uuid,
+    user_id: Uuid,
+) -> Result<bool, AppError> {
+    let used = sqlx::query_scalar!(
+        r#"SELECT (
+               EXISTS(SELECT 1 FROM resources
+                      WHERE source_id = $1 AND archived_at IS NULL)
+               OR EXISTS(SELECT 1 FROM sources
+                         WHERE (parent_source_id = $1 OR translation_of_id = $1)
+                           AND created_by <> $2)
+               OR EXISTS(SELECT 1 FROM articles
+                         WHERE markdown ILIKE '%' || $1::text || '%'
+                           AND user_id <> $2)
+           ) AS "used!""#,
+        source_id,
+        user_id,
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(used)
+}
+
 pub async fn browse_sources(
     pool: &PgPool,
     q: Option<&str>,

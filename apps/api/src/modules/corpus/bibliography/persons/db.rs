@@ -22,6 +22,36 @@ pub async fn search_persons(pool: &PgPool, query: &str) -> Result<Vec<PersonResp
     Ok(rows.into_iter().map(row_to_response).collect())
 }
 
+/// Whether the person is linked to any source the given user does not
+/// control — a source created by someone else, or one of the user's own
+/// sources that is already cited on a public book page. Used to stop a
+/// non-editor creator from renaming a person once it is displayed in
+/// content they don't control.
+pub async fn person_used_by_others(
+    pool: &PgPool,
+    person_id: Uuid,
+    user_id: Uuid,
+) -> Result<bool, AppError> {
+    let used = sqlx::query_scalar!(
+        r#"SELECT EXISTS(
+               SELECT 1
+               FROM source_persons sp
+               JOIN sources s ON s.id = sp.source_id
+               WHERE sp.person_id = $1
+                 AND (
+                     s.created_by <> $2
+                     OR EXISTS(SELECT 1 FROM resources r
+                               WHERE r.source_id = s.id AND r.archived_at IS NULL)
+                 )
+           ) AS "used!""#,
+        person_id,
+        user_id,
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(used)
+}
+
 pub async fn get_person(pool: &PgPool, person_id: Uuid) -> Result<PersonResponse, AppError> {
     let row = sqlx::query_as!(
         PersonRow,

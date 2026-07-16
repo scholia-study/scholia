@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT (\n               EXISTS(SELECT 1 FROM resources\n                      WHERE source_id = $1 AND archived_at IS NULL)\n               OR EXISTS(SELECT 1 FROM sources\n                         WHERE (parent_source_id = $1 OR translation_of_id = $1)\n                           AND created_by <> $2)\n               OR EXISTS(SELECT 1 FROM articles\n                         WHERE markdown ILIKE '%' || $1::text || '%'\n                           AND user_id <> $2)\n           ) AS \"used!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "used!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "0f96645056aa92907cf6e9be447930c1adc4d7c5abbe7f6aa584ba9e2e29d1db"
+}

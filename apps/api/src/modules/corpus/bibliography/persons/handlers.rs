@@ -114,6 +114,20 @@ pub async fn update_person(
             "You can only edit persons you created".into(),
         ));
     }
+    if !is_editor
+        && crate::modules::corpus::bibliography::persons::db::person_used_by_others(
+            &state.pool,
+            person_id,
+            user.id,
+        )
+        .await?
+    {
+        return Err(AppError::Forbidden(
+            "This person appears in content you don't control and can no longer be edited \
+             directly. Use the Feedback button to ask an editor to make the change."
+                .into(),
+        ));
+    }
 
     validate_person_fields(body.name.as_deref(), body.sort_name.as_deref())?;
 

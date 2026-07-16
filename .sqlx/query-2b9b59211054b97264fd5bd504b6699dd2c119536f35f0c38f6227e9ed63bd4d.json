@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT EXISTS(\n               SELECT 1\n               FROM source_persons sp\n               JOIN sources s ON s.id = sp.source_id\n               WHERE sp.person_id = $1\n                 AND (\n                     s.created_by <> $2\n                     OR EXISTS(SELECT 1 FROM resources r\n                               WHERE r.source_id = s.id AND r.archived_at IS NULL)\n                 )\n           ) AS \"used!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "used!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "2b9b59211054b97264fd5bd504b6699dd2c119536f35f0c38f6227e9ed63bd4d"
+}

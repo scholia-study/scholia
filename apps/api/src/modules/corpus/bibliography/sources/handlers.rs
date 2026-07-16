@@ -33,6 +33,18 @@ async fn guard_source_edit(
             "You can only edit sources you created".into(),
         ));
     }
+    if !is_editor
+        && crate::modules::corpus::bibliography::sources::db::source_used_by_others(
+            pool, source_id, user.id,
+        )
+        .await?
+    {
+        return Err(AppError::Forbidden(
+            "This source is cited in content you don't control and can no longer be edited \
+             directly. Use the Feedback button to ask an editor to make the change."
+                .into(),
+        ));
+    }
     Ok(())
 }
 
@@ -324,6 +336,20 @@ pub async fn update_source(
     if body.protected.is_some() && !is_editor {
         return Err(AppError::Forbidden(
             "Only editors can change the protected flag".into(),
+        ));
+    }
+    if !is_editor
+        && crate::modules::corpus::bibliography::sources::db::source_used_by_others(
+            &state.pool,
+            source_id,
+            user.id,
+        )
+        .await?
+    {
+        return Err(AppError::Forbidden(
+            "This source is cited in content you don't control and can no longer be edited \
+             directly. Use the Feedback button to ask an editor to make the change."
+                .into(),
         ));
     }
 
