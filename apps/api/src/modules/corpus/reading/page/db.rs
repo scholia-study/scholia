@@ -411,10 +411,12 @@ pub async fn get_node_page_at(
         });
     };
 
-    // Matches the JS formula `Math.max(0, sort_order - 1 - back)` so the
-    // SQL `sort_order > after` predicate yields the anchor and `back` nodes
-    // before it.
-    let after = (row.sort_order - 1 - back).max(0);
+    // The SQL predicate is `sort_order > after`, so to include the anchor
+    // (sort_order S) plus `back` nodes before it, the cursor must be
+    // S - 1 - back. Clamp to -1, not 0: -1 is the sentinel meaning "before
+    // node 0" (`sort_order > -1` includes the first node), so an anchor at
+    // sort_order 0 stays in its own window.
+    let after = (row.sort_order - 1 - back).max(-1);
     get_node_page(pool, book_slug, Some(after), None, limit, include_original).await
 }
 
