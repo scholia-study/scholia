@@ -53,9 +53,9 @@ struct QuotationRowEx {
     projected_verse_end: Option<String>,
 }
 
-struct SentenceLookup {
-    id: Uuid,
-    node_id: Uuid,
+pub(crate) struct SentenceLookup {
+    pub(crate) id: Uuid,
+    pub(crate) node_id: Uuid,
 }
 
 struct NoteRow {
@@ -121,7 +121,11 @@ fn quotation_from_row_ex(r: QuotationRowEx) -> QuotationResponse {
     }
 }
 
-async fn resolve_sentence(
+// Shared with article_passage_references, which resolves article
+// ::quotation directives to the same anchor shape. Not-found is
+// BadRequest so callers can tell a bad sentence number apart from a
+// genuine database failure (which propagates as Internal).
+pub(crate) async fn resolve_sentence(
     pool: &PgPool,
     book_id: Uuid,
     sentence_number: i32,
@@ -136,8 +140,8 @@ async fn resolve_sentence(
                 book_id,
                 sentence_number,
             )
-            .fetch_one(pool)
-            .await
+            .fetch_optional(pool)
+            .await?
         }
         // Figure anchors have no sentence_number (they sit outside the body
         // enumeration); they are addressed by the block's figure_number.
@@ -150,8 +154,8 @@ async fn resolve_sentence(
                 book_id,
                 sentence_number,
             )
-            .fetch_one(pool)
-            .await
+            .fetch_optional(pool)
+            .await?
         }
         _ => {
             sqlx::query_as!(
@@ -161,11 +165,11 @@ async fn resolve_sentence(
                 book_id,
                 sentence_number,
             )
-            .fetch_one(pool)
-            .await
+            .fetch_optional(pool)
+            .await?
         }
     }
-    .map_err(|_| {
+    .ok_or_else(|| {
         AppError::BadRequest(format!(
             "Sentence {sentence_number} not found for kind '{sentence_kind}'"
         ))

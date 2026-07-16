@@ -990,6 +990,83 @@
                 }
             }
         },
+        "/api/books/{slug}/article-references": {
+            "get": {
+                "tags": ["articles"],
+                "summary": "List published articles quoting a sentence range (public)",
+                "operationId": "list_article_references",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Book slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "start",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "end",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "kind",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Articles quoting the passage, across translations of the same work",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PassageArticleListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found"
+                    }
+                }
+            }
+        },
         "/api/books/{slug}/nodes": {
             "get": {
                 "tags": ["nodes"],
@@ -4255,6 +4332,56 @@
                         "type": ["string", "null"]
                     },
                     "source_type": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    }
+                }
+            },
+            "PassageArticleListResponse": {
+                "type": "object",
+                "required": ["articles", "total"],
+                "properties": {
+                    "articles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PassageArticleResponse"
+                        }
+                    },
+                    "total": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "PassageArticleResponse": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "slug",
+                    "title",
+                    "author_user_id",
+                    "author_display_name"
+                ],
+                "properties": {
+                    "author_display_name": {
+                        "type": "string"
+                    },
+                    "author_handle": {
+                        "type": ["string", "null"],
+                        "description": "Current handle of the author. Use `/users/<handle>` for the\ncanonical link, or `/users/by-id/<author_user_id>` for a\nrename-durable link."
+                    },
+                    "author_user_id": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "published_at": {
+                        "type": ["string", "null"]
+                    },
+                    "slug": {
                         "type": "string"
                     },
                     "title": {

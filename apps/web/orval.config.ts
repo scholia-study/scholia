@@ -30,6 +30,12 @@ export default defineConfig({
                             useInfiniteQueryParam: "after",
                         },
                     },
+                    list_article_references: {
+                        query: {
+                            useInfinite: true,
+                            useInfiniteQueryParam: "offset",
+                        },
+                    },
                 },
             },
         },

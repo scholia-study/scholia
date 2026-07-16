@@ -1,0 +1,26 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO article_passage_references (\n                   article_id, book_id, anchor_node_id,\n                   anchor_sentence_start_id, anchor_sentence_end_id,\n                   sentence_kind\n               ) VALUES ($1, $2, $3, $4, $5, $6::sentence_kind)\n               ON CONFLICT DO NOTHING",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                "Uuid",
+                "Uuid",
+                "Uuid",
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "sentence_kind",
+                        "kind": {
+                            "Enum": ["body", "footnote", "figure"]
+                        }
+                    }
+                }
+            ]
+        },
+        "nullable": []
+    },
+    "hash": "afc0ddfc4761992ea851b882774456e5e935ff58d6ce9e88a03ff67364415b3f"
+}

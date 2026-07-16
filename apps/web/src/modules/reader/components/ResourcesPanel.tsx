@@ -1,4 +1,5 @@
 import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
+import ArticleOutlined from "@mui/icons-material/ArticleOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import CommitOutlined from "@mui/icons-material/CommitOutlined";
 import CompareOutlined from "@mui/icons-material/CompareOutlined";
@@ -22,6 +23,7 @@ import {
     useUnsaveQuotation,
 } from "#/modules/quotation";
 import { useReaderTour } from "#/modules/tour";
+import { useListArticleReferences } from "../../../api/articles/articles";
 import { useListBooks } from "../../../api/books/books";
 import { FetchError } from "../../../api/fetcher";
 import type {
@@ -41,6 +43,7 @@ import { useGetToc } from "../../../api/toc/toc";
 import { useAuth } from "../../../hooks/useAuth";
 import { useFeedback } from "../../feedback";
 import { AboutThisTextView } from "./AboutThisTextView";
+import { ArticleReferencesView } from "./ArticleReferencesView";
 import { CommentaryView, getSentenceRange } from "./CommentaryView";
 import { NotesView } from "./NotesView";
 import { PanelToc } from "./PanelToc";
@@ -54,6 +57,7 @@ type ViewKind =
     | "verbatim"
     | "paraphrase"
     | "allusion"
+    | "articles"
     | "sentence"
     | "notes";
 
@@ -125,6 +129,19 @@ export function ResourcesPanel({
             allusion: all.filter((r) => r.resource_type === "allusion").length,
         };
     }, [resourcesData]);
+
+    // Platform articles quoting the selection (badge count; the view
+    // itself refetches with its own limit and shares this cache entry).
+    const { data: articleRefsData } = useListArticleReferences(
+        bookSlug,
+        {
+            start: sentenceRange?.start ?? 0,
+            end: sentenceRange?.end ?? 0,
+            kind: sentenceRange?.kind ?? "body",
+        },
+        { query: { enabled: !!sentenceRange } },
+    );
+    const articleRefCount = articleRefsData?.data?.total ?? 0;
 
     // Modal state for resource create/edit (used by ResourceFormModal)
     const [resourceModalOpen, setResourceModalOpen] = useState(false);
@@ -382,6 +399,15 @@ export function ResourcesPanel({
             ),
             onClick: () => onViewChange("allusion"),
         },
+        {
+            key: "articles",
+            label: `Articles${articleRefCount ? ` (${articleRefCount})` : ""}`,
+            disabled: !selectedSentence,
+            icon: (
+                <ArticleOutlined fontSize="small" sx={{ color: "#8a6d3b" }} />
+            ),
+            onClick: () => onViewChange("articles"),
+        },
     ];
 
     const toolItems: ResourceMenuItem[] = user
@@ -484,9 +510,11 @@ export function ResourcesPanel({
                                       ? "Paraphrases"
                                       : viewKind === "allusion"
                                         ? "Allusions"
-                                        : viewKind === "notes"
-                                          ? "Notes"
-                                          : "\u00A0"}
+                                        : viewKind === "articles"
+                                          ? "Articles"
+                                          : viewKind === "notes"
+                                            ? "Notes"
+                                            : "\u00A0"}
                     </div>
                 </div>
                 <IconButton size="small" onClick={onClose} title="Close">
@@ -570,6 +598,14 @@ export function ResourcesPanel({
                     isEditor={isEditor}
                     onAdd={handleAddResource}
                     onEdit={handleEditResource}
+                />
+            )}
+
+            {/* Articles-quoting-this-passage view */}
+            {viewKind === "articles" && (
+                <ArticleReferencesView
+                    bookSlug={bookSlug}
+                    selectedSentence={selectedSentence}
                 />
             )}
 

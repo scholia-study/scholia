@@ -1,0 +1,67 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "WITH target AS (\n               SELECT b.id AS book_id,\n                      COALESCE(src.translation_of_id, src.id) AS work_root\n               FROM books b\n               JOIN sources src ON src.id = b.source_id\n               WHERE b.id = $1\n           ),\n           sel_lo AS (\n               SELECT COALESCE((\n                   SELECT MAX(s2.sentence_number)\n                   FROM sentences s2\n                   JOIN page_markers pm2 ON pm2.sentence_id = s2.id\n                   JOIN reference_systems rs2 ON rs2.id = pm2.system_id\n                                             AND rs2.slug = 'verse'\n                   WHERE s2.book_id = (SELECT book_id FROM target)\n                     AND s2.node_id = (\n                         SELECT s3.node_id FROM sentences s3\n                         WHERE s3.book_id = (SELECT book_id FROM target)\n                           AND s3.sentence_number = $2\n                           AND s3.block_id IS NOT NULL\n                     )\n                     AND s2.sentence_number <= $2\n               ), $2) AS lo\n           ),\n           target_verses AS (\n               SELECT DISTINCT\n                   CASE WHEN va.book_id IS NULL THEN tn.source_ref\n                        ELSE va.canonical_source_ref END AS canonical_src,\n                   CASE WHEN va.book_id IS NULL THEN pm.ref_value\n                        ELSE va.canonical_ref_value END AS canonical_ref\n               FROM target t\n               CROSS JOIN sel_lo\n               JOIN sentences s ON s.book_id = t.book_id\n                               AND s.block_id IS NOT NULL\n                               AND s.sentence_number BETWEEN sel_lo.lo AND $3\n               JOIN toc_nodes tn ON tn.id = s.node_id\n               JOIN page_markers pm ON pm.sentence_id = s.id\n               JOIN reference_systems rs ON rs.id = pm.system_id\n                                        AND rs.slug = 'verse'\n               LEFT JOIN cross_translation_alignments va\n                      ON va.book_id = t.book_id\n                     AND va.system_slug = 'verse'\n                     AND va.source_ref = tn.source_ref\n                     AND va.local_ref_value = pm.ref_value\n           ),\n           matches AS (\n               SELECT DISTINCT apr.article_id\n               FROM article_passage_references apr\n               CROSS JOIN target t\n               JOIN books pb ON pb.id = apr.book_id\n               JOIN sources ps ON ps.id = pb.source_id\n               JOIN sentences pss ON pss.id = apr.anchor_sentence_start_id\n               LEFT JOIN content_blocks pcb ON pcb.id = pss.block_id\n               LEFT JOIN sentences pse ON pse.id = apr.anchor_sentence_end_id\n               WHERE apr.sentence_kind = $4::sentence_kind\n                 AND COALESCE(ps.translation_of_id, ps.id) = t.work_root\n                 AND (\n                     (apr.book_id = t.book_id\n                      AND COALESCE(pss.sentence_number, pcb.figure_number) <= $3\n                      AND COALESCE(pse.sentence_number, pss.sentence_number,\n                                   pcb.figure_number) >= $2)\n                     OR\n                     (apr.book_id <> t.book_id\n                      AND NOT EXISTS (\n                          SELECT 1 FROM reference_systems rsx\n                          WHERE rsx.book_id = apr.book_id AND rsx.slug = 'verse'\n                      )\n                      AND EXISTS (\n                          SELECT 1\n                          FROM sentences ts\n                          JOIN sentences te\n                            ON te.book_id = t.book_id\n                           AND te.natural_key =\n                               COALESCE(pse.natural_key, pss.natural_key)\n                          WHERE ts.book_id = t.book_id\n                            AND ts.natural_key = pss.natural_key\n                            AND ts.sentence_number <= $3\n                            AND te.sentence_number >= $2\n                      ))\n                     OR\n                     (apr.book_id <> t.book_id\n                      AND EXISTS (\n                          SELECT 1\n                          FROM sentences ps2\n                          JOIN toc_nodes ptn ON ptn.id = ps2.node_id\n                          JOIN page_markers ppm ON ppm.sentence_id = ps2.id\n                          JOIN reference_systems prs ON prs.id = ppm.system_id\n                                                    AND prs.book_id = apr.book_id\n                                                    AND prs.slug = 'verse'\n                          LEFT JOIN cross_translation_alignments pva\n                                 ON pva.book_id = apr.book_id\n                                AND pva.system_slug = 'verse'\n                                AND pva.source_ref = ptn.source_ref\n                                AND pva.local_ref_value = ppm.ref_value\n                          JOIN target_verses tv\n                                 ON tv.canonical_src = CASE\n                                        WHEN pva.book_id IS NULL THEN ptn.source_ref\n                                        ELSE pva.canonical_source_ref END\n                                AND tv.canonical_ref = CASE\n                                        WHEN pva.book_id IS NULL THEN ppm.ref_value\n                                        ELSE pva.canonical_ref_value END\n                          WHERE ps2.book_id = apr.book_id\n                            AND ps2.sentence_number BETWEEN\n                                COALESCE((\n                                    SELECT MAX(s4.sentence_number)\n                                    FROM sentences s4\n                                    JOIN page_markers pm4 ON pm4.sentence_id = s4.id\n                                    JOIN reference_systems rs4 ON rs4.id = pm4.system_id\n                                                              AND rs4.book_id = apr.book_id\n                                                              AND rs4.slug = 'verse'\n                                    WHERE s4.book_id = apr.book_id\n                                      AND s4.node_id = pss.node_id\n                                      AND s4.sentence_number <= pss.sentence_number\n                                ), pss.sentence_number)\n                                AND COALESCE(pse.sentence_number, pss.sentence_number)\n                      ))\n                 )\n           )\n           SELECT a.id,\n                  a.slug,\n                  a.title,\n                  u.id AS \"author_user_id!\",\n                  u.display_name AS \"author_display_name!\",\n                  u.handle AS \"author_handle?\",\n                  a.published_at,\n                  COUNT(*) OVER () AS \"total!\"\n           FROM matches m\n           JOIN articles a ON a.id = m.article_id\n           JOIN users u ON u.id = a.user_id\n           WHERE a.status IN ('published', 'archived')\n           ORDER BY a.published_at DESC NULLS LAST, a.id\n           LIMIT $5 OFFSET $6",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "author_user_id!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 4,
+                "name": "author_display_name!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "author_handle?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "published_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 7,
+                "name": "total!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                "Int4",
+                "Int4",
+                {
+                    "Custom": {
+                        "name": "sentence_kind",
+                        "kind": {
+                            "Enum": ["body", "footnote", "figure"]
+                        }
+                    }
+                },
+                "Int8",
+                "Int8"
+            ]
+        },
+        "nullable": [false, false, false, false, false, true, true, null]
+    },
+    "hash": "124ccad859b4138f400f7669e2c58e64b1d872530d5a6109713d3e51e76a30f6"
+}

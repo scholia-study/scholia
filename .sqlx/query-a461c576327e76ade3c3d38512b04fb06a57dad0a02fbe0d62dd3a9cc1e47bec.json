@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "DELETE FROM article_passage_references WHERE article_id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "a461c576327e76ade3c3d38512b04fb06a57dad0a02fbe0d62dd3a9cc1e47bec"
+}

@@ -8,12 +8,16 @@
 import type {
     DataTag,
     DefinedInitialDataOptions,
+    DefinedUseInfiniteQueryResult,
     DefinedUseQueryResult,
+    InfiniteData,
     MutationFunction,
     QueryClient,
     QueryFunction,
     QueryKey,
     UndefinedInitialDataOptions,
+    UseInfiniteQueryOptions,
+    UseInfiniteQueryResult,
     UseMutationOptions,
     UseMutationResult,
     UseQueryOptions,
@@ -21,7 +25,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    useInfiniteQuery,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher";
 import type {
     ApplyEditorialLabelRequest,
@@ -30,8 +39,10 @@ import type {
     CreateArticleRequest,
     EditorialLabelListResponse,
     EditorialLabelResponse,
+    ListArticleReferencesParams,
     ListPublishedArticlesParams,
     ListUserArticlesParams,
+    PassageArticleListResponse,
     PublishedArticleListResponse,
     UpdateArticleRequest,
 } from "../model";
@@ -1362,6 +1373,580 @@ export function useGetPublishedArticleSuspense<
 } {
     const queryOptions = getGetPublishedArticleSuspenseQueryOptions(
         slug,
+        options,
+    );
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export type listArticleReferencesResponse200 = {
+    data: PassageArticleListResponse;
+    status: 200;
+};
+
+export type listArticleReferencesResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type listArticleReferencesResponseSuccess =
+    listArticleReferencesResponse200 & {
+        headers: Headers;
+    };
+export type listArticleReferencesResponseError =
+    listArticleReferencesResponse404 & {
+        headers: Headers;
+    };
+
+export const getListArticleReferencesUrl = (
+    slug: string,
+    params: ListArticleReferencesParams,
+) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : String(value),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `/api/books/${slug}/article-references?${stringifiedParams}`
+        : `/api/books/${slug}/article-references`;
+};
+
+/**
+ * @summary List published articles quoting a sentence range (public)
+ */
+export const listArticleReferences = async (
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: RequestInit,
+): Promise<listArticleReferencesResponseSuccess> => {
+    return customFetch<listArticleReferencesResponseSuccess>(
+        getListArticleReferencesUrl(slug, params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
+};
+
+export const getListArticleReferencesInfiniteQueryKey = (
+    slug: string,
+    params?: ListArticleReferencesParams,
+) => {
+    return [
+        "infinite",
+        `/api/books/${slug}/article-references`,
+        ...(params ? [params] : []),
+    ] as const;
+};
+
+export const getListArticleReferencesQueryKey = (
+    slug: string,
+    params?: ListArticleReferencesParams,
+) => {
+    return [
+        `/api/books/${slug}/article-references`,
+        ...(params ? [params] : []),
+    ] as const;
+};
+
+export const getListArticleReferencesInfiniteQueryOptions = <
+    TData = InfiniteData<
+        Awaited<ReturnType<typeof listArticleReferences>>,
+        ListArticleReferencesParams["offset"]
+    >,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseInfiniteQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData,
+                QueryKey,
+                ListArticleReferencesParams["offset"]
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ??
+        getListArticleReferencesInfiniteQueryKey(slug, params);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listArticleReferences>>,
+        QueryKey,
+        ListArticleReferencesParams["offset"]
+    > = ({ signal, pageParam }) =>
+        listArticleReferences(
+            slug,
+            { ...params, offset: pageParam ?? params?.["offset"] },
+            { signal, ...requestOptions },
+        );
+
+    return {
+        queryKey,
+        queryFn,
+        enabled: slug !== null && slug !== undefined,
+        ...queryOptions,
+    } as UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listArticleReferences>>,
+        TError,
+        TData,
+        QueryKey,
+        ListArticleReferencesParams["offset"]
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListArticleReferencesInfiniteQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listArticleReferences>>
+>;
+export type ListArticleReferencesInfiniteQueryError = void;
+
+export function useListArticleReferencesInfinite<
+    TData = InfiniteData<
+        Awaited<ReturnType<typeof listArticleReferences>>,
+        ListArticleReferencesParams["offset"]
+    >,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options: {
+        query: Partial<
+            UseInfiniteQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData,
+                QueryKey,
+                ListArticleReferencesParams["offset"]
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listArticleReferences>>,
+                    TError,
+                    Awaited<ReturnType<typeof listArticleReferences>>,
+                    QueryKey
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListArticleReferencesInfinite<
+    TData = InfiniteData<
+        Awaited<ReturnType<typeof listArticleReferences>>,
+        ListArticleReferencesParams["offset"]
+    >,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseInfiniteQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData,
+                QueryKey,
+                ListArticleReferencesParams["offset"]
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listArticleReferences>>,
+                    TError,
+                    Awaited<ReturnType<typeof listArticleReferences>>,
+                    QueryKey
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListArticleReferencesInfinite<
+    TData = InfiniteData<
+        Awaited<ReturnType<typeof listArticleReferences>>,
+        ListArticleReferencesParams["offset"]
+    >,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseInfiniteQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData,
+                QueryKey,
+                ListArticleReferencesParams["offset"]
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List published articles quoting a sentence range (public)
+ */
+
+export function useListArticleReferencesInfinite<
+    TData = InfiniteData<
+        Awaited<ReturnType<typeof listArticleReferences>>,
+        ListArticleReferencesParams["offset"]
+    >,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseInfiniteQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData,
+                QueryKey,
+                ListArticleReferencesParams["offset"]
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListArticleReferencesInfiniteQueryOptions(
+        slug,
+        params,
+        options,
+    );
+
+    const query = useInfiniteQuery(
+        queryOptions,
+        queryClient,
+    ) as UseInfiniteQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getListArticleReferencesQueryOptions = <
+    TData = Awaited<ReturnType<typeof listArticleReferences>>,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ??
+        getListArticleReferencesQueryKey(slug, params);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listArticleReferences>>
+    > = ({ signal }) =>
+        listArticleReferences(slug, params, { signal, ...requestOptions });
+
+    return {
+        queryKey,
+        queryFn,
+        enabled: slug !== null && slug !== undefined,
+        ...queryOptions,
+    } as UseQueryOptions<
+        Awaited<ReturnType<typeof listArticleReferences>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListArticleReferencesQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listArticleReferences>>
+>;
+export type ListArticleReferencesQueryError = void;
+
+export function useListArticleReferences<
+    TData = Awaited<ReturnType<typeof listArticleReferences>>,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listArticleReferences>>,
+                    TError,
+                    Awaited<ReturnType<typeof listArticleReferences>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListArticleReferences<
+    TData = Awaited<ReturnType<typeof listArticleReferences>>,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listArticleReferences>>,
+                    TError,
+                    Awaited<ReturnType<typeof listArticleReferences>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListArticleReferences<
+    TData = Awaited<ReturnType<typeof listArticleReferences>>,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List published articles quoting a sentence range (public)
+ */
+
+export function useListArticleReferences<
+    TData = Awaited<ReturnType<typeof listArticleReferences>>,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListArticleReferencesQueryOptions(
+        slug,
+        params,
+        options,
+    );
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getListArticleReferencesSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof listArticleReferences>>,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ??
+        getListArticleReferencesQueryKey(slug, params);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listArticleReferences>>
+    > = ({ signal }) =>
+        listArticleReferences(slug, params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listArticleReferences>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListArticleReferencesSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listArticleReferences>>
+>;
+export type ListArticleReferencesSuspenseQueryError = void;
+
+export function useListArticleReferencesSuspense<
+    TData = Awaited<ReturnType<typeof listArticleReferences>>,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListArticleReferencesSuspense<
+    TData = Awaited<ReturnType<typeof listArticleReferences>>,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListArticleReferencesSuspense<
+    TData = Awaited<ReturnType<typeof listArticleReferences>>,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List published articles quoting a sentence range (public)
+ */
+
+export function useListArticleReferencesSuspense<
+    TData = Awaited<ReturnType<typeof listArticleReferences>>,
+    TError = void,
+>(
+    slug: string,
+    params: ListArticleReferencesParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReferences>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListArticleReferencesSuspenseQueryOptions(
+        slug,
+        params,
         options,
     );
 

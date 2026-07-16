@@ -1,8 +1,10 @@
 //! The writing domain: user-authored articles, quotations (with notes and
-//! tags), and the article↔quotation embeds linking them. Features are flat
-//! siblings; `quotations` and `article_quotations` are mutually coupled.
-//! Other domains reach writing only through the re-exports below.
+//! tags), the article↔quotation embeds linking them, and the derived
+//! passage-reference index (which articles quote which passages). Features
+//! are flat siblings; `quotations` and `article_quotations` are mutually
+//! coupled. Other domains reach writing only through the re-exports below.
 
+mod article_passage_references;
 mod article_quotations;
 mod articles;
 mod quotations;
@@ -63,7 +65,8 @@ pub fn user_router() -> OpenApiRouter<AppState> {
 }
 
 /// Public endpoints: published articles, topics, editorial labels, the
-/// sentence-batch fetch, and reading a single article-quotation embed.
+/// sentence-batch fetch, reading a single article-quotation embed, and
+/// the per-passage article-reference lookup.
 pub fn public_router() -> OpenApiRouter<AppState> {
     OpenApiRouter::new()
         .routes(utoipa_axum::routes!(
@@ -80,6 +83,9 @@ pub fn public_router() -> OpenApiRouter<AppState> {
         .routes(utoipa_axum::routes!(articles::handlers::batch_sentences))
         .routes(utoipa_axum::routes!(
             article_quotations::handlers::get_article_quotation
+        ))
+        .routes(utoipa_axum::routes!(
+            article_passage_references::handlers::list_article_references
         ))
 }
 

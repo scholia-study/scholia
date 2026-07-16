@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT markdown FROM articles WHERE id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "markdown",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false]
+    },
+    "hash": "6623553b9c13ac9c2df8e610651d2f66a422486a12f99326580026ba76d81d01"
+}

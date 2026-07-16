@@ -166,8 +166,11 @@ fn article_detail_response(
 /// "https://scholia.app"); used to build retrieval URLs for user-article
 /// bibliography entries.
 pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown: &str) -> String {
-    // Pre-process: extract ::quotation{...} directives and replace with placeholders
-    let directive_re = Regex::new(r#"::quotation\{([^}]+)\}"#).expect("Invalid directive regex");
+    // Pre-process: extract ::quotation{...} directives and replace with
+    // placeholders. The pattern is shared with the passage-reference
+    // index so the two can't drift on what counts as a quotation embed.
+    let directive_re =
+        crate::modules::writing::article_passage_references::db::quotation_directive_regex();
 
     let mut placeholder_map: Vec<String> = Vec::new();
     let mut quotation_book_slugs: Vec<String> = Vec::new();
@@ -1164,6 +1167,10 @@ pub async fn update_article(
         revoked =
             crate::modules::writing::articles::editorial_labels::revoke_on_edit(pool, article_id)
                 .await?;
+        crate::modules::writing::article_passage_references::db::sync_article_passage_references(
+            pool, article_id, md,
+        )
+        .await?;
     }
 
     // Update description
@@ -1232,6 +1239,17 @@ pub async fn publish_article(
         row.id,
     )
     .execute(pool)
+    .await?;
+
+    // Belt-and-braces for drafts whose last save predates the
+    // passage-reference index: every save syncs, but publish is the
+    // moment the rows become publicly visible.
+    let markdown = sqlx::query_scalar!(r#"SELECT markdown FROM articles WHERE id = $1"#, row.id)
+        .fetch_one(pool)
+        .await?;
+    crate::modules::writing::article_passage_references::db::sync_article_passage_references(
+        pool, row.id, &markdown,
+    )
     .await?;
 
     Ok(())
