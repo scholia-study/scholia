@@ -46,6 +46,11 @@ export type getNodePageResponse200 = {
     status: 200;
 };
 
+export type getNodePageResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type getNodePageResponse404 = {
     data: void;
     status: 404;
@@ -54,7 +59,10 @@ export type getNodePageResponse404 = {
 export type getNodePageResponseSuccess = getNodePageResponse200 & {
     headers: Headers;
 };
-export type getNodePageResponseError = getNodePageResponse404 & {
+export type getNodePageResponseError = (
+    | getNodePageResponse400
+    | getNodePageResponse404
+) & {
     headers: Headers;
 };
 

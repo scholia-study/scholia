@@ -8,6 +8,14 @@ use crate::modules::corpus::reading::page::models::NodePage;
 use crate::system::error::AppError;
 use crate::system::state::AppState;
 
+/// Cap on the `node_ids` / `source_nodes` batch. These branches fetch full
+/// content per id and skip the normal page-size clamp, so an unbounded list is
+/// a cheap amplification vector on this public endpoint. The largest legitimate
+/// caller is the interleaved-translation view fetching every loaded companion
+/// node; the biggest structurally-paired work is ~120 nodes, and browsers cap a
+/// URL near ~200 ids regardless, so 256 leaves ample headroom.
+const MAX_NODE_BATCH: usize = 256;
+
 #[derive(Deserialize, IntoParams)]
 pub struct PageParams {
     /// sort_order cursor — fetch nodes after this value
@@ -46,6 +54,7 @@ pub struct PageParams {
     ),
     responses(
         (status = 200, description = "Page of nodes with content", body = NodePage),
+        (status = 400, description = "Too many node_ids/source_nodes"),
         (status = 404, description = "Book not found")
     ),
     tag = "nodes"
@@ -71,6 +80,11 @@ pub async fn get_node_page(
             .split(',')
             .filter_map(|s| s.trim().parse::<Uuid>().ok())
             .collect();
+        if source_node_ids.len() > MAX_NODE_BATCH {
+            return Err(AppError::BadRequest(format!(
+                "Too many source_nodes (max {MAX_NODE_BATCH})"
+            )));
+        }
         if source_node_ids.is_empty() {
             return Ok(Json(NodePage {
                 nodes: vec![],
@@ -93,6 +107,11 @@ pub async fn get_node_page(
             .split(',')
             .filter_map(|s| s.trim().parse::<Uuid>().ok())
             .collect();
+        if ids.len() > MAX_NODE_BATCH {
+            return Err(AppError::BadRequest(format!(
+                "Too many node_ids (max {MAX_NODE_BATCH})"
+            )));
+        }
         if ids.is_empty() {
             return Ok(Json(NodePage {
                 nodes: vec![],

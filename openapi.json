@@ -1173,6 +1173,9 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Too many node_ids/source_nodes"
+                    },
                     "404": {
                         "description": "Book not found"
                     }
