@@ -58,6 +58,14 @@ pub async fn get_node_page(
     let pool = &state.pool;
     let include_original = params.original.unwrap_or(false);
 
+    let book = sqlx::query!("SELECT nodes_per_page FROM books WHERE slug = $1", slug)
+        .fetch_optional(pool)
+        .await?;
+    let Some(book) = book else {
+        return Err(AppError::NotFound("Book not found".into()));
+    };
+    let nodes_per_page: Option<i16> = book.nodes_per_page;
+
     if let Some(ref source_nodes_str) = params.source_nodes {
         let source_node_ids: Vec<Uuid> = source_nodes_str
             .split(',')
@@ -110,12 +118,6 @@ pub async fn get_node_page(
     // unchanged. This branch sizes the page itself (and, for the anchor window,
     // keeps the target node included even at sort_order 0) so it never has to
     // touch the shared default-path math.
-    let nodes_per_page: Option<i16> =
-        sqlx::query_scalar!("SELECT nodes_per_page FROM books WHERE slug = $1", slug)
-            .fetch_optional(pool)
-            .await?
-            .flatten();
-
     if let Some(p) = nodes_per_page {
         let page_size = (p as i32).max(1);
         if let Some(ref node_slug) = params.at {
