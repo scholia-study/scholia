@@ -766,6 +766,9 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Rate limit reached"
+                    },
                     "401": {
                         "description": "Not authenticated"
                     }

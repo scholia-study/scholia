@@ -1693,6 +1693,11 @@ export type requestPasswordChangeResponse200 = {
     status: 200;
 };
 
+export type requestPasswordChangeResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type requestPasswordChangeResponse401 = {
     data: void;
     status: 401;
@@ -1702,10 +1707,12 @@ export type requestPasswordChangeResponseSuccess =
     requestPasswordChangeResponse200 & {
         headers: Headers;
     };
-export type requestPasswordChangeResponseError =
-    requestPasswordChangeResponse401 & {
-        headers: Headers;
-    };
+export type requestPasswordChangeResponseError = (
+    | requestPasswordChangeResponse400
+    | requestPasswordChangeResponse401
+) & {
+    headers: Headers;
+};
 
 export const getRequestPasswordChangeUrl = () => {
     return `/api/auth/request-password-change`;

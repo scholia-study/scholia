@@ -55,6 +55,7 @@ pub const MAX_EMAIL: usize = 254;
 pub const MAX_DISPLAY_NAME: usize = 100;
 pub const MIN_PASSWORD: usize = 8;
 pub const MAX_PASSWORD: usize = 128;
+pub const MAX_PASSWORD_CHANGE_PER_HOUR: i64 = 5;
 
 // Profile
 pub const MAX_PROFILE_BIO: usize = 500;

@@ -24,7 +24,8 @@ use crate::system::email;
 use crate::system::error::AppError;
 use crate::system::state::AppState;
 use crate::system::validation::{
-    MAX_DISPLAY_NAME, MAX_EMAIL, MAX_PASSWORD, MIN_PASSWORD, check_max_len,
+    MAX_DISPLAY_NAME, MAX_EMAIL, MAX_PASSWORD, MAX_PASSWORD_CHANGE_PER_HOUR, MIN_PASSWORD,
+    check_max_len,
 };
 
 // ── Request / response types ────────────────────────────────
@@ -885,6 +886,7 @@ pub async fn update_profile(
     path = "/api/auth/request-password-change",
     responses(
         (status = 200, description = "Password change email sent", body = MessageResponse),
+        (status = 400, description = "Rate limit reached"),
         (status = 401, description = "Not authenticated")
     ),
     tag = "auth"
@@ -892,7 +894,24 @@ pub async fn update_profile(
 pub async fn request_password_change(
     State(state): State<AppState>,
     user: AuthUser,
-) -> Json<MessageResponse> {
+) -> Result<Json<MessageResponse>, AppError> {
+    // Per-user throttle: this sends an email on every call, so cap the rate to
+    // protect email quota/reputation. Keyed on the user (not IP) because the
+    // endpoint is authenticated and the governor's IP key is a single bucket
+    // behind the proxy.
+    let recent: i64 = sqlx::query_scalar::<_, i64>(
+        "SELECT COUNT(*) FROM password_reset_tokens
+         WHERE user_id = $1 AND created_at > now() - INTERVAL '1 hour'",
+    )
+    .bind(user.id)
+    .fetch_one(&state.pool)
+    .await?;
+    if recent >= MAX_PASSWORD_CHANGE_PER_HOUR {
+        return Err(AppError::BadRequest(
+            "Too many password-change requests. Please try again later.".into(),
+        ));
+    }
+
     let (raw_token, token_hash) = tokens::generate_token();
     let expires_at = OffsetDateTime::now_utc() + Duration::hours(1);
 
@@ -921,9 +940,9 @@ pub async fn request_password_change(
         }
     });
 
-    Json(MessageResponse {
+    Ok(Json(MessageResponse {
         message: "Password change link sent to your email.".to_string(),
-    })
+    }))
 }
 
 fn is_unique_violation(e: &sqlx::Error) -> bool {
