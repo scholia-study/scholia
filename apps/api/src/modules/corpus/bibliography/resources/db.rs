@@ -54,6 +54,10 @@ pub async fn list_resources(
     start: i32,
     end: i32,
     kind: &str,
+    // `admin_notes` is an editor-internal field. This endpoint is public, so
+    // callers without ResourcesManage must never receive it. Editor callers
+    // (create/update re-fetch) pass `true`.
+    include_admin_notes: bool,
 ) -> Result<Vec<ResourceResponse>, AppError> {
     let rows = sqlx::query_as!(
         ResourceRow,
@@ -203,7 +207,11 @@ pub async fn list_resources(
                 source_page_end: r.source_page_end,
                 source_location_freeform: r.source_location_freeform,
                 is_featured: r.is_featured,
-                admin_notes: r.admin_notes,
+                admin_notes: if include_admin_notes {
+                    r.admin_notes
+                } else {
+                    None
+                },
                 created_at: r
                     .created_at
                     .format(&time::format_description::well_known::Rfc3339)

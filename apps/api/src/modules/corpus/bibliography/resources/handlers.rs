@@ -69,11 +69,18 @@ fn validate_resource_fields(
 )]
 pub async fn list_resources(
     State(state): State<AppState>,
+    maybe_user: Option<AuthUser>,
     Path(slug): Path<String>,
     Query(params): Query<ResourceQuery>,
 ) -> Result<Json<ResourceListResponse>, AppError> {
     let book_id =
         crate::modules::corpus::reading::books::db::get_book_id_by_slug(&state.pool, &slug).await?;
+
+    // Editor-internal `admin_notes` is only returned to callers who can
+    // manage resources. Authenticated editors bypass the CDN cache
+    // (session cookie), so the cached anonymous response never carries it.
+    let include_admin_notes =
+        maybe_user.is_some_and(|u| u.has_permission(Permission::ResourcesManage));
 
     let resources = crate::modules::corpus::bibliography::resources::db::list_resources(
         &state.pool,
@@ -81,6 +88,7 @@ pub async fn list_resources(
         params.start,
         params.end,
         &params.kind,
+        include_admin_notes,
     )
     .await?;
 
@@ -150,13 +158,15 @@ pub async fn create_resource(
     )
     .await?;
 
-    // Return the resource in context (re-fetch with full joins)
+    // Return the resource in context (re-fetch with full joins). Editor
+    // caller — include admin_notes so the form can round-trip it.
     let resources = crate::modules::corpus::bibliography::resources::db::list_resources(
         &state.pool,
         book_id,
         body.sentence_start,
         body.sentence_end.unwrap_or(body.sentence_start),
         &body.sentence_kind,
+        true,
     )
     .await?;
 
