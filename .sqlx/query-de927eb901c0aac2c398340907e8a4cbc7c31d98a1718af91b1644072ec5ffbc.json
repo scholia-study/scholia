@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT a.title,\n                  u.display_name AS \"author_display_name!\",\n                  u.sort_name    AS \"author_sort_name?\",\n                  a.published_at\n           FROM articles a\n           JOIN users u ON u.id = a.user_id\n           WHERE a.id = $1 AND a.status IN ('published', 'archived')",
+    "query": "SELECT a.title,\n                  u.display_name AS \"author_display_name!\",\n                  u.sort_name    AS \"author_sort_name?\",\n                  a.published_at,\n                  a.html AS \"html!\"\n           FROM articles a\n           JOIN users u ON u.id = a.user_id\n           WHERE a.id = $1 AND a.status IN ('published', 'archived')",
     "describe": {
         "columns": [
             {
@@ -22,12 +22,17 @@
                 "ordinal": 3,
                 "name": "published_at",
                 "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 4,
+                "name": "html!",
+                "type_info": "Text"
             }
         ],
         "parameters": {
             "Left": ["Uuid"]
         },
-        "nullable": [false, false, true, true]
+        "nullable": [false, false, true, true, false]
     },
-    "hash": "33dba8d75c90dc7d01f3ebc24b034e9a7d7c1371a43e1908599f0b80704cb071"
+    "hash": "de927eb901c0aac2c398340907e8a4cbc7c31d98a1718af91b1644072ec5ffbc"
 }
