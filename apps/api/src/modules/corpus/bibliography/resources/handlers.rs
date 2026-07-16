@@ -105,7 +105,8 @@ pub async fn list_resources(
         (status = 200, description = "Resource created", body = ResourceListResponse),
         (status = 400, description = "Invalid input"),
         (status = 401, description = "Not authenticated"),
-        (status = 403, description = "Insufficient permissions")
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Book not found")
     ),
     tag = "resources"
 )]
@@ -256,6 +257,7 @@ pub async fn update_resource(
     ),
     responses(
         (status = 200, description = "Resource archived"),
+        (status = 400, description = "Invalid resource ID"),
         (status = 401, description = "Not authenticated"),
         (status = 403, description = "Insufficient permissions"),
         (status = 404, description = "Resource not found")

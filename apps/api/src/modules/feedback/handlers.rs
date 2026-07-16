@@ -103,6 +103,7 @@ pub async fn list_feedback(
     params(("id" = String, Path, description = "Feedback ID")),
     responses(
         (status = 200, description = "Feedback detail", body = FeedbackResponse),
+        (status = 400, description = "Invalid feedback ID"),
         (status = 401, description = "Not authenticated"),
         (status = 404, description = "Not found / not an admin")
     ),

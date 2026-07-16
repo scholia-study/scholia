@@ -36,6 +36,7 @@ fn validate_note_fields(body: &str, tags: &[String]) -> Result<(), AppError> {
     ),
     responses(
         (status = 200, description = "User's quotations for the node", body = QuotationListResponse),
+        (status = 400, description = "Invalid node ID"),
         (status = 401, description = "Not authenticated"),
         (status = 404, description = "Book not found")
     ),
@@ -74,7 +75,8 @@ pub async fn list_quotations(
     responses(
         (status = 200, description = "Quotation saved", body = CreateQuotationResponse),
         (status = 400, description = "Invalid input"),
-        (status = 401, description = "Not authenticated")
+        (status = 401, description = "Not authenticated"),
+        (status = 404, description = "Book not found")
     ),
     tag = "quotations"
 )]
@@ -122,6 +124,7 @@ pub async fn create_quotation(
     ),
     responses(
         (status = 200, description = "Quotation deleted"),
+        (status = 400, description = "Invalid quotation ID"),
         (status = 401, description = "Not authenticated"),
         (status = 404, description = "Quotation not found")
     ),
@@ -154,6 +157,7 @@ pub async fn delete_quotation(
     ),
     responses(
         (status = 200, description = "Notes for the quotation", body = NoteListResponse),
+        (status = 400, description = "Invalid quotation ID"),
         (status = 401, description = "Not authenticated"),
         (status = 404, description = "Quotation not found")
     ),
@@ -258,6 +262,7 @@ pub async fn create_note(
         (status = 200, description = "Note updated"),
         (status = 400, description = "Invalid input"),
         (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Not the note owner"),
         (status = 404, description = "Note not found")
     ),
     tag = "quotations"
@@ -307,6 +312,7 @@ pub async fn update_note(
     ),
     responses(
         (status = 200, description = "Note deleted"),
+        (status = 400, description = "Invalid note ID"),
         (status = 401, description = "Not authenticated"),
         (status = 404, description = "Note not found")
     ),

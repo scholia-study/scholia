@@ -192,6 +192,7 @@ pub async fn browse_sources(
     params(("id" = String, Path, description = "Source ID")),
     responses(
         (status = 200, description = "Source details", body = SourceResponse),
+        (status = 400, description = "Invalid source ID"),
         (status = 401, description = "Not authenticated"),
         (status = 403, description = "Insufficient permissions"),
         (status = 404, description = "Source not found")
@@ -222,6 +223,7 @@ pub async fn get_source(
     request_body = CreateSourceRequest,
     responses(
         (status = 200, description = "Source created", body = SourceResponse),
+        (status = 400, description = "Invalid input"),
         (status = 401, description = "Not authenticated"),
         (status = 403, description = "Insufficient permissions")
     ),
@@ -298,6 +300,7 @@ pub async fn create_source(
     request_body = UpdateSourceRequest,
     responses(
         (status = 200, description = "Source updated", body = SourceResponse),
+        (status = 400, description = "Invalid input"),
         (status = 401, description = "Not authenticated"),
         (status = 403, description = "Insufficient permissions"),
         (status = 404, description = "Source not found")
@@ -416,8 +419,10 @@ pub async fn update_source(
     request_body = LinkSourcePersonRequest,
     responses(
         (status = 200, description = "Person linked to source"),
+        (status = 400, description = "Invalid ID"),
         (status = 401, description = "Not authenticated"),
-        (status = 403, description = "Insufficient permissions")
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Source not found")
     ),
     tag = "sources"
 )]
@@ -458,8 +463,10 @@ pub async fn add_source_person(
     ),
     responses(
         (status = 200, description = "Person unlinked from source"),
+        (status = 400, description = "Invalid ID"),
         (status = 401, description = "Not authenticated"),
-        (status = 403, description = "Insufficient permissions")
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Source not found")
     ),
     tag = "sources"
 )]
@@ -548,6 +555,7 @@ pub async fn delete_source(
     params(("id" = String, Path, description = "Source ID")),
     responses(
         (status = 200, description = "Reference check result", body = ReferenceCheckResponse),
+        (status = 400, description = "Invalid source ID"),
         (status = 401, description = "Not authenticated"),
         (status = 403, description = "Insufficient permissions")
     ),

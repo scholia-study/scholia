@@ -45,6 +45,11 @@ export type listQuotationsResponse200 = {
     status: 200;
 };
 
+export type listQuotationsResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type listQuotationsResponse401 = {
     data: void;
     status: 401;
@@ -59,6 +64,7 @@ export type listQuotationsResponseSuccess = listQuotationsResponse200 & {
     headers: Headers;
 };
 export type listQuotationsResponseError = (
+    | listQuotationsResponse400
     | listQuotationsResponse401
     | listQuotationsResponse404
 ) & {
@@ -422,12 +428,18 @@ export type createQuotationResponse401 = {
     status: 401;
 };
 
+export type createQuotationResponse404 = {
+    data: void;
+    status: 404;
+};
+
 export type createQuotationResponseSuccess = createQuotationResponse200 & {
     headers: Headers;
 };
 export type createQuotationResponseError = (
     | createQuotationResponse400
     | createQuotationResponse401
+    | createQuotationResponse404
 ) & {
     headers: Headers;
 };
@@ -529,6 +541,11 @@ export type deleteQuotationResponse200 = {
     status: 200;
 };
 
+export type deleteQuotationResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type deleteQuotationResponse401 = {
     data: void;
     status: 401;
@@ -543,6 +560,7 @@ export type deleteQuotationResponseSuccess = deleteQuotationResponse200 & {
     headers: Headers;
 };
 export type deleteQuotationResponseError = (
+    | deleteQuotationResponse400
     | deleteQuotationResponse401
     | deleteQuotationResponse404
 ) & {
@@ -641,6 +659,11 @@ export type listNotesResponse200 = {
     status: 200;
 };
 
+export type listNotesResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type listNotesResponse401 = {
     data: void;
     status: 401;
@@ -655,6 +678,7 @@ export type listNotesResponseSuccess = listNotesResponse200 & {
     headers: Headers;
 };
 export type listNotesResponseError = (
+    | listNotesResponse400
     | listNotesResponse401
     | listNotesResponse404
 ) & {
@@ -1105,6 +1129,11 @@ export type updateNoteResponse401 = {
     status: 401;
 };
 
+export type updateNoteResponse403 = {
+    data: void;
+    status: 403;
+};
+
 export type updateNoteResponse404 = {
     data: void;
     status: 404;
@@ -1116,6 +1145,7 @@ export type updateNoteResponseSuccess = updateNoteResponse200 & {
 export type updateNoteResponseError = (
     | updateNoteResponse400
     | updateNoteResponse401
+    | updateNoteResponse403
     | updateNoteResponse404
 ) & {
     headers: Headers;
@@ -1225,6 +1255,11 @@ export type deleteNoteResponse200 = {
     status: 200;
 };
 
+export type deleteNoteResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type deleteNoteResponse401 = {
     data: void;
     status: 401;
@@ -1239,6 +1274,7 @@ export type deleteNoteResponseSuccess = deleteNoteResponse200 & {
     headers: Headers;
 };
 export type deleteNoteResponseError = (
+    | deleteNoteResponse400
     | deleteNoteResponse401
     | deleteNoteResponse404
 ) & {

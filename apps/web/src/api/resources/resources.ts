@@ -409,6 +409,11 @@ export type createResourceResponse403 = {
     status: 403;
 };
 
+export type createResourceResponse404 = {
+    data: void;
+    status: 404;
+};
+
 export type createResourceResponseSuccess = createResourceResponse200 & {
     headers: Headers;
 };
@@ -416,6 +421,7 @@ export type createResourceResponseError = (
     | createResourceResponse400
     | createResourceResponse401
     | createResourceResponse403
+    | createResourceResponse404
 ) & {
     headers: Headers;
 };
@@ -647,6 +653,11 @@ export type deleteResourceResponse200 = {
     status: 200;
 };
 
+export type deleteResourceResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type deleteResourceResponse401 = {
     data: void;
     status: 401;
@@ -666,6 +677,7 @@ export type deleteResourceResponseSuccess = deleteResourceResponse200 & {
     headers: Headers;
 };
 export type deleteResourceResponseError = (
+    | deleteResourceResponse400
     | deleteResourceResponse401
     | deleteResourceResponse403
     | deleteResourceResponse404

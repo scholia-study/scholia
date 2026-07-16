@@ -126,6 +126,7 @@ pub async fn get_user_article(
         (status = 200, description = "Article updated", body = ArticleDetailResponse),
         (status = 400, description = "Invalid input"),
         (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Article edit limit reached"),
         (status = 404, description = "Article not found")
     ),
     tag = "articles"
@@ -177,6 +178,7 @@ pub async fn update_article(
         (status = 200, description = "Article published"),
         (status = 400, description = "Publish limit reached"),
         (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Article edit limit reached"),
         (status = 404, description = "Article not found")
     ),
     tag = "articles"
@@ -333,6 +335,7 @@ pub async fn list_topics(
     params(("id" = String, Path, description = "Article UUID")),
     responses(
         (status = 200, description = "Article detail", body = ArticleDetailResponse),
+        (status = 400, description = "Invalid article ID"),
         (status = 404, description = "Article not found")
     ),
     tag = "articles"
@@ -439,7 +442,8 @@ pub async fn remove_article_label(
     path = "/api/sentences/batch",
     request_body = BatchSentencesRequest,
     responses(
-        (status = 200, description = "Sentence data", body = BatchSentencesResponse)
+        (status = 200, description = "Sentence data", body = BatchSentencesResponse),
+        (status = 404, description = "Book or node not found")
     ),
     tag = "sentences"
 )]

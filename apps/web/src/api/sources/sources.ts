@@ -376,6 +376,11 @@ export type createSourceResponse200 = {
     status: 200;
 };
 
+export type createSourceResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type createSourceResponse401 = {
     data: void;
     status: 401;
@@ -390,6 +395,7 @@ export type createSourceResponseSuccess = createSourceResponse200 & {
     headers: Headers;
 };
 export type createSourceResponseError = (
+    | createSourceResponse400
     | createSourceResponse401
     | createSourceResponse403
 ) & {
@@ -820,6 +826,11 @@ export type getSourceResponse200 = {
     status: 200;
 };
 
+export type getSourceResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type getSourceResponse401 = {
     data: void;
     status: 401;
@@ -839,6 +850,7 @@ export type getSourceResponseSuccess = getSourceResponse200 & {
     headers: Headers;
 };
 export type getSourceResponseError = (
+    | getSourceResponse400
     | getSourceResponse401
     | getSourceResponse403
     | getSourceResponse404
@@ -1147,6 +1159,11 @@ export type updateSourceResponse200 = {
     status: 200;
 };
 
+export type updateSourceResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type updateSourceResponse401 = {
     data: void;
     status: 401;
@@ -1166,6 +1183,7 @@ export type updateSourceResponseSuccess = updateSourceResponse200 & {
     headers: Headers;
 };
 export type updateSourceResponseError = (
+    | updateSourceResponse400
     | updateSourceResponse401
     | updateSourceResponse403
     | updateSourceResponse404
@@ -1386,6 +1404,11 @@ export type addSourcePersonResponse200 = {
     status: 200;
 };
 
+export type addSourcePersonResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type addSourcePersonResponse401 = {
     data: void;
     status: 401;
@@ -1396,12 +1419,19 @@ export type addSourcePersonResponse403 = {
     status: 403;
 };
 
+export type addSourcePersonResponse404 = {
+    data: void;
+    status: 404;
+};
+
 export type addSourcePersonResponseSuccess = addSourcePersonResponse200 & {
     headers: Headers;
 };
 export type addSourcePersonResponseError = (
+    | addSourcePersonResponse400
     | addSourcePersonResponse401
     | addSourcePersonResponse403
+    | addSourcePersonResponse404
 ) & {
     headers: Headers;
 };
@@ -1503,6 +1533,11 @@ export type removeSourcePersonResponse200 = {
     status: 200;
 };
 
+export type removeSourcePersonResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type removeSourcePersonResponse401 = {
     data: void;
     status: 401;
@@ -1513,13 +1548,20 @@ export type removeSourcePersonResponse403 = {
     status: 403;
 };
 
+export type removeSourcePersonResponse404 = {
+    data: void;
+    status: 404;
+};
+
 export type removeSourcePersonResponseSuccess =
     removeSourcePersonResponse200 & {
         headers: Headers;
     };
 export type removeSourcePersonResponseError = (
+    | removeSourcePersonResponse400
     | removeSourcePersonResponse401
     | removeSourcePersonResponse403
+    | removeSourcePersonResponse404
 ) & {
     headers: Headers;
 };
@@ -1624,6 +1666,11 @@ export type checkSourceReferencesResponse200 = {
     status: 200;
 };
 
+export type checkSourceReferencesResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type checkSourceReferencesResponse401 = {
     data: void;
     status: 401;
@@ -1639,6 +1686,7 @@ export type checkSourceReferencesResponseSuccess =
         headers: Headers;
     };
 export type checkSourceReferencesResponseError = (
+    | checkSourceReferencesResponse400
     | checkSourceReferencesResponse401
     | checkSourceReferencesResponse403
 ) & {

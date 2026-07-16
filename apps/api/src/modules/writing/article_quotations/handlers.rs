@@ -21,7 +21,8 @@ use crate::system::validation::{
     responses(
         (status = 200, description = "Article quotation saved", body = CreateArticleQuotationResponse),
         (status = 400, description = "Invalid input"),
-        (status = 401, description = "Not authenticated")
+        (status = 401, description = "Not authenticated"),
+        (status = 404, description = "Article not found or not published")
     ),
     tag = "article-quotations"
 )]
@@ -101,6 +102,7 @@ pub async fn list_article_quotations(
     params(("id" = String, Path, description = "Article quotation ID")),
     responses(
         (status = 200, description = "Article quotation detail", body = ArticleQuotationResponse),
+        (status = 400, description = "Invalid quotation ID"),
         (status = 404, description = "Not found")
     ),
     tag = "article-quotations"
@@ -128,6 +130,7 @@ pub async fn get_article_quotation(
     params(("id" = String, Path, description = "Article quotation ID")),
     responses(
         (status = 200, description = "Article quotation deleted"),
+        (status = 400, description = "Invalid quotation ID"),
         (status = 401, description = "Not authenticated"),
         (status = 404, description = "Not found")
     ),

@@ -750,6 +750,11 @@ export type getArticleByIdResponse200 = {
     status: 200;
 };
 
+export type getArticleByIdResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type getArticleByIdResponse404 = {
     data: void;
     status: 404;
@@ -758,7 +763,10 @@ export type getArticleByIdResponse404 = {
 export type getArticleByIdResponseSuccess = getArticleByIdResponse200 & {
     headers: Headers;
 };
-export type getArticleByIdResponseError = getArticleByIdResponse404 & {
+export type getArticleByIdResponseError = (
+    | getArticleByIdResponse400
+    | getArticleByIdResponse404
+) & {
     headers: Headers;
 };
 
@@ -2927,6 +2935,11 @@ export type updateArticleResponse401 = {
     status: 401;
 };
 
+export type updateArticleResponse403 = {
+    data: void;
+    status: 403;
+};
+
 export type updateArticleResponse404 = {
     data: void;
     status: 404;
@@ -2938,6 +2951,7 @@ export type updateArticleResponseSuccess = updateArticleResponse200 & {
 export type updateArticleResponseError = (
     | updateArticleResponse400
     | updateArticleResponse401
+    | updateArticleResponse403
     | updateArticleResponse404
 ) & {
     headers: Headers;
@@ -3161,6 +3175,11 @@ export type publishArticleResponse401 = {
     status: 401;
 };
 
+export type publishArticleResponse403 = {
+    data: void;
+    status: 403;
+};
+
 export type publishArticleResponse404 = {
     data: void;
     status: 404;
@@ -3172,6 +3191,7 @@ export type publishArticleResponseSuccess = publishArticleResponse200 & {
 export type publishArticleResponseError = (
     | publishArticleResponse400
     | publishArticleResponse401
+    | publishArticleResponse403
     | publishArticleResponse404
 ) & {
     headers: Headers;

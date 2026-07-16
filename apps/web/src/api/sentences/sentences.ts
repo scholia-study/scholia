@@ -22,7 +22,15 @@ export type batchSentencesResponse200 = {
     status: 200;
 };
 
+export type batchSentencesResponse404 = {
+    data: void;
+    status: 404;
+};
+
 export type batchSentencesResponseSuccess = batchSentencesResponse200 & {
+    headers: Headers;
+};
+export type batchSentencesResponseError = batchSentencesResponse404 & {
     headers: Headers;
 };
 
@@ -46,7 +54,7 @@ export const batchSentences = async (
 };
 
 export const getBatchSentencesMutationOptions = <
-    TError = unknown,
+    TError = void,
     TContext = unknown,
 >(options?: {
     mutation?: UseMutationOptions<
@@ -87,12 +95,12 @@ export type BatchSentencesMutationResult = NonNullable<
     Awaited<ReturnType<typeof batchSentences>>
 >;
 export type BatchSentencesMutationBody = BatchSentencesRequest;
-export type BatchSentencesMutationError = unknown;
+export type BatchSentencesMutationError = void;
 
 /**
  * @summary Batch fetch sentences for quotation card hydration
  */
-export const useBatchSentences = <TError = unknown, TContext = unknown>(
+export const useBatchSentences = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof batchSentences>>,

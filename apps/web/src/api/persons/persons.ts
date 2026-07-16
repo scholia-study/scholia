@@ -481,6 +481,11 @@ export type updatePersonResponse200 = {
     status: 200;
 };
 
+export type updatePersonResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type updatePersonResponse401 = {
     data: void;
     status: 401;
@@ -500,6 +505,7 @@ export type updatePersonResponseSuccess = updatePersonResponse200 & {
     headers: Headers;
 };
 export type updatePersonResponseError = (
+    | updatePersonResponse400
     | updatePersonResponse401
     | updatePersonResponse403
     | updatePersonResponse404

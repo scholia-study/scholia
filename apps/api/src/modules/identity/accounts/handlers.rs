@@ -248,6 +248,7 @@ pub async fn register(
     request_body = LoginRequest,
     responses(
         (status = 200, description = "Logged in", body = AuthResponse),
+        (status = 400, description = "Invalid input"),
         (status = 401, description = "Invalid credentials"),
         (status = 403, description = "Email not verified")
     ),
@@ -695,7 +696,8 @@ pub async fn get_profile(
     responses(
         (status = 200, description = "Profile updated", body = MessageResponse),
         (status = 400, description = "Invalid input"),
-        (status = 401, description = "Not authenticated")
+        (status = 401, description = "Not authenticated"),
+        (status = 409, description = "Handle already taken")
     ),
     tag = "auth"
 )]

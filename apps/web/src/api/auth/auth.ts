@@ -737,6 +737,11 @@ export type loginResponse200 = {
     status: 200;
 };
 
+export type loginResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type loginResponse401 = {
     data: void;
     status: 401;
@@ -750,7 +755,11 @@ export type loginResponse403 = {
 export type loginResponseSuccess = loginResponse200 & {
     headers: Headers;
 };
-export type loginResponseError = (loginResponse401 | loginResponse403) & {
+export type loginResponseError = (
+    | loginResponse400
+    | loginResponse401
+    | loginResponse403
+) & {
     headers: Headers;
 };
 
@@ -1483,12 +1492,18 @@ export type updateProfileResponse401 = {
     status: 401;
 };
 
+export type updateProfileResponse409 = {
+    data: void;
+    status: 409;
+};
+
 export type updateProfileResponseSuccess = updateProfileResponse200 & {
     headers: Headers;
 };
 export type updateProfileResponseError = (
     | updateProfileResponse400
     | updateProfileResponse401
+    | updateProfileResponse409
 ) & {
     headers: Headers;
 };

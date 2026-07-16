@@ -87,6 +87,7 @@ pub async fn create_person(
     request_body = UpdatePersonRequest,
     responses(
         (status = 200, description = "Person updated", body = PersonResponse),
+        (status = 400, description = "Invalid person ID"),
         (status = 401, description = "Not authenticated"),
         (status = 403, description = "Insufficient permissions"),
         (status = 404, description = "Person not found")

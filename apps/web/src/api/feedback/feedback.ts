@@ -372,6 +372,11 @@ export type getFeedbackResponse200 = {
     status: 200;
 };
 
+export type getFeedbackResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type getFeedbackResponse401 = {
     data: void;
     status: 401;
@@ -386,6 +391,7 @@ export type getFeedbackResponseSuccess = getFeedbackResponse200 & {
     headers: Headers;
 };
 export type getFeedbackResponseError = (
+    | getFeedbackResponse400
     | getFeedbackResponse401
     | getFeedbackResponse404
 ) & {

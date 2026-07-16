@@ -347,6 +347,11 @@ export type createArticleQuotationResponse401 = {
     status: 401;
 };
 
+export type createArticleQuotationResponse404 = {
+    data: void;
+    status: 404;
+};
+
 export type createArticleQuotationResponseSuccess =
     createArticleQuotationResponse200 & {
         headers: Headers;
@@ -354,6 +359,7 @@ export type createArticleQuotationResponseSuccess =
 export type createArticleQuotationResponseError = (
     | createArticleQuotationResponse400
     | createArticleQuotationResponse401
+    | createArticleQuotationResponse404
 ) & {
     headers: Headers;
 };
@@ -457,6 +463,11 @@ export type getArticleQuotationResponse200 = {
     status: 200;
 };
 
+export type getArticleQuotationResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type getArticleQuotationResponse404 = {
     data: void;
     status: 404;
@@ -466,10 +477,12 @@ export type getArticleQuotationResponseSuccess =
     getArticleQuotationResponse200 & {
         headers: Headers;
     };
-export type getArticleQuotationResponseError =
-    getArticleQuotationResponse404 & {
-        headers: Headers;
-    };
+export type getArticleQuotationResponseError = (
+    | getArticleQuotationResponse400
+    | getArticleQuotationResponse404
+) & {
+    headers: Headers;
+};
 
 export const getGetArticleQuotationUrl = (id: string) => {
     return `/api/article-quotations/${id}`;
@@ -780,6 +793,11 @@ export type deleteArticleQuotationResponse200 = {
     status: 200;
 };
 
+export type deleteArticleQuotationResponse400 = {
+    data: void;
+    status: 400;
+};
+
 export type deleteArticleQuotationResponse401 = {
     data: void;
     status: 401;
@@ -795,6 +813,7 @@ export type deleteArticleQuotationResponseSuccess =
         headers: Headers;
     };
 export type deleteArticleQuotationResponseError = (
+    | deleteArticleQuotationResponse400
     | deleteArticleQuotationResponse401
     | deleteArticleQuotationResponse404
 ) & {
