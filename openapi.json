@@ -859,6 +859,9 @@
                     "401": {
                         "description": "Not authenticated"
                     },
+                    "409": {
+                        "description": "Already has an active subscription"
+                    },
                     "500": {
                         "description": "Stripe API error"
                     }

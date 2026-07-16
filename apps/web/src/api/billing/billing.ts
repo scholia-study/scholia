@@ -36,6 +36,11 @@ export type createCheckoutSessionResponse401 = {
     status: 401;
 };
 
+export type createCheckoutSessionResponse409 = {
+    data: void;
+    status: 409;
+};
+
 export type createCheckoutSessionResponse500 = {
     data: void;
     status: 500;
@@ -48,6 +53,7 @@ export type createCheckoutSessionResponseSuccess =
 export type createCheckoutSessionResponseError = (
     | createCheckoutSessionResponse400
     | createCheckoutSessionResponse401
+    | createCheckoutSessionResponse409
     | createCheckoutSessionResponse500
 ) & {
     headers: Headers;

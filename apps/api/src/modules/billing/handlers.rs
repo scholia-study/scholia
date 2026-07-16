@@ -126,6 +126,7 @@ pub struct PortalSessionResponse {
         (status = 200, description = "Checkout session created", body = CreateCheckoutResponse),
         (status = 400, description = "Invalid tier"),
         (status = 401, description = "Not authenticated"),
+        (status = 409, description = "Already has an active subscription"),
         (status = 500, description = "Stripe API error")
     ),
     tag = "billing"
@@ -140,6 +141,36 @@ pub async fn create_checkout_session(
         None => return AppError::BadRequest("invalid tier".into()).into_response(),
     };
     let price_id = tier.price_id(&state.config).to_string();
+
+    // Refuse a second checkout while a live subscription exists. Stripe would
+    // happily create a second subscription for the same customer; the webhook
+    // then can't land it (the partial unique index idx_subscriptions_user_live
+    // permits only one live row per user), so it 500-loops on Stripe retries
+    // while the user is double-charged. Tier changes go through the portal.
+    // The predicate mirrors that index and grants_access().
+    let has_live_sub: bool = match sqlx::query_scalar(
+        "SELECT EXISTS(
+             SELECT 1 FROM subscriptions
+             WHERE user_id = $1 AND status IN ('active', 'trialing', 'past_due')
+         )",
+    )
+    .bind(user.id)
+    .fetch_one(&state.pool)
+    .await
+    {
+        Ok(exists) => exists,
+        Err(e) => {
+            // Fail closed: don't risk a second subscription on a stale read.
+            tracing::error!("checkout live-subscription guard query failed: {e}");
+            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+        }
+    };
+    if has_live_sub {
+        return AppError::Conflict(
+            "You already have an active membership. Manage it from the billing portal.".into(),
+        )
+        .into_response();
+    }
 
     let customer_id = match get_or_create_stripe_customer(&state, &user).await {
         Ok(id) => id,
