@@ -182,6 +182,9 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Invalid feedback ID"
+                    },
                     "401": {
                         "description": "Not authenticated"
                     },
@@ -289,6 +292,9 @@
                     },
                     "401": {
                         "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Article not found or not published"
                     }
                 }
             }
@@ -320,6 +326,9 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Invalid quotation ID"
+                    },
                     "404": {
                         "description": "Not found"
                     }
@@ -343,6 +352,9 @@
                 "responses": {
                     "200": {
                         "description": "Article quotation deleted"
+                    },
+                    "400": {
+                        "description": "Invalid quotation ID"
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -471,6 +483,9 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Invalid article ID"
                     },
                     "404": {
                         "description": "Article not found"
@@ -610,6 +625,9 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Invalid input"
+                    },
                     "401": {
                         "description": "Invalid credentials"
                     },
@@ -711,6 +729,9 @@
                     },
                     "401": {
                         "description": "Not authenticated"
+                    },
+                    "409": {
+                        "description": "Handle already taken"
                     }
                 }
             }
@@ -1313,6 +1334,9 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Invalid node ID"
+                    },
                     "401": {
                         "description": "Not authenticated"
                     },
@@ -1362,6 +1386,9 @@
                     },
                     "401": {
                         "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Book not found"
                     }
                 }
             }
@@ -1394,6 +1421,9 @@
                 "responses": {
                     "200": {
                         "description": "Quotation deleted"
+                    },
+                    "400": {
+                        "description": "Invalid quotation ID"
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -1439,6 +1469,9 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Invalid quotation ID"
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -1559,6 +1592,9 @@
                     "401": {
                         "description": "Not authenticated"
                     },
+                    "403": {
+                        "description": "Not the note owner"
+                    },
                     "404": {
                         "description": "Note not found"
                     }
@@ -1600,6 +1636,9 @@
                 "responses": {
                     "200": {
                         "description": "Note deleted"
+                    },
+                    "400": {
+                        "description": "Invalid note ID"
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -1712,6 +1751,9 @@
                     },
                     "403": {
                         "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Book not found"
                     }
                 }
             }
@@ -1796,6 +1838,9 @@
                 "responses": {
                     "200": {
                         "description": "Resource archived"
+                    },
+                    "400": {
+                        "description": "Invalid resource ID"
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -2058,6 +2103,9 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Invalid person ID"
+                    },
                     "401": {
                         "description": "Not authenticated"
                     },
@@ -2135,6 +2183,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Book or node not found"
                     }
                 }
             }
@@ -2200,6 +2251,9 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Invalid input"
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -2314,6 +2368,9 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Invalid source ID"
+                    },
                     "401": {
                         "description": "Not authenticated"
                     },
@@ -2360,6 +2417,9 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Invalid input"
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -2436,11 +2496,17 @@
                     "200": {
                         "description": "Person linked to source"
                     },
+                    "400": {
+                        "description": "Invalid ID"
+                    },
                     "401": {
                         "description": "Not authenticated"
                     },
                     "403": {
                         "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Source not found"
                     }
                 }
             }
@@ -2483,11 +2549,17 @@
                     "200": {
                         "description": "Person unlinked from source"
                     },
+                    "400": {
+                        "description": "Invalid ID"
+                    },
                     "401": {
                         "description": "Not authenticated"
                     },
                     "403": {
                         "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Source not found"
                     }
                 }
             }
@@ -2518,6 +2590,9 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Invalid source ID"
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -2678,6 +2753,9 @@
                     "401": {
                         "description": "Not authenticated"
                     },
+                    "403": {
+                        "description": "Article edit limit reached"
+                    },
                     "404": {
                         "description": "Article not found"
                     }
@@ -2738,6 +2816,9 @@
                     },
                     "401": {
                         "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Article edit limit reached"
                     },
                     "404": {
                         "description": "Article not found"
