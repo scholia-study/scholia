@@ -513,22 +513,32 @@ pub async fn reset_password(
         Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
     };
 
-    // Update password, verify email, and set password_changed_at to invalidate existing sessions
-    let _ = sqlx::query(
-        "UPDATE users SET password_hash = $1, email_verified_at = COALESCE(email_verified_at, now()), sessions_invalidated_at = now(), updated_at = now() WHERE id = $2",
-    )
-    .bind(&new_hash)
-    .bind(user_id)
-    .execute(&state.pool)
+    // Change the password and consume the token atomically: if the token
+    // isn't marked used, it stays valid for its 1h window and could be
+    // replayed. `sessions_invalidated_at = now()` in the same statement is the
+    // backstop that logs existing sessions out even if the purge below fails.
+    let tx_result = async {
+        let mut tx = state.pool.begin().await?;
+        sqlx::query(
+            "UPDATE users SET password_hash = $1, email_verified_at = COALESCE(email_verified_at, now()), sessions_invalidated_at = now(), updated_at = now() WHERE id = $2",
+        )
+        .bind(&new_hash)
+        .bind(user_id)
+        .execute(&mut *tx)
+        .await?;
+        sqlx::query("UPDATE password_reset_tokens SET used_at = now() WHERE id = $1")
+            .bind(token_id)
+            .execute(&mut *tx)
+            .await?;
+        tx.commit().await
+    }
     .await;
+    if tx_result.is_err() {
+        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+    }
 
-    // Mark token as used
-    let _ = sqlx::query("UPDATE password_reset_tokens SET used_at = now() WHERE id = $1")
-        .bind(token_id)
-        .execute(&state.pool)
-        .await;
-
-    // Purge all sessions for this user
+    // Best-effort session purge; the sessions_invalidated_at stamp above is
+    // the durable guarantee.
     invalidate_user_sessions(&state.pool, user_id).await;
 
     Json(MessageResponse {

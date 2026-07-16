@@ -553,6 +553,8 @@ pub async fn create_note(
     body: &str,
     tag_names: &[String],
 ) -> Result<NoteResponse, AppError> {
+    let mut tx = pool.begin().await?;
+
     let note_id = sqlx::query_scalar!(
         r#"INSERT INTO quotation_notes (quotation_id, body)
            VALUES ($1, $2)
@@ -560,10 +562,10 @@ pub async fn create_note(
         quotation_id,
         body,
     )
-    .fetch_one(pool)
+    .fetch_one(&mut *tx)
     .await?;
 
-    let tags = upsert_and_link_tags(pool, user_id, note_id, tag_names).await?;
+    let tags = upsert_and_link_tags(&mut tx, user_id, note_id, tag_names).await?;
 
     let note = sqlx::query_as!(
         NoteRow,
@@ -571,8 +573,10 @@ pub async fn create_note(
            FROM quotation_notes WHERE id = $1"#,
         note_id,
     )
-    .fetch_one(pool)
+    .fetch_one(&mut *tx)
     .await?;
+
+    tx.commit().await?;
 
     Ok(NoteResponse {
         id: note.id.to_string(),
@@ -606,28 +610,30 @@ pub async fn update_note(
         return Err(AppError::Forbidden("Not your note".to_string()));
     }
 
+    let mut tx = pool.begin().await?;
+
     if let Some(body) = body {
         sqlx::query!(
             r#"UPDATE quotation_notes SET body = $2, updated_at = now() WHERE id = $1"#,
             note_id,
             body,
         )
-        .execute(pool)
+        .execute(&mut *tx)
         .await?;
     }
 
     if let Some(tags) = tag_names {
-        // Clear existing tags
         sqlx::query!(
             r#"DELETE FROM quotation_note_tags WHERE note_id = $1"#,
             note_id,
         )
-        .execute(pool)
+        .execute(&mut *tx)
         .await?;
 
-        upsert_and_link_tags(pool, user_id, note_id, tags).await?;
+        upsert_and_link_tags(&mut tx, user_id, note_id, tags).await?;
     }
 
+    tx.commit().await?;
     Ok(())
 }
 
@@ -976,7 +982,7 @@ fn truncate_snippet(text: &str, max_len: usize) -> String {
 }
 
 async fn upsert_and_link_tags(
-    pool: &PgPool,
+    conn: &mut sqlx::PgConnection,
     user_id: Uuid,
     note_id: Uuid,
     tag_names: &[String],
@@ -996,7 +1002,7 @@ async fn upsert_and_link_tags(
             user_id,
             trimmed,
         )
-        .fetch_one(pool)
+        .fetch_one(&mut *conn)
         .await?;
 
         sqlx::query!(
@@ -1005,7 +1011,7 @@ async fn upsert_and_link_tags(
             note_id,
             tag_id,
         )
-        .execute(pool)
+        .execute(&mut *conn)
         .await?;
 
         tags.push(TagResponse {

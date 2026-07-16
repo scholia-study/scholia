@@ -1432,29 +1432,37 @@ async fn set_article_topics(
         return Err(AppError::BadRequest("Maximum 5 topics per article".into()));
     }
 
-    // Clear existing
+    // Parse every id before touching the table: a bad id must not wipe the
+    // article's existing topics and then fail.
+    let parsed: Vec<Uuid> = topic_ids
+        .iter()
+        .map(|s| {
+            Uuid::parse_str(s).map_err(|_| AppError::BadRequest(format!("Invalid topic ID: {s}")))
+        })
+        .collect::<Result<_, _>>()?;
+
+    // Replace the topic set atomically, so a failed insert (e.g. a nonexistent
+    // topic id) rolls back the delete instead of leaving the article empty.
+    let mut tx = pool.begin().await?;
     sqlx::query!(
         r#"DELETE FROM article_topics WHERE article_id = $1"#,
         article_id,
     )
-    .execute(pool)
+    .execute(&mut *tx)
     .await?;
 
-    // Insert new
-    for id_str in topic_ids {
-        let topic_id = Uuid::parse_str(id_str)
-            .map_err(|_| AppError::BadRequest(format!("Invalid topic ID: {id_str}")))?;
-
+    for topic_id in parsed {
         sqlx::query!(
             r#"INSERT INTO article_topics (article_id, topic_id) VALUES ($1, $2)
                ON CONFLICT DO NOTHING"#,
             article_id,
             topic_id,
         )
-        .execute(pool)
+        .execute(&mut *tx)
         .await?;
     }
 
+    tx.commit().await?;
     Ok(())
 }
 

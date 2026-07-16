@@ -32,9 +32,30 @@ impl IntoResponse for AppError {
 
 impl From<sqlx::Error> for AppError {
     fn from(err: sqlx::Error) -> Self {
-        match err {
-            sqlx::Error::RowNotFound => AppError::NotFound("Not found".to_string()),
-            e => AppError::Internal(e.to_string()),
+        if let sqlx::Error::RowNotFound = err {
+            return AppError::NotFound("Not found".to_string());
         }
+        // Map the constraint/format violations a bad request can trigger to
+        // 4xx instead of a blanket 500. Messages stay generic — the raw DB
+        // error (constraint/column names) is logged at debug, never returned.
+        if let sqlx::Error::Database(db) = &err {
+            if let Some(code) = db.code() {
+                tracing::debug!("database error {code}: {db}");
+                return match code.as_ref() {
+                    "23505" => AppError::Conflict("That already exists.".to_string()),
+                    "23503" => {
+                        AppError::BadRequest("References a record that doesn't exist.".to_string())
+                    }
+                    "23514" => {
+                        AppError::BadRequest("A value is outside the allowed range.".to_string())
+                    }
+                    "22P02" | "22007" | "22008" => {
+                        AppError::BadRequest("A value has an invalid format.".to_string())
+                    }
+                    _ => AppError::Internal(err.to_string()),
+                };
+            }
+        }
+        AppError::Internal(err.to_string())
     }
 }
