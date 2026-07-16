@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT EXISTS(\n               SELECT 1 FROM resources WHERE id = $1 AND book_id = $2\n           ) AS \"e!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "e!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "a358a00f17b317cb86031fd9850f97472e0b61f61cb630413c2f162b8b8a7a45"
+}

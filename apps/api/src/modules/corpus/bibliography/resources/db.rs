@@ -376,6 +376,34 @@ pub async fn update_resource(
     book_id: Uuid,
     patch: ResourceUpdate<'_>,
 ) -> Result<(), AppError> {
+    // sentence_kind only makes sense alongside a re-resolved anchor: it
+    // decides whether the anchor is a body or footnote sentence, so changing
+    // it without a sentence_start would leave the stored anchor inconsistent
+    // (and silently no-op, since kind is only written in the range branch).
+    if patch.sentence_kind.is_some() && patch.sentence_start.is_none() {
+        return Err(AppError::BadRequest(
+            "sentence_kind can only be changed together with sentence_start".into(),
+        ));
+    }
+
+    // Scope the update to the book in the URL. The UPDATEs below match on id
+    // only, so without this a resource could be re-anchored to another book's
+    // sentences (leaving book_id stale and the resource invisible in its own
+    // book), and an id from a different book — or a nonexistent one — would
+    // silently succeed.
+    let belongs = sqlx::query_scalar!(
+        r#"SELECT EXISTS(
+               SELECT 1 FROM resources WHERE id = $1 AND book_id = $2
+           ) AS "e!""#,
+        resource_id,
+        book_id,
+    )
+    .fetch_one(pool)
+    .await?;
+    if !belongs {
+        return Err(AppError::NotFound("Resource not found".into()));
+    }
+
     // If sentence range is being updated, resolve IDs
     if let Some(start) = patch.sentence_start {
         let end = patch.sentence_end.unwrap_or(start);

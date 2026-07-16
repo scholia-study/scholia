@@ -190,6 +190,44 @@ pub async fn update_source(
     source_id: Uuid,
     patch: SourceUpdate<'_>,
 ) -> Result<SourceResponse, AppError> {
+    // Reject parent/translation edges that would make the source reference
+    // itself. A self-edge makes check_source_references count the source as
+    // its own child, so total > 0 forever and it can never be deleted.
+    if let Some(new_parent) = patch.parent_source_id {
+        if new_parent == source_id {
+            return Err(AppError::BadRequest(
+                "A source cannot be its own parent".into(),
+            ));
+        }
+        // Also reject a parent that is a descendant of this source — setting
+        // it would close a cycle in the parent chain.
+        let creates_cycle = sqlx::query_scalar!(
+            // UNION (not UNION ALL) so the walk terminates even if the data
+            // already contains a cycle from before this guard existed.
+            r#"WITH RECURSIVE ancestors AS (
+                   SELECT id, parent_source_id FROM sources WHERE id = $1
+                   UNION
+                   SELECT s.id, s.parent_source_id FROM sources s
+                   JOIN ancestors a ON s.id = a.parent_source_id
+               )
+               SELECT EXISTS(SELECT 1 FROM ancestors WHERE id = $2) AS "cycle!""#,
+            new_parent,
+            source_id,
+        )
+        .fetch_one(pool)
+        .await?;
+        if creates_cycle {
+            return Err(AppError::BadRequest(
+                "This parent would create a cycle".into(),
+            ));
+        }
+    }
+    if patch.translation_of_id == Some(source_id) {
+        return Err(AppError::BadRequest(
+            "A source cannot be a translation of itself".into(),
+        ));
+    }
+
     sqlx::query!(
         r#"UPDATE sources
            SET title = COALESCE($2, title),
