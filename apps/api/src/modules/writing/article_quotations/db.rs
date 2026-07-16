@@ -245,6 +245,27 @@ pub async fn list_article_quotations_for_unified(
 
 // ── Internal helpers ───────────────────────────────────────
 
+async fn fetch_article_quotation_row(
+    pool: &PgPool,
+    id: Uuid,
+) -> Result<ArticleQuotationRow, AppError> {
+    sqlx::query_as!(
+        ArticleQuotationRow,
+        r#"SELECT aq.id, aq.article_id, aq.article_title,
+                  aq.author_display_name, aq.text, aq.html,
+                  COUNT(qn.id) AS "note_count?",
+                  aq.created_at
+           FROM article_quotations aq
+           LEFT JOIN quotation_notes qn ON qn.article_quotation_id = aq.id
+           WHERE aq.id = $1
+           GROUP BY aq.id"#,
+        id,
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(|_| AppError::NotFound("Article quotation not found".into()))
+}
+
 #[cfg(test)]
 mod tests {
     use super::quote_text_occurs_in_html;
@@ -378,25 +399,4 @@ mod tests {
         // become matchable tokens that a fabricated quote could exploit.
         assert!(!quote_text_occurs_in_html(ARTICLE, "em amp"));
     }
-}
-
-async fn fetch_article_quotation_row(
-    pool: &PgPool,
-    id: Uuid,
-) -> Result<ArticleQuotationRow, AppError> {
-    sqlx::query_as!(
-        ArticleQuotationRow,
-        r#"SELECT aq.id, aq.article_id, aq.article_title,
-                  aq.author_display_name, aq.text, aq.html,
-                  COUNT(qn.id) AS "note_count?",
-                  aq.created_at
-           FROM article_quotations aq
-           LEFT JOIN quotation_notes qn ON qn.article_quotation_id = aq.id
-           WHERE aq.id = $1
-           GROUP BY aq.id"#,
-        id,
-    )
-    .fetch_one(pool)
-    .await
-    .map_err(|_| AppError::NotFound("Article quotation not found".into()))
 }
