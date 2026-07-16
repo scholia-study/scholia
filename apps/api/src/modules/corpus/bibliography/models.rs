@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
-// ── Response types ─────────────────────────────────────────
-
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ResourceResponse {
     pub id: String,
@@ -117,8 +115,6 @@ pub struct SourceSearchResponse {
     pub protected: bool,
     pub persons: Vec<SourcePersonResponse>,
 }
-
-// ── Request types ──────────────────────────────────────────
 
 #[derive(Debug, Deserialize, IntoParams)]
 pub struct ResourceQuery {

@@ -9,8 +9,6 @@ use crate::modules::corpus::bibliography::models::{
 };
 use crate::system::error::AppError;
 
-// ── Row types ──────────────────────────────────────────────
-
 struct SourceRow {
     id: Uuid,
     source_type: String,
@@ -42,8 +40,6 @@ struct SourcePersonRow {
     person_created_by: Uuid,
     person_protected: bool,
 }
-
-// ── Queries ────────────────────────────────────────────────
 
 pub async fn search_sources(
     pool: &PgPool,
@@ -549,8 +545,6 @@ pub async fn is_person_protected(pool: &PgPool, person_id: Uuid) -> Result<bool,
 
     Ok(protected)
 }
-
-// ── Helpers ────────────────────────────────────────────────
 
 pub async fn fetch_source_persons(
     pool: &PgPool,

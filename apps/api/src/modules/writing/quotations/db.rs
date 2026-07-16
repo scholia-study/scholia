@@ -9,15 +9,12 @@ use crate::modules::writing::quotations::models::{
 use crate::system::auth::permissions::{Permission, resolve_permissions};
 use crate::system::error::AppError;
 
-// ── Tier limits ──────────────────────────────────────────
 // Free tier: 50 quotations / 50 notes. Paid / staff: 10 000 of each
 // (a hard cap to prevent abuse, not a usage target).
 const FREE_QUOTATIONS: i32 = 50;
 const FREE_NOTES: i32 = 50;
 const PAID_QUOTATIONS: i32 = 10_000;
 const PAID_NOTES: i32 = 10_000;
-
-// ── Row types ──────────────────────────────────────────────
 
 struct QuotationRow {
     id: Uuid,
@@ -75,8 +72,6 @@ struct OwnerRow {
     user_id: Uuid,
     book_id: Uuid,
 }
-
-// ── Helpers ────────────────────────────────────────────────
 
 fn fmt_time(t: time::OffsetDateTime) -> String {
     t.format(&time::format_description::well_known::Rfc3339)
@@ -176,8 +171,6 @@ pub(crate) async fn resolve_sentence(
     })?;
     Ok(sent)
 }
-
-// ── Quotation queries ──────────────────────────────────────
 
 pub async fn list_quotations_for_node(
     pool: &PgPool,
@@ -503,8 +496,6 @@ pub async fn get_quotation_owner(
     Ok((row.user_id, row.book_id))
 }
 
-// ── Note queries ───────────────────────────────────────────
-
 pub async fn list_notes(pool: &PgPool, quotation_id: Uuid) -> Result<Vec<NoteResponse>, AppError> {
     let notes = sqlx::query_as!(
         NoteRow,
@@ -658,8 +649,6 @@ pub async fn delete_note(pool: &PgPool, note_id: Uuid, user_id: Uuid) -> Result<
     Ok(())
 }
 
-// ── Tag queries ────────────────────────────────────────────
-
 pub async fn list_tags(pool: &PgPool, user_id: Uuid) -> Result<Vec<TagResponse>, AppError> {
     struct Row {
         id: Uuid,
@@ -682,8 +671,6 @@ pub async fn list_tags(pool: &PgPool, user_id: Uuid) -> Result<Vec<TagResponse>,
         })
         .collect())
 }
-
-// ── Tier limit queries ─────────────────────────────────────
 
 /// Total quotations for a user across both books and articles.
 pub async fn get_user_quotation_count(pool: &PgPool, user_id: Uuid) -> Result<i64, AppError> {
@@ -751,8 +738,6 @@ pub async fn get_note_limits_response(
         current: get_user_note_count(pool, user_id).await?,
     })
 }
-
-// ── Global listing queries ─────────────────────────────────
 
 struct QuotationWithContextRow {
     id: Uuid,
@@ -989,8 +974,6 @@ fn truncate_snippet(text: &str, max_len: usize) -> String {
         format!("{}…", &text[..end])
     }
 }
-
-// ── Helpers ────────────────────────────────────────────────
 
 async fn upsert_and_link_tags(
     pool: &PgPool,

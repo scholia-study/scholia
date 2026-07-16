@@ -8,8 +8,6 @@ use crate::modules::corpus::bibliography::models::{
 use crate::modules::corpus::bibliography::sources::db::fetch_source_persons;
 use crate::system::error::AppError;
 
-// ── Row types ──────────────────────────────────────────────
-
 struct ResourceRow {
     id: Uuid,
     resource_type: String,
@@ -45,8 +43,6 @@ struct ResourceRow {
     src_created_by: Option<Uuid>,
     src_protected: Option<bool>,
 }
-
-// ── Queries ────────────────────────────────────────────────
 
 pub async fn list_resources(
     pool: &PgPool,

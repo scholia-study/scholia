@@ -13,15 +13,12 @@ use crate::system::validation::{
     MAX_ARTICLE_DESCRIPTION, MAX_ARTICLE_MARKDOWN, MAX_ARTICLE_TITLE, check_max_len,
 };
 
-// ── Tier limits ──────────────────────────────────────────
 // Free tier defaults (applied when user lacks elevated permissions).
 const FREE_ARTICLES_ACTIVE: i32 = 5;
 const FREE_ARTICLES_ARCHIVE: i32 = 10;
 // Paid / staff tier (granted by ArticlesLimit1000 / ArticlesArchiveLimit1000).
 const PAID_ARTICLES_ACTIVE: i32 = 1000;
 const PAID_ARTICLES_ARCHIVE: i32 = 1000;
-
-// ── Validation helpers ────────────────────────────────────
 
 /// Reject any input containing emoji or other extended pictographs.
 /// Articles are meant for serious study; emoji are out of scope.
@@ -36,8 +33,6 @@ fn reject_emoji(field: &str, value: &str) -> Result<(), AppError> {
     }
     Ok(())
 }
-
-// ── Row types ─────────────────────────────────────────────
 
 struct ArticleRow {
     id: Uuid,
@@ -86,8 +81,6 @@ struct CountRow {
     active: Option<i64>,
     archived: Option<i64>,
 }
-
-// ── Helpers ───────────────────────────────────────────────
 
 fn fmt_time(t: time::OffsetDateTime) -> String {
     t.format(&time::format_description::well_known::Rfc3339)
@@ -416,8 +409,6 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
     crate::system::sanitize::clean_article_html(&html_output)
 }
 
-// ── Citation helpers ─────────────────────────────────────
-
 #[derive(Clone)]
 struct CitationSourceData {
     title: String,
@@ -728,8 +719,6 @@ fn format_article_bibliography_entry(data: &ArticleCitationData, frontend_url: &
         None => format!(r#"{author_part}. {year}. "{title}." Scholia (no longer available)."#),
     }
 }
-
-// ── Article queries ───────────────────────────────────────
 
 pub async fn create_article(
     pool: &PgPool,
@@ -1358,8 +1347,6 @@ pub async fn get_article_limits_response(
     })
 }
 
-// ── Topic queries ─────────────────────────────────────────
-
 pub async fn list_topics(pool: &PgPool) -> Result<Vec<TopicResponse>, AppError> {
     let rows = sqlx::query_as!(
         TopicRow,
@@ -1470,8 +1457,6 @@ async fn set_article_topics(
 
     Ok(())
 }
-
-// ── Batch sentence queries for quotation card hydration ───
 
 struct SentenceRow {
     sentence_number: Option<i32>,

@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
-// ── Response types ─────────────────────────────────────────
-
 #[derive(Debug, Serialize, ToSchema)]
 pub struct QuotationResponse {
     pub id: String,
@@ -109,8 +107,6 @@ pub struct TagListResponse {
     pub tags: Vec<TagResponse>,
 }
 
-// ── Global listing response types ──────────────────────────
-
 #[derive(Debug, Serialize, ToSchema)]
 pub struct QuotationWithContextResponse {
     pub id: String,
@@ -202,8 +198,6 @@ pub struct GlobalListQuery {
     #[serde(default)]
     pub book_slug: Option<String>,
 }
-
-// ── Request types ──────────────────────────────────────────
 
 #[derive(Debug, Deserialize, IntoParams)]
 pub struct QuotationQuery {

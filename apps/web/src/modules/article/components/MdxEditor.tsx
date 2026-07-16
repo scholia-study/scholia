@@ -27,8 +27,6 @@ import { ArticleQuotationCard, QuotationCard } from "../../quotation";
 import { type CitationEntry, CitationPopover } from "./CitationPopover";
 import type { QuotationPickerResult } from "./QuotationPickerModal";
 
-// ── Quotation directive descriptor ────────────────────────
-
 type QuotationMode = "source" | "translation" | "source+translation";
 type QuotationLayout =
     | "stacked"
@@ -243,8 +241,6 @@ const quotationDirectiveDescriptor: DirectiveDescriptor = {
     Editor: QuotationDirectiveEditor,
 };
 
-// ── Article quotation directive descriptor ────────────────
-
 function ArticleQuotationDirectiveEditor({
     mdastNode,
     parentEditor,
@@ -301,8 +297,6 @@ const articleQuotationDirectiveDescriptor: DirectiveDescriptor = {
     type: "leafDirective",
     Editor: ArticleQuotationDirectiveEditor,
 };
-
-// ── Citation directive descriptor ─────────────────────────
 
 /** Parse the sources attribute: "uuid1:pages,uuid2:pages" */
 function parseCiteSources(sourcesStr: string) {
@@ -418,8 +412,6 @@ const citationDirectiveDescriptor: DirectiveDescriptor = {
     Editor: CitationDirectiveEditor,
 };
 
-// ── Toolbar quotation button ──────────────────────────────
-
 function InsertQuotationButton({ onClick }: { onClick: () => void }) {
     return (
         <button
@@ -449,8 +441,6 @@ function InsertCitationButton({
         </button>
     );
 }
-
-// ── Editor component ──────────────────────────────────────
 
 export interface ArticleEditorHandle {
     insertQuotation: (result: QuotationPickerResult) => void;

@@ -8,8 +8,6 @@ use crate::modules::corpus::reading::library::models::{
 };
 use crate::system::error::AppError;
 
-// ── Row types ───────────────────────────────────────────────
-
 struct SourceRow {
     id: Uuid,
     title: String,
@@ -45,8 +43,6 @@ struct PrimaryAuthor {
     sort_name: String,
 }
 
-// ── Internal types ──────────────────────────────────────────
-
 /// A "version" of a work — either a top-level books row or a nested
 /// toc-node anchor inside some host book.
 struct VersionInstance {
@@ -66,8 +62,6 @@ enum GroupKey {
     Author(Uuid),
     SelfNamed(Uuid),
 }
-
-// ── Public ──────────────────────────────────────────────────
 
 pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
     // Every book-type source. title_display for display, parent for
@@ -408,8 +402,6 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
     })
 }
 
-// ── Bible-shape book_pills ──────────────────────────────────
-
 async fn populate_book_pills(pool: &PgPool, groups: &mut [LibraryGroup]) -> Result<(), AppError> {
     for group in groups.iter_mut() {
         if group.primary_kind != "self" {
@@ -460,8 +452,6 @@ async fn populate_book_pills(pool: &PgPool, groups: &mut [LibraryGroup]) -> Resu
     }
     Ok(())
 }
-
-// ── Helpers ─────────────────────────────────────────────────
 
 fn compute_primary_key(
     work_id: Uuid,

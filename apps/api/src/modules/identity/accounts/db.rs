@@ -7,8 +7,6 @@ use crate::system::auth::handle::MAX_HANDLE_LEN;
 use crate::system::auth::permissions::filter_public_roles;
 use crate::system::error::AppError;
 
-// ── Handle uniqueness ──────────────────────────────────────
-
 /// Returns true if `handle` is currently held by a *different* user, or
 /// was previously released by a different user. Per the no-recycle rule
 /// (see `released_handles`), a handle that any other user has ever
@@ -93,8 +91,6 @@ pub async fn record_released_handle(
     .await?;
     Ok(())
 }
-
-// ── Public profile lookups ─────────────────────────────────
 
 pub struct PublicProfileRow {
     pub id: Uuid,

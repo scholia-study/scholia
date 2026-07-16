@@ -28,8 +28,6 @@ use crate::system::validation::{
     check_max_len,
 };
 
-// ── Request / response types ────────────────────────────────
-
 #[derive(Deserialize, ToSchema)]
 pub struct RegisterRequest {
     pub email: String,
@@ -122,8 +120,6 @@ pub struct UpdateProfileRequest {
     #[serde(default)]
     pub website_url: Option<String>,
 }
-
-// ── Handlers ────────────────────────────────────────────────
 
 /// Register a new user with email and password
 #[utoipa::path(

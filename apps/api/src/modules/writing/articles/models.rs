@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
-// ── Response types ─────────────────────────────────────────
-
 #[derive(Debug, Clone, Serialize, ToSchema)]
 pub struct TopicResponse {
     pub id: String,
@@ -116,8 +114,6 @@ pub struct ArticleLimitsResponse {
     pub current_archive: i64,
 }
 
-// ── Batch sentence types for quotation card hydration ─────
-
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct BatchSentenceRequest {
     pub book_slug: String,
@@ -188,8 +184,6 @@ pub struct BatchSentencesResponse {
     pub items: Vec<BatchSentenceResponseItem>,
 }
 
-// ── Request types ──────────────────────────────────────────
-
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateArticleRequest {
     pub title: String,
@@ -206,8 +200,6 @@ pub struct UpdateArticleRequest {
     #[serde(default)]
     pub topic_ids: Option<Vec<String>>,
 }
-
-// ── Query types ────────────────────────────────────────────
 
 #[derive(Debug, Deserialize, IntoParams)]
 pub struct ArticleListQuery {

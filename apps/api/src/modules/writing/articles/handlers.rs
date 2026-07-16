@@ -13,8 +13,6 @@ use crate::system::cache;
 use crate::system::error::AppError;
 use crate::system::state::AppState;
 
-// ── User article endpoints (authenticated) ────────────────
-
 /// Create a new article
 #[utoipa::path(
     post,
@@ -262,8 +260,6 @@ fn sitemap_cache_paths() -> Vec<String> {
     vec!["/sitemap.xml".to_string(), "/sitemaps/site.xml".to_string()]
 }
 
-// ── Public article endpoints ──────────────────────────────
-
 /// List published articles
 #[utoipa::path(
     get,
@@ -314,8 +310,6 @@ pub async fn get_published_article(
     Ok(Json(article))
 }
 
-// ── Topic endpoints ───────────────────────────────────────
-
 /// List all topics
 #[utoipa::path(
     get,
@@ -354,8 +348,6 @@ pub async fn get_article_by_id(
         crate::modules::writing::articles::db::get_article_by_id(&state.pool, article_id).await?;
     Ok(Json(article))
 }
-
-// ── Editorial labels ──────────────────────────────────────
 
 /// List all editorial labels. Public — readers see chip metadata so the
 /// frontend can render names/slugs without a separate lookup, and editors
@@ -440,8 +432,6 @@ pub async fn remove_article_label(
     .await?;
     Ok(Json(()))
 }
-
-// ── Batch sentence endpoint ───────────────────────────────
 
 /// Batch fetch sentences for quotation card hydration
 #[utoipa::path(

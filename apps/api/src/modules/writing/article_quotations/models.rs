@@ -3,8 +3,6 @@ use utoipa::{IntoParams, ToSchema};
 
 use crate::modules::writing::quotations::models::QuotationLimitsResponse;
 
-// ── Response types ─────────────────────────────────────────
-
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ArticleQuotationResponse {
     pub id: String,
@@ -29,16 +27,12 @@ pub struct CreateArticleQuotationResponse {
     pub created: bool,
 }
 
-// ── Request types ──────────────────────────────────────────
-
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateArticleQuotationRequest {
     pub article_id: String,
     pub text: String,
     pub html: String,
 }
-
-// ── Unified listing types ──────────────────────────────────
 
 #[derive(Debug, Serialize, ToSchema)]
 #[serde(tag = "source_type")]

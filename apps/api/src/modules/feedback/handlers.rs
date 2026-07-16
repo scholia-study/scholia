@@ -14,8 +14,6 @@ use crate::system::validation::{
     MAX_FEEDBACK_USER_AGENT, MIN_FEEDBACK_BODY, check_max_len,
 };
 
-// ── User-facing endpoint ───────────────────────────────────
-
 /// Submit feedback to admins. Auth-required; rate-limited per user.
 #[utoipa::path(
     post,
@@ -69,8 +67,6 @@ pub async fn create_feedback(
     .await?;
     Ok(Json(feedback))
 }
-
-// ── Admin endpoints ────────────────────────────────────────
 
 /// List feedback (admin only). Default filter is "active" (todo + in_progress).
 #[utoipa::path(
@@ -162,8 +158,6 @@ pub async fn update_feedback(
     .await?;
     Ok(Json(f))
 }
-
-// ── Helpers ────────────────────────────────────────────────
 
 /// Reject non-admins as if the route doesn't exist (don't signal that
 /// `/api/admin/*` endpoints are real to non-admin clients).

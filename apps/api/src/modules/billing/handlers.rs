@@ -20,8 +20,6 @@ use crate::system::config::AppConfig;
 use crate::system::error::AppError;
 use crate::system::state::AppState;
 
-// ── Tier vocabulary ─────────────────────────────────────────
-//
 // `Tier` is the canonical name for the three subscription levels the
 // app sells. Every other representation (the slug accepted on the
 // checkout request, the Stripe Price ID configured in env, the
@@ -94,8 +92,6 @@ fn grants_access(status: &str) -> bool {
     matches!(status, "active" | "trialing" | "past_due")
 }
 
-// ── Request / response types ────────────────────────────────
-
 #[derive(Deserialize, ToSchema)]
 pub struct CreateCheckoutRequest {
     /// Tier slug: "base" | "mid" | "high".
@@ -113,8 +109,6 @@ pub struct PortalSessionResponse {
     /// Stripe-hosted Customer Portal URL; redirect the browser here.
     pub url: String,
 }
-
-// ── Handlers ────────────────────────────────────────────────
 
 /// Create a Stripe Embedded Checkout Session for the given tier.
 /// Lazily creates the user's Stripe customer on first call.
@@ -345,8 +339,6 @@ pub async fn stripe_webhook(
 
     StatusCode::OK.into_response()
 }
-
-// ── Helpers ─────────────────────────────────────────────────
 
 /// Lazily resolve the user's Stripe customer ID, creating one at
 /// Stripe if this is their first checkout. Stores the ID on

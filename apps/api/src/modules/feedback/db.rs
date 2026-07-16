@@ -6,8 +6,6 @@ use crate::modules::feedback::models::{
 };
 use crate::system::error::AppError;
 
-// ── Helpers ────────────────────────────────────────────────
-
 fn fmt_time(t: time::OffsetDateTime) -> String {
     t.format(&time::format_description::well_known::Rfc3339)
         .unwrap_or_default()
@@ -62,8 +60,6 @@ fn feedback_from_row(r: FeedbackRow) -> FeedbackResponse {
         updated_at: fmt_time(r.updated_at),
     }
 }
-
-// ── Queries ────────────────────────────────────────────────
 
 /// Count feedback rows submitted by `user_id` in the last 24 hours.
 /// Used by the rate-limit gate at the create endpoint.

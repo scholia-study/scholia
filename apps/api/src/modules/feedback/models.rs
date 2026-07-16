@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
-// ── Status enum (matches db `feedback_status`) ─────────────
-
 #[derive(Debug, Clone, Copy, sqlx::Type, Serialize, Deserialize, ToSchema, PartialEq, Eq)]
 #[sqlx(type_name = "feedback_status", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
@@ -12,8 +10,6 @@ pub enum FeedbackStatus {
     Done,
     Cancelled,
 }
-
-// ── Request types ──────────────────────────────────────────
 
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateFeedbackRequest {
@@ -49,8 +45,6 @@ pub struct FeedbackListQuery {
     #[serde(default)]
     pub per_page: Option<u32>,
 }
-
-// ── Response types ─────────────────────────────────────────
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct FeedbackSubmitter {

@@ -39,8 +39,6 @@ fn quote_text_occurs_in_html(article_html: &str, quote_text: &str) -> bool {
     haystack.contains(&needle)
 }
 
-// ── Row types ──────────────────────────────────────────────
-
 struct ArticleQuotationRow {
     id: Uuid,
     article_id: Option<Uuid>,
@@ -51,8 +49,6 @@ struct ArticleQuotationRow {
     note_count: Option<i64>,
     created_at: time::OffsetDateTime,
 }
-
-// ── Helpers ────────────────────────────────────────────────
 
 fn fmt_time(t: time::OffsetDateTime) -> String {
     t.format(&time::format_description::well_known::Rfc3339)
@@ -71,8 +67,6 @@ fn article_quotation_from_row(r: ArticleQuotationRow) -> ArticleQuotationRespons
         created_at: fmt_time(r.created_at),
     }
 }
-
-// ── Queries ────────────────────────────────────────────────
 
 pub async fn create_article_quotation(
     pool: &PgPool,
@@ -208,8 +202,6 @@ pub async fn delete_article_quotation(
     Ok(())
 }
 
-// ── Unified listing helpers ────────────────────────────────
-
 pub struct UnifiedArticleQuotationRow {
     pub id: Uuid,
     pub article_id: Option<Uuid>,
@@ -243,8 +235,6 @@ pub async fn list_article_quotations_for_unified(
     Ok(rows)
 }
 
-// ── Internal helpers ───────────────────────────────────────
-
 async fn fetch_article_quotation_row(
     pool: &PgPool,
     id: Uuid,
@@ -272,8 +262,6 @@ mod tests {
 
     const ARTICLE: &str = "<p>Kant argues that space &amp; time are <em>a priori</em> forms \
          of intuition.</p><p>Reason has its limits.</p>";
-
-    // ── Faithful quotes: must be accepted ────────────────────
 
     #[test]
     fn accepts_verbatim_quote() {
@@ -352,8 +340,6 @@ mod tests {
         assert!(quote_text_occurs_in_html(ARTICLE, ""));
         assert!(quote_text_occurs_in_html(ARTICLE, "   "));
     }
-
-    // ── Fabricated / altered quotes: must be rejected ────────
 
     #[test]
     fn rejects_fabricated_quote() {
