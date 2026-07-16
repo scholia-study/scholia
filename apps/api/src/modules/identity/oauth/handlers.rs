@@ -221,9 +221,30 @@ pub async fn github_callback(
                 .flatten();
 
         let uid = if let Some(id) = existing_user {
-            // Auto-link: also verify email and update avatar if not verified
+            // Auto-link to the existing local account and let GitHub's
+            // verified email stand in for email verification.
+            //
+            // Security: if the account was NOT already verified, its
+            // password was set by whoever registered the email — which we
+            // never confirmed was this GitHub identity. An attacker can
+            // pre-register a victim's email with an attacker-known password
+            // (the account sits unverified, unusable) and wait for the
+            // victim to sign in with GitHub. To defeat that pre-hijack, we
+            // discard the untrusted password on link (the real owner
+            // recovers it via forgot-password) and stamp
+            // sessions_invalidated_at. Already-verified accounts keep their
+            // password — the owner proved the email earlier.
             let _ = sqlx::query(
-                "UPDATE users SET email_verified_at = COALESCE(email_verified_at, now()), avatar_url = COALESCE($1, avatar_url), updated_at = now() WHERE id = $2",
+                "UPDATE users
+                 SET password_hash = CASE WHEN email_verified_at IS NULL THEN NULL ELSE password_hash END,
+                     sessions_invalidated_at = CASE
+                         WHEN email_verified_at IS NULL AND password_hash IS NOT NULL THEN now()
+                         ELSE sessions_invalidated_at
+                     END,
+                     email_verified_at = COALESCE(email_verified_at, now()),
+                     avatar_url = COALESCE($1, avatar_url),
+                     updated_at = now()
+                 WHERE id = $2",
             )
             .bind(avatar_url)
             .bind(id)

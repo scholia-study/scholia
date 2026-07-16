@@ -1,6 +1,8 @@
 use std::collections::HashSet;
 
-use axum::extract::FromRequestParts;
+use std::convert::Infallible;
+
+use axum::extract::{FromRequestParts, OptionalFromRequestParts};
 use axum::http::StatusCode;
 use axum::http::request::Parts;
 use sqlx::{PgPool, Row};
@@ -148,6 +150,25 @@ impl FromRequestParts<AppState> for AuthUser {
             .ok_or(StatusCode::UNAUTHORIZED)?;
 
         Ok(user)
+    }
+}
+
+/// Optional variant for endpoints that are public but adjust their response
+/// for authenticated callers (e.g. exposing editor-only fields). Any reason
+/// the required extractor would reject — no session, unverified email,
+/// invalidated session — yields `None` rather than a 401.
+impl OptionalFromRequestParts<AppState> for AuthUser {
+    type Rejection = Infallible;
+
+    async fn from_request_parts(
+        parts: &mut Parts,
+        state: &AppState,
+    ) -> Result<Option<Self>, Self::Rejection> {
+        Ok(
+            <AuthUser as FromRequestParts<AppState>>::from_request_parts(parts, state)
+                .await
+                .ok(),
+        )
     }
 }
 
