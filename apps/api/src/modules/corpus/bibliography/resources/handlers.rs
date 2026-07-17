@@ -206,20 +206,27 @@ pub async fn update_resource(
     let resource_id = uuid::Uuid::parse_str(&id)
         .map_err(|_| AppError::BadRequest("Invalid resource ID".into()))?;
 
-    let source_id = body
-        .source_id
-        .as_deref()
-        .map(uuid::Uuid::parse_str)
-        .transpose()
-        .map_err(|_| AppError::BadRequest("Invalid source_id".into()))?;
+    // source_id is nullable and clearable: preserve absent vs explicit-null.
+    let source_id = match &body.source_id {
+        None => None,
+        Some(None) => Some(None),
+        Some(Some(s)) => {
+            Some(Some(uuid::Uuid::parse_str(s).map_err(|_| {
+                AppError::BadRequest("Invalid source_id".into())
+            })?))
+        }
+    };
 
+    // Validate only the values being SET; a clear (Some(None)) has nothing to check.
     validate_resource_fields(
-        body.quoted_text.as_deref(),
-        body.editor_note.as_deref(),
-        body.admin_notes.as_deref(),
-        body.source_location_freeform.as_deref(),
-        body.source_page_start,
-        body.source_page_end,
+        body.quoted_text.as_ref().and_then(|o| o.as_deref()),
+        body.editor_note.as_ref().and_then(|o| o.as_deref()),
+        body.admin_notes.as_ref().and_then(|o| o.as_deref()),
+        body.source_location_freeform
+            .as_ref()
+            .and_then(|o| o.as_deref()),
+        body.source_page_start.flatten(),
+        body.source_page_end.flatten(),
     )?;
 
     crate::modules::corpus::bibliography::resources::db::update_resource(
@@ -228,18 +235,18 @@ pub async fn update_resource(
         book_id,
         crate::modules::corpus::bibliography::resources::db::ResourceUpdate {
             resource_type: body.resource_type.as_deref(),
-            verbatim_kind: body.verbatim_kind.as_deref(),
+            verbatim_kind: body.verbatim_kind.as_ref().map(|o| o.as_deref()),
             sentence_start: body.sentence_start,
             sentence_end: body.sentence_end,
             sentence_kind: body.sentence_kind.as_deref(),
             source_id,
             source_page_start: body.source_page_start,
             source_page_end: body.source_page_end,
-            source_location_freeform: body.source_location_freeform.as_deref(),
-            quoted_text: body.quoted_text.as_deref(),
-            editor_note: body.editor_note.as_deref(),
+            source_location_freeform: body.source_location_freeform.as_ref().map(|o| o.as_deref()),
+            quoted_text: body.quoted_text.as_ref().map(|o| o.as_deref()),
+            editor_note: body.editor_note.as_ref().map(|o| o.as_deref()),
             is_featured: body.is_featured,
-            admin_notes: body.admin_notes.as_deref(),
+            admin_notes: body.admin_notes.as_ref().map(|o| o.as_deref()),
         },
     )
     .await?;

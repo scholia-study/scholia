@@ -352,18 +352,18 @@ pub async fn create_resource(
 
 pub struct ResourceUpdate<'a> {
     pub resource_type: Option<&'a str>,
-    pub verbatim_kind: Option<&'a str>,
+    pub verbatim_kind: Option<Option<&'a str>>,
     pub sentence_start: Option<i32>,
     pub sentence_end: Option<i32>,
     pub sentence_kind: Option<&'a str>,
-    pub source_id: Option<Uuid>,
-    pub source_page_start: Option<i32>,
-    pub source_page_end: Option<i32>,
-    pub source_location_freeform: Option<&'a str>,
-    pub quoted_text: Option<&'a str>,
-    pub editor_note: Option<&'a str>,
+    pub source_id: Option<Option<Uuid>>,
+    pub source_page_start: Option<Option<i32>>,
+    pub source_page_end: Option<Option<i32>>,
+    pub source_location_freeform: Option<Option<&'a str>>,
+    pub quoted_text: Option<Option<&'a str>>,
+    pub editor_note: Option<Option<&'a str>>,
     pub is_featured: Option<bool>,
-    pub admin_notes: Option<&'a str>,
+    pub admin_notes: Option<Option<&'a str>>,
 }
 
 pub async fn update_resource(
@@ -481,35 +481,46 @@ pub async fn update_resource(
         .await?;
     }
 
-    // Update remaining fields
-    sqlx::query!(
-        r#"UPDATE resources
-           SET resource_type = COALESCE($2::resource_type, resource_type),
-               verbatim_kind = COALESCE($3::verbatim_kind, verbatim_kind),
-               source_id = COALESCE($4, source_id),
-               source_page_start = COALESCE($5, source_page_start),
-               source_page_end = COALESCE($6, source_page_end),
-               source_location_freeform = COALESCE($7, source_location_freeform),
-               quoted_text = COALESCE($8, quoted_text),
-               editor_note = COALESCE($9, editor_note),
-               is_featured = COALESCE($10, is_featured),
-               admin_notes = COALESCE($11, admin_notes),
-               updated_at = now()
-           WHERE id = $1"#,
-        resource_id,
-        patch.resource_type as _,
-        patch.verbatim_kind as _,
-        patch.source_id,
-        patch.source_page_start,
-        patch.source_page_end,
-        patch.source_location_freeform,
-        patch.quoted_text,
-        patch.editor_note,
-        patch.is_featured,
-        patch.admin_notes,
-    )
-    .execute(pool)
-    .await?;
+    // Update the remaining fields, touching only those present in the patch.
+    // Nullable columns carry an inner Option, so an explicit null binds NULL
+    // and clears the column while an absent field is left unchanged.
+    let mut qb = sqlx::QueryBuilder::new("UPDATE resources SET updated_at = now()");
+    if let Some(v) = patch.resource_type {
+        qb.push(", resource_type = ")
+            .push_bind(v)
+            .push("::resource_type");
+    }
+    if let Some(v) = patch.verbatim_kind {
+        qb.push(", verbatim_kind = ")
+            .push_bind(v)
+            .push("::verbatim_kind");
+    }
+    if let Some(v) = patch.source_id {
+        qb.push(", source_id = ").push_bind(v);
+    }
+    if let Some(v) = patch.source_page_start {
+        qb.push(", source_page_start = ").push_bind(v);
+    }
+    if let Some(v) = patch.source_page_end {
+        qb.push(", source_page_end = ").push_bind(v);
+    }
+    if let Some(v) = patch.source_location_freeform {
+        qb.push(", source_location_freeform = ").push_bind(v);
+    }
+    if let Some(v) = patch.quoted_text {
+        qb.push(", quoted_text = ").push_bind(v);
+    }
+    if let Some(v) = patch.editor_note {
+        qb.push(", editor_note = ").push_bind(v);
+    }
+    if let Some(v) = patch.is_featured {
+        qb.push(", is_featured = ").push_bind(v);
+    }
+    if let Some(v) = patch.admin_notes {
+        qb.push(", admin_notes = ").push_bind(v);
+    }
+    qb.push(" WHERE id = ").push_bind(resource_id);
+    qb.build().execute(pool).await?;
 
     Ok(())
 }

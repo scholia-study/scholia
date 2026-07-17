@@ -165,19 +165,19 @@ pub async fn create_source(
 
 pub struct SourceUpdate<'a> {
     pub title: Option<&'a str>,
-    pub title_display: Option<&'a str>,
-    pub publication_year: Option<i16>,
-    pub publisher: Option<&'a str>,
-    pub isbn: Option<&'a [String]>,
-    pub doi: Option<&'a str>,
-    pub edition: Option<&'a str>,
-    pub volume: Option<&'a str>,
-    pub journal_name: Option<&'a str>,
-    pub url: Option<&'a str>,
-    pub page_start: Option<i32>,
-    pub page_end: Option<i32>,
-    pub parent_source_id: Option<Uuid>,
-    pub translation_of_id: Option<Uuid>,
+    pub title_display: Option<Option<&'a str>>,
+    pub publication_year: Option<Option<i16>>,
+    pub publisher: Option<Option<&'a str>>,
+    pub isbn: Option<Option<&'a [String]>>,
+    pub doi: Option<Option<&'a str>>,
+    pub edition: Option<Option<&'a str>>,
+    pub volume: Option<Option<&'a str>>,
+    pub journal_name: Option<Option<&'a str>>,
+    pub url: Option<Option<&'a str>>,
+    pub page_start: Option<Option<i32>>,
+    pub page_end: Option<Option<i32>>,
+    pub parent_source_id: Option<Option<Uuid>>,
+    pub translation_of_id: Option<Option<Uuid>>,
     pub protected: Option<bool>,
 }
 
@@ -188,8 +188,9 @@ pub async fn update_source(
 ) -> Result<SourceResponse, AppError> {
     // Reject parent/translation edges that would make the source reference
     // itself. A self-edge makes check_source_references count the source as
-    // its own child, so total > 0 forever and it can never be deleted.
-    if let Some(new_parent) = patch.parent_source_id {
+    // its own child, so total > 0 forever and it can never be deleted. Only a
+    // *set* (Some(Some(id))) can create a cycle; clearing (Some(None)) can't.
+    if let Some(Some(new_parent)) = patch.parent_source_id {
         if new_parent == source_id {
             return Err(AppError::BadRequest(
                 "A source cannot be its own parent".into(),
@@ -218,49 +219,67 @@ pub async fn update_source(
             ));
         }
     }
-    if patch.translation_of_id == Some(source_id) {
+    if patch.translation_of_id == Some(Some(source_id)) {
         return Err(AppError::BadRequest(
             "A source cannot be a translation of itself".into(),
         ));
     }
 
-    sqlx::query!(
-        r#"UPDATE sources
-           SET title = COALESCE($2, title),
-               title_display = COALESCE($3, title_display),
-               publication_year = COALESCE($4, publication_year),
-               publisher = COALESCE($5, publisher),
-               isbn = COALESCE($6, isbn),
-               doi = COALESCE($7, doi),
-               edition = COALESCE($8, edition),
-               volume = COALESCE($9, volume),
-               journal_name = COALESCE($10, journal_name),
-               url = COALESCE($11, url),
-               page_start = COALESCE($12, page_start),
-               page_end = COALESCE($13, page_end),
-               parent_source_id = COALESCE($14, parent_source_id),
-               translation_of_id = COALESCE($15, translation_of_id),
-               protected = COALESCE($16, protected)
-           WHERE id = $1"#,
-        source_id,
-        patch.title,
-        patch.title_display,
-        patch.publication_year,
-        patch.publisher,
-        patch.isbn,
-        patch.doi,
-        patch.edition,
-        patch.volume,
-        patch.journal_name,
-        patch.url,
-        patch.page_start,
-        patch.page_end,
-        patch.parent_source_id,
-        patch.translation_of_id,
-        patch.protected,
-    )
-    .execute(pool)
-    .await?;
+    // Build the SET clause from only the fields that are present. For the
+    // nullable columns, an outer Some carries the inner Option, so an explicit
+    // `null` (Some(None)) binds NULL and clears the column, while an absent
+    // field is skipped and left unchanged.
+    // Seed with a no-op self-assignment so the SET list is never empty and
+    // each real field appends with a comma. `updated_at` is maintained by the
+    // trg_sources_updated_at trigger, so it needn't be set here.
+    let mut qb = sqlx::QueryBuilder::new("UPDATE sources SET id = id");
+    if let Some(v) = patch.title {
+        qb.push(", title = ").push_bind(v);
+    }
+    if let Some(v) = patch.title_display {
+        qb.push(", title_display = ").push_bind(v);
+    }
+    if let Some(v) = patch.publication_year {
+        qb.push(", publication_year = ").push_bind(v);
+    }
+    if let Some(v) = patch.publisher {
+        qb.push(", publisher = ").push_bind(v);
+    }
+    if let Some(v) = patch.isbn {
+        qb.push(", isbn = ").push_bind(v);
+    }
+    if let Some(v) = patch.doi {
+        qb.push(", doi = ").push_bind(v);
+    }
+    if let Some(v) = patch.edition {
+        qb.push(", edition = ").push_bind(v);
+    }
+    if let Some(v) = patch.volume {
+        qb.push(", volume = ").push_bind(v);
+    }
+    if let Some(v) = patch.journal_name {
+        qb.push(", journal_name = ").push_bind(v);
+    }
+    if let Some(v) = patch.url {
+        qb.push(", url = ").push_bind(v);
+    }
+    if let Some(v) = patch.page_start {
+        qb.push(", page_start = ").push_bind(v);
+    }
+    if let Some(v) = patch.page_end {
+        qb.push(", page_end = ").push_bind(v);
+    }
+    if let Some(v) = patch.parent_source_id {
+        qb.push(", parent_source_id = ").push_bind(v);
+    }
+    if let Some(v) = patch.translation_of_id {
+        qb.push(", translation_of_id = ").push_bind(v);
+    }
+    if let Some(v) = patch.protected {
+        qb.push(", protected = ").push_bind(v);
+    }
+    qb.push(" WHERE id = ").push_bind(source_id);
+    qb.build().execute(pool).await?;
 
     get_source(pool, source_id).await
 }

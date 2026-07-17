@@ -12,5 +12,6 @@ pub mod error;
 pub mod migrate;
 pub mod rate_limit;
 pub mod sanitize;
+pub mod serde_util;
 pub mod state;
 pub mod validation;

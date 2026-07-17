@@ -5,6 +5,12 @@
  * OpenAPI spec version: 0.1.0
  */
 
+/**
+ * Patch for a source. Nullable columns use `Option<Option<T>>` (via
+ * `double_option`) so an omitted field is left unchanged while an explicit
+ * `null` clears the column. `title` (NOT NULL) and `source_type` (immutable)
+ * stay plain `Option<T>`.
+ */
 export interface UpdateSourceRequest {
     /** @nullable */
     doi?: string | null;

@@ -228,30 +228,32 @@ export function ResourceFormModal({
             return;
         }
 
+        // Nullable fields send `null` (not `undefined`) when empty so an edit
+        // that empties a field clears it rather than leaving the old value.
+        // Harmless on create (null and absent both insert NULL).
         const payload = {
             resource_type: resourceType,
-            verbatim_kind:
-                resourceType === "verbatim" ? verbatimKind : undefined,
+            verbatim_kind: resourceType === "verbatim" ? verbatimKind : null,
             sentence_start: start,
             sentence_end: end,
             sentence_kind: sentenceKind,
-            source_id: sourceId || undefined,
+            source_id: sourceId || null,
             source_page_start:
                 !useFreeformLocation && sourcePageStart
                     ? Number.parseInt(sourcePageStart, 10)
-                    : undefined,
+                    : null,
             source_page_end:
                 !useFreeformLocation && sourcePageEnd
                     ? Number.parseInt(sourcePageEnd, 10)
-                    : undefined,
+                    : null,
             source_location_freeform:
                 useFreeformLocation && sourceLocationFreeform.trim()
                     ? sourceLocationFreeform.trim()
-                    : undefined,
-            quoted_text: quotedText.trim() || undefined,
-            editor_note: editorNote.trim() || undefined,
+                    : null,
+            quoted_text: quotedText.trim() || null,
+            editor_note: editorNote.trim() || null,
             is_featured: isFeatured,
-            admin_notes: adminNotes.trim() || undefined,
+            admin_notes: adminNotes.trim() || null,
         };
 
         if (isEdit) {

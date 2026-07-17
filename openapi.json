@@ -5690,6 +5690,7 @@
             },
             "UpdateSourceRequest": {
                 "type": "object",
+                "description": "Patch for a source. Nullable columns use `Option<Option<T>>` (via\n`double_option`) so an omitted field is left unchanged while an explicit\n`null` clears the column. `title` (NOT NULL) and `source_type` (immutable)\nstay plain `Option<T>`.",
                 "properties": {
                     "doi": {
                         "type": ["string", "null"]

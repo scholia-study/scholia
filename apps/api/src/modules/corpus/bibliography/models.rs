@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
+use crate::system::serde_util::double_option;
+
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ResourceResponse {
     pub id: String,
@@ -177,18 +179,26 @@ pub struct CreateResourceRequest {
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateResourceRequest {
     pub resource_type: Option<String>,
-    pub verbatim_kind: Option<String>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub verbatim_kind: Option<Option<String>>,
     pub sentence_start: Option<i32>,
     pub sentence_end: Option<i32>,
     pub sentence_kind: Option<String>,
-    pub source_id: Option<String>,
-    pub source_page_start: Option<i32>,
-    pub source_page_end: Option<i32>,
-    pub source_location_freeform: Option<String>,
-    pub quoted_text: Option<String>,
-    pub editor_note: Option<String>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub source_id: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub source_page_start: Option<Option<i32>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub source_page_end: Option<Option<i32>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub source_location_freeform: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub quoted_text: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub editor_note: Option<Option<String>>,
     pub is_featured: Option<bool>,
-    pub admin_notes: Option<String>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub admin_notes: Option<Option<String>>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
@@ -210,23 +220,40 @@ pub struct CreateSourceRequest {
     pub translation_of_id: Option<String>,
 }
 
+/// Patch for a source. Nullable columns use `Option<Option<T>>` (via
+/// `double_option`) so an omitted field is left unchanged while an explicit
+/// `null` clears the column. `title` (NOT NULL) and `source_type` (immutable)
+/// stay plain `Option<T>`.
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateSourceRequest {
     pub source_type: Option<String>,
     pub title: Option<String>,
-    pub title_display: Option<String>,
-    pub publication_year: Option<i16>,
-    pub publisher: Option<String>,
-    pub isbn: Option<Vec<String>>,
-    pub doi: Option<String>,
-    pub edition: Option<String>,
-    pub volume: Option<String>,
-    pub journal_name: Option<String>,
-    pub url: Option<String>,
-    pub page_start: Option<i32>,
-    pub page_end: Option<i32>,
-    pub parent_source_id: Option<String>,
-    pub translation_of_id: Option<String>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub title_display: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub publication_year: Option<Option<i16>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub publisher: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub isbn: Option<Option<Vec<String>>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub doi: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub edition: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub volume: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub journal_name: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub url: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub page_start: Option<Option<i32>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub page_end: Option<Option<i32>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub parent_source_id: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub translation_of_id: Option<Option<String>>,
     pub protected: Option<bool>,
 }
 

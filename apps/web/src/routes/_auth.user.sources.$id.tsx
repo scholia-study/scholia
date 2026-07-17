@@ -172,37 +172,38 @@ function DetailContent({
     const handleSave = async () => {
         const yearNum = publicationYear
             ? Number.parseInt(publicationYear, 10)
-            : undefined;
+            : null;
         const isbnArr = isbn.trim()
             ? isbn
                   .split(",")
                   .map((s) => s.trim())
                   .filter(Boolean)
-            : undefined;
+            : null;
 
         try {
+            // Nullable fields send `null` (not `undefined`) when empty so an
+            // emptied field is cleared, not left unchanged. `title` is NOT NULL
+            // and `protected` is editor-only, so they stay `undefined`-on-skip.
             await updateMutation.mutateAsync({
                 id: source.id,
                 data: {
                     title: title.trim() || undefined,
-                    title_display: titleDisplay.trim() || undefined,
+                    title_display: titleDisplay.trim() || null,
                     publication_year:
                         yearNum != null && !Number.isNaN(yearNum)
                             ? yearNum
-                            : undefined,
-                    publisher: publisher.trim() || undefined,
+                            : null,
+                    publisher: publisher.trim() || null,
                     isbn: isbnArr,
-                    doi: doi.trim() || undefined,
-                    edition: edition.trim() || undefined,
-                    volume: volume.trim() || undefined,
-                    journal_name: journalName.trim() || undefined,
-                    url: url.trim() || undefined,
+                    doi: doi.trim() || null,
+                    edition: edition.trim() || null,
+                    volume: volume.trim() || null,
+                    journal_name: journalName.trim() || null,
+                    url: url.trim() || null,
                     page_start: pageStart
                         ? Number.parseInt(pageStart, 10)
-                        : undefined,
-                    page_end: pageEnd
-                        ? Number.parseInt(pageEnd, 10)
-                        : undefined,
+                        : null,
+                    page_end: pageEnd ? Number.parseInt(pageEnd, 10) : null,
                     protected: isEditor ? protectedFlag : undefined,
                 },
             });

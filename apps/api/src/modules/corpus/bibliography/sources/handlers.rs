@@ -17,6 +17,23 @@ use crate::system::validation::{
     MIN_PUBLICATION_YEAR, MIN_SOURCE_PAGE, check_count, check_int_range, check_max_len,
 };
 
+/// Parse a nullable-UUID patch field, preserving the three PATCH states:
+/// absent → `None`, explicit null → `Some(None)` (clear), value → `Some(Some(id))`.
+fn parse_nullable_uuid(
+    field: &Option<Option<String>>,
+    name: &str,
+) -> Result<Option<Option<uuid::Uuid>>, AppError> {
+    match field {
+        None => Ok(None),
+        Some(None) => Ok(Some(None)),
+        Some(Some(s)) => {
+            Ok(Some(Some(uuid::Uuid::parse_str(s).map_err(|_| {
+                AppError::BadRequest(format!("Invalid {name}"))
+            })?)))
+        }
+    }
+}
+
 async fn guard_source_edit(
     pool: &sqlx::PgPool,
     user: &AuthUser,
@@ -356,33 +373,24 @@ pub async fn update_source(
         ));
     }
 
-    let parent_source_id = body
-        .parent_source_id
-        .as_deref()
-        .map(uuid::Uuid::parse_str)
-        .transpose()
-        .map_err(|_| AppError::BadRequest("Invalid parent_source_id".into()))?;
+    let parent_source_id = parse_nullable_uuid(&body.parent_source_id, "parent_source_id")?;
+    let translation_of_id = parse_nullable_uuid(&body.translation_of_id, "translation_of_id")?;
 
-    let translation_of_id = body
-        .translation_of_id
-        .as_deref()
-        .map(uuid::Uuid::parse_str)
-        .transpose()
-        .map_err(|_| AppError::BadRequest("Invalid translation_of_id".into()))?;
-
+    // Validate only the value being SET (Some(Some(v))); a clear (Some(None))
+    // or an absent field has nothing to length-check.
     validate_source_fields(SourceFields {
         title: body.title.as_deref(),
-        title_display: body.title_display.as_deref(),
-        publisher: body.publisher.as_deref(),
-        journal_name: body.journal_name.as_deref(),
-        doi: body.doi.as_deref(),
-        edition: body.edition.as_deref(),
-        volume: body.volume.as_deref(),
-        url: body.url.as_deref(),
-        isbn: body.isbn.as_deref(),
-        publication_year: body.publication_year,
-        page_start: body.page_start,
-        page_end: body.page_end,
+        title_display: body.title_display.as_ref().and_then(|o| o.as_deref()),
+        publisher: body.publisher.as_ref().and_then(|o| o.as_deref()),
+        journal_name: body.journal_name.as_ref().and_then(|o| o.as_deref()),
+        doi: body.doi.as_ref().and_then(|o| o.as_deref()),
+        edition: body.edition.as_ref().and_then(|o| o.as_deref()),
+        volume: body.volume.as_ref().and_then(|o| o.as_deref()),
+        url: body.url.as_ref().and_then(|o| o.as_deref()),
+        isbn: body.isbn.as_ref().and_then(|o| o.as_deref()),
+        publication_year: body.publication_year.flatten(),
+        page_start: body.page_start.flatten(),
+        page_end: body.page_end.flatten(),
     })?;
 
     let source = crate::modules::corpus::bibliography::sources::db::update_source(
@@ -390,15 +398,15 @@ pub async fn update_source(
         source_id,
         crate::modules::corpus::bibliography::sources::db::SourceUpdate {
             title: body.title.as_deref(),
-            title_display: body.title_display.as_deref(),
+            title_display: body.title_display.as_ref().map(|o| o.as_deref()),
             publication_year: body.publication_year,
-            publisher: body.publisher.as_deref(),
-            isbn: body.isbn.as_deref(),
-            doi: body.doi.as_deref(),
-            edition: body.edition.as_deref(),
-            volume: body.volume.as_deref(),
-            journal_name: body.journal_name.as_deref(),
-            url: body.url.as_deref(),
+            publisher: body.publisher.as_ref().map(|o| o.as_deref()),
+            isbn: body.isbn.as_ref().map(|o| o.as_deref()),
+            doi: body.doi.as_ref().map(|o| o.as_deref()),
+            edition: body.edition.as_ref().map(|o| o.as_deref()),
+            volume: body.volume.as_ref().map(|o| o.as_deref()),
+            journal_name: body.journal_name.as_ref().map(|o| o.as_deref()),
+            url: body.url.as_ref().map(|o| o.as_deref()),
             page_start: body.page_start,
             page_end: body.page_end,
             parent_source_id,
