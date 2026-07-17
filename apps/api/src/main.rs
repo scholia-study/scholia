@@ -53,12 +53,7 @@ async fn main() {
     .await
     .expect("Failed to connect to database");
 
-    // Session store
     let session_store = PostgresStore::new(pool.clone());
-    session_store
-        .migrate()
-        .await
-        .expect("Failed to migrate session store");
 
     let session_layer = SessionManagerLayer::new(session_store)
         .with_name("scholia_session")
