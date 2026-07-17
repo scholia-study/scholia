@@ -30,6 +30,8 @@ assets/ibsen1/*
 !assets/ibsen1/curated/
 
 .env
+.env.master
+.env.notes
 apps/web/node_modules/
 apps/web/dist/
 .turbo
