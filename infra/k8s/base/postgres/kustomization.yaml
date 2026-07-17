@@ -5,3 +5,13 @@ resources:
   - statefulset.yaml
   - service.yaml
   - network-policy.yaml
+
+# initdb.d script that provisions the restricted `scholia_app` role on a fresh
+# DB. disableNameSuffixHash: editing the script must not rotate the ConfigMap
+# name and bounce the DB StatefulSet (the script only ever runs at initdb).
+configMapGenerator:
+  - name: postgres-initdb
+    files:
+      - initdb-app-role.sh
+    options:
+      disableNameSuffixHash: true

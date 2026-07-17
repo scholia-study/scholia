@@ -68,20 +68,14 @@ spec:
             - name: http
               containerPort: 4000
           env:
-            # DB creds pulled from the postgres Secret so rotating the
-            # password doesn't touch the api Secret. Connection options
-            # are assembled inside the binary — see
-            # config::pg_connect_options_from_env.
+            # The serving process connects as the restricted role.
             - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: user
+              value: scholia_app
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres
-                  key: password
+                  key: app_db_password
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
