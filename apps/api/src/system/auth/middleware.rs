@@ -101,6 +101,38 @@ pub async fn invalidate_user_sessions(pool: &PgPool, user_id: Uuid) {
     }
 }
 
+/// Spawn an hourly background task that prunes expired sessions. Sessions
+/// expire on inactivity but their rows aren't deleted, and the `user_sessions`
+/// mappings they leave behind aren't either — without this both tables grow
+/// without bound. Runs in the serving process; the runtime role has DELETE on
+/// both tables.
+pub fn spawn_session_cleanup(pool: PgPool) {
+    tokio::spawn(async move {
+        loop {
+            if let Err(e) =
+                sqlx::query("DELETE FROM tower_sessions.session WHERE expiry_date < now()")
+                    .execute(&pool)
+                    .await
+            {
+                tracing::error!("session cleanup: pruning expired sessions failed: {e}");
+            }
+            // Drop mappings whose session no longer exists (expired above, or
+            // deleted by the tower-sessions store). Runs after the prune so
+            // just-expired sessions are cleaned in the same pass.
+            if let Err(e) = sqlx::query(
+                "DELETE FROM user_sessions us
+                 WHERE NOT EXISTS (SELECT 1 FROM tower_sessions.session s WHERE s.id = us.session_id)",
+            )
+            .execute(&pool)
+            .await
+            {
+                tracing::error!("session cleanup: pruning orphaned user_sessions failed: {e}");
+            }
+            tokio::time::sleep(std::time::Duration::from_secs(60 * 60)).await;
+        }
+    });
+}
+
 /// The authenticated user, extracted from the session.
 #[derive(Debug, Clone)]
 pub struct AuthUser {

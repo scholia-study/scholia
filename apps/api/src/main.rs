@@ -54,6 +54,7 @@ async fn main() {
     .expect("Failed to connect to database");
 
     let session_store = PostgresStore::new(pool.clone());
+    api::system::auth::middleware::spawn_session_cleanup(pool.clone());
 
     let session_layer = SessionManagerLayer::new(session_store)
         .with_name("scholia_session")

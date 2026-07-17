@@ -423,7 +423,9 @@ pub async fn list_all_quotations(
                 article_id: q.article_id.map(|id| id.to_string()),
                 article_title: q.article_title,
                 author_display_name: q.author_display_name,
-                text_snippet: truncate_snippet(&q.text, 80),
+                text_snippet: crate::modules::writing::quotations::db::truncate_snippet(
+                    &q.text, 80,
+                ),
                 note_count: q.note_count.unwrap_or(0),
                 created_at: q
                     .created_at
@@ -454,18 +456,6 @@ pub async fn list_all_quotations(
     .await?;
 
     Ok(Json(UnifiedQuotationListResponse { quotations, limits }))
-}
-
-fn truncate_snippet(text: &str, max_len: usize) -> String {
-    if text.len() <= max_len {
-        text.to_string()
-    } else {
-        let mut end = max_len;
-        while end > 0 && !text.is_char_boundary(end) {
-            end -= 1;
-        }
-        format!("{}…", &text[..end])
-    }
 }
 
 /// List all notes for the authenticated user (across all books)

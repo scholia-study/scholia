@@ -969,7 +969,7 @@ pub async fn list_all_notes(
         .collect())
 }
 
-fn truncate_snippet(text: &str, max_len: usize) -> String {
+pub(crate) fn truncate_snippet(text: &str, max_len: usize) -> String {
     if text.len() <= max_len {
         text.to_string()
     } else {
