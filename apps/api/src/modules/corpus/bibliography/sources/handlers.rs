@@ -15,6 +15,7 @@ use crate::system::validation::{
     MAX_SOURCE_ISBNS, MAX_SOURCE_JOURNAL_NAME, MAX_SOURCE_PAGE, MAX_SOURCE_PUBLISHER,
     MAX_SOURCE_TITLE, MAX_SOURCE_TITLE_DISPLAY, MAX_SOURCE_URL, MAX_SOURCE_VOLUME,
     MIN_PUBLICATION_YEAR, MIN_SOURCE_PAGE, check_count, check_int_range, check_max_len,
+    check_url_scheme,
 };
 
 /// Parse a nullable-UUID patch field, preserving the three PATCH states:
@@ -96,6 +97,7 @@ fn validate_source_fields(fields: SourceFields<'_>) -> Result<(), AppError> {
     }
     if let Some(d) = fields.doi {
         check_max_len("DOI", d, MAX_SOURCE_DOI)?;
+        check_url_scheme("DOI", d)?;
     }
     if let Some(e) = fields.edition {
         check_max_len("Edition", e, MAX_SOURCE_EDITION)?;
@@ -105,6 +107,7 @@ fn validate_source_fields(fields: SourceFields<'_>) -> Result<(), AppError> {
     }
     if let Some(u) = fields.url {
         check_max_len("URL", u, MAX_SOURCE_URL)?;
+        check_url_scheme("URL", u)?;
     }
     if let Some(list) = fields.isbn {
         check_count("ISBNs", list, MAX_SOURCE_ISBNS)?;

@@ -769,6 +769,12 @@ pub async fn update_profile(
         return e.into_response();
     }
 
+    if let Some(w) = &website_url
+        && let Err(e) = crate::system::validation::check_url_scheme("Website URL", w)
+    {
+        return e.into_response();
+    }
+
     // Handle rename — only attempt if the request actually includes a
     // `handle` field that differs from the current value.
     let new_handle = body.handle.as_deref().map(str::trim);

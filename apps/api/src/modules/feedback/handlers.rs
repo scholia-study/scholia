@@ -11,7 +11,7 @@ use crate::system::error::AppError;
 use crate::system::state::AppState;
 use crate::system::validation::{
     MAX_FEEDBACK_ADMIN_NOTES, MAX_FEEDBACK_BODY, MAX_FEEDBACK_PER_DAY, MAX_FEEDBACK_URL,
-    MAX_FEEDBACK_USER_AGENT, MIN_FEEDBACK_BODY, check_max_len,
+    MAX_FEEDBACK_USER_AGENT, MIN_FEEDBACK_BODY, check_max_len, check_url_scheme,
 };
 
 /// Submit feedback to admins. Auth-required; rate-limited per user.
@@ -40,6 +40,7 @@ pub async fn create_feedback(
     check_max_len("Feedback body", trimmed, MAX_FEEDBACK_BODY)?;
     if let Some(u) = body.url.as_deref() {
         check_max_len("URL", u, MAX_FEEDBACK_URL)?;
+        check_url_scheme("URL", u)?;
     }
     if let Some(ua) = body.user_agent.as_deref() {
         check_max_len("User agent", ua, MAX_FEEDBACK_USER_AGENT)?;
