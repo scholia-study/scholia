@@ -26,10 +26,24 @@ source /app/scripts/lib.sh
 scholia_rclone_config
 if [ -n "${DERIVED_HASH:-}" ]; then
     SRC="scholia:scholia-assets-auto/${CORPUS}/derived@${DERIVED_HASH}"
-    if ! rclone lsf "$SRC" --max-depth 1 | grep -q .; then
-        echo "error: ${SRC} is missing or empty." >&2
-        echo "The artifact likely hit the auto-ingest bucket's 30-day expiry;" >&2
-        echo "re-run the Build workflow (workflow_dispatch) to rebuild + re-upload." >&2
+    # CI ends every upload with a `.complete` marker. Freshly created
+    # prefixes can lag in Hetzner's S3 listings (seen in the wild: a Job
+    # listed an empty prefix minutes after a verified upload), so poll
+    # rather than trusting the first answer.
+    found=""
+    for attempt in 1 2 3 4 5 6; do
+        if rclone lsf "$SRC" --max-depth 1 | grep -qxF ".complete"; then
+            found=yes
+            break
+        fi
+        echo "waiting for ${SRC} to appear in listings (attempt ${attempt}/6)..."
+        sleep 10
+    done
+    if [ -z "$found" ]; then
+        echo "error: ${SRC} has no .complete marker after 6 checks." >&2
+        echo "Either the artifact hit the auto-ingest bucket's 30-day expiry, or its" >&2
+        echo "upload never finished. Re-run the Build workflow (workflow_dispatch)" >&2
+        echo "to rebuild + re-upload; it re-copies and re-marks incomplete prefixes." >&2
         exit 1
     fi
 else
