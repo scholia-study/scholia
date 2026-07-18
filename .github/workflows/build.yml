@@ -43,7 +43,7 @@ jobs:
         outputs:
             matrix: ${{ steps.matrix.outputs.matrix }}
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
 
             - uses: dorny/paths-filter@v4
               id: filter
@@ -148,7 +148,7 @@ jobs:
             matrix:
                 include: ${{ fromJSON(needs.changes.outputs.matrix) }}
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v4
@@ -191,7 +191,7 @@ jobs:
         name: Build structs
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
 
             # Pinned so output hashes never depend on the runner's rustc.
             - uses: dtolnay/rust-toolchain@stable
@@ -248,7 +248,7 @@ jobs:
         if: ${{ !cancelled() && needs.changes.result == 'success' && needs.structs.result == 'success' && needs.build.result != 'failure' }}
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
               with:
                   ref: main
                   token: ${{ secrets.PAT }}
