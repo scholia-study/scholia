@@ -20,6 +20,15 @@ creation_rules:
       - age:
           - age1a57wpmedhxjfpc7eggf639ktpwh66pyg0r5n72gavm3w0zrrv3qq8eesn6
 
+  # Argo's own secrets (argocd namespace — outside the synced app, so
+  # applied manually: `sops -d <file> | kubectl apply -f -`). Suffixed
+  # per environment; -prod files will need the prod recipient.
+  - path_regex: infra/argo/secrets/.*-dev\.ya?ml$
+    encrypted_regex: "^(data|stringData)$"
+    key_groups:
+      - age:
+          - age1a57wpmedhxjfpc7eggf639ktpwh66pyg0r5n72gavm3w0zrrv3qq8eesn6
+
   # Add a prod rule here once the prod cluster + age keypair exist:
   #
   # - path_regex: infra/k8s/overlays/prod/.*\.ya?ml$

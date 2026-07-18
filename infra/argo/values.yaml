@@ -25,8 +25,57 @@ global:
 # Trim components we don't use to keep the footprint small on a 4GB node.
 dex:
   enabled: false # no external SSO; local admin login only
+
+# Notifications: failures push to ntfy (phone). The topic URL is a
+# secret (topic name = credential), so it lives in the manually created
+# `argocd-notifications-secret` (see README bootstrap), referenced here
+# as $ntfy-url. The Application CR opts in via
+# `notifications.argoproj.io/subscribe.…` annotations
+# (application-dev.yaml). Failures only — no per-deploy chatter.
 notifications:
-  enabled: false
+  enabled: true
+  secret:
+    create: false # created manually: key `ntfy-url` = https://ntfy.sh/<topic>
+  notifiers:
+    service.webhook.ntfy: |
+      url: $ntfy-url
+      headers:
+        - name: Title
+          value: Argo scholia-dev
+        - name: Priority
+          value: high
+        - name: Tags
+          value: warning
+  templates:
+    # Body lists only the unhealthy resources (kind/name + k8s health
+    # message). Deeper "why" (e.g. a reconcile-abort reason) is in pod
+    # logs, which notifications can't see — hence the logs pointer.
+    template.app-degraded: |
+      webhook:
+        ntfy:
+          method: POST
+          body: |
+            {{.app.metadata.name}} is Degraded.
+            {{- range .app.status.resources }}
+            {{- if and .health (ne .health.status "Healthy") (ne .health.status "Progressing") }}
+            {{ .kind }}/{{ .name }}: {{ .health.status }}{{ if .health.message }} — {{ .health.message }}{{ end }}
+            {{- end }}
+            {{- end }}
+            logs: kubectl logs -n scholia job/<name> (or the Argo UI)
+    template.app-sync-failed: |
+      webhook:
+        ntfy:
+          method: POST
+          body: |
+            {{.app.metadata.name}} sync FAILED.
+            {{.app.status.operationState.message}}
+  triggers:
+    trigger.on-health-degraded: |
+      - when: app.status.health.status == 'Degraded'
+        send: [app-degraded]
+    trigger.on-sync-failed: |
+      - when: app.status.operationState.phase in ['Error', 'Failed']
+        send: [app-sync-failed]
 applicationSet:
   # This chart's applicationSet section has no `enabled` key (unlike dex
   # / notifications above) — scaling to zero is how you switch the

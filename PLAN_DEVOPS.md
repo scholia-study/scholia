@@ -1,8 +1,14 @@
 # Scholia — DevOps Plan
 
 Design notes and decisions for taking Scholia to production. Distilled from
-the design grill on 2026-05-04. This is the reference doc for execution;
-no code yet, just decisions + rationale.
+the design grill on 2026-05-04. This is the reference doc for execution.
+
+Status audit 2026-07-18: checkboxes and sections reconciled against the
+repo. Ingest orchestration is now recorded in ADR 0006 (narrow waist) +
+ADR 0007 (auto-ingest) and `docs/architecture/overview.md`; the
+superseded Ingest-as-Jobs design below was replaced with a pointer.
+**Next prod-blocking workstream: backups (§3 is designed but entirely
+unimplemented — see the roadmap).**
 
 ---
 
@@ -113,8 +119,9 @@ become multiple migrations, not one edit.
 
 ### ✅ 0.4 Update auto-memory note
 
-The `reference-db-reset` auto-memory now points at `pnpm db:reset` →
-sqlx migrations in `db/migrations/`, and a companion
+The `reference-db-reset` auto-memory points at sqlx migrations in
+`db/migrations/` (forward-only `pnpm db:migrate`; `scripts/db_reset.sh`
+is local-scratch only — live DBs are never reset), and a companion
 `feedback-migration-naming` memory captures the `NNNN_<semantic-name>`
 convention starting at `0000`. CLAUDE.md `Database — db/migrations/`
 section rewritten to match.
@@ -235,7 +242,9 @@ both HTML and `/api/*`, fewer ingress rules to get wrong.
 ### 2.1 Rust API (`scholia-api`)
 
 - **Image**: multi-stage Docker build (`rust:bookworm` builder, `debian:bookworm-slim` runtime)
-- **Tag**: `ghcr.io/<you>/scholia-api:main-<sha7>` for dev, `:v1.2.3` for prod
+- **Tag**: immutable `ghcr.io/<you>/scholia-api:main-<sha7>` everywhere.
+  No semver — prod pins move by *promotion* (copy dev overlay pins into
+  the prod overlay; ADR 0007), not by release tags.
 - **Pod**: 1 replica per cluster (no horizontal scaling for v1)
 - **Init container**: same image, runs `api migrate` to apply DB migrations
   before the main container starts. Migration failure prevents the API
@@ -297,7 +306,9 @@ both HTML and `/api/*`, fewer ingress rules to get wrong.
 ### 2.4 Postgres (`scholia-db`)
 
 - **Pattern**: in-cluster, raw StatefulSet on local-path PVC (no operator)
-- **Image**: official `postgres:16` (or 17 when stable)
+- **Image**: official `postgres:18`
+- **App role**: `initdb-app-role.sh` creates a CRUD-only application
+  role on fresh initdb — the api does not run as superuser
 - **Storage**: 20GB PVC initially, resizable
 - **Backups**: see § 3
 - **Why raw StatefulSet not CloudNativePG**: lower abstraction = better
@@ -317,6 +328,10 @@ both HTML and `/api/*`, fewer ingress rules to get wrong.
 ---
 
 ## 3. Backups
+
+> **Status: designed, entirely unimplemented (audit 2026-07-18).** No
+> backup bucket, no CronJob, no dump script exist yet. Prod-blocking —
+> tracked as its own workstream in the § 8 roadmap.
 
 ### 3.1 Target
 
@@ -413,9 +428,12 @@ The Kustomize bases + overlays from v0 are reused as-is by Argo.
 
 | Trigger | Action |
 |---|---|
-| PR opened/updated | Build + test + lint + typecheck (no push) |
-| Push to `main` | Build changed images (api, web, proxy, + ingest jobs), push `:main-<sha>` to ghcr.io, then the `bump` job **commits per-service image-tag bumps to `infra/k8s/overlays/dev/`** (via PAT) for Argo to sync |
-| Tag `v*` push | Build all three images, push `:<version>` and `:latest` to ghcr.io |
+| Push to `main` | Build changed images (api, web, proxy, ingest, ingest-bible), push `:main-<sha>` to ghcr.io; the `structs` job builds + content-hashes derived structs and uploads new hashes to `scholia-assets-auto`; the `bump` job **commits image-tag bumps + ingest-Job hash bumps to `infra/k8s/overlays/dev/` in one commit** (via PAT) for Argo to sync. See ADR 0007. |
+| `workflow_dispatch` | Full rebuild, or structs-only recovery run (`images=false`, `corpora=<subset>`) |
+
+No PR-triggered CI exists (validation runs in the lefthook pre-commit
+instead), and no tag/semver flow — deploys are `main-<sha>` pins,
+promoted dev→prod by copying overlay pins (ADR 0007).
 
 The proxy image rebuild is slow on first build (it compiles
 `ngx_cache_purge` from source) but well-cached after, since the source
@@ -431,9 +449,10 @@ versions and configure args rarely change.
 ### 4.6 Image registry: ghcr.io
 
 - **Visibility**: public (image bytes aren't sensitive; secrets live in K8s Secrets)
-- **Three images**: `ghcr.io/<you>/scholia-api`, `ghcr.io/<you>/scholia-web`,
-  `ghcr.io/<you>/scholia-proxy`
-- **Tag scheme**: `main-<sha7>` for main pushes, semver for releases, never `:latest` in Deployments
+- **Five images**: `scholia-{api,web,proxy}` (Deployments) +
+  `scholia-{ingest,ingest-bible}` (Job images)
+- **Tag scheme**: immutable `main-<sha7>` + mutable `main`; no semver,
+  never `:latest` in Deployments
 
 ---
 
@@ -442,26 +461,32 @@ versions and configure args rarely change.
 ```
 .
 ├── apps/
-│   ├── api/                  # existing — Rust axum API
-│   ├── web/                  # existing — React frontend, now Node SSR
-│   └── proxy/                # existing — nginx-cache (Dockerfile + conf)
+│   ├── api/                  # Rust axum API
+│   ├── web/                  # React frontend, Node SSR
+│   └── proxy/                # nginx-cache (Dockerfile + conf)
+├── jobs/                     # one-shot Job images
+│   ├── ingest/               # shared struct-importer (CORPUS env)
+│   └── ingest-bible/
+├── packages/                 # Rust ingest crates (see overview.md)
+├── assets/<corpus>/          # raw/ (ignored) · curated/ (tracked) · derived/ (ignored)
 ├── db/
-│   └── migrations/           # NEW — sqlx migrations, append-only
-├── infra/                    # NEW
+│   └── migrations/           # sqlx migrations, append-only
+├── docs/
+│   ├── adr/                  # decisions (0006 waist, 0007 auto-ingest, …)
+│   └── architecture/         # current-state docs + overview.md diagrams
+├── scripts/                  # shell family behind the justfile
+├── infra/
 │   ├── terraform/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   ├── dev.tfvars
-│   │   ├── prod.tfvars
-│   │   ├── cloud-init/
-│   │   │   └── k3s.yaml.tpl
-│   │   └── modules/
-│   │       └── cluster/
+│   │   ├── clusters/         # per-env, workspaced (dev|prod tfvars, cloud-init, modules/)
+│   │   └── shared/           # project-wide: buckets (assets, assets-auto, tf-state)
+│   ├── argo/                 # Application CR, Helm values, README
 │   └── k8s/
 │       ├── base/             # core manifests (api, web, proxy, postgres, ingress)
+│       ├── jobs/             # manual ingest Jobs (kubectl escape hatch)
 │       └── overlays/
-│           ├── dev/
-│           └── prod/
+│           ├── dev/          # + ingest-jobs/ (Argo-managed, CI-bumped)
+│           └── prod/         # (when prod lands)
+├── justfile                  # operational front door
 ├── PLAN_DEVOPS.md            # this file
 └── ...
 ```
@@ -479,6 +504,10 @@ versions and configure args rarely change.
 
 ### 6.2 Backup discipline
 
+**Not yet implemented — nothing in § 3 exists (no CronJob, no backup
+bucket, no dump script). See the roadmap's backups workstream.** Once
+live:
+
 - Verify daily backup ran (CronJob exit code, object exists in bucket)
 - Quarterly manual restore test into dev cluster
 - Never let restore-test cadence slip — untested backup = no backup
@@ -493,8 +522,9 @@ versions and configure args rarely change.
   git.
 - Watch logs via `kubectl logs` for first ~10 minutes post-deploy
 - **Prod (when it exists)**: same pattern — second Argo on the prod
-  cluster, `application-prod.yaml` tracking `overlays/prod`. Tag a
-  release (`vX.Y.Z`) → CI builds prod-tagged image → bump prod overlay.
+  cluster, `application-prod.yaml` tracking `overlays/prod`. Deploys by
+  **promotion**: copy dev overlay pins (image tags + ingest-Job hashes)
+  into `overlays/prod` and commit (ADR 0007). No release tags.
 
 ### 6.4 Disaster recovery
 
@@ -559,13 +589,14 @@ Cloud's free tier is still the lower-effort default.)
       re-ingest invalidates the affected book/chapter URLs. Syncs were set up to handle this on any service deployment.
 - [x] Migrations bootstrap (sqlx-cli, init container)
 - [x] Update auto-memory note about `db_reset.sh` flow
-- [ ] Regenerate openapi.json + frontend client (run as part of any
-      handler change)
-- [ ] Smoke-test the production build path end-to-end:
-      `pnpm --filter @apps/web build && pnpm --filter @apps/web start`
-      behind the proxy, then `curl` chapter URLs to confirm Nitro
-      output paths match the `start` script
-- [ ] Update Stripe Dashboard webhook URL post-deploy
+- [x] Regenerate openapi.json + frontend client — routine `pnpm codegen`
+      after any handler change, not a standing task
+- [x] Smoke-test the production build path — superseded: the dev
+      cluster has served the production build behind the proxy since
+      first-deploy (2026-05-18)
+- [ ] Update Stripe Dashboard webhook URL post-deploy (part of the dev
+      validation tail: point test-mode webhook at
+      `https://dev.scholia.study/api/webhooks/stripe`)
 
 ### v0 — Cluster bringup
 
@@ -614,7 +645,7 @@ Cloud's free tier is still the lower-effort default.)
       `debian:bookworm-slim` runtime, libssl3 + ca-certificates, non-
       root uid 10001). Reads committed `.sqlx/` offline metadata via
       `SQLX_OFFLINE=true`, so the build needs no live DB. Image is
-      ~148 MB. `scripts/db_prepare.sh` + `pnpm db:prepare` regenerate
+      ~148 MB. `pnpm api:sqlx:prep` regenerates
       `.sqlx/` against the local DB after any sqlx query change.
 - [x] **Dockerfile for `scholia-web`** — `apps/web/Dockerfile`.
       Multi-stage node:22-alpine + corepack/pnpm. Separate `deps`
@@ -658,10 +689,12 @@ Cloud's free tier is still the lower-effort default.)
       (X-Cache-Status: MISS then HIT), authenticated requests bypass,
       PURGE after an article publish invalidates the listing, Stripe
       test charge → role flips → cancellation flow
-- [ ] Flip dev Ingress's `cert-manager.io/cluster-issuer` annotation
-      from `letsencrypt-staging` to `letsencrypt-prod` once HTTP-01
-      challenge is known-good
-- [ ] `kubectl apply -k overlays/prod/`
+- [x] Flip dev Ingress's `cert-manager.io/cluster-issuer` annotation
+      to `letsencrypt-prod` (landed with HTTPS 2026-05-18; the
+      overlay patch sets it)
+- [ ] Prod bringup: `overlays/prod` synced by a prod-cluster Argo
+      (`application-prod.yaml`) — no manual `kubectl apply -k` path
+      anymore
 - [ ] Update Stripe to live mode keys + production webhook URL
 - [ ] Public soft launch
 
@@ -715,9 +748,9 @@ Two more hardening steps deferred:
 - **k3s `--secrets-encryption`** to encrypt the Secrets datastore on
   the node disk. Worth adding at prod cluster bringup so it's there
   from day one rather than requiring a Secret rewrap mid-life.
-- **Separate app-level DB user** with only CONNECT/USAGE/CRUD on the
-  app tables (no DDL, no DROP). Currently the api uses the Postgres
-  superuser. Limits blast radius if api credentials leak.
+- ✅ **Separate app-level DB user** — landed 2026-07:
+  `infra/k8s/base/postgres/initdb-app-role.sh` creates a CRUD-only
+  app role on fresh initdb; the api no longer runs as superuser.
 
 ### Dev lockdown landed (2026-05-18; Basic Auth → cookie gate later)
 
@@ -766,18 +799,17 @@ launch checklist in §8).
 
 ### Dev DB content + ergonomics (2026-05-18)
 
-- Kant ingested into dev DB via `pnpm db:dev:run pnpm db:kant1`
-  through the kubectl port-forward tunnel.
-- New scripts (root `package.json`):
-  - `db:dev:forward` — opens `localhost:55432` → `postgres:5432`.
-  - `db:dev:run <cmd>` — runs any command with `DATABASE_URL`
-    pointed at the tunneled cluster DB. Wraps
-    `scripts/db_dev_run.sh` which decrypts the password from SOPS,
-    URL-encodes it, and `exec`s the command.
-  - `db:dev:reset` — drops public schema + re-applies migrations on
-    the dev cluster. Prompts for explicit `yes` confirmation; bypass
-    with `--yes` for automation.
-  - `db:dev:reload` — `db:dev:reset` + re-ingest of Kant + Bible.
+- Kant first ingested into the dev DB through the kubectl
+  port-forward tunnel (since replaced by in-cluster Jobs).
+- Tunnel ergonomics survive as `just` recipes (the original
+  `pnpm db:dev:*` aliases are retired):
+  - `just dev-forward` — opens `localhost:55432` → `postgres:5432`.
+  - `just dev-run <cmd>` — runs any command with `DATABASE_URL`
+    pointed at the tunneled cluster DB (decrypts + URL-encodes the
+    SOPS password).
+  - `just dev-reset` / `just dev-reload` — emergency schema reset /
+    reload against the dev cluster; content normally moves via
+    auto-ingest (ADR 0007), not these.
 
 ### Cluster capacity snapshot (2026-05-18)
 
@@ -812,193 +844,33 @@ out-of-band edits):
 - The old `kubectl rollout restart` / `kubectl apply -k` flow is retired
   for dev; immutable tags make `rollout restart` a no-op anyway.
 
-### Ingest-as-Jobs (next workstream, designed 2026-05-19)
+### Ingest orchestration — superseded twice; see the ADRs
 
-**Problem.** Bible KJV alone didn't finish in 20 min over the
-kubectl port-forward tunnel; full Bible would be hours. Tunnel
-latency × millions of small INSERTs is the bottleneck. `pg_dump |
-psql` would be faster but still tunnel-bound, and would require
-wiping + restoring content tables (CASCADE-nuking any user
-quotations/articles that reference them). Both are stopgaps. Post-
-launch, we'll regularly add new books and translations against a
-live prod DB — we need a pattern where each ingest is fast,
-additive, and doesn't disturb user content.
+The 2026-05-19 "Ingest-as-Jobs" design recorded here (one image per
+importer, skip-if-exists idempotency with a deferred `--force-replace`,
+`pnpm assets:sync` + manual `kubectl apply` as the trigger) shipped,
+worked, and was then replaced in two steps:
 
-**Solution.** Package each ingest binary into its own container
-image (no assets baked in). Assets live in Hetzner Object Storage
-and are pulled at Job start. Run each book/translation ingest as
-a one-shot Kubernetes Job in-cluster. Postgres traffic stays on
-the LAN. Same pattern for dev and prod.
+- **ADR 0006 (2026-07-02), the narrow waist**: one `text_struct`
+  schema, one `struct_to_db` importer whose **reconcile-in-place**
+  (sentence UUIDs + anchored quotations survive edits) obsoleted both
+  skip-if-exists and `--force-replace`; one shared `jobs/ingest` image
+  (`CORPUS` env) instead of per-corpus images; `scripts/ingest.sh` as
+  the single orchestration manifest. Bible keeps its own image + flow.
+- **ADR 0007 (2026-07-18), auto-ingest**: merge-to-main triggers CI
+  struct builds; content-hash-named Jobs run via Argo; the manual
+  manifests in `infra/k8s/jobs/` remain as the kubectl escape hatch.
 
-```
-local workstation                cluster
-─────────────────                ─────────────────────────────────
-                                ┌────────────────────────────────┐
-edit assets/ locally            │ rclone sync s3:scholia-assets  │
-pnpm assets:sync ──┐            │   /<scope> → /assets           │
-                   ↓            │ binary (bible_to_db | ...)     │
-       s3://scholia-assets ────►│   reads /assets                │
-                                │   ↓ in-cluster                 │
-                                │   postgres svc                 │
-                                │   ↓                            │
-                                │   curl PURGE                   │
-kubectl apply ─────────────────►│ Job pod orchestrates           │
-  ingest-bible.yaml             └────────────────────────────────┘
-```
-
-**Components.**
-
-1. **One image per importer.** Built from `jobs/<name>/Dockerfile`:
-   - `jobs/ingest-bible/` → `scholia-ingest-bible` image, binary
-     `bible_to_db`, ENTRYPOINT `ingest_bible.sh` (runs KJV first,
-     then WEB/ASV/BBE/DARBY in parallel — preserves existing
-     `db_bible.sh` orchestration).
-   - `jobs/ingest-kant1/` → `scholia-ingest-kant1` image, binary
-     `kant1_struct_to_db`, ENTRYPOINT `ingest_kant1.sh` (runs DE
-     then EN translation).
-   - Future content sources (Aristotle, Augustine, …) drop in
-     under `jobs/` without touching `apps/`.
-
-   Rust source stays under `packages/` (workspace members). Each
-   `jobs/<x>/Dockerfile` references its own crate as build input.
-   `cargo-chef` caches workspace deps across the per-image builds
-   so the marginal cost of N images is just N final-link steps,
-   not N full workspace compiles.
-
-   Convention: `apps/` houses long-running Deployments;
-   `jobs/` houses one-shot Jobs. Mirrors the K8s primitives:
-   `apps/<x>/Dockerfile` ↔ `infra/k8s/base/<x>/` for services;
-   `jobs/<x>/Dockerfile` ↔ `infra/k8s/jobs/<x>.yaml` for batch.
-
-2. **Bucket-based assets (`scholia-assets`, Hetzner Object
-   Storage, fsn1).** Provisioned by
-   `infra/terraform/shared/main.tf`. Local `assets/` is canonical;
-   `pnpm assets:sync` mirrors it up (rclone sync, ~1.7GB total,
-   ~5min cold push, ~1-2min re-run after edits). Each Job pulls
-   only the scope it needs at pod start:
-   - `ingest-bible` pulls `s3://scholia-assets/bible/`.
-   - `ingest-kant1` pulls `s3://scholia-assets/kant1/derived/md_to_struct/`
-     + `s3://scholia-assets/kant1/derived/md_translation_to_struct/`.
-
-   Bucket creds: single Hetzner-issued S3 keypair, account-wide
-   (Hetzner Object Storage doesn't support per-bucket IAM). Local
-   reads/writes via `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY`
-   in `scholia-infra.env`. Cluster Jobs read via the same keypair
-   exposed through a SOPS-encrypted Secret. Per-bucket split would
-   require a separate Hetzner project — defer.
-
-   Image size win: per-binary image is ~30MB (binary + rclone),
-   not ~80-300MB (binary + assets baked in). Faster CI builds and
-   faster Job cold-starts on first pull.
-
-3. **Idempotency in ingest binaries.** Each binary previously
-   `INSERT`ed assuming an empty schema; a re-run blew up on the
-   `books.slug` UNIQUE constraint mid-transaction.
-   - ✅ **Skip-if-exists landed (2026-05-20).** `bible_to_db` and
-     `kant1_struct_to_db` now check `SELECT id FROM books WHERE
-     slug = $1` before opening the transaction; on hit they log
-     "already imported, skipping" and exit 0. Each translation
-     has its own `books` row (`kjv-bible`, `web-bible`, …) so the
-     guard is per-translation, not per-Bible-as-a-whole.
-   - ⏳ Replace flow deferred. A `--force-replace` flag that
-     deletes + re-inserts a given book is a separate design — has
-     to account for FK chains to user content (quotations →
-     sentences) and for `cross_translation_alignments` regen.
-     Schema/source-data fixes go through `pnpm db:reset` for now.
-
-4. **Job manifests (`infra/k8s/jobs/`).** One per content source
-   (Bible is one Job, Kant is one Job — intra-source orchestration
-   stays inside the runner script). Each Job:
-   - `generateName: ingest-bible-` so re-applies create fresh
-     pods; old ones linger as audit trail until TTL'd.
-   - Reads `POSTGRES_*` env from the same `postgres-credentials`
-     Secret the api uses (DB user, password, host, port, db).
-   - Reads `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` from a
-     SOPS-encrypted `assets-bucket` Secret for the rclone pull.
-   - `restartPolicy: Never`, `backoffLimit: 0` — Jobs fail fast
-     on bugs. Investigate, fix, re-apply rather than auto-retry.
-   - `ttlSecondsAfterFinished: 86400` — auto-clean after 1 day.
-   - `resources.requests` modest; `limits.memory` generous (ingest
-     parses + holds book trees in memory).
-
-5. **PURGE on success.** ✅ Landed 2026-05-20. Both binaries call
-   `purge_cache(...)` after `tx.commit()`, reading
-   `CACHE_PURGE_URL` from env (no-op if unset, so local dev
-   without a proxy still works). Currently invalidates `/api/
-   library`, `/api/books`, `/books` — enough for the new-book
-   case (skip-if-exists). When `--force-replace` lands, the path
-   list will need to expand to the per-book pages too.
-
-6. **Workflow.**
-   ```
-   # 1. edit assets/ locally if content changed; sync to bucket
-   pnpm assets:sync
-   # 2. CI builds scholia-ingest-{bible,kant1}:main (if Dockerfile
-   #    or crate sources changed)
-   # 3. trigger:
-   kubectl apply -f infra/k8s/jobs/ingest-bible.yaml -n scholia
-   # 4. watch:
-   kubectl wait --for=condition=complete \
-     job -l ingest=bible --timeout=20m -n scholia
-   kubectl logs -f -l ingest=bible -n scholia
-   # 5. job terminates; PURGE has fired; content live
-   ```
-
-**First proof point.** Bible-on-dev becomes the first concrete use
-of this pattern, replacing the killed tunneled ingest.
-
-**Once landed.** The `scripts/db_dev_run.sh`, `db_dev_reset.sh`,
-`db_dev_reload`, etc. stay useful for Beekeeper DB inspection and
-emergency wipes, but the primary content path is Jobs. The old
-`pnpm db:dev:run pnpm db:bible` workflow is retired.
-
-### Ingest-as-Jobs prereqs landed (2026-05-19)
-
-- ✅ **Terraform restructured** to `infra/terraform/{clusters,
-  shared}/`. Cluster TF (per-env, workspaced) lives in
-  `clusters/`. Project-wide TF (no workspaces, applied once)
-  lives in `shared/`. Backend keys: `scholia/terraform.tfstate`
-  for clusters, `scholia/shared.tfstate` for shared — same
-  backing bucket (`scholia-tf-state`), different state files.
-- ✅ **`scholia-assets` bucket provisioned** via
-  `infra/terraform/shared/main.tf` (AWS provider pointed at
-  Hetzner Object Storage S3 endpoint, `fsn1`).
-- ✅ **`pnpm assets:sync`** wired up. `scripts/assets_sync.sh`
-  configures rclone via env vars (no `rclone.conf` needed),
-  mirrors `./assets/` → `s3://scholia-assets/`. Source-of-truth
-  is local; sync deletes remote files no longer present locally.
-  Pass-through flags (e.g. `--dry-run`) supported.
-- ✅ **Initial 1.7GB upload complete.** Re-runs take ~1-2 min to
-  list and compare 8300+ files; transfers only changes.
+Current flow diagrams: `docs/architecture/overview.md`. Ops:
+`infra/argo/README.md`. Front door: `just struct <corpus>` /
+`just db <corpus>` / `just assets-sync` (the old `pnpm db:*` and
+`pnpm assets:sync` aliases are retired). PURGE fires from the importer
+after commit via `CACHE_PURGE_URL` (per-book paths).
 
 ### Pickup for next session
 
-1. **Land Ingest-as-Jobs** (see above). Order of operations:
-   1. ✅ Provision `scholia-assets` bucket (Terraform).
-   2. ✅ Seed via `pnpm assets:sync`.
-   3. ✅ Skip-if-exists in `bible_to_db` and `kant1_struct_to_db`
-      (2026-05-20). Each binary now checks `books.slug` before
-      opening its transaction and exits cleanly if the book is
-      already imported. `--force-replace` deferred (see § 3).
-   4. ✅ PURGE wired into both binaries (2026-05-20). Reads
-      `CACHE_PURGE_URL` from env; calls after `tx.commit()`;
-      invalidates `/api/library`, `/api/books`, `/books`.
-   5. ⏳ Build `jobs/ingest-bible/Dockerfile` and
-      `jobs/ingest-kant1/Dockerfile`. Each image: binary + rclone
-      + runner script (`ingest_bible.sh`, `ingest_kant1.sh`).
-      Refactor `scripts/db_bible.sh` + `db_kant1.sh` so the binary
-      path is `${INGEST_BIN:-target/release/<name>}` — same script
-      works in dev (cargo-build path) and in-image (pre-built bin
-      on PATH). Add to CI workflow alongside api/web/proxy.
-   6. ⏳ Create SOPS-encrypted `assets-bucket` Secret in
-      `infra/k8s/overlays/{dev,prod}/secrets/` for the rclone pull
-      creds.
-   7. ⏳ Write Job manifest templates under `infra/k8s/jobs/`
-      (`ingest-bible.yaml`, `ingest-kant1.yaml`). Kustomized so
-      dev/prod overlays don't fork the YAML.
-   8. ⏳ Run the first Job against dev: Bible. Verify timing,
-      logs, PURGE call, idempotency on re-run.
-   9. ⏳ Run Kant ingest Job against dev as second proof.
+1. ✅ **Ingest-as-Jobs landed, then superseded** — see the section
+   above; nothing remains from the original nine-step pickup list.
 
 2. **End-to-end validation tail** (per § 6.3 — partially done):
    - ✅ Anonymous chapter pageview: `X-Cache-Status: MISS` → `HIT`
@@ -1009,12 +881,16 @@ emergency wipes, but the primary content path is Jobs. The old
      (verified via DevTools while logged in via GitHub OAuth).
    - ✅ Authenticated write path: profile bio update via GitHub-
      authed session round-trips to the DB and renders fresh.
-   - ⏳ PURGE after article publish invalidates the listing. Any
-     authenticated user can do this — `ArticlesCreate` is a base
-     permission and `create_article` only needs a title. Flow: create
-     article → publish → GET `/articles` (MISS then HIT) → publish a
-     second article → GET `/articles` again and expect MISS (PURGE
-     fired). No editor role or ingested book required.
+   - ⏳ PURGE after article publish invalidates the listing. **Purge
+     mechanics verified live 2026-07-18**: warm `/api/library` +
+     PURGE via the :8080 listener → 200, repeat → 412 (= no entry;
+     ngx_cache_purge's no-op answer, also what ingest Jobs log on a
+     cold cache), refetch → MISS. Rust→listener wiring observed in
+     ingest Job logs the same day. Remaining: exercise the
+     article-publish *trigger* itself — create article → publish →
+     GET `/articles` (MISS→HIT) → publish second → expect MISS. Any
+     authenticated user can do this (`ArticlesCreate` is a base
+     permission); no editor role or ingested book required.
    - ⏳ Stripe test charge → role flips → cancellation. Requires
      pointing the Stripe Dashboard webhook at
      `https://dev.scholia.study/api/webhooks/stripe` and using the
@@ -1024,7 +900,7 @@ emergency wipes, but the primary content path is Jobs. The old
 3. **Deferred hardening** (from earlier security review):
    - NetworkPolicy on Postgres ✅ done.
    - k3s `--secrets-encryption` — defer to prod cluster bringup.
-   - Separate app-level DB user (not superuser) — v1 maintenance.
+   - Separate app-level DB user ✅ done 2026-07 (`initdb-app-role.sh`).
    - **Auth rate-limit key** (auth audit #4, deferred 2026-06-12) — the API
      auth limiter (`apps/api/src/system/rate_limit.rs`) keys on the TCP peer
      IP via `PeerIpKeyExtractor`. Behind Traefik → nginx → api that peer is
@@ -1091,6 +967,21 @@ emergency wipes, but the primary content path is Jobs. The old
 - [ ] Install ArgoCD on prod cluster when it exists
 - [ ] Sentry integration in API + frontend
 - [ ] Capacity-aware UX (warn at 80% of free-tier limits)
+
+### v1 — Backups (prod-blocking; next workstream)
+
+Nothing from § 3 exists yet. Minimum viable chain, dev-first:
+
+- [ ] Backup bucket in `infra/terraform/shared/` (separate from
+      assets; 30 daily + 12 monthly retention — Hetzner can't converge
+      the aws-provider lifecycle resource, use the
+      `scripts/assets_lifecycle.sh` pattern instead)
+- [ ] CronJob (03:00 UTC): `pg_dump --format=custom` + gzip → bucket.
+      Reuses the postgres image + rclone; creds from a SOPS Secret
+- [ ] Run-verification: object-exists check + failure surfacing (same
+      notification channel as the ADR 0007 ingest-failure hook)
+- [ ] First manual restore test into the dev cluster — untested
+      backup = no backup
 
 ### v1 — SEO infrastructure — landed 2026-07-12
 
@@ -1194,3 +1085,8 @@ These were touched on during the grill but explicitly deferred:
   sync becomes relevant when it does.
 - **User account deletion**: same — no endpoint, but when added, must
   cancel Stripe sub + handle data retention question.
+- **Ingest-run visibility**: every content merge now runs ingest Jobs
+  whose pod logs vanish when the next bump prunes the Job. A durable,
+  easily-browsable run log (report → bucket, `ingest_runs` table, or
+  the v2 logging stack) is designed-but-undecided — pairs with the
+  ADR 0007 notification-hook open item.

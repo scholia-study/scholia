@@ -223,11 +223,16 @@ jobs:
                       bash scripts/struct.sh "$c"
                       h=$(bash scripts/derived_hash.sh "$c")
                       dest="scholia:scholia-assets-auto/$c/derived@$h"
-                      if rclone lsf "$dest" --max-depth 1 | grep -q .; then
+                      # `.complete` is uploaded LAST and is what the Job
+                      # entrypoint (and this skip-check) looks for — a
+                      # partial upload has no marker and gets re-copied
+                      # (rclone copy is incremental, so re-runs are cheap).
+                      if rclone lsf "$dest" --max-depth 1 | grep -qxF ".complete"; then
                           echo "$c@$h already in bucket"
                       else
                           rclone copy "assets/$c/derived" "$dest" --transfers=8
-                          echo "uploaded $c@$h"
+                          rclone touch "$dest/.complete"
+                          echo "uploaded $c@$h (+ .complete marker)"
                       fi
                       hashes=$(jq -c --arg c "$c" --arg h "$h" '. + {($c): $h}' <<< "$hashes")
                   done

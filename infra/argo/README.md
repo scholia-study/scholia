@@ -60,6 +60,13 @@ kubectl create secret generic sops-age \
   -n argocd \
   --from-file=keys.txt=/path/to/dev-age-key.txt
 
+# 2b. Notifications: the ntfy topic URL (topic name = credential),
+#     SOPS-encrypted in git. values.yaml references it as $ntfy-url;
+#     failure alerts (Degraded / sync-failed) push to the phone app
+#     subscribed to the topic. Manual apply — it targets the argocd
+#     namespace, which the synced app doesn't cover.
+sops -d infra/argo/secrets/notifications-dev.yaml | kubectl apply -f -
+
 # 3. Register the app. From here Argo self-manages.
 kubectl apply -f infra/argo/application-dev.yaml
 

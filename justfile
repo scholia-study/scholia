@@ -65,3 +65,8 @@ dev-reload:
     bash scripts/db_dev_reset.sh
     for c in $(bash scripts/ingest.sh --list); do bash scripts/db_dev_run.sh just db "$c"; done
     bash scripts/db_dev_run.sh just db-bible
+
+# push a phone notification via ntfy (needs NTFY_URL in the env)
+[group("dev-cluster")]
+notify *msg:
+    bash scripts/notify.sh {{ msg }}

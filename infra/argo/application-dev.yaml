@@ -22,6 +22,12 @@ kind: Application
 metadata:
   name: scholia-dev
   namespace: argocd
+  annotations:
+    # Failure notifications → ntfy (see values.yaml `notifications:` +
+    # README bootstrap for the topic-URL secret). Empty value = the
+    # service's static config decides where it goes.
+    notifications.argoproj.io/subscribe.on-health-degraded.ntfy: ""
+    notifications.argoproj.io/subscribe.on-sync-failed.ntfy: ""
 spec:
   project: default
   source:
