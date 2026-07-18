@@ -12,9 +12,10 @@ See `../../PLAN_ARGOCD.md` for the full rationale and decisions.
 
 | Managed by Argo | Stays manual |
 |-----------------|--------------|
-| api, web, proxy, postgres | ingest Jobs (`infra/k8s/jobs/`, run on-demand via kubectl) |
+| api, web, proxy, postgres | Bible ingest (`infra/k8s/jobs/ingest-bible.yaml`, kubectl) |
 | ingress + redirect middleware | cert-manager + ClusterIssuers (one-time install) |
 | SOPS-encrypted Secrets (via KSOPS) | the `sops-age` key Secret (bootstrap step 2 below) |
+| auto-ingest Jobs (`overlays/dev/ingest-jobs/`, hash-named, CI-bumped) | manual ingest escape hatch (`infra/k8s/jobs/`, kubectl) |
 
 ## Files
 
@@ -95,6 +96,24 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
   `main`; Argo syncs it.
 - **Secret change** → `sops infra/k8s/overlays/dev/secrets/<file>.yaml`,
   commit the re-encrypted file; Argo decrypts + applies on sync.
+- **Curated MD / parser change** → merge to `main` → CI builds structs,
+  uploads `derived@<hash>` to `scholia-assets-auto`, and bumps the
+  corpus's Job manifest (`overlays/dev/ingest-jobs/`) in the same commit
+  as any image tags → Argo creates the new hash-named Job (wave 1, after
+  api/migrations) → `struct_to_db` reconciles. A failed reconcile (e.g.
+  the aligner's sim < 0.90 bail) shows as a red Job / Degraded app —
+  land the edit as two passes, per the reconcile design.
+- **Re-run an ingest** → delete the finished Job
+  (`kubectl delete job ingest-<corpus>-<hash>`); selfHeal recreates and
+  re-runs it. For a `derived@<hash>` that hit the auto-ingest bucket's
+  30-day expiry, re-run the Build workflow (`workflow_dispatch`; set
+  images=false for a structs-only run) — it rebuilds and re-uploads
+  current hashes.
+- **Ingest without CI** (haywire escape hatch) →
+  `kubectl create -f infra/k8s/jobs/ingest-<corpus>.yaml` still works:
+  those manifests have no `DERIVED_HASH`, so the entrypoint pulls the
+  manually mirrored `scholia-assets` bucket (`just struct <corpus>` +
+  `just assets-sync` first).
 - **Manual hotfix via kubectl** → will be reverted by selfHeal. That's
   intended; put the fix in git.
 - **Force a sync / inspect drift** → the UI (port-forward) or

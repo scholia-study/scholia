@@ -7,12 +7,15 @@
 # Single Application (not app-of-apps) — we deploy exactly one app. It
 # points at the dev overlay; Argo runs `kustomize build` there (with the
 # KSOPS plugin enabled on the repo-server) and keeps the scholia
-# namespace matching the result: api, web, proxy, postgres, ingress, and
-# the SOPS-decrypted Secrets.
+# namespace matching the result: api, web, proxy, postgres, ingress,
+# the SOPS-decrypted Secrets, and the auto-ingest Jobs
+# (overlays/dev/ingest-jobs/ — hash-named, CI-bumped; prune removes the
+# old Job when CI renames one).
 #
-# NOT covered (by design): the ingest Jobs (run on-demand via kubectl)
-# and cert-manager + its ClusterIssuers (one-time manual install). Those
-# live outside overlays/dev so this Application never sees them.
+# NOT covered (by design): Bible ingest + the manual ingest escape
+# hatch (infra/k8s/jobs/, run on-demand via kubectl) and cert-manager +
+# its ClusterIssuers (one-time manual install). Those live outside
+# overlays/dev so this Application never sees them.
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application

@@ -1,5 +1,9 @@
-# On-demand ingest Job for the milton1 corpus — the shared struct-importer
-# image (jobs/ingest) parameterized by CORPUS. Not Argo-managed; run with:
+# MANUAL ingest escape hatch for the milton1 corpus — the shared
+# struct-importer image (jobs/ingest) parameterized by CORPUS. No
+# DERIVED_HASH env, so the entrypoint pulls the manually mirrored
+# scholia-assets bucket (`just struct milton1` + `just assets-sync` first).
+# The normal path is the Argo-managed auto-ingest Job
+# (infra/k8s/overlays/dev/ingest-jobs/); use this one when CI is down:
 #   kubectl create -f infra/k8s/jobs/ingest-milton1.yaml
 apiVersion: batch/v1
 kind: Job

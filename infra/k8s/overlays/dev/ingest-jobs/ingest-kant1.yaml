@@ -1,28 +1,23 @@
-# MANUAL ingest escape hatch for the ibsen1 corpus — the shared
-# struct-importer image (jobs/ingest) parameterized by CORPUS. No
-# DERIVED_HASH env, so the entrypoint pulls the manually mirrored
-# scholia-assets bucket (`just struct ibsen1` + `just assets-sync` first).
-# The normal path is the Argo-managed auto-ingest Job
-# (infra/k8s/overlays/dev/ingest-jobs/); use this one when CI is down:
-#   kubectl create -f infra/k8s/jobs/ingest-ibsen1.yaml
+# Auto-ingest Job for kant1 — CI-bumped, Argo-run. Rationale for the
+# shape (no TTL, wave 1, unpinned image, -bootstrap): see kustomization.yaml.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: ingest-ibsen1-
-  namespace: scholia
+  name: ingest-kant1-bootstrap
   labels:
-    ingest: ibsen1
+    ingest: kant1
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
-  ttlSecondsAfterFinished: 86400 # 1 day
-  backoffLimit: 0 # Fail fast
+  backoffLimit: 0
   template:
     metadata:
       labels:
-        ingest: ibsen1
+        ingest: kant1
     spec:
       restartPolicy: Never
       containers:
-        - name: ingest-ibsen1
+        - name: ingest-kant1
           image: ghcr.io/scholia-study/scholia-ingest:main
           imagePullPolicy: Always
           resources:
@@ -33,7 +28,9 @@ spec:
               memory: 1Gi
           env:
             - name: CORPUS
-              value: ibsen1
+              value: kant1
+            - name: DERIVED_HASH
+              value: ""
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

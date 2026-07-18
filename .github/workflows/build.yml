@@ -9,6 +9,8 @@ on:
             - "packages/**"
             - "db/migrations/**"
             - ".sqlx/**"
+            - "assets/*/curated/**"
+            - "scripts/**"
             - "Cargo.toml"
             - "Cargo.lock"
             - "package.json"
@@ -16,6 +18,15 @@ on:
             - "pnpm-workspace.yaml"
             - ".github/workflows/build.yml"
     workflow_dispatch:
+        inputs:
+            images:
+                description: "Rebuild all service images"
+                type: boolean
+                default: true
+            corpora:
+                description: "Corpora to build structs for (space-separated, or 'all')"
+                type: string
+                default: "all"
 
 permissions:
     contents: read
@@ -71,7 +82,8 @@ jobs:
                         - '.github/workflows/build.yml'
                       # One struct-importer image for every corpus (CORPUS env
                       # selects at run time); parser crates don't affect the
-                      # image (derived structs come from the assets bucket).
+                      # image (derived structs come from the assets bucket —
+                      # the `structs` job below builds + uploads them).
                       ingest:
                         - 'packages/struct_to_db/**'
                         - 'packages/text_struct/**'
@@ -89,19 +101,25 @@ jobs:
               id: matrix
               env:
                   EVENT: ${{ github.event_name }}
+                  IMAGES_INPUT: ${{ inputs.images }}
                   API: ${{ steps.filter.outputs.api }}
                   WEB: ${{ steps.filter.outputs.web }}
                   PROXY: ${{ steps.filter.outputs.proxy }}
                   INGEST_BIBLE: ${{ steps.filter.outputs.ingest_bible }}
                   INGEST: ${{ steps.filter.outputs.ingest }}
               run: |
-                  # Manual (workflow_dispatch) trigger = rebuild
-                  # everything. paths-filter has no useful base to
-                  # compare to when invoked manually with no commits
-                  # in flight.
+                  # Manual (workflow_dispatch) trigger: rebuild every image
+                  # unless images=false (structs-only recovery run).
+                  # paths-filter has no useful base to compare to when
+                  # invoked manually with no commits in flight.
                   if [[ "$EVENT" == "workflow_dispatch" ]]; then
-                      API=true; WEB=true; PROXY=true
-                      INGEST_BIBLE=true; INGEST=true
+                      if [[ "$IMAGES_INPUT" == "true" ]]; then
+                          API=true; WEB=true; PROXY=true
+                          INGEST_BIBLE=true; INGEST=true
+                      else
+                          API=false; WEB=false; PROXY=false
+                          INGEST_BIBLE=false; INGEST=false
+                      fi
                   fi
 
                   matrix='[]'
@@ -168,10 +186,66 @@ jobs:
                   cache-from: type=gha,scope=${{ matrix.service }}
                   cache-to: type=gha,mode=max,scope=${{ matrix.service }}
 
+    # Always builds structs scoped to current derived hash. Any failure will end workflow.
+    structs:
+        name: Build structs
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+
+            # Pinned so output hashes never depend on the runner's rustc.
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  toolchain: 1.96.0
+
+            - uses: Swatinem/rust-cache@v2
+
+            - name: Install rclone
+              run: sudo apt-get update -qq && sudo apt-get install -y -qq rclone
+
+            - name: Build, hash, upload
+              id: structs
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.ASSETS_BUCKET_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.ASSETS_BUCKET_SECRET_ACCESS_KEY }}
+                  CORPORA: ${{ inputs.corpora }}
+              run: |
+                  if [[ -z "$CORPORA" || "$CORPORA" == "all" ]]; then
+                      CORPORA=$(bash scripts/struct.sh --list | tr '\n' ' ')
+                  fi
+                  echo "Corpora: $CORPORA"
+
+                  source scripts/lib.sh
+                  scholia_rclone_config
+
+                  hashes='{}'
+                  for c in $CORPORA; do
+                      bash scripts/struct.sh "$c"
+                      h=$(bash scripts/derived_hash.sh "$c")
+                      dest="scholia:scholia-assets-auto/$c/derived@$h"
+                      if rclone lsf "$dest" --max-depth 1 | grep -q .; then
+                          echo "$c@$h already in bucket"
+                      else
+                          rclone copy "assets/$c/derived" "$dest" --transfers=8
+                          echo "uploaded $c@$h"
+                      fi
+                      hashes=$(jq -c --arg c "$c" --arg h "$h" '. + {($c): $h}' <<< "$hashes")
+                  done
+                  echo "hashes=$hashes" >> "$GITHUB_OUTPUT"
+        outputs:
+            hashes: ${{ steps.structs.outputs.hashes }}
+
+    # One commit updates the whole dev overlay: image tags AND ingest Job
+    # content hashes. Atomic by construction — Argo can never see a new
+    # Job hash without the image bump that shipped alongside it.
     bump:
-        name: Bump dev image tags
-        needs: [changes, build]
-        if: needs.changes.outputs.matrix != '[]'
+        name: Bump dev overlay
+        needs: [changes, build, structs]
+        # `build` is legitimately skipped on curated-only pushes and on
+        # workflow_dispatch with images=false — and a job whose `needs`
+        # includes a skipped job is itself skipped by default. So: run
+        # unless something actually failed or the run was cancelled.
+        if: ${{ !cancelled() && needs.changes.result == 'success' && needs.structs.result == 'success' && needs.build.result != 'failure' }}
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v6
@@ -198,22 +272,41 @@ jobs:
                               echo "bumped $img -> $TAG"
                               ;;
                           *)
-                              echo "skip $svc (not Argo-managed)"
+                              # ingest images are deliberately unpinned in the
+                              # overlay (Job identity = content hash; see
+                              # ingest-jobs/kustomization.yaml).
+                              echo "skip $svc (no overlay tag pin)"
                               ;;
                       esac
+                  done
+
+            # Convergent, not event-driven: patch any corpus whose current
+            # content hash differs from what the overlay says, regardless
+            # of which push built it.
+            - name: Rewrite ingest Job hashes
+              env:
+                  HASHES: ${{ needs.structs.outputs.hashes }}
+              run: |
+                  for c in $(echo "$HASHES" | jq -r 'keys[]'); do
+                      h=$(echo "$HASHES" | jq -r --arg c "$c" '.[$c]')
+                      f="infra/k8s/overlays/dev/ingest-jobs/ingest-$c.yaml"
+                      perl -0777 -pi -e "
+                          s{(name: ingest-\Q$c\E-)\S+}{\${1}$h}g;
+                          s{(- name: DERIVED_HASH\n\s+value: ).*}{\${1}\"$h\"};
+                      " "$f"
+                      echo "ingest-$c -> $h"
                   done
 
             - name: Commit + push if changed
               env:
                   SHA: ${{ github.sha }}
               run: |
-                  FILE=infra/k8s/overlays/dev/kustomization.yaml
-                  if git diff --quiet -- "$FILE"; then
-                      echo "no tag changes to commit"
+                  git add infra/k8s/overlays/dev
+                  if git diff --cached --quiet; then
+                      echo "no overlay changes to commit"
                       exit 0
                   fi
                   git config user.name "scholia-ci[bot]"
                   git config user.email "ci@scholia.study"
-                  git add "$FILE"
-                  git commit -m "ci: bump image tags to main-${SHA:0:7} [skip ci]"
+                  git commit -m "ci: bump dev overlay to main-${SHA:0:7} [skip ci]"
                   git push origin HEAD:main

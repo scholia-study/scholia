@@ -1,0 +1,34 @@
+# Argo-managed auto-ingest Jobs — one per struct-importer corpus (Bible
+# stays manual: infra/k8s/jobs/ingest-bible.yaml). See PLAN_AUTO_INGEST.md.
+#
+# CI (.github/workflows/build.yml `bump` job) rewrites each Job's name
+# suffix + DERIVED_HASH env to the corpus's current content hash
+# (scripts/derived_hash.sh over the derived struct JSONs). A new name is a
+# new resource: Argo creates the new Job and prunes the old one — killing
+# it if still mid-run, which is safe because struct_to_db commits one
+# transaction per edition and the replacement re-runs both.
+#
+# Deliberate shape, shared by all five manifests:
+#   - No ttlSecondsAfterFinished: with selfHeal on, Argo would resurrect
+#     (= re-run) a TTL-deleted Job. Prune-on-rename is the cleanup.
+#   - sync-wave 1: waits for wave 0 (api — migrations run in its init
+#     container) before importing.
+#   - backoffLimit 0: a reconcile abort (e.g. ambiguous sentence rewrite,
+#     sim < 0.90) must surface as a red Job / Degraded app, not retry.
+#   - Image deliberately UNPINNED (:main + pull Always), unlike the
+#     api/web/proxy tag pins: the Job's identity is its content hash.
+#     Pinning here would mutate an immutable Job field on every importer
+#     rebuild and re-run all corpora for a code-only change.
+#   - "-bootstrap" name + empty DERIVED_HASH is the pre-first-bump state:
+#     the entrypoint then falls back to the manually mirrored
+#     scholia-assets bucket, so the adoption sync runs one reconcile
+#     against current manual content.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ingest-kant1.yaml
+  - ingest-kant3.yaml
+  - ingest-shakespeare1.yaml
+  - ingest-milton1.yaml
+  - ingest-ibsen1.yaml

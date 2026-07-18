@@ -24,6 +24,9 @@ namespace: scholia
 
 resources:
   - ../../base
+  # Auto-ingest Jobs (CI bumps content hashes, Argo runs them — see
+  # ingest-jobs/kustomization.yaml for the full mechanics).
+  - ingest-jobs
 
 generators:
   - secret-generator.yaml
