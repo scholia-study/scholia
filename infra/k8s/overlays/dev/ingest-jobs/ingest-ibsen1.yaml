@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-ibsen1-bootstrap
+  name: ingest-ibsen1-87d9a0b7097a
   labels:
     ingest: ibsen1
   annotations:
@@ -30,7 +30,7 @@ spec:
             - name: CORPUS
               value: ibsen1
             - name: DERIVED_HASH
-              value: ""
+              value: "87d9a0b7097a"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

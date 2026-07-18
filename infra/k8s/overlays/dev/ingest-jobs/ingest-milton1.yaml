@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-milton1-bootstrap
+  name: ingest-milton1-a118ee0b0ca1
   labels:
     ingest: milton1
   annotations:
@@ -30,7 +30,7 @@ spec:
             - name: CORPUS
               value: milton1
             - name: DERIVED_HASH
-              value: ""
+              value: "a118ee0b0ca1"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

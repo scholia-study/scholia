@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-kant3-bootstrap
+  name: ingest-kant3-7e6f78d27a91
   labels:
     ingest: kant3
   annotations:
@@ -30,7 +30,7 @@ spec:
             - name: CORPUS
               value: kant3
             - name: DERIVED_HASH
-              value: ""
+              value: "7e6f78d27a91"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

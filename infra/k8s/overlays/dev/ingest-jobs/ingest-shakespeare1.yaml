@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-shakespeare1-bootstrap
+  name: ingest-shakespeare1-458dac1bd7b7
   labels:
     ingest: shakespeare1
   annotations:
@@ -30,7 +30,7 @@ spec:
             - name: CORPUS
               value: shakespeare1
             - name: DERIVED_HASH
-              value: ""
+              value: "458dac1bd7b7"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
