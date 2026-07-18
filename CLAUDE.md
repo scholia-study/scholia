@@ -80,7 +80,7 @@ runs `api migrate`. Dev resets via `scripts/db_reset.sh` (uses `sqlx-cli`).
 
 ### Rust packages (ingest CLIs)
 
-See `packages/README.md` for the pipeline diagram (the "narrow waist": genre parsers → `text_struct` JSON → `struct_to_db`).
+See `docs/architecture/overview.md` for the pipeline diagrams (the "narrow waist": genre parsers → `text_struct` JSON → `struct_to_db`, plus the CI→Argo deploy flow).
 
 - `packages/common` — shared parsers (epub, ncx, opf, kant1, sentences, content).
 - `packages/bible_to_db` — `--translation kjv|web|asv|bbe|darby`.

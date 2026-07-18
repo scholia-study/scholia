@@ -1,5 +1,5 @@
 # Argo-managed auto-ingest Jobs — one per struct-importer corpus (Bible
-# stays manual: infra/k8s/jobs/ingest-bible.yaml). See PLAN_AUTO_INGEST.md.
+# stays manual: infra/k8s/jobs/ingest-bible.yaml). See ADR 0007.
 #
 # CI (.github/workflows/build.yml `bump` job) rewrites each Job's name
 # suffix + DERIVED_HASH env to the corpus's current content hash

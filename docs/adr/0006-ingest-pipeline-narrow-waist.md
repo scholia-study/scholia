@@ -82,7 +82,8 @@ against books written by the old importers short-circuits on root hash
 
 - Net ≈ −4,700 lines; 18 crates → 13; five importers → two (`struct_to_db`,
   `bible_to_db`); the `md_<genre>_to_struct` naming scheme makes roles
-  legible from names alone (see `packages/README.md` for the diagram).
+  legible from names alone (see `docs/architecture/overview.md` for the
+  diagram).
 - hegel1 (queued in `assets/hegel1/raw/`) is the standing acceptance test of
   the new-text rule.
 - Two real bugs surfaced and fixed en route: the pnpm `--` separator broke

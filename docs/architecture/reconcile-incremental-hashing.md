@@ -10,8 +10,11 @@ The reconciling re-import (see `reconcile.rs` in both importers) currently rewri
 (the "offset trick") and then reassigns each row individually. That is O(book)
 per-row `UPDATE`s even when nothing changed. Two problems:
 
-- **Idempotent re-runs aren't cheap** — re-running a cluster Job over unchanged
-  assets still does ~thousands of writes.
+- **A changed corpus pays full price** — auto-ingest gates cluster Jobs on a
+  content hash of the derived structs (`docs/architecture/overview.md`), so
+  unchanged content never starts a Job; but any change at all rewrites every
+  sentence of every book in the corpus. A one-line MD fix costs O(book), and a
+  Job re-created after deletion (selfHeal) re-runs the same full reconcile.
 - **The laptop→cluster tunnel is slow** — each per-row `UPDATE` is a separate
   round-trip; a full-book reconcile over the port-forward takes minutes.
 
