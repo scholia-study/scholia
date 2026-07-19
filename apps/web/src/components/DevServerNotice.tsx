@@ -28,6 +28,17 @@ export function DevServerNotice() {
                 volatile: accounts, quotations, and notes you create here may
                 change or disappear without notice. Only use for testing!
             </p>
+            <button
+                type="button"
+                className="mt-2 rounded border border-amber-400 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-amber-800 hover:bg-amber-100"
+                onClick={() => {
+                    throw new Error(
+                        `error-reporting test (${new Date().toISOString()})`,
+                    );
+                }}
+            >
+                Test error reporting
+            </button>
         </div>
     );
 }

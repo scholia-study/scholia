@@ -40,6 +40,12 @@ spec:
             # patches this per environment.
             - name: APP_PROFILE
               value: dev
+            # Node SSR error reporting (instrument.server.mjs) — the
+            # scholia-web-<env> Better Stack source's DSN (ingest-only,
+            # public-safe; it also ships in the browser bundle via
+            # config.ts). Patched per environment like APP_PROFILE.
+            - name: SENTRY_DSN
+              value: "https://pWnckLLN4SR5ErwyAiJ3Kb2T@s2610462.eu-central-1a.betterstackdata.com/2610462"
           resources:
             requests:
               cpu: 100m

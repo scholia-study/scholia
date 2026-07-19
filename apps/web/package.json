@@ -6,10 +6,10 @@
         "#/*": "./src/*"
     },
     "scripts": {
-        "dev": "vite dev --port 3000 --host",
+        "dev": "NODE_OPTIONS='--import ./instrument.server.mjs' vite dev --port 3000 --host",
         "ct": "tsc -p tsconfig.json --pretty --noEmit",
-        "build": "vite build",
-        "start": "srvx serve --prod --entry ./dist/server/server.js --static ../client --port ${PORT:-3000}",
+        "build": "vite build && cp instrument.server.mjs ./dist/server/",
+        "start": "NODE_OPTIONS='--import ./dist/server/instrument.server.mjs' srvx serve --prod --entry ./dist/server/server.js --static ../client --port ${PORT:-3000}",
         "preview": "vite preview",
         "test": "vitest run",
         "format": "biome format",
@@ -27,6 +27,8 @@
         "@mdxeditor/editor": "^3.53.1",
         "@mui/icons-material": "^7.3.9",
         "@mui/material": "^7.3.9",
+        "@sentry/cli": "^3.6.0",
+        "@sentry/tanstackstart-react": "^10.66.0",
         "@stripe/react-stripe-js": "^6.3.0",
         "@stripe/stripe-js": "^9.4.0",
         "@tanstack/react-query": "^5.101.0",

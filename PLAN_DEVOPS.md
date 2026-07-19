@@ -560,9 +560,47 @@ Recovery scenarios:
 
 | Phase | What | Why |
 |---|---|---|
-| **v0** (now) | `kubectl logs`, `kubectl top` | Bringup; you'll be at the terminal anyway |
-| **v1** (pre-launch) | Sentry (errors only) | Best ROI per minute of integration; free tier covers our scale |
-| **v2** (after launch + traffic) | Grafana Cloud free tier | Logs + metrics aggregation; 50GB logs, 10k metrics, 14-day retention |
+| **v0** (now) | `kubectl logs`, `kubectl top`, ntfy failure alerts (Argo) | Bringup; you'll be at the terminal anyway |
+| **v1** (pre-launch) | Errors via **Sentry SDKs → Better Stack backend** (DSN swap) + Better Stack uptime monitor + backup heartbeat | Instrumentation is backend-agnostic (swap DSN to sentry.io any time); one vendor covers errors + uptime + dead-man's-switch; free tiers fit |
+| **v2** (after launch + traffic) | Logs: Better Stack Logs **or** Grafana Cloud free tier — decide when log aggregation actually matters | Both viable; Better Stack consolidates vendors, Grafana's free metrics tier is more generous |
+
+v1 instrumentation **landed 2026-07-19**: `sentry` crate in the api
+(panic hook + `AppError::Internal` capture; `SENTRY_DSN` /
+`SENTRY_ENVIRONMENT` via the `api` Secret's envFrom, unset = no-op)
+and `@sentry/tanstackstart-react` in web (client-only init from the
+config-registry `SENTRY_DSN`, catch-boundary capture in an effect;
+empty DSN = inert). Sources are **per-environment**
+(`scholia-{api,web}-dev`, prod's at prod bringup) — hard isolation
+over environment-tag filtering, matching the repo's per-env split
+everywhere else; the `environment` tag is still sent.
+Pending: dev DSNs into `config.ts` + the api SOPS secret, uptime
+monitor on `/robots.txt` (gate-exempt), Rust-ingest smoke test —
+Rust isn't on Better Stack's supported list, so verify one deliberate
+error arrives well-formed before trusting it (fallback: DSN swap to
+sentry.io).
+Full TanStack-Start guide setup **landed 2026-07-19** (client
+`instrument.client.ts` + custom `src/client.tsx`, Node SSR
+`instrument.server.mjs` loaded via `NODE_OPTIONS --import` in the web
+image, `createStart` middlewares, `sentryTanstackStart` vite plugin
+with source-map upload + `tunnelRoute`). Sample rates are 0 —
+errors-only; the tracing integrations are wired but inert until the
+rates are raised. **Release = build identity (`main-<sha7>`), NEVER
+env-suffixed**: dev and prod run byte-identical bundles, maps match by
+debug ID, environment is a runtime tag — per-env-*build* release
+schemes would break the one-image promotion model. Upload runs inside
+the web `docker build` (BuildKit secret `sentry_auth_token`,
+`SENTRY_RELEASE` build-arg from CI, maps deleted after upload, plugin
+skips without a token so local builds stay green). Uploads are
+per-project: prod bringup adds a second upload to the prod source.
+Dev DSNs wired 2026-07-19 (web → config.ts + the web Deployment's
+`SENTRY_DSN` env; api → SOPS `api.yaml`); `SENTRY_AUTH_TOKEN` Actions
+secret set. **Rust ingest verified 2026-07-19**: deliberate
+panic-on-connect arrived in the dev api source fully symbolicated
+(exact `main.rs` frames), environment + release intact — the DSN swap
+works for the unlisted platform. Pending: uptime monitor on
+`/robots.txt`, and the in-cluster browser test post-deploy (the
+dev-notice "Test error reporting" button — exercises DSN, tunnel
+route, and source maps in one click).
 
 **Don't self-host Grafana/Loki/Prometheus on the dev cx23.** The stack
 alone eats ~1GB RAM, leaving no headroom on a 4GB box. (Prod's cx43 has
@@ -965,7 +1003,9 @@ after commit via `CACHE_PURGE_URL` (per-book paths).
 - [x] Migrate Kustomize apply → Argo Application sync (dev)
 - [x] SOPS handling in Argo (KSOPS init-container on repo-server)
 - [ ] Install ArgoCD on prod cluster when it exists
-- [ ] Sentry integration in API + frontend
+- [x] Error-reporting instrumentation in API + frontend (Sentry SDKs;
+      backend = Better Stack via DSN swap — see § 7). Pending: DSNs +
+      Rust-ingest smoke test
 - [ ] Capacity-aware UX (warn at 80% of free-tier limits)
 
 ### v1 — Backups (prod-blocking; next workstream)

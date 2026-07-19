@@ -25,6 +25,7 @@ utoipa = { version = "5", features = ["axum_extras", "uuid"] }
 utoipa-axum = "0.2"
 utoipa-swagger-ui = { version = "9", features = ["axum"] }
 dotenvy = "0.15"
+sentry = "0.48"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 argon2 = "0.5"
@@ -35,9 +36,6 @@ oauth2 = "5"
 resend-rs = "0.22"
 reqwest = { version = "0.12", features = ["json"] }
 pulldown-cmark = "0.12"
-# Allowlist HTML sanitizer (html5ever-based). Applied to every byte of
-# user-authored HTML we persist, since the frontend renders it with a
-# parser that does not sanitize. See system::sanitize.
 ammonia = "4"
 slug = "0.1"
 regex = "1"

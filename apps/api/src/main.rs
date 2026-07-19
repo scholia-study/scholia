@@ -12,9 +12,28 @@ use tower_sessions::cookie::SameSite;
 use tower_sessions_sqlx_store::PostgresStore;
 use utoipa_swagger_ui::SwaggerUi;
 
-#[tokio::main]
-async fn main() {
+fn main() {
     dotenvy::dotenv().ok();
+
+    let _sentry = sentry::init(sentry::ClientOptions {
+        dsn: std::env::var("SENTRY_DSN")
+            .ok()
+            .and_then(|dsn| dsn.parse().ok()),
+        release: sentry::release_name!(),
+        environment: std::env::var("SENTRY_ENVIRONMENT")
+            .ok()
+            .map(std::borrow::Cow::Owned),
+        ..Default::default()
+    });
+
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .expect("Failed to build tokio runtime")
+        .block_on(run());
+}
+
+async fn run() {
     // Default filter silences two noisy modules from async-stripe that
     // emit WARN spans whenever Stripe's API version drifts ahead of the
     // SDK codegen. The spans include the entire raw event payload as

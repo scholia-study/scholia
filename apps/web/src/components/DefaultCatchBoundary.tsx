@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/tanstackstart-react";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import {
     ErrorComponent,
@@ -6,6 +7,7 @@ import {
     useMatch,
     useRouter,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
     const router = useRouter();
@@ -14,7 +16,11 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
         select: (state) => state.id === rootRouteId,
     });
 
-    console.error(error);
+    // In an effect so the error screen re-rendering doesn't re-capture.
+    useEffect(() => {
+        Sentry.captureException(error);
+        console.error(error);
+    }, [error]);
 
     return (
         <div className="min-w-0 flex-1 p-4 flex flex-col items-center justify-center gap-6">
