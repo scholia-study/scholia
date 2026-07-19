@@ -597,10 +597,12 @@ Dev DSNs wired 2026-07-19 (web → config.ts + the web Deployment's
 secret set. **Rust ingest verified 2026-07-19**: deliberate
 panic-on-connect arrived in the dev api source fully symbolicated
 (exact `main.rs` frames), environment + release intact — the DSN swap
-works for the unlisted platform. Pending: uptime monitor on
-`/robots.txt`, and the in-cluster browser test post-deploy (the
-dev-notice "Test error reporting" button — exercises DSN, tunnel
-route, and source maps in one click).
+works for the unlisted platform. **Browser path verified in-cluster
+2026-07-19**: the dev-notice "Test error reporting" button landed in
+the dev web source fully source-mapped (original TSX with code
+context), environment + release intact — DSN, tunnel route, and
+source-map upload all proven in one click. Pending: only the uptime
+monitor on `/robots.txt` (dashboard click).
 
 **Don't self-host Grafana/Loki/Prometheus on the dev cx23.** The stack
 alone eats ~1GB RAM, leaving no headroom on a 4GB box. (Prod's cx43 has
