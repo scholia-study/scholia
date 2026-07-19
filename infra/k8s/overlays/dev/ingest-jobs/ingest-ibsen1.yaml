@@ -8,6 +8,7 @@ metadata:
     ingest: ibsen1
   annotations:
     argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: Force=true,Replace=true
 spec:
   backoffLimit: 0
   template:
@@ -31,6 +32,12 @@ spec:
               value: ibsen1
             - name: DERIVED_HASH
               value: "87d9a0b7097a"
+            - name: NTFY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ntfy
+                  key: NTFY_URL
+                  optional: true
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

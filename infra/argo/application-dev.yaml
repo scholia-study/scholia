@@ -46,3 +46,8 @@ spec:
       # base/namespace.yaml already declares the scholia namespace, so
       # Argo doesn't need to create it.
       - CreateNamespace=false
+      # Only apply resources that actually differ. Load-bearing for the
+      # ingest Jobs' Force=true,Replace=true (immutable-spec changes
+      # deploy as delete+recreate): without this, EVERY sync would
+      # recreate — i.e. re-run — all five Jobs.
+      - ApplyOutOfSyncOnly=true

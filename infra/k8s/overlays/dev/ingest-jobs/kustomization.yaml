@@ -23,6 +23,14 @@
 #     the entrypoint then falls back to the manually mirrored
 #     scholia-assets bucket, so the adoption sync runs one reconcile
 #     against current manual content.
+#   - Force=true,Replace=true sync option: Job specs are immutable, so
+#     a spec-only manifest change (new env var, resource tweak) would
+#     fail the sync under both apply (patch) and plain replace (PUT).
+#     Force+Replace deploys it as delete + recreate — one extra no-op
+#     reconcile, safe by design. DEPENDS on the Application's
+#     ApplyOutOfSyncOnly=true (application-dev.yaml): without it every
+#     sync would recreate (= re-run) all five Jobs. The normal
+#     hash-rename flow needs none of this (new name = new resource).
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 

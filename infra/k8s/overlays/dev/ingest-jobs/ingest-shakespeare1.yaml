@@ -8,6 +8,7 @@ metadata:
     ingest: shakespeare1
   annotations:
     argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: Force=true,Replace=true
 spec:
   backoffLimit: 0
   template:
@@ -31,6 +32,12 @@ spec:
               value: shakespeare1
             - name: DERIVED_HASH
               value: "458dac1bd7b7"
+            - name: NTFY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ntfy
+                  key: NTFY_URL
+                  optional: true
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

@@ -23,6 +23,30 @@ set -euo pipefail
 cd /app
 source /app/scripts/lib.sh
 
+REPORT="$(mktemp)"
+exec > >(tee "$REPORT") 2>&1
+
+report_and_notify() {
+    status=$?
+    sleep 1 # let tee drain
+    ts="$(date -u +%Y%m%dT%H%M%SZ)"
+    outcome=$([ "$status" -eq 0 ] && echo ok || echo failed)
+    rclone copyto "$REPORT" \
+        "scholia:scholia-assets-auto/${CORPUS}/reports/${ts}-${DERIVED_HASH:-manual}-${outcome}.log" \
+        2>/dev/null || true
+    if [ "$status" -eq 0 ] && [ -n "${NTFY_URL:-}" ]; then
+        summary="$(grep -A1 '=== Reconcile ===' "$REPORT" |
+            grep -v '=== \|^--' | sed 's/^ *//' | paste -sd '; ' - || true)"
+        curl -fsS -o /dev/null -m 10 \
+            -H "Title: ingest ${CORPUS}" \
+            -H "Priority: low" \
+            -H "Tags: package" \
+            -d "${CORPUS}@${DERIVED_HASH:-manual}: ${summary:-done}" \
+            "$NTFY_URL" || true
+    fi
+}
+trap report_and_notify EXIT
+
 scholia_rclone_config
 if [ -n "${DERIVED_HASH:-}" ]; then
     SRC="scholia:scholia-assets-auto/${CORPUS}/derived@${DERIVED_HASH}"

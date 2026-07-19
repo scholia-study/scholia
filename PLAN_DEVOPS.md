@@ -562,7 +562,7 @@ Recovery scenarios:
 |---|---|---|
 | **v0** (now) | `kubectl logs`, `kubectl top`, ntfy failure alerts (Argo) | Bringup; you'll be at the terminal anyway |
 | **v1** (pre-launch) | Errors via **Sentry SDKs → Better Stack backend** (DSN swap) + Better Stack uptime monitor + backup heartbeat | Instrumentation is backend-agnostic (swap DSN to sentry.io any time); one vendor covers errors + uptime + dead-man's-switch; free tiers fit |
-| **v2** (after launch + traffic) | Logs: Better Stack Logs **or** Grafana Cloud free tier — decide when log aggregation actually matters | Both viable; Better Stack consolidates vendors, Grafana's free metrics tier is more generous |
+| **v2** (prod bringup, decide then) | Cluster logs + metrics — Better Stack collector or Grafana Cloud | Trialed the collector on dev 2026-07 and removed it as premature (near-idle gated cluster = nothing to observe; tamed helm values live in git history at `infra/betterstack/`, chart defaults OOM-loop a 4 GB node). Deciding factors for prod: the collector is a remotely-configured, host-network privileged agent that bypasses NetworkPolicies |
 
 v1 instrumentation **landed 2026-07-19**: `sentry` crate in the api
 (panic hook + `AppError::Internal` capture; `SENTRY_DSN` /
@@ -1127,8 +1127,13 @@ These were touched on during the grill but explicitly deferred:
   sync becomes relevant when it does.
 - **User account deletion**: same — no endpoint, but when added, must
   cancel Stripe sub + handle data retention question.
-- **Ingest-run visibility**: every content merge now runs ingest Jobs
-  whose pod logs vanish when the next bump prunes the Job. A durable,
-  easily-browsable run log (report → bucket, `ingest_runs` table, or
-  the v2 logging stack) is designed-but-undecided — pairs with the
-  ADR 0007 notification-hook open item.
+- **Ingest-run visibility — resolved 2026-07-20** by report→bucket:
+  the Job entrypoint uploads its full log to
+  `scholia-assets-auto/<corpus>/reports/<ts>-<hash>-<ok|failed>.log`
+  on every exit (the bucket's blanket 30-day expiry applies — a
+  month-old run report has no remaining relevance), and pings ntfy at
+  LOW priority on success (failures alert loudly via Argo Degraded —
+  no duplicate). Note a failed Job's kubectl logs also persist until
+  the fixing commit renames it. The `ingest_runs` DB table remains
+  the upgrade path if ingest history ever becomes an admin-UI
+  feature.
