@@ -330,16 +330,27 @@ both HTML and `/api/*`, fewer ingress rules to get wrong.
 
 ## 3. Backups
 
-> **Status: chain built, awaiting first live run + restore test.** The
-> `scholia-backups` bucket, `scripts/backups_lifecycle.sh` retention rule,
-> `postgres-backup` CronJob (`infra/k8s/base/postgres/backup-cronjob.yaml`),
-> and its `scholia-backup` image (`jobs/backup/`) all exist. What's left is
-> operational: apply the lifecycle rule, let a scheduled run land, and do
-> the first manual restore into dev. Tracked in the § 8 roadmap.
+> **Status: single-region chain verified; three-region mirror in flight.**
+> The `postgres-backup` CronJob (`infra/k8s/base/postgres/backup-cronjob.yaml`)
+> + `scholia-backup` image (`jobs/backup/`) are live and a run to
+> `scholia-backups` (fsn1) is proven end to end. Being added: two mirror
+> buckets `scholia-backups-sigma` (hel1) + `scholia-backups-tau` (nbg1) —
+> `terraform apply` to create them, `just backups-lifecycle` to set
+> retention on all three, then a rebuilt image fans each dump out to all
+> three. First manual restore into dev still outstanding. See § 8 roadmap.
 
 ### 3.1 Target
 
 **Hetzner Object Storage** (S3-compatible). Same provider as VPS — same-region traffic, single vendor, single bill, flat-rate 1TB pool incl. egress.
+
+Each dump is mirrored to **three regional buckets** for redundancy against
+a single region/bucket loss: `scholia-backups` (fsn1, Falkenstein),
+`scholia-backups-sigma` (hel1, Helsinki), `scholia-backups-tau` (nbg1,
+Nuremberg). Hetzner S3 credentials are project-scoped, so one keypair
+writes to all three. The Job takes one `pg_dump` and fans it out; the
+night succeeds as long as **at least one** region got the dump (partial
+failure still succeeds but fires a high-priority ntfy alert naming the
+down region, total failure exits non-zero).
 
 ### 3.2 Cadence + retention
 
@@ -347,7 +358,7 @@ both HTML and `/api/*`, fewer ingress rules to get wrong.
 |---|---|
 | **Prod cadence** | Daily, 03:00 UTC, `pg_dump --format=custom`, gzipped |
 | **Dev cadence** | Daily during bringup (validates the chain). Tear down once prod is stable; dev becomes restore-from-prod when needed. |
-| **Retention** | Last 60 daily, via a bucket lifecycle rule (`daily/` prefix expires at 60 days). No monthly tier for v1. |
+| **Retention** | Last 60 daily per bucket, via a lifecycle rule on each (`daily/` prefix expires at 60 days). No monthly tier: backups exist for disaster recovery (DB down → restore the latest good dump), not point-in-time historical retrieval, so a flat rolling window is the right shape. |
 | **Encryption** | At-rest from Hetzner. No client-side encryption layer for v1 (no PCI/HIPAA scope). |
 | **Restore test** | Manual, every 1-3 months. Pull latest dump, restore into dev cluster, smoke-test API. |
 
@@ -1029,9 +1040,20 @@ Code chain landed; what's left is running it once and proving a restore.
       creds from the existing postgres/assets-bucket/ntfy Secrets.
 - [x] Run-verification: object-exists poll after upload + ntfy failure
       surfacing (high priority), same channel as the ADR 0007 hook
-- [ ] Apply the lifecycle rule (`just backups-lifecycle`) + `terraform
-      import` the bucket
-- [ ] Let a scheduled run land; confirm the object + the ntfy ping
+- [x] Apply the lifecycle rule (`just backups-lifecycle`) + `terraform
+      import` the bucket (state matches; clean plan)
+- [x] Confirmed via manual run: `pg_dump` (~60 MB) lands in
+      `scholia-backups/daily/`, object-exists poll + ntfy both fire.
+      First scheduled run is 03:00 UTC.
+      Note: kube-router lags ~1-2s programming a new pod's NetworkPolicy
+      ipset, so the Job waits for Postgres before dumping (a bare
+      first-instruction connect races the enforcer → "connection refused").
+- [~] Three-region mirror: buckets `scholia-backups-sigma` (hel1) +
+      `scholia-backups-tau` (nbg1) in `infra/terraform/shared/` (`apply`
+      creates them — new, no import), 60-day rule on all three via
+      `just backups-lifecycle`, and the dump Job fans each dump out to
+      all three (degraded-OK: succeed if ≥1 region lands, alert on any
+      miss). Needs `terraform apply` + image rebuild to go live.
 - [ ] First manual restore test into the dev cluster — untested
       backup = no backup
 

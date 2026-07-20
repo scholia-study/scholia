@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
 #
-# Daily Postgres backup. Streams `pg_dump --format=custom | gzip` straight
-# to Hetzner Object Storage (scholia-backups/daily/), confirms the object
-# landed, then reports over ntfy — success at low priority, failure at
-# high so it can't be missed. Runs from the postgres-backup CronJob
-# (infra/k8s/base/postgres/backup-cronjob.yaml).
+# Daily Postgres backup, mirrored across three Hetzner Object Storage
+# regions for redundancy. Takes one `pg_dump --format=custom | gzip` and
+# fans the same dump out to all three buckets, confirming each landed,
+# then reports over ntfy.
 #
-# Retention (keep the last 60 daily dumps) is NOT this script's job: it's
-# a bucket lifecycle rule applied out of band by scripts/backups_lifecycle.sh.
+# Failure policy: the night is a success as long as at least one region
+# received the dump (you can always restore). A partial failure still
+# succeeds but fires a high-priority alert naming the down region(s); a
+# total failure exits non-zero. Retention (keep the last 60 daily dumps)
+# is a per-bucket lifecycle rule applied out of band by
+# scripts/backups_lifecycle.sh.
 #
 # Env (all from the same Secrets the ingest Jobs use):
-#   POSTGRES_HOST/PORT/USER/DB, PGPASSWORD   — the `postgres` Secret
+#   POSTGRES_HOST/PORT/USER/DB, PGPASSWORD    — the `postgres` Secret
 #   AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY — the `assets-bucket` Secret
+#                                               (project-scoped: one keypair
+#                                               works across all regions)
 #   NTFY_URL (optional)                       — the `ntfy` Secret
 set -euo pipefail
 
@@ -19,17 +24,36 @@ set -euo pipefail
 : "${POSTGRES_USER:?}"
 : "${POSTGRES_DB:?}"
 : "${PGPASSWORD:?}"
+: "${AWS_ACCESS_KEY_ID:?}"
+: "${AWS_SECRET_ACCESS_KEY:?}"
 
-source /app/scripts/lib.sh
-scholia_rclone_config
+# region  bucket — primary first; the dump is mirrored to every entry.
+TARGETS=(
+    "fsn1 scholia-backups"        # Falkenstein
+    "hel1 scholia-backups-sigma"  # Helsinki
+    "nbg1 scholia-backups-tau"    # Nuremberg
+)
+
+# An rclone remote per region: same credentials, region-specific endpoint.
+# Env-var config keys are uppercase; the remote is referenced lowercase.
+setup_remote() {
+    local region=$1 up
+    up=$(echo "$region" | tr 'a-z' 'A-Z')
+    export "RCLONE_CONFIG_${up}_TYPE=s3"
+    export "RCLONE_CONFIG_${up}_PROVIDER=Other"
+    export "RCLONE_CONFIG_${up}_ENDPOINT=https://${region}.your-objectstorage.com"
+    export "RCLONE_CONFIG_${up}_REGION=${region}"
+    export "RCLONE_CONFIG_${up}_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
+    export "RCLONE_CONFIG_${up}_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
+    export "RCLONE_CONFIG_${up}_FORCE_PATH_STYLE=true"
+}
 
 ts="$(date -u +%Y%m%dT%H%M%SZ)"
 dump="/tmp/scholia-${ts}.dump.gz"
 object="daily/${ts}.dump.gz"
-dest="scholia:scholia-backups/${object}"
 
 notify() {
-    status=$1 msg=$2
+    local status=$1 msg=$2 prio tags
     [ -n "${NTFY_URL:-}" ] || return 0
     if [ "$status" -eq 0 ]; then
         prio=low; tags=floppy_disk
@@ -43,21 +67,23 @@ notify() {
         -d "$msg" "$NTFY_URL" || true
 }
 
+phase=setup
 on_exit() {
-    status=$?
+    local status=$?
     rm -f "$dump"
-    if [ "$status" -ne 0 ]; then
-        notify "$status" "FAILED at ${ts} (exit ${status}) — no dump uploaded"
+    # Normal outcomes notify themselves and set phase=done; this only
+    # catches an unexpected death mid-run.
+    if [ "$status" -ne 0 ] && [ "$phase" != done ]; then
+        notify 1 "FAILED during ${phase} at ${ts} (exit ${status})"
     fi
 }
 trap on_exit EXIT
 
-# k3s's NetworkPolicy enforcer (kube-router) can take a second or two to
-# program a freshly-started pod's IP into Postgres's allow-ipset. This Job
-# hits the DB as its very first action, so without waiting it races the
-# enforcer and gets a spurious "connection refused". Block until Postgres
-# actually accepts connections. (The ingest Jobs never hit this because
-# they pull from S3 first, which masks the lag.)
+# kube-router can take a second or two to program a freshly-started pod's
+# IP into Postgres's allow-ipset. This Job hits the DB as its very first
+# action, so without waiting it races the enforcer and gets a spurious
+# "connection refused". Block until Postgres actually accepts connections.
+# (The ingest Jobs never hit this because they pull from S3 first.)
 echo "Waiting for ${POSTGRES_HOST}:${POSTGRES_PORT:-5432} to accept connections..."
 for attempt in $(seq 1 30); do
     pg_isready -h "$POSTGRES_HOST" -p "${POSTGRES_PORT:-5432}" -q && break
@@ -68,7 +94,8 @@ for attempt in $(seq 1 30); do
     sleep 2
 done
 
-echo "Dumping ${POSTGRES_DB} on ${POSTGRES_HOST} → ${dest} ..."
+phase=dump
+echo "Dumping ${POSTGRES_DB} on ${POSTGRES_HOST} → ${object} ..."
 pg_dump \
     --format=custom \
     --host="$POSTGRES_HOST" \
@@ -77,25 +104,36 @@ pg_dump \
     "$POSTGRES_DB" | gzip -c >"$dump"
 
 bytes=$(stat -c%s "$dump")
-echo "Dump is ${bytes} bytes; uploading ..."
-rclone copyto "$dump" "$dest"
+human=$(numfmt --to=iec --suffix=B "$bytes" 2>/dev/null || echo "${bytes}B")
+echo "Dump is ${human}; mirroring to ${#TARGETS[@]} regions ..."
 
-# Trust nothing: confirm the object is actually listed before calling it a
-# backup. Hetzner listings can lag fresh writes, so poll briefly.
-found=""
-for attempt in 1 2 3 4 5; do
-    if rclone lsf "scholia:scholia-backups/daily/" | grep -qxF "${ts}.dump.gz"; then
-        found=yes
-        break
+phase=upload
+succeeded=()
+failed=()
+for entry in "${TARGETS[@]}"; do
+    read -r region bucket <<<"$entry"
+    setup_remote "$region"
+    # copy + confirm the object is actually listed before trusting it.
+    if rclone copyto "$dump" "${region}:${bucket}/${object}" 2>&1 &&
+        rclone lsf "${region}:${bucket}/daily/" | grep -qxF "${ts}.dump.gz"; then
+        echo "  ${region}:${bucket} ok"
+        succeeded+=("$region")
+    else
+        echo "  ${region}:${bucket} FAILED" >&2
+        failed+=("$region")
     fi
-    echo "waiting for ${object} to appear in listings (attempt ${attempt}/5)..."
-    sleep 5
 done
-if [ -z "$found" ]; then
-    echo "error: ${object} never appeared in listings after upload." >&2
+
+phase=done
+if [ ${#succeeded[@]} -eq 0 ]; then
+    echo "Backup FAILED: no region accepted ${object}" >&2
+    notify 1 "${object} FAILED to ALL regions (${TARGETS[*]%% *})"
     exit 1
 fi
-
-human=$(numfmt --to=iec --suffix=B "$bytes" 2>/dev/null || echo "${bytes}B")
-echo "Backup complete: ${object} (${human})"
-notify 0 "${object} ok (${human})"
+if [ ${#failed[@]} -gt 0 ]; then
+    echo "Backup degraded: ok=[${succeeded[*]}] failed=[${failed[*]}]"
+    notify 1 "${object} degraded (${human}) — ok:[${succeeded[*]}] FAILED:[${failed[*]}]"
+else
+    echo "Backup complete to all regions: ${object} (${human})"
+    notify 0 "${object} ok to [${succeeded[*]}] (${human})"
+fi

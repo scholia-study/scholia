@@ -17,6 +17,40 @@ provider "aws" {
   s3_use_path_style           = true
 }
 
+# Aliased providers for the two backup-mirror regions. Hetzner S3
+# credentials are project-scoped (one keypair works everywhere), so only
+# the region + endpoint differ. Used for the cross-region DB-backup
+# buckets below.
+provider "aws" {
+  alias  = "hel1"
+  region = "hel1"
+
+  endpoints {
+    s3 = "https://hel1.your-objectstorage.com"
+  }
+
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_region_validation      = true
+  skip_requesting_account_id  = true
+  s3_use_path_style           = true
+}
+
+provider "aws" {
+  alias  = "nbg1"
+  region = "nbg1"
+
+  endpoints {
+    s3 = "https://nbg1.your-objectstorage.com"
+  }
+
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_region_validation      = true
+  skip_requesting_account_id  = true
+  s3_use_path_style           = true
+}
+
 # Asset store for content ingested by the in-cluster Jobs (Bible
 # translations, Kant struct JSONs, etc.). Local `assets/` is the
 # canonical source; `just assets-sync` mirrors it here. See
@@ -50,6 +84,21 @@ resource "aws_s3_bucket" "backups" {
   bucket = "scholia-backups"
 }
 
+# Cross-region mirrors of the daily DB dump (see backup-cronjob.yaml — the
+# Job writes the same dump to all three). Redundancy against a single
+# region/bucket loss. Unlike scholia-backups (created out of band, then
+# imported), these are new, so `apply` creates them. Their 60-day
+# retention rule is applied by scripts/backups_lifecycle.sh, not here.
+resource "aws_s3_bucket" "backups_sigma" {
+  provider = aws.hel1
+  bucket   = "scholia-backups-sigma"
+}
+
+resource "aws_s3_bucket" "backups_tau" {
+  provider = aws.nbg1
+  bucket   = "scholia-backups-tau"
+}
+
 output "assets_bucket_name" {
   description = "Asset bucket name. Wire into rclone configs and Job manifests."
   value       = aws_s3_bucket.assets.id
@@ -60,9 +109,13 @@ output "assets_auto_bucket_name" {
   value       = aws_s3_bucket.assets_auto.id
 }
 
-output "backups_bucket_name" {
-  description = "DB-backup bucket name. Wire into the backup CronJob + scripts/backups_lifecycle.sh."
-  value       = aws_s3_bucket.backups.id
+output "backups_bucket_names" {
+  description = "DB-backup bucket names, all regions. Wire into the backup CronJob + scripts/backups_lifecycle.sh."
+  value = {
+    fsn1 = aws_s3_bucket.backups.id
+    hel1 = aws_s3_bucket.backups_sigma.id
+    nbg1 = aws_s3_bucket.backups_tau.id
+  }
 }
 
 output "assets_endpoint" {

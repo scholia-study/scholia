@@ -98,7 +98,6 @@ jobs:
                         - '.github/workflows/build.yml'
                       backup:
                         - 'jobs/backup/**'
-                        - 'scripts/lib.sh'
                         - '.github/workflows/build.yml'
 
             - name: Build matrix
