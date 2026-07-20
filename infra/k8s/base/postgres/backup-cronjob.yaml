@@ -41,6 +41,12 @@ spec:
                 limits:
                   memory: 512Mi
               env:
+                # Backup object key is db/daily/$SCHOLIA_ENV/<ts>.dump.gz,
+                # so dev and prod never collide in the shared buckets. Base
+                # defaults to dev; the prod overlay patches it, like
+                # APP_PROFILE on the web Deployment.
+                - name: SCHOLIA_ENV
+                  value: dev
                 - name: POSTGRES_HOST
                   value: postgres
                 - name: POSTGRES_PORT

@@ -352,13 +352,20 @@ night succeeds as long as **at least one** region got the dump (partial
 failure still succeeds but fires a high-priority ntfy alert naming the
 down region, total failure exits non-zero).
 
+Object key is **`db/daily/<env>/<ts>.dump.gz`** — backup-type → cadence →
+environment. So dev and prod never collide in the shared buckets, and one
+fixed lifecycle rule on `db/daily/` retains every environment identically
+no matter how many are added. `<env>` comes from `SCHOLIA_ENV` on the
+CronJob (base defaults `dev`; the prod overlay patches it, like
+`APP_PROFILE`).
+
 ### 3.2 Cadence + retention
 
 | Aspect | Decision |
 |---|---|
 | **Prod cadence** | Daily, 03:00 UTC, `pg_dump --format=custom`, gzipped |
 | **Dev cadence** | Daily during bringup (validates the chain). Tear down once prod is stable; dev becomes restore-from-prod when needed. |
-| **Retention** | Last 60 daily per bucket, via a lifecycle rule on each (`daily/` prefix expires at 60 days). No monthly tier: backups exist for disaster recovery (DB down → restore the latest good dump), not point-in-time historical retrieval, so a flat rolling window is the right shape. |
+| **Retention** | Last 60 daily per env per bucket, via one lifecycle rule on each bucket (`db/daily/` prefix expires at 60 days, covering all envs). No monthly tier: backups exist for disaster recovery (DB down → restore the latest good dump), not point-in-time historical retrieval, so a flat rolling window is the right shape. |
 | **Encryption** | At-rest from Hetzner. No client-side encryption layer for v1 (no PCI/HIPAA scope). |
 | **Restore test** | Manual, every 1-3 months. Pull latest dump, restore into dev cluster, smoke-test API. |
 

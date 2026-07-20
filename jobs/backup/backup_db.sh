@@ -5,14 +5,22 @@
 # fans the same dump out to all three buckets, confirming each landed,
 # then reports over ntfy.
 #
+# Object key is `db/daily/<env>/<ts>.dump.gz`: db (backup type) → daily
+# (cadence) → env (SCHOLIA_ENV). Dev and prod live in separate namespaces
+# so they never collide, and one fixed lifecycle rule on `db/daily/`
+# covers every environment no matter how many we add.
+#
 # Failure policy: the night is a success as long as at least one region
 # received the dump (you can always restore). A partial failure still
 # succeeds but fires a high-priority alert naming the down region(s); a
 # total failure exits non-zero. Retention (keep the last 60 daily dumps)
-# is a per-bucket lifecycle rule applied out of band by
+# is a per-env lifecycle rule applied out of band by
 # scripts/backups_lifecycle.sh.
 #
-# Env (all from the same Secrets the ingest Jobs use):
+# Env (Secrets as the ingest Jobs use; SCHOLIA_ENV from the CronJob):
+#   SCHOLIA_ENV                               — dev | prod (base defaults
+#                                               dev; the prod overlay patches
+#                                               it, like APP_PROFILE)
 #   POSTGRES_HOST/PORT/USER/DB, PGPASSWORD    — the `postgres` Secret
 #   AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY — the `assets-bucket` Secret
 #                                               (project-scoped: one keypair
@@ -20,6 +28,7 @@
 #   NTFY_URL (optional)                       — the `ntfy` Secret
 set -euo pipefail
 
+: "${SCHOLIA_ENV:?}"
 : "${POSTGRES_HOST:?}"
 : "${POSTGRES_USER:?}"
 : "${POSTGRES_DB:?}"
@@ -50,7 +59,7 @@ setup_remote() {
 
 ts="$(date -u +%Y%m%dT%H%M%SZ)"
 dump="/tmp/scholia-${ts}.dump.gz"
-object="daily/${ts}.dump.gz"
+object="db/daily/${SCHOLIA_ENV}/${ts}.dump.gz"
 
 notify() {
     local status=$1 msg=$2 prio tags
@@ -115,7 +124,7 @@ for entry in "${TARGETS[@]}"; do
     setup_remote "$region"
     # copy + confirm the object is actually listed before trusting it.
     if rclone copyto "$dump" "${region}:${bucket}/${object}" 2>&1 &&
-        rclone lsf "${region}:${bucket}/daily/" | grep -qxF "${ts}.dump.gz"; then
+        rclone lsf "${region}:${bucket}/db/daily/${SCHOLIA_ENV}/" | grep -qxF "${ts}.dump.gz"; then
         echo "  ${region}:${bucket} ok"
         succeeded+=("$region")
     else

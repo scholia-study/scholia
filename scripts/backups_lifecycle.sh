@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 #
 # Apply the retention lifecycle rule on every DB-backup bucket: objects
-# under the daily/ prefix expire after 60 days. The daily pg_dump CronJob
-# (infra/k8s/base/postgres/backup-cronjob.yaml) mirrors each dump to all
-# three regional buckets, so this caps each at "last 60 daily dumps".
+# under db/daily/ expire after 60 days. The daily pg_dump CronJob
+# (infra/k8s/base/postgres/backup-cronjob.yaml) writes each dump to
+# db/daily/<env>/<ts>.dump.gz and mirrors it to all three regional
+# buckets, so this one prefix rule caps every environment at "last 60
+# daily dumps" — no edit needed as environments are added.
 #
 # Same rationale as scripts/assets_lifecycle.sh for living in a script,
 # not Terraform: aws provider >= 5.70 verifies lifecycle PUTs by polling
@@ -33,7 +35,7 @@ config='<?xml version="1.0" encoding="UTF-8"?>
 <LifecycleConfiguration>
     <Rule>
         <ID>expire-daily-dumps</ID>
-        <Prefix>daily/</Prefix>
+        <Prefix>db/daily/</Prefix>
         <Status>Enabled</Status>
         <Expiration><Days>60</Days></Expiration>
     </Rule>
