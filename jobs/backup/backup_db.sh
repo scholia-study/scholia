@@ -52,6 +52,22 @@ on_exit() {
 }
 trap on_exit EXIT
 
+# k3s's NetworkPolicy enforcer (kube-router) can take a second or two to
+# program a freshly-started pod's IP into Postgres's allow-ipset. This Job
+# hits the DB as its very first action, so without waiting it races the
+# enforcer and gets a spurious "connection refused". Block until Postgres
+# actually accepts connections. (The ingest Jobs never hit this because
+# they pull from S3 first, which masks the lag.)
+echo "Waiting for ${POSTGRES_HOST}:${POSTGRES_PORT:-5432} to accept connections..."
+for attempt in $(seq 1 30); do
+    pg_isready -h "$POSTGRES_HOST" -p "${POSTGRES_PORT:-5432}" -q && break
+    if [ "$attempt" -eq 30 ]; then
+        echo "error: ${POSTGRES_HOST}:${POSTGRES_PORT:-5432} unreachable after 30 tries" >&2
+        exit 1
+    fi
+    sleep 2
+done
+
 echo "Dumping ${POSTGRES_DB} on ${POSTGRES_HOST} → ${dest} ..."
 pg_dump \
     --format=custom \
