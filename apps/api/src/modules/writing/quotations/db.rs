@@ -182,7 +182,7 @@ pub async fn list_quotations_for_node(
     // anchor toc-node shares this node's `source_ref` and whose book
     // shares the translation root. The frontend uses peer entries for
     // visual-marker projection only — saved quotations themselves stay
-    // locked to their translation (PLAN_BIG_BOOKS.md Q7).
+    // locked to their translation.
     //
     // Each row carries:
     //   - `book_slug` and `translation_label` — for the source badge

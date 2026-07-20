@@ -7,8 +7,9 @@ Status audit 2026-07-18: checkboxes and sections reconciled against the
 repo. Ingest orchestration is now recorded in ADR 0006 (narrow waist) +
 ADR 0007 (auto-ingest) and `docs/architecture/overview.md`; the
 superseded Ingest-as-Jobs design below was replaced with a pointer.
-**Next prod-blocking workstream: backups (§3 is designed but entirely
-unimplemented — see the roadmap).**
+**Backups (§3): the daily-dump chain is built (bucket, lifecycle script,
+CronJob, image) and awaits its first live run + restore test — see the
+roadmap.**
 
 ---
 
@@ -329,9 +330,12 @@ both HTML and `/api/*`, fewer ingress rules to get wrong.
 
 ## 3. Backups
 
-> **Status: designed, entirely unimplemented (audit 2026-07-18).** No
-> backup bucket, no CronJob, no dump script exist yet. Prod-blocking —
-> tracked as its own workstream in the § 8 roadmap.
+> **Status: chain built, awaiting first live run + restore test.** The
+> `scholia-backups` bucket, `scripts/backups_lifecycle.sh` retention rule,
+> `postgres-backup` CronJob (`infra/k8s/base/postgres/backup-cronjob.yaml`),
+> and its `scholia-backup` image (`jobs/backup/`) all exist. What's left is
+> operational: apply the lifecycle rule, let a scheduled run land, and do
+> the first manual restore into dev. Tracked in the § 8 roadmap.
 
 ### 3.1 Target
 
@@ -343,7 +347,7 @@ both HTML and `/api/*`, fewer ingress rules to get wrong.
 |---|---|
 | **Prod cadence** | Daily, 03:00 UTC, `pg_dump --format=custom`, gzipped |
 | **Dev cadence** | Daily during bringup (validates the chain). Tear down once prod is stable; dev becomes restore-from-prod when needed. |
-| **Retention** | Last 30 daily + 12 monthly via bucket lifecycle rules |
+| **Retention** | Last 60 daily, via a bucket lifecycle rule (`daily/` prefix expires at 60 days). No monthly tier for v1. |
 | **Encryption** | At-rest from Hetzner. No client-side encryption layer for v1 (no PCI/HIPAA scope). |
 | **Restore test** | Manual, every 1-3 months. Pull latest dump, restore into dev cluster, smoke-test API. |
 
@@ -504,9 +508,7 @@ versions and configure args rarely change.
 
 ### 6.2 Backup discipline
 
-**Not yet implemented — nothing in § 3 exists (no CronJob, no backup
-bucket, no dump script). See the roadmap's backups workstream.** Once
-live:
+**Built, awaiting first live run + restore test (see § 3).** Once running:
 
 - Verify daily backup ran (CronJob exit code, object exists in bucket)
 - Quarterly manual restore test into dev cluster
@@ -1010,18 +1012,26 @@ after commit via `CACHE_PURGE_URL` (per-book paths).
       Rust-ingest smoke test
 - [ ] Capacity-aware UX (warn at 80% of free-tier limits)
 
-### v1 — Backups (prod-blocking; next workstream)
+### v1 — Backups (prod-blocking; chain built, operational steps remain)
 
-Nothing from § 3 exists yet. Minimum viable chain, dev-first:
+Code chain landed; what's left is running it once and proving a restore.
 
-- [ ] Backup bucket in `infra/terraform/shared/` (separate from
-      assets; 30 daily + 12 monthly retention — Hetzner can't converge
-      the aws-provider lifecycle resource, use the
-      `scripts/assets_lifecycle.sh` pattern instead)
-- [ ] CronJob (03:00 UTC): `pg_dump --format=custom` + gzip → bucket.
-      Reuses the postgres image + rclone; creds from a SOPS Secret
-- [ ] Run-verification: object-exists check + failure surfacing (same
-      notification channel as the ADR 0007 ingest-failure hook)
+- [x] `scholia-backups` bucket (created out of band; declared in
+      `infra/terraform/shared/main.tf` for parity — needs a one-time
+      `terraform import` before the next apply)
+- [x] Retention: last 60 daily via `scripts/backups_lifecycle.sh`
+      (`daily/` prefix expires at 60 days). Hetzner can't converge the
+      aws-provider lifecycle resource, so it's a curl+sigv4 PUT like
+      `assets_lifecycle.sh`, not Terraform. Run `just backups-lifecycle`.
+- [x] CronJob (03:00 UTC): `pg_dump --format=custom` + gzip → bucket, in
+      `infra/k8s/base/postgres/backup-cronjob.yaml`. Runs the dedicated
+      `scholia-backup` image (`jobs/backup/`, postgres:18 + rclone);
+      creds from the existing postgres/assets-bucket/ntfy Secrets.
+- [x] Run-verification: object-exists poll after upload + ntfy failure
+      surfacing (high priority), same channel as the ADR 0007 hook
+- [ ] Apply the lifecycle rule (`just backups-lifecycle`) + `terraform
+      import` the bucket
+- [ ] Let a scheduled run land; confirm the object + the ntfy ping
 - [ ] First manual restore test into the dev cluster — untested
       backup = no backup
 

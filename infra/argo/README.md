@@ -6,7 +6,9 @@ postgres, ingress, and the SOPS-decrypted Secrets). Image deploys happen
 by CI committing immutable `main-<sha>` tag bumps to the overlay; Argo
 syncs the diff.
 
-See `../../PLAN_ARGOCD.md` for the full rationale and decisions.
+Decision rationale: ADR 0007 (the auto-ingest half) and the ArgoCD
+decision record in git history under PLAN_ARGOCD (plan files are
+temporary — deleted once fully implemented).
 
 ## What Argo manages vs. doesn't
 

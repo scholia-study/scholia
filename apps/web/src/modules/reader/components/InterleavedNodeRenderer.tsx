@@ -106,7 +106,7 @@ function alignSentences(
         return companionSentences.map((s) => ({ primary: [], companion: [s] }));
     }
 
-    // Two alignment modes (PLAN_BIG_BOOKS.md):
+    // Two alignment modes:
     //
     // 1. **sentence-link**: companion sentences carry
     //    `source_sentence_start_id` pointing at primary sentence ids.

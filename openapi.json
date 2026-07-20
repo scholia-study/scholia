@@ -3392,7 +3392,7 @@
                         "items": {
                             "$ref": "#/components/schemas/BookSummary"
                         },
-                        "description": "Sibling translations: every other book that shares this book's\ntranslation root. Populated when the work has no hosted source\nlanguage (Bible: KJV book has [WEB]) so the reader's flat\ntranslation picker can list peer translations regardless of\nsource/translation polarity. Empty for Kant-style works where\n`source_book_slug` and `translations` already express the\nrelationship. (PLAN_BIG_BOOKS.md Q6)"
+                        "description": "Sibling translations: every other book that shares this book's\ntranslation root. Populated when the work has no hosted source\nlanguage (Bible: KJV book has [WEB]) so the reader's flat\ntranslation picker can list peer translations regardless of\nsource/translation polarity. Empty for Kant-style works where\n`source_book_slug` and `translations` already express the\nrelationship."
                     },
                     "slug": {
                         "type": "string"

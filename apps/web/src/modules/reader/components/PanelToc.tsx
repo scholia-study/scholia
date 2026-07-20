@@ -70,7 +70,7 @@ export function PanelToc({
 }: PanelTocProps) {
     // Bible-shape: top-level nodes are bibliographic anchors (source_id
     // set on each — e.g. Genesis, John inside a Bible). Switch to the
-    // 2-level pill UI from PLAN_BIG_BOOKS.md Q4. Heuristic stays scoped
+    // 2-level pill UI. Heuristic stays scoped
     // to the obvious indicator so future compilations behave the same
     // automatically.
     const isBibleShape = toc.length > 0 && toc.every((n) => n.source_id);

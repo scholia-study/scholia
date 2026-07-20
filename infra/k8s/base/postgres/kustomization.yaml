@@ -5,6 +5,7 @@ resources:
   - statefulset.yaml
   - service.yaml
   - network-policy.yaml
+  - backup-cronjob.yaml
 
 # initdb.d script that provisions the restricted `scholia_app` role on a fresh
 # DB. disableNameSuffixHash: editing the script must not rotate the ConfigMap

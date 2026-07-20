@@ -40,3 +40,7 @@ spec:
                     matchExpressions:
                         - key: ingest
                           operator: Exists
+              # Daily pg_dump CronJob (backup-cronjob.yaml).
+              - podSelector:
+                    matchLabels:
+                        app.kubernetes.io/name: postgres-backup

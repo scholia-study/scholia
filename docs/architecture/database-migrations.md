@@ -114,11 +114,11 @@ Docker image; `default-run = "api"` in `apps/api/Cargo.toml` plus
 argv dispatch in `main.rs` make `api migrate` and `api` (the default
 server) two modes of one binary.
 
-> **Status note**: as of this writing the `.sqlx/` offline metadata
-> isn't committed yet. Every local build still hits the live dev
-> Postgres at compile time, which is fine because every dev machine
-> has one running. We'll generate and commit `.sqlx/` as part of the
-> cluster bringup work in PLAN_DEVOPS.
+The `.sqlx/` offline metadata is committed (the Dockerfile builds with
+`SQLX_OFFLINE=true`); regenerate it after any sqlx query change with
+`pnpm api:sqlx:prep` against the local DB. Local builds outside Docker
+still verify against the live local Postgres — fine, every dev machine
+runs one.
 
 ## Side-by-side
 
@@ -153,9 +153,8 @@ bash scripts/db_reset.sh   # drop schema + re-apply all migrations from scratch
 That's the inner loop for dev. The fresh schema includes the new
 migration, and the `_sqlx_migrations` ledger records it.
 
-For naming and append-only discipline, see `MEMORY.md`
-(`feedback-migration-naming`, `reference-db-reset`) and
-`PLAN_DEVOPS.md § 0.3`.
+Naming: `NNNN_<semantic-name>.sql`, sequential from `0000`, the name
+conveying the change at a glance. Append-only discipline below.
 
 ### Append-only rule
 

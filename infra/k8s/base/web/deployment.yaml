@@ -2,7 +2,7 @@
 #
 # Single replica — the proxy in front handles caching; multi-replica
 # would mean per-pod request caches drifting, which we explicitly
-# don't want (PLAN_DEVOPS § 2.2).
+# don't want.
 #
 # APP_PROFILE is the env var __root.tsx reads at render time and
 # inlines into the HTML head as `window.__ENV__.APP_PROFILE`. The

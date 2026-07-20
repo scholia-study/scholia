@@ -228,7 +228,7 @@ export function ResourcesPanel({
         mutation: {
             onSuccess: () => {
                 toast.success("Quotation saved");
-                // Verse-level marker projection (PLAN_BIG_BOOKS.md Q7)
+                // Verse-level marker projection
                 // means a save in WEB also affects KJV's marker render.
                 // Wider-than-current-book invalidation prevents the
                 // "had to hard refresh to see the marker" bug.

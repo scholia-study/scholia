@@ -129,7 +129,7 @@ function GroupSection({ group }: { group: LibraryGroup }) {
     const isSingleton = isSelf && group.books.length === 0;
     // Bible-shape: one compilation work in many translations.
     // Pills become the primary navigation, translation collapses to a
-    // single subtle chooser (PLAN_BIG_BOOKS.md Q1/Q2/Q5).
+    // single subtle chooser.
     const isCompilationShape = group.book_pills.length > 0;
 
     if (isCompilationShape) {
@@ -208,7 +208,7 @@ function useBibleTranslation(
 ): [string, (slug: string) => void] {
     const fallback = useMemo(
         () =>
-            // WEB is the v1 default (PLAN_BIG_BOOKS.md Q2). The publisher
+            // WEB is the v1 default. The publisher
             // field carries the short label; we ship "WEB" / "KJV" today.
             versions.find((v) => v.publisher === "WEB")?.book_slug ??
             versions[0]?.book_slug ??

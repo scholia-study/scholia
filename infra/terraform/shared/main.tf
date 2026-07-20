@@ -39,6 +39,17 @@ resource "aws_s3_bucket" "assets_auto" {
   bucket = "scholia-assets-auto"
 }
 
+# Daily pg_dump target (see PLAN_DEVOPS.md § 3 + backup-cronjob.yaml).
+# Created out of band before this resource existed, so it must be
+# imported before the next apply, or the create call collides:
+#   terraform import aws_s3_bucket.backups scholia-backups
+# The 60-day retention rule is NOT here (aws provider can't converge
+# Hetzner lifecycle PUTs — see assets_auto's note); it lives in
+# scripts/backups_lifecycle.sh.
+resource "aws_s3_bucket" "backups" {
+  bucket = "scholia-backups"
+}
+
 output "assets_bucket_name" {
   description = "Asset bucket name. Wire into rclone configs and Job manifests."
   value       = aws_s3_bucket.assets.id
@@ -47,6 +58,11 @@ output "assets_bucket_name" {
 output "assets_auto_bucket_name" {
   description = "Auto-ingest bucket name. Wire into build.yml and the ingest Job manifests."
   value       = aws_s3_bucket.assets_auto.id
+}
+
+output "backups_bucket_name" {
+  description = "DB-backup bucket name. Wire into the backup CronJob + scripts/backups_lifecycle.sh."
+  value       = aws_s3_bucket.backups.id
 }
 
 output "assets_endpoint" {

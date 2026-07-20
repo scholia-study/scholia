@@ -21,7 +21,7 @@ export interface BookDetail {
      * translation picker can list peer translations regardless of
      * source/translation polarity. Empty for Kant-style works where
      * `source_book_slug` and `translations` already express the
-     * relationship. (PLAN_BIG_BOOKS.md Q6)
+     * relationship.
      */
     sibling_translations: BookSummary[];
     slug: string;

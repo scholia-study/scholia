@@ -1,0 +1,78 @@
+# Daily Postgres backup. pg_dump --format=custom | gzip → Hetzner Object
+# Storage (scholia-backups/daily/), 03:00 UTC. Retention (last 60 daily)
+# is a bucket lifecycle rule, applied out of band by
+# scripts/backups_lifecycle.sh — nothing here prunes.
+#
+# In base (not the dev overlay) so prod inherits the same schedule when
+# its cluster exists. The Secrets it reads (postgres, assets-bucket, ntfy)
+# are supplied per-environment; on dev they come from the overlay's KSOPS
+# generator. Image is the unpinned :main tag, same as the ingest Jobs.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  labels:
+    app.kubernetes.io/name: postgres-backup
+spec:
+  schedule: "0 3 * * *"
+  timeZone: Etc/UTC
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 86400 # 1 day
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: postgres-backup
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: backup
+              image: ghcr.io/scholia-study/scholia-backup:main
+              imagePullPolicy: Always
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+                limits:
+                  memory: 512Mi
+              env:
+                - name: POSTGRES_HOST
+                  value: postgres
+                - name: POSTGRES_PORT
+                  value: "5432"
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres
+                      key: user
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres
+                      key: database
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres
+                      key: password
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: assets-bucket
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: assets-bucket
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: NTFY_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ntfy
+                      key: NTFY_URL
+                      optional: true

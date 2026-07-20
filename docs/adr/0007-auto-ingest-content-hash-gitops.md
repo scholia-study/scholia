@@ -7,8 +7,8 @@
 
 Struct imports were manual: `just struct <corpus>` + `just assets-sync`
 locally, then `kubectl create` a Job on the cluster. Everything else
-already deployed via CI → git write-back → Argo (ADR-adjacent decisions
-in `PLAN_ARGOCD.md`, git history). This extends that pattern to data:
+already deployed via CI → git write-back → Argo (decision record in
+git history — PLAN_ARGOCD). This extends that pattern to data:
 a merge touching a corpus's curated MD — or its parser — builds structs
 and runs the DB import with no manual steps. Scope: struct-importer
 corpora only; **Bible is excluded** (own importer + fetch flow, source

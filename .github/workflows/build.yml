@@ -96,6 +96,10 @@ jobs:
                         - 'Cargo.toml'
                         - 'Cargo.lock'
                         - '.github/workflows/build.yml'
+                      backup:
+                        - 'jobs/backup/**'
+                        - 'scripts/lib.sh'
+                        - '.github/workflows/build.yml'
 
             - name: Build matrix
               id: matrix
@@ -107,6 +111,7 @@ jobs:
                   PROXY: ${{ steps.filter.outputs.proxy }}
                   INGEST_BIBLE: ${{ steps.filter.outputs.ingest_bible }}
                   INGEST: ${{ steps.filter.outputs.ingest }}
+                  BACKUP: ${{ steps.filter.outputs.backup }}
               run: |
                   # Manual (workflow_dispatch) trigger: rebuild every image
                   # unless images=false (structs-only recovery run).
@@ -115,10 +120,10 @@ jobs:
                   if [[ "$EVENT" == "workflow_dispatch" ]]; then
                       if [[ "$IMAGES_INPUT" == "true" ]]; then
                           API=true; WEB=true; PROXY=true
-                          INGEST_BIBLE=true; INGEST=true
+                          INGEST_BIBLE=true; INGEST=true; BACKUP=true
                       else
                           API=false; WEB=false; PROXY=false
-                          INGEST_BIBLE=false; INGEST=false
+                          INGEST_BIBLE=false; INGEST=false; BACKUP=false
                       fi
                   fi
 
@@ -134,6 +139,7 @@ jobs:
                   if [[ "$PROXY"         == "true" ]]; then add proxy        apps/proxy apps/proxy/Dockerfile;        fi
                   if [[ "$INGEST_BIBLE"  == "true" ]]; then add ingest-bible .          jobs/ingest-bible/Dockerfile; fi
                   if [[ "$INGEST"        == "true" ]]; then add ingest       .          jobs/ingest/Dockerfile;       fi
+                  if [[ "$BACKUP"        == "true" ]]; then add backup       .          jobs/backup/Dockerfile;       fi
 
                   echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
                   echo "Build matrix: $matrix"

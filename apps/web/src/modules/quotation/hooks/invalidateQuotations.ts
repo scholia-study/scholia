@@ -3,7 +3,7 @@ import type { QueryClient } from "@tanstack/react-query";
 /**
  * Invalidate every cached `list_quotations_for_node` response across
  * every book the user is reading. Needed because saved quotations
- * project across translations as visual markers (PLAN_BIG_BOOKS.md Q7) —
+ * project across translations as visual markers —
  * a save in WEB has to refresh the KJV cache too, otherwise the user
  * has to hard-refresh to see the marker on a verse they just saved.
  *

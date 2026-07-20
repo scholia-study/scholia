@@ -1,6 +1,6 @@
 # Postgres 18 StatefulSet, single replica, local-path PVC.
 #
-# Per PLAN_DEVOPS § 2.4: raw StatefulSet (no operator) for v0; revisit
+# Raw StatefulSet (no operator) by choice — bare primitives first; revisit
 # CloudNativePG once PITR or replicas matter. Storage is k3s's default
 # local-path provisioner — pinned to whatever node the pod runs on, but
 # since we have one node, that's a no-op constraint.

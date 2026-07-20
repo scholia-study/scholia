@@ -38,6 +38,11 @@ assets-sync *flags:
 assets-lifecycle:
     bash scripts/assets_lifecycle.sh
 
+# (re)apply the scholia-backups retention rule (daily/ dumps expire at 60 days)
+[group("assets")]
+backups-lifecycle:
+    bash scripts/backups_lifecycle.sh
+
 # kant1 OCR pre-curation stages (raw → lines → elements)
 [group("assets")]
 elem-kant1:

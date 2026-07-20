@@ -12,7 +12,7 @@ interface QuotationContextValue {
      *    sentence's own verse markers are looked up against that set.
      *    The API resolves drift across translations (Romans doxology,
      *    DARBY Psalm titles) into target-local coords before we get
-     *    here, so the match is direct (PLAN_BIG_BOOKS.md Q7 — visual
+     *    here, so the match is direct (visual
      *    hint only).
      * 2. sentence_number fallback (Kant) — quotations without verse
      *    keys fall back to the existing within-book sentence_number
