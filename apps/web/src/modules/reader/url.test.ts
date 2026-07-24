@@ -26,6 +26,25 @@ describe("validateSearch", () => {
         const out = validateSearch({ s: "", p2: "" });
         expect(out).toEqual({});
     });
+
+    it("coerces JSON-parsed numeric values back to strings", () => {
+        // The router's default search parser JSON-parses each value, so
+        // "?s=12&r=1" arrives as numbers on a fresh page load.
+        const out = validateSearch({ s: 12, r: 1 });
+        expect(out).toEqual({ s: "12", r: "1" });
+    });
+});
+
+describe("decode with raw (unvalidated) search values", () => {
+    it("coerces numeric values seen during the hydration render", () => {
+        const state = decode({
+            bookSlug: "kant1",
+            nodeSlug: "preface",
+            search: { s: 12, r: 1 } as unknown as ReaderSearch,
+        });
+        expect(state.panels[0].selectedSentenceId).toBe("12");
+        expect(state.panels[0].resourcesOpen).toBe(true);
+    });
 });
 
 describe("decode → encode round-trip", () => {

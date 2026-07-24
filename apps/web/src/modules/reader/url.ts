@@ -85,12 +85,17 @@ const SEARCH_KEYS = [
 ] as const satisfies ReadonlyArray<keyof ReaderSearch>;
 
 /** Coerce a raw search-param record into the typed `ReaderSearch` shape used by
- *  TanStack Router's `validateSearch`. Drops unknown keys; keeps only string values. */
+ *  TanStack Router's `validateSearch`. Drops unknown keys. All reader params are
+ *  strings on the wire, but the router's default search parser JSON-parses each
+ *  value, so a purely numeric sentence key ("?s=12") arrives as a number —
+ *  coerce it back rather than dropping the highlight. */
 export function validateSearch(search: Record<string, unknown>): ReaderSearch {
     const out: ReaderSearch = {};
     for (const key of SEARCH_KEYS) {
         const v = search[key];
         if (typeof v === "string" && v.length > 0) out[key] = v;
+        else if (typeof v === "number" && Number.isFinite(v))
+            out[key] = String(v);
     }
     return out;
 }
@@ -137,7 +142,13 @@ function read(
     prefix: string,
     idx: number,
 ): string | undefined {
-    return search[key<keyof ReaderSearch>(prefix, idx)];
+    // The first client render during hydration can see the router's raw
+    // JSON-parsed search before `validateSearch` has applied, so numeric
+    // values ("?s=12") sneak in here — coerce instead of crashing downstream
+    // (parseRangeKey and friends expect strings).
+    const v: unknown = search[key<keyof ReaderSearch>(prefix, idx)];
+    if (typeof v === "number" && Number.isFinite(v)) return String(v);
+    return typeof v === "string" && v.length > 0 ? v : undefined;
 }
 
 /** Convert URL pieces (path params + typed search) into canonical `ReaderState`.
