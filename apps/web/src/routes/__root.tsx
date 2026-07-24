@@ -69,7 +69,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
             links: [
                 { rel: "stylesheet", href: appCss },
                 { rel: "icon", href: "/favicon.ico" },
-                { rel: "manifest", href: "/manifest.json" },
+                {
+                    rel: "manifest",
+                    href: "/manifest.json",
+                    crossOrigin: "use-credentials",
+                },
             ],
             scripts: [
                 {
