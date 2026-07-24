@@ -9,82 +9,46 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as VerifyEmailRouteImport } from './routes/verify-email'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as RegisterRouteImport } from './routes/register'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as LicenceRouteImport } from './routes/licence'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as ContributeRouteImport } from './routes/contribute'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as MembershipIndexRouteImport } from './routes/membership.index'
-import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
-import { Route as UsersHandleRouteImport } from './routes/users.$handle'
-import { Route as MembershipWelcomeRouteImport } from './routes/membership.welcome'
-import { Route as MembershipCheckoutRouteImport } from './routes/membership.checkout'
-import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
+import { Route as AuthRouteImport } from './routes/_auth'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ContributeRouteImport } from './routes/contribute'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as LicenceRouteImport } from './routes/licence'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as AuthAdminRouteImport } from './routes/_auth._admin'
-import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
-import { Route as UsersByIdIdRouteImport } from './routes/users.by-id.$id'
-import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
-import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
-import { Route as AuthUserQuotationsRouteImport } from './routes/_auth.user.quotations'
-import { Route as AuthUserProfileRouteImport } from './routes/_auth.user.profile'
+import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
+import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
+import { Route as MembershipIndexRouteImport } from './routes/membership.index'
+import { Route as MembershipCheckoutRouteImport } from './routes/membership.checkout'
+import { Route as MembershipWelcomeRouteImport } from './routes/membership.welcome'
+import { Route as UsersHandleRouteImport } from './routes/users.$handle'
 import { Route as AuthUserNotesRouteImport } from './routes/_auth.user.notes'
-import { Route as AuthUserSourcesIndexRouteImport } from './routes/_auth.user.sources.index'
+import { Route as AuthUserProfileRouteImport } from './routes/_auth.user.profile'
+import { Route as AuthUserQuotationsRouteImport } from './routes/_auth.user.quotations'
+import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
+import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
+import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
+import { Route as UsersByIdIdRouteImport } from './routes/users.by-id.$id'
 import { Route as AuthUserArticlesIndexRouteImport } from './routes/_auth.user.articles.index'
-import { Route as AuthUserSourcesIdRouteImport } from './routes/_auth.user.sources.$id'
 import { Route as AuthUserArticlesSlugRouteImport } from './routes/_auth.user.articles.$slug'
+import { Route as AuthUserSourcesIndexRouteImport } from './routes/_auth.user.sources.index'
+import { Route as AuthUserSourcesIdRouteImport } from './routes/_auth.user.sources.$id'
 import { Route as AuthAdminAdminFeedbackIndexRouteImport } from './routes/_auth._admin.admin.feedback.index'
 import { Route as AuthAdminAdminFeedbackIdRouteImport } from './routes/_auth._admin.admin.feedback.$id'
 
-const VerifyEmailRoute = VerifyEmailRouteImport.update({
-  id: '/verify-email',
-  path: '/verify-email',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LicenceRoute = LicenceRouteImport.update({
-  id: '/licence',
-  path: '/licence',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContributeRoute = ContributeRouteImport.update({
-  id: '/contribute',
-  path: '/contribute',
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -92,38 +56,58 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/_auth',
+const ContributeRoute = ContributeRouteImport.update({
+  id: '/contribute',
+  path: '/contribute',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MembershipIndexRoute = MembershipIndexRouteImport.update({
-  id: '/membership/',
-  path: '/membership/',
+const LicenceRoute = LicenceRouteImport.update({
+  id: '/licence',
+  path: '/licence',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthAdminRoute = AuthAdminRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => AuthRoute,
 } as any)
 const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
   id: '/articles/',
   path: '/articles/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UsersHandleRoute = UsersHandleRouteImport.update({
-  id: '/users/$handle',
-  path: '/users/$handle',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MembershipWelcomeRoute = MembershipWelcomeRouteImport.update({
-  id: '/membership/welcome',
-  path: '/membership/welcome',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MembershipCheckoutRoute = MembershipCheckoutRouteImport.update({
-  id: '/membership/checkout',
-  path: '/membership/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
@@ -131,33 +115,29 @@ const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
   path: '/articles/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthAdminRoute = AuthAdminRouteImport.update({
-  id: '/_admin',
-  getParentRoute: () => AuthRoute,
-} as any)
-const BooksBookSlugIndexRoute = BooksBookSlugIndexRouteImport.update({
-  id: '/books/$bookSlug/',
-  path: '/books/$bookSlug/',
+const MembershipIndexRoute = MembershipIndexRouteImport.update({
+  id: '/membership/',
+  path: '/membership/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UsersByIdIdRoute = UsersByIdIdRouteImport.update({
-  id: '/users/by-id/$id',
-  path: '/users/by-id/$id',
+const MembershipCheckoutRoute = MembershipCheckoutRouteImport.update({
+  id: '/membership/checkout',
+  path: '/membership/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BooksBookSlugNodeSlugRoute = BooksBookSlugNodeSlugRouteImport.update({
-  id: '/books/$bookSlug/$nodeSlug',
-  path: '/books/$bookSlug/$nodeSlug',
+const MembershipWelcomeRoute = MembershipWelcomeRouteImport.update({
+  id: '/membership/welcome',
+  path: '/membership/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ArticlesByIdIdRoute = ArticlesByIdIdRouteImport.update({
-  id: '/articles/by-id/$id',
-  path: '/articles/by-id/$id',
+const UsersHandleRoute = UsersHandleRouteImport.update({
+  id: '/users/$handle',
+  path: '/users/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthUserQuotationsRoute = AuthUserQuotationsRouteImport.update({
-  id: '/user/quotations',
-  path: '/user/quotations',
+const AuthUserNotesRoute = AuthUserNotesRouteImport.update({
+  id: '/user/notes',
+  path: '/user/notes',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthUserProfileRoute = AuthUserProfileRouteImport.update({
@@ -165,9 +145,39 @@ const AuthUserProfileRoute = AuthUserProfileRouteImport.update({
   path: '/user/profile',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthUserNotesRoute = AuthUserNotesRouteImport.update({
-  id: '/user/notes',
-  path: '/user/notes',
+const AuthUserQuotationsRoute = AuthUserQuotationsRouteImport.update({
+  id: '/user/quotations',
+  path: '/user/quotations',
+  getParentRoute: () => AuthRoute,
+} as any)
+const ArticlesByIdIdRoute = ArticlesByIdIdRouteImport.update({
+  id: '/articles/by-id/$id',
+  path: '/articles/by-id/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksBookSlugIndexRoute = BooksBookSlugIndexRouteImport.update({
+  id: '/books/$bookSlug/',
+  path: '/books/$bookSlug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksBookSlugNodeSlugRoute = BooksBookSlugNodeSlugRouteImport.update({
+  id: '/books/$bookSlug/$nodeSlug',
+  path: '/books/$bookSlug/$nodeSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersByIdIdRoute = UsersByIdIdRouteImport.update({
+  id: '/users/by-id/$id',
+  path: '/users/by-id/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthUserArticlesIndexRoute = AuthUserArticlesIndexRouteImport.update({
+  id: '/user/articles/',
+  path: '/user/articles/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthUserArticlesSlugRoute = AuthUserArticlesSlugRouteImport.update({
+  id: '/user/articles/$slug',
+  path: '/user/articles/$slug',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthUserSourcesIndexRoute = AuthUserSourcesIndexRouteImport.update({
@@ -175,19 +185,9 @@ const AuthUserSourcesIndexRoute = AuthUserSourcesIndexRouteImport.update({
   path: '/user/sources/',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthUserArticlesIndexRoute = AuthUserArticlesIndexRouteImport.update({
-  id: '/user/articles/',
-  path: '/user/articles/',
-  getParentRoute: () => AuthRoute,
-} as any)
 const AuthUserSourcesIdRoute = AuthUserSourcesIdRouteImport.update({
   id: '/user/sources/$id',
   path: '/user/sources/$id',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthUserArticlesSlugRoute = AuthUserArticlesSlugRouteImport.update({
-  id: '/user/articles/$slug',
-  path: '/user/articles/$slug',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthAdminAdminFeedbackIndexRoute =
@@ -430,74 +430,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/verify-email': {
-      id: '/verify-email'
-      path: '/verify-email'
-      fullPath: '/verify-email'
-      preLoaderRoute: typeof VerifyEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/licence': {
-      id: '/licence'
-      path: '/licence'
-      fullPath: '/licence'
-      preLoaderRoute: typeof LicenceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contribute': {
-      id: '/contribute'
-      path: '/contribute'
-      fullPath: '/contribute'
-      preLoaderRoute: typeof ContributeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -507,53 +444,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/membership/': {
-      id: '/membership/'
-      path: '/membership'
-      fullPath: '/membership/'
-      preLoaderRoute: typeof MembershipIndexRouteImport
+    '/contribute': {
+      id: '/contribute'
+      path: '/contribute'
+      fullPath: '/contribute'
+      preLoaderRoute: typeof ContributeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/articles/': {
-      id: '/articles/'
-      path: '/articles'
-      fullPath: '/articles/'
-      preLoaderRoute: typeof ArticlesIndexRouteImport
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/users/$handle': {
-      id: '/users/$handle'
-      path: '/users/$handle'
-      fullPath: '/users/$handle'
-      preLoaderRoute: typeof UsersHandleRouteImport
+    '/licence': {
+      id: '/licence'
+      path: '/licence'
+      fullPath: '/licence'
+      preLoaderRoute: typeof LicenceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/membership/welcome': {
-      id: '/membership/welcome'
-      path: '/membership/welcome'
-      fullPath: '/membership/welcome'
-      preLoaderRoute: typeof MembershipWelcomeRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/membership/checkout': {
-      id: '/membership/checkout'
-      path: '/membership/checkout'
-      fullPath: '/membership/checkout'
-      preLoaderRoute: typeof MembershipCheckoutRouteImport
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/articles/$slug': {
-      id: '/articles/$slug'
-      path: '/articles/$slug'
-      fullPath: '/articles/$slug'
-      preLoaderRoute: typeof ArticlesSlugRouteImport
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/_admin': {
@@ -563,39 +521,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdminRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/books/$bookSlug/': {
-      id: '/books/$bookSlug/'
-      path: '/books/$bookSlug'
-      fullPath: '/books/$bookSlug/'
-      preLoaderRoute: typeof BooksBookSlugIndexRouteImport
+    '/articles/': {
+      id: '/articles/'
+      path: '/articles'
+      fullPath: '/articles/'
+      preLoaderRoute: typeof ArticlesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/users/by-id/$id': {
-      id: '/users/by-id/$id'
-      path: '/users/by-id/$id'
-      fullPath: '/users/by-id/$id'
-      preLoaderRoute: typeof UsersByIdIdRouteImport
+    '/articles/$slug': {
+      id: '/articles/$slug'
+      path: '/articles/$slug'
+      fullPath: '/articles/$slug'
+      preLoaderRoute: typeof ArticlesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/books/$bookSlug/$nodeSlug': {
-      id: '/books/$bookSlug/$nodeSlug'
-      path: '/books/$bookSlug/$nodeSlug'
-      fullPath: '/books/$bookSlug/$nodeSlug'
-      preLoaderRoute: typeof BooksBookSlugNodeSlugRouteImport
+    '/membership/': {
+      id: '/membership/'
+      path: '/membership'
+      fullPath: '/membership/'
+      preLoaderRoute: typeof MembershipIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/articles/by-id/$id': {
-      id: '/articles/by-id/$id'
-      path: '/articles/by-id/$id'
-      fullPath: '/articles/by-id/$id'
-      preLoaderRoute: typeof ArticlesByIdIdRouteImport
+    '/membership/checkout': {
+      id: '/membership/checkout'
+      path: '/membership/checkout'
+      fullPath: '/membership/checkout'
+      preLoaderRoute: typeof MembershipCheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/user/quotations': {
-      id: '/_auth/user/quotations'
-      path: '/user/quotations'
-      fullPath: '/user/quotations'
-      preLoaderRoute: typeof AuthUserQuotationsRouteImport
+    '/membership/welcome': {
+      id: '/membership/welcome'
+      path: '/membership/welcome'
+      fullPath: '/membership/welcome'
+      preLoaderRoute: typeof MembershipWelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/$handle': {
+      id: '/users/$handle'
+      path: '/users/$handle'
+      fullPath: '/users/$handle'
+      preLoaderRoute: typeof UsersHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/user/notes': {
+      id: '/_auth/user/notes'
+      path: '/user/notes'
+      fullPath: '/user/notes'
+      preLoaderRoute: typeof AuthUserNotesRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/user/profile': {
@@ -605,11 +577,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthUserProfileRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/user/notes': {
-      id: '/_auth/user/notes'
-      path: '/user/notes'
-      fullPath: '/user/notes'
-      preLoaderRoute: typeof AuthUserNotesRouteImport
+    '/_auth/user/quotations': {
+      id: '/_auth/user/quotations'
+      path: '/user/quotations'
+      fullPath: '/user/quotations'
+      preLoaderRoute: typeof AuthUserQuotationsRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/articles/by-id/$id': {
+      id: '/articles/by-id/$id'
+      path: '/articles/by-id/$id'
+      fullPath: '/articles/by-id/$id'
+      preLoaderRoute: typeof ArticlesByIdIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books/$bookSlug/': {
+      id: '/books/$bookSlug/'
+      path: '/books/$bookSlug'
+      fullPath: '/books/$bookSlug/'
+      preLoaderRoute: typeof BooksBookSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books/$bookSlug/$nodeSlug': {
+      id: '/books/$bookSlug/$nodeSlug'
+      path: '/books/$bookSlug/$nodeSlug'
+      fullPath: '/books/$bookSlug/$nodeSlug'
+      preLoaderRoute: typeof BooksBookSlugNodeSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/by-id/$id': {
+      id: '/users/by-id/$id'
+      path: '/users/by-id/$id'
+      fullPath: '/users/by-id/$id'
+      preLoaderRoute: typeof UsersByIdIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/user/articles/': {
+      id: '/_auth/user/articles/'
+      path: '/user/articles'
+      fullPath: '/user/articles/'
+      preLoaderRoute: typeof AuthUserArticlesIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/user/articles/$slug': {
+      id: '/_auth/user/articles/$slug'
+      path: '/user/articles/$slug'
+      fullPath: '/user/articles/$slug'
+      preLoaderRoute: typeof AuthUserArticlesSlugRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/user/sources/': {
@@ -619,25 +633,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthUserSourcesIndexRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/user/articles/': {
-      id: '/_auth/user/articles/'
-      path: '/user/articles'
-      fullPath: '/user/articles/'
-      preLoaderRoute: typeof AuthUserArticlesIndexRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/_auth/user/sources/$id': {
       id: '/_auth/user/sources/$id'
       path: '/user/sources/$id'
       fullPath: '/user/sources/$id'
       preLoaderRoute: typeof AuthUserSourcesIdRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/user/articles/$slug': {
-      id: '/_auth/user/articles/$slug'
-      path: '/user/articles/$slug'
-      fullPath: '/user/articles/$slug'
-      preLoaderRoute: typeof AuthUserArticlesSlugRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/_admin/admin/feedback/': {
