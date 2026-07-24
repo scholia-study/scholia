@@ -246,7 +246,9 @@ export function QuotationPickerModal({
                                         control={<Radio size="small" />}
                                         label="Source"
                                         slotProps={{
-                                            typography: { fontSize: "0.8rem" },
+                                            typography: {
+                                                sx: { fontSize: "0.8rem" },
+                                            },
                                         }}
                                     />
                                     <FormControlLabel
@@ -254,7 +256,9 @@ export function QuotationPickerModal({
                                         control={<Radio size="small" />}
                                         label="Translation"
                                         slotProps={{
-                                            typography: { fontSize: "0.8rem" },
+                                            typography: {
+                                                sx: { fontSize: "0.8rem" },
+                                            },
                                         }}
                                     />
                                     <FormControlLabel
@@ -262,7 +266,9 @@ export function QuotationPickerModal({
                                         control={<Radio size="small" />}
                                         label="Both"
                                         slotProps={{
-                                            typography: { fontSize: "0.8rem" },
+                                            typography: {
+                                                sx: { fontSize: "0.8rem" },
+                                            },
                                         }}
                                     />
                                 </RadioGroup>
@@ -288,7 +294,7 @@ export function QuotationPickerModal({
                                             label="Stacked"
                                             slotProps={{
                                                 typography: {
-                                                    fontSize: "0.8rem",
+                                                    sx: { fontSize: "0.8rem" },
                                                 },
                                             }}
                                         />
@@ -298,7 +304,7 @@ export function QuotationPickerModal({
                                             label="Side-by-side (source left)"
                                             slotProps={{
                                                 typography: {
-                                                    fontSize: "0.8rem",
+                                                    sx: { fontSize: "0.8rem" },
                                                 },
                                             }}
                                         />
@@ -308,7 +314,7 @@ export function QuotationPickerModal({
                                             label="Side-by-side (source right)"
                                             slotProps={{
                                                 typography: {
-                                                    fontSize: "0.8rem",
+                                                    sx: { fontSize: "0.8rem" },
                                                 },
                                             }}
                                         />

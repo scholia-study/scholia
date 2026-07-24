@@ -115,7 +115,7 @@ export function Navbar() {
                                             slotProps={{
                                                 primary: {
                                                     variant: "body2",
-                                                    fontWeight: 500,
+                                                    sx: { fontWeight: 500 },
                                                 },
                                                 secondary: {
                                                     variant: "caption",

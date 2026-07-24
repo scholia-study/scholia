@@ -473,15 +473,15 @@ function ArticleEditorPage() {
                             }
                             slotProps={{
                                 input: {
-                                    ...params.InputProps,
+                                    ...params.slotProps.input,
                                     disableUnderline: true,
                                 },
                             }}
                         />
                     )}
-                    renderTags={(value, getTagProps) =>
+                    renderValue={(value, getItemProps) =>
                         value.map((option, index) => {
-                            const { key, ...rest } = getTagProps({ index });
+                            const { key, ...rest } = getItemProps({ index });
                             return (
                                 <Chip
                                     key={key}

@@ -18,7 +18,7 @@ export const theme = createTheme({
         },
         MuiTooltip: {
             defaultProps: {
-                TransitionComponent: Fade,
+                slots: { transition: Fade },
                 slotProps: {
                     popper: {
                         modifiers: [

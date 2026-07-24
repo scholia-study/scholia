@@ -468,7 +468,9 @@ export function ResourceFormModal({
                                     />
                                 }
                                 label="Freeform location"
-                                slotProps={{ typography: { fontSize: 12 } }}
+                                slotProps={{
+                                    typography: { sx: { fontSize: 12 } },
+                                }}
                             />
                             {useFreeformLocation ? (
                                 <TextField
@@ -561,7 +563,7 @@ export function ResourceFormModal({
                                 />
                             }
                             label="Featured"
-                            slotProps={{ typography: { fontSize: 12 } }}
+                            slotProps={{ typography: { sx: { fontSize: 12 } } }}
                         />
                     </div>
 

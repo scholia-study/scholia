@@ -573,8 +573,8 @@ export function TextPanel({
                                     anchorEl={menuAnchor}
                                     open={Boolean(menuAnchor)}
                                     onClose={() => setMenuAnchor(null)}
-                                    MenuListProps={{ dense: compactMenu }}
                                     slotProps={{
+                                        list: { dense: compactMenu },
                                         paper: {
                                             sx: {
                                                 minWidth: compactMenu

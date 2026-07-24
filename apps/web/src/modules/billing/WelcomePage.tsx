@@ -72,7 +72,7 @@ export function WelcomePage() {
 
 function PendingState() {
     return (
-        <Stack spacing={3} alignItems="center" className="py-10">
+        <Stack spacing={3} sx={{ alignItems: "center" }} className="py-10">
             <CircularProgress />
             <Typography variant="h5" component="p" className="!font-serif">
                 Activating your membership…
@@ -123,7 +123,7 @@ function SuccessState({ tierLabel }: { tierLabel: string }) {
             <Stack
                 direction={{ xs: "column", sm: "row" }}
                 spacing={2}
-                justifyContent="center"
+                sx={{ justifyContent: "center" }}
             >
                 <Button component={Link} to="/" variant="contained">
                     Continue reading
@@ -156,7 +156,7 @@ function TimeoutState() {
             <Stack
                 direction={{ xs: "column", sm: "row" }}
                 spacing={2}
-                justifyContent="center"
+                sx={{ justifyContent: "center" }}
             >
                 <Button
                     variant="contained"

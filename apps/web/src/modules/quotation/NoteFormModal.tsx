@@ -157,9 +157,9 @@ export function NoteFormModal({
                     onInputChange={(_e, newInputValue) =>
                         setTagInput(newInputValue)
                     }
-                    renderTags={(value, getTagProps) =>
+                    renderValue={(value, getItemProps) =>
                         value.map((tag, index) => {
-                            const { key, ...rest } = getTagProps({ index });
+                            const { key, ...rest } = getItemProps({ index });
                             return (
                                 <Chip
                                     key={key}
