@@ -1,0 +1,48 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT u.id,\n                  u.email,\n                  u.display_name,\n                  u.handle,\n                  (u.email_verified_at IS NOT NULL) AS \"email_verified!\",\n                  u.created_at,\n                  COALESCE(ARRAY(\n                      SELECT r.name\n                      FROM user_roles ur\n                      JOIN roles r ON r.id = ur.role_id\n                      WHERE ur.user_id = u.id\n                      ORDER BY r.name\n                  ), '{}') AS \"roles!: Vec<String>\"\n           FROM users u\n           WHERE $1::text IS NULL\n              OR u.email ILIKE $2\n              OR u.display_name ILIKE $2\n              OR u.handle ILIKE $2\n           ORDER BY u.created_at DESC\n           LIMIT $3 OFFSET $4",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "email",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "display_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "handle",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "email_verified!",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 5,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 6,
+                "name": "roles!: Vec<String>",
+                "type_info": "TextArray"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Text", "Int8", "Int8"]
+        },
+        "nullable": [false, false, false, true, null, false, null]
+    },
+    "hash": "1c662c740236aedeae2855056ac3006bf120911374f5c8f3e3e0e760af7c56ec"
+}

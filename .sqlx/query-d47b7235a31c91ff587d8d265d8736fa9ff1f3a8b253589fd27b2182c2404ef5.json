@@ -1,0 +1,48 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT u.id,\n                  u.email,\n                  u.display_name,\n                  u.handle,\n                  (u.email_verified_at IS NOT NULL) AS \"email_verified!\",\n                  u.created_at,\n                  COALESCE(ARRAY(\n                      SELECT r.name\n                      FROM user_roles ur\n                      JOIN roles r ON r.id = ur.role_id\n                      WHERE ur.user_id = u.id\n                      ORDER BY r.name\n                  ), '{}') AS \"roles!: Vec<String>\"\n           FROM users u\n           WHERE u.id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "email",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "display_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "handle",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "email_verified!",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 5,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 6,
+                "name": "roles!: Vec<String>",
+                "type_info": "TextArray"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, false, true, null, false, null]
+    },
+    "hash": "d47b7235a31c91ff587d8d265d8736fa9ff1f3a8b253589fd27b2182c2404ef5"
+}

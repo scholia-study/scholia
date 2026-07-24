@@ -241,6 +241,150 @@
                 }
             }
         },
+        "/api/admin/users": {
+            "get": {
+                "tags": ["admin-users"],
+                "summary": "List users with their roles, paginated and optionally searched.",
+                "operationId": "list_users",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Case-insensitive substring match on email, display name, or handle.",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32",
+                            "minimum": 0
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminUserListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Insufficient permissions"
+                    }
+                }
+            }
+        },
+        "/api/admin/users/{id}": {
+            "get": {
+                "tags": ["admin-users"],
+                "summary": "Get a single user with their roles.",
+                "operationId": "get_user",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminUserRow"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user ID"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Not found / insufficient permissions"
+                    }
+                }
+            }
+        },
+        "/api/admin/users/{id}/roles": {
+            "put": {
+                "tags": ["admin-users"],
+                "summary": "Replace a user's manageable roles. Rejects paid/unknown roles, refuses\nself-demotion out of admin, and (in the DB tx) refuses to remove the\nlast admin. On success, the target's sessions are invalidated so the\nchange takes effect on their next request.",
+                "operationId": "set_user_roles",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SetUserRolesRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Roles updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminUserRow"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input / non-manageable role / last admin"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Not found / insufficient permissions"
+                    }
+                }
+            }
+        },
         "/api/article-quotations": {
             "get": {
                 "tags": ["article-quotations"],
@@ -2965,6 +3109,70 @@
                     }
                 }
             },
+            "AdminUserListResponse": {
+                "type": "object",
+                "required": ["users", "total", "page", "per_page"],
+                "properties": {
+                    "page": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "total": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "users": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminUserRow"
+                        }
+                    }
+                }
+            },
+            "AdminUserRow": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "email",
+                    "display_name",
+                    "roles",
+                    "email_verified",
+                    "created_at"
+                ],
+                "properties": {
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "email_verified": {
+                        "type": "boolean"
+                    },
+                    "handle": {
+                        "type": ["string", "null"]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "All roles the user holds, including the default `user` role and any\npaid (Stripe-managed) tiers. The UI renders paid roles read-only."
+                    }
+                }
+            },
             "ApplyEditorialLabelRequest": {
                 "type": "object",
                 "required": ["label_slug"],
@@ -5110,6 +5318,19 @@
                     },
                     "text": {
                         "type": "string"
+                    }
+                }
+            },
+            "SetUserRolesRequest": {
+                "type": "object",
+                "required": ["roles"],
+                "properties": {
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "The full desired set of *manageable* roles for the user (see\n`MANAGEABLE_ROLES`). Paid tiers and the default `user` role are\nleft untouched; passing a non-manageable role is rejected."
                     }
                 }
             },

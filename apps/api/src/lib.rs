@@ -41,7 +41,8 @@ pub fn api_router() -> OpenApiRouter<AppState> {
     // Permission::ArticleLabelsManage, not AdminPanel — editors qualify.
     let admin_router = OpenApiRouter::new()
         .merge(crate::modules::feedback::admin_router())
-        .merge(crate::modules::writing::admin_router());
+        .merge(crate::modules::writing::admin_router())
+        .merge(crate::modules::identity::admin_router());
 
     let public_router = OpenApiRouter::new()
         .merge(crate::modules::corpus::public_router())

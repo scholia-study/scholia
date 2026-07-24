@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\"\n           FROM user_roles ur\n           JOIN roles r ON r.id = ur.role_id\n           WHERE r.name = 'admin'",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": []
+        },
+        "nullable": [null]
+    },
+    "hash": "24258a3442a7b820b6ddcc5931ea2e8b213a1240dd00dd669723823cd3e8d13b"
+}

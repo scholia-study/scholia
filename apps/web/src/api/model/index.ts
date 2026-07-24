@@ -6,6 +6,8 @@
  */
 
 export * from "./aboutThisTextResponse.ts";
+export * from "./adminUserListResponse.ts";
+export * from "./adminUserRow.ts";
 export * from "./applyEditorialLabelRequest.ts";
 export * from "./articleDetailResponse.ts";
 export * from "./articleLimitsResponse.ts";
@@ -66,6 +68,7 @@ export * from "./listPublishedArticlesParams.ts";
 export * from "./listQuotationsParams.ts";
 export * from "./listResourcesParams.ts";
 export * from "./listUserArticlesParams.ts";
+export * from "./listUsersParams.ts";
 export * from "./loginRequest.ts";
 export * from "./messageResponse.ts";
 export * from "./nodeDetail.ts";
@@ -104,6 +107,7 @@ export * from "./searchPersonsParams.ts";
 export * from "./searchSourcesParams.ts";
 export * from "./sentenceData.ts";
 export * from "./sentenceResponse.ts";
+export * from "./setUserRolesRequest.ts";
 export * from "./sourceBrowseResponse.ts";
 export * from "./sourceContext.ts";
 export * from "./sourcePersonResponse.ts";

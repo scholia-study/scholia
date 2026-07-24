@@ -201,6 +201,20 @@ export function Navbar() {
                                             </Typography>
                                         </MenuItem>
                                     )}
+                                    {hasPermission("admin_panel") && (
+                                        <MenuItem
+                                            onClick={() => {
+                                                setAnchorEl(null);
+                                                navigate({
+                                                    to: "/admin/users",
+                                                });
+                                            }}
+                                        >
+                                            <Typography variant="body2">
+                                                Admin: Users
+                                            </Typography>
+                                        </MenuItem>
+                                    )}
                                     <Divider />
                                     <MenuItem
                                         onClick={() => {

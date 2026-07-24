@@ -41,6 +41,7 @@ import { Route as AuthUserSourcesIndexRouteImport } from './routes/_auth.user.so
 import { Route as AuthUserSourcesIdRouteImport } from './routes/_auth.user.sources.$id'
 import { Route as AuthAdminAdminFeedbackIndexRouteImport } from './routes/_auth._admin.admin.feedback.index'
 import { Route as AuthAdminAdminFeedbackIdRouteImport } from './routes/_auth._admin.admin.feedback.$id'
+import { Route as AuthAdminAdminUsersIndexRouteImport } from './routes/_auth._admin.admin.users.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -202,6 +203,12 @@ const AuthAdminAdminFeedbackIdRoute =
     path: '/admin/feedback/$id',
     getParentRoute: () => AuthAdminRoute,
   } as any)
+const AuthAdminAdminUsersIndexRoute =
+  AuthAdminAdminUsersIndexRouteImport.update({
+    id: '/admin/users/',
+    path: '/admin/users/',
+    getParentRoute: () => AuthAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/user/sources/': typeof AuthUserSourcesIndexRoute
   '/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
   '/admin/feedback/': typeof AuthAdminAdminFeedbackIndexRoute
+  '/admin/users/': typeof AuthAdminAdminUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -266,6 +274,7 @@ export interface FileRoutesByTo {
   '/user/sources': typeof AuthUserSourcesIndexRoute
   '/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
   '/admin/feedback': typeof AuthAdminAdminFeedbackIndexRoute
+  '/admin/users': typeof AuthAdminAdminUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -301,6 +310,7 @@ export interface FileRoutesById {
   '/_auth/user/sources/': typeof AuthUserSourcesIndexRoute
   '/_auth/_admin/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
   '/_auth/_admin/admin/feedback/': typeof AuthAdminAdminFeedbackIndexRoute
+  '/_auth/_admin/admin/users/': typeof AuthAdminAdminUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -335,6 +345,7 @@ export interface FileRouteTypes {
     | '/user/sources/'
     | '/admin/feedback/$id'
     | '/admin/feedback/'
+    | '/admin/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -367,6 +378,7 @@ export interface FileRouteTypes {
     | '/user/sources'
     | '/admin/feedback/$id'
     | '/admin/feedback'
+    | '/admin/users'
   id:
     | '__root__'
     | '/'
@@ -401,6 +413,7 @@ export interface FileRouteTypes {
     | '/_auth/user/sources/'
     | '/_auth/_admin/admin/feedback/$id'
     | '/_auth/_admin/admin/feedback/'
+    | '/_auth/_admin/admin/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -654,17 +667,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdminAdminFeedbackIdRouteImport
       parentRoute: typeof AuthAdminRoute
     }
+    '/_auth/_admin/admin/users/': {
+      id: '/_auth/_admin/admin/users/'
+      path: '/admin/users'
+      fullPath: '/admin/users/'
+      preLoaderRoute: typeof AuthAdminAdminUsersIndexRouteImport
+      parentRoute: typeof AuthAdminRoute
+    }
   }
 }
 
 interface AuthAdminRouteChildren {
   AuthAdminAdminFeedbackIdRoute: typeof AuthAdminAdminFeedbackIdRoute
   AuthAdminAdminFeedbackIndexRoute: typeof AuthAdminAdminFeedbackIndexRoute
+  AuthAdminAdminUsersIndexRoute: typeof AuthAdminAdminUsersIndexRoute
 }
 
 const AuthAdminRouteChildren: AuthAdminRouteChildren = {
   AuthAdminAdminFeedbackIdRoute: AuthAdminAdminFeedbackIdRoute,
   AuthAdminAdminFeedbackIndexRoute: AuthAdminAdminFeedbackIndexRoute,
+  AuthAdminAdminUsersIndexRoute: AuthAdminAdminUsersIndexRoute,
 }
 
 const AuthAdminRouteWithChildren = AuthAdminRoute._addFileChildren(

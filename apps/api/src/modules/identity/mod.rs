@@ -6,6 +6,7 @@
 //! `Permission` enum, token primitives) lives in `crate::system::auth`.
 
 mod accounts;
+mod admin_users;
 mod oauth;
 mod profiles;
 
@@ -42,6 +43,12 @@ pub fn user_router() -> OpenApiRouter<AppState> {
         .routes(utoipa_axum::routes!(
             accounts::handlers::request_password_change
         ))
+}
+
+/// Admin user management: list users and grant/revoke roles (gated by
+/// `Permission::UsersManage`).
+pub fn admin_router() -> OpenApiRouter<AppState> {
+    admin_users::admin_router()
 }
 
 /// Public user profiles + by-id → handle redirect resolver.
