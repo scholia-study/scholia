@@ -7,9 +7,9 @@ Status audit 2026-07-18: checkboxes and sections reconciled against the
 repo. Ingest orchestration is now recorded in ADR 0006 (narrow waist) +
 ADR 0007 (auto-ingest) and `docs/architecture/overview.md`; the
 superseded Ingest-as-Jobs design below was replaced with a pointer.
-**Backups (§3): the daily-dump chain is built (bucket, lifecycle script,
-CronJob, image) and awaits its first live run + restore test — see the
-roadmap.**
+**Backups (§3): done — three-region daily dumps live, restore proven on
+dev. Remaining prod-blocking work is the prod cluster bringup itself
+(overlays/prod, prod Argo, prod DNS/ingress).**
 
 ---
 
@@ -330,14 +330,13 @@ both HTML and `/api/*`, fewer ingress rules to get wrong.
 
 ## 3. Backups
 
-> **Status: single-region chain verified; three-region mirror in flight.**
-> The `postgres-backup` CronJob (`infra/k8s/base/postgres/backup-cronjob.yaml`)
-> + `scholia-backup` image (`jobs/backup/`) are live and a run to
-> `scholia-backups` (fsn1) is proven end to end. Being added: two mirror
-> buckets `scholia-backups-sigma` (hel1) + `scholia-backups-tau` (nbg1) —
-> `terraform apply` to create them, `just backups-lifecycle` to set
-> retention on all three, then a rebuilt image fans each dump out to all
-> three. First manual restore into dev still outstanding. See § 8 roadmap.
+> **Status: done + verified.** The `postgres-backup` CronJob
+> (`infra/k8s/base/postgres/backup-cronjob.yaml`) + `scholia-backup` image
+> (`jobs/backup/`) run daily, mirroring each dump to all three regional
+> buckets (fsn1/hel1/nbg1) under `db/daily/<env>/`. Restore is proven on
+> dev both non-destructively (scratch DB) and via a full DR cycle
+> (`scripts/db_restore.sh` / `just db-restore`). Prod inherits it when its
+> cluster exists.
 
 ### 3.1 Target
 
@@ -1030,9 +1029,11 @@ after commit via `CACHE_PURGE_URL` (per-book paths).
       Rust-ingest smoke test
 - [ ] Capacity-aware UX (warn at 80% of free-tier limits)
 
-### v1 — Backups (prod-blocking; chain built, operational steps remain)
+### v1 — Backups — landed + verified
 
-Code chain landed; what's left is running it once and proving a restore.
+Three-region daily dumps live, restore proven both ways on dev. Prod
+inherits it automatically once its cluster exists (CronJob is in base;
+`SCHOLIA_ENV` keys prod dumps under `db/daily/prod/`).
 
 - [x] `scholia-backups` bucket (created out of band; declared in
       `infra/terraform/shared/main.tf` for parity — needs a one-time
@@ -1055,12 +1056,13 @@ Code chain landed; what's left is running it once and proving a restore.
       Note: kube-router lags ~1-2s programming a new pod's NetworkPolicy
       ipset, so the Job waits for Postgres before dumping (a bare
       first-instruction connect races the enforcer → "connection refused").
-- [~] Three-region mirror: buckets `scholia-backups-sigma` (hel1) +
-      `scholia-backups-tau` (nbg1) in `infra/terraform/shared/` (`apply`
-      creates them — new, no import), 60-day rule on all three via
-      `just backups-lifecycle`, and the dump Job fans each dump out to
-      all three (degraded-OK: succeed if ≥1 region lands, alert on any
-      miss). Needs `terraform apply` + image rebuild to go live.
+- [x] Three-region mirror LIVE + verified: buckets `scholia-backups-sigma`
+      (hel1) + `scholia-backups-tau` (nbg1) in `infra/terraform/shared/`,
+      60-day `db/daily/` rule on all three via `just backups-lifecycle`,
+      and the dump Job fans each dump out to all three (degraded-OK:
+      succeed if ≥1 region lands, alert on any miss). Confirmed a run
+      landing byte-identical in all three. Alerts fire on failure only —
+      successful dumps are silent (no nightly-ok noise).
 - [x] Restore verified two ways on dev: a non-destructive scratch-DB
       restore (row counts matched live), then a full destructive
       DR cycle (`scripts/db_restore.sh` / `just db-restore`: scale api
