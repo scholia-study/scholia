@@ -24,7 +24,12 @@ export function Navbar() {
     const handleLogout = async () => {
         setAnchorEl(null);
         await logoutMutation.mutateAsync();
-        await queryClient.invalidateQueries({ queryKey: getMeQueryKey() });
+        // `me` 401s once the session is gone. Invalidating would refetch and,
+        // on that error, keep the last successful user in `data` — so the
+        // avatar stays "logged in" until a hard refresh. Removing the cache
+        // entry clears it immediately. Then leave any auth-only page.
+        queryClient.removeQueries({ queryKey: getMeQueryKey() });
+        await navigate({ to: "/" });
     };
 
     return (
