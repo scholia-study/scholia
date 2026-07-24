@@ -2,8 +2,8 @@
 #
 # Daily Postgres backup, mirrored across three Hetzner Object Storage
 # regions for redundancy. Takes one `pg_dump --format=custom | gzip` and
-# fans the same dump out to all three buckets, confirming each landed,
-# then reports over ntfy.
+# fans the same dump out to all three buckets, confirming each landed.
+# Silent on success; alerts over ntfy only when a dump fails.
 #
 # Object key is `db/daily/<env>/<ts>.dump.gz`: db (backup type) → daily
 # (cadence) → env (SCHOLIA_ENV). Dev and prod live in separate namespaces
@@ -61,18 +61,13 @@ ts="$(date -u +%Y%m%dT%H%M%SZ)"
 dump="/tmp/scholia-${ts}.dump.gz"
 object="db/daily/${SCHOLIA_ENV}/${ts}.dump.gz"
 
-notify() {
-    local status=$1 msg=$2 prio tags
+alert() {
+    local msg=$1
     [ -n "${NTFY_URL:-}" ] || return 0
-    if [ "$status" -eq 0 ]; then
-        prio=low; tags=floppy_disk
-    else
-        prio=high; tags=rotating_light
-    fi
     curl -fsS -o /dev/null -m 10 \
         -H "Title: db-backup" \
-        -H "Priority: ${prio}" \
-        -H "Tags: ${tags}" \
+        -H "Priority: high" \
+        -H "Tags: rotating_light" \
         -d "$msg" "$NTFY_URL" || true
 }
 
@@ -83,7 +78,7 @@ on_exit() {
     # Normal outcomes notify themselves and set phase=done; this only
     # catches an unexpected death mid-run.
     if [ "$status" -ne 0 ] && [ "$phase" != done ]; then
-        notify 1 "FAILED during ${phase} at ${ts} (exit ${status})"
+        alert "FAILED during ${phase} at ${ts} (exit ${status})"
     fi
 }
 trap on_exit EXIT
@@ -136,13 +131,12 @@ done
 phase=done
 if [ ${#succeeded[@]} -eq 0 ]; then
     echo "Backup FAILED: no region accepted ${object}" >&2
-    notify 1 "${object} FAILED to ALL regions (${TARGETS[*]%% *})"
+    alert "${object} FAILED to ALL regions (${TARGETS[*]%% *})"
     exit 1
 fi
 if [ ${#failed[@]} -gt 0 ]; then
     echo "Backup degraded: ok=[${succeeded[*]}] failed=[${failed[*]}]"
-    notify 1 "${object} degraded (${human}) — ok:[${succeeded[*]}] FAILED:[${failed[*]}]"
+    alert "${object} degraded (${human}) — ok:[${succeeded[*]}] FAILED:[${failed[*]}]"
 else
     echo "Backup complete to all regions: ${object} (${human})"
-    notify 0 "${object} ok to [${succeeded[*]}] (${human})"
 fi
