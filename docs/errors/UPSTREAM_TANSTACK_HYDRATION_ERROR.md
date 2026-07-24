@@ -147,6 +147,15 @@ timing decides which.
 
 ## Environmental masking (why this is so hard to attribute)
 
+**Bot-UA buffering:** requests whose user agent is classified as a bot
+(curl, HeadlessChrome, playwright) receive the fully-buffered `allReady`
+render — no streaming at all. Every conventional reproduction tool
+therefore silently tests the safe path; only real browsers get the
+streamed response. Confirmed directly: same URL, same server — curl UA →
+TTFB = full render time, zero stream markers; real Chrome UA → TTFB 40 ms,
+fallback + `$RC` streaming. Any repro or probe MUST override the UA to a
+real-browser string.
+
 Our edge proxy (nginx) caches anonymous HTML, which forces full-response
 buffering — anonymous users receive the response as one burst, data always
 present before hydration, no race. Authenticated requests bypass the cache
