@@ -1061,8 +1061,13 @@ Code chain landed; what's left is running it once and proving a restore.
       `just backups-lifecycle`, and the dump Job fans each dump out to
       all three (degraded-OK: succeed if ≥1 region lands, alert on any
       miss). Needs `terraform apply` + image rebuild to go live.
-- [ ] First manual restore test into the dev cluster — untested
-      backup = no backup
+- [x] Restore verified two ways on dev: a non-destructive scratch-DB
+      restore (row counts matched live), then a full destructive
+      DR cycle (`scripts/db_restore.sh` / `just db-restore`: scale api
+      down → `pg_restore --clean` over live → scale back up). Restore
+      runs in a pg18 pod (`infra/k8s/jobs/db-restore-pod.yaml`) since the
+      dump is pg18; the script acts on the ambient kubectl context and
+      reads the target env from the cluster's own CronJob.
 
 ### v1 — SEO infrastructure — landed 2026-07-12
 

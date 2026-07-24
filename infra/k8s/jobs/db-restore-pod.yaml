@@ -1,0 +1,53 @@
+# Manual DB-restore pod. Not part of any overlay/Argo — apply by hand
+# (`kubectl apply -f`) only when restoring. Uses the backup image because
+# it already carries a version-matched pg_restore (Postgres 18), rclone,
+# and — via these Secrets — the DB + object-storage credentials, and its
+# `postgres-backup` label is allowed through the NetworkPolicy to Postgres.
+#
+# The entrypoint is overridden to sleep so you can drive the restore by
+# hand (`kubectl exec -it db-restore -n scholia -- bash`). See the restore
+# runbook for the steps. Delete the pod when done.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db-restore
+  namespace: scholia
+  labels:
+    app.kubernetes.io/name: postgres-backup
+spec:
+  restartPolicy: Never
+  containers:
+    - name: restore
+      image: ghcr.io/scholia-study/scholia-backup:main
+      imagePullPolicy: Always
+      command: ["sleep", "infinity"]
+      env:
+        - name: POSTGRES_HOST
+          value: postgres
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: password
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: database
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: assets-bucket
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: assets-bucket
+              key: AWS_SECRET_ACCESS_KEY

@@ -75,3 +75,9 @@ dev-reload:
 [group("dev-cluster")]
 notify *msg:
     bash scripts/notify.sh {{ msg }}
+
+# restore the DB from a daily backup — acts on your CURRENT kubectl context
+# (set KUBECONFIG for dev/prod); flags: --dump <key|latest> --region --dry-run
+[group("dev-cluster")]
+db-restore *flags:
+    bash scripts/db_restore.sh {{ flags }}
