@@ -24,7 +24,7 @@ export function Navbar() {
     const handleLogout = async () => {
         setAnchorEl(null);
         await logoutMutation.mutateAsync();
-        queryClient.removeQueries({ queryKey: getMeQueryKey() });
+        await queryClient.invalidateQueries({ queryKey: getMeQueryKey() });
     };
 
     return (
