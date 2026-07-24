@@ -21,9 +21,14 @@ import {
 export const Route = createFileRoute("/books/$bookSlug/$nodeSlug")({
     validateSearch,
     loader: async ({ context, params }) => {
-        // Heavy chapter content: fire-and-forget, streamed into the HTML
-        // via react-query dehydration — awaiting it would block first-byte.
-        context.queryClient.prefetchInfiniteQuery(
+        // Heavy chapter content: awaited so the reading column renders
+        // synchronously into the SSR HTML. Fire-and-forget streaming made
+        // the column a late Suspense boundary whose $RC reveal script races
+        // client hydration — with a warm bundle cache the client hydrates
+        // first and the late reveal throws React #418. Costs first-byte
+        // (~the chapter query), buys structural hydration safety; revisit
+        // if TanStack Start fixes late-boundary hydration coordination.
+        await context.queryClient.prefetchInfiniteQuery(
             getNodePageSuspenseQueryOptions({
                 bookSlug: params.bookSlug,
                 showOriginal: false,
