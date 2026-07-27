@@ -2,7 +2,9 @@ use axum::Json;
 use axum::extract::{Path, Query, State};
 
 use crate::modules::corpus::bibliography::models::{
-    CreateResourceRequest, ResourceListResponse, ResourceQuery, UpdateResourceRequest,
+    CreateResourceRequest, ResourceListResponse, ResourceQuery, ResourceReviewStatus,
+    ResourceSubmissionListResponse, ResourceSubmissionResponse, ReviewSubmissionRequest,
+    SubmissionListQuery, UpdateResourceRequest,
 };
 use crate::system::auth::middleware::AuthUser;
 use crate::system::auth::permissions::Permission;
@@ -10,8 +12,8 @@ use crate::system::error::AppError;
 use crate::system::state::AppState;
 use crate::system::validation::{
     MAX_RESOURCE_ADMIN_NOTES, MAX_RESOURCE_EDITOR_NOTE, MAX_RESOURCE_QUOTED_TEXT,
-    MAX_RESOURCE_SOURCE_LOCATION, MAX_RESOURCE_SOURCE_PAGE, MIN_RESOURCE_SOURCE_PAGE,
-    check_int_range, check_max_len,
+    MAX_RESOURCE_REVIEW_NOTE, MAX_RESOURCE_SOURCE_LOCATION, MAX_RESOURCE_SOURCE_PAGE,
+    MAX_RESOURCE_SUBMISSIONS_PER_DAY, MIN_RESOURCE_SOURCE_PAGE, check_int_range, check_max_len,
 };
 
 fn validate_resource_fields(
@@ -79,8 +81,11 @@ pub async fn list_resources(
     // Editor-internal `admin_notes` is only returned to callers who can
     // manage resources. Authenticated editors bypass the CDN cache
     // (session cookie), so the cached anonymous response never carries it.
-    let include_admin_notes =
-        maybe_user.is_some_and(|u| u.has_permission(Permission::ResourcesManage));
+    // `viewer_id` lets a submitter see their own pending suggestion inline.
+    let (viewer_id, include_admin_notes) = match &maybe_user {
+        Some(u) => (Some(u.id), u.has_permission(Permission::ResourcesManage)),
+        None => (None, false),
+    };
 
     let resources = crate::modules::corpus::bibliography::resources::db::list_resources(
         &state.pool,
@@ -88,6 +93,7 @@ pub async fn list_resources(
         params.start,
         params.end,
         &params.kind,
+        viewer_id,
         include_admin_notes,
     )
     .await?;
@@ -95,17 +101,18 @@ pub async fn list_resources(
     Ok(Json(ResourceListResponse { resources }))
 }
 
-/// Create a new resource (editor only)
+/// Create a resource. Any authenticated user may submit; editors
+/// (`ResourcesManage`) publish immediately, everyone else's suggestion enters
+/// the review queue as `pending` until an editor approves it.
 #[utoipa::path(
     post,
     path = "/api/books/{slug}/resources",
     params(("slug" = String, Path, description = "Book slug")),
     request_body = CreateResourceRequest,
     responses(
-        (status = 200, description = "Resource created", body = ResourceListResponse),
-        (status = 400, description = "Invalid input"),
+        (status = 200, description = "Resource created or submitted for review", body = ResourceListResponse),
+        (status = 400, description = "Invalid input or rate limit reached"),
         (status = 401, description = "Not authenticated"),
-        (status = 403, description = "Insufficient permissions"),
         (status = 404, description = "Book not found")
     ),
     tag = "resources"
@@ -116,8 +123,7 @@ pub async fn create_resource(
     Path(slug): Path<String>,
     Json(body): Json<CreateResourceRequest>,
 ) -> Result<Json<ResourceListResponse>, AppError> {
-    user.require_permission(Permission::ResourcesManage)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    let can_manage = user.has_permission(Permission::ResourcesManage);
 
     let book_id =
         crate::modules::corpus::reading::books::db::get_book_id_by_slug(&state.pool, &slug).await?;
@@ -129,16 +135,46 @@ pub async fn create_resource(
         .transpose()
         .map_err(|_| AppError::BadRequest("Invalid source_id".into()))?;
 
+    // Editor-only fields never originate from a community submission; ignore
+    // them on that path rather than trusting the client.
+    let (is_featured, admin_notes) = if can_manage {
+        (
+            body.is_featured.unwrap_or(false),
+            body.admin_notes.as_deref(),
+        )
+    } else {
+        (false, None)
+    };
+
     validate_resource_fields(
         body.quoted_text.as_deref(),
         body.editor_note.as_deref(),
-        body.admin_notes.as_deref(),
+        admin_notes,
         body.source_location_freeform.as_deref(),
         body.source_page_start,
         body.source_page_end,
     )?;
 
-    let _resource_id = crate::modules::corpus::bibliography::resources::db::create_resource(
+    // Non-editors go through review; rate-limit to bound spam (auth is the real
+    // gate). Their `submitted_by` also lets them see the pending row inline.
+    let (review_status, submitted_by) = if can_manage {
+        ("approved", None)
+    } else {
+        let recent =
+            crate::modules::corpus::bibliography::resources::db::count_recent_submissions_by_user(
+                &state.pool,
+                user.id,
+            )
+            .await?;
+        if recent >= MAX_RESOURCE_SUBMISSIONS_PER_DAY {
+            return Err(AppError::BadRequest(format!(
+                "Submission rate limit reached ({MAX_RESOURCE_SUBMISSIONS_PER_DAY} per 24h). Try again later."
+            )));
+        }
+        ("pending", Some(user.id))
+    };
+
+    crate::modules::corpus::bibliography::resources::db::create_resource(
         &state.pool,
         book_id,
         crate::modules::corpus::bibliography::resources::db::ResourceCreate {
@@ -153,21 +189,24 @@ pub async fn create_resource(
             source_location_freeform: body.source_location_freeform.as_deref(),
             quoted_text: body.quoted_text.as_deref(),
             editor_note: body.editor_note.as_deref(),
-            is_featured: body.is_featured.unwrap_or(false),
-            admin_notes: body.admin_notes.as_deref(),
+            is_featured,
+            admin_notes,
+            review_status,
+            submitted_by,
         },
     )
     .await?;
 
-    // Return the resource in context (re-fetch with full joins). Editor
-    // caller — include admin_notes so the form can round-trip it.
+    // Re-fetch the range in context. A submitter sees their new pending row
+    // (viewer_id == user.id); admin_notes are included only for editors.
     let resources = crate::modules::corpus::bibliography::resources::db::list_resources(
         &state.pool,
         book_id,
         body.sentence_start,
         body.sentence_end.unwrap_or(body.sentence_start),
         &body.sentence_kind,
-        true,
+        Some(user.id),
+        can_manage,
     )
     .await?;
 
@@ -290,4 +329,103 @@ pub async fn delete_resource(
     .await?;
 
     Ok(Json(()))
+}
+
+/// List community resource submissions for review (editors + admins).
+#[utoipa::path(
+    get,
+    path = "/api/admin/resource-submissions",
+    params(SubmissionListQuery),
+    responses(
+        (status = 200, description = "Submission queue", body = ResourceSubmissionListResponse),
+        (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Insufficient permissions")
+    ),
+    tag = "resources"
+)]
+pub async fn list_resource_submissions(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Query(params): Query<SubmissionListQuery>,
+) -> Result<Json<ResourceSubmissionListResponse>, AppError> {
+    user.require_permission(Permission::ResourcesManage)
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+
+    let statuses = parse_submission_filter(params.filter.as_deref());
+    let page = params.page.unwrap_or(1).max(1);
+    let per_page = params.per_page.unwrap_or(25).clamp(1, 100);
+
+    let list = crate::modules::corpus::bibliography::resources::db::list_submissions(
+        &state.pool,
+        &statuses,
+        page,
+        per_page,
+    )
+    .await?;
+    Ok(Json(list))
+}
+
+/// Approve or reject a community submission (editors + admins).
+#[utoipa::path(
+    patch,
+    path = "/api/admin/resource-submissions/{id}",
+    params(("id" = String, Path, description = "Submission (resource) ID")),
+    request_body = ReviewSubmissionRequest,
+    responses(
+        (status = 200, description = "Submission reviewed", body = ResourceSubmissionResponse),
+        (status = 400, description = "Invalid input"),
+        (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Submission not found")
+    ),
+    tag = "resources"
+)]
+pub async fn review_resource_submission(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(id): Path<String>,
+    Json(body): Json<ReviewSubmissionRequest>,
+) -> Result<Json<ResourceSubmissionResponse>, AppError> {
+    user.require_permission(Permission::ResourcesManage)
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+
+    if !matches!(
+        body.status,
+        ResourceReviewStatus::Approved | ResourceReviewStatus::Rejected
+    ) {
+        return Err(AppError::BadRequest(
+            "A review must set status to 'approved' or 'rejected'".into(),
+        ));
+    }
+
+    if let Some(note) = body.review_note.as_deref() {
+        check_max_len("Review note", note, MAX_RESOURCE_REVIEW_NOTE)?;
+    }
+
+    let submission_id = uuid::Uuid::parse_str(&id)
+        .map_err(|_| AppError::BadRequest("Invalid submission ID".into()))?;
+
+    let reviewed = crate::modules::corpus::bibliography::resources::db::review_submission(
+        &state.pool,
+        submission_id,
+        user.id,
+        body.status,
+        body.review_note.as_deref(),
+    )
+    .await?;
+    Ok(Json(reviewed))
+}
+
+fn parse_submission_filter(filter: Option<&str>) -> Vec<ResourceReviewStatus> {
+    match filter {
+        None | Some("pending") => vec![ResourceReviewStatus::Pending],
+        Some("approved") => vec![ResourceReviewStatus::Approved],
+        Some("rejected") => vec![ResourceReviewStatus::Rejected],
+        Some("all") => vec![
+            ResourceReviewStatus::Pending,
+            ResourceReviewStatus::Approved,
+            ResourceReviewStatus::Rejected,
+        ],
+        Some(_) => vec![ResourceReviewStatus::Pending],
+    }
 }

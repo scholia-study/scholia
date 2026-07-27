@@ -9,6 +9,23 @@ CREATE TABLE article_editorial_labels (
   FOREIGN KEY (label_id) REFERENCES editorial_labels(id) ON DELETE CASCADE
 );
 
+CREATE TABLE article_passage_references (
+  id uuid NOT NULL,
+  article_id uuid NOT NULL,
+  book_id uuid NOT NULL,
+  anchor_node_id uuid NOT NULL,
+  anchor_sentence_start_id uuid NOT NULL,
+  anchor_sentence_end_id uuid,
+  sentence_kind sentence_kind NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (anchor_node_id) REFERENCES toc_nodes(id) ON DELETE CASCADE,
+  FOREIGN KEY (anchor_sentence_end_id) REFERENCES sentences(id) ON DELETE CASCADE,
+  FOREIGN KEY (anchor_sentence_start_id) REFERENCES sentences(id) ON DELETE CASCADE,
+  FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+  FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+);
+
 CREATE TABLE article_quotations (
   id uuid NOT NULL,
   user_id uuid NOT NULL,
@@ -59,6 +76,7 @@ CREATE TABLE books (
   created_at timestamp with time zone NOT NULL,
   updated_at timestamp with time zone NOT NULL,
   content_hash text,
+  nodes_per_page smallint,
   PRIMARY KEY (id),
   FOREIGN KEY (source_id) REFERENCES sources(id)
 );
@@ -78,6 +96,7 @@ CREATE TABLE content_blocks (
   created_at timestamp with time zone NOT NULL,
   updated_at timestamp with time zone NOT NULL,
   figure_number integer,
+  tsv tsvector,
   PRIMARY KEY (id),
   FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
   FOREIGN KEY (node_id) REFERENCES toc_nodes(id) ON DELETE CASCADE
@@ -223,6 +242,7 @@ CREATE TABLE persons (
   protected boolean NOT NULL,
   created_by uuid NOT NULL,
   created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (created_by) REFERENCES users(id)
 );
@@ -276,6 +296,8 @@ CREATE TABLE reference_systems (
   admin_notes text,
   created_at timestamp with time zone NOT NULL,
   updated_at timestamp with time zone NOT NULL,
+  cite_priority smallint,
+  cite_template text,
   PRIMARY KEY (id),
   FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
 );
@@ -310,6 +332,11 @@ CREATE TABLE resources (
   admin_notes text,
   created_at timestamp with time zone NOT NULL,
   updated_at timestamp with time zone NOT NULL,
+  review_status resource_review_status NOT NULL,
+  submitted_by uuid,
+  reviewed_by uuid,
+  reviewed_at timestamp with time zone,
+  review_note text,
   PRIMARY KEY (id),
   FOREIGN KEY (anchor_block_id) REFERENCES content_blocks(id) ON DELETE CASCADE,
   FOREIGN KEY (anchor_node_id) REFERENCES toc_nodes(id) ON DELETE CASCADE,
@@ -317,7 +344,9 @@ CREATE TABLE resources (
   FOREIGN KEY (anchor_sentence_start_id) REFERENCES sentences(id) ON DELETE CASCADE,
   FOREIGN KEY (archived_by) REFERENCES users(id),
   FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
-  FOREIGN KEY (source_id) REFERENCES sources(id)
+  FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (source_id) REFERENCES sources(id),
+  FOREIGN KEY (submitted_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE roles (
@@ -347,6 +376,8 @@ CREATE TABLE sentences (
   updated_at timestamp with time zone NOT NULL,
   segment smallint,
   natural_key text,
+  indent smallint,
+  tsv tsvector,
   PRIMARY KEY (id),
   FOREIGN KEY (footnote_id) REFERENCES footnotes(id) ON DELETE CASCADE,
   FOREIGN KEY (block_id) REFERENCES content_blocks(id) ON DELETE CASCADE,
@@ -386,6 +417,7 @@ CREATE TABLE sources (
   protected boolean NOT NULL,
   created_by uuid NOT NULL,
   created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (created_by) REFERENCES users(id),
   FOREIGN KEY (parent_source_id) REFERENCES sources(id) ON DELETE SET NULL,

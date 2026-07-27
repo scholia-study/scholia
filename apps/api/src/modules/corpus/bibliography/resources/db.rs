@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::modules::corpus::bibliography::models::{
-    ParentSourceResponse, ResourceResponse, SourcePersonResponse, SourceResponse,
+    ParentSourceResponse, ResourceResponse, ResourceReviewStatus, ResourceSubmissionListResponse,
+    ResourceSubmissionResponse, ResourceSubmitter, SourcePersonResponse, SourceResponse,
 };
 use crate::modules::corpus::bibliography::sources::db::fetch_source_persons;
 use crate::system::error::{AppError, SqlxResultExt};
@@ -22,6 +23,7 @@ struct ResourceRow {
     source_location_freeform: Option<String>,
     is_featured: bool,
     admin_notes: Option<String>,
+    review_status: String,
     created_at: time::OffsetDateTime,
     // Source fields (joined)
     src_id: Option<Uuid>,
@@ -50,6 +52,11 @@ pub async fn list_resources(
     start: i32,
     end: i32,
     kind: &str,
+    // The reader only sees approved resources, plus the caller's own pending
+    // submissions (so a submitter gets immediate feedback that their suggestion
+    // landed). `None` for anonymous callers → approved only. Rejected rows are
+    // never surfaced here; they live in the editor queue.
+    viewer_id: Option<Uuid>,
     // `admin_notes` is an editor-internal field. This endpoint is public, so
     // callers without ResourcesManage must never receive it. Editor callers
     // (create/update re-fetch) pass `true`.
@@ -65,7 +72,9 @@ pub async fn list_resources(
                   r.sentence_kind::TEXT AS "sentence_kind!",
                   r.quoted_text, r.editor_note,
                   r.source_page_start, r.source_page_end, r.source_location_freeform,
-                  r.is_featured, r.admin_notes, r.created_at,
+                  r.is_featured, r.admin_notes,
+                  r.review_status::TEXT AS "review_status!",
+                  r.created_at,
                   s.id AS "src_id?",
                   s.source_type::TEXT AS "src_type?",
                   s.title AS "src_title?",
@@ -93,6 +102,8 @@ pub async fn list_resources(
              AND r.sentence_kind = $2::sentence_kind
              AND ss.sentence_number <= $4
              AND COALESCE(se.sentence_number, ss.sentence_number) >= $3
+             AND (r.review_status = 'approved'
+                  OR (r.submitted_by = $5 AND r.review_status = 'pending'))
            ORDER BY r.is_featured DESC,
                     s.publication_year DESC NULLS LAST,
                     r.source_page_start ASC NULLS LAST"#,
@@ -100,10 +111,22 @@ pub async fn list_resources(
         kind as _,
         start,
         end,
+        viewer_id,
     )
     .fetch_all(pool)
     .await?;
 
+    build_resource_responses(pool, rows, include_admin_notes).await
+}
+
+/// Map raw resource rows into their nested response shape, batch-fetching the
+/// joined source persons and parent sources. Shared by the reader listing and
+/// the editor submission queue so both render sources identically.
+async fn build_resource_responses(
+    pool: &PgPool,
+    rows: Vec<ResourceRow>,
+    include_admin_notes: bool,
+) -> Result<Vec<ResourceResponse>, AppError> {
     // Collect unique source IDs and parent IDs for batch fetching
     let source_ids: Vec<Uuid> = rows.iter().filter_map(|r| r.src_id).collect();
     let parent_ids: Vec<Uuid> = rows
@@ -208,6 +231,7 @@ pub async fn list_resources(
                 } else {
                     None
                 },
+                review_status: r.review_status,
                 created_at: r
                     .created_at
                     .format(&time::format_description::well_known::Rfc3339)
@@ -236,6 +260,11 @@ pub struct ResourceCreate<'a> {
     pub editor_note: Option<&'a str>,
     pub is_featured: bool,
     pub admin_notes: Option<&'a str>,
+    /// "approved" when an editor creates directly, "pending" for a community
+    /// submission awaiting review.
+    pub review_status: &'a str,
+    /// The community submitter, when this arrived through the review flow.
+    pub submitted_by: Option<Uuid>,
 }
 
 pub async fn create_resource(
@@ -321,11 +350,13 @@ pub async fn create_resource(
                anchor_sentence_start_id, anchor_sentence_end_id,
                sentence_kind, source_id,
                source_page_start, source_page_end, source_location_freeform,
-               verbatim_kind, quoted_text, editor_note, is_featured, admin_notes
+               verbatim_kind, quoted_text, editor_note, is_featured, admin_notes,
+               review_status, submitted_by
            ) VALUES (
                $1, $2::resource_type, $3, $4, $5,
                $6::sentence_kind, $7, $8, $9, $10,
-               $11::verbatim_kind, $12, $13, $14, $15
+               $11::verbatim_kind, $12, $13, $14, $15,
+               $16::resource_review_status, $17
            )
            RETURNING id"#,
         book_id,
@@ -343,6 +374,8 @@ pub async fn create_resource(
         entry.editor_note,
         entry.is_featured,
         entry.admin_notes,
+        entry.review_status as _,
+        entry.submitted_by,
     )
     .fetch_one(pool)
     .await?;
@@ -568,4 +601,352 @@ struct ParentRow {
     title: String,
     publication_year: Option<i16>,
     publisher: Option<String>,
+}
+
+// ── Community submission queue ──────────────────────────────────────────
+
+/// Count resources submitted (via the review flow) by `user_id` in the last
+/// 24 hours. Feeds the rate-limit gate on non-editor submissions.
+pub async fn count_recent_submissions_by_user(
+    pool: &PgPool,
+    user_id: Uuid,
+) -> Result<i64, AppError> {
+    let count: i64 = sqlx::query_scalar!(
+        r#"SELECT COUNT(*) AS "count!"
+           FROM resources
+           WHERE submitted_by = $1
+             AND created_at > now() - INTERVAL '24 hours'"#,
+        user_id,
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(count)
+}
+
+/// A submission-queue row: every column `ResourceRow` needs plus the book,
+/// submitter, and review metadata the editor sees alongside the proposal.
+struct SubmissionRow {
+    // Resource core (mirrors ResourceRow).
+    id: Uuid,
+    resource_type: String,
+    verbatim_kind: Option<String>,
+    start_number: Option<i32>,
+    end_number: Option<i32>,
+    sentence_kind: String,
+    quoted_text: Option<String>,
+    editor_note: Option<String>,
+    source_page_start: Option<i32>,
+    source_page_end: Option<i32>,
+    source_location_freeform: Option<String>,
+    is_featured: bool,
+    admin_notes: Option<String>,
+    review_status: String,
+    created_at: time::OffsetDateTime,
+    src_id: Option<Uuid>,
+    src_type: Option<String>,
+    src_title: Option<String>,
+    src_title_display: Option<String>,
+    src_year: Option<i16>,
+    src_publisher: Option<String>,
+    src_isbn: Option<Vec<String>>,
+    src_doi: Option<String>,
+    src_edition: Option<String>,
+    src_volume: Option<String>,
+    src_journal_name: Option<String>,
+    src_url: Option<String>,
+    src_page_start: Option<i32>,
+    src_page_end: Option<i32>,
+    src_parent_id: Option<Uuid>,
+    src_translation_of_id: Option<Uuid>,
+    src_created_by: Option<Uuid>,
+    src_protected: Option<bool>,
+    // Submission context.
+    book_slug: String,
+    book_title: String,
+    submitter_id: Option<Uuid>,
+    submitter_display_name: Option<String>,
+    review_note: Option<String>,
+    reviewed_at: Option<time::OffsetDateTime>,
+}
+
+struct SubmissionExtra {
+    book_slug: String,
+    book_title: String,
+    submitter: Option<ResourceSubmitter>,
+    review_note: Option<String>,
+    reviewed_at: Option<String>,
+}
+
+impl SubmissionRow {
+    fn split(self) -> (ResourceRow, SubmissionExtra) {
+        let submitter = match (self.submitter_id, self.submitter_display_name) {
+            (Some(id), Some(display_name)) => Some(ResourceSubmitter {
+                id: id.to_string(),
+                display_name,
+            }),
+            _ => None,
+        };
+        let reviewed_at = self.reviewed_at.map(|t| {
+            t.format(&time::format_description::well_known::Rfc3339)
+                .unwrap_or_default()
+        });
+        let extra = SubmissionExtra {
+            book_slug: self.book_slug,
+            book_title: self.book_title,
+            submitter,
+            review_note: self.review_note,
+            reviewed_at,
+        };
+        let row = ResourceRow {
+            id: self.id,
+            resource_type: self.resource_type,
+            verbatim_kind: self.verbatim_kind,
+            start_number: self.start_number,
+            end_number: self.end_number,
+            sentence_kind: self.sentence_kind,
+            quoted_text: self.quoted_text,
+            editor_note: self.editor_note,
+            source_page_start: self.source_page_start,
+            source_page_end: self.source_page_end,
+            source_location_freeform: self.source_location_freeform,
+            is_featured: self.is_featured,
+            admin_notes: self.admin_notes,
+            review_status: self.review_status,
+            created_at: self.created_at,
+            src_id: self.src_id,
+            src_type: self.src_type,
+            src_title: self.src_title,
+            src_title_display: self.src_title_display,
+            src_year: self.src_year,
+            src_publisher: self.src_publisher,
+            src_isbn: self.src_isbn,
+            src_doi: self.src_doi,
+            src_edition: self.src_edition,
+            src_volume: self.src_volume,
+            src_journal_name: self.src_journal_name,
+            src_url: self.src_url,
+            src_page_start: self.src_page_start,
+            src_page_end: self.src_page_end,
+            src_parent_id: self.src_parent_id,
+            src_translation_of_id: self.src_translation_of_id,
+            src_created_by: self.src_created_by,
+            src_protected: self.src_protected,
+        };
+        (row, extra)
+    }
+}
+
+async fn wrap_submissions(
+    pool: &PgPool,
+    rows: Vec<SubmissionRow>,
+) -> Result<Vec<ResourceSubmissionResponse>, AppError> {
+    let (resource_rows, extras): (Vec<ResourceRow>, Vec<SubmissionExtra>) =
+        rows.into_iter().map(SubmissionRow::split).unzip();
+
+    // Editor context: include admin_notes so edit-before-approve round-trips.
+    let resources = build_resource_responses(pool, resource_rows, true).await?;
+
+    Ok(resources
+        .into_iter()
+        .zip(extras)
+        .map(|(resource, extra)| ResourceSubmissionResponse {
+            resource,
+            book_slug: extra.book_slug,
+            book_title: extra.book_title,
+            submitter: extra.submitter,
+            review_note: extra.review_note,
+            reviewed_at: extra.reviewed_at,
+        })
+        .collect())
+}
+
+pub async fn list_submissions(
+    pool: &PgPool,
+    statuses: &[ResourceReviewStatus],
+    page: u32,
+    per_page: u32,
+) -> Result<ResourceSubmissionListResponse, AppError> {
+    let offset = ((page.saturating_sub(1)) as i64) * per_page as i64;
+    let limit = per_page as i64;
+    let status_strs: Vec<String> = statuses
+        .iter()
+        .map(|s| review_status_str(*s).to_string())
+        .collect();
+
+    // The `?`-typed aliases inside SUBMISSION_SELECT require the compile-time
+    // macro path, so the shared column list is concatenated into each literal.
+    let rows = sqlx::query_as!(
+        SubmissionRow,
+        r#"SELECT
+    r.id,
+    r.resource_type::TEXT AS "resource_type!",
+    r.verbatim_kind::TEXT AS "verbatim_kind?",
+    ss.sentence_number AS "start_number?",
+    se.sentence_number AS "end_number?",
+    r.sentence_kind::TEXT AS "sentence_kind!",
+    r.quoted_text, r.editor_note,
+    r.source_page_start, r.source_page_end, r.source_location_freeform,
+    r.is_featured, r.admin_notes,
+    r.review_status::TEXT AS "review_status!",
+    r.created_at,
+    s.id AS "src_id?",
+    s.source_type::TEXT AS "src_type?",
+    s.title AS "src_title?",
+    s.title_display AS "src_title_display?",
+    s.publication_year AS "src_year?",
+    s.publisher AS "src_publisher?",
+    s.isbn AS "src_isbn?",
+    s.doi AS "src_doi?",
+    s.edition AS "src_edition?",
+    s.volume AS "src_volume?",
+    s.journal_name AS "src_journal_name?",
+    s.url AS "src_url?",
+    s.page_start AS "src_page_start?",
+    s.page_end AS "src_page_end?",
+    s.parent_source_id AS "src_parent_id?",
+    s.translation_of_id AS "src_translation_of_id?",
+    s.created_by AS "src_created_by?",
+    s.protected AS "src_protected?",
+    b.slug AS book_slug,
+    bs.title AS book_title,
+    su.id AS "submitter_id?",
+    su.display_name AS "submitter_display_name?",
+    r.review_note,
+    r.reviewed_at
+           FROM resources r
+           JOIN books b ON b.id = r.book_id
+           JOIN sources bs ON bs.id = b.source_id
+           JOIN sentences ss ON ss.id = r.anchor_sentence_start_id
+           LEFT JOIN sentences se ON se.id = r.anchor_sentence_end_id
+           LEFT JOIN sources s ON s.id = r.source_id
+           LEFT JOIN users su ON su.id = r.submitted_by
+           WHERE r.submitted_by IS NOT NULL
+             AND r.archived_at IS NULL
+             AND r.review_status::TEXT = ANY($1)
+           ORDER BY r.created_at DESC
+           LIMIT $2 OFFSET $3"#,
+        &status_strs,
+        limit,
+        offset,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let total: i64 = sqlx::query_scalar!(
+        r#"SELECT COUNT(*) AS "count!"
+           FROM resources r
+           WHERE r.submitted_by IS NOT NULL
+             AND r.archived_at IS NULL
+             AND r.review_status::TEXT = ANY($1)"#,
+        &status_strs,
+    )
+    .fetch_one(pool)
+    .await?;
+
+    Ok(ResourceSubmissionListResponse {
+        submissions: wrap_submissions(pool, rows).await?,
+        total,
+        page,
+        per_page,
+    })
+}
+
+pub async fn get_submission(
+    pool: &PgPool,
+    id: Uuid,
+) -> Result<ResourceSubmissionResponse, AppError> {
+    let rows = sqlx::query_as!(
+        SubmissionRow,
+        r#"SELECT
+    r.id,
+    r.resource_type::TEXT AS "resource_type!",
+    r.verbatim_kind::TEXT AS "verbatim_kind?",
+    ss.sentence_number AS "start_number?",
+    se.sentence_number AS "end_number?",
+    r.sentence_kind::TEXT AS "sentence_kind!",
+    r.quoted_text, r.editor_note,
+    r.source_page_start, r.source_page_end, r.source_location_freeform,
+    r.is_featured, r.admin_notes,
+    r.review_status::TEXT AS "review_status!",
+    r.created_at,
+    s.id AS "src_id?",
+    s.source_type::TEXT AS "src_type?",
+    s.title AS "src_title?",
+    s.title_display AS "src_title_display?",
+    s.publication_year AS "src_year?",
+    s.publisher AS "src_publisher?",
+    s.isbn AS "src_isbn?",
+    s.doi AS "src_doi?",
+    s.edition AS "src_edition?",
+    s.volume AS "src_volume?",
+    s.journal_name AS "src_journal_name?",
+    s.url AS "src_url?",
+    s.page_start AS "src_page_start?",
+    s.page_end AS "src_page_end?",
+    s.parent_source_id AS "src_parent_id?",
+    s.translation_of_id AS "src_translation_of_id?",
+    s.created_by AS "src_created_by?",
+    s.protected AS "src_protected?",
+    b.slug AS book_slug,
+    bs.title AS book_title,
+    su.id AS "submitter_id?",
+    su.display_name AS "submitter_display_name?",
+    r.review_note,
+    r.reviewed_at
+           FROM resources r
+           JOIN books b ON b.id = r.book_id
+           JOIN sources bs ON bs.id = b.source_id
+           JOIN sentences ss ON ss.id = r.anchor_sentence_start_id
+           LEFT JOIN sentences se ON se.id = r.anchor_sentence_end_id
+           LEFT JOIN sources s ON s.id = r.source_id
+           LEFT JOIN users su ON su.id = r.submitted_by
+           WHERE r.id = $1 AND r.submitted_by IS NOT NULL"#,
+        id,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    wrap_submissions(pool, rows)
+        .await?
+        .into_iter()
+        .next()
+        .ok_or_else(|| AppError::NotFound("Submission not found".into()))
+}
+
+pub async fn review_submission(
+    pool: &PgPool,
+    id: Uuid,
+    reviewer_id: Uuid,
+    status: ResourceReviewStatus,
+    review_note: Option<&str>,
+) -> Result<ResourceSubmissionResponse, AppError> {
+    let result = sqlx::query!(
+        r#"UPDATE resources
+           SET review_status = $2::resource_review_status,
+               reviewed_by   = $3,
+               reviewed_at   = now(),
+               review_note   = $4,
+               updated_at    = now()
+           WHERE id = $1 AND submitted_by IS NOT NULL"#,
+        id,
+        review_status_str(status) as _,
+        reviewer_id,
+        review_note,
+    )
+    .execute(pool)
+    .await?;
+
+    if result.rows_affected() == 0 {
+        return Err(AppError::NotFound("Submission not found".into()));
+    }
+
+    get_submission(pool, id).await
+}
+
+fn review_status_str(s: ResourceReviewStatus) -> &'static str {
+    match s {
+        ResourceReviewStatus::Pending => "pending",
+        ResourceReviewStatus::Approved => "approved",
+        ResourceReviewStatus::Rejected => "rejected",
+    }
 }

@@ -40,7 +40,13 @@ interface ResourceFormModalProps {
     defaultSentenceStart?: number;
     defaultSentenceEnd?: number;
     defaultSentenceKind?: string;
+    /** Text of the highlighted selection, used to seed Quoted Text for a new
+     * verbatim resource (editable). Ignored for other types and for edits. */
+    defaultQuotedText?: string;
     isAdmin?: boolean;
+    /** Editors publish immediately; everyone else's create is a submission
+     * that enters the review queue. Governs copy and editor-only fields. */
+    isEditor?: boolean;
 }
 
 interface InitialFormState {
@@ -66,6 +72,7 @@ interface FormDefaults {
     sentenceStart?: number;
     sentenceEnd?: number;
     sentenceKind?: string;
+    quotedText?: string;
 }
 
 function getInitialFormState(
@@ -113,7 +120,10 @@ function getInitialFormState(
         sourcePageEnd: "",
         sourceLocationFreeform: "",
         useFreeformLocation: false,
-        quotedText: "",
+        // Seed the quote from the highlighted selection for verbatim only; a
+        // paraphrase is reworded and an allusion has no quote.
+        quotedText:
+            defaults.type === "verbatim" ? (defaults.quotedText ?? "") : "",
         editorNote: "",
         isFeatured: false,
         adminNotes: "",
@@ -130,14 +140,20 @@ export function ResourceFormModal({
     defaultSentenceStart,
     defaultSentenceEnd,
     defaultSentenceKind,
+    defaultQuotedText,
     isAdmin,
+    isEditor = false,
 }: ResourceFormModalProps) {
     const isEdit = mode === "edit" && initialData;
+    // A non-editor creating a resource is really submitting a suggestion for
+    // review; editors (and any edit) publish/save directly.
+    const isSubmission = !isEdit && !isEditor;
     const initial = getInitialFormState(isEdit ? initialData : undefined, {
         type: defaultType,
         sentenceStart: defaultSentenceStart,
         sentenceEnd: defaultSentenceEnd,
         sentenceKind: defaultSentenceKind,
+        quotedText: defaultQuotedText,
     });
 
     // Form state
@@ -183,10 +199,19 @@ export function ResourceFormModal({
     const createMutation = useCreateResource({
         mutation: {
             onSuccess: () => {
-                toast.success("Resource created");
+                toast.success(
+                    isSubmission
+                        ? "Thanks — your suggestion was submitted for review."
+                        : "Resource created",
+                );
                 invalidateAndClose();
             },
-            onError: () => toast.error("Failed to create resource"),
+            onError: () =>
+                toast.error(
+                    isSubmission
+                        ? "Failed to submit suggestion"
+                        : "Failed to create resource",
+                ),
         },
     });
 
@@ -281,7 +306,11 @@ export function ResourceFormModal({
         <>
             <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ fontSize: 16 }}>
-                    {isEdit ? "Edit Resource" : "New Resource"}
+                    {isEdit
+                        ? "Edit Resource"
+                        : isSubmission
+                          ? "Suggest a Source"
+                          : "New Resource"}
                 </DialogTitle>
                 <DialogContent
                     sx={{
@@ -291,6 +320,13 @@ export function ResourceFormModal({
                         pt: "8px !important",
                     }}
                 >
+                    {isSubmission && (
+                        <p className="text-xs text-stone-500 bg-stone-50 rounded px-2 py-1.5">
+                            Your suggestion will be reviewed by an editor before
+                            it appears here.
+                        </p>
+                    )}
+
                     {/* Type */}
                     <div className="flex gap-2">
                         <FormControl size="small" sx={{ flex: 1 }}>
@@ -512,60 +548,93 @@ export function ResourceFormModal({
                         </div>
                     )}
 
-                    {/* Content fields */}
-                    <div className="border-t border-stone-200 pt-2">
-                        {resourceType === "verbatim" && (
-                            <TextField
-                                label="Quoted Text"
-                                value={quotedText}
-                                onChange={(e) => setQuotedText(e.target.value)}
-                                size="small"
-                                multiline
-                                rows={3}
-                                fullWidth
-                                sx={{ mb: 2 }}
-                            />
-                        )}
+                    {/* Content fields. For an allusion submission there is
+                        neither a quoted body nor an editor note, so skip the
+                        section entirely rather than render an empty divider. */}
+                    {(resourceType !== "allusion" || !isSubmission) && (
+                        <div className="border-t border-stone-200 pt-2">
+                            {resourceType === "verbatim" && (
+                                <>
+                                    <p className="text-xs text-stone-500 mb-1.5">
+                                        The quotation as it appears in the
+                                        source.{" "}
+                                        {isEdit
+                                            ? "It may differ from the reader's text (spelling, edition, or the cited fragment)."
+                                            : "Pre-filled from your selection — adjust it to match the source's exact wording (spelling, edition, or the cited fragment)."}
+                                    </p>
+                                    <TextField
+                                        label="Quoted Text"
+                                        value={quotedText}
+                                        onChange={(e) =>
+                                            setQuotedText(e.target.value)
+                                        }
+                                        size="small"
+                                        multiline
+                                        rows={3}
+                                        fullWidth
+                                        sx={{ mb: 2 }}
+                                    />
+                                </>
+                            )}
 
-                        {resourceType === "paraphrase" && (
-                            <TextField
-                                label="Paraphrased Content"
-                                value={quotedText}
-                                onChange={(e) => setQuotedText(e.target.value)}
-                                size="small"
-                                multiline
-                                rows={3}
-                                fullWidth
-                                sx={{ mb: 2 }}
-                            />
-                        )}
+                            {resourceType === "paraphrase" && (
+                                <>
+                                    <p className="text-xs text-stone-500 mb-1.5">
+                                        How the source restates this passage, in
+                                        the source's own words.
+                                    </p>
+                                    <TextField
+                                        label="Paraphrased Content"
+                                        value={quotedText}
+                                        onChange={(e) =>
+                                            setQuotedText(e.target.value)
+                                        }
+                                        size="small"
+                                        multiline
+                                        rows={3}
+                                        fullWidth
+                                        sx={{ mb: 2 }}
+                                    />
+                                </>
+                            )}
 
-                        <TextField
-                            label="Editor Note"
-                            value={editorNote}
-                            onChange={(e) => setEditorNote(e.target.value)}
-                            size="small"
-                            multiline
-                            rows={2}
-                            fullWidth
-                        />
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    size="small"
-                                    checked={isFeatured}
+                            {/* Editor-facing annotation; not shown to submitters,
+                            whose suggestion is judged from the proposed content. */}
+                            {!isSubmission && (
+                                <TextField
+                                    label="Editor Note"
+                                    value={editorNote}
                                     onChange={(e) =>
-                                        setIsFeatured(e.target.checked)
+                                        setEditorNote(e.target.value)
                                     }
+                                    size="small"
+                                    multiline
+                                    rows={2}
+                                    fullWidth
                                 />
-                            }
-                            label="Featured"
-                            slotProps={{ typography: { sx: { fontSize: 12 } } }}
-                        />
-                    </div>
+                            )}
+                        </div>
+                    )}
+
+                    {!isSubmission && (
+                        <div className="flex items-center gap-4">
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        size="small"
+                                        checked={isFeatured}
+                                        onChange={(e) =>
+                                            setIsFeatured(e.target.checked)
+                                        }
+                                    />
+                                }
+                                label="Featured"
+                                slotProps={{
+                                    typography: { sx: { fontSize: 12 } },
+                                }}
+                            />
+                        </div>
+                    )}
 
                     {isAdmin && (
                         <TextField
@@ -591,7 +660,11 @@ export function ResourceFormModal({
                             createMutation.isPending || updateMutation.isPending
                         }
                     >
-                        {isEdit ? "Update" : "Create"}
+                        {isEdit
+                            ? "Update"
+                            : isSubmission
+                              ? "Submit for review"
+                              : "Create"}
                     </Button>
                 </DialogActions>
             </Dialog>

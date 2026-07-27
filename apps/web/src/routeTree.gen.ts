@@ -22,6 +22,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as AuthAdminRouteImport } from './routes/_auth._admin'
+import { Route as AuthEditorRouteImport } from './routes/_auth._editor'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 import { Route as MembershipIndexRouteImport } from './routes/membership.index'
@@ -42,6 +43,7 @@ import { Route as AuthUserSourcesIdRouteImport } from './routes/_auth.user.sourc
 import { Route as AuthAdminAdminFeedbackIndexRouteImport } from './routes/_auth._admin.admin.feedback.index'
 import { Route as AuthAdminAdminFeedbackIdRouteImport } from './routes/_auth._admin.admin.feedback.$id'
 import { Route as AuthAdminAdminUsersIndexRouteImport } from './routes/_auth._admin.admin.users.index'
+import { Route as AuthEditorEditorResourceSubmissionsIndexRouteImport } from './routes/_auth._editor.editor.resource-submissions.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -104,6 +106,10 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
 } as any)
 const AuthAdminRoute = AuthAdminRouteImport.update({
   id: '/_admin',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthEditorRoute = AuthEditorRouteImport.update({
+  id: '/_editor',
   getParentRoute: () => AuthRoute,
 } as any)
 const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
@@ -209,6 +215,12 @@ const AuthAdminAdminUsersIndexRoute =
     path: '/admin/users/',
     getParentRoute: () => AuthAdminRoute,
   } as any)
+const AuthEditorEditorResourceSubmissionsIndexRoute =
+  AuthEditorEditorResourceSubmissionsIndexRouteImport.update({
+    id: '/editor/resource-submissions/',
+    path: '/editor/resource-submissions/',
+    getParentRoute: () => AuthEditorRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -242,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
   '/admin/feedback/': typeof AuthAdminAdminFeedbackIndexRoute
   '/admin/users/': typeof AuthAdminAdminUsersIndexRoute
+  '/editor/resource-submissions/': typeof AuthEditorEditorResourceSubmissionsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -275,6 +288,7 @@ export interface FileRoutesByTo {
   '/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
   '/admin/feedback': typeof AuthAdminAdminFeedbackIndexRoute
   '/admin/users': typeof AuthAdminAdminUsersIndexRoute
+  '/editor/resource-submissions': typeof AuthEditorEditorResourceSubmissionsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -291,6 +305,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/_auth/_admin': typeof AuthAdminRouteWithChildren
+  '/_auth/_editor': typeof AuthEditorRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/membership/checkout': typeof MembershipCheckoutRoute
   '/membership/welcome': typeof MembershipWelcomeRoute
@@ -311,6 +326,7 @@ export interface FileRoutesById {
   '/_auth/_admin/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
   '/_auth/_admin/admin/feedback/': typeof AuthAdminAdminFeedbackIndexRoute
   '/_auth/_admin/admin/users/': typeof AuthAdminAdminUsersIndexRoute
+  '/_auth/_editor/editor/resource-submissions/': typeof AuthEditorEditorResourceSubmissionsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -346,6 +362,7 @@ export interface FileRouteTypes {
     | '/admin/feedback/$id'
     | '/admin/feedback/'
     | '/admin/users/'
+    | '/editor/resource-submissions/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -379,6 +396,7 @@ export interface FileRouteTypes {
     | '/admin/feedback/$id'
     | '/admin/feedback'
     | '/admin/users'
+    | '/editor/resource-submissions'
   id:
     | '__root__'
     | '/'
@@ -394,6 +412,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/_auth/_admin'
+    | '/_auth/_editor'
     | '/articles/$slug'
     | '/membership/checkout'
     | '/membership/welcome'
@@ -414,6 +433,7 @@ export interface FileRouteTypes {
     | '/_auth/_admin/admin/feedback/$id'
     | '/_auth/_admin/admin/feedback/'
     | '/_auth/_admin/admin/users/'
+    | '/_auth/_editor/editor/resource-submissions/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -532,6 +552,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthAdminRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/_editor': {
+      id: '/_auth/_editor'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthEditorRouteImport
       parentRoute: typeof AuthRoute
     }
     '/articles/': {
@@ -674,6 +701,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdminAdminUsersIndexRouteImport
       parentRoute: typeof AuthAdminRoute
     }
+    '/_auth/_editor/editor/resource-submissions/': {
+      id: '/_auth/_editor/editor/resource-submissions/'
+      path: '/editor/resource-submissions'
+      fullPath: '/editor/resource-submissions/'
+      preLoaderRoute: typeof AuthEditorEditorResourceSubmissionsIndexRouteImport
+      parentRoute: typeof AuthEditorRoute
+    }
   }
 }
 
@@ -693,8 +727,22 @@ const AuthAdminRouteWithChildren = AuthAdminRoute._addFileChildren(
   AuthAdminRouteChildren,
 )
 
+interface AuthEditorRouteChildren {
+  AuthEditorEditorResourceSubmissionsIndexRoute: typeof AuthEditorEditorResourceSubmissionsIndexRoute
+}
+
+const AuthEditorRouteChildren: AuthEditorRouteChildren = {
+  AuthEditorEditorResourceSubmissionsIndexRoute:
+    AuthEditorEditorResourceSubmissionsIndexRoute,
+}
+
+const AuthEditorRouteWithChildren = AuthEditorRoute._addFileChildren(
+  AuthEditorRouteChildren,
+)
+
 interface AuthRouteChildren {
   AuthAdminRoute: typeof AuthAdminRouteWithChildren
+  AuthEditorRoute: typeof AuthEditorRouteWithChildren
   AuthUserNotesRoute: typeof AuthUserNotesRoute
   AuthUserProfileRoute: typeof AuthUserProfileRoute
   AuthUserQuotationsRoute: typeof AuthUserQuotationsRoute
@@ -706,6 +754,7 @@ interface AuthRouteChildren {
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthAdminRoute: AuthAdminRouteWithChildren,
+  AuthEditorRoute: AuthEditorRouteWithChildren,
   AuthUserNotesRoute: AuthUserNotesRoute,
   AuthUserProfileRoute: AuthUserProfileRoute,
   AuthUserQuotationsRoute: AuthUserQuotationsRoute,

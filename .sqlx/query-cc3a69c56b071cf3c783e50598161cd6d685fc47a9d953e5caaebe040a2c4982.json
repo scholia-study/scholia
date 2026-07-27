@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT r.id,\n                  r.resource_type::TEXT AS \"resource_type!\",\n                  r.verbatim_kind::TEXT AS \"verbatim_kind?\",\n                  ss.sentence_number AS \"start_number?\",\n                  se.sentence_number AS \"end_number?\",\n                  r.sentence_kind::TEXT AS \"sentence_kind!\",\n                  r.quoted_text, r.editor_note,\n                  r.source_page_start, r.source_page_end, r.source_location_freeform,\n                  r.is_featured, r.admin_notes, r.created_at,\n                  s.id AS \"src_id?\",\n                  s.source_type::TEXT AS \"src_type?\",\n                  s.title AS \"src_title?\",\n                  s.title_display AS \"src_title_display?\",\n                  s.publication_year AS \"src_year?\",\n                  s.publisher AS \"src_publisher?\",\n                  s.isbn AS \"src_isbn?\",\n                  s.doi AS \"src_doi?\",\n                  s.edition AS \"src_edition?\",\n                  s.volume AS \"src_volume?\",\n                  s.journal_name AS \"src_journal_name?\",\n                  s.url AS \"src_url?\",\n                  s.page_start AS \"src_page_start?\",\n                  s.page_end AS \"src_page_end?\",\n                  s.parent_source_id AS \"src_parent_id?\",\n                  s.translation_of_id AS \"src_translation_of_id?\",\n                  s.created_by AS \"src_created_by?\",\n                  s.protected AS \"src_protected?\"\n           FROM resources r\n           JOIN sentences ss ON ss.id = r.anchor_sentence_start_id\n           LEFT JOIN sentences se ON se.id = r.anchor_sentence_end_id\n           LEFT JOIN sources s ON s.id = r.source_id\n           WHERE r.book_id = $1\n             AND r.archived_at IS NULL\n             AND r.sentence_kind = $2::sentence_kind\n             AND ss.sentence_number <= $4\n             AND COALESCE(se.sentence_number, ss.sentence_number) >= $3\n           ORDER BY r.is_featured DESC,\n                    s.publication_year DESC NULLS LAST,\n                    r.source_page_start ASC NULLS LAST",
+    "query": "SELECT\n    r.id,\n    r.resource_type::TEXT AS \"resource_type!\",\n    r.verbatim_kind::TEXT AS \"verbatim_kind?\",\n    ss.sentence_number AS \"start_number?\",\n    se.sentence_number AS \"end_number?\",\n    r.sentence_kind::TEXT AS \"sentence_kind!\",\n    r.quoted_text, r.editor_note,\n    r.source_page_start, r.source_page_end, r.source_location_freeform,\n    r.is_featured, r.admin_notes,\n    r.review_status::TEXT AS \"review_status!\",\n    r.created_at,\n    s.id AS \"src_id?\",\n    s.source_type::TEXT AS \"src_type?\",\n    s.title AS \"src_title?\",\n    s.title_display AS \"src_title_display?\",\n    s.publication_year AS \"src_year?\",\n    s.publisher AS \"src_publisher?\",\n    s.isbn AS \"src_isbn?\",\n    s.doi AS \"src_doi?\",\n    s.edition AS \"src_edition?\",\n    s.volume AS \"src_volume?\",\n    s.journal_name AS \"src_journal_name?\",\n    s.url AS \"src_url?\",\n    s.page_start AS \"src_page_start?\",\n    s.page_end AS \"src_page_end?\",\n    s.parent_source_id AS \"src_parent_id?\",\n    s.translation_of_id AS \"src_translation_of_id?\",\n    s.created_by AS \"src_created_by?\",\n    s.protected AS \"src_protected?\",\n    b.slug AS book_slug,\n    bs.title AS book_title,\n    su.id AS \"submitter_id?\",\n    su.display_name AS \"submitter_display_name?\",\n    r.review_note,\n    r.reviewed_at\n           FROM resources r\n           JOIN books b ON b.id = r.book_id\n           JOIN sources bs ON bs.id = b.source_id\n           JOIN sentences ss ON ss.id = r.anchor_sentence_start_id\n           LEFT JOIN sentences se ON se.id = r.anchor_sentence_end_id\n           LEFT JOIN sources s ON s.id = r.source_id\n           LEFT JOIN users su ON su.id = r.submitted_by\n           WHERE r.id = $1 AND r.submitted_by IS NOT NULL",
     "describe": {
         "columns": [
             {
@@ -70,114 +70,137 @@
             },
             {
                 "ordinal": 13,
+                "name": "review_status!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 14,
                 "name": "created_at",
                 "type_info": "Timestamptz"
             },
             {
-                "ordinal": 14,
+                "ordinal": 15,
                 "name": "src_id?",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 15,
+                "ordinal": 16,
                 "name": "src_type?",
                 "type_info": "Text"
             },
             {
-                "ordinal": 16,
+                "ordinal": 17,
                 "name": "src_title?",
                 "type_info": "Text"
             },
             {
-                "ordinal": 17,
+                "ordinal": 18,
                 "name": "src_title_display?",
                 "type_info": "Text"
             },
             {
-                "ordinal": 18,
+                "ordinal": 19,
                 "name": "src_year?",
                 "type_info": "Int2"
             },
             {
-                "ordinal": 19,
+                "ordinal": 20,
                 "name": "src_publisher?",
                 "type_info": "Text"
             },
             {
-                "ordinal": 20,
+                "ordinal": 21,
                 "name": "src_isbn?",
                 "type_info": "TextArray"
             },
             {
-                "ordinal": 21,
+                "ordinal": 22,
                 "name": "src_doi?",
                 "type_info": "Text"
             },
             {
-                "ordinal": 22,
+                "ordinal": 23,
                 "name": "src_edition?",
                 "type_info": "Text"
             },
             {
-                "ordinal": 23,
+                "ordinal": 24,
                 "name": "src_volume?",
                 "type_info": "Text"
             },
             {
-                "ordinal": 24,
+                "ordinal": 25,
                 "name": "src_journal_name?",
                 "type_info": "Text"
             },
             {
-                "ordinal": 25,
+                "ordinal": 26,
                 "name": "src_url?",
                 "type_info": "Text"
             },
             {
-                "ordinal": 26,
+                "ordinal": 27,
                 "name": "src_page_start?",
                 "type_info": "Int4"
             },
             {
-                "ordinal": 27,
+                "ordinal": 28,
                 "name": "src_page_end?",
                 "type_info": "Int4"
             },
             {
-                "ordinal": 28,
+                "ordinal": 29,
                 "name": "src_parent_id?",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 29,
+                "ordinal": 30,
                 "name": "src_translation_of_id?",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 30,
+                "ordinal": 31,
                 "name": "src_created_by?",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 31,
+                "ordinal": 32,
                 "name": "src_protected?",
                 "type_info": "Bool"
+            },
+            {
+                "ordinal": 33,
+                "name": "book_slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 34,
+                "name": "book_title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 35,
+                "name": "submitter_id?",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 36,
+                "name": "submitter_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 37,
+                "name": "review_note",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 38,
+                "name": "reviewed_at",
+                "type_info": "Timestamptz"
             }
         ],
         "parameters": {
-            "Left": [
-                "Uuid",
-                {
-                    "Custom": {
-                        "name": "sentence_kind",
-                        "kind": {
-                            "Enum": ["body", "footnote", "figure"]
-                        }
-                    }
-                },
-                "Int4",
-                "Int4"
-            ]
+            "Left": ["Uuid"]
         },
         "nullable": [
             false,
@@ -193,6 +216,7 @@
             true,
             false,
             true,
+            null,
             false,
             false,
             null,
@@ -211,8 +235,14 @@
             true,
             true,
             false,
-            false
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true
         ]
     },
-    "hash": "7fc29b021f4952ab1d02a2c8497b4b4ab9fb4f00e1832bce5809ae88ba49076d"
+    "hash": "cc3a69c56b071cf3c783e50598161cd6d685fc47a9d953e5caaebe040a2c4982"
 }

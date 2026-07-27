@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\"\n           FROM resources r\n           WHERE r.submitted_by IS NOT NULL\n             AND r.archived_at IS NULL\n             AND r.review_status::TEXT = ANY($1)",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["TextArray"]
+        },
+        "nullable": [null]
+    },
+    "hash": "98877bdad0e46ce08d49b069b749412b7fc19cfd87937ef0886ac2a7c1228693"
+}

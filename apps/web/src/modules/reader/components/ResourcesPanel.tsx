@@ -84,6 +84,18 @@ interface ResourcesPanelProps {
     overlay?: boolean;
 }
 
+/** Joined text of the current selection, used to seed a verbatim quote. */
+function selectedSentenceText(
+    selection: ResourcesPanelProps["selectedSentence"],
+): string {
+    if (!selection) return "";
+    const sentences = Array.isArray(selection) ? selection : [selection];
+    return sentences
+        .map((s) => s.text?.trim())
+        .filter(Boolean)
+        .join(" ");
+}
+
 export function ResourcesPanel({
     toc,
     bookSlug,
@@ -105,6 +117,7 @@ export function ResourcesPanel({
         user?.roles?.includes("editor") ||
         user?.roles?.includes("admin") ||
         false;
+    const isAuthenticated = !!user;
 
     // Fetch resource counts for menu badges
     const sentenceRange = useMemo(
@@ -153,6 +166,7 @@ export function ResourcesPanel({
         start: number;
         end: number | undefined;
         kind: string;
+        quotedText: string;
     } | null>(null);
 
     const handleAddResource = (
@@ -162,7 +176,13 @@ export function ResourcesPanel({
         kind: string,
     ) => {
         setEditingResource(undefined);
-        setModalDefaults({ type, start, end, kind });
+        setModalDefaults({
+            type,
+            start,
+            end,
+            kind,
+            quotedText: selectedSentenceText(selectedSentence),
+        });
         setResourceModalOpen(true);
     };
 
@@ -596,6 +616,7 @@ export function ResourcesPanel({
                     resourceType={viewKind}
                     selectedSentence={selectedSentence}
                     isEditor={isEditor}
+                    canContribute={isAuthenticated}
                     onAdd={handleAddResource}
                     onEdit={handleEditResource}
                 />
@@ -649,7 +670,9 @@ export function ResourcesPanel({
                 defaultSentenceStart={modalDefaults?.start}
                 defaultSentenceEnd={modalDefaults?.end}
                 defaultSentenceKind={modalDefaults?.kind}
+                defaultQuotedText={modalDefaults?.quotedText}
                 isAdmin={user?.roles?.includes("admin") ?? false}
+                isEditor={isEditor}
             />
 
             {/* Note create/edit modal */}

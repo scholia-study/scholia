@@ -1,0 +1,24 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE resources\n           SET review_status = $2::resource_review_status,\n               reviewed_by   = $3,\n               reviewed_at   = now(),\n               review_note   = $4,\n               updated_at    = now()\n           WHERE id = $1 AND submitted_by IS NOT NULL",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "resource_review_status",
+                        "kind": {
+                            "Enum": ["pending", "approved", "rejected"]
+                        }
+                    }
+                },
+                "Uuid",
+                "Text"
+            ]
+        },
+        "nullable": []
+    },
+    "hash": "33eb00eacd27c792d5977216c889d63eb5c40d5a14627e8f4676e9355e6a43ea"
+}

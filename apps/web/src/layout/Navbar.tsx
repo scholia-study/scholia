@@ -192,6 +192,20 @@ export function Navbar() {
                                             Send feedback
                                         </Typography>
                                     </MenuItem>
+                                    {hasPermission("resources_manage") && (
+                                        <MenuItem
+                                            onClick={() => {
+                                                setAnchorEl(null);
+                                                navigate({
+                                                    to: "/editor/resource-submissions",
+                                                });
+                                            }}
+                                        >
+                                            <Typography variant="body2">
+                                                Editor: Submissions
+                                            </Typography>
+                                        </MenuItem>
+                                    )}
                                     {hasPermission("admin_panel") && (
                                         <MenuItem
                                             onClick={() => {

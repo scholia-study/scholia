@@ -241,6 +241,114 @@
                 }
             }
         },
+        "/api/admin/resource-submissions": {
+            "get": {
+                "tags": ["resources"],
+                "summary": "List community resource submissions for review (editors + admins).",
+                "operationId": "list_resource_submissions",
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "description": "Filter set: \"pending\" (default), \"all\", \"approved\", or \"rejected\".",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32",
+                            "minimum": 0
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Submission queue",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceSubmissionListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    }
+                }
+            }
+        },
+        "/api/admin/resource-submissions/{id}": {
+            "patch": {
+                "tags": ["resources"],
+                "summary": "Approve or reject a community submission (editors + admins).",
+                "operationId": "review_resource_submission",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Submission (resource) ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReviewSubmissionRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Submission reviewed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceSubmissionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Submission not found"
+                    }
+                }
+            }
+        },
         "/api/admin/users": {
             "get": {
                 "tags": ["admin-users"],
@@ -1853,7 +1961,7 @@
             },
             "post": {
                 "tags": ["resources"],
-                "summary": "Create a new resource (editor only)",
+                "summary": "Create a resource. Any authenticated user may submit; editors\n(`ResourcesManage`) publish immediately, everyone else's suggestion enters\nthe review queue as `pending` until an editor approves it.",
                 "operationId": "create_resource",
                 "parameters": [
                     {
@@ -1878,7 +1986,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Resource created",
+                        "description": "Resource created or submitted for review",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1888,13 +1996,10 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Invalid input or rate limit reached"
                     },
                     "401": {
                         "description": "Not authenticated"
-                    },
-                    "403": {
-                        "description": "Insufficient permissions"
                     },
                     "404": {
                         "description": "Book not found"
@@ -5187,6 +5292,7 @@
                     "anchor_sentence_start_number",
                     "sentence_kind",
                     "is_featured",
+                    "review_status",
                     "created_at"
                 ],
                 "properties": {
@@ -5219,6 +5325,10 @@
                     "resource_type": {
                         "type": "string"
                     },
+                    "review_status": {
+                        "type": "string",
+                        "description": "Lifecycle: \"approved\" for live resources, \"pending\" for a community\nsubmission awaiting review, \"rejected\" for a declined one. The reader\nonly ever receives \"approved\" rows plus the caller's own \"pending\" ones."
+                    },
                     "sentence_kind": {
                         "type": "string"
                     },
@@ -5245,6 +5355,96 @@
                     },
                     "verbatim_kind": {
                         "type": ["string", "null"]
+                    }
+                }
+            },
+            "ResourceReviewStatus": {
+                "type": "string",
+                "description": "Review state of a resource that entered via community submission.",
+                "enum": ["pending", "approved", "rejected"]
+            },
+            "ResourceSubmissionListResponse": {
+                "type": "object",
+                "required": ["submissions", "total", "page", "per_page"],
+                "properties": {
+                    "page": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "submissions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ResourceSubmissionResponse"
+                        }
+                    },
+                    "total": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "ResourceSubmissionResponse": {
+                "type": "object",
+                "description": "One entry in the editor review queue: the proposed resource plus the\ncontext an editor needs to judge it (where it anchors, who suggested it).",
+                "required": ["resource", "book_slug", "book_title"],
+                "properties": {
+                    "book_slug": {
+                        "type": "string"
+                    },
+                    "book_title": {
+                        "type": "string"
+                    },
+                    "resource": {
+                        "$ref": "#/components/schemas/ResourceResponse",
+                        "description": "The proposed resource, in the same shape the reader renders. `review_status`\non this object carries the submission's current state."
+                    },
+                    "review_note": {
+                        "type": ["string", "null"]
+                    },
+                    "reviewed_at": {
+                        "type": ["string", "null"]
+                    },
+                    "submitter": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ResourceSubmitter",
+                                "description": "`None` when the submitter's account has since been deleted."
+                            }
+                        ]
+                    }
+                }
+            },
+            "ResourceSubmitter": {
+                "type": "object",
+                "required": ["id", "display_name"],
+                "properties": {
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ReviewSubmissionRequest": {
+                "type": "object",
+                "description": "An editor's verdict on a submission. `status` must be `approved` or\n`rejected`; `review_note` is an optional message (e.g. a rejection reason).",
+                "required": ["status"],
+                "properties": {
+                    "review_note": {
+                        "type": ["string", "null"]
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ResourceReviewStatus"
                     }
                 }
             },

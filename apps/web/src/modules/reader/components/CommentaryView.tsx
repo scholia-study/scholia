@@ -27,6 +27,8 @@ interface CommentaryViewProps {
         | (SentenceResponse | FootnoteSentenceResponse)[]
         | undefined;
     isEditor: boolean;
+    /** Any authenticated user may contribute; non-editors submit for review. */
+    canContribute: boolean;
     onAdd: (
         type: ResourceType,
         start: number,
@@ -81,6 +83,7 @@ export function CommentaryView({
     resourceType,
     selectedSentence,
     isEditor,
+    canContribute,
     onAdd,
     onEdit,
 }: CommentaryViewProps) {
@@ -187,7 +190,7 @@ export function CommentaryView({
                 >
                     <StarOutlined fontSize="small" />
                 </IconButton>
-                {isEditor && (
+                {canContribute && (
                     <IconButton
                         size="small"
                         onClick={() =>
@@ -200,7 +203,7 @@ export function CommentaryView({
                                 range.kind,
                             )
                         }
-                        title="Add entry"
+                        title={isEditor ? "Add entry" : "Suggest a source"}
                     >
                         <AddOutlined fontSize="small" />
                     </IconButton>

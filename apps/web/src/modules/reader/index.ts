@@ -1,5 +1,7 @@
 export { BibleShapeFullToc, PanelToc } from "./components/PanelToc";
 export { ReaderLayout } from "./components/ReaderLayout";
+// Reused by the editor submission-review page for edit-before-approve.
+export { ResourceFormModal } from "./components/ResourceFormModal";
 export { TranslationBadge } from "./components/TranslationBadge";
 export {
     LINE_NUMBER_INTERVALS,

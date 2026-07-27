@@ -20,6 +20,12 @@ export interface ResourceResponse {
     /** @nullable */
     quoted_text?: string | null;
     resource_type: string;
+    /**
+     * Lifecycle: "approved" for live resources, "pending" for a community
+     * submission awaiting review, "rejected" for a declined one. The reader
+     * only ever receives "approved" rows plus the caller's own "pending" ones.
+     */
+    review_status: string;
     sentence_kind: string;
     source?: null | SourceResponse;
     /** @nullable */

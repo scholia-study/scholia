@@ -1,16 +1,16 @@
 import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
 import { getMeQueryOptions } from "../api/auth/auth";
 
-export const Route = createFileRoute("/_auth/_admin")({
+export const Route = createFileRoute("/_auth/_editor")({
     beforeLoad: async ({ context }) => {
         const me = await context.queryClient.fetchQuery(getMeQueryOptions());
-        if (!me?.data?.permissions?.includes("admin_panel")) {
+        if (!me?.data?.permissions?.includes("resources_manage")) {
             throw notFound();
         }
     },
-    component: AdminLayout,
+    component: EditorLayout,
 });
 
-function AdminLayout() {
+function EditorLayout() {
     return <Outlet />;
 }

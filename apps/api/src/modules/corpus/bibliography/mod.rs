@@ -52,4 +52,10 @@ pub fn editor_router() -> OpenApiRouter<AppState> {
             persons::handlers::create_person
         ))
         .routes(utoipa_axum::routes!(persons::handlers::update_person))
+        .routes(utoipa_axum::routes!(
+            resources::handlers::list_resource_submissions
+        ))
+        .routes(utoipa_axum::routes!(
+            resources::handlers::review_resource_submission
+        ))
 }

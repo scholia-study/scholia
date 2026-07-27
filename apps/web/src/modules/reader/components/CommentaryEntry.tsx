@@ -53,6 +53,11 @@ export function CommentaryEntry({
                         <span className="text-stone-800 truncate">
                             {citation || "Unknown source"}
                         </span>
+                        {resource.review_status === "pending" && (
+                            <span className="shrink-0 text-[10px] uppercase tracking-wide font-medium text-amber-700 bg-amber-50 rounded px-1 py-0.5">
+                                Pending review
+                            </span>
+                        )}
                     </div>
                     <div className="text-xs text-stone-400 truncate mt-0.5">
                         {source?.title}

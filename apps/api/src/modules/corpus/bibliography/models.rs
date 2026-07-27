@@ -28,12 +28,78 @@ pub struct ResourceResponse {
     pub is_featured: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub admin_notes: Option<String>,
+    /// Lifecycle: "approved" for live resources, "pending" for a community
+    /// submission awaiting review, "rejected" for a declined one. The reader
+    /// only ever receives "approved" rows plus the caller's own "pending" ones.
+    pub review_status: String,
     pub created_at: String,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ResourceListResponse {
     pub resources: Vec<ResourceResponse>,
+}
+
+/// Review state of a resource that entered via community submission.
+#[derive(Debug, Clone, Copy, sqlx::Type, Serialize, Deserialize, ToSchema, PartialEq, Eq)]
+#[sqlx(type_name = "resource_review_status", rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
+pub enum ResourceReviewStatus {
+    Pending,
+    Approved,
+    Rejected,
+}
+
+#[derive(Debug, Clone, Serialize, ToSchema)]
+pub struct ResourceSubmitter {
+    pub id: String,
+    pub display_name: String,
+}
+
+/// One entry in the editor review queue: the proposed resource plus the
+/// context an editor needs to judge it (where it anchors, who suggested it).
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ResourceSubmissionResponse {
+    /// The proposed resource, in the same shape the reader renders. `review_status`
+    /// on this object carries the submission's current state.
+    pub resource: ResourceResponse,
+    pub book_slug: String,
+    pub book_title: String,
+    /// `None` when the submitter's account has since been deleted.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub submitter: Option<ResourceSubmitter>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub review_note: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reviewed_at: Option<String>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ResourceSubmissionListResponse {
+    pub submissions: Vec<ResourceSubmissionResponse>,
+    pub total: i64,
+    pub page: u32,
+    pub per_page: u32,
+}
+
+#[derive(Debug, Deserialize, IntoParams)]
+pub struct SubmissionListQuery {
+    /// Filter set: "pending" (default), "all", "approved", or "rejected".
+    #[serde(default)]
+    pub filter: Option<String>,
+    #[serde(default)]
+    pub page: Option<u32>,
+    #[serde(default)]
+    pub per_page: Option<u32>,
+}
+
+/// An editor's verdict on a submission. `status` must be `approved` or
+/// `rejected`; `review_note` is an optional message (e.g. a rejection reason).
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct ReviewSubmissionRequest {
+    pub status: ResourceReviewStatus,
+    #[serde(default)]
+    pub review_note: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, ToSchema)]

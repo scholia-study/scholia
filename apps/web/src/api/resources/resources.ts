@@ -25,13 +25,502 @@ import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { customFetch } from ".././fetcher";
 import type {
     CreateResourceRequest,
+    ListResourceSubmissionsParams,
     ListResourcesParams,
     ResourceListResponse,
+    ResourceSubmissionListResponse,
+    ResourceSubmissionResponse,
+    ReviewSubmissionRequest,
     UpdateResourceRequest,
 } from "../model";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+export type listResourceSubmissionsResponse200 = {
+    data: ResourceSubmissionListResponse;
+    status: 200;
+};
+
+export type listResourceSubmissionsResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type listResourceSubmissionsResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type listResourceSubmissionsResponseSuccess =
+    listResourceSubmissionsResponse200 & {
+        headers: Headers;
+    };
+export type listResourceSubmissionsResponseError = (
+    | listResourceSubmissionsResponse401
+    | listResourceSubmissionsResponse403
+) & {
+    headers: Headers;
+};
+
+export const getListResourceSubmissionsUrl = (
+    params?: ListResourceSubmissionsParams,
+) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : String(value),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `/api/admin/resource-submissions?${stringifiedParams}`
+        : `/api/admin/resource-submissions`;
+};
+
+/**
+ * @summary List community resource submissions for review (editors + admins).
+ */
+export const listResourceSubmissions = async (
+    params?: ListResourceSubmissionsParams,
+    options?: RequestInit,
+): Promise<listResourceSubmissionsResponseSuccess> => {
+    return customFetch<listResourceSubmissionsResponseSuccess>(
+        getListResourceSubmissionsUrl(params),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
+};
+
+export const getListResourceSubmissionsQueryKey = (
+    params?: ListResourceSubmissionsParams,
+) => {
+    return [
+        `/api/admin/resource-submissions`,
+        ...(params ? [params] : []),
+    ] as const;
+};
+
+export const getListResourceSubmissionsQueryOptions = <
+    TData = Awaited<ReturnType<typeof listResourceSubmissions>>,
+    TError = void,
+>(
+    params?: ListResourceSubmissionsParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listResourceSubmissions>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getListResourceSubmissionsQueryKey(params);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listResourceSubmissions>>
+    > = ({ signal }) =>
+        listResourceSubmissions(params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof listResourceSubmissions>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListResourceSubmissionsQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listResourceSubmissions>>
+>;
+export type ListResourceSubmissionsQueryError = void;
+
+export function useListResourceSubmissions<
+    TData = Awaited<ReturnType<typeof listResourceSubmissions>>,
+    TError = void,
+>(
+    params: undefined | ListResourceSubmissionsParams,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listResourceSubmissions>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listResourceSubmissions>>,
+                    TError,
+                    Awaited<ReturnType<typeof listResourceSubmissions>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListResourceSubmissions<
+    TData = Awaited<ReturnType<typeof listResourceSubmissions>>,
+    TError = void,
+>(
+    params?: ListResourceSubmissionsParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listResourceSubmissions>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listResourceSubmissions>>,
+                    TError,
+                    Awaited<ReturnType<typeof listResourceSubmissions>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListResourceSubmissions<
+    TData = Awaited<ReturnType<typeof listResourceSubmissions>>,
+    TError = void,
+>(
+    params?: ListResourceSubmissionsParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listResourceSubmissions>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List community resource submissions for review (editors + admins).
+ */
+
+export function useListResourceSubmissions<
+    TData = Awaited<ReturnType<typeof listResourceSubmissions>>,
+    TError = void,
+>(
+    params?: ListResourceSubmissionsParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listResourceSubmissions>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListResourceSubmissionsQueryOptions(
+        params,
+        options,
+    );
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getListResourceSubmissionsSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof listResourceSubmissions>>,
+    TError = void,
+>(
+    params?: ListResourceSubmissionsParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listResourceSubmissions>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getListResourceSubmissionsQueryKey(params);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listResourceSubmissions>>
+    > = ({ signal }) =>
+        listResourceSubmissions(params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listResourceSubmissions>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListResourceSubmissionsSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listResourceSubmissions>>
+>;
+export type ListResourceSubmissionsSuspenseQueryError = void;
+
+export function useListResourceSubmissionsSuspense<
+    TData = Awaited<ReturnType<typeof listResourceSubmissions>>,
+    TError = void,
+>(
+    params: undefined | ListResourceSubmissionsParams,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listResourceSubmissions>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListResourceSubmissionsSuspense<
+    TData = Awaited<ReturnType<typeof listResourceSubmissions>>,
+    TError = void,
+>(
+    params?: ListResourceSubmissionsParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listResourceSubmissions>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListResourceSubmissionsSuspense<
+    TData = Awaited<ReturnType<typeof listResourceSubmissions>>,
+    TError = void,
+>(
+    params?: ListResourceSubmissionsParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listResourceSubmissions>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List community resource submissions for review (editors + admins).
+ */
+
+export function useListResourceSubmissionsSuspense<
+    TData = Awaited<ReturnType<typeof listResourceSubmissions>>,
+    TError = void,
+>(
+    params?: ListResourceSubmissionsParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listResourceSubmissions>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListResourceSubmissionsSuspenseQueryOptions(
+        params,
+        options,
+    );
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export type reviewResourceSubmissionResponse200 = {
+    data: ResourceSubmissionResponse;
+    status: 200;
+};
+
+export type reviewResourceSubmissionResponse400 = {
+    data: void;
+    status: 400;
+};
+
+export type reviewResourceSubmissionResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type reviewResourceSubmissionResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type reviewResourceSubmissionResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type reviewResourceSubmissionResponseSuccess =
+    reviewResourceSubmissionResponse200 & {
+        headers: Headers;
+    };
+export type reviewResourceSubmissionResponseError = (
+    | reviewResourceSubmissionResponse400
+    | reviewResourceSubmissionResponse401
+    | reviewResourceSubmissionResponse403
+    | reviewResourceSubmissionResponse404
+) & {
+    headers: Headers;
+};
+
+export const getReviewResourceSubmissionUrl = (id: string) => {
+    return `/api/admin/resource-submissions/${id}`;
+};
+
+/**
+ * @summary Approve or reject a community submission (editors + admins).
+ */
+export const reviewResourceSubmission = async (
+    id: string,
+    reviewSubmissionRequest: ReviewSubmissionRequest,
+    options?: RequestInit,
+): Promise<reviewResourceSubmissionResponseSuccess> => {
+    return customFetch<reviewResourceSubmissionResponseSuccess>(
+        getReviewResourceSubmissionUrl(id),
+        {
+            ...options,
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(reviewSubmissionRequest),
+        },
+    );
+};
+
+export const getReviewResourceSubmissionMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof reviewResourceSubmission>>,
+        TError,
+        { id: string; data: ReviewSubmissionRequest },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof reviewResourceSubmission>>,
+    TError,
+    { id: string; data: ReviewSubmissionRequest },
+    TContext
+> => {
+    const mutationKey = ["reviewResourceSubmission"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof reviewResourceSubmission>>,
+        { id: string; data: ReviewSubmissionRequest }
+    > = (props) => {
+        const { id, data } = props ?? {};
+
+        return reviewResourceSubmission(id, data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type ReviewResourceSubmissionMutationResult = NonNullable<
+    Awaited<ReturnType<typeof reviewResourceSubmission>>
+>;
+export type ReviewResourceSubmissionMutationBody = ReviewSubmissionRequest;
+export type ReviewResourceSubmissionMutationError = void;
+
+/**
+ * @summary Approve or reject a community submission (editors + admins).
+ */
+export const useReviewResourceSubmission = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof reviewResourceSubmission>>,
+            TError,
+            { id: string; data: ReviewSubmissionRequest },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof reviewResourceSubmission>>,
+    TError,
+    { id: string; data: ReviewSubmissionRequest },
+    TContext
+> => {
+    return useMutation(
+        getReviewResourceSubmissionMutationOptions(options),
+        queryClient,
+    );
+};
 export type listResourcesResponse200 = {
     data: ResourceListResponse;
     status: 200;
@@ -404,11 +893,6 @@ export type createResourceResponse401 = {
     status: 401;
 };
 
-export type createResourceResponse403 = {
-    data: void;
-    status: 403;
-};
-
 export type createResourceResponse404 = {
     data: void;
     status: 404;
@@ -420,7 +904,6 @@ export type createResourceResponseSuccess = createResourceResponse200 & {
 export type createResourceResponseError = (
     | createResourceResponse400
     | createResourceResponse401
-    | createResourceResponse403
     | createResourceResponse404
 ) & {
     headers: Headers;
@@ -431,7 +914,9 @@ export const getCreateResourceUrl = (slug: string) => {
 };
 
 /**
- * @summary Create a new resource (editor only)
+ * @summary Create a resource. Any authenticated user may submit; editors
+(`ResourcesManage`) publish immediately, everyone else's suggestion enters
+the review queue as `pending` until an editor approves it.
  */
 export const createResource = async (
     slug: string,
@@ -497,7 +982,9 @@ export type CreateResourceMutationBody = CreateResourceRequest;
 export type CreateResourceMutationError = void;
 
 /**
- * @summary Create a new resource (editor only)
+ * @summary Create a resource. Any authenticated user may submit; editors
+(`ResourcesManage`) publish immediately, everyone else's suggestion enters
+the review queue as `pending` until an editor approves it.
  */
 export const useCreateResource = <TError = void, TContext = unknown>(
     options?: {
