@@ -193,6 +193,7 @@ pub async fn create_resource(
             admin_notes,
             review_status,
             submitted_by,
+            scope: body.scope.as_deref().unwrap_or("work"),
         },
     )
     .await?;
@@ -286,6 +287,7 @@ pub async fn update_resource(
             editor_note: body.editor_note.as_ref().map(|o| o.as_deref()),
             is_featured: body.is_featured,
             admin_notes: body.admin_notes.as_ref().map(|o| o.as_deref()),
+            scope: body.scope.as_deref(),
         },
     )
     .await?;

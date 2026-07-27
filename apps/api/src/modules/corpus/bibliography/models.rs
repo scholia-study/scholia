@@ -32,6 +32,26 @@ pub struct ResourceResponse {
     /// submission awaiting review, "rejected" for a declined one. The reader
     /// only ever receives "approved" rows plus the caller's own "pending" ones.
     pub review_status: String,
+    /// Cataloguer's claim about what the resource is about: "work" (the
+    /// passage in any form), "language" (this language's translation layer),
+    /// or "edition" (this one edition's actual text). Label only — never
+    /// affects which editions the resource appears on.
+    pub scope: String,
+    /// True when this entry is projected from a sibling edition of the same
+    /// work (its anchor lives in `origin_book_slug`, not the requested book).
+    /// Projected entries are read-only in the requesting edition.
+    pub is_projected: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub origin_book_slug: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub origin_language: Option<String>,
+    /// Target-local sentence range covering the projected anchor, for
+    /// placement in the requesting edition. Absent when the anchor's
+    /// passage has no counterpart there.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub projected_sentence_start_number: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub projected_sentence_end_number: Option<i32>,
     pub created_at: String,
 }
 
@@ -240,6 +260,8 @@ pub struct CreateResourceRequest {
     pub editor_note: Option<String>,
     pub is_featured: Option<bool>,
     pub admin_notes: Option<String>,
+    /// "work" (default) | "language" | "edition" — see ResourceResponse.scope.
+    pub scope: Option<String>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
@@ -265,6 +287,8 @@ pub struct UpdateResourceRequest {
     pub is_featured: Option<bool>,
     #[serde(default, deserialize_with = "double_option")]
     pub admin_notes: Option<Option<String>>,
+    /// NOT NULL column: plain Option — omit to leave unchanged.
+    pub scope: Option<String>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]

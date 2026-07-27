@@ -1,9 +1,11 @@
 import AddOutlined from "@mui/icons-material/AddOutlined";
+import HideSourceOutlined from "@mui/icons-material/HideSourceOutlined";
 import StarOutlined from "@mui/icons-material/StarOutlined";
 import { IconButton } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { useGetBook } from "../../../api/books/books";
 import type {
     FootnoteSentenceResponse,
     ResourceResponse,
@@ -89,8 +91,13 @@ export function CommentaryView({
 }: CommentaryViewProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [featuredOnly, setFeaturedOnly] = useState(false);
+    const [hideOtherEditions, setHideOtherEditions] = useState(false);
 
     const range = getSentenceRange(selectedSentence);
+
+    // Warm cache hit — TextPanel fetches the same book detail.
+    const { data: bookData } = useGetBook(bookSlug);
+    const bookLanguage = bookData?.data?.language;
 
     const { data, isLoading } = useListResources(
         bookSlug,
@@ -133,6 +140,12 @@ export function CommentaryView({
             filtered = filtered.filter((r) => r.is_featured);
         }
 
+        // Hide entries projected from sibling editions (ADR 0008); they
+        // remain one toggle away rather than being suppressed server-side.
+        if (hideOtherEditions) {
+            filtered = filtered.filter((r) => !r.is_projected);
+        }
+
         // Apply search filter
         if (searchQuery.trim()) {
             const q = searchQuery.toLowerCase();
@@ -148,7 +161,7 @@ export function CommentaryView({
         }
 
         return filtered;
-    }, [data, resourceType, featuredOnly, searchQuery]);
+    }, [data, resourceType, featuredOnly, hideOtherEditions, searchQuery]);
 
     if (!range) {
         return (
@@ -190,6 +203,22 @@ export function CommentaryView({
                 >
                     <StarOutlined fontSize="small" />
                 </IconButton>
+                <IconButton
+                    size="small"
+                    onClick={() => setHideOtherEditions(!hideOtherEditions)}
+                    title={
+                        hideOtherEditions
+                            ? "Show entries from all editions"
+                            : "Hide entries from other editions"
+                    }
+                    sx={{
+                        color: hideOtherEditions
+                            ? "rgb(67 56 202)"
+                            : "rgb(168 162 158)",
+                    }}
+                >
+                    <HideSourceOutlined fontSize="small" />
+                </IconButton>
                 {canContribute && (
                     <IconButton
                         size="small"
@@ -229,6 +258,7 @@ export function CommentaryView({
                         key={resource.id}
                         resource={resource}
                         isEditor={isEditor}
+                        bookLanguage={bookLanguage}
                         onEdit={onEdit}
                         onDelete={handleDelete}
                     />

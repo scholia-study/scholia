@@ -17,6 +17,25 @@ export interface ResourceResponse {
     editor_note?: string | null;
     id: string;
     is_featured: boolean;
+    /**
+     * True when this entry is projected from a sibling edition of the same
+     * work (its anchor lives in `origin_book_slug`, not the requested book).
+     * Projected entries are read-only in the requesting edition.
+     */
+    is_projected: boolean;
+    /** @nullable */
+    origin_book_slug?: string | null;
+    /** @nullable */
+    origin_language?: string | null;
+    /** @nullable */
+    projected_sentence_end_number?: number | null;
+    /**
+     * Target-local sentence range covering the projected anchor, for
+     * placement in the requesting edition. Absent when the anchor's
+     * passage has no counterpart there.
+     * @nullable
+     */
+    projected_sentence_start_number?: number | null;
     /** @nullable */
     quoted_text?: string | null;
     resource_type: string;
@@ -26,6 +45,13 @@ export interface ResourceResponse {
      * only ever receives "approved" rows plus the caller's own "pending" ones.
      */
     review_status: string;
+    /**
+     * Cataloguer's claim about what the resource is about: "work" (the
+     * passage in any form), "language" (this language's translation layer),
+     * or "edition" (this one edition's actual text). Label only — never
+     * affects which editions the resource appears on.
+     */
+    scope: string;
     sentence_kind: string;
     source?: null | SourceResponse;
     /** @nullable */

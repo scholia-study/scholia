@@ -334,6 +334,13 @@ function ReviewDialog({
                     {r.resource_type}
                     {r.verbatim_kind ? ` (${r.verbatim_kind})` : ""}
                 </Field>
+                <Field label="Applies to">
+                    {r.scope === "work"
+                        ? "The work (all editions)"
+                        : r.scope === "language"
+                          ? "This language's editions"
+                          : "This edition only"}
+                </Field>
                 <Field label="Source">
                     {r.source ? (
                         <>

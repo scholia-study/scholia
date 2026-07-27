@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "INSERT INTO resources (\n               book_id, resource_type, anchor_node_id,\n               anchor_sentence_start_id, anchor_sentence_end_id,\n               sentence_kind, source_id,\n               source_page_start, source_page_end, source_location_freeform,\n               verbatim_kind, quoted_text, editor_note, is_featured, admin_notes,\n               review_status, submitted_by\n           ) VALUES (\n               $1, $2::resource_type, $3, $4, $5,\n               $6::sentence_kind, $7, $8, $9, $10,\n               $11::verbatim_kind, $12, $13, $14, $15,\n               $16::resource_review_status, $17\n           )\n           RETURNING id",
+    "query": "INSERT INTO resources (\n               book_id, resource_type, anchor_node_id,\n               anchor_sentence_start_id, anchor_sentence_end_id,\n               sentence_kind, source_id,\n               source_page_start, source_page_end, source_location_freeform,\n               verbatim_kind, quoted_text, editor_note, is_featured, admin_notes,\n               review_status, submitted_by, scope\n           ) VALUES (\n               $1, $2::resource_type, $3, $4, $5,\n               $6::sentence_kind, $7, $8, $9, $10,\n               $11::verbatim_kind, $12, $13, $14, $15,\n               $16::resource_review_status, $17, $18::resource_scope\n           )\n           RETURNING id",
     "describe": {
         "columns": [
             {
@@ -55,10 +55,18 @@
                         }
                     }
                 },
-                "Uuid"
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "resource_scope",
+                        "kind": {
+                            "Enum": ["work", "language", "edition"]
+                        }
+                    }
+                }
             ]
         },
         "nullable": [false]
     },
-    "hash": "cab3cfd6f078e5f8da585456ec5f710688e60e0828cea40c96224a90a10afabd"
+    "hash": "570b7423afdc23c2dcc0e47b2197611bd4dc6e2c70daac9cc51744636c9706aa"
 }

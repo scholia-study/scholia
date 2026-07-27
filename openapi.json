@@ -3984,6 +3984,10 @@
                     "resource_type": {
                         "type": "string"
                     },
+                    "scope": {
+                        "type": ["string", "null"],
+                        "description": "\"work\" (default) | \"language\" | \"edition\" — see ResourceResponse.scope."
+                    },
                     "sentence_end": {
                         "type": ["integer", "null"],
                         "format": "int32"
@@ -5293,6 +5297,8 @@
                     "sentence_kind",
                     "is_featured",
                     "review_status",
+                    "scope",
+                    "is_projected",
                     "created_at"
                 ],
                 "properties": {
@@ -5319,6 +5325,25 @@
                     "is_featured": {
                         "type": "boolean"
                     },
+                    "is_projected": {
+                        "type": "boolean",
+                        "description": "True when this entry is projected from a sibling edition of the same\nwork (its anchor lives in `origin_book_slug`, not the requested book).\nProjected entries are read-only in the requesting edition."
+                    },
+                    "origin_book_slug": {
+                        "type": ["string", "null"]
+                    },
+                    "origin_language": {
+                        "type": ["string", "null"]
+                    },
+                    "projected_sentence_end_number": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    },
+                    "projected_sentence_start_number": {
+                        "type": ["integer", "null"],
+                        "format": "int32",
+                        "description": "Target-local sentence range covering the projected anchor, for\nplacement in the requesting edition. Absent when the anchor's\npassage has no counterpart there."
+                    },
                     "quoted_text": {
                         "type": ["string", "null"]
                     },
@@ -5328,6 +5353,10 @@
                     "review_status": {
                         "type": "string",
                         "description": "Lifecycle: \"approved\" for live resources, \"pending\" for a community\nsubmission awaiting review, \"rejected\" for a declined one. The reader\nonly ever receives \"approved\" rows plus the caller's own \"pending\" ones."
+                    },
+                    "scope": {
+                        "type": "string",
+                        "description": "Cataloguer's claim about what the resource is about: \"work\" (the\npassage in any form), \"language\" (this language's translation layer),\nor \"edition\" (this one edition's actual text). Label only — never\naffects which editions the resource appears on."
                     },
                     "sentence_kind": {
                         "type": "string"
@@ -6078,6 +6107,10 @@
                     },
                     "resource_type": {
                         "type": ["string", "null"]
+                    },
+                    "scope": {
+                        "type": ["string", "null"],
+                        "description": "NOT NULL column: plain Option — omit to leave unchanged."
                     },
                     "sentence_end": {
                         "type": ["integer", "null"],

@@ -15,6 +15,11 @@ export interface CreateResourceRequest {
     /** @nullable */
     quoted_text?: string | null;
     resource_type: string;
+    /**
+     * "work" (default) | "language" | "edition" — see ResourceResponse.scope.
+     * @nullable
+     */
+    scope?: string | null;
     /** @nullable */
     sentence_end?: number | null;
     sentence_kind: string;

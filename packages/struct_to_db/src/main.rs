@@ -1,3 +1,4 @@
+mod canonical;
 mod import;
 mod reconcile_input;
 

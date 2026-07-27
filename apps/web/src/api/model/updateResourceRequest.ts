@@ -16,6 +16,11 @@ export interface UpdateResourceRequest {
     quoted_text?: string | null;
     /** @nullable */
     resource_type?: string | null;
+    /**
+     * NOT NULL column: plain Option — omit to leave unchanged.
+     * @nullable
+     */
+    scope?: string | null;
     /** @nullable */
     sentence_end?: number | null;
     /** @nullable */

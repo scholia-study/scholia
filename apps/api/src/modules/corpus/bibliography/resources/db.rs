@@ -24,6 +24,7 @@ struct ResourceRow {
     is_featured: bool,
     admin_notes: Option<String>,
     review_status: String,
+    scope: String,
     created_at: time::OffsetDateTime,
     // Source fields (joined)
     src_id: Option<Uuid>,
@@ -74,6 +75,7 @@ pub async fn list_resources(
                   r.source_page_start, r.source_page_end, r.source_location_freeform,
                   r.is_featured, r.admin_notes,
                   r.review_status::TEXT AS "review_status!",
+                  r.scope::TEXT AS "scope!",
                   r.created_at,
                   s.id AS "src_id?",
                   s.source_type::TEXT AS "src_type?",
@@ -116,7 +118,44 @@ pub async fn list_resources(
     .fetch_all(pool)
     .await?;
 
-    build_resource_responses(pool, rows, include_admin_notes).await
+    let mut resources = build_resource_responses(pool, rows, include_admin_notes).await?;
+
+    // Sibling-edition resources projected through canonical passages
+    // (ADR 0008). Approved only — pending stays visible solely to its
+    // submitter on its origin edition.
+    let projected = list_projected_resources(pool, book_id, start, end, kind).await?;
+    if !projected.is_empty() {
+        resources.extend(projected);
+        sort_resources(&mut resources);
+    }
+
+    Ok(resources)
+}
+
+/// The SQL ordering of the same-book query, applied over the merged
+/// native + projected list: featured first, then source year (newest
+/// first, unknown last), then source page (unknown last).
+fn sort_resources(resources: &mut [ResourceResponse]) {
+    resources.sort_by(|a, b| {
+        b.is_featured
+            .cmp(&a.is_featured)
+            .then_with(|| {
+                let ya = a.source.as_ref().and_then(|s| s.publication_year);
+                let yb = b.source.as_ref().and_then(|s| s.publication_year);
+                match (ya, yb) {
+                    (Some(x), Some(y)) => y.cmp(&x),
+                    (Some(_), None) => std::cmp::Ordering::Less,
+                    (None, Some(_)) => std::cmp::Ordering::Greater,
+                    (None, None) => std::cmp::Ordering::Equal,
+                }
+            })
+            .then_with(|| match (a.source_page_start, b.source_page_start) {
+                (Some(x), Some(y)) => x.cmp(&y),
+                (Some(_), None) => std::cmp::Ordering::Less,
+                (None, Some(_)) => std::cmp::Ordering::Greater,
+                (None, None) => std::cmp::Ordering::Equal,
+            })
+    });
 }
 
 /// Map raw resource rows into their nested response shape, batch-fetching the
@@ -232,11 +271,234 @@ async fn build_resource_responses(
                     None
                 },
                 review_status: r.review_status,
+                scope: r.scope,
+                is_projected: false,
+                origin_book_slug: None,
+                origin_language: None,
+                projected_sentence_start_number: None,
+                projected_sentence_end_number: None,
                 created_at: r
                     .created_at
                     .format(&time::format_description::well_known::Rfc3339)
                     .unwrap_or_default(),
             }
+        })
+        .collect())
+}
+
+/// A projected row: every `ResourceRow` column plus the origin edition and
+/// the target-local placement range.
+struct PeerResourceRow {
+    id: Uuid,
+    resource_type: String,
+    verbatim_kind: Option<String>,
+    start_number: Option<i32>,
+    end_number: Option<i32>,
+    sentence_kind: String,
+    quoted_text: Option<String>,
+    editor_note: Option<String>,
+    source_page_start: Option<i32>,
+    source_page_end: Option<i32>,
+    source_location_freeform: Option<String>,
+    is_featured: bool,
+    admin_notes: Option<String>,
+    review_status: String,
+    scope: String,
+    created_at: time::OffsetDateTime,
+    src_id: Option<Uuid>,
+    src_type: Option<String>,
+    src_title: Option<String>,
+    src_title_display: Option<String>,
+    src_year: Option<i16>,
+    src_publisher: Option<String>,
+    src_isbn: Option<Vec<String>>,
+    src_doi: Option<String>,
+    src_edition: Option<String>,
+    src_volume: Option<String>,
+    src_journal_name: Option<String>,
+    src_url: Option<String>,
+    src_page_start: Option<i32>,
+    src_page_end: Option<i32>,
+    src_parent_id: Option<Uuid>,
+    src_translation_of_id: Option<Uuid>,
+    src_created_by: Option<Uuid>,
+    src_protected: Option<bool>,
+    origin_book_slug: String,
+    origin_language: String,
+    projected_start: Option<i32>,
+    projected_end: Option<i32>,
+}
+
+struct PeerExtra {
+    origin_book_slug: String,
+    origin_language: String,
+    projected_start: Option<i32>,
+    projected_end: Option<i32>,
+}
+
+impl PeerResourceRow {
+    fn split(self) -> (ResourceRow, PeerExtra) {
+        let extra = PeerExtra {
+            origin_book_slug: self.origin_book_slug,
+            origin_language: self.origin_language,
+            projected_start: self.projected_start,
+            projected_end: self.projected_end,
+        };
+        let row = ResourceRow {
+            id: self.id,
+            resource_type: self.resource_type,
+            verbatim_kind: self.verbatim_kind,
+            start_number: self.start_number,
+            end_number: self.end_number,
+            sentence_kind: self.sentence_kind,
+            quoted_text: self.quoted_text,
+            editor_note: self.editor_note,
+            source_page_start: self.source_page_start,
+            source_page_end: self.source_page_end,
+            source_location_freeform: self.source_location_freeform,
+            is_featured: self.is_featured,
+            admin_notes: self.admin_notes,
+            review_status: self.review_status,
+            scope: self.scope,
+            created_at: self.created_at,
+            src_id: self.src_id,
+            src_type: self.src_type,
+            src_title: self.src_title,
+            src_title_display: self.src_title_display,
+            src_year: self.src_year,
+            src_publisher: self.src_publisher,
+            src_isbn: self.src_isbn,
+            src_doi: self.src_doi,
+            src_edition: self.src_edition,
+            src_volume: self.src_volume,
+            src_journal_name: self.src_journal_name,
+            src_url: self.src_url,
+            src_page_start: self.src_page_start,
+            src_page_end: self.src_page_end,
+            src_parent_id: self.src_parent_id,
+            src_translation_of_id: self.src_translation_of_id,
+            src_created_by: self.src_created_by,
+            src_protected: self.src_protected,
+        };
+        (row, extra)
+    }
+}
+
+// Peer split above; the submission split below mirrors it.
+
+/// Approved resources anchored on sibling editions of the same work whose
+/// canonical-passage span overlaps the requested range (ADR 0008). The
+/// target span resolves the requested sentences to canonical ordinals;
+/// a peer anchor matches when its own ordinal span overlaps. Sentences
+/// without a passage (standalone works, figure anchors, DARBY title
+/// verses) never resolve, so such selections and anchors simply don't
+/// project. `admin_notes` stays origin-side (never returned here).
+async fn list_projected_resources(
+    pool: &PgPool,
+    book_id: Uuid,
+    start: i32,
+    end: i32,
+    kind: &str,
+) -> Result<Vec<ResourceResponse>, AppError> {
+    let rows = sqlx::query_as!(
+        PeerResourceRow,
+        r#"WITH target_span AS (
+               SELECT cp.work_root, MIN(cp.ordinal) AS lo, MAX(cp.ordinal) AS hi
+               FROM sentences ts
+               JOIN canonical_passages cp ON cp.id = ts.canonical_passage_id
+               WHERE ts.book_id = $1
+                 AND cp.sentence_kind = $2::sentence_kind
+                 AND ts.sentence_number BETWEEN $3 AND $4
+               GROUP BY cp.work_root
+           )
+           SELECT r.id,
+                  r.resource_type::TEXT AS "resource_type!",
+                  r.verbatim_kind::TEXT AS "verbatim_kind?",
+                  ss.sentence_number AS "start_number?",
+                  se.sentence_number AS "end_number?",
+                  r.sentence_kind::TEXT AS "sentence_kind!",
+                  r.quoted_text, r.editor_note,
+                  r.source_page_start, r.source_page_end, r.source_location_freeform,
+                  r.is_featured,
+                  NULL::TEXT AS "admin_notes?",
+                  r.review_status::TEXT AS "review_status!",
+                  r.scope::TEXT AS "scope!",
+                  r.created_at,
+                  s.id AS "src_id?",
+                  s.source_type::TEXT AS "src_type?",
+                  s.title AS "src_title?",
+                  s.title_display AS "src_title_display?",
+                  s.publication_year AS "src_year?",
+                  s.publisher AS "src_publisher?",
+                  s.isbn AS "src_isbn?",
+                  s.doi AS "src_doi?",
+                  s.edition AS "src_edition?",
+                  s.volume AS "src_volume?",
+                  s.journal_name AS "src_journal_name?",
+                  s.url AS "src_url?",
+                  s.page_start AS "src_page_start?",
+                  s.page_end AS "src_page_end?",
+                  s.parent_source_id AS "src_parent_id?",
+                  s.translation_of_id AS "src_translation_of_id?",
+                  s.created_by AS "src_created_by?",
+                  s.protected AS "src_protected?",
+                  rb.slug AS origin_book_slug,
+                  rb.language AS origin_language,
+                  (SELECT MIN(t2.sentence_number)
+                   FROM sentences t2
+                   JOIN canonical_passages c2 ON c2.id = t2.canonical_passage_id
+                   WHERE t2.book_id = $1
+                     AND c2.work_root = tsp.work_root
+                     AND c2.sentence_kind = $2::sentence_kind
+                     AND c2.ordinal BETWEEN cps.ordinal
+                                        AND COALESCE(cpe.ordinal, cps.ordinal)
+                  ) AS "projected_start?",
+                  (SELECT MAX(t2.sentence_number)
+                   FROM sentences t2
+                   JOIN canonical_passages c2 ON c2.id = t2.canonical_passage_id
+                   WHERE t2.book_id = $1
+                     AND c2.work_root = tsp.work_root
+                     AND c2.sentence_kind = $2::sentence_kind
+                     AND c2.ordinal BETWEEN cps.ordinal
+                                        AND COALESCE(cpe.ordinal, cps.ordinal)
+                  ) AS "projected_end?"
+           FROM resources r
+           JOIN books rb ON rb.id = r.book_id
+           JOIN sentences ss ON ss.id = r.anchor_sentence_start_id
+           JOIN canonical_passages cps ON cps.id = ss.canonical_passage_id
+           LEFT JOIN sentences se ON se.id = r.anchor_sentence_end_id
+           LEFT JOIN canonical_passages cpe ON cpe.id = se.canonical_passage_id
+           JOIN target_span tsp ON tsp.work_root = cps.work_root
+           LEFT JOIN sources s ON s.id = r.source_id
+           WHERE r.book_id <> $1
+             AND r.archived_at IS NULL
+             AND r.review_status = 'approved'
+             AND r.sentence_kind = $2::sentence_kind
+             AND cps.ordinal <= tsp.hi
+             AND COALESCE(cpe.ordinal, cps.ordinal) >= tsp.lo"#,
+        book_id,
+        kind as _,
+        start,
+        end,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let (resource_rows, extras): (Vec<ResourceRow>, Vec<PeerExtra>) =
+        rows.into_iter().map(PeerResourceRow::split).unzip();
+
+    let resources = build_resource_responses(pool, resource_rows, false).await?;
+
+    Ok(resources
+        .into_iter()
+        .zip(extras)
+        .map(|(mut resource, extra)| {
+            resource.is_projected = true;
+            resource.origin_book_slug = Some(extra.origin_book_slug);
+            resource.origin_language = Some(extra.origin_language);
+            resource.projected_sentence_start_number = extra.projected_start;
+            resource.projected_sentence_end_number = extra.projected_end;
+            resource
         })
         .collect())
 }
@@ -265,6 +527,8 @@ pub struct ResourceCreate<'a> {
     pub review_status: &'a str,
     /// The community submitter, when this arrived through the review flow.
     pub submitted_by: Option<Uuid>,
+    /// "work" | "language" | "edition" (ADR 0008).
+    pub scope: &'a str,
 }
 
 pub async fn create_resource(
@@ -351,12 +615,12 @@ pub async fn create_resource(
                sentence_kind, source_id,
                source_page_start, source_page_end, source_location_freeform,
                verbatim_kind, quoted_text, editor_note, is_featured, admin_notes,
-               review_status, submitted_by
+               review_status, submitted_by, scope
            ) VALUES (
                $1, $2::resource_type, $3, $4, $5,
                $6::sentence_kind, $7, $8, $9, $10,
                $11::verbatim_kind, $12, $13, $14, $15,
-               $16::resource_review_status, $17
+               $16::resource_review_status, $17, $18::resource_scope
            )
            RETURNING id"#,
         book_id,
@@ -376,6 +640,7 @@ pub async fn create_resource(
         entry.admin_notes,
         entry.review_status as _,
         entry.submitted_by,
+        entry.scope as _,
     )
     .fetch_one(pool)
     .await?;
@@ -397,6 +662,7 @@ pub struct ResourceUpdate<'a> {
     pub editor_note: Option<Option<&'a str>>,
     pub is_featured: Option<bool>,
     pub admin_notes: Option<Option<&'a str>>,
+    pub scope: Option<&'a str>,
 }
 
 pub async fn update_resource(
@@ -552,6 +818,9 @@ pub async fn update_resource(
     if let Some(v) = patch.admin_notes {
         qb.push(", admin_notes = ").push_bind(v);
     }
+    if let Some(v) = patch.scope {
+        qb.push(", scope = ").push_bind(v).push("::resource_scope");
+    }
     qb.push(" WHERE id = ").push_bind(resource_id);
     qb.build().execute(pool).await?;
 
@@ -641,6 +910,7 @@ struct SubmissionRow {
     is_featured: bool,
     admin_notes: Option<String>,
     review_status: String,
+    scope: String,
     created_at: time::OffsetDateTime,
     src_id: Option<Uuid>,
     src_type: Option<String>,
@@ -712,6 +982,7 @@ impl SubmissionRow {
             is_featured: self.is_featured,
             admin_notes: self.admin_notes,
             review_status: self.review_status,
+            scope: self.scope,
             created_at: self.created_at,
             src_id: self.src_id,
             src_type: self.src_type,
@@ -788,6 +1059,7 @@ pub async fn list_submissions(
     r.source_page_start, r.source_page_end, r.source_location_freeform,
     r.is_featured, r.admin_notes,
     r.review_status::TEXT AS "review_status!",
+    r.scope::TEXT AS "scope!",
     r.created_at,
     s.id AS "src_id?",
     s.source_type::TEXT AS "src_type?",
@@ -868,6 +1140,7 @@ pub async fn get_submission(
     r.source_page_start, r.source_page_end, r.source_location_freeform,
     r.is_featured, r.admin_notes,
     r.review_status::TEXT AS "review_status!",
+    r.scope::TEXT AS "scope!",
     r.created_at,
     s.id AS "src_id?",
     s.source_type::TEXT AS "src_type?",

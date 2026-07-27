@@ -293,6 +293,11 @@ pub async fn run(
                 full_rewrite,
             )
             .await?;
+            let cp = crate::canonical::seed_sentence_basis(&mut tx, id, source_book_id).await?;
+            eprintln!(
+                "Canonical passages: {} minted, {} sentences stamped",
+                cp.minted, cp.stamped
+            );
             if dry_run {
                 tx.rollback().await?;
             } else {
@@ -625,6 +630,12 @@ pub async fn run(
         .bind(root_hash(&node_hashes))
         .execute(&mut *tx)
         .await?;
+
+    let cp = crate::canonical::seed_sentence_basis(&mut tx, book_id, source_book_id).await?;
+    eprintln!(
+        "Canonical passages: {} minted, {} sentences stamped",
+        cp.minted, cp.stamped
+    );
 
     if dry_run {
         tx.rollback().await?;

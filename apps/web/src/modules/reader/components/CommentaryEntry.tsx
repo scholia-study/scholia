@@ -7,18 +7,43 @@ import type { ResourceResponse } from "../../../api/model";
 interface CommentaryEntryProps {
     resource: ResourceResponse;
     isEditor: boolean;
+    /** Language of the book being read, for the cross-language badge. */
+    bookLanguage?: string;
     onEdit: (resource: ResourceResponse) => void;
     onDelete: (resource: ResourceResponse) => void;
+}
+
+function scopeLabel(scope: string, isProjected: boolean): string | null {
+    if (scope === "language") {
+        return isProjected
+            ? "about its language's translation layer"
+            : "about this translation layer";
+    }
+    if (scope === "edition") {
+        return isProjected
+            ? "specific to its edition's text"
+            : "specific to this edition's text";
+    }
+    return null;
 }
 
 export function CommentaryEntry({
     resource,
     isEditor,
+    bookLanguage,
     onEdit,
     onDelete,
 }: CommentaryEntryProps) {
     const [expanded, setExpanded] = useState(false);
     const source = resource.source;
+
+    // Projected entries live on a sibling edition of this work. Language
+    // difference is the prominent signal; same-language projection gets a
+    // subtle edition note (ADR 0008).
+    const crossLanguage =
+        resource.is_projected &&
+        !!resource.origin_language &&
+        resource.origin_language !== bookLanguage;
 
     // Build citation line: "Author (Year), Title, pp. X-Y"
     const firstAuthor = source?.persons?.find((p) => p.role === "author");
@@ -58,6 +83,22 @@ export function CommentaryEntry({
                                 Pending review
                             </span>
                         )}
+                        {crossLanguage && (
+                            <span
+                                className="shrink-0 text-[10px] uppercase tracking-wide font-medium text-indigo-700 bg-indigo-50 rounded px-1 py-0.5"
+                                title={`From the ${resource.origin_book_slug} edition`}
+                            >
+                                {resource.origin_language}
+                            </span>
+                        )}
+                        {resource.is_projected && !crossLanguage && (
+                            <span
+                                className="shrink-0 text-[10px] uppercase tracking-wide text-stone-500 border border-stone-300 rounded px-1 py-0.5"
+                                title={`From the ${resource.origin_book_slug} edition`}
+                            >
+                                other ed.
+                            </span>
+                        )}
                     </div>
                     <div className="text-xs text-stone-400 truncate mt-0.5">
                         {source?.title}
@@ -80,6 +121,30 @@ export function CommentaryEntry({
             {/* Expanded detail */}
             {expanded && (
                 <div className="px-3 pb-3 pt-1 border-t border-stone-100 space-y-2">
+                    {(resource.is_projected || resource.scope !== "work") && (
+                        <p className="text-xs text-stone-500 bg-stone-50 rounded px-2 py-1">
+                            {resource.is_projected && (
+                                <>
+                                    From the{" "}
+                                    <span className="uppercase">
+                                        {resource.origin_language}
+                                    </span>{" "}
+                                    edition{" "}
+                                    <span className="text-stone-400">
+                                        ({resource.origin_book_slug})
+                                    </span>
+                                    {resource.scope !== "work" ? " — " : ""}
+                                </>
+                            )}
+                            {resource.scope !== "work" &&
+                                (scopeLabel(
+                                    resource.scope,
+                                    resource.is_projected,
+                                ) ??
+                                    resource.scope)}
+                        </p>
+                    )}
+
                     {resource.quoted_text && (
                         <Field
                             label={
@@ -174,16 +239,45 @@ export function CommentaryEntry({
                         </>
                     )}
 
+                    {pageRef && (
+                        <Field label="Location in source">
+                            <p className="text-stone-700 text-xs">{pageRef}</p>
+                        </Field>
+                    )}
+
                     <Field label="Sentences">
                         <p className="text-stone-700 text-xs">
-                            {resource.anchor_sentence_end_number != null
-                                ? `${resource.anchor_sentence_start_number}\u2013${resource.anchor_sentence_end_number}`
-                                : resource.anchor_sentence_start_number}{" "}
-                            ({resource.sentence_kind})
+                            {resource.is_projected &&
+                            resource.projected_sentence_start_number != null ? (
+                                <>
+                                    {resource.projected_sentence_end_number !=
+                                        null &&
+                                    resource.projected_sentence_end_number !==
+                                        resource.projected_sentence_start_number
+                                        ? `${resource.projected_sentence_start_number}\u2013${resource.projected_sentence_end_number}`
+                                        : resource.projected_sentence_start_number}{" "}
+                                    ({resource.sentence_kind})
+                                    <span className="text-stone-400">
+                                        {" \u00b7 anchored at "}
+                                        {resource.anchor_sentence_end_number !=
+                                        null
+                                            ? `${resource.anchor_sentence_start_number}\u2013${resource.anchor_sentence_end_number}`
+                                            : resource.anchor_sentence_start_number}{" "}
+                                        in the origin edition
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    {resource.anchor_sentence_end_number != null
+                                        ? `${resource.anchor_sentence_start_number}\u2013${resource.anchor_sentence_end_number}`
+                                        : resource.anchor_sentence_start_number}{" "}
+                                    ({resource.sentence_kind})
+                                </>
+                            )}
                         </p>
                     </Field>
 
-                    {isEditor && (
+                    {isEditor && !resource.is_projected && (
                         <div className="flex gap-2 pt-1">
                             <button
                                 type="button"

@@ -49,6 +49,12 @@ interface ResourceFormModalProps {
     isEditor?: boolean;
 }
 
+const SCOPES = [
+    { value: "work", label: "The work (all editions)" },
+    { value: "language", label: "This language's editions" },
+    { value: "edition", label: "This edition only" },
+] as const;
+
 interface InitialFormState {
     resourceType: string;
     verbatimKind: string;
@@ -65,6 +71,7 @@ interface InitialFormState {
     editorNote: string;
     isFeatured: boolean;
     adminNotes: string;
+    scope: string;
 }
 
 interface FormDefaults {
@@ -105,6 +112,7 @@ function getInitialFormState(
             editorNote: initialData.editor_note ?? "",
             isFeatured: initialData.is_featured,
             adminNotes: initialData.admin_notes ?? "",
+            scope: initialData.scope,
         };
     }
     return {
@@ -127,6 +135,7 @@ function getInitialFormState(
         editorNote: "",
         isFeatured: false,
         adminNotes: "",
+        scope: "work",
     };
 }
 
@@ -190,6 +199,7 @@ export function ResourceFormModal({
     const [editorNote, setEditorNote] = useState(initial.editorNote);
     const [isFeatured, setIsFeatured] = useState(initial.isFeatured);
     const [adminNotes, setAdminNotes] = useState(initial.adminNotes);
+    const [scope, setScope] = useState(initial.scope);
 
     // Source creation modal
     const [sourceModalOpen, setSourceModalOpen] = useState(false);
@@ -279,6 +289,7 @@ export function ResourceFormModal({
             editor_note: editorNote.trim() || null,
             is_featured: isFeatured,
             admin_notes: adminNotes.trim() || null,
+            scope,
         };
 
         if (isEdit) {
@@ -412,6 +423,24 @@ export function ResourceFormModal({
                                 : `Single sentence: ${sentenceStart} (${sentenceKind})`}
                         </p>
                     </div>
+
+                    {/* Scope: what the resource claims to be about (ADR
+                        0008). Display metadata only — never limits which
+                        editions it appears on. */}
+                    <FormControl size="small" fullWidth>
+                        <InputLabel>Applies to</InputLabel>
+                        <Select
+                            value={scope}
+                            onChange={(e) => setScope(e.target.value)}
+                            label="Applies to"
+                        >
+                            {SCOPES.map((s) => (
+                                <MenuItem key={s.value} value={s.value}>
+                                    {s.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
                     {/* Source selector */}
                     <div className="border-t border-stone-200 pt-2">

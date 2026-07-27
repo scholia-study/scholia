@@ -512,6 +512,9 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             cli.full_rewrite,
         )
         .await?;
+        let (cp_minted, cp_stamped) =
+            seed_canonical_passages(&mut tx, translation.slug, existing_id).await?;
+        eprintln!("Canonical passages: {cp_minted} minted, {cp_stamped} sentences stamped");
         if cli.dry_run {
             tx.rollback().await?;
         } else {
@@ -928,6 +931,10 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     .await?;
     totals.alignments = alignment_rows;
 
+    let (cp_minted, cp_stamped) =
+        seed_canonical_passages(&mut tx, translation.slug, book_id).await?;
+    eprintln!("Canonical passages: {cp_minted} minted, {cp_stamped} sentences stamped");
+
     if cli.dry_run {
         tx.rollback().await?;
         eprintln!("(dry-run: nothing committed)");
@@ -1036,6 +1043,114 @@ const DARBY_HEBREW_TITLE_CHAPTERS: &[&str] = &[
     "psalms:141",
     "2kings:11",
 ];
+
+/// Seed verse-basis canonical passages (ADR 0008). KJV — the canonical
+/// numbering by convention — mints one passage per verse in traversal
+/// order; every translation (KJV included) then stamps its sentences by
+/// resolving each sentence's verse marker through
+/// cross_translation_alignments: no row → identity, mapped row → the
+/// row's canonical coords, translation-only row (NULL canonical) → no
+/// stamp, so those sentences never project. Idempotent; runs on both
+/// the fresh-import and reconcile paths. Non-KJV translations imported
+/// before KJV stamp nothing until KJV mints — the standard KJV-first
+/// import order (and any full re-ingest) converges.
+async fn seed_canonical_passages(
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
+    translation_slug: &str,
+    book_id: Uuid,
+) -> Result<(u64, u64), Box<dyn std::error::Error>> {
+    // The fresh-import path bulk-loads sentences/markers earlier in this
+    // same transaction, so the planner has no statistics for them yet —
+    // without ANALYZE the resolve/stamp joins below degrade to
+    // nested-loop seq scans (minutes, not seconds).
+    for table in ["sentences", "page_markers", "toc_nodes"] {
+        sqlx::query(&format!("ANALYZE {table}"))
+            .execute(&mut **tx)
+            .await?;
+    }
+
+    let mut minted = 0;
+    if translation_slug == "kjv" {
+        minted = sqlx::query(
+            r#"WITH wr AS (
+                   SELECT COALESCE(s.translation_of_id, s.id) AS root
+                   FROM books b JOIN sources s ON s.id = b.source_id
+                   WHERE b.id = $1
+               ),
+               verses AS (
+                   SELECT tn.source_ref, pm.ref_value,
+                          MIN(se.sentence_number) AS first_sentence
+                   FROM page_markers pm
+                   JOIN reference_systems rs
+                     ON rs.id = pm.system_id AND rs.slug = 'verse' AND rs.book_id = $1
+                   JOIN sentences se ON se.id = pm.sentence_id
+                   JOIN toc_nodes tn ON tn.id = se.node_id
+                   WHERE se.book_id = $1
+                   GROUP BY tn.source_ref, pm.ref_value
+               )
+               INSERT INTO canonical_passages
+                   (work_root, basis, sentence_kind, ordinal, source_ref, ref_value)
+               SELECT wr.root, 'verse', 'body',
+                      ROW_NUMBER() OVER (ORDER BY v.first_sentence),
+                      v.source_ref, v.ref_value
+               FROM verses v CROSS JOIN wr
+               ON CONFLICT (work_root, source_ref, ref_value) WHERE basis = 'verse'
+               DO UPDATE SET ordinal = EXCLUDED.ordinal"#,
+        )
+        .bind(book_id)
+        .execute(&mut **tx)
+        .await?
+        .rows_affected();
+    }
+
+    // canonical_passages may have just gained ~31k rows (KJV mint).
+    sqlx::query("ANALYZE canonical_passages")
+        .execute(&mut **tx)
+        .await?;
+
+    let stamped = sqlx::query(
+        r#"WITH wr AS (
+               SELECT COALESCE(s.translation_of_id, s.id) AS root
+               FROM books b JOIN sources s ON s.id = b.source_id
+               WHERE b.id = $1
+           ),
+           resolved AS (
+               SELECT se.id AS sentence_id,
+                      CASE WHEN cta.book_id IS NULL THEN tn.source_ref
+                           ELSE cta.canonical_source_ref END AS c_ref,
+                      CASE WHEN cta.book_id IS NULL THEN pm.ref_value
+                           ELSE cta.canonical_ref_value END AS c_val
+               FROM sentences se
+               JOIN page_markers pm ON pm.sentence_id = se.id
+               JOIN reference_systems rs
+                 ON rs.id = pm.system_id AND rs.slug = 'verse' AND rs.book_id = $1
+               JOIN toc_nodes tn ON tn.id = se.node_id
+               LEFT JOIN cross_translation_alignments cta
+                      ON cta.book_id = $1
+                     AND cta.system_slug = 'verse'
+                     AND cta.source_ref = tn.source_ref
+                     AND cta.local_ref_value = pm.ref_value
+               WHERE se.book_id = $1
+           )
+           UPDATE sentences se
+           SET canonical_passage_id = cp.id
+           FROM resolved r
+           JOIN canonical_passages cp
+             ON cp.basis = 'verse'
+            AND cp.source_ref = r.c_ref
+            AND cp.ref_value = r.c_val,
+           wr
+           WHERE se.id = r.sentence_id
+             AND cp.work_root = wr.root
+             AND se.canonical_passage_id IS DISTINCT FROM cp.id"#,
+    )
+    .bind(book_id)
+    .execute(&mut **tx)
+    .await?
+    .rows_affected();
+
+    Ok((minted, stamped))
+}
 
 /// Seed cross_translation_alignments rows for this translation. Returns
 /// the number of rows inserted. Translations that match canonical (KJV,
