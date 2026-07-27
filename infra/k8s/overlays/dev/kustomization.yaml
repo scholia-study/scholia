@@ -37,9 +37,9 @@ generators:
 # values are overwritten on the first CI run after this lands.
 images:
   - name: ghcr.io/scholia-study/scholia-api
-    newTag: main-2f500c6
+    newTag: main-3ab8c18
   - name: ghcr.io/scholia-study/scholia-web
-    newTag: main-8f7b8b6
+    newTag: main-3ab8c18
   - name: ghcr.io/scholia-study/scholia-proxy
     newTag: main-60adb7c
 
