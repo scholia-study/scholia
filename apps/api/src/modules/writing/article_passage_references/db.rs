@@ -216,6 +216,7 @@ struct PassageArticleRow {
     author_display_name: String,
     author_handle: Option<String>,
     published_at: Option<time::OffsetDateTime>,
+    origins: serde_json::Value,
     total: i64,
 }
 
@@ -301,7 +302,7 @@ pub async fn list_article_references(
                      AND va.local_ref_value = pm.ref_value
            ),
            matches AS (
-               SELECT DISTINCT apr.article_id
+               SELECT DISTINCT apr.article_id, apr.book_id
                FROM article_passage_references apr
                CROSS JOIN target t
                JOIN books pb ON pb.id = apr.book_id
@@ -380,11 +381,17 @@ pub async fn list_article_references(
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
                   a.published_at,
+                  jsonb_agg(DISTINCT jsonb_build_object(
+                      'book_slug', mb.slug, 'language', mb.language
+                  )) AS "origins!",
                   COUNT(*) OVER () AS "total!"
            FROM matches m
+           JOIN books mb ON mb.id = m.book_id
            JOIN articles a ON a.id = m.article_id
            JOIN users u ON u.id = a.user_id
            WHERE a.status IN ('published', 'archived')
+           GROUP BY a.id, a.slug, a.title, u.id, u.display_name,
+                    u.handle, a.published_at
            ORDER BY a.published_at DESC NULLS LAST, a.id
            LIMIT $5 OFFSET $6"#,
         book_id,
@@ -408,6 +415,9 @@ pub async fn list_article_references(
             author_display_name: r.author_display_name,
             author_handle: r.author_handle,
             published_at: r.published_at.map(fmt_time),
+            // Shape is fixed by the jsonb_build_object above; a parse
+            // failure would be a programming error, not data.
+            origins: serde_json::from_value(r.origins).unwrap_or_default(),
         })
         .collect();
     Ok((articles, total))

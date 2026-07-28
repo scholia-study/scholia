@@ -4762,6 +4762,19 @@
                     }
                 }
             },
+            "PassageArticleOrigin": {
+                "type": "object",
+                "description": "One edition an article's matched references anchor on.",
+                "required": ["book_slug", "language"],
+                "properties": {
+                    "book_slug": {
+                        "type": "string"
+                    },
+                    "language": {
+                        "type": "string"
+                    }
+                }
+            },
             "PassageArticleResponse": {
                 "type": "object",
                 "required": [
@@ -4769,7 +4782,8 @@
                     "slug",
                     "title",
                     "author_user_id",
-                    "author_display_name"
+                    "author_display_name",
+                    "origins"
                 ],
                 "properties": {
                     "author_display_name": {
@@ -4784,6 +4798,13 @@
                     },
                     "id": {
                         "type": "string"
+                    },
+                    "origins": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PassageArticleOrigin"
+                        },
+                        "description": "The editions whose passages this article's matched references\nanchor on, for the selection being viewed. Contains the requested\nbook itself when the article quotes it directly; other entries\nmean the article reached this selection across editions (ADR\n0008) — the reader badges those by language/edition."
                     },
                     "published_at": {
                         "type": ["string", "null"]

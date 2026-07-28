@@ -83,6 +83,7 @@ export * from "./noteWithContextResponse.ts";
 export * from "./pageMarkerResponse.ts";
 export * from "./parentSourceResponse.ts";
 export * from "./passageArticleListResponse.ts";
+export * from "./passageArticleOrigin.ts";
 export * from "./passageArticleResponse.ts";
 export * from "./personResponse.ts";
 export * from "./portalSessionResponse.ts";

@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { PassageArticleOrigin } from "./passageArticleOrigin.ts";
 
 export interface PassageArticleResponse {
     author_display_name: string;
@@ -16,6 +17,14 @@ export interface PassageArticleResponse {
     author_handle?: string | null;
     author_user_id: string;
     id: string;
+    /**
+     * The editions whose passages this article's matched references
+     * anchor on, for the selection being viewed. Contains the requested
+     * book itself when the article quotes it directly; other entries
+     * mean the article reached this selection across editions (ADR
+     * 0008) — the reader badges those by language/edition.
+     */
+    origins: PassageArticleOrigin[];
     /** @nullable */
     published_at?: string | null;
     slug: string;

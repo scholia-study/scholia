@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useListArticleReferencesInfinite } from "../../../api/articles/articles";
+import { useGetBook } from "../../../api/books/books";
 import type {
     FootnoteSentenceResponse,
+    PassageArticleOrigin,
     SentenceResponse,
 } from "../../../api/model";
 import { getSentenceRange } from "./CommentaryView";
@@ -22,11 +24,55 @@ interface ArticleReferencesViewProps {
  * across all translations of the same work. One entry per article,
  * newest first.
  */
+/** Cross-edition origin chips, mirroring CommentaryEntry's badge model:
+ *  prominent language chip when the article quotes another language's
+ *  edition, subtle "other ed." when it quotes a same-language sibling.
+ *  Nothing renders for articles quoting the current book directly. */
+function OriginChips({
+    origins,
+    bookSlug,
+    bookLanguage,
+}: {
+    origins: PassageArticleOrigin[];
+    bookSlug: string;
+    bookLanguage?: string;
+}) {
+    const foreign = origins.filter((o) => o.book_slug !== bookSlug);
+    if (foreign.length === 0) return null;
+    return (
+        <>
+            {foreign.map((o) =>
+                o.language !== bookLanguage ? (
+                    <span
+                        key={o.book_slug}
+                        className="shrink-0 text-[10px] uppercase tracking-wide font-medium text-indigo-700 bg-indigo-50 rounded px-1 py-0.5"
+                        title={`Quotes the ${o.book_slug} edition`}
+                    >
+                        {o.language}
+                    </span>
+                ) : (
+                    <span
+                        key={o.book_slug}
+                        className="shrink-0 text-[10px] uppercase tracking-wide text-stone-500 border border-stone-300 rounded px-1 py-0.5"
+                        title={`Quotes the ${o.book_slug} edition`}
+                    >
+                        other ed.
+                    </span>
+                ),
+            )}
+        </>
+    );
+}
+
 export function ArticleReferencesView({
     bookSlug,
     selectedSentence,
 }: ArticleReferencesViewProps) {
     const range = getSentenceRange(selectedSentence);
+
+    // Warm cache hit — TextPanel fetches the same book detail.
+    const { data: bookData } = useGetBook(bookSlug);
+    const bookLanguage = bookData?.data?.language;
 
     const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
         useListArticleReferencesInfinite(
@@ -88,8 +134,15 @@ export function ArticleReferencesView({
                     rel="noopener"
                     className="block p-2 border border-stone-100 rounded bg-white group hover:border-stone-300"
                 >
-                    <div className="text-sm font-medium text-stone-800 group-hover:underline">
-                        {article.title}
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-medium text-stone-800 group-hover:underline truncate">
+                            {article.title}
+                        </span>
+                        <OriginChips
+                            origins={article.origins}
+                            bookSlug={bookSlug}
+                            bookLanguage={bookLanguage}
+                        />
                     </div>
                     <div className="flex items-center gap-2 text-xs text-stone-400 mt-0.5">
                         <span>{article.author_display_name}</span>
