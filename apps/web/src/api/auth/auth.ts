@@ -27,6 +27,7 @@ import type {
     AuthResponse,
     ForgotPasswordRequest,
     GithubCallbackParams,
+    GoogleCallbackParams,
     LoginRequest,
     MessageResponse,
     ProfileResponse,
@@ -424,7 +425,7 @@ export type githubCallbackResponseError = githubCallbackResponse302 & {
 
 export type githubCallbackResponse = githubCallbackResponseError;
 
-export const getGithubCallbackUrl = (params: GithubCallbackParams) => {
+export const getGithubCallbackUrl = (params?: GithubCallbackParams) => {
     const normalizedParams = new URLSearchParams();
 
     Object.entries(params || {}).forEach(([key, value]) => {
@@ -447,7 +448,7 @@ export const getGithubCallbackUrl = (params: GithubCallbackParams) => {
  * @summary Handle GitHub OAuth callback
  */
 export const githubCallback = async (
-    params: GithubCallbackParams,
+    params?: GithubCallbackParams,
     options?: RequestInit,
 ): Promise<githubCallbackResponse> => {
     return customFetch<githubCallbackResponse>(getGithubCallbackUrl(params), {
@@ -464,7 +465,7 @@ export const getGithubCallbackQueryOptions = <
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
 >(
-    params: GithubCallbackParams,
+    params?: GithubCallbackParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -501,7 +502,7 @@ export function useGithubCallback<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
 >(
-    params: GithubCallbackParams,
+    params: undefined | GithubCallbackParams,
     options: {
         query: Partial<
             UseQueryOptions<
@@ -528,7 +529,7 @@ export function useGithubCallback<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
 >(
-    params: GithubCallbackParams,
+    params?: GithubCallbackParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -555,7 +556,7 @@ export function useGithubCallback<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
 >(
-    params: GithubCallbackParams,
+    params?: GithubCallbackParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -578,7 +579,7 @@ export function useGithubCallback<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
 >(
-    params: GithubCallbackParams,
+    params?: GithubCallbackParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -607,7 +608,7 @@ export const getGithubCallbackSuspenseQueryOptions = <
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
 >(
-    params: GithubCallbackParams,
+    params?: GithubCallbackParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -644,7 +645,7 @@ export function useGithubCallbackSuspense<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
 >(
-    params: GithubCallbackParams,
+    params: undefined | GithubCallbackParams,
     options: {
         query: Partial<
             UseSuspenseQueryOptions<
@@ -663,7 +664,7 @@ export function useGithubCallbackSuspense<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
 >(
-    params: GithubCallbackParams,
+    params?: GithubCallbackParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -682,7 +683,7 @@ export function useGithubCallbackSuspense<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
 >(
-    params: GithubCallbackParams,
+    params?: GithubCallbackParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -705,7 +706,7 @@ export function useGithubCallbackSuspense<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
 >(
-    params: GithubCallbackParams,
+    params?: GithubCallbackParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -721,6 +722,606 @@ export function useGithubCallbackSuspense<
     queryKey: DataTag<QueryKey, TData, TError>;
 } {
     const queryOptions = getGithubCallbackSuspenseQueryOptions(params, options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export type googleLoginResponse302 = {
+    data: void;
+    status: 302;
+};
+export type googleLoginResponseError = googleLoginResponse302 & {
+    headers: Headers;
+};
+
+export type googleLoginResponse = googleLoginResponseError;
+
+export const getGoogleLoginUrl = () => {
+    return `/api/auth/google`;
+};
+
+/**
+ * @summary Redirect to Google OAuth
+ */
+export const googleLogin = async (
+    options?: RequestInit,
+): Promise<googleLoginResponse> => {
+    return customFetch<googleLoginResponse>(getGoogleLoginUrl(), {
+        ...options,
+        method: "GET",
+    });
+};
+
+export const getGoogleLoginQueryKey = () => {
+    return [`/api/auth/google`] as const;
+};
+
+export const getGoogleLoginQueryOptions = <
+    TData = Awaited<ReturnType<typeof googleLogin>>,
+    TError = void,
+>(options?: {
+    query?: Partial<
+        UseQueryOptions<Awaited<ReturnType<typeof googleLogin>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getGoogleLoginQueryKey();
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof googleLogin>>> = ({
+        signal,
+    }) => googleLogin({ signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof googleLogin>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GoogleLoginQueryResult = NonNullable<
+    Awaited<ReturnType<typeof googleLogin>>
+>;
+export type GoogleLoginQueryError = void;
+
+export function useGoogleLogin<
+    TData = Awaited<ReturnType<typeof googleLogin>>,
+    TError = void,
+>(
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof googleLogin>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof googleLogin>>,
+                    TError,
+                    Awaited<ReturnType<typeof googleLogin>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGoogleLogin<
+    TData = Awaited<ReturnType<typeof googleLogin>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof googleLogin>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof googleLogin>>,
+                    TError,
+                    Awaited<ReturnType<typeof googleLogin>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGoogleLogin<
+    TData = Awaited<ReturnType<typeof googleLogin>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof googleLogin>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Redirect to Google OAuth
+ */
+
+export function useGoogleLogin<
+    TData = Awaited<ReturnType<typeof googleLogin>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof googleLogin>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGoogleLoginQueryOptions(options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getGoogleLoginSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof googleLogin>>,
+    TError = void,
+>(options?: {
+    query?: Partial<
+        UseSuspenseQueryOptions<
+            Awaited<ReturnType<typeof googleLogin>>,
+            TError,
+            TData
+        >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getGoogleLoginQueryKey();
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof googleLogin>>> = ({
+        signal,
+    }) => googleLogin({ signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof googleLogin>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GoogleLoginSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof googleLogin>>
+>;
+export type GoogleLoginSuspenseQueryError = void;
+
+export function useGoogleLoginSuspense<
+    TData = Awaited<ReturnType<typeof googleLogin>>,
+    TError = void,
+>(
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof googleLogin>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGoogleLoginSuspense<
+    TData = Awaited<ReturnType<typeof googleLogin>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof googleLogin>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGoogleLoginSuspense<
+    TData = Awaited<ReturnType<typeof googleLogin>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof googleLogin>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Redirect to Google OAuth
+ */
+
+export function useGoogleLoginSuspense<
+    TData = Awaited<ReturnType<typeof googleLogin>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof googleLogin>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGoogleLoginSuspenseQueryOptions(options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export type googleCallbackResponse302 = {
+    data: void;
+    status: 302;
+};
+export type googleCallbackResponseError = googleCallbackResponse302 & {
+    headers: Headers;
+};
+
+export type googleCallbackResponse = googleCallbackResponseError;
+
+export const getGoogleCallbackUrl = (params?: GoogleCallbackParams) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : String(value),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `/api/auth/google/callback?${stringifiedParams}`
+        : `/api/auth/google/callback`;
+};
+
+/**
+ * @summary Handle Google OAuth callback
+ */
+export const googleCallback = async (
+    params?: GoogleCallbackParams,
+    options?: RequestInit,
+): Promise<googleCallbackResponse> => {
+    return customFetch<googleCallbackResponse>(getGoogleCallbackUrl(params), {
+        ...options,
+        method: "GET",
+    });
+};
+
+export const getGoogleCallbackQueryKey = (params?: GoogleCallbackParams) => {
+    return [`/api/auth/google/callback`, ...(params ? [params] : [])] as const;
+};
+
+export const getGoogleCallbackQueryOptions = <
+    TData = Awaited<ReturnType<typeof googleCallback>>,
+    TError = void,
+>(
+    params?: GoogleCallbackParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof googleCallback>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getGoogleCallbackQueryKey(params);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof googleCallback>>
+    > = ({ signal }) => googleCallback(params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof googleCallback>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GoogleCallbackQueryResult = NonNullable<
+    Awaited<ReturnType<typeof googleCallback>>
+>;
+export type GoogleCallbackQueryError = void;
+
+export function useGoogleCallback<
+    TData = Awaited<ReturnType<typeof googleCallback>>,
+    TError = void,
+>(
+    params: undefined | GoogleCallbackParams,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof googleCallback>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof googleCallback>>,
+                    TError,
+                    Awaited<ReturnType<typeof googleCallback>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGoogleCallback<
+    TData = Awaited<ReturnType<typeof googleCallback>>,
+    TError = void,
+>(
+    params?: GoogleCallbackParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof googleCallback>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof googleCallback>>,
+                    TError,
+                    Awaited<ReturnType<typeof googleCallback>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGoogleCallback<
+    TData = Awaited<ReturnType<typeof googleCallback>>,
+    TError = void,
+>(
+    params?: GoogleCallbackParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof googleCallback>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Handle Google OAuth callback
+ */
+
+export function useGoogleCallback<
+    TData = Awaited<ReturnType<typeof googleCallback>>,
+    TError = void,
+>(
+    params?: GoogleCallbackParams,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof googleCallback>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGoogleCallbackQueryOptions(params, options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getGoogleCallbackSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof googleCallback>>,
+    TError = void,
+>(
+    params?: GoogleCallbackParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof googleCallback>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getGoogleCallbackQueryKey(params);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof googleCallback>>
+    > = ({ signal }) => googleCallback(params, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof googleCallback>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GoogleCallbackSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof googleCallback>>
+>;
+export type GoogleCallbackSuspenseQueryError = void;
+
+export function useGoogleCallbackSuspense<
+    TData = Awaited<ReturnType<typeof googleCallback>>,
+    TError = void,
+>(
+    params: undefined | GoogleCallbackParams,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof googleCallback>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGoogleCallbackSuspense<
+    TData = Awaited<ReturnType<typeof googleCallback>>,
+    TError = void,
+>(
+    params?: GoogleCallbackParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof googleCallback>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGoogleCallbackSuspense<
+    TData = Awaited<ReturnType<typeof googleCallback>>,
+    TError = void,
+>(
+    params?: GoogleCallbackParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof googleCallback>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Handle Google OAuth callback
+ */
+
+export function useGoogleCallbackSuspense<
+    TData = Awaited<ReturnType<typeof googleCallback>>,
+    TError = void,
+>(
+    params?: GoogleCallbackParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof googleCallback>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getGoogleCallbackSuspenseQueryOptions(params, options);
 
     const query = useSuspenseQuery(
         queryOptions,

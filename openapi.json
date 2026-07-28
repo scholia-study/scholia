@@ -1020,7 +1020,7 @@
                         "name": "code",
                         "in": "query",
                         "description": "Authorization code",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
@@ -1029,7 +1029,69 @@
                         "name": "state",
                         "in": "query",
                         "description": "CSRF state",
-                        "required": true,
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "error",
+                        "in": "query",
+                        "description": "Provider-side error (e.g. user cancelled)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Redirect to frontend"
+                    }
+                }
+            }
+        },
+        "/api/auth/google": {
+            "get": {
+                "tags": ["auth"],
+                "summary": "Redirect to Google OAuth",
+                "operationId": "google_login",
+                "responses": {
+                    "302": {
+                        "description": "Redirect to Google"
+                    }
+                }
+            }
+        },
+        "/api/auth/google/callback": {
+            "get": {
+                "tags": ["auth"],
+                "summary": "Handle Google OAuth callback",
+                "operationId": "google_callback",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "Authorization code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "query",
+                        "description": "CSRF state",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "error",
+                        "in": "query",
+                        "description": "Provider-side error (e.g. user cancelled)",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }

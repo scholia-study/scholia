@@ -94,7 +94,7 @@ spec:
           envFrom:
             # Pulls every other env var the API needs:
             # RESEND_API_KEY, FROM_EMAIL, BACKEND_URL, FRONTEND_URL,
-            # GITHUB_CLIENT_ID/SECRET/REDIRECT_URI, STRIPE_API_KEY,
+            # GITHUB_CLIENT_ID/SECRET, GOOGLE_CLIENT_ID/SECRET, STRIPE_API_KEY,
             # STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_BASE/MID/HIGH.
             # Authored as a SOPS-encrypted manifest in the overlay.
             - secretRef:

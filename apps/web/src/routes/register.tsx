@@ -145,12 +145,18 @@ function RegisterPage() {
                     </button>
                 </form>
 
-                <div className="mt-4">
+                <div className="mt-4 space-y-2">
                     <a
                         href={`${config.API_BASE_URL}/api/auth/github`}
                         className="block w-full py-2 text-center rounded border border-stone-300 bg-white hover:bg-stone-50 transition-colors text-stone-800"
                     >
                         Sign up with GitHub
+                    </a>
+                    <a
+                        href={`${config.API_BASE_URL}/api/auth/google`}
+                        className="block w-full py-2 text-center rounded border border-[#EA4335] bg-[#EA4335] hover:bg-[#C5221F] hover:border-[#C5221F] transition-colors text-white"
+                    >
+                        Sign up with Google
                     </a>
                 </div>
 

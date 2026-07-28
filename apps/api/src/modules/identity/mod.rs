@@ -1,5 +1,5 @@
 //! The identity domain: account lifecycle (registration, login, sessions,
-//! email verification, password reset, profile), GitHub OAuth, and public
+//! email verification, password reset, profile), OAuth login, and public
 //! user profiles. The `accounts` feature owns the user persistence and DTOs
 //! that `oauth` and `profiles` build on. Cross-cutting auth *plumbing*
 //! (session middleware, the `AuthSession`/`AuthUser` extractors, the
@@ -29,8 +29,10 @@ pub fn rate_limited_router() -> OpenApiRouter<AppState> {
         .routes(utoipa_axum::routes!(accounts::handlers::forgot_password))
         .routes(utoipa_axum::routes!(accounts::handlers::reset_password))
         .routes(utoipa_axum::routes!(accounts::handlers::verify_email))
-        .routes(utoipa_axum::routes!(oauth::handlers::github_login))
-        .routes(utoipa_axum::routes!(oauth::handlers::github_callback))
+        .routes(utoipa_axum::routes!(oauth::github_login))
+        .routes(utoipa_axum::routes!(oauth::github_callback))
+        .routes(utoipa_axum::routes!(oauth::google_login))
+        .routes(utoipa_axum::routes!(oauth::google_callback))
 }
 
 /// Authenticated profile management.

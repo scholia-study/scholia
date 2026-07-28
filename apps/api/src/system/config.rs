@@ -12,7 +12,14 @@ pub struct AppConfig {
     pub frontend_url: String,
     pub github_client_id: String,
     pub github_client_secret: String,
+    pub google_client_id: String,
+    pub google_client_secret: String,
+    /// Callback URLs, derived from `backend_url` rather than configured: they
+    /// are routes on a host we already know, and hand-writing them is how they
+    /// drift from what's registered in the provider's console. Each must match
+    /// its console entry exactly.
     pub github_redirect_uri: String,
+    pub google_redirect_uri: String,
     pub stripe_api_key: String,
     pub stripe_webhook_secret: String,
     pub stripe_price_base: String,
@@ -26,6 +33,16 @@ pub struct AppConfig {
 
 impl AppConfig {
     pub fn from_env() -> Self {
+        let backend_url = env::var("BACKEND_URL").expect("BACKEND_URL must be set");
+        let callback_uri = |provider: &str| {
+            format!(
+                "{}/api/auth/{provider}/callback",
+                backend_url.trim_end_matches('/')
+            )
+        };
+        let github_redirect_uri = callback_uri("github");
+        let google_redirect_uri = callback_uri("google");
+
         let cfg = Self {
             // Secure-by-default; only the literal "false" opts out (local dev).
             cookie_secure: env::var("COOKIE_SECURE")
@@ -33,13 +50,16 @@ impl AppConfig {
                 .unwrap_or(true),
             resend_api_key: env::var("RESEND_API_KEY").expect("RESEND_API_KEY must be set"),
             from_email: env::var("FROM_EMAIL").expect("FROM_EMAIL must be set"),
-            backend_url: env::var("BACKEND_URL").expect("BACKEND_URL must be set"),
             frontend_url: env::var("FRONTEND_URL").expect("FRONTEND_URL must be set"),
             github_client_id: env::var("GITHUB_CLIENT_ID").expect("GITHUB_CLIENT_ID must be set"),
             github_client_secret: env::var("GITHUB_CLIENT_SECRET")
                 .expect("GITHUB_CLIENT_SECRET must be set"),
-            github_redirect_uri: env::var("GITHUB_REDIRECT_URI")
-                .expect("GITHUB_REDIRECT_URI must be set"),
+            google_client_id: env::var("GOOGLE_CLIENT_ID").expect("GOOGLE_CLIENT_ID must be set"),
+            google_client_secret: env::var("GOOGLE_CLIENT_SECRET")
+                .expect("GOOGLE_CLIENT_SECRET must be set"),
+            github_redirect_uri,
+            google_redirect_uri,
+            backend_url,
             stripe_api_key: env::var("STRIPE_API_KEY").expect("STRIPE_API_KEY must be set"),
             stripe_webhook_secret: env::var("STRIPE_WEBHOOK_SECRET")
                 .expect("STRIPE_WEBHOOK_SECRET must be set"),

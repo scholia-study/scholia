@@ -83,7 +83,9 @@ function LoginPage() {
                     <div className="mb-4 p-3 rounded bg-red-50 text-red-800 text-sm border border-red-200">
                         {queryError === "invalid_token"
                             ? "Invalid or expired verification link."
-                            : `Authentication error: ${queryError}`}
+                            : queryError === "oauth_cancelled"
+                              ? "Sign-in was cancelled."
+                              : `Authentication error: ${queryError}`}
                     </div>
                 )}
 
@@ -135,12 +137,18 @@ function LoginPage() {
                     </button>
                 </form>
 
-                <div className="mt-4">
+                <div className="mt-4 space-y-2">
                     <a
                         href={`${config.API_BASE_URL}/api/auth/github`}
                         className="block w-full py-2 text-center rounded border border-stone-300 bg-white hover:bg-stone-50 transition-colors text-stone-800"
                     >
                         Sign in with GitHub
+                    </a>
+                    <a
+                        href={`${config.API_BASE_URL}/api/auth/google`}
+                        className="block w-full py-2 text-center rounded border border-[#EA4335] bg-[#EA4335] hover:bg-[#C5221F] hover:border-[#C5221F] transition-colors text-white"
+                    >
+                        Sign in with Google
                     </a>
                 </div>
 
