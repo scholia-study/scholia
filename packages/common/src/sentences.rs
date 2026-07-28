@@ -427,7 +427,13 @@ fn track_tags_in_segment(segment: &str, open_tags: &mut Vec<String>) {
             }
 
             // Only track inline formatting tags
-            if matches!(tag_name, "i" | "b" | "sup" | "sub" | "span") {
+            // Inline formatting tags worth re-balancing across sentence
+            // splits: the corpus set (i/b/sup/sub/span) plus the tags
+            // pulldown-cmark emits for markdown articles.
+            if matches!(
+                tag_name,
+                "i" | "b" | "sup" | "sub" | "span" | "em" | "strong" | "code" | "a" | "del"
+            ) {
                 if is_closing {
                     // Remove the last matching open tag (match by tag name prefix)
                     if let Some(pos) = open_tags

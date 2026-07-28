@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT user_id FROM articles WHERE id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "user_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false]
+    },
+    "hash": "a012d4599bf483788c13b11808769ad1e583994db8a77d7b8c059b968af44b60"
+}

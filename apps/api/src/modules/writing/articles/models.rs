@@ -59,6 +59,10 @@ pub struct ArticleResponse {
     /// Editor/admin-applied editorial labels. Empty for drafts and for
     /// articles no editor has chipped. Ordered by `editorial_labels.sort_order`.
     pub labels: Vec<EditorialLabelResponse>,
+    /// Pending review request on this article, if any. Owner-facing
+    /// listings only; absent on public endpoints.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pending_review_request_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub published_at: Option<String>,
     pub created_at: String,
@@ -88,6 +92,14 @@ pub struct ArticleDetailResponse {
     /// Frontend uses this to toast the author.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub revoked_labels: Vec<EditorialLabelResponse>,
+    /// Pending review request on this article, if any. Populated for the
+    /// owner (`get_user_article`) only; absent on public endpoints.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pending_review_request_id: Option<String>,
+    /// Most recent review request of any status (owner only) — the
+    /// author's entry point to the review page and its history.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub latest_review_request_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub published_at: Option<String>,
     pub created_at: String,

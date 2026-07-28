@@ -43,6 +43,13 @@ pub const MAX_RESOURCE_SUBMISSIONS_PER_DAY: i64 = 20;
 pub const MAX_ARTICLE_QUOTATION_TEXT: usize = 50_000;
 pub const MAX_ARTICLE_QUOTATION_HTML: usize = 100_000;
 
+pub const MAX_REVIEW_MESSAGE: usize = 4_000;
+pub const MAX_REVIEW_COMMENT: usize = 4_000;
+pub const MAX_REVIEW_QUOTED_TEXT: usize = 5_000;
+pub const MAX_REVIEW_REQUESTS_PER_DAY: i64 = 10;
+/// Combined cap on channel messages + comments + replies per user/24h.
+pub const MAX_REVIEW_POSTS_PER_DAY: i64 = 200;
+
 pub const MAX_EMAIL: usize = 254;
 pub const MAX_DISPLAY_NAME: usize = 100;
 pub const MIN_PASSWORD: usize = 8;

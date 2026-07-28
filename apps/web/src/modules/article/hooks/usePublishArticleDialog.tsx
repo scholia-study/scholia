@@ -54,6 +54,11 @@ export function usePublishArticleDialog({
                         references
                     </li>
                 </ul>
+                <DialogContentText sx={{ fontSize: "0.875rem", mb: 1.5 }}>
+                    You can also submit this draft for review and let the
+                    ediorial team at Scholia publish it with a seal of approval
+                    if it shows good scholarly merit.
+                </DialogContentText>
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 2 }}>
                 <Button onClick={close} size="small">

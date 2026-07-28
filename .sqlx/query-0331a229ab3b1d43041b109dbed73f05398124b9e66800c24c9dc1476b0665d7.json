@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\"\n           FROM article_review_requests\n           WHERE status::TEXT = ANY($1)",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["TextArray"]
+        },
+        "nullable": [null]
+    },
+    "hash": "0331a229ab3b1d43041b109dbed73f05398124b9e66800c24c9dc1476b0665d7"
+}

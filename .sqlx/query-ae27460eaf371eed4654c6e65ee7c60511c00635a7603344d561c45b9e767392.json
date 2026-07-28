@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\"\n           FROM article_review_requests arr\n           JOIN articles a ON a.id = arr.article_id\n           WHERE a.user_id = $1 AND arr.submitted_at > now() - INTERVAL '24 hours'",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "ae27460eaf371eed4654c6e65ee7c60511c00635a7603344d561c45b9e767392"
+}

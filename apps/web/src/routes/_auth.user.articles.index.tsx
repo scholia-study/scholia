@@ -340,6 +340,23 @@ function ArticleRow({
                         color={statusColor(article.status) as "default"}
                         sx={{ fontSize: "0.65rem", height: 20 }}
                     />
+                    {article.pending_review_request_id && (
+                        <Link
+                            to="/articles/review/$requestId"
+                            params={{
+                                requestId: article.pending_review_request_id,
+                            }}
+                            className="inline-flex items-center"
+                        >
+                            <Chip
+                                label="in review"
+                                size="small"
+                                color="info"
+                                clickable
+                                sx={{ fontSize: "0.65rem", height: 20 }}
+                            />
+                        </Link>
+                    )}
                 </div>
                 <div className="flex items-center gap-2">
                     {article.topics.map((t) => (

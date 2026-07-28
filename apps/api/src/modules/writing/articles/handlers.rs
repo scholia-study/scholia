@@ -70,12 +70,27 @@ pub async fn list_user_articles(
     user.require_permission(Permission::ArticlesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
-    let articles = crate::modules::writing::articles::db::list_user_articles(
+    let mut articles = crate::modules::writing::articles::db::list_user_articles(
         &state.pool,
         user.id,
         params.status.as_deref(),
     )
     .await?;
+
+    let article_ids: Vec<uuid::Uuid> = articles
+        .iter()
+        .filter_map(|a| uuid::Uuid::parse_str(&a.id).ok())
+        .collect();
+    let pending = crate::modules::writing::article_reviews::db::pending_requests_for_articles(
+        &state.pool,
+        &article_ids,
+    )
+    .await?;
+    for article in &mut articles {
+        if let Ok(id) = uuid::Uuid::parse_str(&article.id) {
+            article.pending_review_request_id = pending.get(&id).map(|r| r.to_string());
+        }
+    }
 
     let limits = crate::modules::writing::articles::db::get_article_limits_response(
         &state.pool,
@@ -107,12 +122,23 @@ pub async fn get_user_article(
     user.require_permission(Permission::ArticlesCreate)
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
-    let article = crate::modules::writing::articles::db::get_user_article_by_slug(
+    let mut article = crate::modules::writing::articles::db::get_user_article_by_slug(
         &state.pool,
         &slug,
         user.id,
     )
     .await?;
+
+    let article_id = uuid::Uuid::parse_str(&article.id)
+        .map_err(|_| AppError::Internal("Invalid article id".into()))?;
+    let (pending, latest) = crate::modules::writing::article_reviews::db::request_ids_for_article(
+        &state.pool,
+        article_id,
+    )
+    .await?;
+    article.pending_review_request_id = pending.map(|id| id.to_string());
+    article.latest_review_request_id = latest.map(|id| id.to_string());
+
     Ok(Json(article))
 }
 
@@ -235,7 +261,15 @@ pub async fn archive_article(
         )));
     }
 
-    crate::modules::writing::articles::db::archive_article(&state.pool, &slug, user.id).await?;
+    let article_id =
+        crate::modules::writing::articles::db::archive_article(&state.pool, &slug, user.id).await?;
+    // A pending review request on an archived article has nothing left
+    // to review — withdraw it rather than leaving it in the queue.
+    crate::modules::writing::article_reviews::db::withdraw_pending_for_article(
+        &state.pool,
+        article_id,
+    )
+    .await?;
     let mut paths = article_cache_paths(&slug);
     paths.extend(sitemap_cache_paths());
     cache::invalidate(&state, paths);
@@ -246,7 +280,8 @@ pub async fn archive_article(
 /// or is removed. Listings get short-TTL'd already, but PURGEing them
 /// makes the change visible immediately rather than after the TTL.
 /// Draft-only changes purge nothing — no public URL serves a draft.
-fn article_cache_paths(slug: &str) -> Vec<String> {
+/// Shared with `article_reviews` (editor approval can publish).
+pub(crate) fn article_cache_paths(slug: &str) -> Vec<String> {
     vec![
         format!("/articles/{slug}"),
         "/articles".to_string(),
@@ -258,7 +293,8 @@ fn article_cache_paths(slug: &str) -> Vec<String> {
 /// Sitemap paths change only when the set of published articles (or
 /// qualifying author profiles) changes — publish/archive, not content
 /// edits, whose lastmod drift can ride out the 1h TTL.
-fn sitemap_cache_paths() -> Vec<String> {
+/// Shared with `article_reviews` (editor approval can publish).
+pub(crate) fn sitemap_cache_paths() -> Vec<String> {
     vec!["/sitemap.xml".to_string(), "/sitemaps/site.xml".to_string()]
 }
 

@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE article_review_requests\n           SET status = 'withdrawn', resolved_at = now(), updated_at = now()\n           WHERE article_id = $1 AND status = 'pending'",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "72221108e0c60de3edccb5064b37cd31b176a65ad14e28c67c0eb9f3295db615"
+}

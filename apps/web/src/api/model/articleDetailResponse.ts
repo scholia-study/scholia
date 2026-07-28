@@ -19,7 +19,19 @@ export interface ArticleDetailResponse {
     html: string;
     id: string;
     labels: EditorialLabelResponse[];
+    /**
+     * Most recent review request of any status (owner only) — the
+     * author's entry point to the review page and its history.
+     * @nullable
+     */
+    latest_review_request_id?: string | null;
     markdown: string;
+    /**
+     * Pending review request on this article, if any. Populated for the
+     * owner (`get_user_article`) only; absent on public endpoints.
+     * @nullable
+     */
+    pending_review_request_id?: string | null;
     /** @nullable */
     published_at?: string | null;
     /**

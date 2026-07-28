@@ -1,0 +1,101 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "WITH inserted AS (\n               INSERT INTO article_review_comments\n                   (request_id, parent_id, sender_id, block_index,\n                    sentence_start, sentence_end, quoted_text, body)\n               VALUES ($1, $2, $3, $4, $5, $6, $7, $8)\n               RETURNING id, request_id, parent_id, sender_id, block_index,\n                   sentence_start, sentence_end, quoted_text, body,\n                   resolved_at, created_at\n           )\n           SELECT i.id, i.request_id, i.parent_id, i.sender_id,\n               u.display_name AS \"sender_display_name?\",\n               u.handle AS \"sender_handle?\",\n               i.block_index, i.sentence_start, i.sentence_end,\n               i.quoted_text, i.body, i.resolved_at, i.created_at\n           FROM inserted i\n           LEFT JOIN users u ON u.id = i.sender_id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "request_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "parent_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 3,
+                "name": "sender_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 4,
+                "name": "sender_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "sender_handle?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "block_index",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 7,
+                "name": "sentence_start",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 8,
+                "name": "sentence_end",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 9,
+                "name": "quoted_text",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 10,
+                "name": "body",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 11,
+                "name": "resolved_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 12,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                "Uuid",
+                "Uuid",
+                "Int4",
+                "Int4",
+                "Int4",
+                "Text",
+                "Text"
+            ]
+        },
+        "nullable": [
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            false
+        ]
+    },
+    "hash": "b4a9f7ed9fbe93ec8ebafcfab0568d6b3e22d0d4192f078f71fec4a24a825173"
+}

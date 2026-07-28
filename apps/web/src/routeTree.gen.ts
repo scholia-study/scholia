@@ -36,6 +36,7 @@ import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
 import { Route as UsersByIdIdRouteImport } from './routes/users.by-id.$id'
+import { Route as AuthArticlesReviewRequestIdRouteImport } from './routes/_auth.articles.review.$requestId'
 import { Route as AuthUserArticlesIndexRouteImport } from './routes/_auth.user.articles.index'
 import { Route as AuthUserArticlesSlugRouteImport } from './routes/_auth.user.articles.$slug'
 import { Route as AuthUserSourcesIndexRouteImport } from './routes/_auth.user.sources.index'
@@ -43,6 +44,7 @@ import { Route as AuthUserSourcesIdRouteImport } from './routes/_auth.user.sourc
 import { Route as AuthAdminAdminFeedbackIndexRouteImport } from './routes/_auth._admin.admin.feedback.index'
 import { Route as AuthAdminAdminFeedbackIdRouteImport } from './routes/_auth._admin.admin.feedback.$id'
 import { Route as AuthAdminAdminUsersIndexRouteImport } from './routes/_auth._admin.admin.users.index'
+import { Route as AuthEditorEditorArticleReviewsIndexRouteImport } from './routes/_auth._editor.editor.article-reviews.index'
 import { Route as AuthEditorEditorResourceSubmissionsIndexRouteImport } from './routes/_auth._editor.editor.resource-submissions.index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -177,6 +179,12 @@ const UsersByIdIdRoute = UsersByIdIdRouteImport.update({
   path: '/users/by-id/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthArticlesReviewRequestIdRoute =
+  AuthArticlesReviewRequestIdRouteImport.update({
+    id: '/articles/review/$requestId',
+    path: '/articles/review/$requestId',
+    getParentRoute: () => AuthRoute,
+  } as any)
 const AuthUserArticlesIndexRoute = AuthUserArticlesIndexRouteImport.update({
   id: '/user/articles/',
   path: '/user/articles/',
@@ -215,6 +223,12 @@ const AuthAdminAdminUsersIndexRoute =
     path: '/admin/users/',
     getParentRoute: () => AuthAdminRoute,
   } as any)
+const AuthEditorEditorArticleReviewsIndexRoute =
+  AuthEditorEditorArticleReviewsIndexRouteImport.update({
+    id: '/editor/article-reviews/',
+    path: '/editor/article-reviews/',
+    getParentRoute: () => AuthEditorRoute,
+  } as any)
 const AuthEditorEditorResourceSubmissionsIndexRoute =
   AuthEditorEditorResourceSubmissionsIndexRouteImport.update({
     id: '/editor/resource-submissions/',
@@ -247,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/users/by-id/$id': typeof UsersByIdIdRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
+  '/articles/review/$requestId': typeof AuthArticlesReviewRequestIdRoute
   '/user/articles/$slug': typeof AuthUserArticlesSlugRoute
   '/user/sources/$id': typeof AuthUserSourcesIdRoute
   '/user/articles/': typeof AuthUserArticlesIndexRoute
@@ -254,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
   '/admin/feedback/': typeof AuthAdminAdminFeedbackIndexRoute
   '/admin/users/': typeof AuthAdminAdminUsersIndexRoute
+  '/editor/article-reviews/': typeof AuthEditorEditorArticleReviewsIndexRoute
   '/editor/resource-submissions/': typeof AuthEditorEditorResourceSubmissionsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -281,6 +297,7 @@ export interface FileRoutesByTo {
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/users/by-id/$id': typeof UsersByIdIdRoute
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
+  '/articles/review/$requestId': typeof AuthArticlesReviewRequestIdRoute
   '/user/articles/$slug': typeof AuthUserArticlesSlugRoute
   '/user/sources/$id': typeof AuthUserSourcesIdRoute
   '/user/articles': typeof AuthUserArticlesIndexRoute
@@ -288,6 +305,7 @@ export interface FileRoutesByTo {
   '/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
   '/admin/feedback': typeof AuthAdminAdminFeedbackIndexRoute
   '/admin/users': typeof AuthAdminAdminUsersIndexRoute
+  '/editor/article-reviews': typeof AuthEditorEditorArticleReviewsIndexRoute
   '/editor/resource-submissions': typeof AuthEditorEditorResourceSubmissionsIndexRoute
 }
 export interface FileRoutesById {
@@ -319,6 +337,7 @@ export interface FileRoutesById {
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/users/by-id/$id': typeof UsersByIdIdRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
+  '/_auth/articles/review/$requestId': typeof AuthArticlesReviewRequestIdRoute
   '/_auth/user/articles/$slug': typeof AuthUserArticlesSlugRoute
   '/_auth/user/sources/$id': typeof AuthUserSourcesIdRoute
   '/_auth/user/articles/': typeof AuthUserArticlesIndexRoute
@@ -326,6 +345,7 @@ export interface FileRoutesById {
   '/_auth/_admin/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
   '/_auth/_admin/admin/feedback/': typeof AuthAdminAdminFeedbackIndexRoute
   '/_auth/_admin/admin/users/': typeof AuthAdminAdminUsersIndexRoute
+  '/_auth/_editor/editor/article-reviews/': typeof AuthEditorEditorArticleReviewsIndexRoute
   '/_auth/_editor/editor/resource-submissions/': typeof AuthEditorEditorResourceSubmissionsIndexRoute
 }
 export interface FileRouteTypes {
@@ -355,6 +375,7 @@ export interface FileRouteTypes {
     | '/books/$bookSlug/$nodeSlug'
     | '/users/by-id/$id'
     | '/books/$bookSlug/'
+    | '/articles/review/$requestId'
     | '/user/articles/$slug'
     | '/user/sources/$id'
     | '/user/articles/'
@@ -362,6 +383,7 @@ export interface FileRouteTypes {
     | '/admin/feedback/$id'
     | '/admin/feedback/'
     | '/admin/users/'
+    | '/editor/article-reviews/'
     | '/editor/resource-submissions/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -389,6 +411,7 @@ export interface FileRouteTypes {
     | '/books/$bookSlug/$nodeSlug'
     | '/users/by-id/$id'
     | '/books/$bookSlug'
+    | '/articles/review/$requestId'
     | '/user/articles/$slug'
     | '/user/sources/$id'
     | '/user/articles'
@@ -396,6 +419,7 @@ export interface FileRouteTypes {
     | '/admin/feedback/$id'
     | '/admin/feedback'
     | '/admin/users'
+    | '/editor/article-reviews'
     | '/editor/resource-submissions'
   id:
     | '__root__'
@@ -426,6 +450,7 @@ export interface FileRouteTypes {
     | '/books/$bookSlug/$nodeSlug'
     | '/users/by-id/$id'
     | '/books/$bookSlug/'
+    | '/_auth/articles/review/$requestId'
     | '/_auth/user/articles/$slug'
     | '/_auth/user/sources/$id'
     | '/_auth/user/articles/'
@@ -433,6 +458,7 @@ export interface FileRouteTypes {
     | '/_auth/_admin/admin/feedback/$id'
     | '/_auth/_admin/admin/feedback/'
     | '/_auth/_admin/admin/users/'
+    | '/_auth/_editor/editor/article-reviews/'
     | '/_auth/_editor/editor/resource-submissions/'
   fileRoutesById: FileRoutesById
 }
@@ -652,6 +678,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersByIdIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/articles/review/$requestId': {
+      id: '/_auth/articles/review/$requestId'
+      path: '/articles/review/$requestId'
+      fullPath: '/articles/review/$requestId'
+      preLoaderRoute: typeof AuthArticlesReviewRequestIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/user/articles/': {
       id: '/_auth/user/articles/'
       path: '/user/articles'
@@ -701,6 +734,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdminAdminUsersIndexRouteImport
       parentRoute: typeof AuthAdminRoute
     }
+    '/_auth/_editor/editor/article-reviews/': {
+      id: '/_auth/_editor/editor/article-reviews/'
+      path: '/editor/article-reviews'
+      fullPath: '/editor/article-reviews/'
+      preLoaderRoute: typeof AuthEditorEditorArticleReviewsIndexRouteImport
+      parentRoute: typeof AuthEditorRoute
+    }
     '/_auth/_editor/editor/resource-submissions/': {
       id: '/_auth/_editor/editor/resource-submissions/'
       path: '/editor/resource-submissions'
@@ -728,10 +768,13 @@ const AuthAdminRouteWithChildren = AuthAdminRoute._addFileChildren(
 )
 
 interface AuthEditorRouteChildren {
+  AuthEditorEditorArticleReviewsIndexRoute: typeof AuthEditorEditorArticleReviewsIndexRoute
   AuthEditorEditorResourceSubmissionsIndexRoute: typeof AuthEditorEditorResourceSubmissionsIndexRoute
 }
 
 const AuthEditorRouteChildren: AuthEditorRouteChildren = {
+  AuthEditorEditorArticleReviewsIndexRoute:
+    AuthEditorEditorArticleReviewsIndexRoute,
   AuthEditorEditorResourceSubmissionsIndexRoute:
     AuthEditorEditorResourceSubmissionsIndexRoute,
 }
@@ -746,6 +789,7 @@ interface AuthRouteChildren {
   AuthUserNotesRoute: typeof AuthUserNotesRoute
   AuthUserProfileRoute: typeof AuthUserProfileRoute
   AuthUserQuotationsRoute: typeof AuthUserQuotationsRoute
+  AuthArticlesReviewRequestIdRoute: typeof AuthArticlesReviewRequestIdRoute
   AuthUserArticlesSlugRoute: typeof AuthUserArticlesSlugRoute
   AuthUserSourcesIdRoute: typeof AuthUserSourcesIdRoute
   AuthUserArticlesIndexRoute: typeof AuthUserArticlesIndexRoute
@@ -758,6 +802,7 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthUserNotesRoute: AuthUserNotesRoute,
   AuthUserProfileRoute: AuthUserProfileRoute,
   AuthUserQuotationsRoute: AuthUserQuotationsRoute,
+  AuthArticlesReviewRequestIdRoute: AuthArticlesReviewRequestIdRoute,
   AuthUserArticlesSlugRoute: AuthUserArticlesSlugRoute,
   AuthUserSourcesIdRoute: AuthUserSourcesIdRoute,
   AuthUserArticlesIndexRoute: AuthUserArticlesIndexRoute,

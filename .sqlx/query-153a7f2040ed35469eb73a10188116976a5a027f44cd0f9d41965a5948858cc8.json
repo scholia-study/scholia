@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE articles SET status = 'archived', updated_at = now()\n           WHERE slug = $1 AND user_id = $2 AND status = 'published'\n           RETURNING id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Uuid"]
+        },
+        "nullable": [false]
+    },
+    "hash": "153a7f2040ed35469eb73a10188116976a5a027f44cd0f9d41965a5948858cc8"
+}

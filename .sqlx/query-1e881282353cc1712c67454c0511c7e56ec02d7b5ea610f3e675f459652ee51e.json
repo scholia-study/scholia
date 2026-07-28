@@ -1,0 +1,43 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "WITH inserted AS (\n               INSERT INTO article_review_messages (article_id, sender_id, body)\n               VALUES ($1, $2, $3)\n               RETURNING id, sender_id, body, created_at\n           )\n           SELECT i.id, i.sender_id,\n               u.display_name AS \"sender_display_name?\",\n               u.handle AS \"sender_handle?\",\n               i.body, i.created_at\n           FROM inserted i\n           LEFT JOIN users u ON u.id = i.sender_id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "sender_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "sender_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "sender_handle?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "body",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Uuid", "Text"]
+        },
+        "nullable": [false, true, true, true, false, false]
+    },
+    "hash": "1e881282353cc1712c67454c0511c7e56ec02d7b5ea610f3e675f459652ee51e"
+}

@@ -27,6 +27,7 @@ import {
     useArchiveArticleDialog,
     usePublishArticleDialog,
 } from "../modules/article";
+import { ReviewControls } from "../modules/review";
 
 const MemoizedEditor = memo(
     ({
@@ -290,6 +291,7 @@ function ArticleEditorPage() {
                         </span>
                     </div>
                     <div className="flex items-center gap-2">
+                        <ReviewControls article={article} />
                         {article.status === "draft" && (
                             <Button
                                 size="small"
@@ -472,6 +474,7 @@ function ArticleEditorPage() {
                                     : ""
                             }
                             slotProps={{
+                                ...params.slotProps,
                                 input: {
                                     ...params.slotProps.input,
                                     disableUnderline: true,

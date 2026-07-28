@@ -6,6 +6,7 @@
 
 mod article_passage_references;
 mod article_quotations;
+mod article_reviews;
 mod articles;
 mod quotations;
 
@@ -62,6 +63,34 @@ pub fn user_router() -> OpenApiRouter<AppState> {
         .routes(utoipa_axum::routes!(
             article_quotations::handlers::delete_article_quotation
         ))
+        // Article reviews: author submission plus the shared review
+        // surface (author or `ArticlesReview` holder — checked in-handler).
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::create_review_request
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::withdraw_review_request
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::get_review_request
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::list_review_comments,
+            article_reviews::handlers::create_review_comment
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::create_review_reply
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::update_review_comment
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::list_review_messages,
+            article_reviews::handlers::create_review_message
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::get_review_activity
+        ))
 }
 
 /// Public endpoints: published articles, topics, editorial labels, the
@@ -90,7 +119,8 @@ pub fn public_router() -> OpenApiRouter<AppState> {
 }
 
 /// Admin/editor endpoints: applying and removing editorial labels on
-/// articles (gated by `Permission::ArticleLabelsManage`).
+/// articles (gated by `Permission::ArticleLabelsManage`) and the article
+/// review queue (gated by `Permission::ArticlesReview` — editors qualify).
 pub fn admin_router() -> OpenApiRouter<AppState> {
     OpenApiRouter::new()
         .routes(utoipa_axum::routes!(
@@ -98,5 +128,11 @@ pub fn admin_router() -> OpenApiRouter<AppState> {
         ))
         .routes(utoipa_axum::routes!(
             articles::handlers::remove_article_label
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::list_article_review_queue
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::decide_article_review
         ))
 }

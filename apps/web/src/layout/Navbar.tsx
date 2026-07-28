@@ -202,7 +202,21 @@ export function Navbar() {
                                             }}
                                         >
                                             <Typography variant="body2">
-                                                Editor: Submissions
+                                                Editor: Source Submissions
+                                            </Typography>
+                                        </MenuItem>
+                                    )}
+                                    {hasPermission("articles_review") && (
+                                        <MenuItem
+                                            onClick={() => {
+                                                setAnchorEl(null);
+                                                navigate({
+                                                    to: "/editor/article-reviews",
+                                                });
+                                            }}
+                                        >
+                                            <Typography variant="body2">
+                                                Editor: Article Reviews
                                             </Typography>
                                         </MenuItem>
                                     )}

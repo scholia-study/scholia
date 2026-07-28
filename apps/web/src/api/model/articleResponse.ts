@@ -28,6 +28,12 @@ export interface ArticleResponse {
      * articles no editor has chipped. Ordered by `editorial_labels.sort_order`.
      */
     labels: EditorialLabelResponse[];
+    /**
+     * Pending review request on this article, if any. Owner-facing
+     * listings only; absent on public endpoints.
+     * @nullable
+     */
+    pending_review_request_id?: string | null;
     /** @nullable */
     published_at?: string | null;
     slug: string;

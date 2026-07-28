@@ -1,0 +1,29 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE article_review_requests\n           SET status = $2::article_review_request_status,\n               reviewed_by = $3, resolved_at = now(), updated_at = now()\n           WHERE id = $1 AND status = 'pending'",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "article_review_request_status",
+                        "kind": {
+                            "Enum": [
+                                "pending",
+                                "approved",
+                                "declined",
+                                "resolved",
+                                "withdrawn"
+                            ]
+                        }
+                    }
+                },
+                "Uuid"
+            ]
+        },
+        "nullable": []
+    },
+    "hash": "ff0ca6f461e7ec3656e96f058351475fc0feb899565148916b8e9e8e31962dda"
+}

@@ -1,0 +1,23 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT article_id, id FROM article_review_requests\n           WHERE article_id = ANY($1) AND status = 'pending'",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "article_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, false]
+    },
+    "hash": "40e383033768535595f1c9354efae994b0122f10cc68856ca4e17f03d9b4b77e"
+}

@@ -87,8 +87,18 @@ fn fmt_time(t: time::OffsetDateTime) -> String {
         .unwrap_or_default()
 }
 
+/// Base slugs that would shadow static frontend routes under
+/// `/articles/…` (the review page lives at `/articles/review/<id>`).
+/// Articles with these titles go straight to the suffixed form.
+const RESERVED_SLUGS: &[&str] = &["review", "reviews", "by-id"];
+
 fn generate_slug(title: &str) -> String {
-    slug::slugify(title)
+    let slug = slug::slugify(title);
+    if RESERVED_SLUGS.contains(&slug.as_str()) {
+        let suffix: u32 = rand::random::<u32>() % 999999;
+        return format!("{slug}-{suffix:06}");
+    }
+    slug
 }
 
 /// Convenience for the single-author case. List endpoints batch via
@@ -120,6 +130,7 @@ fn article_response(
         author_public_roles: public_roles,
         topics,
         labels,
+        pending_review_request_id: None,
         published_at: r.published_at.map(fmt_time),
         created_at: fmt_time(r.created_at),
         updated_at: fmt_time(r.updated_at),
@@ -147,6 +158,8 @@ fn article_detail_response(
         topics,
         labels,
         revoked_labels: Vec::new(),
+        pending_review_request_id: None,
+        latest_review_request_id: None,
         published_at: r.published_at.map(fmt_time),
         created_at: fmt_time(r.created_at),
         updated_at: fmt_time(r.updated_at),
@@ -1244,22 +1257,49 @@ pub async fn publish_article(
     Ok(())
 }
 
-pub async fn archive_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result<(), AppError> {
+/// Publish a draft by id, skipping the author-side quota check — the
+/// editor-approval path (`article_reviews`), where an editor publishes on
+/// the author's behalf. Idempotent: already-published articles no-op.
+pub async fn publish_article_by_id(pool: &PgPool, article_id: Uuid) -> Result<(), AppError> {
     let result = sqlx::query!(
-        r#"UPDATE articles SET status = 'archived', updated_at = now()
-           WHERE slug = $1 AND user_id = $2 AND status = 'published'"#,
-        slug,
-        user_id,
+        r#"UPDATE articles
+           SET status = 'published',
+               published_at = COALESCE(published_at, now()),
+               updated_at = now()
+           WHERE id = $1 AND status = 'draft'"#,
+        article_id,
     )
     .execute(pool)
     .await?;
 
-    if result.rows_affected() == 0 {
-        return Err(AppError::NotFound(
-            "Article not found or not in published status".into(),
-        ));
+    if result.rows_affected() > 0 {
+        let markdown =
+            sqlx::query_scalar!(r#"SELECT markdown FROM articles WHERE id = $1"#, article_id)
+                .fetch_one(pool)
+                .await?;
+        crate::modules::writing::article_passage_references::db::sync_article_passage_references(
+            pool, article_id, &markdown,
+        )
+        .await?;
     }
+
     Ok(())
+}
+
+/// Archive a published article, returning its id so the caller can
+/// clean up dependents (e.g. withdraw a pending review request).
+pub async fn archive_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result<Uuid, AppError> {
+    let id = sqlx::query_scalar!(
+        r#"UPDATE articles SET status = 'archived', updated_at = now()
+           WHERE slug = $1 AND user_id = $2 AND status = 'published'
+           RETURNING id"#,
+        slug,
+        user_id,
+    )
+    .fetch_optional(pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound("Article not found or not in published status".into()))?;
+    Ok(id)
 }
 
 /// Returns the IDs of the N oldest non-archived articles for a user,

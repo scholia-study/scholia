@@ -1,0 +1,55 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO article_review_requests\n               (article_id, intent, snapshot_markdown, snapshot_html)\n           VALUES ($1, $2::article_review_intent, $3, $4)\n           RETURNING id, article_id,\n               intent::TEXT AS \"intent!\", status::TEXT AS \"status!\",\n               submitted_at, resolved_at",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "article_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "intent!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "status!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "submitted_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 5,
+                "name": "resolved_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "article_review_intent",
+                        "kind": {
+                            "Enum": ["feedback", "publication"]
+                        }
+                    }
+                },
+                "Text",
+                "Text"
+            ]
+        },
+        "nullable": [false, false, null, null, false, true]
+    },
+    "hash": "8098e98e29cdf7e375c3de8bc149886df5210297373c11b0571bc76b0d0a322c"
+}

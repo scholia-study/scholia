@@ -1,0 +1,33 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT\n               (SELECT COUNT(*) FROM article_review_messages\n                WHERE article_id = $1) AS \"messages!\",\n               (SELECT COUNT(*) FROM article_review_comments c\n                JOIN article_review_requests r ON r.id = c.request_id\n                WHERE r.article_id = $1) AS \"comments!\",\n               (SELECT COUNT(*) FROM article_review_comments c\n                JOIN article_review_requests r ON r.id = c.request_id\n                WHERE r.article_id = $1 AND c.resolved_at IS NOT NULL)\n                   AS \"resolved_comments!\",\n               (SELECT COALESCE(MAX(updated_at), 'epoch'::timestamptz)\n                FROM article_review_requests\n                WHERE article_id = $1) AS \"requests_updated_at!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "messages!",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 1,
+                "name": "comments!",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 2,
+                "name": "resolved_comments!",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 3,
+                "name": "requests_updated_at!",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [null, null, null, null]
+    },
+    "hash": "cad5fb406af74454d8c360382f6e1471478be66901ad1418f59d411d5a7b6a92"
+}

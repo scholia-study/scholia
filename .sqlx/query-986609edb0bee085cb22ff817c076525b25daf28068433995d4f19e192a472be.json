@@ -1,0 +1,92 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "WITH updated AS (\n               UPDATE article_review_comments\n               SET resolved_at = CASE WHEN $2 THEN now() ELSE NULL END,\n                   resolved_by = CASE WHEN $2 THEN $3::uuid ELSE NULL END\n               WHERE id = $1 AND parent_id IS NULL\n               RETURNING id, request_id, parent_id, sender_id, block_index,\n                   sentence_start, sentence_end, quoted_text, body,\n                   resolved_at, created_at\n           )\n           SELECT up.id, up.request_id, up.parent_id, up.sender_id,\n               u.display_name AS \"sender_display_name?\",\n               u.handle AS \"sender_handle?\",\n               up.block_index, up.sentence_start, up.sentence_end,\n               up.quoted_text, up.body, up.resolved_at, up.created_at\n           FROM updated up\n           LEFT JOIN users u ON u.id = up.sender_id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "request_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "parent_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 3,
+                "name": "sender_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 4,
+                "name": "sender_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "sender_handle?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "block_index",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 7,
+                "name": "sentence_start",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 8,
+                "name": "sentence_end",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 9,
+                "name": "quoted_text",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 10,
+                "name": "body",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 11,
+                "name": "resolved_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 12,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Bool", "Uuid"]
+        },
+        "nullable": [
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            false
+        ]
+    },
+    "hash": "986609edb0bee085cb22ff817c076525b25daf28068433995d4f19e192a472be"
+}

@@ -9,6 +9,115 @@
         "version": "0.1.0"
     },
     "paths": {
+        "/api/admin/article-review-requests": {
+            "get": {
+                "tags": ["article-reviews"],
+                "summary": "Editor queue of review requests.",
+                "operationId": "list_article_review_queue",
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "description": "`pending` (default) | `approved` | `declined` | `resolved` | `all`.",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review queue",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewQueueResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    }
+                }
+            }
+        },
+        "/api/admin/article-review-requests/{id}": {
+            "patch": {
+                "tags": ["article-reviews"],
+                "summary": "Decide a pending request. Approving a publication-intent request\npublishes the article (if still a draft) and applies the Imprimatur\nlabel; feedback-intent requests close as `resolved`.",
+                "operationId": "decide_article_review",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Review request ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReviewDecisionRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Request decided",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid decision for this request"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Review request not found"
+                    },
+                    "409": {
+                        "description": "Request is no longer pending"
+                    }
+                }
+            }
+        },
         "/api/admin/articles/{slug}/labels": {
             "post": {
                 "tags": ["articles"],
@@ -2407,6 +2516,342 @@
                 }
             }
         },
+        "/api/review/articles/{article_id}/activity": {
+            "get": {
+                "tags": ["article-reviews"],
+                "summary": "Change-detection stamp for the review page's polling loop. The\nclient compares the whole payload and invalidates its request,\ncomment, and message queries when it changes.",
+                "operationId": "get_review_activity",
+                "parameters": [
+                    {
+                        "name": "article_id",
+                        "in": "path",
+                        "description": "Article ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Activity stamp",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewActivityResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Article not found"
+                    }
+                }
+            }
+        },
+        "/api/review/articles/{article_id}/messages": {
+            "get": {
+                "tags": ["article-reviews"],
+                "summary": "The article's review channel, shared across review rounds.",
+                "operationId": "list_review_messages",
+                "parameters": [
+                    {
+                        "name": "article_id",
+                        "in": "path",
+                        "description": "Article ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Channel messages",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewMessageListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Article not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["article-reviews"],
+                "summary": "Post to the article's review channel (author or reviewer). The\nchannel exists once the article has been submitted at least once.",
+                "operationId": "create_review_message",
+                "parameters": [
+                    {
+                        "name": "article_id",
+                        "in": "path",
+                        "description": "Article ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateReviewMessageRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Message posted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewMessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Article not found"
+                    }
+                }
+            }
+        },
+        "/api/review/comments/{id}": {
+            "patch": {
+                "tags": ["article-reviews"],
+                "summary": "Resolve or reopen a comment thread (reviewers only).",
+                "operationId": "update_review_comment",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Comment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateReviewCommentRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Comment updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewCommentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Comment not found"
+                    }
+                }
+            }
+        },
+        "/api/review/comments/{id}/replies": {
+            "post": {
+                "tags": ["article-reviews"],
+                "summary": "Reply within a comment thread (author or reviewer).",
+                "operationId": "create_review_reply",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Comment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateReviewReplyRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reply created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewCommentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Comment not found"
+                    }
+                }
+            }
+        },
+        "/api/review/requests/{id}": {
+            "get": {
+                "tags": ["article-reviews"],
+                "summary": "Review page payload: the request, its frozen snapshot, article\nmetadata, and sibling rounds. Author or reviewer only (404 otherwise).",
+                "operationId": "get_review_request",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Review request ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Review request not found"
+                    }
+                }
+            }
+        },
+        "/api/review/requests/{id}/comments": {
+            "get": {
+                "tags": ["article-reviews"],
+                "summary": "List the comment threads on a request's snapshot.",
+                "operationId": "list_review_comments",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Review request ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comment threads",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewCommentListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Review request not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["article-reviews"],
+                "summary": "Create an anchored comment on a request's snapshot (reviewers only).",
+                "operationId": "create_review_comment",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Review request ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateReviewCommentRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Comment created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewCommentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Review request not found"
+                    }
+                }
+            }
+        },
         "/api/sentences/batch": {
             "post": {
                 "tags": ["sentences"],
@@ -3075,6 +3520,87 @@
                 }
             }
         },
+        "/api/user/articles/{slug}/review-requests": {
+            "post": {
+                "tags": ["article-reviews"],
+                "summary": "Submit an article for review (feedback or publication hand-off).",
+                "operationId": "create_review_request",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Article slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateReviewRequestRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Review request created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or article not eligible"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Article not found"
+                    },
+                    "409": {
+                        "description": "A review request is already pending"
+                    }
+                }
+            }
+        },
+        "/api/user/review-requests/{id}/withdraw": {
+            "post": {
+                "tags": ["article-reviews"],
+                "summary": "Withdraw a pending review request (author only). Withdrawing the\narticle's only request revokes editor access to the draft.",
+                "operationId": "withdraw_review_request",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Review request ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request withdrawn"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "No pending request found"
+                    }
+                }
+            }
+        },
         "/api/users/by-id/{id}": {
             "get": {
                 "tags": ["users"],
@@ -3338,8 +3864,16 @@
                             "$ref": "#/components/schemas/EditorialLabelResponse"
                         }
                     },
+                    "latest_review_request_id": {
+                        "type": ["string", "null"],
+                        "description": "Most recent review request of any status (owner only) — the\nauthor's entry point to the review page and its history."
+                    },
                     "markdown": {
                         "type": "string"
+                    },
+                    "pending_review_request_id": {
+                        "type": ["string", "null"],
+                        "description": "Pending review request on this article, if any. Populated for the\nowner (`get_user_article`) only; absent on public endpoints."
                     },
                     "published_at": {
                         "type": ["string", "null"]
@@ -3513,6 +4047,10 @@
                         },
                         "description": "Editor/admin-applied editorial labels. Empty for drafts and for\narticles no editor has chipped. Ordered by `editorial_labels.sort_order`."
                     },
+                    "pending_review_request_id": {
+                        "type": ["string", "null"],
+                        "description": "Pending review request on this article, if any. Owner-facing\nlistings only; absent on public endpoints."
+                    },
                     "published_at": {
                         "type": ["string", "null"]
                     },
@@ -3532,6 +4070,269 @@
                         }
                     },
                     "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ArticleReviewActivityResponse": {
+                "type": "object",
+                "description": "A cheap change-detection stamp for the review page's polling: the\nclient treats the whole object as an opaque token and invalidates\nits queries when any field changes. Counts alone would miss\nun-resolving a comment; timestamps alone would miss deletions.",
+                "required": [
+                    "messages",
+                    "comments",
+                    "resolved_comments",
+                    "requests_updated_at"
+                ],
+                "properties": {
+                    "comments": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "messages": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "requests_updated_at": {
+                        "type": "string"
+                    },
+                    "resolved_comments": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "ArticleReviewCommentListResponse": {
+                "type": "object",
+                "required": ["comments"],
+                "properties": {
+                    "comments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ArticleReviewCommentResponse"
+                        }
+                    }
+                }
+            },
+            "ArticleReviewCommentResponse": {
+                "type": "object",
+                "required": ["id", "request_id", "body", "created_at"],
+                "properties": {
+                    "block_index": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    },
+                    "body": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "parent_id": {
+                        "type": ["string", "null"]
+                    },
+                    "quoted_text": {
+                        "type": ["string", "null"]
+                    },
+                    "request_id": {
+                        "type": "string"
+                    },
+                    "resolved_at": {
+                        "type": ["string", "null"]
+                    },
+                    "sender": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ReviewParticipant"
+                            }
+                        ]
+                    },
+                    "sentence_end": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    },
+                    "sentence_start": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    }
+                }
+            },
+            "ArticleReviewDetailResponse": {
+                "type": "object",
+                "required": [
+                    "request",
+                    "snapshot_html",
+                    "article",
+                    "requests",
+                    "draft_changed"
+                ],
+                "properties": {
+                    "article": {
+                        "$ref": "#/components/schemas/ReviewArticleMeta"
+                    },
+                    "draft_changed": {
+                        "type": "boolean",
+                        "description": "True when the article body was edited after this request was\nsubmitted — the snapshot no longer matches the live draft."
+                    },
+                    "request": {
+                        "$ref": "#/components/schemas/ArticleReviewRequestResponse"
+                    },
+                    "requests": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ArticleReviewRequestResponse"
+                        },
+                        "description": "Every review round for this article (withdrawn rounds only for\nthe author), newest first — for round navigation on the page."
+                    },
+                    "snapshot_html": {
+                        "type": "string",
+                        "description": "The article HTML frozen at submission, annotated with\n`data-block` / `data-s` markers that comments anchor into."
+                    }
+                }
+            },
+            "ArticleReviewMessageListResponse": {
+                "type": "object",
+                "required": ["messages"],
+                "properties": {
+                    "messages": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ArticleReviewMessageResponse"
+                        }
+                    }
+                }
+            },
+            "ArticleReviewMessageResponse": {
+                "type": "object",
+                "required": ["id", "body", "created_at"],
+                "properties": {
+                    "body": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "sender": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ReviewParticipant"
+                            }
+                        ]
+                    }
+                }
+            },
+            "ArticleReviewQueueItem": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "article_id",
+                    "article_title",
+                    "article_slug",
+                    "article_status",
+                    "author_user_id",
+                    "author_display_name",
+                    "intent",
+                    "status",
+                    "submitted_at",
+                    "open_comment_count"
+                ],
+                "properties": {
+                    "article_id": {
+                        "type": "string"
+                    },
+                    "article_slug": {
+                        "type": "string"
+                    },
+                    "article_status": {
+                        "type": "string"
+                    },
+                    "article_title": {
+                        "type": "string"
+                    },
+                    "author_display_name": {
+                        "type": "string"
+                    },
+                    "author_handle": {
+                        "type": ["string", "null"]
+                    },
+                    "author_user_id": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "intent": {
+                        "type": "string"
+                    },
+                    "open_comment_count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Unresolved top-level comments on this request."
+                    },
+                    "resolved_at": {
+                        "type": ["string", "null"]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "submitted_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ArticleReviewQueueResponse": {
+                "type": "object",
+                "required": ["items", "total"],
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ArticleReviewQueueItem"
+                        }
+                    },
+                    "total": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "ArticleReviewRequestResponse": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "article_id",
+                    "intent",
+                    "status",
+                    "submitted_at"
+                ],
+                "properties": {
+                    "article_id": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "intent": {
+                        "type": "string"
+                    },
+                    "resolved_at": {
+                        "type": ["string", "null"]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "submitted_at": {
                         "type": "string"
                     }
                 }
@@ -4015,6 +4816,65 @@
                     },
                     "verbatim_kind": {
                         "type": ["string", "null"]
+                    }
+                }
+            },
+            "CreateReviewCommentRequest": {
+                "type": "object",
+                "required": ["block_index", "body"],
+                "properties": {
+                    "block_index": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "`data-block` index of the snapshot block this comment anchors to."
+                    },
+                    "body": {
+                        "type": "string"
+                    },
+                    "quoted_text": {
+                        "type": ["string", "null"],
+                        "description": "The anchored text as the editor saw it, for the comment rail."
+                    },
+                    "sentence_end": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    },
+                    "sentence_start": {
+                        "type": ["integer", "null"],
+                        "format": "int32",
+                        "description": "Sentence range within the block (`data-s` indices, inclusive).\nOmit both for a block-level comment (embeds, figures)."
+                    }
+                }
+            },
+            "CreateReviewMessageRequest": {
+                "type": "object",
+                "required": ["body"],
+                "properties": {
+                    "body": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CreateReviewReplyRequest": {
+                "type": "object",
+                "required": ["body"],
+                "properties": {
+                    "body": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CreateReviewRequestRequest": {
+                "type": "object",
+                "required": ["intent"],
+                "properties": {
+                    "intent": {
+                        "type": "string",
+                        "description": "`feedback` — the author wants comments; the editor closes the\nrequest as `resolved`. `publication` — a hand-off: approving\npublishes the article (if still a draft) and applies the\n`imprimatur` label."
+                    },
+                    "message": {
+                        "type": ["string", "null"],
+                        "description": "Optional note posted as the first message in the article's\nreview channel."
                     }
                 }
             },
@@ -5485,6 +6345,78 @@
                     }
                 }
             },
+            "ReviewArticleMeta": {
+                "type": "object",
+                "description": "Article metadata shown on the review page. Distinct from the public\narticle DTOs because the article may still be a draft here.",
+                "required": [
+                    "id",
+                    "title",
+                    "slug",
+                    "status",
+                    "author_user_id",
+                    "author_display_name",
+                    "labels"
+                ],
+                "properties": {
+                    "author_display_name": {
+                        "type": "string"
+                    },
+                    "author_handle": {
+                        "type": ["string", "null"]
+                    },
+                    "author_user_id": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "labels": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EditorialLabelResponse"
+                        }
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ReviewDecisionRequest": {
+                "type": "object",
+                "required": ["status"],
+                "properties": {
+                    "message": {
+                        "type": ["string", "null"],
+                        "description": "Optional message posted to the article's review channel alongside\nthe decision."
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "`approved` | `declined` (publication intent) or `resolved`\n(feedback intent)."
+                    }
+                }
+            },
+            "ReviewParticipant": {
+                "type": "object",
+                "description": "Who wrote a message or comment. Absent when the account was deleted.",
+                "required": ["user_id", "display_name"],
+                "properties": {
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "handle": {
+                        "type": ["string", "null"]
+                    },
+                    "user_id": {
+                        "type": "string"
+                    }
+                }
+            },
             "ReviewSubmissionRequest": {
                 "type": "object",
                 "description": "An editor's verdict on a submission. `status` must be `approved` or\n`rejected`; `review_note` is an optional message (e.g. a rejection reason).",
@@ -6160,6 +7092,15 @@
                     },
                     "verbatim_kind": {
                         "type": ["string", "null"]
+                    }
+                }
+            },
+            "UpdateReviewCommentRequest": {
+                "type": "object",
+                "required": ["resolved"],
+                "properties": {
+                    "resolved": {
+                        "type": "boolean"
                     }
                 }
             },

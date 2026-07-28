@@ -1,0 +1,92 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT c.id, c.request_id, c.parent_id, c.sender_id,\n               u.display_name AS \"sender_display_name?\",\n               u.handle AS \"sender_handle?\",\n               c.block_index, c.sentence_start, c.sentence_end,\n               c.quoted_text, c.body, c.resolved_at, c.created_at\n           FROM article_review_comments c\n           LEFT JOIN users u ON u.id = c.sender_id\n           WHERE c.request_id = $1\n           ORDER BY c.created_at",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "request_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "parent_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 3,
+                "name": "sender_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 4,
+                "name": "sender_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "sender_handle?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "block_index",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 7,
+                "name": "sentence_start",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 8,
+                "name": "sentence_end",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 9,
+                "name": "quoted_text",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 10,
+                "name": "body",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 11,
+                "name": "resolved_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 12,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [
+            false,
+            false,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            false
+        ]
+    },
+    "hash": "f663d50c28797c7775131769191f02525fa0e62f62e65faa167128ef88290079"
+}

@@ -42,6 +42,53 @@ CREATE TABLE article_quotations (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE article_review_comments (
+  id uuid NOT NULL,
+  request_id uuid NOT NULL,
+  parent_id uuid,
+  sender_id uuid,
+  block_index integer,
+  sentence_start integer,
+  sentence_end integer,
+  quoted_text text,
+  body text NOT NULL,
+  resolved_at timestamp with time zone,
+  resolved_by uuid,
+  created_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (parent_id) REFERENCES article_review_comments(id) ON DELETE CASCADE,
+  FOREIGN KEY (request_id) REFERENCES article_review_requests(id) ON DELETE CASCADE,
+  FOREIGN KEY (resolved_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE article_review_messages (
+  id uuid NOT NULL,
+  article_id uuid NOT NULL,
+  sender_id uuid,
+  body text NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+  FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE article_review_requests (
+  id uuid NOT NULL,
+  article_id uuid NOT NULL,
+  intent article_review_intent NOT NULL,
+  status article_review_request_status NOT NULL,
+  snapshot_markdown text NOT NULL,
+  snapshot_html text NOT NULL,
+  submitted_at timestamp with time zone NOT NULL,
+  reviewed_by uuid,
+  resolved_at timestamp with time zone,
+  updated_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+  FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
 CREATE TABLE article_topics (
   article_id uuid NOT NULL,
   topic_id uuid NOT NULL,
@@ -79,6 +126,21 @@ CREATE TABLE books (
   nodes_per_page smallint,
   PRIMARY KEY (id),
   FOREIGN KEY (source_id) REFERENCES sources(id)
+);
+
+CREATE TABLE canonical_passages (
+  id uuid NOT NULL,
+  work_root uuid NOT NULL,
+  basis canonical_basis NOT NULL,
+  sentence_kind sentence_kind NOT NULL,
+  ordinal integer NOT NULL,
+  root_sentence_id uuid,
+  source_ref text,
+  ref_value text,
+  created_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (root_sentence_id) REFERENCES sentences(id) ON DELETE CASCADE,
+  FOREIGN KEY (work_root) REFERENCES sources(id) ON DELETE CASCADE
 );
 
 CREATE TABLE content_blocks (
@@ -337,6 +399,7 @@ CREATE TABLE resources (
   reviewed_by uuid,
   reviewed_at timestamp with time zone,
   review_note text,
+  scope resource_scope NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (anchor_block_id) REFERENCES content_blocks(id) ON DELETE CASCADE,
   FOREIGN KEY (anchor_node_id) REFERENCES toc_nodes(id) ON DELETE CASCADE,
@@ -378,10 +441,12 @@ CREATE TABLE sentences (
   natural_key text,
   indent smallint,
   tsv tsvector,
+  canonical_passage_id uuid,
   PRIMARY KEY (id),
   FOREIGN KEY (footnote_id) REFERENCES footnotes(id) ON DELETE CASCADE,
   FOREIGN KEY (block_id) REFERENCES content_blocks(id) ON DELETE CASCADE,
   FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+  FOREIGN KEY (canonical_passage_id) REFERENCES canonical_passages(id) ON DELETE SET NULL,
   FOREIGN KEY (node_id) REFERENCES toc_nodes(id) ON DELETE CASCADE,
   FOREIGN KEY (source_sentence_end_id) REFERENCES sentences(id) ON DELETE SET NULL,
   FOREIGN KEY (source_sentence_start_id) REFERENCES sentences(id) ON DELETE SET NULL
