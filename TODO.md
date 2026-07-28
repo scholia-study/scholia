@@ -3,7 +3,9 @@
 - Bible layout comparison broken
 
 ## 🌿 FEATURES
-- add "submit for review" for user articles to editors to receive editorial feedback/quality approval
+- posthog
+- google login
+- Stripe production products
 - insignias/badges
 - caching layer on backend API
 - rate-limiting on backend API
@@ -18,6 +20,7 @@
 ## 🏗️ INFRA / EXTERNAL SETUP
 - Auth callback       <domain>/api/auth/github/callback
 - Stripe webhook      <domain>/api/webhooks/stripe
+- Posthog
 
 ## 🤔 MAYBE
 - add "commentary, paraphrase, allusion submission to editors for review and approval" 

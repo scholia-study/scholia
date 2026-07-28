@@ -162,9 +162,20 @@ pub struct RequestWithArticle {
     pub author_user_id: Uuid,
     pub author_display_name: String,
     pub author_handle: Option<String>,
+    pub assigned_to: Option<Uuid>,
+    pub assignee_display_name: Option<String>,
+    pub assignee_handle: Option<String>,
 }
 
 impl RequestWithArticle {
+    pub fn assignee(&self) -> Option<ReviewParticipant> {
+        participant(
+            self.assigned_to,
+            self.assignee_display_name.clone(),
+            self.assignee_handle.clone(),
+        )
+    }
+
     pub fn to_request_response(&self) -> ArticleReviewRequestResponse {
         ArticleReviewRequestResponse {
             id: self.id.to_string(),
@@ -191,10 +202,14 @@ pub async fn get_request(
                a.updated_at AS article_updated_at,
                a.user_id AS author_user_id,
                u.display_name AS author_display_name,
-               u.handle AS author_handle
+               u.handle AS author_handle,
+               arr.assigned_to,
+               au.display_name AS "assignee_display_name?",
+               au.handle AS "assignee_handle?"
            FROM article_review_requests arr
            JOIN articles a ON a.id = arr.article_id
            JOIN users u ON u.id = a.user_id
+           LEFT JOIN users au ON au.id = arr.assigned_to
            WHERE arr.id = $1"#,
         request_id,
     )
@@ -329,6 +344,71 @@ pub async fn withdraw_pending_for_article(pool: &PgPool, article_id: Uuid) -> Re
     Ok(())
 }
 
+/// Assign or unassign an editor on a pending request. Returns false
+/// when the request is not pending (or doesn't exist).
+pub async fn assign_request(
+    pool: &PgPool,
+    request_id: Uuid,
+    patch: Option<Uuid>,
+) -> Result<bool, AppError> {
+    let result = sqlx::query!(
+        r#"UPDATE article_review_requests
+           SET assigned_to = $2, updated_at = now()
+           WHERE id = $1 AND status = 'pending'"#,
+        request_id,
+        patch,
+    )
+    .execute(pool)
+    .await?;
+    Ok(result.rows_affected() > 0)
+}
+
+/// Users who hold a reviewer role (admin/editor), for the assignment
+/// dropdown. Role names are the source of truth for the
+/// `articles_review` permission (`Role::permissions`).
+pub async fn list_reviewers(pool: &PgPool) -> Result<Vec<ReviewParticipant>, AppError> {
+    struct ReviewerRow {
+        id: Uuid,
+        display_name: String,
+        handle: Option<String>,
+    }
+    let rows = sqlx::query_as!(
+        ReviewerRow,
+        r#"SELECT DISTINCT u.id, u.display_name, u.handle
+           FROM users u
+           JOIN user_roles ur ON ur.user_id = u.id
+           JOIN roles r ON r.id = ur.role_id
+           WHERE r.name IN ('admin', 'editor')
+           ORDER BY u.display_name"#,
+    )
+    .fetch_all(pool)
+    .await?;
+    Ok(rows
+        .into_iter()
+        .map(|r| ReviewParticipant {
+            user_id: r.id.to_string(),
+            display_name: r.display_name,
+            handle: r.handle,
+        })
+        .collect())
+}
+
+/// Whether this user holds a reviewer role — guards assigning requests
+/// to someone who couldn't act on them.
+pub async fn user_is_reviewer(pool: &PgPool, user_id: Uuid) -> Result<bool, AppError> {
+    let exists = sqlx::query_scalar!(
+        r#"SELECT EXISTS(
+               SELECT 1 FROM user_roles ur
+               JOIN roles r ON r.id = ur.role_id
+               WHERE ur.user_id = $1 AND r.name IN ('admin', 'editor')
+           ) AS "exists!""#,
+        user_id,
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(exists)
+}
+
 pub struct ReviewDecision<'a> {
     pub status: &'a str,
     pub reviewed_by: Uuid,
@@ -355,14 +435,30 @@ pub async fn decide_request(
     Ok(result.rows_affected() > 0)
 }
 
+/// Assignee scoping for the queue: everyone, one reviewer, or only
+/// unclaimed requests.
+pub enum AssigneeFilter {
+    Any,
+    User(Uuid),
+    Unassigned,
+}
+
 pub async fn list_queue(
     pool: &PgPool,
     statuses: &[String],
+    assignee: &AssigneeFilter,
     page: i32,
     per_page: i32,
 ) -> Result<(Vec<ArticleReviewQueueItem>, i64), AppError> {
     let offset = i64::from((page - 1) * per_page);
     let limit = i64::from(per_page);
+    // Two params encode the three-way filter: ($a IS NULL OR match) for
+    // a specific reviewer, and a bool for unassigned-only.
+    let (assignee_id, unassigned_only) = match assignee {
+        AssigneeFilter::Any => (None, false),
+        AssigneeFilter::User(id) => (Some(*id), false),
+        AssigneeFilter::Unassigned => (None, true),
+    };
 
     struct QueueRow {
         id: Uuid,
@@ -378,6 +474,9 @@ pub async fn list_queue(
         submitted_at: time::OffsetDateTime,
         resolved_at: Option<time::OffsetDateTime>,
         open_comment_count: i64,
+        assigned_to: Option<Uuid>,
+        assignee_display_name: Option<String>,
+        assignee_handle: Option<String>,
     }
 
     let rows = sqlx::query_as!(
@@ -393,16 +492,24 @@ pub async fn list_queue(
                (SELECT COUNT(*) FROM article_review_comments arc
                 WHERE arc.request_id = arr.id
                   AND arc.parent_id IS NULL
-                  AND arc.resolved_at IS NULL) AS "open_comment_count!"
+                  AND arc.resolved_at IS NULL) AS "open_comment_count!",
+               arr.assigned_to,
+               au.display_name AS "assignee_display_name?",
+               au.handle AS "assignee_handle?"
            FROM article_review_requests arr
            JOIN articles a ON a.id = arr.article_id
            JOIN users u ON u.id = a.user_id
+           LEFT JOIN users au ON au.id = arr.assigned_to
            WHERE arr.status::TEXT = ANY($1)
+             AND ($4::uuid IS NULL OR arr.assigned_to = $4)
+             AND (NOT $5 OR arr.assigned_to IS NULL)
            ORDER BY arr.submitted_at DESC
            LIMIT $2 OFFSET $3"#,
         statuses,
         limit,
         offset,
+        assignee_id,
+        unassigned_only,
     )
     .fetch_all(pool)
     .await?;
@@ -410,8 +517,12 @@ pub async fn list_queue(
     let total = sqlx::query_scalar!(
         r#"SELECT COUNT(*) AS "count!"
            FROM article_review_requests
-           WHERE status::TEXT = ANY($1)"#,
+           WHERE status::TEXT = ANY($1)
+             AND ($2::uuid IS NULL OR assigned_to = $2)
+             AND (NOT $3 OR assigned_to IS NULL)"#,
         statuses,
+        assignee_id,
+        unassigned_only,
     )
     .fetch_one(pool)
     .await?;
@@ -432,6 +543,7 @@ pub async fn list_queue(
             submitted_at: fmt_time(r.submitted_at),
             resolved_at: r.resolved_at.map(fmt_time),
             open_comment_count: r.open_comment_count,
+            assignee: participant(r.assigned_to, r.assignee_display_name, r.assignee_handle),
         })
         .collect();
 

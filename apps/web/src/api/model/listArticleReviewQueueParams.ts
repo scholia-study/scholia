@@ -12,6 +12,12 @@ export type ListArticleReviewQueueParams = {
      */
     filter?: string | null;
     /**
+     * Filter by assignee: a reviewer's user id, or `unassigned`.
+     * Absent = everyone.
+     * @nullable
+     */
+    assignee?: string | null;
+    /**
      * @nullable
      */
     page?: number | null;

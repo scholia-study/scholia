@@ -6,9 +6,10 @@ use crate::modules::writing::article_reviews::db;
 use crate::modules::writing::article_reviews::models::{
     ArticleReviewActivityResponse, ArticleReviewCommentListResponse, ArticleReviewCommentResponse,
     ArticleReviewDetailResponse, ArticleReviewMessageListResponse, ArticleReviewMessageResponse,
-    ArticleReviewQueueResponse, ArticleReviewRequestResponse, CreateReviewCommentRequest,
-    CreateReviewMessageRequest, CreateReviewReplyRequest, CreateReviewRequestRequest,
-    ReviewArticleMeta, ReviewDecisionRequest, ReviewQueueQuery, UpdateReviewCommentRequest,
+    ArticleReviewQueueResponse, ArticleReviewRequestResponse, AssignReviewRequest,
+    CreateReviewCommentRequest, CreateReviewMessageRequest, CreateReviewReplyRequest,
+    CreateReviewRequestRequest, ReviewArticleMeta, ReviewDecisionRequest, ReviewQueueQuery,
+    ReviewerListResponse, UpdateReviewCommentRequest,
 };
 use crate::modules::writing::article_reviews::snapshot::annotate_snapshot_html;
 use crate::system::auth::middleware::AuthUser;
@@ -206,6 +207,7 @@ pub async fn get_review_request(
 
     Ok(Json(ArticleReviewDetailResponse {
         request: req.to_request_response(),
+        assignee: req.assignee(),
         snapshot_html: req.snapshot_html.clone(),
         article: ReviewArticleMeta {
             id: req.article_id.to_string(),
@@ -558,11 +560,84 @@ pub async fn list_article_review_queue(
         .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
 
     let statuses = parse_queue_filter(params.filter.as_deref())?;
+    let assignee = match params.assignee.as_deref() {
+        None | Some("") => db::AssigneeFilter::Any,
+        Some("unassigned") => db::AssigneeFilter::Unassigned,
+        Some(id) => db::AssigneeFilter::User(parse_uuid(id, "assignee")?),
+    };
     let page = params.page.unwrap_or(1).max(1);
     let per_page = params.per_page.unwrap_or(25).clamp(1, 100);
 
-    let (items, total) = db::list_queue(&state.pool, &statuses, page, per_page).await?;
+    let (items, total) = db::list_queue(&state.pool, &statuses, &assignee, page, per_page).await?;
     Ok(Json(ArticleReviewQueueResponse { items, total }))
+}
+
+/// Users holding a reviewer role, for the assignment dropdown.
+#[utoipa::path(
+    get,
+    path = "/api/admin/article-reviewers",
+    responses(
+        (status = 200, description = "Assignable reviewers", body = ReviewerListResponse),
+        (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Insufficient permissions")
+    ),
+    tag = "article-reviews"
+)]
+pub async fn list_article_reviewers(
+    State(state): State<AppState>,
+    user: AuthUser,
+) -> Result<Json<ReviewerListResponse>, AppError> {
+    user.require_permission(Permission::ArticlesReview)
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    let reviewers = db::list_reviewers(&state.pool).await?;
+    Ok(Json(ReviewerListResponse { reviewers }))
+}
+
+/// Assign an editor to a pending request (or unassign with a null
+/// assignee). Any reviewer may assign themselves or a colleague.
+#[utoipa::path(
+    patch,
+    path = "/api/admin/article-review-requests/{id}/assignee",
+    params(("id" = String, Path, description = "Review request ID")),
+    request_body = AssignReviewRequest,
+    responses(
+        (status = 200, description = "Assignee updated"),
+        (status = 400, description = "Assignee is not a reviewer"),
+        (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Review request not found"),
+        (status = 409, description = "Request is no longer pending")
+    ),
+    tag = "article-reviews"
+)]
+pub async fn assign_article_review(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(id): Path<String>,
+    Json(body): Json<AssignReviewRequest>,
+) -> Result<Json<()>, AppError> {
+    user.require_permission(Permission::ArticlesReview)
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+    let request_id = parse_uuid(&id, "review request")?;
+
+    let assignee = match &body.assignee_id {
+        Some(id) => {
+            let assignee_id = parse_uuid(id, "assignee")?;
+            if !db::user_is_reviewer(&state.pool, assignee_id).await? {
+                return Err(AppError::BadRequest(
+                    "Assignee does not hold a reviewer role".into(),
+                ));
+            }
+            Some(assignee_id)
+        }
+        None => None,
+    };
+
+    let assigned = db::assign_request(&state.pool, request_id, assignee).await?;
+    if !assigned {
+        return Err(AppError::Conflict("Request is no longer pending".into()));
+    }
+    Ok(Json(()))
 }
 
 /// Decide a pending request. Approving a publication-intent request

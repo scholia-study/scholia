@@ -32,12 +32,14 @@ import type {
     ArticleReviewMessageResponse,
     ArticleReviewQueueResponse,
     ArticleReviewRequestResponse,
+    AssignReviewRequest,
     CreateReviewCommentRequest,
     CreateReviewMessageRequest,
     CreateReviewReplyRequest,
     CreateReviewRequestRequest,
     ListArticleReviewQueueParams,
     ReviewDecisionRequest,
+    ReviewerListResponse,
     UpdateReviewCommentRequest,
 } from "../model";
 
@@ -535,6 +537,454 @@ export const useDecideArticleReview = <TError = void, TContext = unknown>(
         queryClient,
     );
 };
+export type assignArticleReviewResponse200 = {
+    data: void;
+    status: 200;
+};
+
+export type assignArticleReviewResponse400 = {
+    data: void;
+    status: 400;
+};
+
+export type assignArticleReviewResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type assignArticleReviewResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type assignArticleReviewResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type assignArticleReviewResponse409 = {
+    data: void;
+    status: 409;
+};
+
+export type assignArticleReviewResponseSuccess =
+    assignArticleReviewResponse200 & {
+        headers: Headers;
+    };
+export type assignArticleReviewResponseError = (
+    | assignArticleReviewResponse400
+    | assignArticleReviewResponse401
+    | assignArticleReviewResponse403
+    | assignArticleReviewResponse404
+    | assignArticleReviewResponse409
+) & {
+    headers: Headers;
+};
+
+export const getAssignArticleReviewUrl = (id: string) => {
+    return `/api/admin/article-review-requests/${id}/assignee`;
+};
+
+/**
+ * @summary Assign an editor to a pending request (or unassign with a null
+assignee). Any reviewer may assign themselves or a colleague.
+ */
+export const assignArticleReview = async (
+    id: string,
+    assignReviewRequest: AssignReviewRequest,
+    options?: RequestInit,
+): Promise<assignArticleReviewResponseSuccess> => {
+    return customFetch<assignArticleReviewResponseSuccess>(
+        getAssignArticleReviewUrl(id),
+        {
+            ...options,
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(assignReviewRequest),
+        },
+    );
+};
+
+export const getAssignArticleReviewMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof assignArticleReview>>,
+        TError,
+        { id: string; data: AssignReviewRequest },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof assignArticleReview>>,
+    TError,
+    { id: string; data: AssignReviewRequest },
+    TContext
+> => {
+    const mutationKey = ["assignArticleReview"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof assignArticleReview>>,
+        { id: string; data: AssignReviewRequest }
+    > = (props) => {
+        const { id, data } = props ?? {};
+
+        return assignArticleReview(id, data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type AssignArticleReviewMutationResult = NonNullable<
+    Awaited<ReturnType<typeof assignArticleReview>>
+>;
+export type AssignArticleReviewMutationBody = AssignReviewRequest;
+export type AssignArticleReviewMutationError = void;
+
+/**
+ * @summary Assign an editor to a pending request (or unassign with a null
+assignee). Any reviewer may assign themselves or a colleague.
+ */
+export const useAssignArticleReview = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof assignArticleReview>>,
+            TError,
+            { id: string; data: AssignReviewRequest },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof assignArticleReview>>,
+    TError,
+    { id: string; data: AssignReviewRequest },
+    TContext
+> => {
+    return useMutation(
+        getAssignArticleReviewMutationOptions(options),
+        queryClient,
+    );
+};
+export type listArticleReviewersResponse200 = {
+    data: ReviewerListResponse;
+    status: 200;
+};
+
+export type listArticleReviewersResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type listArticleReviewersResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type listArticleReviewersResponseSuccess =
+    listArticleReviewersResponse200 & {
+        headers: Headers;
+    };
+export type listArticleReviewersResponseError = (
+    | listArticleReviewersResponse401
+    | listArticleReviewersResponse403
+) & {
+    headers: Headers;
+};
+
+export const getListArticleReviewersUrl = () => {
+    return `/api/admin/article-reviewers`;
+};
+
+/**
+ * @summary Users holding a reviewer role, for the assignment dropdown.
+ */
+export const listArticleReviewers = async (
+    options?: RequestInit,
+): Promise<listArticleReviewersResponseSuccess> => {
+    return customFetch<listArticleReviewersResponseSuccess>(
+        getListArticleReviewersUrl(),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
+};
+
+export const getListArticleReviewersQueryKey = () => {
+    return [`/api/admin/article-reviewers`] as const;
+};
+
+export const getListArticleReviewersQueryOptions = <
+    TData = Awaited<ReturnType<typeof listArticleReviewers>>,
+    TError = void,
+>(options?: {
+    query?: Partial<
+        UseQueryOptions<
+            Awaited<ReturnType<typeof listArticleReviewers>>,
+            TError,
+            TData
+        >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getListArticleReviewersQueryKey();
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listArticleReviewers>>
+    > = ({ signal }) => listArticleReviewers({ signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof listArticleReviewers>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListArticleReviewersQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listArticleReviewers>>
+>;
+export type ListArticleReviewersQueryError = void;
+
+export function useListArticleReviewers<
+    TData = Awaited<ReturnType<typeof listArticleReviewers>>,
+    TError = void,
+>(
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReviewers>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listArticleReviewers>>,
+                    TError,
+                    Awaited<ReturnType<typeof listArticleReviewers>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListArticleReviewers<
+    TData = Awaited<ReturnType<typeof listArticleReviewers>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReviewers>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listArticleReviewers>>,
+                    TError,
+                    Awaited<ReturnType<typeof listArticleReviewers>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListArticleReviewers<
+    TData = Awaited<ReturnType<typeof listArticleReviewers>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReviewers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Users holding a reviewer role, for the assignment dropdown.
+ */
+
+export function useListArticleReviewers<
+    TData = Awaited<ReturnType<typeof listArticleReviewers>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReviewers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListArticleReviewersQueryOptions(options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getListArticleReviewersSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof listArticleReviewers>>,
+    TError = void,
+>(options?: {
+    query?: Partial<
+        UseSuspenseQueryOptions<
+            Awaited<ReturnType<typeof listArticleReviewers>>,
+            TError,
+            TData
+        >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getListArticleReviewersQueryKey();
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listArticleReviewers>>
+    > = ({ signal }) => listArticleReviewers({ signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listArticleReviewers>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListArticleReviewersSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listArticleReviewers>>
+>;
+export type ListArticleReviewersSuspenseQueryError = void;
+
+export function useListArticleReviewersSuspense<
+    TData = Awaited<ReturnType<typeof listArticleReviewers>>,
+    TError = void,
+>(
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReviewers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListArticleReviewersSuspense<
+    TData = Awaited<ReturnType<typeof listArticleReviewers>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReviewers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListArticleReviewersSuspense<
+    TData = Awaited<ReturnType<typeof listArticleReviewers>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReviewers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Users holding a reviewer role, for the assignment dropdown.
+ */
+
+export function useListArticleReviewersSuspense<
+    TData = Awaited<ReturnType<typeof listArticleReviewers>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listArticleReviewers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListArticleReviewersSuspenseQueryOptions(options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
 export type getReviewActivityResponse200 = {
     data: ArticleReviewActivityResponse;
     status: 200;

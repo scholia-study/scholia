@@ -45,6 +45,9 @@ pub struct ReviewArticleMeta {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ArticleReviewDetailResponse {
     pub request: ArticleReviewRequestResponse,
+    /// Editor currently assigned to this request, if any.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub assignee: Option<ReviewParticipant>,
     /// The article HTML frozen at submission, annotated with
     /// `data-block` / `data-s` markers that comments anchor into.
     pub snapshot_html: String,
@@ -168,6 +171,8 @@ pub struct ArticleReviewQueueItem {
     pub resolved_at: Option<String>,
     /// Unresolved top-level comments on this request.
     pub open_comment_count: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub assignee: Option<ReviewParticipant>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -181,10 +186,26 @@ pub struct ReviewQueueQuery {
     /// `pending` (default) | `approved` | `declined` | `resolved` | `all`.
     #[serde(default)]
     pub filter: Option<String>,
+    /// Filter by assignee: a reviewer's user id, or `unassigned`.
+    /// Absent = everyone.
+    #[serde(default)]
+    pub assignee: Option<String>,
     #[serde(default)]
     pub page: Option<i32>,
     #[serde(default)]
     pub per_page: Option<i32>,
+}
+
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct AssignReviewRequest {
+    /// Editor to assign, or null/omitted to unassign.
+    #[serde(default)]
+    pub assignee_id: Option<String>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReviewerListResponse {
+    pub reviewers: Vec<ReviewParticipant>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]

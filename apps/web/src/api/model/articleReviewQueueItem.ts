@@ -4,12 +4,14 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ReviewParticipant } from "./reviewParticipant.ts";
 
 export interface ArticleReviewQueueItem {
     article_id: string;
     article_slug: string;
     article_status: string;
     article_title: string;
+    assignee?: null | ReviewParticipant;
     author_display_name: string;
     /** @nullable */
     author_handle?: string | null;

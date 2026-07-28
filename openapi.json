@@ -25,6 +25,15 @@
                         }
                     },
                     {
+                        "name": "assignee",
+                        "in": "query",
+                        "description": "Filter by assignee: a reviewer's user id, or `unassigned`.\nAbsent = everyone.",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
                         "name": "page",
                         "in": "query",
                         "required": false,
@@ -114,6 +123,79 @@
                     },
                     "409": {
                         "description": "Request is no longer pending"
+                    }
+                }
+            }
+        },
+        "/api/admin/article-review-requests/{id}/assignee": {
+            "patch": {
+                "tags": ["article-reviews"],
+                "summary": "Assign an editor to a pending request (or unassign with a null\nassignee). Any reviewer may assign themselves or a colleague.",
+                "operationId": "assign_article_review",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Review request ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AssignReviewRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Assignee updated"
+                    },
+                    "400": {
+                        "description": "Assignee is not a reviewer"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Review request not found"
+                    },
+                    "409": {
+                        "description": "Request is no longer pending"
+                    }
+                }
+            }
+        },
+        "/api/admin/article-reviewers": {
+            "get": {
+                "tags": ["article-reviews"],
+                "summary": "Users holding a reviewer role, for the assignment dropdown.",
+                "operationId": "list_article_reviewers",
+                "responses": {
+                    "200": {
+                        "description": "Assignable reviewers",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReviewerListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
                     }
                 }
             }
@@ -4175,6 +4257,17 @@
                     "article": {
                         "$ref": "#/components/schemas/ReviewArticleMeta"
                     },
+                    "assignee": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ReviewParticipant",
+                                "description": "Editor currently assigned to this request, if any."
+                            }
+                        ]
+                    },
                     "draft_changed": {
                         "type": "boolean",
                         "description": "True when the article body was edited after this request was\nsubmitted — the snapshot no longer matches the live draft."
@@ -4260,6 +4353,16 @@
                     "article_title": {
                         "type": "string"
                     },
+                    "assignee": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ReviewParticipant"
+                            }
+                        ]
+                    },
                     "author_display_name": {
                         "type": "string"
                     },
@@ -4334,6 +4437,15 @@
                     },
                     "submitted_at": {
                         "type": "string"
+                    }
+                }
+            },
+            "AssignReviewRequest": {
+                "type": "object",
+                "properties": {
+                    "assignee_id": {
+                        "type": ["string", "null"],
+                        "description": "Editor to assign, or null/omitted to unassign."
                     }
                 }
             },
@@ -6427,6 +6539,18 @@
                     },
                     "status": {
                         "$ref": "#/components/schemas/ResourceReviewStatus"
+                    }
+                }
+            },
+            "ReviewerListResponse": {
+                "type": "object",
+                "required": ["reviewers"],
+                "properties": {
+                    "reviewers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ReviewParticipant"
+                        }
                     }
                 }
             },

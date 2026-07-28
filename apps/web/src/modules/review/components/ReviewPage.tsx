@@ -327,6 +327,16 @@ export function ReviewPage({ requestId }: { requestId: string }) {
                             color={STATUS_COLORS[request.status] ?? "default"}
                             sx={{ height: 20, fontSize: "0.65rem" }}
                         />
+                        {detail.assignee && (
+                            <Tooltip title="Assigned reviewer — set from the editor dashboard">
+                                <Chip
+                                    label={`Reviewer: ${detail.assignee.display_name}`}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{ height: 20, fontSize: "0.65rem" }}
+                                />
+                            </Tooltip>
+                        )}
                         <span className="text-xs text-stone-400">
                             submitted{" "}
                             {new Date(

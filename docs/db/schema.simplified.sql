@@ -84,8 +84,10 @@ CREATE TABLE article_review_requests (
   reviewed_by uuid,
   resolved_at timestamp with time zone,
   updated_at timestamp with time zone NOT NULL,
+  assigned_to uuid,
   PRIMARY KEY (id),
   FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+  FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE SET NULL,
   FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
 );
 

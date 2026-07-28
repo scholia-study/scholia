@@ -135,4 +135,10 @@ pub fn admin_router() -> OpenApiRouter<AppState> {
         .routes(utoipa_axum::routes!(
             article_reviews::handlers::decide_article_review
         ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::assign_article_review
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::list_article_reviewers
+        ))
 }

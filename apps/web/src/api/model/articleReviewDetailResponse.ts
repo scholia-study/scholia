@@ -6,9 +6,11 @@
  */
 import type { ArticleReviewRequestResponse } from "./articleReviewRequestResponse.ts";
 import type { ReviewArticleMeta } from "./reviewArticleMeta.ts";
+import type { ReviewParticipant } from "./reviewParticipant.ts";
 
 export interface ArticleReviewDetailResponse {
     article: ReviewArticleMeta;
+    assignee?: null | ReviewParticipant;
     /**
      * True when the article body was edited after this request was
      * submitted — the snapshot no longer matches the live draft.
