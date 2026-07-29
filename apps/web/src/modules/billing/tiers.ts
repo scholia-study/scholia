@@ -11,7 +11,7 @@ export const TIERS = [
         label: "Scholiast",
         shortLabel: "Scholiast",
         role: "scholiast",
-        price: "€5",
+        price: "€3",
         blurb: "Support the project and unlock the elevated note and quotation limits.",
     },
     {
@@ -19,7 +19,7 @@ export const TIERS = [
         label: "Scholiast Benefactor",
         shortLabel: "Benefactor",
         role: "scholiast_benefactor",
-        price: "€15",
+        price: "€13",
         blurb: "Sustain the project's growth and signal your support.",
     },
     {
@@ -27,7 +27,7 @@ export const TIERS = [
         label: "Scholiast Patron",
         shortLabel: "Patron",
         role: "scholiast_patron",
-        price: "€50",
+        price: "€133",
         blurb: "Champion the project and help fund new editions.",
     },
 ] as const;

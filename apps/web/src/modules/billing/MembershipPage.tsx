@@ -11,6 +11,7 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import toast from "react-hot-toast";
 import { useCreatePortalSession } from "#/api/billing/billing";
+import { CONTACT_EMAIL } from "#/constants";
 import { useAuth } from "#/hooks/useAuth";
 import { CANCELLATION_COPY } from "./CancellationNote";
 import { getCurrentTier, MEMBERSHIP_PERKS, TIERS, type Tier } from "./tiers";
@@ -121,6 +122,19 @@ export function MembershipPage() {
                         to become a member.
                     </p>
                 ) : null}
+
+                <p className="mt-12 text-center text-sm text-stone-500">
+                    Want to support the project beyond a membership? For
+                    patronage, institutional support, or investment inquiries,
+                    write to us at{" "}
+                    <a
+                        href={`mailto:${CONTACT_EMAIL}`}
+                        className="text-stone-700 underline"
+                    >
+                        {CONTACT_EMAIL}
+                    </a>
+                    .
+                </p>
             </div>
         </div>
     );

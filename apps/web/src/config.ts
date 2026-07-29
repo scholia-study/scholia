@@ -51,16 +51,16 @@ interface EnvConfig {
 
 const _sentryDsnDev =
     "https://pWnckLLN4SR5ErwyAiJ3Kb2T@s2610462.eu-central-1a.betterstackdata.com/2610462";
-// TODO: separate prod Errors source in Better Stack at prod bringup.
-const _sentryDsnProd = "";
+const _sentryDsnProd =
+    "https://NvCH5CMCY7FBFhw2QTntdLrZ@s2637365.eu-central-1a.betterstackdata.com/2637365";
 
 const _posthogToken = "phc_xxtCK6dsz7BBKjzFf4BGvbFpNE7MuVytwiiWfvTenQ3q";
 const _posthogHost = "https://eu.i.posthog.com";
 
 const _stripePubKeyTest =
     "pk_test_51TSz7zPDKNSxTB0E4aksjZoEVrCnhH5z6o78uTWhfwlCEqj2jmpBZd6B0miol0lM6xNQh1PVF68Sg3JMEtAuElkW00tReLfYms";
-// TODO: replace with the real live key before flipping prod to live mode.
-const _stripePubKeyLive = "";
+const _stripePubKeyLive =
+    "pk_live_51TSz7zPDKNSxTB0ElTBxJBmkq0TiidSoEwnhtK7a9oyUsxQ1A72Lw345ieMwykOTr8CHd8BVmSHR0WKYPOOFp9Dk00xGvys1oh";
 
 const envConfigs = {
     local: {
