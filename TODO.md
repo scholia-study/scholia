@@ -4,8 +4,6 @@
 
 ## 🌿 FEATURES
 - posthog
-- google login
-- Stripe production products
 - insignias/badges
 - caching layer on backend API
 - rate-limiting on backend API
@@ -20,7 +18,10 @@
 ## 🏗️ INFRA / EXTERNAL SETUP
 - Auth callback       <domain>/api/auth/github/callback
 - Stripe webhook      <domain>/api/webhooks/stripe
+- Stripe production products and checkout waiver 
 - Posthog
+- DMARC: tighten _dmarc.scholia.study from p=none → p=quarantine (~mid-Aug 2026,
+  once aggregate reports at contact@ show only Resend/SES sending), later → p=reject
 
 ## 🤔 MAYBE
 - add "commentary, paraphrase, allusion submission to editors for review and approval" 

@@ -1,6 +1,6 @@
 // Site-wide constants. Import from here rather than hardcoding values.
 
-export const CONTACT_EMAIL = "contact@example.com";
+export const CONTACT_EMAIL = "contact@scholia.study";
 export const SITE_NAME = "Scholia";
 
 // Roles an admin may grant or revoke in the user dashboard. Mirrors the

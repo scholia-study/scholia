@@ -160,6 +160,24 @@ function RegisterPage() {
                     </a>
                 </div>
 
+                <p className="mt-4 text-xs text-stone-400">
+                    By creating an account, you agree to the{" "}
+                    <Link
+                        to="/terms"
+                        className="underline hover:text-stone-600"
+                    >
+                        Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                        to="/privacy"
+                        className="underline hover:text-stone-600"
+                    >
+                        Privacy policy
+                    </Link>
+                    .
+                </p>
+
                 <p className="mt-4 text-sm text-stone-500">
                     Already have an account?{" "}
                     <Link

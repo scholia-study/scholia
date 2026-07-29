@@ -1,18 +1,18 @@
 # Licence
 
-*Last updated: April 12, 2026*
+*Last updated: July 29, 2026*
 
 ## Source texts
 
 The primary texts hosted on Scholia fall into two categories.
 
-**Texts digitized by Scholia.** Where we have transcribed, structured, and edited a primary text ourselves — drawn from editions whose copyright has expired — that editorial work is published under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/) (CC BY-NC-ND 4.0) licence. The underlying public-domain text remains free for anyone to use; the licence covers our digitization and editorial presentation of it.
+**Texts digitized by Scholia.** Where we have transcribed, structured, and edited a primary text ourselves — drawn from editions in the public domain or released under a public-domain dedication — that editorial work is published under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/) (CC BY-NC-ND 4.0) licence. The underlying public-domain text remains free for anyone to use; the licence covers our digitization and editorial presentation of it.
 
 **Texts served from third parties.** Some texts are drawn directly from external sources and APIs that we do not control. These retain their original licence and terms, which govern your use of them and are noted on the relevant work's page. Scholia makes no licensing claim over this material.
 
-## Translations
+## Translations and modernized editions
 
-Original community translations produced for Scholia are published under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/) (CC BY-NC-ND 4.0) licence. You are free to share them for non-commercial purposes, provided you give appropriate credit. You may not distribute modified or derivative versions.
+Original translations produced for Scholia, and the modernized reading editions we prepare from historical texts, are original works and are published under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/) (CC BY-NC-ND 4.0) licence. You are free to share them for non-commercial purposes, provided you give appropriate credit. You may not distribute modified or derivative versions.
 
 Translations sourced from third parties retain their original licence terms, which are noted on the relevant work's page.
 
