@@ -730,7 +730,7 @@ function LoginPrompt({ className = "" }: { className?: string }) {
             >
                 Log in or create an account
             </Link>{" "}
-            to start saving quotations, writig notes and articles.
+            to start saving quotations, writing notes and articles.
         </p>
     );
 }
