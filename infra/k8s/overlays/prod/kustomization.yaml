@@ -1,26 +1,5 @@
 # Prod environment overlay.
 #
-# The base is prod-neutral and public-by-default, so unlike dev this
-# overlay adds NO lockdown fragment — no cookie gate, no robots
-# override, no X-Robots-Tag. Shipping any of those here would zero out
-# the SEO layer (see PLAN_DEVOPS.md, SEO launch checklist).
-#
-# What it does layer:
-#   - Ingress hostname scholia.study + letsencrypt-prod issuer.
-#   - APP_PROFILE=prod on web (profile registry selection) and an
-#     empty SENTRY_DSN until the scholia-web-prod Better Stack source
-#     exists (empty = the SDK stays inert).
-#   - SCHOLIA_ENV=prod on the backup CronJob (dumps land under
-#     db/daily/prod/ in all three regional buckets).
-#
-# Image tags + ingest-Job hashes move by PROMOTION (ADR 0007): copy the
-# pins from overlays/dev into this file (and ingest-jobs/) and commit.
-# CI's bump job only ever writes the dev overlay.
-#
-# Secrets in secrets/ are SOPS-encrypted (prod age recipient — see
-# .sops.yaml) and pulled in via the KSOPS generator, decrypted by the
-# prod cluster's Argo repo-server. Same mechanics as dev.
-
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
@@ -33,12 +12,11 @@ resources:
 generators:
   - secret-generator.yaml
 
-# Promoted pins — copied from overlays/dev/kustomization.yaml.
 images:
   - name: ghcr.io/scholia-study/scholia-api
-    newTag: main-2263a2a
+    newTag: main-df22241
   - name: ghcr.io/scholia-study/scholia-web
-    newTag: main-2263a2a
+    newTag: main-df22241
   - name: ghcr.io/scholia-study/scholia-proxy
     newTag: main-2263a2a
 
