@@ -45,12 +45,17 @@ interface EnvConfig {
     SITE_ORIGIN: string;
     STRIPE_PUBLISHABLE_KEY: string;
     SENTRY_DSN: string;
+    POSTHOG_TOKEN: string;
+    POSTHOG_HOST: string;
 }
 
 const _sentryDsnDev =
     "https://pWnckLLN4SR5ErwyAiJ3Kb2T@s2610462.eu-central-1a.betterstackdata.com/2610462";
 // TODO: separate prod Errors source in Better Stack at prod bringup.
 const _sentryDsnProd = "";
+
+const _posthogToken = "phc_xxtCK6dsz7BBKjzFf4BGvbFpNE7MuVytwiiWfvTenQ3q";
+const _posthogHost = "https://eu.i.posthog.com";
 
 const _stripePubKeyTest =
     "pk_test_51TSz7zPDKNSxTB0E4aksjZoEVrCnhH5z6o78uTWhfwlCEqj2jmpBZd6B0miol0lM6xNQh1PVF68Sg3JMEtAuElkW00tReLfYms";
@@ -64,6 +69,8 @@ const envConfigs = {
         SITE_ORIGIN: "http://localhost:3000",
         STRIPE_PUBLISHABLE_KEY: _stripePubKeyTest,
         SENTRY_DSN: "",
+        POSTHOG_TOKEN: "",
+        POSTHOG_HOST: _posthogHost,
     },
     "local-proxy": {
         // Same-origin API: the local proxy (apps/proxy) terminates :8000
@@ -76,6 +83,8 @@ const envConfigs = {
         SITE_ORIGIN: "http://localhost:8000",
         STRIPE_PUBLISHABLE_KEY: _stripePubKeyTest,
         SENTRY_DSN: "",
+        POSTHOG_TOKEN: "",
+        POSTHOG_HOST: _posthogHost,
     },
     dev: {
         PROFILE: "dev",
@@ -83,6 +92,8 @@ const envConfigs = {
         SITE_ORIGIN: "https://dev.scholia.study",
         STRIPE_PUBLISHABLE_KEY: _stripePubKeyTest,
         SENTRY_DSN: _sentryDsnDev,
+        POSTHOG_TOKEN: _posthogToken,
+        POSTHOG_HOST: _posthogHost,
     },
     prod: {
         PROFILE: "prod",
@@ -90,6 +101,8 @@ const envConfigs = {
         SITE_ORIGIN: "https://scholia.study",
         STRIPE_PUBLISHABLE_KEY: _stripePubKeyLive,
         SENTRY_DSN: _sentryDsnProd,
+        POSTHOG_TOKEN: _posthogToken,
+        POSTHOG_HOST: _posthogHost,
     },
 } as const satisfies Record<Profile, EnvConfig>;
 

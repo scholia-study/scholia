@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@mui/material/styles";
+import { PostHogProvider } from "@posthog/react";
 import type { QueryClient } from "@tanstack/react-query";
 import {
     createRootRouteWithContext,
@@ -7,6 +8,7 @@ import {
     Scripts,
     useLocation,
 } from "@tanstack/react-router";
+import posthog from "posthog-js";
 import { Toaster } from "react-hot-toast";
 import { getMeQueryKey, getMeQueryOptions } from "../api/auth/auth";
 import { AuthProvider } from "../hooks/useAuth";
@@ -102,30 +104,32 @@ function RootComponent() {
     const showFooter = pathname !== "/" && !isReader;
 
     return (
-        <ThemeProvider theme={theme}>
-            <AuthProvider>
-                <FeedbackProvider>
-                    <ReaderPreferencesProvider>
-                        <Navbar />
-                        <UserSubnav />
-                        <InfoSubnav />
-                        <main className="flex-1 overflow-y-auto">
-                            <div
-                                className={`${isReader ? "h-full" : "min-h-full"} flex flex-col`}
-                            >
-                                <div className="flex-1 min-h-0 flex flex-col">
-                                    <Outlet />
+        <PostHogProvider client={posthog}>
+            <ThemeProvider theme={theme}>
+                <AuthProvider>
+                    <FeedbackProvider>
+                        <ReaderPreferencesProvider>
+                            <Navbar />
+                            <UserSubnav />
+                            <InfoSubnav />
+                            <main className="flex-1 overflow-y-auto">
+                                <div
+                                    className={`${isReader ? "h-full" : "min-h-full"} flex flex-col`}
+                                >
+                                    <div className="flex-1 min-h-0 flex flex-col">
+                                        <Outlet />
+                                    </div>
+                                    {showFooter && <Footer />}
                                 </div>
-                                {showFooter && <Footer />}
-                            </div>
-                        </main>
-                        <ScrollToTop />
-                        <FeedbackModal />
-                        <Toaster position="bottom-right" />
-                    </ReaderPreferencesProvider>
-                </FeedbackProvider>
-            </AuthProvider>
-        </ThemeProvider>
+                            </main>
+                            <ScrollToTop />
+                            <FeedbackModal />
+                            <Toaster position="bottom-right" />
+                        </ReaderPreferencesProvider>
+                    </FeedbackProvider>
+                </AuthProvider>
+            </ThemeProvider>
+        </PostHogProvider>
     );
 }
 
