@@ -37,11 +37,11 @@ generators:
 # values are overwritten on the first CI run after this lands.
 images:
   - name: ghcr.io/scholia-study/scholia-api
-    newTag: main-df22241
+    newTag: main-e2918ec
   - name: ghcr.io/scholia-study/scholia-web
     newTag: main-505d3c2
   - name: ghcr.io/scholia-study/scholia-proxy
-    newTag: main-2263a2a
+    newTag: main-e2918ec
 
 configMapGenerator:
   - name: proxy-security
