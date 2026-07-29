@@ -4,14 +4,30 @@ server {
     listen 80 default_server;
     server_name _;
 
+    # Resolve the real client IP from X-Forwarded-For, trusting only the
+    # in-cluster edge (Traefik, on the k3s pod network) as a hop. With
+    # `recursive on`, nginx walks the XFF chain right-to-left past
+    # trusted addresses and stops at the first untrusted one — the
+    # actual client, even if the client prepended fake entries.
+    # $remote_addr below therefore means "proxy-vouched client IP".
+    set_real_ip_from  10.42.0.0/16;
+    real_ip_header    X-Forwarded-For;
+    real_ip_recursive on;
+
     # Forward proper headers to all upstreams. Without `Host`, vite dev
     # rejects requests because the Host header would be the upstream name
     # ("node_ssr"). With these set at the server level, all `location`
     # blocks below inherit them — as long as none of them set their own
     # `proxy_set_header` (which would wipe inheritance per nginx's rules).
+    #
+    # X-Forwarded-For is deliberately COLLAPSED to the resolved client
+    # address (not $proxy_add_x_forwarded_for): the API's auth rate
+    # limiter keys on this header via SmartIpKeyExtractor, which reads
+    # the leftmost entry — appending would let clients smuggle a fake
+    # leftmost IP and dodge per-client limiting (see rate_limit.rs).
     proxy_set_header Host              $host;
     proxy_set_header X-Real-IP         $remote_addr;
-    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-For   $remote_addr;
     proxy_set_header X-Forwarded-Proto $scheme;
 
     # Surface cache decisions in responses for debugging: HIT, MISS, BYPASS,
