@@ -1,0 +1,35 @@
+# Scholia
+
+> An interactive reader for primary-source texts — philosophical, literary,
+> and historical works structured down to the sentence and aligned across
+> translations. Operated by Dialogos AS (Norway).
+
+Scholia hosts public-domain primary texts (Bible translations, Kant's
+Critiques, Shakespeare, Milton, Ibsen, and more) alongside its own
+translations, modernized reading editions, and scholarly annotations, plus
+reader-contributed articles.
+
+## Content
+
+- [Library](https://scholia.study/): all hosted works, grouped by author
+- [Sitemap](https://scholia.study/sitemap.xml): every readable page, per-book
+- [Articles](https://scholia.study/articles): published reader articles
+
+## Licensing
+
+- [Licence](https://scholia.study/licence): the underlying primary texts are
+  public domain. Scholia's own digitizations, translations, modernized
+  editions, and editorial annotations are copyrighted and published under
+  CC BY-NC-ND 4.0 — non-commercial sharing with attribution, no derivatives.
+  Published articles are their authors' property, shared under the same
+  licence. Please respect these terms when reusing content from this site.
+
+## Policies
+
+- [Terms of Service](https://scholia.study/terms)
+- [Privacy](https://scholia.study/privacy)
+- [Contribute](https://scholia.study/contribute): how to help with editions
+
+## Contact
+
+- contact@scholia.study
