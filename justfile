@@ -81,3 +81,15 @@ notify *msg:
 [group("dev-cluster")]
 db-restore *flags:
     bash scripts/db_restore.sh {{ flags }}
+
+# port-forward the prod cluster's Postgres to localhost:54322 (leave running)
+[group("prod-cluster")]
+prod-forward:
+    KUBECONFIG=~/.kube/scholia-prod.yaml kubectl port-forward -n scholia svc/postgres 54322:5432
+
+# promote dev pins → prod overlay (dispatches the GitHub workflow, then watches it)
+[group("prod-cluster")]
+promote:
+    gh workflow run promote.yml
+    sleep 5
+    gh run watch $(gh run list --workflow=promote.yml --limit 1 --json databaseId -q '.[0].databaseId') --exit-status

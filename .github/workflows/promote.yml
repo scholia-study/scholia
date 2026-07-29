@@ -1,0 +1,61 @@
+name: Promote to prod
+
+on:
+    workflow_dispatch:
+
+concurrency:
+    group: promote-prod
+    cancel-in-progress: false
+
+jobs:
+    promote:
+        name: Copy dev pins into prod overlay
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  ref: main
+                  token: ${{ secrets.PAT }}
+
+            - name: Copy image tags dev → prod
+              run: |
+                  DEV=infra/k8s/overlays/dev/kustomization.yaml
+                  PROD=infra/k8s/overlays/prod/kustomization.yaml
+                  for svc in api web proxy; do
+                      img="ghcr.io/scholia-study/scholia-$svc"
+                      tag=$(grep -A1 "name: $img\$" "$DEV" | awk '/newTag:/ {print $2}')
+                      if [ -z "$tag" ] || echo "$tag" | grep -q PLACEHOLDER; then
+                          echo "::error::dev tag for $svc is '$tag' — refusing to promote"
+                          exit 1
+                      fi
+                      perl -0777 -pi -e \
+                          "s{(name: \Q$img\E\n\s+newTag: )\S+}{\${1}$tag}g" \
+                          "$PROD"
+                      echo "$svc -> $tag"
+                  done
+
+            - name: Copy ingest Job manifests dev → prod
+              run: |
+                  # Job files are env-agnostic (secrets/services resolve
+                  # in-cluster), so a verbatim copy IS the promotion of
+                  # both the hash-named Job identity and DERIVED_HASH.
+                  # ingest-jobs/kustomization.yaml is NOT copied — prod
+                  # keeps its own (promotion-flavored) header.
+                  cp infra/k8s/overlays/dev/ingest-jobs/ingest-*.yaml \
+                     infra/k8s/overlays/prod/ingest-jobs/
+
+            - name: Commit + push if changed
+              run: |
+                  git add infra/k8s/overlays/prod
+                  if git diff --cached --quiet; then
+                      echo "prod already matches dev — nothing to promote"
+                      exit 0
+                  fi
+                  echo "promoting:"
+                  git diff --cached --stat
+                  api_tag=$(grep -A1 "name: ghcr.io/scholia-study/scholia-api\$" \
+                      infra/k8s/overlays/prod/kustomization.yaml | awk '/newTag:/ {print $2}')
+                  git config user.name "scholia-ci[bot]"
+                  git config user.email "ci@scholia.study"
+                  git commit -m "ci: promote prod overlay to ${api_tag} [skip ci]"
+                  git push origin HEAD:main

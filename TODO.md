@@ -22,9 +22,6 @@
 - Posthog
 - DMARC: tighten _dmarc.scholia.study from p=none → p=quarantine (~mid-Aug 2026,
   once aggregate reports at contact@ show only Resend/SES sending), later → p=reject
-- promote-to-prod action: workflow_dispatch that copies dev overlay pins
-  (image newTags + ingest-Job hashes) into overlays/prod and commits via PAT
-  (manual trigger only — promotion stays a decision, per ADR 0007)
 
 ## 🤔 MAYBE
 - add "commentary, paraphrase, allusion submission to editors for review and approval" 
