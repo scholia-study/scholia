@@ -30,10 +30,14 @@ creation_rules:
       - age:
           - age1a57wpmedhxjfpc7eggf639ktpwh66pyg0r5n72gavm3w0zrrv3qq8eesn6
 
-  # Add a prod rule here once the prod cluster + age keypair exist:
-  #
-  # - path_regex: infra/k8s/overlays/prod/.*\.ya?ml$
-  #   encrypted_regex: "^(data|stringData)$"
-  #   key_groups:
-  #     - age:
-  #         - <prod-public-key>
+  - path_regex: infra/k8s/overlays/prod/.*\.ya?ml$
+    encrypted_regex: "^(data|stringData)$"
+    key_groups:
+      - age:
+          - age1da7lwg3mfe3wkgwk9xk9swzj65nh9q5fnttpgcsdfhdhepesyslsud4gn9
+
+  - path_regex: infra/[^/]+/secrets/.*-prod\.ya?ml$
+    encrypted_regex: "^(data|stringData)$"
+    key_groups:
+      - age:
+          - age1da7lwg3mfe3wkgwk9xk9swzj65nh9q5fnttpgcsdfhdhepesyslsud4gn9

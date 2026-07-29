@@ -54,3 +54,7 @@ __pycache__/
 # Exact pg_dump DDL, regenerable via `pnpm db:schema`. The companion
 # schema.simplified.sql IS tracked (small, diagram-import friendly).
 docs/db/schema.sql
+# age private keys must never be committed (SOPS recipients are fine —
+# they're public). Guards against a keygen'd file in the repo root.
+*age-key*.txt
+*.age

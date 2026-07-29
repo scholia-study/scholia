@@ -1,0 +1,71 @@
+# Auto-ingest Job for kant3 — CI-bumped, Argo-run. Rationale for the
+# shape (no TTL, wave 1, unpinned image, -bootstrap): see kustomization.yaml.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ingest-kant3-7e6f78d27a91
+  labels:
+    ingest: kant3
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: Force=true,Replace=true
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        ingest: kant3
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: ingest-kant3
+          image: ghcr.io/scholia-study/scholia-ingest:main
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 1Gi
+          env:
+            - name: CORPUS
+              value: kant3
+            - name: DERIVED_HASH
+              value: "7e6f78d27a91"
+            - name: NTFY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ntfy
+                  key: NTFY_URL
+                  optional: true
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: database
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: CACHE_PURGE_URL
+              value: http://scholia-proxy:8080
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: assets-bucket
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: assets-bucket
+                  key: AWS_SECRET_ACCESS_KEY

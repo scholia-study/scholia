@@ -1,0 +1,16 @@
+# Strategic-merge patch: prod dumps key under db/daily/prod/ in the
+# three regional backup buckets (base defaults to dev).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              env:
+                - name: SCHOLIA_ENV
+                  value: prod

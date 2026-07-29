@@ -1,0 +1,36 @@
+# ArgoCD Application for the PROD cluster (mirror of application-dev.yaml
+# — see that file for the full rationale on single-Application shape,
+# what's deliberately not covered, and the sync options).
+#
+# Registered once at bootstrap, against the prod kubeconfig:
+#   kubectl apply -f infra/argo/application-prod.yaml
+# After that Argo watches git and self-manages; re-apply only when THIS
+# spec changes.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: scholia-prod
+  namespace: argocd
+  annotations:
+    notifications.argoproj.io/subscribe.on-health-degraded.ntfy: ""
+    notifications.argoproj.io/subscribe.on-sync-failed.ntfy: ""
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/scholia-study/scholia.git
+    targetRevision: main
+    path: infra/k8s/overlays/prod
+  destination:
+    # This same cluster — one self-contained Argo per cluster.
+    server: https://kubernetes.default.svc
+    namespace: scholia
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      # Load-bearing for the ingest Jobs' Force=true,Replace=true —
+      # see overlays/prod/ingest-jobs/kustomization.yaml.
+      - ApplyOutOfSyncOnly=true

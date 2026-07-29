@@ -1,0 +1,19 @@
+# Replace the base's PLACEHOLDER hostname with the prod apex and pin
+# the production ACME issuer (HTTP-01 already proven on dev).
+#
+# The `~1` in the JSON Pointer path escapes a literal `/` inside the
+# annotation key `cert-manager.io/cluster-issuer`.
+#
+# NOTE: www.scholia.study (CNAME to the apex in DNS) has no rule here —
+# it 404s at Traefik and isn't on the cert. Add a second host + a
+# redirect middleware if www traffic ever matters.
+
+- op: replace
+  path: /spec/tls/0/hosts/0
+  value: scholia.study
+- op: replace
+  path: /spec/rules/0/host
+  value: scholia.study
+- op: replace
+  path: /metadata/annotations/cert-manager.io~1cluster-issuer
+  value: letsencrypt-prod

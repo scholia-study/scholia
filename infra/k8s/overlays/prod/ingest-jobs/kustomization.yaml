@@ -1,0 +1,43 @@
+# Argo-managed auto-ingest Jobs — one per struct-importer corpus (Bible
+# stays manual: infra/k8s/jobs/ingest-bible.yaml). See ADR 0007.
+#
+# PROD DIFFERENCE: CI's `bump` job only rewrites the DEV overlay. These
+# hashes move by promotion — copy the current name suffix + DERIVED_HASH
+# from overlays/dev/ingest-jobs/ once the content is validated on dev,
+# and commit. A new name is a new resource: Argo creates the new Job and
+# prunes the old one — killing it if still mid-run, which is safe because
+# struct_to_db commits one transaction per edition and the replacement
+# re-runs both.
+#
+# Deliberate shape, shared by all five manifests:
+#   - No ttlSecondsAfterFinished: with selfHeal on, Argo would resurrect
+#     (= re-run) a TTL-deleted Job. Prune-on-rename is the cleanup.
+#   - sync-wave 1: waits for wave 0 (api — migrations run in its init
+#     container) before importing.
+#   - backoffLimit 0: a reconcile abort (e.g. ambiguous sentence rewrite,
+#     sim < 0.90) must surface as a red Job / Degraded app, not retry.
+#   - Image deliberately UNPINNED (:main + pull Always), unlike the
+#     api/web/proxy tag pins: the Job's identity is its content hash.
+#     Pinning here would mutate an immutable Job field on every importer
+#     rebuild and re-run all corpora for a code-only change.
+#   - "-bootstrap" name + empty DERIVED_HASH is the pre-first-bump state:
+#     the entrypoint then falls back to the manually mirrored
+#     scholia-assets bucket, so the adoption sync runs one reconcile
+#     against current manual content.
+#   - Force=true,Replace=true sync option: Job specs are immutable, so
+#     a spec-only manifest change (new env var, resource tweak) would
+#     fail the sync under both apply (patch) and plain replace (PUT).
+#     Force+Replace deploys it as delete + recreate — one extra no-op
+#     reconcile, safe by design. DEPENDS on the Application's
+#     ApplyOutOfSyncOnly=true (application-prod.yaml): without it every
+#     sync would recreate (= re-run) all five Jobs. The normal
+#     hash-rename flow needs none of this (new name = new resource).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ingest-kant1.yaml
+  - ingest-kant3.yaml
+  - ingest-shakespeare1.yaml
+  - ingest-milton1.yaml
+  - ingest-ibsen1.yaml

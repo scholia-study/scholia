@@ -1,0 +1,21 @@
+# Strategic-merge patch: env entries merge by name into the base's
+# web container.
+#
+# SENTRY_DSN is deliberately empty until the scholia-web-prod Better
+# Stack source exists — the SDK treats an empty DSN as "off". When the
+# source is created, its DSN goes here (Node SSR side) AND in
+# apps/web/src/config.ts `_sentryDsnProd` (browser side).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scholia-web
+spec:
+  template:
+    spec:
+      containers:
+        - name: web
+          env:
+            - name: APP_PROFILE
+              value: prod
+            - name: SENTRY_DSN
+              value: ""
