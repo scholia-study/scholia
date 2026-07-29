@@ -22,15 +22,13 @@ const config = defineConfig({
         sentryTanstackStart({
             sentryUrl: "https://eu-central-1a-sourcemaps.betterstackdata.com",
             org: "572091",
-            project: "2610462",
+            project: "2637365", // prod source.
             authToken: process.env.SENTRY_AUTH_TOKEN,
             tunnelRoute: true,
-            // Build identity from CI (main-<sha7>); locally the plugin
-            // falls back to git detection.
-            release: { name: process.env.SENTRY_RELEASE },
-            // Never ship map files in the image/public assets — they're
-            // uploaded, then removed.
+            release: { name: process.env.SENTRY_RELEASE }, // Build identity from CI (main-<sha7>).
             sourcemaps: {
+                // Never ship map files in the image/public assets — they're
+                // uploaded, then removed.
                 filesToDeleteAfterUpload: "./dist/**/*.map",
             },
         }),
