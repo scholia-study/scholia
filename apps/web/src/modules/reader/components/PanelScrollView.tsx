@@ -179,7 +179,7 @@ export const PanelScrollView = forwardRef<
     });
 
     const companionNodeMap = useMemo(() => {
-        if (!companionData || companionData.status !== 200) return undefined;
+        if (companionData?.status !== 200) return undefined;
         const map = new Map<string, NodeDetail>();
         const primaryIsTranslation = nodes.some((n) => n.source_node_id);
         for (const node of companionData.data.nodes) {

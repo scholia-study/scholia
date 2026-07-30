@@ -429,8 +429,14 @@ struct CitationSourceData {
     original_year: Option<i16>,
     publisher: Option<String>,
     publication_place: Option<String>,
-    authors: Vec<String>, // sorted by position
+    /// The persons occupying Chicago's author slot, sorted by position:
+    /// the authors, or (per Chicago's author-less rule) the editors, then
+    /// the translators. Empty only when the source has none of the three.
+    authors: Vec<String>,
     author_sort_names: Vec<String>,
+    /// Bibliography-only role marker when non-authors fill the slot:
+    /// "ed." / "eds." / "trans.". Text citations never carry it.
+    author_slot_suffix: Option<String>,
 }
 
 impl CitationSourceData {
@@ -526,6 +532,7 @@ async fn fetch_citation_data(
                 publication_place: s.publication_place.clone(),
                 authors: Vec::new(),
                 author_sort_names: Vec::new(),
+                author_slot_suffix: None,
             },
         );
     }
@@ -534,14 +541,16 @@ async fn fetch_citation_data(
         source_id: Uuid,
         name: String,
         sort_name: Option<String>,
+        role: String,
     }
 
     let persons: Vec<PersonRow> = sqlx::query_as!(
         PersonRow,
-        r#"SELECT sp.source_id, p.name, p.sort_name
+        r#"SELECT sp.source_id, p.name, p.sort_name, sp.role::TEXT AS "role!"
            FROM source_persons sp
            JOIN persons p ON p.id = sp.person_id
-           WHERE sp.source_id = ANY($1) AND sp.role = 'author'
+           WHERE sp.source_id = ANY($1)
+             AND sp.role IN ('author', 'editor', 'translator')
            ORDER BY sp.position"#,
         source_ids,
     )
@@ -549,18 +558,41 @@ async fn fetch_citation_data(
     .await
     .unwrap_or_default();
 
+    // Group by (source, role), then fill each source's author slot per
+    // Chicago's author-less rule: authors, else editors, else translators.
+    let mut by_role: HashMap<(Uuid, String), Vec<(String, String)>> = HashMap::new();
     for p in persons {
-        if let Some(data) = map.get_mut(&p.source_id) {
-            data.authors.push(p.name.clone());
-            data.author_sort_names.push(p.sort_name.unwrap_or_else(|| {
-                // Derive last name from full name
-                p.name
-                    .split_whitespace()
-                    .last()
-                    .unwrap_or(&p.name)
-                    .to_string()
-            }));
+        let sort_name = p.sort_name.unwrap_or_else(|| {
+            p.name
+                .split_whitespace()
+                .last()
+                .unwrap_or(&p.name)
+                .to_string()
+        });
+        by_role
+            .entry((p.source_id, p.role))
+            .or_default()
+            .push((p.name, sort_name));
+    }
+    for (id, data) in map.iter_mut() {
+        let (slot, suffix) = ["author", "editor", "translator"]
+            .into_iter()
+            .find_map(|role| {
+                let list = by_role.remove(&(*id, role.to_string()))?;
+                let suffix = match role {
+                    "editor" if list.len() == 1 => Some("ed."),
+                    "editor" => Some("eds."),
+                    "translator" => Some("trans."),
+                    _ => None,
+                };
+                Some((list, suffix))
+            })
+            .unwrap_or_default();
+        for (name, sort_name) in slot {
+            data.authors.push(name);
+            data.author_sort_names.push(sort_name);
         }
+        data.author_slot_suffix = suffix.map(str::to_string);
     }
 
     map
@@ -577,17 +609,17 @@ fn format_inline_citation(
             let uuid = Uuid::parse_str(id_str).ok();
             let data = uuid.and_then(|id| source_data.get(&id));
 
+            // Surnames come from the curated sort_name ("Di Giovanni,
+            // George" → "Di Giovanni") so particle surnames survive;
+            // fetch falls back to the final name token when unset.
+            let sn = |d: &CitationSourceData, i: usize| surname(&d.author_sort_names[i]);
             let author_part = match data {
-                Some(d) if d.authors.is_empty() => "Unknown".to_string(),
-                Some(d) if d.authors.len() == 1 => last_name(&d.authors[0]),
-                Some(d) if d.authors.len() == 2 => {
-                    format!(
-                        "{} and {}",
-                        last_name(&d.authors[0]),
-                        last_name(&d.authors[1])
-                    )
+                Some(d) if d.author_sort_names.is_empty() => "Unknown".to_string(),
+                Some(d) if d.author_sort_names.len() == 1 => sn(d, 0),
+                Some(d) if d.author_sort_names.len() == 2 => {
+                    format!("{} and {}", sn(d, 0), sn(d, 1))
                 }
-                Some(d) => format!("{} et al.", last_name(&d.authors[0])),
+                Some(d) => format!("{} et al.", sn(d, 0)),
                 None => "Unknown".to_string(),
             };
 
@@ -619,10 +651,13 @@ fn format_inline_citation(
 /// Format a bibliography entry in Chicago author-date style.
 ///
 /// Two structural variants:
-///   - With authors: "Last, First. Year. *Title*. Place: Publisher."
-///   - Anonymous (no authors): "*Title*. Year. Place: Publisher." —
-///     Chicago handles author-less works by leading with the title
-///     rather than printing an "Unknown" placeholder.
+///   - With a filled author slot: "Last, First. Year. *Title*. Place:
+///     Publisher." When editors or translators fill the slot (no
+///     authors), their role marker follows the names: "Di Giovanni,
+///     George, ed. 2010. *Title*…"
+///   - Anonymous (no contributors at all): "*Title*. Year. Place:
+///     Publisher." — Chicago leads with the title rather than printing
+///     an "Unknown" placeholder.
 ///
 /// Reprints (original_year differing from publication_year) use
 /// Chicago's "(Original) Reprint" year form: "Kant, Immanuel. (1787)
@@ -684,7 +719,12 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
         }
     };
 
-    format!("{author_part}. {year_terminated} <em>{title}</em>.{publication_suffix}")
+    match data.author_slot_suffix.as_deref() {
+        Some(suffix) => format!(
+            "{author_part}, {suffix} {year_terminated} <em>{title}</em>.{publication_suffix}"
+        ),
+        None => format!("{author_part}. {year_terminated} <em>{title}</em>.{publication_suffix}"),
+    }
 }
 
 #[cfg(test)]
@@ -704,6 +744,7 @@ mod bibliography_tests {
             publication_place: place.map(String::from),
             authors: vec!["Immanuel Kant".to_string()],
             author_sort_names: sort_names.into_iter().map(String::from).collect(),
+            author_slot_suffix: None,
         }
     }
 
@@ -797,11 +838,96 @@ mod bibliography_tests {
         let entries = vec![(id.to_string(), String::new())];
         assert_eq!(format_inline_citation(&entries, &map), "(Kant 1911)");
     }
+
+    fn slot_entry(names: &[(&str, &str)], suffix: Option<&str>) -> CitationSourceData {
+        CitationSourceData {
+            title: "The Science of Logic".to_string(),
+            publication_year: Some(2010),
+            original_year: None,
+            publisher: Some("Cambridge University Press".to_string()),
+            publication_place: Some("Cambridge".to_string()),
+            authors: names.iter().map(|(n, _)| n.to_string()).collect(),
+            author_sort_names: names.iter().map(|(_, s)| s.to_string()).collect(),
+            author_slot_suffix: suffix.map(String::from),
+        }
+    }
+
+    #[test]
+    fn editor_fills_author_slot_with_ed_marker() {
+        let e = slot_entry(
+            &[("George Di Giovanni", "Di Giovanni, George")],
+            Some("ed."),
+        );
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Di Giovanni, George, ed. 2010. <em>The Science of Logic</em>. Cambridge: Cambridge University Press."
+        );
+    }
+
+    #[test]
+    fn two_editors_use_eds_marker() {
+        let e = slot_entry(
+            &[
+                ("George Di Giovanni", "Di Giovanni, George"),
+                ("Henry Allison", "Allison, Henry"),
+            ],
+            Some("eds."),
+        );
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Di Giovanni, George, and Henry Allison, eds. 2010. <em>The Science of Logic</em>. Cambridge: Cambridge University Press."
+        );
+    }
+
+    #[test]
+    fn translator_fills_author_slot_with_trans_marker() {
+        let e = slot_entry(
+            &[("George Di Giovanni", "Di Giovanni, George")],
+            Some("trans."),
+        );
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Di Giovanni, George, trans. 2010. <em>The Science of Logic</em>. Cambridge: Cambridge University Press."
+        );
+    }
+
+    #[test]
+    fn inline_citation_slot_fallback_has_no_role_marker() {
+        let id = Uuid::nil();
+        let mut map = HashMap::new();
+        map.insert(
+            id,
+            slot_entry(
+                &[("George Di Giovanni", "Di Giovanni, George")],
+                Some("ed."),
+            ),
+        );
+
+        let entries = vec![(id.to_string(), "94".to_string())];
+        // Inline surnames come from sort_name, so particle surnames
+        // ("Di Giovanni") survive intact.
+        assert_eq!(
+            format_inline_citation(&entries, &map),
+            "(Di Giovanni 2010, 94)"
+        );
+    }
 }
 
 /// Extract last name from a full name
 fn last_name(name: &str) -> String {
     name.split_whitespace().last().unwrap_or(name).to_string()
+}
+
+/// Surname from a curated sort_name: the segment before the comma
+/// ("Di Giovanni, George" → "Di Giovanni"). A comma-less sort_name is
+/// already just a surname.
+fn surname(sort_name: &str) -> String {
+    sort_name
+        .split(',')
+        .next()
+        .unwrap_or(sort_name)
+        .trim()
+        .to_string()
 }
 
 /// Batch fetch snapshot data for the given article-quotation ids. Reads

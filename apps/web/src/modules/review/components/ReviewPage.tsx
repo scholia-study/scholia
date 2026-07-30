@@ -412,44 +412,38 @@ export function ReviewPage({ requestId }: { requestId: string }) {
                                 </span>
                             </Tooltip>
                         )}
-                        {isReviewer && isPending && (
-                            <>
-                                {request.intent === "publication" ? (
-                                    <>
-                                        <Button
-                                            size="small"
-                                            color="error"
-                                            variant="outlined"
-                                            onClick={() =>
-                                                setDecision("declined")
-                                            }
-                                            sx={{ textTransform: "none" }}
-                                        >
-                                            Decline
-                                        </Button>
-                                        <Button
-                                            size="small"
-                                            variant="contained"
-                                            onClick={() =>
-                                                setDecision("approved")
-                                            }
-                                            sx={{ textTransform: "none" }}
-                                        >
-                                            Approve
-                                        </Button>
-                                    </>
-                                ) : (
+                        {isReviewer &&
+                            isPending &&
+                            (request.intent === "publication" ? (
+                                <>
+                                    <Button
+                                        size="small"
+                                        color="error"
+                                        variant="outlined"
+                                        onClick={() => setDecision("declined")}
+                                        sx={{ textTransform: "none" }}
+                                    >
+                                        Decline
+                                    </Button>
                                     <Button
                                         size="small"
                                         variant="contained"
-                                        onClick={() => setDecision("resolved")}
+                                        onClick={() => setDecision("approved")}
                                         sx={{ textTransform: "none" }}
                                     >
-                                        Mark resolved
+                                        Approve
                                     </Button>
-                                )}
-                            </>
-                        )}
+                                </>
+                            ) : (
+                                <Button
+                                    size="small"
+                                    variant="contained"
+                                    onClick={() => setDecision("resolved")}
+                                    sx={{ textTransform: "none" }}
+                                >
+                                    Mark resolved
+                                </Button>
+                            ))}
                     </div>
                     {detail.draft_changed && (
                         <div className="mt-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800">

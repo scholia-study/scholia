@@ -1,6 +1,6 @@
 import { Button, Popover, TextField } from "@mui/material";
 import { useState } from "react";
-import type { SourceSearchResponse } from "../../../api/model";
+import type { SourceResponse, SourceSearchResponse } from "../../../api/model";
 import { useSearchSources } from "../../../api/sources/sources";
 import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
 import { SourceFormModal } from "../../source";
@@ -11,6 +11,43 @@ export interface CitationEntry {
     pages: string;
     year?: string;
     authorLastName?: string;
+}
+
+/**
+ * Citation fields derived from a source. The chip label lists every
+ * contributor (helps recognize the right source), but the author-date
+ * name fills Chicago's author slot: authors, else editors, else
+ * translators — matching the server-side citation rendering.
+ */
+function citationFields(source: SourceSearchResponse | SourceResponse) {
+    const persons = source.persons ?? [];
+    const personNames = persons.map((p) => p.name).join(", ");
+    const label = personNames
+        ? `${personNames} — ${source.title}`
+        : source.title;
+    // Surname from the curated sort_name ("Di Giovanni, George" →
+    // "Di Giovanni") so particle surnames survive; fall back to the
+    // final name token when no sort_name is set.
+    const surname = (p: { name: string; sort_name?: string | null }) =>
+        p.sort_name?.split(",")[0]?.trim() ||
+        p.name.split(/\s+/).pop() ||
+        p.name;
+    const slot =
+        ["author", "editor", "translator"]
+            .map((role) => persons.filter((p) => p.role === role))
+            .find((list) => list.length > 0) ?? [];
+    const authorLastName =
+        slot.length > 2
+            ? `${surname(slot[0])} et al.`
+            : slot.length === 2
+              ? `${surname(slot[0])} and ${surname(slot[1])}`
+              : slot.length === 1
+                ? surname(slot[0])
+                : "Unknown";
+    const year = source.publication_year
+        ? String(source.publication_year)
+        : "n.d.";
+    return { label, authorLastName, year };
 }
 
 interface CitationPopoverProps {
@@ -40,22 +77,7 @@ function CitationEntryRow({
     const [showResults, setShowResults] = useState(false);
 
     const selectSource = (source: SourceSearchResponse) => {
-        const personNames = source.persons?.map((p) => p.name).join(", ");
-        const label = personNames
-            ? `${personNames} — ${source.title}`
-            : source.title;
-        // Extract last name of first author for citation display
-        const firstAuthor = source.persons?.[0]?.name ?? "";
-        const lastNameParts = firstAuthor.split(/\s+/);
-        const authorLastName =
-            source.persons && source.persons.length > 2
-                ? `${lastNameParts[lastNameParts.length - 1]} et al.`
-                : source.persons && source.persons.length === 2
-                  ? `${lastNameParts[lastNameParts.length - 1]} and ${source.persons[1].name.split(/\s+/).pop()}`
-                  : lastNameParts[lastNameParts.length - 1] || "Unknown";
-        const year = source.publication_year
-            ? String(source.publication_year)
-            : "n.d.";
+        const { label, authorLastName, year } = citationFields(source);
         onChange({
             ...entry,
             sourceId: source.id,
@@ -74,7 +96,9 @@ function CitationEntryRow({
 
     return (
         <div className="flex gap-2 items-start">
-            <div className="flex-1 relative">
+            {/* min-w-0 lets the chip shrink below its nowrap label width so
+                `truncate` clips it instead of pushing the Pages field out. */}
+            <div className="flex-1 min-w-0 relative">
                 {entry.sourceId ? (
                     <div className="flex items-center gap-1 text-xs bg-stone-100 rounded px-2 py-1.5">
                         <span className="flex-1 truncate">
@@ -83,9 +107,10 @@ function CitationEntryRow({
                         <button
                             type="button"
                             onClick={clearSource}
-                            className="text-stone-400 hover:text-stone-600 shrink-0"
+                            aria-label="Clear source"
+                            className="text-stone-400 hover:text-stone-600 shrink-0 text-lg leading-none px-1"
                         >
-                            x
+                            &times;
                         </button>
                     </div>
                 ) : (
@@ -149,7 +174,7 @@ function CitationEntryRow({
                 placeholder="Pages"
                 value={entry.pages}
                 onChange={(e) => onChange({ ...entry, pages: e.target.value })}
-                sx={{ width: 80 }}
+                sx={{ width: 80, flexShrink: 0 }}
                 slotProps={{
                     input: { style: { fontSize: "0.75rem" } },
                 }}
@@ -158,9 +183,10 @@ function CitationEntryRow({
                 <button
                     type="button"
                     onClick={onRemove}
-                    className="text-stone-400 hover:text-red-500 text-xs mt-1.5"
+                    aria-label="Remove citation entry"
+                    className="text-stone-400 hover:text-red-500 text-lg leading-none mt-1.5 px-1"
                 >
-                    x
+                    &times;
                 </button>
             )}
         </div>
@@ -281,24 +307,8 @@ export function CitationPopover({
                     onCreated={(source) => {
                         setSourceModalOpen(false);
                         const emptyIdx = entries.findIndex((e) => !e.sourceId);
-                        const personNames = source.persons
-                            ?.map((p) => p.name)
-                            .join(", ");
-                        const label = personNames
-                            ? `${personNames} — ${source.title}`
-                            : source.title;
-                        const firstAuthor = source.persons?.[0]?.name ?? "";
-                        const lastNameParts = firstAuthor.split(/\s+/);
-                        const authorLastName =
-                            source.persons && source.persons.length > 2
-                                ? `${lastNameParts[lastNameParts.length - 1]} et al.`
-                                : source.persons && source.persons.length === 2
-                                  ? `${lastNameParts[lastNameParts.length - 1]} and ${source.persons[1].name.split(/\s+/).pop()}`
-                                  : lastNameParts[lastNameParts.length - 1] ||
-                                    "Unknown";
-                        const year = source.publication_year
-                            ? String(source.publication_year)
-                            : "n.d.";
+                        const { label, authorLastName, year } =
+                            citationFields(source);
                         const newEntry: CitationEntry = {
                             sourceId: source.id,
                             sourceLabel: label,

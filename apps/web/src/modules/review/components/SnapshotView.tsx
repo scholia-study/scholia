@@ -142,7 +142,6 @@ export function SnapshotView({
                 classes.push("cursor-pointer");
 
             return (
-                // biome-ignore lint/a11y/useKeyWithClickEvents: mouse-driven review affordance; comment rail remains keyboard-accessible
                 <span
                     data-block={block}
                     data-s={sentence}
@@ -206,7 +205,6 @@ export function SnapshotView({
         if (canComment || covering.length > 0) classes.push("cursor-pointer");
 
         return (
-            // biome-ignore lint/a11y/useKeyWithClickEvents: mouse-driven review affordance; comment rail remains keyboard-accessible
             <div
                 data-block={block}
                 className={classes.join(" ")}
