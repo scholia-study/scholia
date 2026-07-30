@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-ibsen1-87d9a0b7097a
+  name: ingest-ibsen1-20fefee7a817
   labels:
     ingest: ibsen1
   annotations:
@@ -31,7 +31,7 @@ spec:
             - name: CORPUS
               value: ibsen1
             - name: DERIVED_HASH
-              value: "87d9a0b7097a"
+              value: "20fefee7a817"
             - name: NTFY_URL
               valueFrom:
                 secretKeyRef:
