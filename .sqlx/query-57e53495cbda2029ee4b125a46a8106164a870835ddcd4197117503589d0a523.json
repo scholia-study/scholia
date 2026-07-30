@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "WITH target_span AS (\n               SELECT cp.work_root, MIN(cp.ordinal) AS lo, MAX(cp.ordinal) AS hi\n               FROM sentences ts\n               JOIN canonical_passages cp ON cp.id = ts.canonical_passage_id\n               WHERE ts.book_id = $1\n                 AND cp.sentence_kind = $2::sentence_kind\n                 AND ts.sentence_number BETWEEN $3 AND $4\n               GROUP BY cp.work_root\n           )\n           SELECT r.id,\n                  r.resource_type::TEXT AS \"resource_type!\",\n                  r.verbatim_kind::TEXT AS \"verbatim_kind?\",\n                  ss.sentence_number AS \"start_number?\",\n                  se.sentence_number AS \"end_number?\",\n                  r.sentence_kind::TEXT AS \"sentence_kind!\",\n                  r.quoted_text, r.editor_note,\n                  r.source_page_start, r.source_page_end, r.source_location_freeform,\n                  r.is_featured,\n                  NULL::TEXT AS \"admin_notes?\",\n                  r.review_status::TEXT AS \"review_status!\",\n                  r.scope::TEXT AS \"scope!\",\n                  r.created_at,\n                  s.id AS \"src_id?\",\n                  s.source_type::TEXT AS \"src_type?\",\n                  s.title AS \"src_title?\",\n                  s.title_display AS \"src_title_display?\",\n                  s.publication_year AS \"src_year?\",\n                  s.publisher AS \"src_publisher?\",\n                  s.isbn AS \"src_isbn?\",\n                  s.doi AS \"src_doi?\",\n                  s.edition AS \"src_edition?\",\n                  s.volume AS \"src_volume?\",\n                  s.journal_name AS \"src_journal_name?\",\n                  s.url AS \"src_url?\",\n                  s.page_start AS \"src_page_start?\",\n                  s.page_end AS \"src_page_end?\",\n                  s.parent_source_id AS \"src_parent_id?\",\n                  s.translation_of_id AS \"src_translation_of_id?\",\n                  s.created_by AS \"src_created_by?\",\n                  s.protected AS \"src_protected?\",\n                  rb.slug AS origin_book_slug,\n                  rb.language AS origin_language,\n                  (SELECT MIN(t2.sentence_number)\n                   FROM sentences t2\n                   JOIN canonical_passages c2 ON c2.id = t2.canonical_passage_id\n                   WHERE t2.book_id = $1\n                     AND c2.work_root = tsp.work_root\n                     AND c2.sentence_kind = $2::sentence_kind\n                     AND c2.ordinal BETWEEN cps.ordinal\n                                        AND COALESCE(cpe.ordinal, cps.ordinal)\n                  ) AS \"projected_start?\",\n                  (SELECT MAX(t2.sentence_number)\n                   FROM sentences t2\n                   JOIN canonical_passages c2 ON c2.id = t2.canonical_passage_id\n                   WHERE t2.book_id = $1\n                     AND c2.work_root = tsp.work_root\n                     AND c2.sentence_kind = $2::sentence_kind\n                     AND c2.ordinal BETWEEN cps.ordinal\n                                        AND COALESCE(cpe.ordinal, cps.ordinal)\n                  ) AS \"projected_end?\"\n           FROM resources r\n           JOIN books rb ON rb.id = r.book_id\n           JOIN sentences ss ON ss.id = r.anchor_sentence_start_id\n           JOIN canonical_passages cps ON cps.id = ss.canonical_passage_id\n           LEFT JOIN sentences se ON se.id = r.anchor_sentence_end_id\n           LEFT JOIN canonical_passages cpe ON cpe.id = se.canonical_passage_id\n           JOIN target_span tsp ON tsp.work_root = cps.work_root\n           LEFT JOIN sources s ON s.id = r.source_id\n           WHERE r.book_id <> $1\n             AND r.archived_at IS NULL\n             AND r.review_status = 'approved'\n             AND r.sentence_kind = $2::sentence_kind\n             AND cps.ordinal <= tsp.hi\n             AND COALESCE(cpe.ordinal, cps.ordinal) >= tsp.lo",
+    "query": "WITH target_span AS (\n               SELECT cp.work_root, MIN(cp.ordinal) AS lo, MAX(cp.ordinal) AS hi\n               FROM sentences ts\n               JOIN canonical_passages cp ON cp.id = ts.canonical_passage_id\n               WHERE ts.book_id = $1\n                 AND cp.sentence_kind = $2::sentence_kind\n                 AND ts.sentence_number BETWEEN $3 AND $4\n               GROUP BY cp.work_root\n           )\n           SELECT r.id,\n                  r.resource_type::TEXT AS \"resource_type!\",\n                  r.verbatim_kind::TEXT AS \"verbatim_kind?\",\n                  ss.sentence_number AS \"start_number?\",\n                  se.sentence_number AS \"end_number?\",\n                  r.sentence_kind::TEXT AS \"sentence_kind!\",\n                  r.quoted_text, r.editor_note,\n                  r.source_page_start, r.source_page_end, r.source_location_freeform,\n                  r.is_featured,\n                  NULL::TEXT AS \"admin_notes?\",\n                  r.review_status::TEXT AS \"review_status!\",\n                  r.scope::TEXT AS \"scope!\",\n                  r.created_at,\n                  s.id AS \"src_id?\",\n                  s.source_type::TEXT AS \"src_type?\",\n                  s.title AS \"src_title?\",\n                  s.title_display AS \"src_title_display?\",\n                  s.publication_year AS \"src_year?\",\n                  s.original_year AS \"src_original_year?\",\n                  s.publisher AS \"src_publisher?\",\n                  s.publication_place AS \"src_publication_place?\",\n                  s.isbn AS \"src_isbn?\",\n                  s.doi AS \"src_doi?\",\n                  s.edition AS \"src_edition?\",\n                  s.volume AS \"src_volume?\",\n                  s.journal_name AS \"src_journal_name?\",\n                  s.url AS \"src_url?\",\n                  s.page_start AS \"src_page_start?\",\n                  s.page_end AS \"src_page_end?\",\n                  s.parent_source_id AS \"src_parent_id?\",\n                  s.translation_of_id AS \"src_translation_of_id?\",\n                  s.created_by AS \"src_created_by?\",\n                  s.protected AS \"src_protected?\",\n                  rb.slug AS origin_book_slug,\n                  rb.language AS origin_language,\n                  (SELECT MIN(t2.sentence_number)\n                   FROM sentences t2\n                   JOIN canonical_passages c2 ON c2.id = t2.canonical_passage_id\n                   WHERE t2.book_id = $1\n                     AND c2.work_root = tsp.work_root\n                     AND c2.sentence_kind = $2::sentence_kind\n                     AND c2.ordinal BETWEEN cps.ordinal\n                                        AND COALESCE(cpe.ordinal, cps.ordinal)\n                  ) AS \"projected_start?\",\n                  (SELECT MAX(t2.sentence_number)\n                   FROM sentences t2\n                   JOIN canonical_passages c2 ON c2.id = t2.canonical_passage_id\n                   WHERE t2.book_id = $1\n                     AND c2.work_root = tsp.work_root\n                     AND c2.sentence_kind = $2::sentence_kind\n                     AND c2.ordinal BETWEEN cps.ordinal\n                                        AND COALESCE(cpe.ordinal, cps.ordinal)\n                  ) AS \"projected_end?\"\n           FROM resources r\n           JOIN books rb ON rb.id = r.book_id\n           JOIN sentences ss ON ss.id = r.anchor_sentence_start_id\n           JOIN canonical_passages cps ON cps.id = ss.canonical_passage_id\n           LEFT JOIN sentences se ON se.id = r.anchor_sentence_end_id\n           LEFT JOIN canonical_passages cpe ON cpe.id = se.canonical_passage_id\n           JOIN target_span tsp ON tsp.work_root = cps.work_root\n           LEFT JOIN sources s ON s.id = r.source_id\n           WHERE r.book_id <> $1\n             AND r.archived_at IS NULL\n             AND r.review_status = 'approved'\n             AND r.sentence_kind = $2::sentence_kind\n             AND cps.ordinal <= tsp.hi\n             AND COALESCE(cpe.ordinal, cps.ordinal) >= tsp.lo",
     "describe": {
         "columns": [
             {
@@ -110,86 +110,96 @@
             },
             {
                 "ordinal": 21,
+                "name": "src_original_year?",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 22,
                 "name": "src_publisher?",
                 "type_info": "Text"
             },
             {
-                "ordinal": 22,
-                "name": "src_isbn?",
-                "type_info": "TextArray"
-            },
-            {
                 "ordinal": 23,
-                "name": "src_doi?",
+                "name": "src_publication_place?",
                 "type_info": "Text"
             },
             {
                 "ordinal": 24,
-                "name": "src_edition?",
-                "type_info": "Text"
+                "name": "src_isbn?",
+                "type_info": "TextArray"
             },
             {
                 "ordinal": 25,
-                "name": "src_volume?",
+                "name": "src_doi?",
                 "type_info": "Text"
             },
             {
                 "ordinal": 26,
-                "name": "src_journal_name?",
+                "name": "src_edition?",
                 "type_info": "Text"
             },
             {
                 "ordinal": 27,
-                "name": "src_url?",
+                "name": "src_volume?",
                 "type_info": "Text"
             },
             {
                 "ordinal": 28,
+                "name": "src_journal_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 29,
+                "name": "src_url?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 30,
                 "name": "src_page_start?",
                 "type_info": "Int4"
             },
             {
-                "ordinal": 29,
+                "ordinal": 31,
                 "name": "src_page_end?",
                 "type_info": "Int4"
             },
             {
-                "ordinal": 30,
+                "ordinal": 32,
                 "name": "src_parent_id?",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 31,
+                "ordinal": 33,
                 "name": "src_translation_of_id?",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 32,
+                "ordinal": 34,
                 "name": "src_created_by?",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 33,
+                "ordinal": 35,
                 "name": "src_protected?",
                 "type_info": "Bool"
             },
             {
-                "ordinal": 34,
+                "ordinal": 36,
                 "name": "origin_book_slug",
                 "type_info": "Text"
             },
             {
-                "ordinal": 35,
+                "ordinal": 37,
                 "name": "origin_language",
                 "type_info": "Text"
             },
             {
-                "ordinal": 36,
+                "ordinal": 38,
                 "name": "projected_start?",
                 "type_info": "Int4"
             },
             {
-                "ordinal": 37,
+                "ordinal": 39,
                 "name": "projected_end?",
                 "type_info": "Int4"
             }
@@ -242,6 +252,8 @@
             true,
             true,
             true,
+            true,
+            true,
             false,
             false,
             false,
@@ -250,5 +262,5 @@
             null
         ]
     },
-    "hash": "75accdbe60737d9a6d6b43246e3c1924be6b0656b83574a73ea506fc9c059922"
+    "hash": "57e53495cbda2029ee4b125a46a8106164a870835ddcd4197117503589d0a523"
 }

@@ -12,10 +12,10 @@ use crate::system::error::AppError;
 use crate::system::state::AppState;
 use crate::system::validation::{
     MAX_PUBLICATION_YEAR, MAX_SOURCE_DOI, MAX_SOURCE_EDITION, MAX_SOURCE_ISBN_LEN,
-    MAX_SOURCE_ISBNS, MAX_SOURCE_JOURNAL_NAME, MAX_SOURCE_PAGE, MAX_SOURCE_PUBLISHER,
-    MAX_SOURCE_TITLE, MAX_SOURCE_TITLE_DISPLAY, MAX_SOURCE_URL, MAX_SOURCE_VOLUME,
-    MIN_PUBLICATION_YEAR, MIN_SOURCE_PAGE, check_count, check_int_range, check_max_len,
-    check_url_scheme,
+    MAX_SOURCE_ISBNS, MAX_SOURCE_JOURNAL_NAME, MAX_SOURCE_PAGE, MAX_SOURCE_PUBLICATION_PLACE,
+    MAX_SOURCE_PUBLISHER, MAX_SOURCE_TITLE, MAX_SOURCE_TITLE_DISPLAY, MAX_SOURCE_URL,
+    MAX_SOURCE_VOLUME, MIN_PUBLICATION_YEAR, MIN_SOURCE_PAGE, check_count, check_int_range,
+    check_max_len, check_url_scheme,
 };
 
 /// Parse a nullable-UUID patch field, preserving the three PATCH states:
@@ -71,6 +71,7 @@ struct SourceFields<'a> {
     title: Option<&'a str>,
     title_display: Option<&'a str>,
     publisher: Option<&'a str>,
+    publication_place: Option<&'a str>,
     journal_name: Option<&'a str>,
     doi: Option<&'a str>,
     edition: Option<&'a str>,
@@ -78,6 +79,7 @@ struct SourceFields<'a> {
     url: Option<&'a str>,
     isbn: Option<&'a [String]>,
     publication_year: Option<i16>,
+    original_year: Option<i16>,
     page_start: Option<i32>,
     page_end: Option<i32>,
 }
@@ -91,6 +93,9 @@ fn validate_source_fields(fields: SourceFields<'_>) -> Result<(), AppError> {
     }
     if let Some(p) = fields.publisher {
         check_max_len("Publisher", p, MAX_SOURCE_PUBLISHER)?;
+    }
+    if let Some(p) = fields.publication_place {
+        check_max_len("Publication place", p, MAX_SOURCE_PUBLICATION_PLACE)?;
     }
     if let Some(j) = fields.journal_name {
         check_max_len("Journal name", j, MAX_SOURCE_JOURNAL_NAME)?;
@@ -118,6 +123,14 @@ fn validate_source_fields(fields: SourceFields<'_>) -> Result<(), AppError> {
     if let Some(y) = fields.publication_year {
         check_int_range(
             "Publication year",
+            y,
+            MIN_PUBLICATION_YEAR,
+            MAX_PUBLICATION_YEAR,
+        )?;
+    }
+    if let Some(y) = fields.original_year {
+        check_int_range(
+            "Original year",
             y,
             MIN_PUBLICATION_YEAR,
             MAX_PUBLICATION_YEAR,
@@ -275,6 +288,7 @@ pub async fn create_source(
         title: Some(&body.title),
         title_display: body.title_display.as_deref(),
         publisher: body.publisher.as_deref(),
+        publication_place: body.publication_place.as_deref(),
         journal_name: body.journal_name.as_deref(),
         doi: body.doi.as_deref(),
         edition: body.edition.as_deref(),
@@ -282,6 +296,7 @@ pub async fn create_source(
         url: body.url.as_deref(),
         isbn: body.isbn.as_deref(),
         publication_year: body.publication_year,
+        original_year: body.original_year,
         page_start: body.page_start,
         page_end: body.page_end,
     })?;
@@ -293,7 +308,9 @@ pub async fn create_source(
             title: &body.title,
             title_display: body.title_display.as_deref(),
             publication_year: body.publication_year,
+            original_year: body.original_year,
             publisher: body.publisher.as_deref(),
+            publication_place: body.publication_place.as_deref(),
             isbn: body.isbn.as_deref(),
             doi: body.doi.as_deref(),
             edition: body.edition.as_deref(),
@@ -385,6 +402,7 @@ pub async fn update_source(
         title: body.title.as_deref(),
         title_display: body.title_display.as_ref().and_then(|o| o.as_deref()),
         publisher: body.publisher.as_ref().and_then(|o| o.as_deref()),
+        publication_place: body.publication_place.as_ref().and_then(|o| o.as_deref()),
         journal_name: body.journal_name.as_ref().and_then(|o| o.as_deref()),
         doi: body.doi.as_ref().and_then(|o| o.as_deref()),
         edition: body.edition.as_ref().and_then(|o| o.as_deref()),
@@ -392,6 +410,7 @@ pub async fn update_source(
         url: body.url.as_ref().and_then(|o| o.as_deref()),
         isbn: body.isbn.as_ref().and_then(|o| o.as_deref()),
         publication_year: body.publication_year.flatten(),
+        original_year: body.original_year.flatten(),
         page_start: body.page_start.flatten(),
         page_end: body.page_end.flatten(),
     })?;
@@ -403,7 +422,9 @@ pub async fn update_source(
             title: body.title.as_deref(),
             title_display: body.title_display.as_ref().map(|o| o.as_deref()),
             publication_year: body.publication_year,
+            original_year: body.original_year,
             publisher: body.publisher.as_ref().map(|o| o.as_deref()),
+            publication_place: body.publication_place.as_ref().map(|o| o.as_deref()),
             isbn: body.isbn.as_ref().map(|o| o.as_deref()),
             doi: body.doi.as_ref().map(|o| o.as_deref()),
             edition: body.edition.as_ref().map(|o| o.as_deref()),

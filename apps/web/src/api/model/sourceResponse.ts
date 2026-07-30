@@ -18,6 +18,13 @@ export interface SourceResponse {
     isbn?: string[] | null;
     /** @nullable */
     journal_name?: string | null;
+    /**
+     * Year of the edition this text presents, when it differs from the
+     * printing transcribed (CSL "original-date"). NULL = same as
+     * `publication_year`.
+     * @nullable
+     */
+    original_year?: number | null;
     /** @nullable */
     page_end?: number | null;
     /** @nullable */
@@ -25,6 +32,8 @@ export interface SourceResponse {
     parent?: null | ParentSourceResponse;
     persons: SourcePersonResponse[];
     protected: boolean;
+    /** @nullable */
+    publication_place?: string | null;
     /** @nullable */
     publication_year?: number | null;
     /** @nullable */

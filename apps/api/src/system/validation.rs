@@ -16,6 +16,7 @@ pub const MAX_NOTE_TAGS: usize = 10;
 pub const MAX_SOURCE_TITLE: usize = 500;
 pub const MAX_SOURCE_TITLE_DISPLAY: usize = 500;
 pub const MAX_SOURCE_PUBLISHER: usize = 255;
+pub const MAX_SOURCE_PUBLICATION_PLACE: usize = 255;
 pub const MAX_SOURCE_JOURNAL_NAME: usize = 255;
 pub const MAX_SOURCE_DOI: usize = 255;
 pub const MAX_SOURCE_EDITION: usize = 100;

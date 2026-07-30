@@ -57,7 +57,9 @@ export function SourceFormModal({
     const [sourceType, setSourceType] = useState<string>("book");
     const [title, setTitle] = useState("");
     const [publicationYear, setPublicationYear] = useState("");
+    const [originalYear, setOriginalYear] = useState("");
     const [publisher, setPublisher] = useState("");
+    const [publicationPlace, setPublicationPlace] = useState("");
     const [isbn, setIsbn] = useState("");
     const [doi, setDoi] = useState("");
     const [edition, setEdition] = useState("");
@@ -156,7 +158,9 @@ export function SourceFormModal({
         setSourceType("book");
         setTitle("");
         setPublicationYear("");
+        setOriginalYear("");
         setPublisher("");
+        setPublicationPlace("");
         setIsbn("");
         setDoi("");
         setEdition("");
@@ -225,7 +229,11 @@ export function SourceFormModal({
                 title: title.trim(),
                 publication_year:
                     yearNum && !Number.isNaN(yearNum) ? yearNum : undefined,
+                original_year: originalYear
+                    ? Number.parseInt(originalYear, 10)
+                    : undefined,
                 publisher: publisher.trim() || undefined,
+                publication_place: publicationPlace.trim() || undefined,
                 isbn: isbnArr,
                 doi: doi.trim() || undefined,
                 edition: edition.trim() || undefined,
@@ -327,6 +335,27 @@ export function SourceFormModal({
                             size="small"
                             sx={{ flex: 2 }}
                             required={isRequired("publisher")}
+                        />
+                    </div>
+
+                    <div className="flex gap-2">
+                        <TextField
+                            label="Place"
+                            value={publicationPlace}
+                            onChange={(e) =>
+                                setPublicationPlace(e.target.value)
+                            }
+                            size="small"
+                            sx={{ flex: 2 }}
+                        />
+                        <TextField
+                            label="Original Year"
+                            value={originalYear}
+                            onChange={(e) => setOriginalYear(e.target.value)}
+                            size="small"
+                            type="number"
+                            sx={{ flex: 1 }}
+                            helperText="Edition year, if it differs from this printing"
                         />
                     </div>
 

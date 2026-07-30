@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "INSERT INTO sources (source_type, title, title_display, publication_year, publisher, isbn, doi,\n                                edition, volume, journal_name, url, page_start, page_end,\n                                parent_source_id, translation_of_id, created_by)\n           VALUES ($1::source_type, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)\n           RETURNING id",
+    "query": "INSERT INTO sources (source_type, title, title_display, publication_year, original_year,\n                                publisher, publication_place, isbn, doi,\n                                edition, volume, journal_name, url, page_start, page_end,\n                                parent_source_id, translation_of_id, created_by)\n           VALUES ($1::source_type, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,\n                   $16, $17, $18)\n           RETURNING id",
     "describe": {
         "columns": [
             {
@@ -28,6 +28,8 @@
                 "Text",
                 "Text",
                 "Int2",
+                "Int2",
+                "Text",
                 "Text",
                 "TextArray",
                 "Text",
@@ -44,5 +46,5 @@
         },
         "nullable": [false]
     },
-    "hash": "37f8ecd5badd07c88b9fd0aae2cbe5f3eb3398348ce1ee19a9a89b9101c3b8dd"
+    "hash": "a75c20e36a84cace5c6cead0698fc0069e5ecf2654b335c152fb10e23d4ed275"
 }

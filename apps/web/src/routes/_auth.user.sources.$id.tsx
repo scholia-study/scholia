@@ -129,7 +129,13 @@ function DetailContent({
     const [publicationYear, setPublicationYear] = useState(
         source.publication_year != null ? String(source.publication_year) : "",
     );
+    const [originalYear, setOriginalYear] = useState(
+        source.original_year != null ? String(source.original_year) : "",
+    );
     const [publisher, setPublisher] = useState(source.publisher ?? "");
+    const [publicationPlace, setPublicationPlace] = useState(
+        source.publication_place ?? "",
+    );
     const [isbn, setIsbn] = useState((source.isbn ?? []).join(", "));
     const [doi, setDoi] = useState(source.doi ?? "");
     const [edition, setEdition] = useState(source.edition ?? "");
@@ -152,7 +158,11 @@ function DetailContent({
                 ? String(source.publication_year)
                 : "",
         );
+        setOriginalYear(
+            source.original_year != null ? String(source.original_year) : "",
+        );
         setPublisher(source.publisher ?? "");
+        setPublicationPlace(source.publication_place ?? "");
         setIsbn((source.isbn ?? []).join(", "));
         setDoi(source.doi ?? "");
         setEdition(source.edition ?? "");
@@ -172,6 +182,9 @@ function DetailContent({
     const handleSave = async () => {
         const yearNum = publicationYear
             ? Number.parseInt(publicationYear, 10)
+            : null;
+        const originalYearNum = originalYear
+            ? Number.parseInt(originalYear, 10)
             : null;
         const isbnArr = isbn.trim()
             ? isbn
@@ -193,7 +206,13 @@ function DetailContent({
                         yearNum != null && !Number.isNaN(yearNum)
                             ? yearNum
                             : null,
+                    original_year:
+                        originalYearNum != null &&
+                        !Number.isNaN(originalYearNum)
+                            ? originalYearNum
+                            : null,
                     publisher: publisher.trim() || null,
+                    publication_place: publicationPlace.trim() || null,
                     isbn: isbnArr,
                     doi: doi.trim() || null,
                     edition: edition.trim() || null,
@@ -358,6 +377,26 @@ function DetailContent({
                         size="small"
                         disabled={!canEdit}
                         sx={{ flex: 2 }}
+                    />
+                </div>
+                <div className="flex gap-2">
+                    <TextField
+                        label="Place"
+                        value={publicationPlace}
+                        onChange={(e) => setPublicationPlace(e.target.value)}
+                        size="small"
+                        disabled={!canEdit}
+                        sx={{ flex: 2 }}
+                    />
+                    <TextField
+                        label="Original Year"
+                        value={originalYear}
+                        onChange={(e) => setOriginalYear(e.target.value)}
+                        size="small"
+                        type="number"
+                        disabled={!canEdit}
+                        sx={{ flex: 1 }}
+                        helperText="Edition year, if it differs from this printing"
                     />
                 </div>
                 <div className="flex gap-2">

@@ -5071,6 +5071,10 @@
                     "journal_name": {
                         "type": ["string", "null"]
                     },
+                    "original_year": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    },
                     "page_end": {
                         "type": ["integer", "null"],
                         "format": "int32"
@@ -5080,6 +5084,9 @@
                         "format": "int32"
                     },
                     "parent_source_id": {
+                        "type": ["string", "null"]
+                    },
+                    "publication_place": {
                         "type": ["string", "null"]
                     },
                     "publication_year": {
@@ -6808,6 +6815,11 @@
                     "journal_name": {
                         "type": ["string", "null"]
                     },
+                    "original_year": {
+                        "type": ["integer", "null"],
+                        "format": "int32",
+                        "description": "Year of the edition this text presents, when it differs from the\nprinting transcribed (CSL \"original-date\"). NULL = same as\n`publication_year`."
+                    },
                     "page_end": {
                         "type": ["integer", "null"],
                         "format": "int32"
@@ -6834,6 +6846,9 @@
                     },
                     "protected": {
                         "type": "boolean"
+                    },
+                    "publication_place": {
+                        "type": ["string", "null"]
                     },
                     "publication_year": {
                         "type": ["integer", "null"],
@@ -7309,6 +7324,10 @@
                     "journal_name": {
                         "type": ["string", "null"]
                     },
+                    "original_year": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    },
                     "page_end": {
                         "type": ["integer", "null"],
                         "format": "int32"
@@ -7322,6 +7341,9 @@
                     },
                     "protected": {
                         "type": ["boolean", "null"]
+                    },
+                    "publication_place": {
+                        "type": ["string", "null"]
                     },
                     "publication_year": {
                         "type": ["integer", "null"],

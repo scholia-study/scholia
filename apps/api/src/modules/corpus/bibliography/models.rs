@@ -131,8 +131,15 @@ pub struct SourceResponse {
     pub title_display: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publication_year: Option<i16>,
+    /// Year of the edition this text presents, when it differs from the
+    /// printing transcribed (CSL "original-date"). NULL = same as
+    /// `publication_year`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub original_year: Option<i16>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub publication_place: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub isbn: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -297,7 +304,9 @@ pub struct CreateSourceRequest {
     pub title: String,
     pub title_display: Option<String>,
     pub publication_year: Option<i16>,
+    pub original_year: Option<i16>,
     pub publisher: Option<String>,
+    pub publication_place: Option<String>,
     pub isbn: Option<Vec<String>>,
     pub doi: Option<String>,
     pub edition: Option<String>,
@@ -323,7 +332,11 @@ pub struct UpdateSourceRequest {
     #[serde(default, deserialize_with = "double_option")]
     pub publication_year: Option<Option<i16>>,
     #[serde(default, deserialize_with = "double_option")]
+    pub original_year: Option<Option<i16>>,
+    #[serde(default, deserialize_with = "double_option")]
     pub publisher: Option<Option<String>>,
+    #[serde(default, deserialize_with = "double_option")]
+    pub publication_place: Option<Option<String>>,
     #[serde(default, deserialize_with = "double_option")]
     pub isbn: Option<Option<Vec<String>>>,
     #[serde(default, deserialize_with = "double_option")]

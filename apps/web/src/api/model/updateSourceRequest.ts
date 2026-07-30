@@ -21,6 +21,8 @@ export interface UpdateSourceRequest {
     /** @nullable */
     journal_name?: string | null;
     /** @nullable */
+    original_year?: number | null;
+    /** @nullable */
     page_end?: number | null;
     /** @nullable */
     page_start?: number | null;
@@ -28,6 +30,8 @@ export interface UpdateSourceRequest {
     parent_source_id?: string | null;
     /** @nullable */
     protected?: boolean | null;
+    /** @nullable */
+    publication_place?: string | null;
     /** @nullable */
     publication_year?: number | null;
     /** @nullable */

@@ -15,7 +15,9 @@ struct SourceRow {
     title: String,
     title_display: Option<String>,
     publication_year: Option<i16>,
+    original_year: Option<i16>,
     publisher: Option<String>,
+    publication_place: Option<String>,
     isbn: Option<Vec<String>>,
     doi: Option<String>,
     edition: Option<String>,
@@ -50,7 +52,8 @@ pub async fn search_sources(
     let rows = sqlx::query_as!(
         SourceRow,
         r#"SELECT DISTINCT s.id, s.source_type::TEXT AS "source_type!", s.title, s.title_display,
-                  s.publication_year, s.publisher, s.isbn, s.doi, s.edition, s.volume,
+                  s.publication_year, s.original_year, s.publisher, s.publication_place,
+                  s.isbn, s.doi, s.edition, s.volume,
                   s.journal_name, s.url, s.page_start, s.page_end,
                   s.parent_source_id, s.translation_of_id,
                   s.created_by AS "created_by!", s.protected
@@ -89,7 +92,8 @@ pub async fn get_source(pool: &PgPool, source_id: Uuid) -> Result<SourceResponse
     let row = sqlx::query_as!(
         SourceRow,
         r#"SELECT id, source_type::TEXT AS "source_type!", title, title_display, publication_year,
-                  publisher, isbn, doi, edition, volume, journal_name, url,
+                  original_year, publisher, publication_place, isbn, doi, edition, volume,
+                  journal_name, url,
                   page_start, page_end, parent_source_id, translation_of_id,
                   created_by AS "created_by!", protected
            FROM sources
@@ -116,7 +120,9 @@ pub struct SourceCreate<'a> {
     pub title: &'a str,
     pub title_display: Option<&'a str>,
     pub publication_year: Option<i16>,
+    pub original_year: Option<i16>,
     pub publisher: Option<&'a str>,
+    pub publication_place: Option<&'a str>,
     pub isbn: Option<&'a [String]>,
     pub doi: Option<&'a str>,
     pub edition: Option<&'a str>,
@@ -135,16 +141,20 @@ pub async fn create_source(
     entry: SourceCreate<'_>,
 ) -> Result<SourceResponse, AppError> {
     let id = sqlx::query_scalar!(
-        r#"INSERT INTO sources (source_type, title, title_display, publication_year, publisher, isbn, doi,
+        r#"INSERT INTO sources (source_type, title, title_display, publication_year, original_year,
+                                publisher, publication_place, isbn, doi,
                                 edition, volume, journal_name, url, page_start, page_end,
                                 parent_source_id, translation_of_id, created_by)
-           VALUES ($1::source_type, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+           VALUES ($1::source_type, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
+                   $16, $17, $18)
            RETURNING id"#,
         entry.source_type as _,
         entry.title,
         entry.title_display,
         entry.publication_year,
+        entry.original_year,
         entry.publisher,
+        entry.publication_place,
         entry.isbn,
         entry.doi,
         entry.edition,
@@ -167,7 +177,9 @@ pub struct SourceUpdate<'a> {
     pub title: Option<&'a str>,
     pub title_display: Option<Option<&'a str>>,
     pub publication_year: Option<Option<i16>>,
+    pub original_year: Option<Option<i16>>,
     pub publisher: Option<Option<&'a str>>,
+    pub publication_place: Option<Option<&'a str>>,
     pub isbn: Option<Option<&'a [String]>>,
     pub doi: Option<Option<&'a str>>,
     pub edition: Option<Option<&'a str>>,
@@ -242,8 +254,14 @@ pub async fn update_source(
     if let Some(v) = patch.publication_year {
         qb.push(", publication_year = ").push_bind(v);
     }
+    if let Some(v) = patch.original_year {
+        qb.push(", original_year = ").push_bind(v);
+    }
     if let Some(v) = patch.publisher {
         qb.push(", publisher = ").push_bind(v);
+    }
+    if let Some(v) = patch.publication_place {
+        qb.push(", publication_place = ").push_bind(v);
     }
     if let Some(v) = patch.isbn {
         qb.push(", isbn = ").push_bind(v);
@@ -483,7 +501,8 @@ pub async fn browse_sources(
     let rows = sqlx::query_as!(
         SourceRow,
         r#"SELECT s.id, s.source_type::TEXT AS "source_type!", s.title, s.title_display,
-                  s.publication_year, s.publisher, s.isbn, s.doi, s.edition, s.volume,
+                  s.publication_year, s.original_year, s.publisher, s.publication_place,
+                  s.isbn, s.doi, s.edition, s.volume,
                   s.journal_name, s.url, s.page_start, s.page_end,
                   s.parent_source_id, s.translation_of_id,
                   s.created_by AS "created_by!", s.protected
@@ -646,7 +665,9 @@ fn build_source_response(
         title: row.title,
         title_display: row.title_display,
         publication_year: row.publication_year,
+        original_year: row.original_year,
         publisher: row.publisher,
+        publication_place: row.publication_place,
         isbn: row.isbn,
         doi: row.doi,
         edition: row.edition,
