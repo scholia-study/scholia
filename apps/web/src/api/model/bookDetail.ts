@@ -10,7 +10,13 @@ export interface BookDetail {
     author: string;
     id: string;
     language: string;
-    /** @nullable */
+    /**
+     * Identity year (`COALESCE(original_year, publication_year)`) —
+     * the edition this text presents, which is also what SEO metadata
+     * publishes. The truthful printing year lives on the source record
+     * (book-about endpoint).
+     * @nullable
+     */
     publication_year?: number | null;
     /** @nullable */
     publisher?: string | null;

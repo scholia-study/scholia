@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT b.id, b.slug, b.language,\n                  b.source_id,\n                  COALESCE(s.title_display, s.title) AS \"title!\",\n                  s.publication_year,\n                  s.publisher,\n\n                  STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author,\n                  src_book.slug AS \"source_book_slug?\"\n           FROM books b\n           JOIN sources s ON s.id = b.source_id\n           LEFT JOIN source_persons sp ON sp.source_id = s.id AND sp.role = 'author'\n           LEFT JOIN persons p ON p.id = sp.person_id\n           LEFT JOIN books src_book ON src_book.source_id = s.translation_of_id\n           GROUP BY b.id, b.slug, b.language,\n                    b.source_id, s.title_display, s.title,\n                    s.publication_year, s.publisher,\n                    src_book.slug\n           ORDER BY COALESCE(s.title_display, s.title)",
+    "query": "SELECT b.id, b.slug, b.language,\n                  b.source_id,\n                  COALESCE(s.title_display, s.title) AS \"title!\",\n                  COALESCE(s.original_year, s.publication_year) AS \"publication_year?\",\n                  s.publisher,\n\n                  STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author,\n                  src_book.slug AS \"source_book_slug?\"\n           FROM books b\n           JOIN sources s ON s.id = b.source_id\n           LEFT JOIN source_persons sp ON sp.source_id = s.id AND sp.role = 'author'\n           LEFT JOIN persons p ON p.id = sp.person_id\n           LEFT JOIN books src_book ON src_book.source_id = s.translation_of_id\n           WHERE b.slug = $1\n           GROUP BY b.id, b.slug, b.language,\n                    b.source_id, s.title_display, s.title,\n                    s.original_year, s.publication_year, s.publisher,\n                    src_book.slug",
     "describe": {
         "columns": [
             {
@@ -30,7 +30,7 @@
             },
             {
                 "ordinal": 5,
-                "name": "publication_year",
+                "name": "publication_year?",
                 "type_info": "Int2"
             },
             {
@@ -50,9 +50,9 @@
             }
         ],
         "parameters": {
-            "Left": []
+            "Left": ["Text"]
         },
-        "nullable": [false, false, false, false, null, true, true, null, false]
+        "nullable": [false, false, false, false, null, null, true, null, false]
     },
-    "hash": "bd62952f7eb1c5a912852398121a0c16fe4fdea2e7bf2232f973810c3e22ea56"
+    "hash": "1af696a55149b6d5ee5c8aaf2eca473f3cc28f1d04497dff5aaa04c60305b1be"
 }

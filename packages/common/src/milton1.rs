@@ -8,7 +8,13 @@
 
 pub const BOOK_SLUG: &str = "paradise-lost";
 pub const BOOK_TITLE: &str = "Paradise Lost";
+/// Imprint per the EEBO-TCP A50924 record ("London: Printed by
+/// S. Simmons, 1674. The second edition revised and augmented by the
+/// same author." — `assets/milton1/raw/A50924.xml`), edition shortened.
 pub const YEAR: i16 = 1674;
+pub const PUBLISHER: &str = "S. Simmons";
+pub const PUBLICATION_PLACE: &str = "London";
+pub const EDITION: &str = "Second edition";
 
 /// Reading nodes are flat (top-level); no work-wrapper node.
 pub const DEPTH: i16 = 0;

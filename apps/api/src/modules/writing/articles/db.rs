@@ -426,9 +426,24 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
 struct CitationSourceData {
     title: String,
     publication_year: Option<i16>,
+    original_year: Option<i16>,
     publisher: Option<String>,
+    publication_place: Option<String>,
     authors: Vec<String>, // sorted by position
     author_sort_names: Vec<String>,
+}
+
+impl CitationSourceData {
+    /// True when the source is a reprint in the Chicago sense: the edition
+    /// presented (`original_year`) predates the printing consulted
+    /// (`publication_year`) — e.g. the 1787 Kritik read in the 1911
+    /// Akademie-Ausgabe. Equal or missing years use the plain form.
+    fn is_reprint(&self) -> bool {
+        matches!(
+            (self.original_year, self.publication_year),
+            (Some(o), Some(p)) if o != p
+        )
+    }
 }
 
 /// Snapshot of a user article, used to build a bibliography entry.
@@ -485,12 +500,14 @@ async fn fetch_citation_data(
         id: Uuid,
         title: String,
         publication_year: Option<i16>,
+        original_year: Option<i16>,
         publisher: Option<String>,
+        publication_place: Option<String>,
     }
 
     let sources: Vec<SourceRow> = sqlx::query_as!(
         SourceRow,
-        r#"SELECT id, title, publication_year, publisher
+        r#"SELECT id, title, publication_year, original_year, publisher, publication_place
            FROM sources WHERE id = ANY($1)"#,
         source_ids,
     )
@@ -504,7 +521,9 @@ async fn fetch_citation_data(
             CitationSourceData {
                 title: s.title.clone(),
                 publication_year: s.publication_year,
+                original_year: s.original_year,
                 publisher: s.publisher.clone(),
+                publication_place: s.publication_place.clone(),
                 authors: Vec::new(),
                 author_sort_names: Vec::new(),
             },
@@ -572,10 +591,19 @@ fn format_inline_citation(
                 None => "Unknown".to_string(),
             };
 
-            let year = data
-                .and_then(|d| d.publication_year)
-                .map(|y| y.to_string())
-                .unwrap_or_else(|| "n.d.".to_string());
+            // Reprints cite as "[original] reprint" (Chicago: brackets in
+            // text citations, parens in the reference list).
+            let year = match data {
+                Some(d) if d.is_reprint() => format!(
+                    "[{}] {}",
+                    d.original_year.unwrap(),
+                    d.publication_year.unwrap()
+                ),
+                _ => data
+                    .and_then(|d| d.publication_year)
+                    .map(|y| y.to_string())
+                    .unwrap_or_else(|| "n.d.".to_string()),
+            };
 
             if pages.is_empty() {
                 format!("{author_part} {year}")
@@ -591,19 +619,34 @@ fn format_inline_citation(
 /// Format a bibliography entry in Chicago author-date style.
 ///
 /// Two structural variants:
-///   - With authors: "Last, First. Year. *Title*. Publisher."
-///   - Anonymous (no authors): "*Title*. Year. Publisher." — Chicago
-///     handles author-less works by leading with the title rather than
-///     printing an "Unknown" placeholder.
+///   - With authors: "Last, First. Year. *Title*. Place: Publisher."
+///   - Anonymous (no authors): "*Title*. Year. Place: Publisher." —
+///     Chicago handles author-less works by leading with the title
+///     rather than printing an "Unknown" placeholder.
+///
+/// Reprints (original_year differing from publication_year) use
+/// Chicago's "(Original) Reprint" year form: "Kant, Immanuel. (1787)
+/// 1911. …" — matching the "[1787] 1911" key in text citations.
+///
+/// The facts-of-publication segment degrades with the data: both →
+/// "Place: Publisher.", publisher alone → "Publisher.", place alone →
+/// "Place.", neither → omitted.
 ///
 /// `year` may legitimately be "n.d." for undated works; we avoid the
 /// double-period artifact ("n.d..") by treating any year-string ending
 /// in `.` as already terminated.
 fn format_bibliography_entry(data: &CitationSourceData) -> String {
-    let year_token = data
-        .publication_year
-        .map(|y| y.to_string())
-        .unwrap_or_else(|| "n.d.".to_string());
+    let year_token = if data.is_reprint() {
+        format!(
+            "({}) {}",
+            data.original_year.unwrap(),
+            data.publication_year.unwrap()
+        )
+    } else {
+        data.publication_year
+            .map(|y| y.to_string())
+            .unwrap_or_else(|| "n.d.".to_string())
+    };
     let year_terminated = if year_token.ends_with('.') {
         year_token.clone()
     } else {
@@ -611,16 +654,18 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
     };
 
     let title = &data.title;
-    let publisher = data.publisher.as_deref().unwrap_or("");
-    let publisher_suffix = if publisher.is_empty() {
-        String::new()
-    } else {
-        format!(" {publisher}.")
+    let publisher = data.publisher.as_deref().unwrap_or("").trim();
+    let place = data.publication_place.as_deref().unwrap_or("").trim();
+    let publication_suffix = match (place.is_empty(), publisher.is_empty()) {
+        (false, false) => format!(" {place}: {publisher}."),
+        (true, false) => format!(" {publisher}."),
+        (false, true) => format!(" {place}."),
+        (true, true) => String::new(),
     };
 
     if data.author_sort_names.is_empty() {
         // Anonymous: lead with the title.
-        return format!("<em>{title}</em>. {year_terminated}{publisher_suffix}");
+        return format!("<em>{title}</em>. {year_terminated}{publication_suffix}");
     }
 
     let author_part = if data.author_sort_names.len() == 1 {
@@ -639,7 +684,119 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
         }
     };
 
-    format!("{author_part}. {year_terminated} <em>{title}</em>.{publisher_suffix}")
+    format!("{author_part}. {year_terminated} <em>{title}</em>.{publication_suffix}")
+}
+
+#[cfg(test)]
+mod bibliography_tests {
+    use super::*;
+
+    fn entry(
+        place: Option<&str>,
+        publisher: Option<&str>,
+        sort_names: Vec<&str>,
+    ) -> CitationSourceData {
+        CitationSourceData {
+            title: "Kritik der reinen Vernunft".to_string(),
+            publication_year: Some(1911),
+            original_year: None,
+            publisher: publisher.map(String::from),
+            publication_place: place.map(String::from),
+            authors: vec!["Immanuel Kant".to_string()],
+            author_sort_names: sort_names.into_iter().map(String::from).collect(),
+        }
+    }
+
+    #[test]
+    fn place_and_publisher() {
+        let e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Berlin: Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn publisher_only() {
+        let e = entry(None, Some("Georg Reimer"), vec!["Kant, Immanuel"]);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn place_only() {
+        let e = entry(Some("Berlin"), None, vec!["Kant, Immanuel"]);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Berlin."
+        );
+    }
+
+    #[test]
+    fn neither_place_nor_publisher() {
+        let e = entry(None, None, vec!["Kant, Immanuel"]);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>."
+        );
+    }
+
+    #[test]
+    fn anonymous_with_place_and_publisher() {
+        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec![]);
+        e.authors.clear();
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "<em>Kritik der reinen Vernunft</em>. 1911. Berlin: Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn reprint_year_form() {
+        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
+        e.original_year = Some(1787);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. (1787) 1911. <em>Kritik der reinen Vernunft</em>. Berlin: Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn equal_original_year_uses_plain_form() {
+        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
+        e.original_year = Some(1911);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Berlin: Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn inline_citation_reprint_form() {
+        let id = Uuid::nil();
+        let mut map = HashMap::new();
+        let mut e = entry(None, None, vec!["Kant, Immanuel"]);
+        e.original_year = Some(1787);
+        map.insert(id, e);
+
+        let entries = vec![(id.to_string(), "B 132".to_string())];
+        assert_eq!(
+            format_inline_citation(&entries, &map),
+            "(Kant [1787] 1911, B 132)"
+        );
+    }
+
+    #[test]
+    fn inline_citation_plain_form() {
+        let id = Uuid::nil();
+        let mut map = HashMap::new();
+        map.insert(id, entry(None, None, vec!["Kant, Immanuel"]));
+
+        let entries = vec![(id.to_string(), String::new())];
+        assert_eq!(format_inline_citation(&entries, &map), "(Kant 1911)");
+    }
 }
 
 /// Extract last name from a full name

@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT id, title, publication_year, publisher\n           FROM sources WHERE id = ANY($1)",
+    "query": "SELECT id, title, publication_year, original_year, publisher, publication_place\n           FROM sources WHERE id = ANY($1)",
     "describe": {
         "columns": [
             {
@@ -20,14 +20,24 @@
             },
             {
                 "ordinal": 3,
+                "name": "original_year",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 4,
                 "name": "publisher",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "publication_place",
                 "type_info": "Text"
             }
         ],
         "parameters": {
             "Left": ["UuidArray"]
         },
-        "nullable": [false, false, true, true]
+        "nullable": [false, false, true, true, true, true]
     },
-    "hash": "fe26109597c7022e045068d3c402c94dfc756c6508d7d0340f048dac2617b23f"
+    "hash": "3fc733161b7e0ce6084aa2ee385b511f5500ac7fac7db2e16b6b29edc956117d"
 }

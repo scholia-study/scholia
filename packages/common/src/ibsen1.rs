@@ -22,7 +22,17 @@ pub const BOOK_TITLE: &str = "Keiser og Galileer";
 pub const AUTHOR: &str = "Henrik Ibsen";
 /// The primary reading layer is modern Norwegian Bokmål.
 pub const LANGUAGE: &str = "nb";
+/// 1873 first-edition imprint per the HIS TEI biblStruct ("København,
+/// Den Gyldendalske Boghandel (F. Hegel), 1873", edition "Førsteutgave"
+/// — `assets/ibsen1/raw/DRVIT_KG_KG73.xml`). The HIS TEI is a
+/// diplomatic transcription of that printing, so the record stays the
+/// 1873 imprint (EEBO-shaped, not AA-shaped).
 pub const YEAR: i16 = 1873;
+pub const PUBLISHER: &str = "Den Gyldendalske Boghandel (F. Hegel)";
+pub const PUBLICATION_PLACE: &str = "København";
+pub const EDITION: &str = "Førsteutgave";
+/// The exact HIS page the TEI was taken from.
+pub const SOURCE_URL: &str = "https://ibsen.uio.no/DRVIT_KG%7CKG73.html?facs=Ja";
 
 pub const MODERNIZED_DIR: &str = "assets/ibsen1/curated/md_modernized";
 pub const REVIEWED_DIR: &str = "assets/ibsen1/curated/md_reviewed";

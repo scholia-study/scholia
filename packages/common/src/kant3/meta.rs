@@ -11,12 +11,20 @@ pub const TRANSLATION_OUTPUT_FILE: &str = "assets/kant3/derived/translation_outp
 
 pub const AUTHOR: &str = "Immanuel Kant";
 
-// German source edition.
+// German source edition. The bibliographic record is the copy-text
+// actually transcribed — KU as printed in Kant's gesammelte Schriften
+// Bd. V, Berlin: Georg Reimer, 1913 (title pages transcribed in
+// assets/kant3/raw/55925-h.htm); the 1790 first edition the text
+// presents is carried by ORIGINAL_YEAR (and the e1790 marker system).
 pub const BOOK_SLUG: &str = "kritik-der-urteilskraft";
 pub const BOOK_TITLE: &str = "Kritik der Urteilskraft";
 pub const LANGUAGE: &str = "de";
 pub const SOURCE: &str = "Akademie-Ausgabe Band V";
-pub const YEAR: &str = "1790";
+pub const YEAR: &str = "1913";
+pub const PUBLISHER: &str = "Georg Reimer";
+pub const PUBLICATION_PLACE: &str = "Berlin";
+pub const VOLUME: &str = "V";
+pub const ORIGINAL_YEAR: i16 = 1790;
 pub const ABOUT: &str = "This German edition reproduces the text of Kant's Kritik der Urteilskraft as printed in the \
          Akademie-Ausgabe (Band V). Margin markers refer to AA page numbers; the original 1790 \
          first-edition pagination is preserved inline. The text itself is in the public domain. \

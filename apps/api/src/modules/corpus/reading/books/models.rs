@@ -20,6 +20,10 @@ pub struct BookDetail {
     pub author: String,
     pub language: String,
     pub source_id: String,
+    /// Identity year (`COALESCE(original_year, publication_year)`) —
+    /// the edition this text presents, which is also what SEO metadata
+    /// publishes. The truthful printing year lives on the source record
+    /// (book-about endpoint).
     pub publication_year: Option<i16>,
     pub publisher: Option<String>,
     /// The hosted source-language book this book translates from

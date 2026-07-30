@@ -23,10 +23,29 @@ pub struct BookData {
     pub language: String,
     pub source: String,
     pub source_date: String,
-    /// Bibliographic publisher line → `sources.publisher`. `None` leaves it
-    /// unset (the poetry/drama corpora carry provenance in `source` only).
+    /// Bibliographic publisher → `sources.publisher`. The actual publisher
+    /// of the printing transcribed (Georg Reimer, S. Simmons), never an
+    /// edition blurb; transcription provenance belongs in `source`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,
+    /// Imprint place of the printing → `sources.publication_place`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub publication_place: Option<String>,
+    /// Year of the edition this text presents, when it differs from the
+    /// printing in `source_date` → `sources.original_year` (e.g. 1787 for
+    /// the Kritik printed in the 1911 Akademie-Ausgabe).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_year: Option<i16>,
+    /// Edition statement of the record → `sources.edition`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub edition: Option<String>,
+    /// Containing volume → `sources.volume` (e.g. "III" for AA Bd. III).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub volume: Option<String>,
+    /// Online home of the exact source consulted → `sources.url`
+    /// (e.g. the HIS page for the ibsen1 TEI).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
     /// Editorial "about this book" copy → `books.about_text`.
     #[serde(default)]
     pub about_text: String,

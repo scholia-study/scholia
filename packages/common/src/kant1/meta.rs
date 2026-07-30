@@ -11,12 +11,22 @@ pub const TRANSLATION_OUTPUT_FILE: &str = "assets/kant1/derived/translation_outp
 
 pub const AUTHOR: &str = "Immanuel Kant";
 
-// German source edition (the B-Auflage).
+// German source edition (the B-Auflage). The bibliographic record is the
+// copy-text actually transcribed — KrV as printed in Kant's gesammelte
+// Schriften Bd. III, Berlin: Georg Reimer, 1911 (title pages at
+// assets/kant1/raw/pages/page-001.png, page-002.png); the edition
+// presented ("Zweite Auflage 1787" per the half-title) is carried by
+// EDITION + ORIGINAL_YEAR.
 pub const BOOK_SLUG: &str = "kritik-der-reinen-vernunft-b";
 pub const BOOK_TITLE: &str = "Kritik der reinen Vernunft";
 pub const LANGUAGE: &str = "de";
 pub const SOURCE: &str = "Akademie-Ausgabe Band III";
-pub const YEAR: &str = "1787";
+pub const YEAR: &str = "1911";
+pub const PUBLISHER: &str = "Georg Reimer";
+pub const PUBLICATION_PLACE: &str = "Berlin";
+pub const VOLUME: &str = "III";
+pub const EDITION: &str = "2. Auflage (B)";
+pub const ORIGINAL_YEAR: i16 = 1787;
 pub const ABOUT: &str = "This German edition reproduces the text of Kant's Kritik der reinen Vernunft as printed in the \
          1911 Akademie-Ausgabe (Band III) facsimile of the second edition (B, 1787). Margin markers \
          refer to AA page numbers; inline B-edition pagination is preserved within the text. \

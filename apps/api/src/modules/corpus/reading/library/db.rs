@@ -12,6 +12,7 @@ struct SourceRow {
     id: Uuid,
     title: String,
     publication_year: Option<i16>,
+    original_year: Option<i16>,
     publisher: Option<String>,
     translation_of_id: Option<Uuid>,
     parent_source_id: Option<Uuid>,
@@ -71,6 +72,7 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
         r#"SELECT id,
                   COALESCE(title_display, title) AS "title!",
                   publication_year,
+                  original_year,
                   publisher,
                   translation_of_id,
                   parent_source_id
@@ -572,7 +574,10 @@ fn build_work(
     LibraryWork {
         work_id: work_id.to_string(),
         title: display_title,
-        publication_year: root_source.publication_year,
+        // Identity year: the edition the work presents (original_year),
+        // not the printing transcribed — "1787" for the Kritik read in
+        // the 1911 Akademie-Ausgabe. Also the card sort key.
+        publication_year: root_source.original_year.or(root_source.publication_year),
         co_authors,
         editor_names,
         versions: library_versions,

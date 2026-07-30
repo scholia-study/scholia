@@ -53,31 +53,48 @@ pub struct Corpus {
     pub marker_labels: (&'static str, &'static str),
 }
 
+// Default-citation system per corpus, matching scholarly convention:
+// kant1 cites by B pagination ("B 132"), kant3 by AA volume page
+// ("AA V 212"). The sibling system stays citation-capable but
+// non-default (priority None).
 fn systems(
     aa_slug: &str,
     aa_label: &str,
     aa_template: &str,
+    aa_priority: Option<i16>,
     ed_slug: &str,
     ed_label: &str,
     ed_template: &str,
+    ed_priority: Option<i16>,
 ) -> Vec<ReferenceSystemData> {
     vec![
         ReferenceSystemData {
             slug: aa_slug.to_string(),
             label: aa_label.to_string(),
             ref_type: "block".to_string(),
-            // Citation-capable but not the default — Kant cites by sentence.
-            cite_priority: None,
+            cite_priority: aa_priority,
             cite_template: Some(aa_template.to_string()),
         },
         ReferenceSystemData {
             slug: ed_slug.to_string(),
             label: ed_label.to_string(),
             ref_type: "inline".to_string(),
-            cite_priority: None,
+            cite_priority: ed_priority,
             cite_template: Some(ed_template.to_string()),
         },
     ]
+}
+
+/// Bibliographic imprint of the record the edition's source row asserts —
+/// the copy-text's own publication facts, plus the identity year of the
+/// edition it presents. The Scholia translation editions are their own
+/// record (no imprint), carrying only the identity year.
+struct Imprint {
+    publisher: Option<&'static str>,
+    place: Option<&'static str>,
+    volume: Option<&'static str>,
+    edition: Option<&'static str>,
+    original_year: Option<i16>,
 }
 
 pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
@@ -94,6 +111,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         meta::SOURCE_EN,
                         meta::YEAR_EN,
                         meta::ABOUT_EN,
+                        Imprint {
+                            publisher: None,
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                        },
                     ),
                     "Figure",
                     meta::TRANSLATION_OUTPUT_FILE,
@@ -108,6 +132,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         meta::SOURCE,
                         meta::YEAR,
                         meta::ABOUT,
+                        Imprint {
+                            publisher: Some(meta::PUBLISHER),
+                            place: Some(meta::PUBLICATION_PLACE),
+                            volume: Some(meta::VOLUME),
+                            edition: Some(meta::EDITION),
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                        },
                     ),
                     "Abbildung",
                     meta::OUTPUT_FILE,
@@ -124,6 +155,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         meta::AA_SYSTEM_LABEL
                     },
                     meta::AA_CITE_TEMPLATE,
+                    None,
                     meta::EDITION_SYSTEM_SLUG,
                     if translation {
                         meta::EDITION_SYSTEM_LABEL_EN
@@ -131,6 +163,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         meta::EDITION_SYSTEM_LABEL
                     },
                     meta::EDITION_CITE_TEMPLATE,
+                    Some(0),
                 ),
                 toc_reviewed: toc::flat_toc_entries(),
                 toc_modernized: toc_mod::flat_toc_entries(),
@@ -164,6 +197,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         meta::SOURCE_EN,
                         meta::YEAR_EN,
                         meta::ABOUT_EN,
+                        Imprint {
+                            publisher: None,
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                        },
                     ),
                     "Figure",
                     meta::TRANSLATION_OUTPUT_FILE,
@@ -178,6 +218,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         meta::SOURCE,
                         meta::YEAR,
                         meta::ABOUT,
+                        Imprint {
+                            publisher: Some(meta::PUBLISHER),
+                            place: Some(meta::PUBLICATION_PLACE),
+                            volume: Some(meta::VOLUME),
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                        },
                     ),
                     "Abbildung",
                     meta::OUTPUT_FILE,
@@ -194,6 +241,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         meta::AA_SYSTEM_LABEL
                     },
                     meta::AA_CITE_TEMPLATE,
+                    Some(0),
                     meta::EDITION_SYSTEM_SLUG,
                     if translation {
                         meta::EDITION_SYSTEM_LABEL_EN
@@ -201,6 +249,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         meta::EDITION_SYSTEM_LABEL
                     },
                     meta::EDITION_CITE_TEMPLATE,
+                    None,
                 ),
                 toc_reviewed: toc::flat_toc_entries(),
                 toc_modernized: toc_mod::flat_toc_entries(),
@@ -231,13 +280,19 @@ fn book_data(
     source: &str,
     year: &str,
     about: &str,
+    imprint: Imprint,
 ) -> BookData {
     BookData {
         slug: slug.to_string(),
         title: title.to_string(),
         author: author.to_string(),
         language: language.to_string(),
-        publisher: Some(source.to_string()),
+        publisher: imprint.publisher.map(str::to_string),
+        publication_place: imprint.place.map(str::to_string),
+        original_year: imprint.original_year,
+        edition: imprint.edition.map(str::to_string),
+        volume: imprint.volume.map(str::to_string),
+        url: None,
         source: source.to_string(),
         source_date: year.to_string(),
         about_text: about.to_string(),

@@ -4670,7 +4670,8 @@
                     },
                     "publication_year": {
                         "type": ["integer", "null"],
-                        "format": "int32"
+                        "format": "int32",
+                        "description": "Identity year (`COALESCE(original_year, publication_year)`) —\nthe edition this text presents, which is also what SEO metadata\npublishes. The truthful printing year lives on the source record\n(book-about endpoint)."
                     },
                     "publisher": {
                         "type": ["string", "null"]
@@ -5459,7 +5460,8 @@
                     },
                     "publication_year": {
                         "type": ["integer", "null"],
-                        "format": "int32"
+                        "format": "int32",
+                        "description": "Identity year of the work — the edition presented\n(`sources.original_year`), falling back to the printing's\n`publication_year`. E.g. 1787 for the Kritik read in the 1911\nAkademie-Ausgabe."
                     },
                     "title": {
                         "type": "string"

@@ -69,6 +69,9 @@ export function AboutThisTextView({
                 {source.publisher && (
                     <Field label="Publisher" value={source.publisher} />
                 )}
+                {source.publication_place && (
+                    <Field label="Place" value={source.publication_place} />
+                )}
                 {source.edition && (
                     <Field label="Edition" value={source.edition} />
                 )}

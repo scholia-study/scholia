@@ -55,6 +55,10 @@ pub struct BookPill {
 pub struct LibraryWork {
     pub work_id: String,
     pub title: String,
+    /// Identity year of the work — the edition presented
+    /// (`sources.original_year`), falling back to the printing's
+    /// `publication_year`. E.g. 1787 for the Kritik read in the 1911
+    /// Akademie-Ausgabe.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publication_year: Option<i16>,
     pub co_authors: Vec<String>,

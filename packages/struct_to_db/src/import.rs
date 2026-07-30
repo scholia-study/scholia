@@ -327,13 +327,19 @@ pub async fn run(
     // A translation edition's source carries `translation_of_id` → the source
     // book's source, the link the side-by-side companion view resolves.
     let bib_source_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO sources (source_type, title, publication_year, publisher, translation_of_id, protected, created_by)
-         VALUES ('book', $1, $2, $3, $4, true, $5)
+        "INSERT INTO sources (source_type, title, publication_year, original_year, publisher,
+                              publication_place, edition, volume, url, translation_of_id, protected, created_by)
+         VALUES ('book', $1, $2, $3, $4, $5, $6, $7, $8, $9, true, $10)
          RETURNING id",
     )
     .bind(&output.book.title)
     .bind(publication_year)
+    .bind(output.book.original_year)
     .bind(&output.book.publisher)
+    .bind(&output.book.publication_place)
+    .bind(&output.book.edition)
+    .bind(&output.book.volume)
+    .bind(&output.book.url)
     .bind(translation_of_id)
     .bind(system_user_id)
     .fetch_one(&mut *tx)

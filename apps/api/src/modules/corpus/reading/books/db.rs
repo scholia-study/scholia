@@ -14,7 +14,7 @@ pub async fn list_books(pool: &PgPool) -> Result<Vec<BookSummary>, AppError> {
         r#"SELECT b.id, b.slug, b.language,
                   b.source_id,
                   COALESCE(s.title_display, s.title) AS "title!",
-                  s.publication_year,
+                  COALESCE(s.original_year, s.publication_year) AS "publication_year?",
                   s.publisher,
 
                   STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author,
@@ -26,7 +26,7 @@ pub async fn list_books(pool: &PgPool) -> Result<Vec<BookSummary>, AppError> {
            LEFT JOIN books src_book ON src_book.source_id = s.translation_of_id
            GROUP BY b.id, b.slug, b.language,
                     b.source_id, s.title_display, s.title,
-                    s.publication_year, s.publisher,
+                    s.original_year, s.publication_year, s.publisher,
                     src_book.slug
            ORDER BY COALESCE(s.title_display, s.title)"#,
     )
@@ -42,7 +42,7 @@ pub async fn get_book_by_slug(pool: &PgPool, slug: &str) -> Result<BookDetail, A
         r#"SELECT b.id, b.slug, b.language,
                   b.source_id,
                   COALESCE(s.title_display, s.title) AS "title!",
-                  s.publication_year,
+                  COALESCE(s.original_year, s.publication_year) AS "publication_year?",
                   s.publisher,
 
                   STRING_AGG(p.name, ', ' ORDER BY sp.position) AS author,
@@ -55,7 +55,7 @@ pub async fn get_book_by_slug(pool: &PgPool, slug: &str) -> Result<BookDetail, A
            WHERE b.slug = $1
            GROUP BY b.id, b.slug, b.language,
                     b.source_id, s.title_display, s.title,
-                    s.publication_year, s.publisher,
+                    s.original_year, s.publication_year, s.publisher,
                     src_book.slug"#,
         slug,
     )

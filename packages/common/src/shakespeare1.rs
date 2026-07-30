@@ -9,8 +9,13 @@
 pub const BOOK_SLUG: &str = "shakespeares-sonnets";
 pub const BOOK_TITLE: &str = "Shakespeare's Sonnets";
 
-/// 1609 Quarto (the original-spelling source layer).
+/// 1609 Quarto (the original-spelling source layer). Imprint per the
+/// EEBO-TCP A12044 record ("At London: By G. Eld for T[homas] T[horpe]
+/// and are to be solde by Iohn Wright…, 1609" —
+/// `assets/shakespeare1/raw/A12044.xml`), publisher shortened.
 pub const YEAR: i16 = 1609;
+pub const PUBLISHER: &str = "G. Eld for Thomas Thorpe";
+pub const PUBLICATION_PLACE: &str = "London";
 
 pub const SONNET_COUNT: u32 = 154;
 /// Reading nodes are flat (top-level); no work-wrapper node.
