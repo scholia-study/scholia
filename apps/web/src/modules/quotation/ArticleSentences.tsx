@@ -34,6 +34,83 @@ function segmentText(text: string): string[] {
     return text.split(/(?<=[.!?])\s+/).filter(Boolean);
 }
 
+function blockText(el: Element): string {
+    const parts: string[] = [];
+    const walk = (node: DOMNode) => {
+        if (node instanceof Text) {
+            parts.push(node.data);
+        } else if (node instanceof Element) {
+            for (const child of node.children || []) {
+                walk(child as DOMNode);
+            }
+        }
+    };
+    for (const child of el.children || []) {
+        walk(child as DOMNode);
+    }
+    return parts.join("");
+}
+
+/**
+ * Containers the render pass replaces wholesale (whole blockquotes,
+ * quotation-embed placeholders) — their inner `<p>`s never become blocks
+ * of their own, so the flat sentence list must skip them too or the two
+ * passes disagree on block numbering, shifting every key after the first
+ * blockquote.
+ */
+function insideReplacedContainer(node: Element): boolean {
+    let cur = node.parent;
+    while (cur) {
+        if (
+            cur instanceof Element &&
+            (cur.name === "blockquote" ||
+                cur.attribs?.class?.includes("quotation-embed"))
+        ) {
+            return true;
+        }
+        cur = cur.parent;
+    }
+    return false;
+}
+
+/**
+ * Flat sentence list keyed identically to the spans the component
+ * renders (`b<block>-s<sentence>`). Exported for the pass-agreement
+ * test — any keying drift between this and the render pass makes the
+ * save-quotation preview show the wrong text.
+ */
+export function buildSentenceList(html: string): SegmentedSentence[] {
+    const sentences: SegmentedSentence[] = [];
+    let blockIndex = 0;
+
+    parse(html, {
+        replace: (domNode: DOMNode) => {
+            if (domNode instanceof Element) {
+                const tag = domNode.name;
+                if (
+                    (tag === "p" || tag === "blockquote") &&
+                    !insideReplacedContainer(domNode)
+                ) {
+                    let sentIdx = 0;
+                    for (const segment of segmentText(blockText(domNode))) {
+                        const trimmed = segment.trim();
+                        if (!trimmed) continue;
+                        sentences.push({
+                            key: `b${blockIndex}-s${sentIdx}`,
+                            text: trimmed,
+                        });
+                        sentIdx++;
+                    }
+                    blockIndex++;
+                }
+            }
+            return undefined;
+        },
+    });
+
+    return sentences;
+}
+
 interface ArticleSentencesProps {
     html: string;
     articleId: string;
@@ -62,51 +139,8 @@ export function ArticleSentences({
         "idle" | "saving" | "saved" | "duplicate"
     >("idle");
 
-    // Build a flat list of all sentences from all paragraphs
-    const allSentences = useMemo(() => {
-        const sentences: SegmentedSentence[] = [];
-        let blockIndex = 0;
-
-        // Parse to find <p> and <blockquote> elements
-        parse(html, {
-            replace: (domNode: DOMNode) => {
-                if (domNode instanceof Element) {
-                    const tag = domNode.name;
-                    if (tag === "p" || tag === "blockquote") {
-                        // Extract text content
-                        const textParts: string[] = [];
-                        const extractText = (node: DOMNode) => {
-                            if (node instanceof Text) {
-                                textParts.push(node.data);
-                            } else if (node instanceof Element) {
-                                for (const child of node.children || []) {
-                                    extractText(child as DOMNode);
-                                }
-                            }
-                        };
-                        for (const child of domNode.children || []) {
-                            extractText(child as DOMNode);
-                        }
-                        const fullText = textParts.join("");
-                        const blockSentences = segmentText(fullText);
-
-                        for (let i = 0; i < blockSentences.length; i++) {
-                            const trimmed = blockSentences[i].trim();
-                            if (!trimmed) continue;
-                            sentences.push({
-                                key: `b${blockIndex}-s${i}`,
-                                text: trimmed,
-                            });
-                        }
-                        blockIndex++;
-                    }
-                }
-                return undefined;
-            },
-        });
-
-        return sentences;
-    }, [html]);
+    // Flat list of all sentences, keyed like the rendered spans below.
+    const allSentences = useMemo(() => buildSentenceList(html), [html]);
 
     const sentenceKeys = useMemo(
         () => allSentences.map((s) => s.key),
@@ -238,21 +272,7 @@ export function ArticleSentences({
             if (disabled) return undefined;
 
             if (tag === "p" || tag === "blockquote") {
-                const textParts: string[] = [];
-                const extractText = (node: DOMNode) => {
-                    if (node instanceof Text) {
-                        textParts.push(node.data);
-                    } else if (node instanceof Element) {
-                        for (const child of node.children || []) {
-                            extractText(child as DOMNode);
-                        }
-                    }
-                };
-                for (const child of domNode.children || []) {
-                    extractText(child as DOMNode);
-                }
-                const fullText = textParts.join("");
-                const segments = segmentText(fullText);
+                const segments = segmentText(blockText(domNode));
                 const currentBlock = blockIndex;
                 blockIndex++;
 
