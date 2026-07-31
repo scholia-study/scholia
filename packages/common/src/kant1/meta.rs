@@ -30,8 +30,9 @@ pub const ORIGINAL_YEAR: i16 = 1787;
 pub const ABOUT: &str = "This German edition reproduces the text of Kant's Kritik der reinen Vernunft as printed in the \
          1911 Akademie-Ausgabe (Band III) facsimile of the second edition (B, 1787). Margin markers \
          refer to AA page numbers; inline B-edition pagination is preserved within the text. \
-         The text itself is in public domain. The digital edition on Scholia is a community-driven \
-         project. Corrections and refinements are welcome.";
+         The text itself is in public domain. The digital edition on Scholia — including its \
+         modernized reading text — is prepared by Scholia Sodalitas, a community-driven project. \
+         Corrections and refinements are welcome.";
 
 // English translation edition.
 pub const BOOK_SLUG_EN: &str = "critique-of-pure-reason-b";

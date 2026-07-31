@@ -22,15 +22,15 @@ pub const BOOK_TITLE: &str = "Keiser og Galileer";
 pub const AUTHOR: &str = "Henrik Ibsen";
 /// The primary reading layer is modern Norwegian Bokmål.
 pub const LANGUAGE: &str = "nb";
-/// 1873 first-edition imprint per the HIS TEI biblStruct ("København,
-/// Den Gyldendalske Boghandel (F. Hegel), 1873", edition "Førsteutgave"
-/// — `assets/ibsen1/raw/DRVIT_KG_KG73.xml`). The HIS TEI is a
-/// diplomatic transcription of that printing, so the record stays the
-/// 1873 imprint (EEBO-shaped, not AA-shaped).
-pub const YEAR: i16 = 1873;
-pub const PUBLISHER: &str = "Den Gyldendalske Boghandel (F. Hegel)";
-pub const PUBLICATION_PLACE: &str = "København";
-pub const EDITION: &str = "Førsteutgave";
+/// The Bokmål modernization is judgment-heavy enough to be Scholia's own
+/// edition: published by Scholia Sodalitas, dated by the edition itself,
+/// with 1873 as identity year. The first-edition imprint ("København, Den
+/// Gyldendalske Boghandel (F. Hegel), 1873" per the HIS TEI biblStruct —
+/// `assets/ibsen1/raw/DRVIT_KG_KG73.xml`) is noted in the about text; the
+/// original layer reproduces that printing.
+pub const YEAR: i16 = 2026;
+pub const ORIGINAL_YEAR: i16 = 1873;
+pub const PUBLISHER: &str = "Scholia Sodalitas";
 /// The exact HIS page the TEI was taken from.
 pub const SOURCE_URL: &str = "https://ibsen.uio.no/DRVIT_KG%7CKG73.html?facs=Ja";
 
@@ -45,9 +45,9 @@ pub const TRANSLATION_OUTPUT_FILE: &str = "assets/ibsen1/derived/translation_out
 pub const BOOK_SLUG_EN: &str = "emperor-and-galilean";
 pub const BOOK_TITLE_EN: &str = "Emperor and Galilean";
 pub const LANGUAGE_EN: &str = "en";
-/// Publication year of the *translation* edition (a present-day Scholia
-/// translation), distinct from the source's 1873 so the two editions don't
-/// collide on the `sources (title, source_type, publication_year)` unique key.
+/// Publication year of the *translation* edition. Both editions are now
+/// 2026 Scholia Sodalitas publications; their distinct titles keep the
+/// `sources (title, source_type, publication_year)` unique key clear.
 pub const YEAR_EN: i16 = 2026;
 /// The community imprint the translation is published under (matches
 /// the Kant EN editions).
@@ -67,8 +67,9 @@ pub const PAGE_SYSTEM_LABEL: &str = "1873 page";
 pub const SOURCE: &str = "Modern Norwegian Bokmål reading text; the original layer reproduces the \
 1873 first edition (Dano-Norwegian) from Henrik Ibsens Skrifter (HIS), University of Oslo.";
 pub const ABOUT: &str = "Keiser og Galileer (Kejser og Galilæer, 1873) by Henrik Ibsen, a \
-two-part world-historical drama. The reading text is a modern Norwegian Bokmål modernization; \
-the original layer reproduces the 1873 first edition. The digital edition on Scholia is a \
+two-part world-historical drama. The reading text is a modern Norwegian Bokmål modernization \
+prepared by Scholia Sodalitas; the original layer reproduces the 1873 first edition — Den \
+Gyldendalske Boghandel (F. Hegel), København. The digital edition on Scholia is a \
 community-driven project; corrections are welcome.";
 
 /// One reading node — its structure only; the display label comes from the

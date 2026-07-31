@@ -8,13 +8,15 @@
 
 pub const BOOK_SLUG: &str = "paradise-lost";
 pub const BOOK_TITLE: &str = "Paradise Lost";
-/// Imprint per the EEBO-TCP A50924 record ("London: Printed by
-/// S. Simmons, 1674. The second edition revised and augmented by the
-/// same author." — `assets/milton1/raw/A50924.xml`), edition shortened.
-pub const YEAR: i16 = 1674;
-pub const PUBLISHER: &str = "S. Simmons";
-pub const PUBLICATION_PLACE: &str = "London";
-pub const EDITION: &str = "Second edition";
+/// The heavily modernized reading text (~1,950 discretionary edits) makes
+/// this Scholia's own edition: published by Scholia Sodalitas, dated by the
+/// edition itself, with the 1674 original as identity year. The 1674 imprint
+/// ("London: Printed by S. Simmons" per EEBO-TCP A50924 —
+/// `assets/milton1/raw/A50924.xml`) is noted in the about text, since the
+/// original-spelling layer reproduces that printing.
+pub const YEAR: i16 = 2026;
+pub const ORIGINAL_YEAR: i16 = 1674;
+pub const PUBLISHER: &str = "Scholia Sodalitas";
 
 /// Reading nodes are flat (top-level); no work-wrapper node.
 pub const DEPTH: i16 = 0;

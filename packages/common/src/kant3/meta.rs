@@ -28,8 +28,8 @@ pub const ORIGINAL_YEAR: i16 = 1790;
 pub const ABOUT: &str = "This German edition reproduces the text of Kant's Kritik der Urteilskraft as printed in the \
          Akademie-Ausgabe (Band V). Margin markers refer to AA page numbers; the original 1790 \
          first-edition pagination is preserved inline. The text itself is in the public domain. \
-         The digital edition on Scholia is a community-driven project. Corrections and refinements \
-         are welcome.";
+         The digital edition on Scholia — including its modernized reading text — is prepared by \
+         Scholia Sodalitas, a community-driven project. Corrections and refinements are welcome.";
 
 // English translation edition.
 pub const BOOK_SLUG_EN: &str = "critique-of-the-power-of-judgment";

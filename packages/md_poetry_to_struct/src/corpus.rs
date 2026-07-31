@@ -56,9 +56,10 @@ Scholia is a community-driven project; corrections are welcome.";
 const MILTON_SOURCE: &str = "Modern-spelling reading text from public-domain sources; the original-spelling \
 layer reproduces the 1674 second edition via EEBO-TCP A50924 (CC0).";
 const MILTON_ABOUT: &str = "Paradise Lost by John Milton. The modern-spelling \
-reading text is drawn from public-domain sources; the original-spelling layer \
-reproduces the 1674 second edition via EEBO-TCP (released CC0). The digital \
-edition on Scholia is a community-driven project; corrections are welcome.";
+reading text is prepared by Scholia Sodalitas from public-domain sources; the \
+original-spelling layer reproduces the 1674 second edition — printed by \
+S. Simmons, London — via EEBO-TCP (released CC0). The digital edition on \
+Scholia is a community-driven project; corrections are welcome.";
 
 /// The `line` reference system. `cite_priority` decides whether lines are the
 /// *default* citation (Milton: `Some(0)`; the Sonnets stay sentence-cited:
@@ -166,9 +167,9 @@ pub fn milton() -> Corpus {
             author: "John Milton".into(),
             language: "en".into(),
             publisher: Some(milton1::PUBLISHER.into()),
-            publication_place: Some(milton1::PUBLICATION_PLACE.into()),
-            original_year: None,
-            edition: Some(milton1::EDITION.into()),
+            publication_place: None,
+            original_year: Some(milton1::ORIGINAL_YEAR),
+            edition: None,
             volume: None,
             url: None,
             source: MILTON_SOURCE.into(),
