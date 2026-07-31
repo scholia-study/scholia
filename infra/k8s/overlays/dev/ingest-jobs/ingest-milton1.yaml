@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-milton1-b1c48d89f1f2
+  name: ingest-milton1-55b2cb677390
   labels:
     ingest: milton1
   annotations:
@@ -31,7 +31,7 @@ spec:
             - name: CORPUS
               value: milton1
             - name: DERIVED_HASH
-              value: "b1c48d89f1f2"
+              value: "55b2cb677390"
             - name: NTFY_URL
               valueFrom:
                 secretKeyRef:
