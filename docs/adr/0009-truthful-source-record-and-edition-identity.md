@@ -22,17 +22,21 @@ Schriften*, hrsg. von der Königlich Preußischen Akademie der
 Wissenschaften, Band III, Berlin: Druck und Verlag von Georg Reimer,
 1911. That fact existed only as hand-written prose in `meta::ABOUT`.
 
-This is the shape of the whole corpus — a modern transcription of an old
-imprint — but the two facts coincide for most of it. EEBO-TCP A50924 *is*
-a transcription of the 1674 *Paradise Lost*; the HIS TEI *is* a
-diplomatic transcription of the 1873 *Kejser og Galilæer*. Only the
-Akademie-Ausgabe presents an edition (1787/1790) printed decades before
-the volume transcribed.
+This is the shape of the whole corpus — a modern edition of an old work —
+and the two facts diverge in two ways. A critical reprint presents an
+edition printed decades earlier: the Akademie-Ausgabe volumes of 1911 and
+1913 carry Kant's 1787 and 1790 texts. And where Scholia's contributors
+do the editorial work — the translations, and the modernizations that
+rest on sustained judgment — Scholia itself is the publisher of a 2026
+edition presenting a much older work. They coincide only when the
+transcription is faithful and nobody here added editorial judgment:
+Shakespeare's Sonnets are the 1609 Quarto via EEBO-TCP, with a modern
+layer taken from PoetryDB rather than prepared here.
 
 Two questions were being answered by one set of columns:
 
-- **Provenance** — "where did this text come from?" The concrete volume
-  transcribed.
+- **Provenance** — "where did this text come from?" The concrete edition
+  Scholia publishes or transcribed it from.
 - **Identity** — "which text is this?" What a reader choosing from the
   library cares about: is this A or B, is this the 1609 Quarto.
 
@@ -44,10 +48,27 @@ while the `AA III {ref}` / `B {ref}` templates sat unused.
 
 ## Decision
 
-1. **The `sources` row records the volume actually transcribed.** For
-   kant1 that is the AA Band III printing: year 1911, publisher "Georg
-   Reimer", place "Berlin", volume "III". No fictional record of a 1787
-   Riga printing nobody here has touched.
+1. **The `sources` row records the edition Scholia actually publishes or
+   transcribes.** Where the text is transcribed, that is the volume in
+   hand: kant1 is the AA Band III printing — year 1911, publisher "Georg
+   Reimer", place "Berlin", volume "III", not a fictional record of a
+   1787 Riga printing nobody here has touched. Where Scholia's
+   contributors prepare the text, Scholia is the publisher: the three
+   translations and the two judgment-heavy modernizations (*Paradise
+   Lost*, *Keiser og Galileer*) are 2026 editions published by **Scholia
+   Sodalitas**, with the historical imprint they displace moving into
+   `about_text`. The dividing line is degree of editorial judgment: the
+   Kant reading texts are also modernized here, but German orthographic
+   normalization does not make a new edition — those rows keep the AA
+   record and the fellowship is credited in `about_text` instead. The
+   imprint itself is publicly declared (about page, `llms.txt`) so a
+   citation-follower can find its publisher. Sodalitas rows carry no
+   `publication_place` — a
+   distributed fellowship publishing on the web has no imprint city, and
+   inventing one is the failure this ADR exists to stop. Chicago and MLA
+   both drop place for online and self-published works, and
+   `format_bibliography_entry` already renders publisher-without-place
+   correctly.
 
 2. **Identity is not a bibliography record.** It is carried by the work
    title, a new `original_year`, the existing `edition` field, and the
@@ -56,9 +77,10 @@ while the `AA III {ref}` / `B {ref}` templates sat unused.
    - `publication_place TEXT` — imprint place of the record itself.
      Useful for every source type.
    - `original_year SMALLINT` — the year of the edition this text
-     *presents*, when it differs from the printing transcribed (CSL's
-     `original-date`). NULL means "same as `publication_year`", which is
-     the common case.
+     *presents*, when it differs from the edition recorded (CSL's
+     `original-date`). NULL means "same as `publication_year`" — true
+     for the Bibles and the Sonnets, while every Kant, Milton, and Ibsen
+     book carries one.
 
    `SMALLINT`, not a label string, because the library **sorts** works
    by year; display strings are composed per surface.
@@ -73,14 +95,18 @@ while the `AA III {ref}` / `B {ref}` templates sat unused.
    surface, not as a per-corpus flag — the answer is the same for every
    corpus, so a knob would only be a way to get it wrong inconsistently.
 
-4. **Article citations implement Chicago's reprint form.** A source is a
-   reprint when `original_year` and `publication_year` are both present
-   and differ (`articles/db.rs:442-453`). Bibliography entries use the
-   parenthesised form, text citations the bracketed one — "Kant,
-   Immanuel. (1787) 1911." and "(Kant [1787] 1911, 132)". The
+4. **Article citations implement Chicago's original-then-edition year
+   form**, which covers reprints and translations of older works alike.
+   It applies whenever `original_year` and `publication_year` are both
+   present and differ (`articles/db.rs:442-453`). Bibliography entries
+   use the parenthesised form, text citations the bracketed one — "Kant,
+   Immanuel. (1787) 1911." for the German record, "(1787) 2026" for the
+   Sodalitas translation, "(Kant [1787] 1911, 132)" in text. The
    facts-of-publication segment degrades with the data: both →
    "Place: Publisher.", publisher alone → "Publisher.", place alone →
-   "Place.", neither → omitted.
+   "Place.", neither → omitted. An `edition` statement, when the record
+   carries one, follows the title per Chicago — "…*Kritik der reinen
+   Vernunft*. 2. Auflage (B). Berlin: Georg Reimer."
 
 5. **Kant cites by page, not by sentence.** `cite_priority` is set in
    the corpus config — kant1 `b_edition` → 0 (B pagination is *the* KrV
