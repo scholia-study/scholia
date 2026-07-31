@@ -39,7 +39,7 @@ images:
   - name: ghcr.io/scholia-study/scholia-api
     newTag: main-116a485
   - name: ghcr.io/scholia-study/scholia-web
-    newTag: main-116a485
+    newTag: main-b69f6b8
   - name: ghcr.io/scholia-study/scholia-proxy
     newTag: main-e2918ec
 
