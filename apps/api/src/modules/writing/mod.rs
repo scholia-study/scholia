@@ -141,4 +141,12 @@ pub fn admin_router() -> OpenApiRouter<AppState> {
         .routes(utoipa_axum::routes!(
             article_reviews::handlers::list_article_reviewers
         ))
+        .routes(utoipa_axum::routes!(
+            articles::handlers::admin_list_topics,
+            articles::handlers::create_topic
+        ))
+        .routes(utoipa_axum::routes!(
+            articles::handlers::update_topic,
+            articles::handlers::delete_topic
+        ))
 }

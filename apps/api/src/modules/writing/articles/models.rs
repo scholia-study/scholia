@@ -13,6 +13,34 @@ pub struct TopicListResponse {
     pub topics: Vec<TopicResponse>,
 }
 
+/// Topic row for the admin panel: public fields plus how many articles
+/// currently carry the topic (delete is refused while non-zero).
+#[derive(Debug, Serialize, ToSchema)]
+pub struct TopicAdminResponse {
+    pub id: String,
+    pub name: String,
+    pub slug: String,
+    pub article_count: i64,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct TopicAdminListResponse {
+    pub topics: Vec<TopicAdminResponse>,
+}
+
+/// `slug` is generated from the name at creation and immutable after —
+/// it appears in shareable URLs (`/articles?topic_slug=…`).
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct CreateTopicRequest {
+    pub name: String,
+}
+
+/// Renames the display name only; the slug never changes.
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct UpdateTopicRequest {
+    pub name: String,
+}
+
 /// Public-facing editorial label. `applied_by`/`applied_at` are
 /// deliberately not exposed — readers don't need to know which editor
 /// chipped an article or when.

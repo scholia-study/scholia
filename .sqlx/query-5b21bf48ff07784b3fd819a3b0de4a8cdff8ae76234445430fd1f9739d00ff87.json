@@ -1,0 +1,33 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT t.id, t.name, t.slug,\n                  COUNT(at.article_id) AS \"article_count!\"\n           FROM topics t\n           LEFT JOIN article_topics at ON at.topic_id = t.id\n           GROUP BY t.id, t.name, t.slug\n           ORDER BY t.name",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "article_count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": []
+        },
+        "nullable": [false, false, false, null]
+    },
+    "hash": "5b21bf48ff07784b3fd819a3b0de4a8cdff8ae76234445430fd1f9739d00ff87"
+}

@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT EXISTS(SELECT 1 FROM topics WHERE name = $1 OR slug = $2) AS \"exists!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "exists!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Text"]
+        },
+        "nullable": [null]
+    },
+    "hash": "8ff9dea61f2d171acd879e461d00ec7fd7c19f5556daa20d424781b68af81383"
+}

@@ -77,7 +77,7 @@ pub async fn create_feedback(
     responses(
         (status = 200, description = "Feedback list", body = FeedbackListResponse),
         (status = 401, description = "Not authenticated"),
-        (status = 404, description = "Not an admin")
+        (status = 403, description = "Insufficient permissions")
     ),
     tag = "feedback"
 )]
@@ -106,7 +106,8 @@ pub async fn list_feedback(
         (status = 200, description = "Feedback detail", body = FeedbackResponse),
         (status = 400, description = "Invalid feedback ID"),
         (status = 401, description = "Not authenticated"),
-        (status = 404, description = "Not found / not an admin")
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Not found")
     ),
     tag = "feedback"
 )]
@@ -132,7 +133,8 @@ pub async fn get_feedback(
         (status = 200, description = "Feedback updated", body = FeedbackResponse),
         (status = 400, description = "Invalid input"),
         (status = 401, description = "Not authenticated"),
-        (status = 404, description = "Not found / not an admin")
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Not found")
     ),
     tag = "feedback"
 )]
@@ -161,11 +163,9 @@ pub async fn update_feedback(
     Ok(Json(f))
 }
 
-/// Reject non-admins as if the route doesn't exist (don't signal that
-/// `/api/admin/*` endpoints are real to non-admin clients).
 fn require_admin(user: &AuthUser) -> Result<(), AppError> {
     user.require_permission(Permission::AdminPanel)
-        .map_err(|_| AppError::NotFound("Not found".into()))
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))
 }
 
 fn parse_filter(filter: Option<&str>) -> Vec<FeedbackStatus> {

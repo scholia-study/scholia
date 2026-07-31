@@ -129,6 +129,25 @@ export function Navbar() {
                                         />
                                     </MenuItem>
                                     <Divider />
+                                    {(hasPermission("admin_panel") ||
+                                        hasPermission("resources_manage") ||
+                                        hasPermission("articles_review")) && (
+                                        <MenuItem
+                                            onClick={() => {
+                                                setAnchorEl(null);
+                                                navigate({ to: "/manage" });
+                                            }}
+                                        >
+                                            <Typography variant="body2">
+                                                The Bridge
+                                            </Typography>
+                                        </MenuItem>
+                                    )}
+                                    {(hasPermission("admin_panel") ||
+                                        hasPermission("resources_manage") ||
+                                        hasPermission("articles_review")) && (
+                                        <Divider />
+                                    )}
                                     <MenuItem
                                         onClick={() => {
                                             setAnchorEl(null);
@@ -192,62 +211,6 @@ export function Navbar() {
                                             Send feedback
                                         </Typography>
                                     </MenuItem>
-                                    {hasPermission("resources_manage") && (
-                                        <MenuItem
-                                            onClick={() => {
-                                                setAnchorEl(null);
-                                                navigate({
-                                                    to: "/editor/resource-submissions",
-                                                });
-                                            }}
-                                        >
-                                            <Typography variant="body2">
-                                                Editor: Source Submissions
-                                            </Typography>
-                                        </MenuItem>
-                                    )}
-                                    {hasPermission("articles_review") && (
-                                        <MenuItem
-                                            onClick={() => {
-                                                setAnchorEl(null);
-                                                navigate({
-                                                    to: "/editor/article-reviews",
-                                                });
-                                            }}
-                                        >
-                                            <Typography variant="body2">
-                                                Editor: Article Reviews
-                                            </Typography>
-                                        </MenuItem>
-                                    )}
-                                    {hasPermission("admin_panel") && (
-                                        <MenuItem
-                                            onClick={() => {
-                                                setAnchorEl(null);
-                                                navigate({
-                                                    to: "/admin/feedback",
-                                                });
-                                            }}
-                                        >
-                                            <Typography variant="body2">
-                                                Admin: Feedback
-                                            </Typography>
-                                        </MenuItem>
-                                    )}
-                                    {hasPermission("admin_panel") && (
-                                        <MenuItem
-                                            onClick={() => {
-                                                setAnchorEl(null);
-                                                navigate({
-                                                    to: "/admin/users",
-                                                });
-                                            }}
-                                        >
-                                            <Typography variant="body2">
-                                                Admin: Users
-                                            </Typography>
-                                        </MenuItem>
-                                    )}
                                     <Divider />
                                     <MenuItem
                                         onClick={() => {

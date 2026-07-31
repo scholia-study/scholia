@@ -340,8 +340,8 @@
                     "401": {
                         "description": "Not authenticated"
                     },
-                    "404": {
-                        "description": "Not an admin"
+                    "403": {
+                        "description": "Insufficient permissions"
                     }
                 }
             }
@@ -379,8 +379,11 @@
                     "401": {
                         "description": "Not authenticated"
                     },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
                     "404": {
-                        "description": "Not found / not an admin"
+                        "description": "Not found"
                     }
                 }
             },
@@ -426,8 +429,11 @@
                     "401": {
                         "description": "Not authenticated"
                     },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
                     "404": {
-                        "description": "Not found / not an admin"
+                        "description": "Not found"
                     }
                 }
             }
@@ -536,6 +542,140 @@
                     },
                     "404": {
                         "description": "Submission not found"
+                    }
+                }
+            }
+        },
+        "/api/admin/topics": {
+            "get": {
+                "tags": ["admin"],
+                "summary": "List topics with per-topic article usage counts",
+                "operationId": "admin_list_topics",
+                "responses": {
+                    "200": {
+                        "description": "Topics with usage counts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TopicAdminListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["admin"],
+                "summary": "Create a topic; the slug is generated from the name and immutable",
+                "operationId": "create_topic",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTopicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Topic created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TopicAdminResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or duplicate name"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    }
+                }
+            }
+        },
+        "/api/admin/topics/{id}": {
+            "delete": {
+                "tags": ["admin"],
+                "summary": "Delete a topic; refused while any article still uses it",
+                "operationId": "delete_topic",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Topic ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Topic deleted"
+                    },
+                    "400": {
+                        "description": "Topic still in use"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Topic not found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": ["admin"],
+                "summary": "Rename a topic (display name only; slug never changes)",
+                "operationId": "update_topic",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Topic ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTopicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Topic renamed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TopicAdminResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or duplicate name"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Topic not found"
                     }
                 }
             }
@@ -5117,6 +5257,16 @@
                     }
                 }
             },
+            "CreateTopicRequest": {
+                "type": "object",
+                "description": "`slug` is generated from the name at creation and immutable after —\nit appears in shareable URLs (`/articles?topic_slug=…`).",
+                "required": ["name"],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
             "EditorialLabelListResponse": {
                 "type": "object",
                 "required": ["labels"],
@@ -6992,6 +7142,38 @@
                     }
                 }
             },
+            "TopicAdminListResponse": {
+                "type": "object",
+                "required": ["topics"],
+                "properties": {
+                    "topics": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TopicAdminResponse"
+                        }
+                    }
+                }
+            },
+            "TopicAdminResponse": {
+                "type": "object",
+                "description": "Topic row for the admin panel: public fields plus how many articles\ncurrently carry the topic (delete is refused while non-zero).",
+                "required": ["id", "name", "slug", "article_count"],
+                "properties": {
+                    "article_count": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    }
+                }
+            },
             "TopicListResponse": {
                 "type": "object",
                 "required": ["topics"],
@@ -7371,6 +7553,16 @@
                     },
                     "volume": {
                         "type": ["string", "null"]
+                    }
+                }
+            },
+            "UpdateTopicRequest": {
+                "type": "object",
+                "description": "Renames the display name only; the slug never changes.",
+                "required": ["name"],
+                "properties": {
+                    "name": {
+                        "type": "string"
                     }
                 }
             },

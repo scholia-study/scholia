@@ -3,9 +3,10 @@ use axum::extract::{Path, Query, State};
 
 use crate::modules::writing::articles::models::{
     ApplyEditorialLabelRequest, ArticleDetailResponse, ArticleListQuery, ArticleListResponse,
-    BatchSentencesRequest, BatchSentencesResponse, CreateArticleRequest,
+    BatchSentencesRequest, BatchSentencesResponse, CreateArticleRequest, CreateTopicRequest,
     EditorialLabelListResponse, EditorialLabelResponse, PublicArticleListQuery,
-    PublishedArticleListResponse, TopicListResponse, UpdateArticleRequest,
+    PublishedArticleListResponse, TopicAdminListResponse, TopicAdminResponse, TopicListResponse,
+    UpdateArticleRequest, UpdateTopicRequest,
 };
 use crate::system::auth::middleware::AuthUser;
 use crate::system::auth::permissions::Permission;
@@ -362,6 +363,117 @@ pub async fn list_topics(
 ) -> Result<Json<TopicListResponse>, AppError> {
     let topics = crate::modules::writing::articles::db::list_topics(&state.pool).await?;
     Ok(Json(TopicListResponse { topics }))
+}
+
+fn require_admin(user: &AuthUser) -> Result<(), AppError> {
+    user.require_permission(Permission::AdminPanel)
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))
+}
+
+fn validated_topic_name(name: &str) -> Result<&str, AppError> {
+    use crate::system::validation::{MAX_TOPIC_NAME, check_max_len};
+    let name = name.trim();
+    if name.is_empty() {
+        return Err(AppError::BadRequest("Topic name cannot be empty".into()));
+    }
+    check_max_len("Topic name", name, MAX_TOPIC_NAME)?;
+    Ok(name)
+}
+
+/// List topics with per-topic article usage counts
+#[utoipa::path(
+    get,
+    path = "/api/admin/topics",
+    responses(
+        (status = 200, description = "Topics with usage counts", body = TopicAdminListResponse),
+        (status = 403, description = "Insufficient permissions")
+    ),
+    tag = "admin"
+)]
+pub async fn admin_list_topics(
+    State(state): State<AppState>,
+    user: AuthUser,
+) -> Result<Json<TopicAdminListResponse>, AppError> {
+    require_admin(&user)?;
+    let topics = crate::modules::writing::articles::db::admin_list_topics(&state.pool).await?;
+    Ok(Json(TopicAdminListResponse { topics }))
+}
+
+/// Create a topic; the slug is generated from the name and immutable
+#[utoipa::path(
+    post,
+    path = "/api/admin/topics",
+    request_body = CreateTopicRequest,
+    responses(
+        (status = 200, description = "Topic created", body = TopicAdminResponse),
+        (status = 400, description = "Invalid or duplicate name"),
+        (status = 403, description = "Insufficient permissions")
+    ),
+    tag = "admin"
+)]
+pub async fn create_topic(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Json(body): Json<CreateTopicRequest>,
+) -> Result<Json<TopicAdminResponse>, AppError> {
+    require_admin(&user)?;
+    let name = validated_topic_name(&body.name)?;
+    let topic = crate::modules::writing::articles::db::create_topic(&state.pool, name).await?;
+    Ok(Json(topic))
+}
+
+/// Rename a topic (display name only; slug never changes)
+#[utoipa::path(
+    patch,
+    path = "/api/admin/topics/{id}",
+    params(("id" = String, Path, description = "Topic ID")),
+    request_body = UpdateTopicRequest,
+    responses(
+        (status = 200, description = "Topic renamed", body = TopicAdminResponse),
+        (status = 400, description = "Invalid or duplicate name"),
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Topic not found")
+    ),
+    tag = "admin"
+)]
+pub async fn update_topic(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(id): Path<String>,
+    Json(body): Json<UpdateTopicRequest>,
+) -> Result<Json<TopicAdminResponse>, AppError> {
+    require_admin(&user)?;
+    let topic_id =
+        uuid::Uuid::parse_str(&id).map_err(|_| AppError::BadRequest("Invalid topic ID".into()))?;
+    let name = validated_topic_name(&body.name)?;
+    let topic =
+        crate::modules::writing::articles::db::rename_topic(&state.pool, topic_id, name).await?;
+    Ok(Json(topic))
+}
+
+/// Delete a topic; refused while any article still uses it
+#[utoipa::path(
+    delete,
+    path = "/api/admin/topics/{id}",
+    params(("id" = String, Path, description = "Topic ID")),
+    responses(
+        (status = 200, description = "Topic deleted"),
+        (status = 400, description = "Topic still in use"),
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Topic not found")
+    ),
+    tag = "admin"
+)]
+pub async fn delete_topic(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(id): Path<String>,
+) -> Result<Json<serde_json::Value>, AppError> {
+    require_admin(&user)?;
+    let topic_id =
+        uuid::Uuid::parse_str(&id).map_err(|_| AppError::BadRequest("Invalid topic ID".into()))?;
+    crate::modules::writing::articles::db::delete_topic(&state.pool, topic_id).await?;
+    Ok(Json(serde_json::json!({ "deleted": true })))
 }
 
 /// Get a published/archived article by UUID (stable URL)

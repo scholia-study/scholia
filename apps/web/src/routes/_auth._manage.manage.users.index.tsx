@@ -18,7 +18,7 @@ import {
     useGridApiRef,
 } from "@mui/x-data-grid";
 import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -26,12 +26,19 @@ import {
     useListUsers,
     useSetUserRoles,
 } from "../api/admin-users/admin-users";
+import { getMeQueryOptions } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import type { AdminUserRow } from "../api/model";
 import { MANAGEABLE_ROLES, PAID_ROLES } from "../constants";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 
-export const Route = createFileRoute("/_auth/_admin/admin/users/")({
+export const Route = createFileRoute("/_auth/_manage/manage/users/")({
+    beforeLoad: async ({ context }) => {
+        const me = await context.queryClient.fetchQuery(getMeQueryOptions());
+        if (!me?.data?.permissions?.includes("admin_panel")) {
+            throw notFound();
+        }
+    },
     component: UsersDashboard,
 });
 

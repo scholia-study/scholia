@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE topics SET name = $2, updated_at = now() WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Text"]
+        },
+        "nullable": []
+    },
+    "hash": "c2294a79db806e220b1ba94dd8db89c1ee5cd318136f291205935899ff47b987"
+}

@@ -8,9 +8,10 @@ import {
     Typography,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { getMeQueryOptions } from "../api/auth/auth";
 import {
     getGetFeedbackQueryKey,
     getListFeedbackQueryKey,
@@ -20,7 +21,13 @@ import {
 import { FetchError } from "../api/fetcher";
 import type { FeedbackStatus } from "../api/model";
 
-export const Route = createFileRoute("/_auth/_admin/admin/feedback/$id")({
+export const Route = createFileRoute("/_auth/_manage/manage/feedback/$id")({
+    beforeLoad: async ({ context }) => {
+        const me = await context.queryClient.fetchQuery(getMeQueryOptions());
+        if (!me?.data?.permissions?.includes("admin_panel")) {
+            throw notFound();
+        }
+    },
     component: FeedbackDetail,
 });
 
@@ -81,7 +88,7 @@ function FeedbackDetail() {
     return (
         <div className="w-full max-w-3xl mx-auto px-8 py-12">
             <Link
-                to="/admin/feedback"
+                to="/manage/feedback"
                 className="text-xs text-stone-500 no-underline hover:underline"
             >
                 ← Back to feedback

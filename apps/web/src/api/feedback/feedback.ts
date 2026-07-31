@@ -43,9 +43,9 @@ export type listFeedbackResponse401 = {
     status: 401;
 };
 
-export type listFeedbackResponse404 = {
+export type listFeedbackResponse403 = {
     data: void;
-    status: 404;
+    status: 403;
 };
 
 export type listFeedbackResponseSuccess = listFeedbackResponse200 & {
@@ -53,7 +53,7 @@ export type listFeedbackResponseSuccess = listFeedbackResponse200 & {
 };
 export type listFeedbackResponseError = (
     | listFeedbackResponse401
-    | listFeedbackResponse404
+    | listFeedbackResponse403
 ) & {
     headers: Headers;
 };
@@ -382,6 +382,11 @@ export type getFeedbackResponse401 = {
     status: 401;
 };
 
+export type getFeedbackResponse403 = {
+    data: void;
+    status: 403;
+};
+
 export type getFeedbackResponse404 = {
     data: void;
     status: 404;
@@ -393,6 +398,7 @@ export type getFeedbackResponseSuccess = getFeedbackResponse200 & {
 export type getFeedbackResponseError = (
     | getFeedbackResponse400
     | getFeedbackResponse401
+    | getFeedbackResponse403
     | getFeedbackResponse404
 ) & {
     headers: Headers;
@@ -709,6 +715,11 @@ export type updateFeedbackResponse401 = {
     status: 401;
 };
 
+export type updateFeedbackResponse403 = {
+    data: void;
+    status: 403;
+};
+
 export type updateFeedbackResponse404 = {
     data: void;
     status: 404;
@@ -720,6 +731,7 @@ export type updateFeedbackResponseSuccess = updateFeedbackResponse200 & {
 export type updateFeedbackResponseError = (
     | updateFeedbackResponse400
     | updateFeedbackResponse401
+    | updateFeedbackResponse403
     | updateFeedbackResponse404
 ) & {
     headers: Headers;

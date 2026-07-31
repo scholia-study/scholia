@@ -15,7 +15,7 @@ import {
     type GridPaginationModel,
 } from "@mui/x-data-grid";
 import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -24,11 +24,18 @@ import {
     useListArticleReviewers,
     useListArticleReviewQueue,
 } from "../api/article-reviews/article-reviews";
+import { getMeQueryOptions } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import type { ArticleReviewQueueItem } from "../api/model";
 import { useAuth } from "../hooks/useAuth";
 
-export const Route = createFileRoute("/_auth/_editor/editor/article-reviews/")({
+export const Route = createFileRoute("/_auth/_manage/manage/article-reviews/")({
+    beforeLoad: async ({ context }) => {
+        const me = await context.queryClient.fetchQuery(getMeQueryOptions());
+        if (!me?.data?.permissions?.includes("articles_review")) {
+            throw notFound();
+        }
+    },
     component: ArticleReviewQueue,
 });
 

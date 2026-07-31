@@ -5,7 +5,8 @@ use uuid::Uuid;
 
 use crate::modules::writing::articles::models::{
     ArticleDetailResponse, ArticleLimitsResponse, ArticleResponse, BatchSentenceResponseItem,
-    CitationPart, EditorialLabelResponse, SentenceData, SourceContext, TopicResponse,
+    CitationPart, EditorialLabelResponse, SentenceData, SourceContext, TopicAdminResponse,
+    TopicResponse,
 };
 use crate::system::auth::permissions::{Permission, resolve_permissions};
 use crate::system::error::{AppError, SqlxResultExt};
@@ -1713,6 +1714,139 @@ pub async fn get_article_limits_response(
         max_archive,
         current_archive,
     })
+}
+
+pub async fn admin_list_topics(pool: &PgPool) -> Result<Vec<TopicAdminResponse>, AppError> {
+    struct Row {
+        id: Uuid,
+        name: String,
+        slug: String,
+        article_count: i64,
+    }
+    let rows = sqlx::query_as!(
+        Row,
+        r#"SELECT t.id, t.name, t.slug,
+                  COUNT(at.article_id) AS "article_count!"
+           FROM topics t
+           LEFT JOIN article_topics at ON at.topic_id = t.id
+           GROUP BY t.id, t.name, t.slug
+           ORDER BY t.name"#,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(rows
+        .into_iter()
+        .map(|r| TopicAdminResponse {
+            id: r.id.to_string(),
+            name: r.name,
+            slug: r.slug,
+            article_count: r.article_count,
+        })
+        .collect())
+}
+
+pub async fn create_topic(pool: &PgPool, name: &str) -> Result<TopicAdminResponse, AppError> {
+    let slug = generate_slug(name);
+    let exists = sqlx::query_scalar!(
+        r#"SELECT EXISTS(SELECT 1 FROM topics WHERE name = $1 OR slug = $2) AS "exists!""#,
+        name,
+        slug,
+    )
+    .fetch_one(pool)
+    .await?;
+    if exists {
+        return Err(AppError::BadRequest(
+            "A topic with this name already exists".into(),
+        ));
+    }
+
+    let id: Uuid = sqlx::query_scalar!(
+        r#"INSERT INTO topics (name, slug) VALUES ($1, $2) RETURNING id"#,
+        name,
+        slug,
+    )
+    .fetch_one(pool)
+    .await?;
+
+    Ok(TopicAdminResponse {
+        id: id.to_string(),
+        name: name.to_string(),
+        slug,
+        article_count: 0,
+    })
+}
+
+/// Renames the display name; the slug is immutable (it lives in shared
+/// article-filter URLs).
+pub async fn rename_topic(
+    pool: &PgPool,
+    topic_id: Uuid,
+    name: &str,
+) -> Result<TopicAdminResponse, AppError> {
+    let taken = sqlx::query_scalar!(
+        r#"SELECT EXISTS(SELECT 1 FROM topics WHERE name = $1 AND id <> $2) AS "taken!""#,
+        name,
+        topic_id,
+    )
+    .fetch_one(pool)
+    .await?;
+    if taken {
+        return Err(AppError::BadRequest(
+            "A topic with this name already exists".into(),
+        ));
+    }
+
+    let updated = sqlx::query!(
+        r#"UPDATE topics SET name = $2, updated_at = now() WHERE id = $1"#,
+        topic_id,
+        name,
+    )
+    .execute(pool)
+    .await?
+    .rows_affected();
+    if updated == 0 {
+        return Err(AppError::NotFound("Topic not found".into()));
+    }
+
+    let row = sqlx::query!(
+        r#"SELECT t.slug,
+                  (SELECT COUNT(*) FROM article_topics at WHERE at.topic_id = t.id) AS "article_count!"
+           FROM topics t WHERE t.id = $1"#,
+        topic_id,
+    )
+    .fetch_one(pool)
+    .await?;
+
+    Ok(TopicAdminResponse {
+        id: topic_id.to_string(),
+        name: name.to_string(),
+        slug: row.slug,
+        article_count: row.article_count,
+    })
+}
+
+pub async fn delete_topic(pool: &PgPool, topic_id: Uuid) -> Result<(), AppError> {
+    let in_use = sqlx::query_scalar!(
+        r#"SELECT COUNT(*) AS "count!" FROM article_topics WHERE topic_id = $1"#,
+        topic_id,
+    )
+    .fetch_one(pool)
+    .await?;
+    if in_use > 0 {
+        return Err(AppError::BadRequest(format!(
+            "Topic is used by {in_use} article(s); remove it from them first"
+        )));
+    }
+
+    let deleted = sqlx::query!(r#"DELETE FROM topics WHERE id = $1"#, topic_id)
+        .execute(pool)
+        .await?
+        .rows_affected();
+    if deleted == 0 {
+        return Err(AppError::NotFound("Topic not found".into()));
+    }
+    Ok(())
 }
 
 pub async fn list_topics(pool: &PgPool) -> Result<Vec<TopicResponse>, AppError> {

@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT EXISTS(SELECT 1 FROM topics WHERE name = $1 AND id <> $2) AS \"taken!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "taken!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "4b86442864acc4ff9610ed3869e35a2a0d9823db3b9c823343f462276abafb61"
+}

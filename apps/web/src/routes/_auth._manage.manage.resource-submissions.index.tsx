@@ -16,9 +16,10 @@ import {
     type GridPaginationModel,
 } from "@mui/x-data-grid";
 import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { getMeQueryOptions } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
 import type { ResourceSubmissionResponse } from "../api/model";
 import {
@@ -29,8 +30,14 @@ import {
 import { ResourceFormModal } from "../modules/reader";
 
 export const Route = createFileRoute(
-    "/_auth/_editor/editor/resource-submissions/",
+    "/_auth/_manage/manage/resource-submissions/",
 )({
+    beforeLoad: async ({ context }) => {
+        const me = await context.queryClient.fetchQuery(getMeQueryOptions());
+        if (!me?.data?.permissions?.includes("resources_manage")) {
+            throw notFound();
+        }
+    },
     component: SubmissionsQueue,
 });
 
@@ -199,7 +206,7 @@ function SubmissionsQueue() {
     return (
         <div className="w-full max-w-6xl mx-auto px-8 py-12">
             <h1 className="text-2xl font-bold text-stone-900 mb-1">
-                Source submissions
+                Resource submissions
             </h1>
             <p className="text-sm text-stone-500 mb-6">
                 Community-suggested sources awaiting review. Click a row to

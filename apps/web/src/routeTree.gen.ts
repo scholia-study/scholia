@@ -21,8 +21,7 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
-import { Route as AuthAdminRouteImport } from './routes/_auth._admin'
-import { Route as AuthEditorRouteImport } from './routes/_auth._editor'
+import { Route as AuthManageRouteImport } from './routes/_auth._manage'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 import { Route as MembershipIndexRouteImport } from './routes/membership.index'
@@ -36,16 +35,18 @@ import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
 import { Route as UsersByIdIdRouteImport } from './routes/users.by-id.$id'
+import { Route as AuthManageManageIndexRouteImport } from './routes/_auth._manage.manage.index'
 import { Route as AuthArticlesReviewRequestIdRouteImport } from './routes/_auth.articles.review.$requestId'
 import { Route as AuthUserArticlesIndexRouteImport } from './routes/_auth.user.articles.index'
 import { Route as AuthUserArticlesSlugRouteImport } from './routes/_auth.user.articles.$slug'
 import { Route as AuthUserSourcesIndexRouteImport } from './routes/_auth.user.sources.index'
 import { Route as AuthUserSourcesIdRouteImport } from './routes/_auth.user.sources.$id'
-import { Route as AuthAdminAdminFeedbackIndexRouteImport } from './routes/_auth._admin.admin.feedback.index'
-import { Route as AuthAdminAdminFeedbackIdRouteImport } from './routes/_auth._admin.admin.feedback.$id'
-import { Route as AuthAdminAdminUsersIndexRouteImport } from './routes/_auth._admin.admin.users.index'
-import { Route as AuthEditorEditorArticleReviewsIndexRouteImport } from './routes/_auth._editor.editor.article-reviews.index'
-import { Route as AuthEditorEditorResourceSubmissionsIndexRouteImport } from './routes/_auth._editor.editor.resource-submissions.index'
+import { Route as AuthManageManageArticleReviewsIndexRouteImport } from './routes/_auth._manage.manage.article-reviews.index'
+import { Route as AuthManageManageFeedbackIndexRouteImport } from './routes/_auth._manage.manage.feedback.index'
+import { Route as AuthManageManageFeedbackIdRouteImport } from './routes/_auth._manage.manage.feedback.$id'
+import { Route as AuthManageManageResourceSubmissionsIndexRouteImport } from './routes/_auth._manage.manage.resource-submissions.index'
+import { Route as AuthManageManageTopicsIndexRouteImport } from './routes/_auth._manage.manage.topics.index'
+import { Route as AuthManageManageUsersIndexRouteImport } from './routes/_auth._manage.manage.users.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -106,12 +107,8 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthAdminRoute = AuthAdminRouteImport.update({
-  id: '/_admin',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthEditorRoute = AuthEditorRouteImport.update({
-  id: '/_editor',
+const AuthManageRoute = AuthManageRouteImport.update({
+  id: '/_manage',
   getParentRoute: () => AuthRoute,
 } as any)
 const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
@@ -179,6 +176,11 @@ const UsersByIdIdRoute = UsersByIdIdRouteImport.update({
   path: '/users/by-id/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthManageManageIndexRoute = AuthManageManageIndexRouteImport.update({
+  id: '/manage/',
+  path: '/manage/',
+  getParentRoute: () => AuthManageRoute,
+} as any)
 const AuthArticlesReviewRequestIdRoute =
   AuthArticlesReviewRequestIdRouteImport.update({
     id: '/articles/review/$requestId',
@@ -205,35 +207,41 @@ const AuthUserSourcesIdRoute = AuthUserSourcesIdRouteImport.update({
   path: '/user/sources/$id',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthAdminAdminFeedbackIndexRoute =
-  AuthAdminAdminFeedbackIndexRouteImport.update({
-    id: '/admin/feedback/',
-    path: '/admin/feedback/',
-    getParentRoute: () => AuthAdminRoute,
+const AuthManageManageArticleReviewsIndexRoute =
+  AuthManageManageArticleReviewsIndexRouteImport.update({
+    id: '/manage/article-reviews/',
+    path: '/manage/article-reviews/',
+    getParentRoute: () => AuthManageRoute,
   } as any)
-const AuthAdminAdminFeedbackIdRoute =
-  AuthAdminAdminFeedbackIdRouteImport.update({
-    id: '/admin/feedback/$id',
-    path: '/admin/feedback/$id',
-    getParentRoute: () => AuthAdminRoute,
+const AuthManageManageFeedbackIndexRoute =
+  AuthManageManageFeedbackIndexRouteImport.update({
+    id: '/manage/feedback/',
+    path: '/manage/feedback/',
+    getParentRoute: () => AuthManageRoute,
   } as any)
-const AuthAdminAdminUsersIndexRoute =
-  AuthAdminAdminUsersIndexRouteImport.update({
-    id: '/admin/users/',
-    path: '/admin/users/',
-    getParentRoute: () => AuthAdminRoute,
+const AuthManageManageFeedbackIdRoute =
+  AuthManageManageFeedbackIdRouteImport.update({
+    id: '/manage/feedback/$id',
+    path: '/manage/feedback/$id',
+    getParentRoute: () => AuthManageRoute,
   } as any)
-const AuthEditorEditorArticleReviewsIndexRoute =
-  AuthEditorEditorArticleReviewsIndexRouteImport.update({
-    id: '/editor/article-reviews/',
-    path: '/editor/article-reviews/',
-    getParentRoute: () => AuthEditorRoute,
+const AuthManageManageResourceSubmissionsIndexRoute =
+  AuthManageManageResourceSubmissionsIndexRouteImport.update({
+    id: '/manage/resource-submissions/',
+    path: '/manage/resource-submissions/',
+    getParentRoute: () => AuthManageRoute,
   } as any)
-const AuthEditorEditorResourceSubmissionsIndexRoute =
-  AuthEditorEditorResourceSubmissionsIndexRouteImport.update({
-    id: '/editor/resource-submissions/',
-    path: '/editor/resource-submissions/',
-    getParentRoute: () => AuthEditorRoute,
+const AuthManageManageTopicsIndexRoute =
+  AuthManageManageTopicsIndexRouteImport.update({
+    id: '/manage/topics/',
+    path: '/manage/topics/',
+    getParentRoute: () => AuthManageRoute,
+  } as any)
+const AuthManageManageUsersIndexRoute =
+  AuthManageManageUsersIndexRouteImport.update({
+    id: '/manage/users/',
+    path: '/manage/users/',
+    getParentRoute: () => AuthManageRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -264,13 +272,15 @@ export interface FileRoutesByFullPath {
   '/articles/review/$requestId': typeof AuthArticlesReviewRequestIdRoute
   '/user/articles/$slug': typeof AuthUserArticlesSlugRoute
   '/user/sources/$id': typeof AuthUserSourcesIdRoute
+  '/manage/': typeof AuthManageManageIndexRoute
   '/user/articles/': typeof AuthUserArticlesIndexRoute
   '/user/sources/': typeof AuthUserSourcesIndexRoute
-  '/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
-  '/admin/feedback/': typeof AuthAdminAdminFeedbackIndexRoute
-  '/admin/users/': typeof AuthAdminAdminUsersIndexRoute
-  '/editor/article-reviews/': typeof AuthEditorEditorArticleReviewsIndexRoute
-  '/editor/resource-submissions/': typeof AuthEditorEditorResourceSubmissionsIndexRoute
+  '/manage/feedback/$id': typeof AuthManageManageFeedbackIdRoute
+  '/manage/article-reviews/': typeof AuthManageManageArticleReviewsIndexRoute
+  '/manage/feedback/': typeof AuthManageManageFeedbackIndexRoute
+  '/manage/resource-submissions/': typeof AuthManageManageResourceSubmissionsIndexRoute
+  '/manage/topics/': typeof AuthManageManageTopicsIndexRoute
+  '/manage/users/': typeof AuthManageManageUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -300,13 +310,15 @@ export interface FileRoutesByTo {
   '/articles/review/$requestId': typeof AuthArticlesReviewRequestIdRoute
   '/user/articles/$slug': typeof AuthUserArticlesSlugRoute
   '/user/sources/$id': typeof AuthUserSourcesIdRoute
+  '/manage': typeof AuthManageManageIndexRoute
   '/user/articles': typeof AuthUserArticlesIndexRoute
   '/user/sources': typeof AuthUserSourcesIndexRoute
-  '/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
-  '/admin/feedback': typeof AuthAdminAdminFeedbackIndexRoute
-  '/admin/users': typeof AuthAdminAdminUsersIndexRoute
-  '/editor/article-reviews': typeof AuthEditorEditorArticleReviewsIndexRoute
-  '/editor/resource-submissions': typeof AuthEditorEditorResourceSubmissionsIndexRoute
+  '/manage/feedback/$id': typeof AuthManageManageFeedbackIdRoute
+  '/manage/article-reviews': typeof AuthManageManageArticleReviewsIndexRoute
+  '/manage/feedback': typeof AuthManageManageFeedbackIndexRoute
+  '/manage/resource-submissions': typeof AuthManageManageResourceSubmissionsIndexRoute
+  '/manage/topics': typeof AuthManageManageTopicsIndexRoute
+  '/manage/users': typeof AuthManageManageUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -322,8 +334,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
-  '/_auth/_admin': typeof AuthAdminRouteWithChildren
-  '/_auth/_editor': typeof AuthEditorRouteWithChildren
+  '/_auth/_manage': typeof AuthManageRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/membership/checkout': typeof MembershipCheckoutRoute
   '/membership/welcome': typeof MembershipWelcomeRoute
@@ -340,13 +351,15 @@ export interface FileRoutesById {
   '/_auth/articles/review/$requestId': typeof AuthArticlesReviewRequestIdRoute
   '/_auth/user/articles/$slug': typeof AuthUserArticlesSlugRoute
   '/_auth/user/sources/$id': typeof AuthUserSourcesIdRoute
+  '/_auth/_manage/manage/': typeof AuthManageManageIndexRoute
   '/_auth/user/articles/': typeof AuthUserArticlesIndexRoute
   '/_auth/user/sources/': typeof AuthUserSourcesIndexRoute
-  '/_auth/_admin/admin/feedback/$id': typeof AuthAdminAdminFeedbackIdRoute
-  '/_auth/_admin/admin/feedback/': typeof AuthAdminAdminFeedbackIndexRoute
-  '/_auth/_admin/admin/users/': typeof AuthAdminAdminUsersIndexRoute
-  '/_auth/_editor/editor/article-reviews/': typeof AuthEditorEditorArticleReviewsIndexRoute
-  '/_auth/_editor/editor/resource-submissions/': typeof AuthEditorEditorResourceSubmissionsIndexRoute
+  '/_auth/_manage/manage/feedback/$id': typeof AuthManageManageFeedbackIdRoute
+  '/_auth/_manage/manage/article-reviews/': typeof AuthManageManageArticleReviewsIndexRoute
+  '/_auth/_manage/manage/feedback/': typeof AuthManageManageFeedbackIndexRoute
+  '/_auth/_manage/manage/resource-submissions/': typeof AuthManageManageResourceSubmissionsIndexRoute
+  '/_auth/_manage/manage/topics/': typeof AuthManageManageTopicsIndexRoute
+  '/_auth/_manage/manage/users/': typeof AuthManageManageUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -378,13 +391,15 @@ export interface FileRouteTypes {
     | '/articles/review/$requestId'
     | '/user/articles/$slug'
     | '/user/sources/$id'
+    | '/manage/'
     | '/user/articles/'
     | '/user/sources/'
-    | '/admin/feedback/$id'
-    | '/admin/feedback/'
-    | '/admin/users/'
-    | '/editor/article-reviews/'
-    | '/editor/resource-submissions/'
+    | '/manage/feedback/$id'
+    | '/manage/article-reviews/'
+    | '/manage/feedback/'
+    | '/manage/resource-submissions/'
+    | '/manage/topics/'
+    | '/manage/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -414,13 +429,15 @@ export interface FileRouteTypes {
     | '/articles/review/$requestId'
     | '/user/articles/$slug'
     | '/user/sources/$id'
+    | '/manage'
     | '/user/articles'
     | '/user/sources'
-    | '/admin/feedback/$id'
-    | '/admin/feedback'
-    | '/admin/users'
-    | '/editor/article-reviews'
-    | '/editor/resource-submissions'
+    | '/manage/feedback/$id'
+    | '/manage/article-reviews'
+    | '/manage/feedback'
+    | '/manage/resource-submissions'
+    | '/manage/topics'
+    | '/manage/users'
   id:
     | '__root__'
     | '/'
@@ -435,8 +452,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/terms'
     | '/verify-email'
-    | '/_auth/_admin'
-    | '/_auth/_editor'
+    | '/_auth/_manage'
     | '/articles/$slug'
     | '/membership/checkout'
     | '/membership/welcome'
@@ -453,13 +469,15 @@ export interface FileRouteTypes {
     | '/_auth/articles/review/$requestId'
     | '/_auth/user/articles/$slug'
     | '/_auth/user/sources/$id'
+    | '/_auth/_manage/manage/'
     | '/_auth/user/articles/'
     | '/_auth/user/sources/'
-    | '/_auth/_admin/admin/feedback/$id'
-    | '/_auth/_admin/admin/feedback/'
-    | '/_auth/_admin/admin/users/'
-    | '/_auth/_editor/editor/article-reviews/'
-    | '/_auth/_editor/editor/resource-submissions/'
+    | '/_auth/_manage/manage/feedback/$id'
+    | '/_auth/_manage/manage/article-reviews/'
+    | '/_auth/_manage/manage/feedback/'
+    | '/_auth/_manage/manage/resource-submissions/'
+    | '/_auth/_manage/manage/topics/'
+    | '/_auth/_manage/manage/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -573,18 +591,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/_admin': {
-      id: '/_auth/_admin'
+    '/_auth/_manage': {
+      id: '/_auth/_manage'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthAdminRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/_editor': {
-      id: '/_auth/_editor'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthEditorRouteImport
+      preLoaderRoute: typeof AuthManageRouteImport
       parentRoute: typeof AuthRoute
     }
     '/articles/': {
@@ -678,6 +689,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersByIdIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/_manage/manage/': {
+      id: '/_auth/_manage/manage/'
+      path: '/manage'
+      fullPath: '/manage/'
+      preLoaderRoute: typeof AuthManageManageIndexRouteImport
+      parentRoute: typeof AuthManageRoute
+    }
     '/_auth/articles/review/$requestId': {
       id: '/_auth/articles/review/$requestId'
       path: '/articles/review/$requestId'
@@ -713,79 +731,79 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthUserSourcesIdRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/_admin/admin/feedback/': {
-      id: '/_auth/_admin/admin/feedback/'
-      path: '/admin/feedback'
-      fullPath: '/admin/feedback/'
-      preLoaderRoute: typeof AuthAdminAdminFeedbackIndexRouteImport
-      parentRoute: typeof AuthAdminRoute
+    '/_auth/_manage/manage/article-reviews/': {
+      id: '/_auth/_manage/manage/article-reviews/'
+      path: '/manage/article-reviews'
+      fullPath: '/manage/article-reviews/'
+      preLoaderRoute: typeof AuthManageManageArticleReviewsIndexRouteImport
+      parentRoute: typeof AuthManageRoute
     }
-    '/_auth/_admin/admin/feedback/$id': {
-      id: '/_auth/_admin/admin/feedback/$id'
-      path: '/admin/feedback/$id'
-      fullPath: '/admin/feedback/$id'
-      preLoaderRoute: typeof AuthAdminAdminFeedbackIdRouteImport
-      parentRoute: typeof AuthAdminRoute
+    '/_auth/_manage/manage/feedback/': {
+      id: '/_auth/_manage/manage/feedback/'
+      path: '/manage/feedback'
+      fullPath: '/manage/feedback/'
+      preLoaderRoute: typeof AuthManageManageFeedbackIndexRouteImport
+      parentRoute: typeof AuthManageRoute
     }
-    '/_auth/_admin/admin/users/': {
-      id: '/_auth/_admin/admin/users/'
-      path: '/admin/users'
-      fullPath: '/admin/users/'
-      preLoaderRoute: typeof AuthAdminAdminUsersIndexRouteImport
-      parentRoute: typeof AuthAdminRoute
+    '/_auth/_manage/manage/feedback/$id': {
+      id: '/_auth/_manage/manage/feedback/$id'
+      path: '/manage/feedback/$id'
+      fullPath: '/manage/feedback/$id'
+      preLoaderRoute: typeof AuthManageManageFeedbackIdRouteImport
+      parentRoute: typeof AuthManageRoute
     }
-    '/_auth/_editor/editor/article-reviews/': {
-      id: '/_auth/_editor/editor/article-reviews/'
-      path: '/editor/article-reviews'
-      fullPath: '/editor/article-reviews/'
-      preLoaderRoute: typeof AuthEditorEditorArticleReviewsIndexRouteImport
-      parentRoute: typeof AuthEditorRoute
+    '/_auth/_manage/manage/resource-submissions/': {
+      id: '/_auth/_manage/manage/resource-submissions/'
+      path: '/manage/resource-submissions'
+      fullPath: '/manage/resource-submissions/'
+      preLoaderRoute: typeof AuthManageManageResourceSubmissionsIndexRouteImport
+      parentRoute: typeof AuthManageRoute
     }
-    '/_auth/_editor/editor/resource-submissions/': {
-      id: '/_auth/_editor/editor/resource-submissions/'
-      path: '/editor/resource-submissions'
-      fullPath: '/editor/resource-submissions/'
-      preLoaderRoute: typeof AuthEditorEditorResourceSubmissionsIndexRouteImport
-      parentRoute: typeof AuthEditorRoute
+    '/_auth/_manage/manage/topics/': {
+      id: '/_auth/_manage/manage/topics/'
+      path: '/manage/topics'
+      fullPath: '/manage/topics/'
+      preLoaderRoute: typeof AuthManageManageTopicsIndexRouteImport
+      parentRoute: typeof AuthManageRoute
+    }
+    '/_auth/_manage/manage/users/': {
+      id: '/_auth/_manage/manage/users/'
+      path: '/manage/users'
+      fullPath: '/manage/users/'
+      preLoaderRoute: typeof AuthManageManageUsersIndexRouteImport
+      parentRoute: typeof AuthManageRoute
     }
   }
 }
 
-interface AuthAdminRouteChildren {
-  AuthAdminAdminFeedbackIdRoute: typeof AuthAdminAdminFeedbackIdRoute
-  AuthAdminAdminFeedbackIndexRoute: typeof AuthAdminAdminFeedbackIndexRoute
-  AuthAdminAdminUsersIndexRoute: typeof AuthAdminAdminUsersIndexRoute
+interface AuthManageRouteChildren {
+  AuthManageManageIndexRoute: typeof AuthManageManageIndexRoute
+  AuthManageManageFeedbackIdRoute: typeof AuthManageManageFeedbackIdRoute
+  AuthManageManageArticleReviewsIndexRoute: typeof AuthManageManageArticleReviewsIndexRoute
+  AuthManageManageFeedbackIndexRoute: typeof AuthManageManageFeedbackIndexRoute
+  AuthManageManageResourceSubmissionsIndexRoute: typeof AuthManageManageResourceSubmissionsIndexRoute
+  AuthManageManageTopicsIndexRoute: typeof AuthManageManageTopicsIndexRoute
+  AuthManageManageUsersIndexRoute: typeof AuthManageManageUsersIndexRoute
 }
 
-const AuthAdminRouteChildren: AuthAdminRouteChildren = {
-  AuthAdminAdminFeedbackIdRoute: AuthAdminAdminFeedbackIdRoute,
-  AuthAdminAdminFeedbackIndexRoute: AuthAdminAdminFeedbackIndexRoute,
-  AuthAdminAdminUsersIndexRoute: AuthAdminAdminUsersIndexRoute,
+const AuthManageRouteChildren: AuthManageRouteChildren = {
+  AuthManageManageIndexRoute: AuthManageManageIndexRoute,
+  AuthManageManageFeedbackIdRoute: AuthManageManageFeedbackIdRoute,
+  AuthManageManageArticleReviewsIndexRoute:
+    AuthManageManageArticleReviewsIndexRoute,
+  AuthManageManageFeedbackIndexRoute: AuthManageManageFeedbackIndexRoute,
+  AuthManageManageResourceSubmissionsIndexRoute:
+    AuthManageManageResourceSubmissionsIndexRoute,
+  AuthManageManageTopicsIndexRoute: AuthManageManageTopicsIndexRoute,
+  AuthManageManageUsersIndexRoute: AuthManageManageUsersIndexRoute,
 }
 
-const AuthAdminRouteWithChildren = AuthAdminRoute._addFileChildren(
-  AuthAdminRouteChildren,
-)
-
-interface AuthEditorRouteChildren {
-  AuthEditorEditorArticleReviewsIndexRoute: typeof AuthEditorEditorArticleReviewsIndexRoute
-  AuthEditorEditorResourceSubmissionsIndexRoute: typeof AuthEditorEditorResourceSubmissionsIndexRoute
-}
-
-const AuthEditorRouteChildren: AuthEditorRouteChildren = {
-  AuthEditorEditorArticleReviewsIndexRoute:
-    AuthEditorEditorArticleReviewsIndexRoute,
-  AuthEditorEditorResourceSubmissionsIndexRoute:
-    AuthEditorEditorResourceSubmissionsIndexRoute,
-}
-
-const AuthEditorRouteWithChildren = AuthEditorRoute._addFileChildren(
-  AuthEditorRouteChildren,
+const AuthManageRouteWithChildren = AuthManageRoute._addFileChildren(
+  AuthManageRouteChildren,
 )
 
 interface AuthRouteChildren {
-  AuthAdminRoute: typeof AuthAdminRouteWithChildren
-  AuthEditorRoute: typeof AuthEditorRouteWithChildren
+  AuthManageRoute: typeof AuthManageRouteWithChildren
   AuthUserNotesRoute: typeof AuthUserNotesRoute
   AuthUserProfileRoute: typeof AuthUserProfileRoute
   AuthUserQuotationsRoute: typeof AuthUserQuotationsRoute
@@ -797,8 +815,7 @@ interface AuthRouteChildren {
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
-  AuthAdminRoute: AuthAdminRouteWithChildren,
-  AuthEditorRoute: AuthEditorRouteWithChildren,
+  AuthManageRoute: AuthManageRouteWithChildren,
   AuthUserNotesRoute: AuthUserNotesRoute,
   AuthUserProfileRoute: AuthUserProfileRoute,
   AuthUserQuotationsRoute: AuthUserQuotationsRoute,

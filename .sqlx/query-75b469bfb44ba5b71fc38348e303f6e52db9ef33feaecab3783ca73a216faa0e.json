@@ -1,0 +1,23 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT t.slug,\n                  (SELECT COUNT(*) FROM article_topics at WHERE at.topic_id = t.id) AS \"article_count!\"\n           FROM topics t WHERE t.id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 1,
+                "name": "article_count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, null]
+    },
+    "hash": "75b469bfb44ba5b71fc38348e303f6e52db9ef33feaecab3783ca73a216faa0e"
+}
