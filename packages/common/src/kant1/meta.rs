@@ -37,9 +37,13 @@ pub const ABOUT: &str = "This German edition reproduces the text of Kant's Kriti
 pub const BOOK_SLUG_EN: &str = "critique-of-pure-reason-b";
 pub const BOOK_TITLE_EN: &str = "Critique of Pure Reason";
 pub const LANGUAGE_EN: &str = "en";
-pub const SOURCE_EN: &str = "Scholia Community Edition";
+pub const SOURCE_EN: &str = "Scholia Sodalitas";
 pub const YEAR_EN: &str = "2026";
-pub const ABOUT_EN: &str = "This English translation of Kant's Kritik der reinen Vernunft is a Scholia community project. \
+/// The community imprint the translation is published under — the
+/// fellowship (sodalitas) of Scholia contributors.
+pub const PUBLISHER_EN: &str = "Scholia Sodalitas";
+pub const ABOUT_EN: &str = "This English translation of Kant's Kritik der reinen Vernunft is a community project, \
+         published by Scholia Sodalitas — the fellowship of contributors behind Scholia's own editions. \
          It is prepared from the 1911 Akademie-Ausgabe (Band III) facsimile of the second edition (B), \
          which serves as the underlying German text on Scholia.";
 

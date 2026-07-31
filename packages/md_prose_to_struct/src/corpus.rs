@@ -112,7 +112,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         meta::YEAR_EN,
                         meta::ABOUT_EN,
                         Imprint {
-                            publisher: None,
+                            publisher: Some(meta::PUBLISHER_EN),
                             place: None,
                             volume: None,
                             edition: None,
@@ -198,7 +198,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         meta::YEAR_EN,
                         meta::ABOUT_EN,
                         Imprint {
-                            publisher: None,
+                            publisher: Some(meta::PUBLISHER_EN),
                             place: None,
                             volume: None,
                             edition: None,

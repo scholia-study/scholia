@@ -35,10 +35,14 @@ pub const ABOUT: &str = "This German edition reproduces the text of Kant's Kriti
 pub const BOOK_SLUG_EN: &str = "critique-of-the-power-of-judgment";
 pub const BOOK_TITLE_EN: &str = "Critique of the Power of Judgment";
 pub const LANGUAGE_EN: &str = "en";
-pub const SOURCE_EN: &str = "Scholia Community Edition";
+pub const SOURCE_EN: &str = "Scholia Sodalitas";
 pub const YEAR_EN: &str = "2026";
+/// The community imprint the translation is published under — the
+/// fellowship (sodalitas) of Scholia contributors.
+pub const PUBLISHER_EN: &str = "Scholia Sodalitas";
 pub const ABOUT_EN: &str = "This English translation of Kant's Kritik der Urteilskraft (Critique of the Power of \
-         Judgment) is a Scholia community project. It is prepared from the Akademie-Ausgabe (Band V) \
+         Judgment) is a community project, published by Scholia Sodalitas — the fellowship of \
+         contributors behind Scholia's own editions. It is prepared from the Akademie-Ausgabe (Band V) \
          German text, which serves as the underlying source on Scholia.";
 
 // Reference systems: the AA (block) system + the edition (inline) page system.

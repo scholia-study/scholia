@@ -20,6 +20,10 @@ The word *scholia* (singular: *scholion*) refers to the marginal notes that anci
 
 Books are grouped by author. Multiple translations of the same work appear as versions of a single entry — the *Critique of Pure Reason* and the *Kritik der reinen Vernunft* are one work, not two.
 
+## Scholia Sodalitas
+
+Scholia's own translations and modernized reading editions are published under **Scholia Sodalitas** — from the Latin *sodalitas*, a fellowship: the community of contributors who prepare, review, and refine these editions together. When you cite one of them, Scholia Sodalitas is its publisher, in the tradition of the learned societies whose names once stood on the title pages of the great critical editions.
+
 ## A work in progress
 
 Scholia is being built openly. The library starts small and grows with each text added, each translation aligned, and each annotation contributed by its readers.

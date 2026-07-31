@@ -106,7 +106,7 @@ pub fn ibsen1_translation() -> Corpus {
             title: ibsen1::BOOK_TITLE_EN.into(),
             author: ibsen1::AUTHOR.into(),
             language: ibsen1::LANGUAGE_EN.into(),
-            publisher: None,
+            publisher: Some(ibsen1::PUBLISHER_EN.into()),
             publication_place: None,
             original_year: Some(ibsen1::YEAR),
             edition: None,

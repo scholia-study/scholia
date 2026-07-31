@@ -429,6 +429,7 @@ struct CitationSourceData {
     original_year: Option<i16>,
     publisher: Option<String>,
     publication_place: Option<String>,
+    edition: Option<String>,
     /// The persons occupying Chicago's author slot, sorted by position:
     /// the authors, or (per Chicago's author-less rule) the editors, then
     /// the translators. Empty only when the source has none of the three.
@@ -509,11 +510,12 @@ async fn fetch_citation_data(
         original_year: Option<i16>,
         publisher: Option<String>,
         publication_place: Option<String>,
+        edition: Option<String>,
     }
 
     let sources: Vec<SourceRow> = sqlx::query_as!(
         SourceRow,
-        r#"SELECT id, title, publication_year, original_year, publisher, publication_place
+        r#"SELECT id, title, publication_year, original_year, publisher, publication_place, edition
            FROM sources WHERE id = ANY($1)"#,
         source_ids,
     )
@@ -530,6 +532,7 @@ async fn fetch_citation_data(
                 original_year: s.original_year,
                 publisher: s.publisher.clone(),
                 publication_place: s.publication_place.clone(),
+                edition: s.edition.clone(),
                 authors: Vec::new(),
                 author_sort_names: Vec::new(),
                 author_slot_suffix: None,
@@ -651,10 +654,10 @@ fn format_inline_citation(
 /// Format a bibliography entry in Chicago author-date style.
 ///
 /// Two structural variants:
-///   - With a filled author slot: "Last, First. Year. *Title*. Place:
-///     Publisher." When editors or translators fill the slot (no
-///     authors), their role marker follows the names: "Di Giovanni,
-///     George, ed. 2010. *Title*…"
+///   - With a filled author slot: "Last, First. Year. *Title*.
+///     Edition. Place: Publisher." When editors or translators fill the
+///     slot (no authors), their role marker follows the names:
+///     "Di Giovanni, George, ed. 2010. *Title*…"
 ///   - Anonymous (no contributors at all): "*Title*. Year. Place:
 ///     Publisher." — Chicago leads with the title rather than printing
 ///     an "Unknown" placeholder.
@@ -689,6 +692,14 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
     };
 
     let title = &data.title;
+    // Chicago places the edition statement right after the title:
+    // "*Title*. 2nd ed. Place: Publisher."
+    let edition = data.edition.as_deref().unwrap_or("").trim();
+    let edition_suffix = if edition.is_empty() {
+        String::new()
+    } else {
+        format!(" {edition}.")
+    };
     let publisher = data.publisher.as_deref().unwrap_or("").trim();
     let place = data.publication_place.as_deref().unwrap_or("").trim();
     let publication_suffix = match (place.is_empty(), publisher.is_empty()) {
@@ -700,7 +711,7 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
 
     if data.author_sort_names.is_empty() {
         // Anonymous: lead with the title.
-        return format!("<em>{title}</em>. {year_terminated}{publication_suffix}");
+        return format!("<em>{title}</em>. {year_terminated}{edition_suffix}{publication_suffix}");
     }
 
     let author_part = if data.author_sort_names.len() == 1 {
@@ -721,9 +732,11 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
 
     match data.author_slot_suffix.as_deref() {
         Some(suffix) => format!(
-            "{author_part}, {suffix} {year_terminated} <em>{title}</em>.{publication_suffix}"
+            "{author_part}, {suffix} {year_terminated} <em>{title}</em>.{edition_suffix}{publication_suffix}"
         ),
-        None => format!("{author_part}. {year_terminated} <em>{title}</em>.{publication_suffix}"),
+        None => format!(
+            "{author_part}. {year_terminated} <em>{title}</em>.{edition_suffix}{publication_suffix}"
+        ),
     }
 }
 
@@ -742,6 +755,7 @@ mod bibliography_tests {
             original_year: None,
             publisher: publisher.map(String::from),
             publication_place: place.map(String::from),
+            edition: None,
             authors: vec!["Immanuel Kant".to_string()],
             author_sort_names: sort_names.into_iter().map(String::from).collect(),
             author_slot_suffix: None,
@@ -846,6 +860,7 @@ mod bibliography_tests {
             original_year: None,
             publisher: Some("Cambridge University Press".to_string()),
             publication_place: Some("Cambridge".to_string()),
+            edition: None,
             authors: names.iter().map(|(n, _)| n.to_string()).collect(),
             author_sort_names: names.iter().map(|(_, s)| s.to_string()).collect(),
             author_slot_suffix: suffix.map(String::from),
@@ -888,6 +903,36 @@ mod bibliography_tests {
         assert_eq!(
             format_bibliography_entry(&e),
             "Di Giovanni, George, trans. 2010. <em>The Science of Logic</em>. Cambridge: Cambridge University Press."
+        );
+    }
+
+    #[test]
+    fn edition_renders_after_title() {
+        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
+        e.original_year = Some(1787);
+        e.edition = Some("2. Auflage (B)".to_string());
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. (1787) 1911. <em>Kritik der reinen Vernunft</em>. 2. Auflage (B). Berlin: Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn scholia_translation_form() {
+        let e = CitationSourceData {
+            title: "Critique of Pure Reason".to_string(),
+            publication_year: Some(2026),
+            original_year: Some(1787),
+            publisher: Some("Scholia Sodalitas".to_string()),
+            publication_place: None,
+            edition: None,
+            authors: vec!["Immanuel Kant".to_string()],
+            author_sort_names: vec!["Kant, Immanuel".to_string()],
+            author_slot_suffix: None,
+        };
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. (1787) 2026. <em>Critique of Pure Reason</em>. Scholia Sodalitas."
         );
     }
 

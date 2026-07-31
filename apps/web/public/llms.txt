@@ -7,7 +7,9 @@
 Scholia hosts public-domain primary texts (Bible translations, Kant's
 Critiques, Shakespeare, Milton, Ibsen, and more) alongside its own
 translations, modernized reading editions, and scholarly annotations, plus
-reader-contributed articles.
+reader-contributed articles. Scholia's own translations and editions are
+published under its community imprint, Scholia Sodalitas, which appears as
+the publisher in bibliographic citations of these editions.
 
 ## Content
 

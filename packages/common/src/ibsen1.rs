@@ -49,12 +49,15 @@ pub const LANGUAGE_EN: &str = "en";
 /// translation), distinct from the source's 1873 so the two editions don't
 /// collide on the `sources (title, source_type, publication_year)` unique key.
 pub const YEAR_EN: i16 = 2026;
+/// The community imprint the translation is published under (matches
+/// the Kant EN editions).
+pub const PUBLISHER_EN: &str = "Scholia Sodalitas";
 pub const TRANSLATED_DIR: &str = "assets/ibsen1/curated/md_modernized_translated";
 pub const SOURCE_EN: &str = "English reading translation prepared from the modern Norwegian Bokmål \
 text; the underlying source is Ibsen's 1873 first edition (Henrik Ibsens Skrifter).";
 pub const ABOUT_EN: &str = "An English reading translation of Henrik Ibsen's Emperor and Galilean \
 (Kejser og Galilæer, 1873), prepared from the modern Norwegian Bokmål edition that serves as the \
-underlying text on Scholia. A Scholia community project; corrections are welcome.";
+underlying text on Scholia. A community project published by Scholia Sodalitas; corrections are welcome.";
 
 /// The `1873` page reference system — the printed-page markers (`{{{ N }}}`) of
 /// the first edition, and drama's **default** citation (`p. N`).
