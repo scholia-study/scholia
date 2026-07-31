@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-kant3-05cca00a13ed
+  name: ingest-kant3-19548639c5dc
   labels:
     ingest: kant3
   annotations:
@@ -31,7 +31,7 @@ spec:
             - name: CORPUS
               value: kant3
             - name: DERIVED_HASH
-              value: "05cca00a13ed"
+              value: "19548639c5dc"
             - name: NTFY_URL
               valueFrom:
                 secretKeyRef:
