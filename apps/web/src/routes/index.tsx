@@ -1,3 +1,5 @@
+import PlayCircleOutlined from "@mui/icons-material/PlayCircleOutlined";
+import { Dialog } from "@mui/material";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -466,6 +468,7 @@ function AboutPanel({
                 sanctuary for careful study, developing original insights, and
                 building collaborative commentary.
             </p>
+            <IntroVideoButton />
             {stats && (
                 <p className="text-xs text-stone-400 mt-4 pt-4 border-t border-stone-200">
                     {formatStats(stats)}
@@ -486,6 +489,49 @@ function AboutPanel({
                 }
             />
         </div>
+    );
+}
+
+/**
+ * "Watch the introduction" button + YouTube lightbox. The iframe only
+ * exists while the dialog is open (MUI unmounts closed dialogs), so
+ * nothing loads from YouTube before the click and playback stops on
+ * close. nocookie host keeps the pre-consent surface clean.
+ */
+function IntroVideoButton() {
+    const [open, setOpen] = useState(false);
+    return (
+        <>
+            <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="mt-4 mx-auto flex items-center gap-1.5 text-sm px-3 py-1.5 border border-stone-300 rounded bg-white text-stone-700 hover:bg-stone-50 hover:border-stone-400 transition-colors cursor-pointer"
+            >
+                <PlayCircleOutlined
+                    sx={{ fontSize: 18 }}
+                    className="text-amber-700"
+                />
+                Watch the introduction
+            </button>
+            <Dialog
+                open={open}
+                onClose={() => setOpen(false)}
+                maxWidth="md"
+                fullWidth
+                slotProps={{ paper: { sx: { bgcolor: "black" } } }}
+            >
+                <div className="relative aspect-video">
+                    <iframe
+                        src="https://www.youtube-nocookie.com/embed/81kjGzeWAs8?autoplay=1"
+                        title="Introduction to Scholia"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        className="absolute inset-0 h-full w-full border-0"
+                    />
+                </div>
+            </Dialog>
+        </>
     );
 }
 
