@@ -21,7 +21,7 @@ const byAuthor = (author: string) => (author ? ` by ${author}` : "");
 
 export const SEO_COPY = {
     library: {
-        title: "Scholia — read classic texts with notes and translations",
+        title: "Scholia | Read and annotate classic texts, sentence by sentence",
         description:
             "A hermeneutical workspace for deep study: the Bible, Kant, Shakespeare, " +
             "Milton and more, structured to the sentence and linked across " +
