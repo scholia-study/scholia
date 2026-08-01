@@ -100,6 +100,15 @@ spec:
                   name: ntfy
                   key: NTFY_URL
                   optional: true
+            # Registration bot gate. Absent secret = gate off; enabling
+            # Turnstile is creating this secret (+ the sitekey in the web
+            # config profile) and restarting — no manifest change.
+            - name: TURNSTILE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: turnstile
+                  key: TURNSTILE_SECRET_KEY
+                  optional: true
           envFrom:
             # Pulls every other env var the API needs:
             # RESEND_API_KEY, FROM_EMAIL, BACKEND_URL, FRONTEND_URL,

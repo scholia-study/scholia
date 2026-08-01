@@ -9,4 +9,11 @@ export interface RegisterRequest {
     display_name: string;
     email: string;
     password: string;
+    /**
+     * Cloudflare Turnstile response token. Required (and verified
+     * server-side) only when the deployment has the bot gate enabled;
+     * ignored otherwise.
+     * @nullable
+     */
+    turnstile_token?: string | null;
 }

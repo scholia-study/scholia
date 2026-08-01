@@ -6926,6 +6926,10 @@
                     },
                     "password": {
                         "type": "string"
+                    },
+                    "turnstile_token": {
+                        "type": ["string", "null"],
+                        "description": "Cloudflare Turnstile response token. Required (and verified\nserver-side) only when the deployment has the bot gate enabled;\nignored otherwise."
                     }
                 }
             },

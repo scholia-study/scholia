@@ -33,6 +33,11 @@ pub struct RegisterRequest {
     pub email: String,
     pub display_name: String,
     pub password: String,
+    /// Cloudflare Turnstile response token. Required (and verified
+    /// server-side) only when the deployment has the bot gate enabled;
+    /// ignored otherwise.
+    #[serde(default)]
+    pub turnstile_token: Option<String>,
 }
 
 #[derive(Deserialize, ToSchema)]
@@ -232,6 +237,18 @@ pub async fn register(
             format!("Password must be {MAX_PASSWORD} characters or fewer"),
         )
             .into_response();
+    }
+
+    // Bot gate
+    if let Some(secret) = &state.config.turnstile_secret_key {
+        let token = body.turnstile_token.as_deref().unwrap_or("");
+        if !crate::system::turnstile::verify(secret, token).await {
+            return (
+                StatusCode::BAD_REQUEST,
+                "Verification challenge failed. Please try again.",
+            )
+                .into_response();
+        }
     }
 
     // Email circuit breaker — checked before any expensive work.

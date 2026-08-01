@@ -2,8 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useRegister } from "../api/auth/auth";
 import { FetchError } from "../api/fetcher";
+import { Turnstile } from "../components/Turnstile";
 import config from "../config";
 import { SEO_COPY, seoHead } from "../modules/seo";
+
+const turnstileEnabled = Boolean(config.TURNSTILE_SITE_KEY);
 
 export const Route = createFileRoute("/register")({
     head: () =>
@@ -21,6 +24,10 @@ function RegisterPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    // Tokens are single-use; remount the widget after a failed submit so
+    // the retry gets a fresh one.
+    const [turnstileGeneration, setTurnstileGeneration] = useState(0);
 
     const registerMutation = useRegister();
 
@@ -29,10 +36,19 @@ function RegisterPage() {
         setError("");
         try {
             await registerMutation.mutateAsync({
-                data: { email, display_name: displayName, password },
+                data: {
+                    email,
+                    display_name: displayName,
+                    password,
+                    turnstile_token: turnstileToken ?? undefined,
+                },
             });
             setSuccess(true);
         } catch (err) {
+            if (turnstileEnabled) {
+                setTurnstileToken(null);
+                setTurnstileGeneration((n) => n + 1);
+            }
             if (err instanceof FetchError) {
                 setError(err.message);
             } else {
@@ -129,9 +145,19 @@ function RegisterPage() {
                             At least 8 characters
                         </p>
                     </div>
+                    {turnstileEnabled && (
+                        <Turnstile
+                            key={turnstileGeneration}
+                            siteKey={config.TURNSTILE_SITE_KEY}
+                            onToken={setTurnstileToken}
+                        />
+                    )}
                     <button
                         type="submit"
-                        disabled={registerMutation.isPending}
+                        disabled={
+                            registerMutation.isPending ||
+                            (turnstileEnabled && !turnstileToken)
+                        }
                         className="w-full py-2 rounded bg-stone-800 text-white hover:bg-stone-700 transition-colors disabled:opacity-50"
                     >
                         {registerMutation.isPending

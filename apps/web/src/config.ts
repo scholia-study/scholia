@@ -47,6 +47,14 @@ interface EnvConfig {
     SENTRY_DSN: string;
     POSTHOG_TOKEN: string;
     POSTHOG_HOST: string;
+    /**
+     * Cloudflare Turnstile sitekey (public) for the registration bot
+     * gate. Empty = widget hidden and no token sent; must match the
+     * TURNSTILE_SECRET_KEY configured on the API for that environment.
+     * Cloudflare's test pair for local runs: sitekey
+     * 1x00000000000000000000AA / secret 1x0000000000000000000000000000000AA.
+     */
+    TURNSTILE_SITE_KEY: string;
 }
 
 const _sentryDsnDev =
@@ -59,6 +67,8 @@ const _posthogHost = "https://eu.i.posthog.com";
 
 const _stripePubKeyTest =
     "pk_test_51TSz7zPDKNSxTB0E4aksjZoEVrCnhH5z6o78uTWhfwlCEqj2jmpBZd6B0miol0lM6xNQh1PVF68Sg3JMEtAuElkW00tReLfYms";
+const _turnstileSiteKey = "0x4AAAAAAEDtKau9vgXX0_D9";
+
 const _stripePubKeyLive =
     "pk_live_51TSz7zPDKNSxTB0ElTBxJBmkq0TiidSoEwnhtK7a9oyUsxQ1A72Lw345ieMwykOTr8CHd8BVmSHR0WKYPOOFp9Dk00xGvys1oh";
 
@@ -71,6 +81,7 @@ const envConfigs = {
         SENTRY_DSN: "",
         POSTHOG_TOKEN: "",
         POSTHOG_HOST: _posthogHost,
+        TURNSTILE_SITE_KEY: "",
     },
     "local-proxy": {
         // Same-origin API: the local proxy (apps/proxy) terminates :8000
@@ -85,6 +96,7 @@ const envConfigs = {
         SENTRY_DSN: "",
         POSTHOG_TOKEN: "",
         POSTHOG_HOST: _posthogHost,
+        TURNSTILE_SITE_KEY: "",
     },
     dev: {
         PROFILE: "dev",
@@ -94,6 +106,7 @@ const envConfigs = {
         SENTRY_DSN: _sentryDsnDev,
         POSTHOG_TOKEN: _posthogToken,
         POSTHOG_HOST: _posthogHost,
+        TURNSTILE_SITE_KEY: _turnstileSiteKey,
     },
     prod: {
         PROFILE: "prod",
@@ -103,6 +116,7 @@ const envConfigs = {
         SENTRY_DSN: _sentryDsnProd,
         POSTHOG_TOKEN: _posthogToken,
         POSTHOG_HOST: _posthogHost,
+        TURNSTILE_SITE_KEY: _turnstileSiteKey,
     },
 } as const satisfies Record<Profile, EnvConfig>;
 
