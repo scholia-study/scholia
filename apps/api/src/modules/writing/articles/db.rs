@@ -774,224 +774,6 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
     }
 }
 
-#[cfg(test)]
-mod bibliography_tests {
-    use super::*;
-
-    fn entry(
-        place: Option<&str>,
-        publisher: Option<&str>,
-        sort_names: Vec<&str>,
-    ) -> CitationSourceData {
-        CitationSourceData {
-            title: "Kritik der reinen Vernunft".to_string(),
-            publication_year: Some(1911),
-            original_year: None,
-            publisher: publisher.map(String::from),
-            publication_place: place.map(String::from),
-            edition: None,
-            authors: vec!["Immanuel Kant".to_string()],
-            author_sort_names: sort_names.into_iter().map(String::from).collect(),
-            author_slot_suffix: None,
-        }
-    }
-
-    #[test]
-    fn place_and_publisher() {
-        let e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Berlin: Georg Reimer."
-        );
-    }
-
-    #[test]
-    fn publisher_only() {
-        let e = entry(None, Some("Georg Reimer"), vec!["Kant, Immanuel"]);
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Georg Reimer."
-        );
-    }
-
-    #[test]
-    fn place_only() {
-        let e = entry(Some("Berlin"), None, vec!["Kant, Immanuel"]);
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Berlin."
-        );
-    }
-
-    #[test]
-    fn neither_place_nor_publisher() {
-        let e = entry(None, None, vec!["Kant, Immanuel"]);
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>."
-        );
-    }
-
-    #[test]
-    fn anonymous_with_place_and_publisher() {
-        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec![]);
-        e.authors.clear();
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "<em>Kritik der reinen Vernunft</em>. 1911. Berlin: Georg Reimer."
-        );
-    }
-
-    #[test]
-    fn reprint_year_form() {
-        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
-        e.original_year = Some(1787);
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Kant, Immanuel. (1787) 1911. <em>Kritik der reinen Vernunft</em>. Berlin: Georg Reimer."
-        );
-    }
-
-    #[test]
-    fn equal_original_year_uses_plain_form() {
-        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
-        e.original_year = Some(1911);
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Berlin: Georg Reimer."
-        );
-    }
-
-    #[test]
-    fn inline_citation_reprint_form() {
-        let id = Uuid::nil();
-        let mut map = HashMap::new();
-        let mut e = entry(None, None, vec!["Kant, Immanuel"]);
-        e.original_year = Some(1787);
-        map.insert(id, e);
-
-        let entries = vec![(id.to_string(), "B 132".to_string())];
-        assert_eq!(
-            format_inline_citation(&entries, &map),
-            "(Kant [1787] 1911, B 132)"
-        );
-    }
-
-    #[test]
-    fn inline_citation_plain_form() {
-        let id = Uuid::nil();
-        let mut map = HashMap::new();
-        map.insert(id, entry(None, None, vec!["Kant, Immanuel"]));
-
-        let entries = vec![(id.to_string(), String::new())];
-        assert_eq!(format_inline_citation(&entries, &map), "(Kant 1911)");
-    }
-
-    fn slot_entry(names: &[(&str, &str)], suffix: Option<&str>) -> CitationSourceData {
-        CitationSourceData {
-            title: "The Science of Logic".to_string(),
-            publication_year: Some(2010),
-            original_year: None,
-            publisher: Some("Cambridge University Press".to_string()),
-            publication_place: Some("Cambridge".to_string()),
-            edition: None,
-            authors: names.iter().map(|(n, _)| n.to_string()).collect(),
-            author_sort_names: names.iter().map(|(_, s)| s.to_string()).collect(),
-            author_slot_suffix: suffix.map(String::from),
-        }
-    }
-
-    #[test]
-    fn editor_fills_author_slot_with_ed_marker() {
-        let e = slot_entry(
-            &[("George Di Giovanni", "Di Giovanni, George")],
-            Some("ed."),
-        );
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Di Giovanni, George, ed. 2010. <em>The Science of Logic</em>. Cambridge: Cambridge University Press."
-        );
-    }
-
-    #[test]
-    fn two_editors_use_eds_marker() {
-        let e = slot_entry(
-            &[
-                ("George Di Giovanni", "Di Giovanni, George"),
-                ("Henry Allison", "Allison, Henry"),
-            ],
-            Some("eds."),
-        );
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Di Giovanni, George, and Henry Allison, eds. 2010. <em>The Science of Logic</em>. Cambridge: Cambridge University Press."
-        );
-    }
-
-    #[test]
-    fn translator_fills_author_slot_with_trans_marker() {
-        let e = slot_entry(
-            &[("George Di Giovanni", "Di Giovanni, George")],
-            Some("trans."),
-        );
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Di Giovanni, George, trans. 2010. <em>The Science of Logic</em>. Cambridge: Cambridge University Press."
-        );
-    }
-
-    #[test]
-    fn edition_renders_after_title() {
-        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
-        e.original_year = Some(1787);
-        e.edition = Some("2. Auflage (B)".to_string());
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Kant, Immanuel. (1787) 1911. <em>Kritik der reinen Vernunft</em>. 2. Auflage (B). Berlin: Georg Reimer."
-        );
-    }
-
-    #[test]
-    fn scholia_translation_form() {
-        let e = CitationSourceData {
-            title: "Critique of Pure Reason".to_string(),
-            publication_year: Some(2026),
-            original_year: Some(1787),
-            publisher: Some("Scholia Sodalitas".to_string()),
-            publication_place: None,
-            edition: None,
-            authors: vec!["Immanuel Kant".to_string()],
-            author_sort_names: vec!["Kant, Immanuel".to_string()],
-            author_slot_suffix: None,
-        };
-        assert_eq!(
-            format_bibliography_entry(&e),
-            "Kant, Immanuel. (1787) 2026. <em>Critique of Pure Reason</em>. Scholia Sodalitas."
-        );
-    }
-
-    #[test]
-    fn inline_citation_slot_fallback_has_no_role_marker() {
-        let id = Uuid::nil();
-        let mut map = HashMap::new();
-        map.insert(
-            id,
-            slot_entry(
-                &[("George Di Giovanni", "Di Giovanni, George")],
-                Some("ed."),
-            ),
-        );
-
-        let entries = vec![(id.to_string(), "94".to_string())];
-        // Inline surnames come from sort_name, so particle surnames
-        // ("Di Giovanni") survive intact.
-        assert_eq!(
-            format_inline_citation(&entries, &map),
-            "(Di Giovanni 2010, 94)"
-        );
-    }
-}
-
 /// Extract last name from a full name
 fn last_name(name: &str) -> String {
     name.split_whitespace().last().unwrap_or(name).to_string()
@@ -2222,4 +2004,222 @@ pub async fn batch_get_sentences(
             })
             .collect(),
     })
+}
+
+#[cfg(test)]
+mod bibliography_tests {
+    use super::*;
+
+    fn entry(
+        place: Option<&str>,
+        publisher: Option<&str>,
+        sort_names: Vec<&str>,
+    ) -> CitationSourceData {
+        CitationSourceData {
+            title: "Kritik der reinen Vernunft".to_string(),
+            publication_year: Some(1911),
+            original_year: None,
+            publisher: publisher.map(String::from),
+            publication_place: place.map(String::from),
+            edition: None,
+            authors: vec!["Immanuel Kant".to_string()],
+            author_sort_names: sort_names.into_iter().map(String::from).collect(),
+            author_slot_suffix: None,
+        }
+    }
+
+    #[test]
+    fn place_and_publisher() {
+        let e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Berlin: Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn publisher_only() {
+        let e = entry(None, Some("Georg Reimer"), vec!["Kant, Immanuel"]);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn place_only() {
+        let e = entry(Some("Berlin"), None, vec!["Kant, Immanuel"]);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Berlin."
+        );
+    }
+
+    #[test]
+    fn neither_place_nor_publisher() {
+        let e = entry(None, None, vec!["Kant, Immanuel"]);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>."
+        );
+    }
+
+    #[test]
+    fn anonymous_with_place_and_publisher() {
+        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec![]);
+        e.authors.clear();
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "<em>Kritik der reinen Vernunft</em>. 1911. Berlin: Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn reprint_year_form() {
+        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
+        e.original_year = Some(1787);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. (1787) 1911. <em>Kritik der reinen Vernunft</em>. Berlin: Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn equal_original_year_uses_plain_form() {
+        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
+        e.original_year = Some(1911);
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. 1911. <em>Kritik der reinen Vernunft</em>. Berlin: Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn inline_citation_reprint_form() {
+        let id = Uuid::nil();
+        let mut map = HashMap::new();
+        let mut e = entry(None, None, vec!["Kant, Immanuel"]);
+        e.original_year = Some(1787);
+        map.insert(id, e);
+
+        let entries = vec![(id.to_string(), "B 132".to_string())];
+        assert_eq!(
+            format_inline_citation(&entries, &map),
+            "(Kant [1787] 1911, B 132)"
+        );
+    }
+
+    #[test]
+    fn inline_citation_plain_form() {
+        let id = Uuid::nil();
+        let mut map = HashMap::new();
+        map.insert(id, entry(None, None, vec!["Kant, Immanuel"]));
+
+        let entries = vec![(id.to_string(), String::new())];
+        assert_eq!(format_inline_citation(&entries, &map), "(Kant 1911)");
+    }
+
+    fn slot_entry(names: &[(&str, &str)], suffix: Option<&str>) -> CitationSourceData {
+        CitationSourceData {
+            title: "The Science of Logic".to_string(),
+            publication_year: Some(2010),
+            original_year: None,
+            publisher: Some("Cambridge University Press".to_string()),
+            publication_place: Some("Cambridge".to_string()),
+            edition: None,
+            authors: names.iter().map(|(n, _)| n.to_string()).collect(),
+            author_sort_names: names.iter().map(|(_, s)| s.to_string()).collect(),
+            author_slot_suffix: suffix.map(String::from),
+        }
+    }
+
+    #[test]
+    fn editor_fills_author_slot_with_ed_marker() {
+        let e = slot_entry(
+            &[("George Di Giovanni", "Di Giovanni, George")],
+            Some("ed."),
+        );
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Di Giovanni, George, ed. 2010. <em>The Science of Logic</em>. Cambridge: Cambridge University Press."
+        );
+    }
+
+    #[test]
+    fn two_editors_use_eds_marker() {
+        let e = slot_entry(
+            &[
+                ("George Di Giovanni", "Di Giovanni, George"),
+                ("Henry Allison", "Allison, Henry"),
+            ],
+            Some("eds."),
+        );
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Di Giovanni, George, and Henry Allison, eds. 2010. <em>The Science of Logic</em>. Cambridge: Cambridge University Press."
+        );
+    }
+
+    #[test]
+    fn translator_fills_author_slot_with_trans_marker() {
+        let e = slot_entry(
+            &[("George Di Giovanni", "Di Giovanni, George")],
+            Some("trans."),
+        );
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Di Giovanni, George, trans. 2010. <em>The Science of Logic</em>. Cambridge: Cambridge University Press."
+        );
+    }
+
+    #[test]
+    fn edition_renders_after_title() {
+        let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
+        e.original_year = Some(1787);
+        e.edition = Some("2. Auflage (B)".to_string());
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. (1787) 1911. <em>Kritik der reinen Vernunft</em>. 2. Auflage (B). Berlin: Georg Reimer."
+        );
+    }
+
+    #[test]
+    fn scholia_translation_form() {
+        let e = CitationSourceData {
+            title: "Critique of Pure Reason".to_string(),
+            publication_year: Some(2026),
+            original_year: Some(1787),
+            publisher: Some("Scholia Sodalitas".to_string()),
+            publication_place: None,
+            edition: None,
+            authors: vec!["Immanuel Kant".to_string()],
+            author_sort_names: vec!["Kant, Immanuel".to_string()],
+            author_slot_suffix: None,
+        };
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Kant, Immanuel. (1787) 2026. <em>Critique of Pure Reason</em>. Scholia Sodalitas."
+        );
+    }
+
+    #[test]
+    fn inline_citation_slot_fallback_has_no_role_marker() {
+        let id = Uuid::nil();
+        let mut map = HashMap::new();
+        map.insert(
+            id,
+            slot_entry(
+                &[("George Di Giovanni", "Di Giovanni, George")],
+                Some("ed."),
+            ),
+        );
+
+        let entries = vec![(id.to_string(), "94".to_string())];
+        // Inline surnames come from sort_name, so particle surnames
+        // ("Di Giovanni") survive intact.
+        assert_eq!(
+            format_inline_citation(&entries, &map),
+            "(Di Giovanni 2010, 94)"
+        );
+    }
 }
