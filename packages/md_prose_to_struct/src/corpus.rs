@@ -53,34 +53,32 @@ pub struct Corpus {
     pub marker_labels: (&'static str, &'static str),
 }
 
+struct SystemSpec {
+    slug: &'static str,
+    label: &'static str,
+    template: &'static str,
+    priority: Option<i16>,
+}
+
 // Default-citation system per corpus, matching scholarly convention:
 // kant1 cites by B pagination ("B 132"), kant3 by AA volume page
 // ("AA V 212"). The sibling system stays citation-capable but
 // non-default (priority None).
-fn systems(
-    aa_slug: &str,
-    aa_label: &str,
-    aa_template: &str,
-    aa_priority: Option<i16>,
-    ed_slug: &str,
-    ed_label: &str,
-    ed_template: &str,
-    ed_priority: Option<i16>,
-) -> Vec<ReferenceSystemData> {
+fn systems(aa: SystemSpec, edition: SystemSpec) -> Vec<ReferenceSystemData> {
     vec![
         ReferenceSystemData {
-            slug: aa_slug.to_string(),
-            label: aa_label.to_string(),
+            slug: aa.slug.to_string(),
+            label: aa.label.to_string(),
             ref_type: "block".to_string(),
-            cite_priority: aa_priority,
-            cite_template: Some(aa_template.to_string()),
+            cite_priority: aa.priority,
+            cite_template: Some(aa.template.to_string()),
         },
         ReferenceSystemData {
-            slug: ed_slug.to_string(),
-            label: ed_label.to_string(),
+            slug: edition.slug.to_string(),
+            label: edition.label.to_string(),
             ref_type: "inline".to_string(),
-            cite_priority: ed_priority,
-            cite_template: Some(ed_template.to_string()),
+            cite_priority: edition.priority,
+            cite_template: Some(edition.template.to_string()),
         },
     ]
 }
@@ -97,49 +95,60 @@ struct Imprint {
     original_year: Option<i16>,
 }
 
+struct BookSpec {
+    slug: &'static str,
+    title: &'static str,
+    author: &'static str,
+    language: &'static str,
+    source: &'static str,
+    year: &'static str,
+    about: &'static str,
+    imprint: Imprint,
+}
+
 pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
     match name {
         "kant1" => {
             use common::kant1::{filenames, filenames_en, meta, toc, toc_en, toc_mod};
             let (book, figure_label, output_file) = if translation {
                 (
-                    book_data(
-                        meta::BOOK_SLUG_EN,
-                        meta::BOOK_TITLE_EN,
-                        meta::AUTHOR,
-                        meta::LANGUAGE_EN,
-                        meta::SOURCE_EN,
-                        meta::YEAR_EN,
-                        meta::ABOUT_EN,
-                        Imprint {
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG_EN,
+                        title: meta::BOOK_TITLE_EN,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE_EN,
+                        source: meta::SOURCE_EN,
+                        year: meta::YEAR_EN,
+                        about: meta::ABOUT_EN,
+                        imprint: Imprint {
                             publisher: Some(meta::PUBLISHER_EN),
                             place: None,
                             volume: None,
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
                         },
-                    ),
+                    }),
                     "Figure",
                     meta::TRANSLATION_OUTPUT_FILE,
                 )
             } else {
                 (
-                    book_data(
-                        meta::BOOK_SLUG,
-                        meta::BOOK_TITLE,
-                        meta::AUTHOR,
-                        meta::LANGUAGE,
-                        meta::SOURCE,
-                        meta::YEAR,
-                        meta::ABOUT,
-                        Imprint {
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG,
+                        title: meta::BOOK_TITLE,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE,
+                        source: meta::SOURCE,
+                        year: meta::YEAR,
+                        about: meta::ABOUT,
+                        imprint: Imprint {
                             publisher: Some(meta::PUBLISHER),
                             place: Some(meta::PUBLICATION_PLACE),
                             volume: Some(meta::VOLUME),
                             edition: Some(meta::EDITION),
                             original_year: Some(meta::ORIGINAL_YEAR),
                         },
-                    ),
+                    }),
                     "Abbildung",
                     meta::OUTPUT_FILE,
                 )
@@ -148,22 +157,26 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 name: "kant1",
                 book,
                 reference_systems: systems(
-                    meta::AA_SYSTEM_SLUG,
-                    if translation {
-                        meta::AA_SYSTEM_LABEL_EN
-                    } else {
-                        meta::AA_SYSTEM_LABEL
+                    SystemSpec {
+                        slug: meta::AA_SYSTEM_SLUG,
+                        label: if translation {
+                            meta::AA_SYSTEM_LABEL_EN
+                        } else {
+                            meta::AA_SYSTEM_LABEL
+                        },
+                        template: meta::AA_CITE_TEMPLATE,
+                        priority: None,
                     },
-                    meta::AA_CITE_TEMPLATE,
-                    None,
-                    meta::EDITION_SYSTEM_SLUG,
-                    if translation {
-                        meta::EDITION_SYSTEM_LABEL_EN
-                    } else {
-                        meta::EDITION_SYSTEM_LABEL
+                    SystemSpec {
+                        slug: meta::EDITION_SYSTEM_SLUG,
+                        label: if translation {
+                            meta::EDITION_SYSTEM_LABEL_EN
+                        } else {
+                            meta::EDITION_SYSTEM_LABEL
+                        },
+                        template: meta::EDITION_CITE_TEMPLATE,
+                        priority: Some(0),
                     },
-                    meta::EDITION_CITE_TEMPLATE,
-                    Some(0),
                 ),
                 toc_reviewed: toc::flat_toc_entries(),
                 toc_modernized: toc_mod::flat_toc_entries(),
@@ -189,43 +202,43 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
             use common::kant3::{filenames, meta, toc, toc_mod};
             let (book, figure_label, output_file) = if translation {
                 (
-                    book_data(
-                        meta::BOOK_SLUG_EN,
-                        meta::BOOK_TITLE_EN,
-                        meta::AUTHOR,
-                        meta::LANGUAGE_EN,
-                        meta::SOURCE_EN,
-                        meta::YEAR_EN,
-                        meta::ABOUT_EN,
-                        Imprint {
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG_EN,
+                        title: meta::BOOK_TITLE_EN,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE_EN,
+                        source: meta::SOURCE_EN,
+                        year: meta::YEAR_EN,
+                        about: meta::ABOUT_EN,
+                        imprint: Imprint {
                             publisher: Some(meta::PUBLISHER_EN),
                             place: None,
                             volume: None,
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
                         },
-                    ),
+                    }),
                     "Figure",
                     meta::TRANSLATION_OUTPUT_FILE,
                 )
             } else {
                 (
-                    book_data(
-                        meta::BOOK_SLUG,
-                        meta::BOOK_TITLE,
-                        meta::AUTHOR,
-                        meta::LANGUAGE,
-                        meta::SOURCE,
-                        meta::YEAR,
-                        meta::ABOUT,
-                        Imprint {
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG,
+                        title: meta::BOOK_TITLE,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE,
+                        source: meta::SOURCE,
+                        year: meta::YEAR,
+                        about: meta::ABOUT,
+                        imprint: Imprint {
                             publisher: Some(meta::PUBLISHER),
                             place: Some(meta::PUBLICATION_PLACE),
                             volume: Some(meta::VOLUME),
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
                         },
-                    ),
+                    }),
                     "Abbildung",
                     meta::OUTPUT_FILE,
                 )
@@ -234,22 +247,26 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 name: "kant3",
                 book,
                 reference_systems: systems(
-                    meta::AA_SYSTEM_SLUG,
-                    if translation {
-                        meta::AA_SYSTEM_LABEL_EN
-                    } else {
-                        meta::AA_SYSTEM_LABEL
+                    SystemSpec {
+                        slug: meta::AA_SYSTEM_SLUG,
+                        label: if translation {
+                            meta::AA_SYSTEM_LABEL_EN
+                        } else {
+                            meta::AA_SYSTEM_LABEL
+                        },
+                        template: meta::AA_CITE_TEMPLATE,
+                        priority: Some(0),
                     },
-                    meta::AA_CITE_TEMPLATE,
-                    Some(0),
-                    meta::EDITION_SYSTEM_SLUG,
-                    if translation {
-                        meta::EDITION_SYSTEM_LABEL_EN
-                    } else {
-                        meta::EDITION_SYSTEM_LABEL
+                    SystemSpec {
+                        slug: meta::EDITION_SYSTEM_SLUG,
+                        label: if translation {
+                            meta::EDITION_SYSTEM_LABEL_EN
+                        } else {
+                            meta::EDITION_SYSTEM_LABEL
+                        },
+                        template: meta::EDITION_CITE_TEMPLATE,
+                        priority: None,
                     },
-                    meta::EDITION_CITE_TEMPLATE,
-                    None,
                 ),
                 toc_reviewed: toc::flat_toc_entries(),
                 toc_modernized: toc_mod::flat_toc_entries(),
@@ -272,30 +289,21 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
     }
 }
 
-fn book_data(
-    slug: &str,
-    title: &str,
-    author: &str,
-    language: &str,
-    source: &str,
-    year: &str,
-    about: &str,
-    imprint: Imprint,
-) -> BookData {
+fn book_data(spec: BookSpec) -> BookData {
     BookData {
-        slug: slug.to_string(),
-        title: title.to_string(),
-        author: author.to_string(),
-        language: language.to_string(),
-        publisher: imprint.publisher.map(str::to_string),
-        publication_place: imprint.place.map(str::to_string),
-        original_year: imprint.original_year,
-        edition: imprint.edition.map(str::to_string),
-        volume: imprint.volume.map(str::to_string),
+        slug: spec.slug.to_string(),
+        title: spec.title.to_string(),
+        author: spec.author.to_string(),
+        language: spec.language.to_string(),
+        publisher: spec.imprint.publisher.map(str::to_string),
+        publication_place: spec.imprint.place.map(str::to_string),
+        original_year: spec.imprint.original_year,
+        edition: spec.imprint.edition.map(str::to_string),
+        volume: spec.imprint.volume.map(str::to_string),
         url: None,
-        source: source.to_string(),
-        source_date: year.to_string(),
-        about_text: about.to_string(),
+        source: spec.source.to_string(),
+        source_date: spec.year.to_string(),
+        about_text: spec.about.to_string(),
         nodes_per_page: None,
     }
 }
