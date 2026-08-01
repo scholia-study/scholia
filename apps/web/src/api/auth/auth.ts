@@ -2204,9 +2204,9 @@ export type registerResponse400 = {
     status: 400;
 };
 
-export type registerResponse409 = {
+export type registerResponse503 = {
     data: void;
-    status: 409;
+    status: 503;
 };
 
 export type registerResponseSuccess = registerResponse201 & {
@@ -2214,7 +2214,7 @@ export type registerResponseSuccess = registerResponse201 & {
 };
 export type registerResponseError = (
     | registerResponse400
-    | registerResponse409
+    | registerResponse503
 ) & {
     headers: Headers;
 };

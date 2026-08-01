@@ -36,3 +36,20 @@ pub fn auth_config() -> Arc<AuthGovernorConfig> {
             .expect("Failed to build governor config"),
     )
 }
+
+/// Much stricter bucket for `/api/auth/register` alone (stacked on top
+/// of the shared auth bucket): burst of 3, one slot per 20 minutes —
+/// ~3/hour/IP. Registration is the one endpoint that sends email to an
+/// attacker-chosen address, so its ceiling bounds how fast a single IP
+/// can burn sender reputation. Humans re-registering after a typo fit
+/// in the burst; NAT'd campus networks may occasionally queue.
+pub fn register_config() -> Arc<AuthGovernorConfig> {
+    Arc::new(
+        GovernorConfigBuilder::default()
+            .per_second(1200)
+            .burst_size(3)
+            .key_extractor(SmartIpKeyExtractor)
+            .finish()
+            .expect("Failed to build governor config"),
+    )
+}

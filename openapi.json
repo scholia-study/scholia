@@ -1706,7 +1706,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "User created",
+                        "description": "Registration accepted — identical whether or not the email already has an account",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1718,8 +1718,8 @@
                     "400": {
                         "description": "Invalid input"
                     },
-                    "409": {
-                        "description": "Email already exists"
+                    "503": {
+                        "description": "Registration temporarily unavailable"
                     }
                 }
             }

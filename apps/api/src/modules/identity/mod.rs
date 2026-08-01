@@ -18,11 +18,17 @@ use crate::system::state::AppState;
 // article authors.
 pub use accounts::db::list_public_roles_for;
 
+/// Registration alone — it sends email to a caller-chosen address, so
+/// `crate::api_router` stacks a much stricter limiter on it in addition
+/// to the shared auth bucket.
+pub fn register_router() -> OpenApiRouter<AppState> {
+    OpenApiRouter::new().routes(utoipa_axum::routes!(accounts::handlers::register))
+}
+
 /// Unauthenticated, rate-limited entry points: account lifecycle and OAuth.
 /// The rate-limit layer itself is applied by `crate::api_router`.
 pub fn rate_limited_router() -> OpenApiRouter<AppState> {
     OpenApiRouter::new()
-        .routes(utoipa_axum::routes!(accounts::handlers::register))
         .routes(utoipa_axum::routes!(accounts::handlers::login))
         .routes(utoipa_axum::routes!(accounts::handlers::logout))
         .routes(utoipa_axum::routes!(accounts::handlers::me))

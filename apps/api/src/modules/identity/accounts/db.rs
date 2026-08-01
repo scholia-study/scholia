@@ -7,6 +7,54 @@ use crate::system::auth::handle::MAX_HANDLE_LEN;
 use crate::system::auth::permissions::filter_public_roles;
 use crate::system::error::{AppError, SqlxResultExt};
 
+/// The existing account behind an email address, for registration's
+/// anti-enumeration path: the caller learns nothing, the address owner
+/// gets a throttled notice email.
+pub struct ExistingAccount {
+    pub user_id: Uuid,
+    pub account_notice_last_sent_at: Option<time::OffsetDateTime>,
+}
+
+pub async fn find_account_by_email(
+    pool: &PgPool,
+    email: &str,
+) -> Result<Option<ExistingAccount>, AppError> {
+    let row = sqlx::query!(
+        r#"SELECT id, account_notice_last_sent_at FROM users WHERE email = $1"#,
+        email,
+    )
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| ExistingAccount {
+        user_id: r.id,
+        account_notice_last_sent_at: r.account_notice_last_sent_at,
+    }))
+}
+
+pub async fn mark_account_notice_sent(pool: &PgPool, user_id: Uuid) -> Result<(), AppError> {
+    sqlx::query!(
+        r#"UPDATE users SET account_notice_last_sent_at = now() WHERE id = $1"#,
+        user_id,
+    )
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+/// Verification emails minted in the last 24 hours — one token row is
+/// written per verification email, so the token table doubles as the
+/// send ledger for the registration email circuit breaker.
+pub async fn verification_emails_last_24h(pool: &PgPool) -> Result<i64, AppError> {
+    let count = sqlx::query_scalar!(
+        r#"SELECT COUNT(*) AS "count!"
+           FROM email_verification_tokens
+           WHERE created_at > now() - INTERVAL '24 hours'"#,
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(count)
+}
+
 /// Returns true if `handle` is currently held by a *different* user, or
 /// was previously released by a different user. Per the no-recycle rule
 /// (see `released_handles`), a handle that any other user has ever

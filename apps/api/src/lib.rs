@@ -28,7 +28,12 @@ pub struct ApiDoc;
 /// Assemble the full documented API surface into one `OpenApiRouter`.
 pub fn api_router() -> OpenApiRouter<AppState> {
     let rate_limit_layer = GovernorLayer::new(system::rate_limit::auth_config());
-    let auth_router = crate::modules::identity::rate_limited_router().layer(rate_limit_layer);
+    let register_limit_layer = GovernorLayer::new(system::rate_limit::register_config());
+    // Register gets its own strict bucket, then shares the general auth
+    // bucket with everything else (both layers apply to it).
+    let auth_router = crate::modules::identity::rate_limited_router()
+        .merge(crate::modules::identity::register_router().layer(register_limit_layer))
+        .layer(rate_limit_layer);
     let user_router = OpenApiRouter::new()
         .merge(crate::modules::identity::user_router())
         .merge(crate::modules::writing::user_router())

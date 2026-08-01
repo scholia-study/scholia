@@ -91,6 +91,15 @@ spec:
             # set it explicitly so any misconfig surfaces fast.
             - name: CACHE_PURGE_URL
               value: http://scholia-proxy:8080
+            # Operational alerts (registration email circuit breaker).
+            # Same topic the backup cronjob publishes to; optional so a
+            # cluster without the secret still boots.
+            - name: NTFY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ntfy
+                  key: NTFY_URL
+                  optional: true
           envFrom:
             # Pulls every other env var the API needs:
             # RESEND_API_KEY, FROM_EMAIL, BACKEND_URL, FRONTEND_URL,

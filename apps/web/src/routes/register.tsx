@@ -34,11 +34,7 @@ function RegisterPage() {
             setSuccess(true);
         } catch (err) {
             if (err instanceof FetchError) {
-                if (err.status === 409) {
-                    setError("An account with this email already exists.");
-                } else {
-                    setError(err.message);
-                }
+                setError(err.message);
             } else {
                 setError("Something went wrong. Please try again.");
             }
@@ -53,9 +49,8 @@ function RegisterPage() {
                         Check your email
                     </h1>
                     <p className="text-stone-600 mb-4">
-                        We've sent a verification link to{" "}
-                        <strong>{email}</strong>. Click the link to activate
-                        your account.
+                        We've sent an email to <strong>{email}</strong>. Follow
+                        the link inside to continue.
                     </p>
                     <Link
                         to="/login"

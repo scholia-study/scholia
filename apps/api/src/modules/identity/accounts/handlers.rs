@@ -121,15 +121,82 @@ pub struct UpdateProfileRequest {
     pub website_url: Option<String>,
 }
 
+/// Alert-first ceiling on global verification-email volume per 24h.
+/// Registration is the one endpoint that emails an attacker-chosen
+/// address; past the cap, sender-domain reputation outranks signup
+/// availability, so registrations are refused rather than letting a
+/// distributed attack burn the Resend domain overnight. Both thresholds
+/// sit far above organic volume — tripping the cap is the cue to turn
+/// on CAPTCHA, not to raise the cap.
+const VERIFICATION_EMAILS_DAILY_WARN: i64 = 200;
+const VERIFICATION_EMAILS_DAILY_CAP: i64 = 1000;
+
+/// At most one "you already have an account" notice per address per
+/// window, so repeated registration attempts can't bombard a victim.
+const ACCOUNT_NOTICE_COOLDOWN: Duration = Duration::hours(24);
+
+fn account_notice_due(last_sent: Option<OffsetDateTime>, now: OffsetDateTime) -> bool {
+    match last_sent {
+        None => true,
+        Some(t) => now - t >= ACCOUNT_NOTICE_COOLDOWN,
+    }
+}
+
+/// Argon2 costs ~19 MiB and tens of milliseconds of CPU per call — run
+/// it on the blocking pool so password endpoints can't stall the async
+/// runtime's worker threads.
+async fn hash_password_blocking(password: String) -> Result<String, ()> {
+    tokio::task::spawn_blocking(move || {
+        let salt = SaltString::generate(&mut OsRng);
+        Argon2::default()
+            .hash_password(password.as_bytes(), &salt)
+            .map(|h| h.to_string())
+            .map_err(|_| ())
+    })
+    .await
+    .unwrap_or(Err(()))
+}
+
+async fn verify_password_blocking(password: String, hash: String) -> bool {
+    tokio::task::spawn_blocking(move || {
+        PasswordHash::new(&hash)
+            .map(|parsed| {
+                Argon2::default()
+                    .verify_password(password.as_bytes(), &parsed)
+                    .is_ok()
+            })
+            .unwrap_or(false)
+    })
+    .await
+    .unwrap_or(false)
+}
+
+/// The one registration outcome the caller is allowed to see — identical
+/// for a fresh signup and for an attempt on an already-registered email,
+/// so the endpoint can't be used to probe which addresses have accounts.
+fn registration_accepted_response() -> Response {
+    (
+        StatusCode::CREATED,
+        Json(MessageResponse {
+            message: "Check your email to continue.".to_string(),
+        }),
+    )
+        .into_response()
+}
+
 /// Register a new user with email and password
 #[utoipa::path(
     post,
     path = "/api/auth/register",
     request_body = RegisterRequest,
     responses(
-        (status = 201, description = "User created", body = MessageResponse),
+        (
+            status = 201,
+            description = "Registration accepted — identical whether or not the email already has an account",
+            body = MessageResponse
+        ),
         (status = 400, description = "Invalid input"),
-        (status = 409, description = "Email already exists")
+        (status = 503, description = "Registration temporarily unavailable")
     ),
     tag = "auth"
 )]
@@ -167,11 +234,82 @@ pub async fn register(
             .into_response();
     }
 
-    // Hash password
-    let salt = SaltString::generate(&mut OsRng);
-    let password_hash = match Argon2::default().hash_password(body.password.as_bytes(), &salt) {
-        Ok(h) => h.to_string(),
+    // Email circuit breaker — checked before any expensive work.
+    let sent_24h =
+        match crate::modules::identity::accounts::db::verification_emails_last_24h(&state.pool)
+            .await
+        {
+            Ok(n) => n,
+            Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+        };
+    if sent_24h >= VERIFICATION_EMAILS_DAILY_CAP {
+        let msg = format!(
+            "Verification-email circuit breaker TRIPPED: {sent_24h} sends in 24h \
+             (cap {VERIFICATION_EMAILS_DAILY_CAP}); refusing registrations"
+        );
+        tracing::error!("{msg}");
+        sentry::capture_message(&msg, sentry::Level::Error);
+        crate::system::ntfy::alert(
+            &state.config,
+            "Registration email breaker TRIPPED",
+            &msg,
+            crate::system::ntfy::Priority::Urgent,
+        );
+        return (
+            StatusCode::SERVICE_UNAVAILABLE,
+            "Registration is temporarily unavailable. Please try again later.",
+        )
+            .into_response();
+    }
+    if sent_24h >= VERIFICATION_EMAILS_DAILY_WARN {
+        let msg = format!(
+            "Verification-email volume high: {sent_24h} sends in 24h \
+             (warn {VERIFICATION_EMAILS_DAILY_WARN}, cap {VERIFICATION_EMAILS_DAILY_CAP})"
+        );
+        tracing::warn!("{msg}");
+        sentry::capture_message(&msg, sentry::Level::Warning);
+        crate::system::ntfy::alert(
+            &state.config,
+            "Registration email volume high",
+            &msg,
+            crate::system::ntfy::Priority::High,
+        );
+    }
+
+    // Existing account: same response as a fresh signup (no enumeration);
+    // the address owner gets a throttled notice email instead.
+    match crate::modules::identity::accounts::db::find_account_by_email(&state.pool, &email).await {
+        Ok(Some(account)) => {
+            if account_notice_due(
+                account.account_notice_last_sent_at,
+                OffsetDateTime::now_utc(),
+            ) {
+                // Mark before sending: a send failure costs one notice,
+                // while the reverse order would let failures re-arm the
+                // throttle indefinitely.
+                let _ = crate::modules::identity::accounts::db::mark_account_notice_sent(
+                    &state.pool,
+                    account.user_id,
+                )
+                .await;
+                let config = state.config.clone();
+                let email_addr = email.clone();
+                tokio::spawn(async move {
+                    if let Err(e) = email::send_account_exists_email(&config, &email_addr).await {
+                        tracing::error!("{e}");
+                    }
+                });
+            }
+            return registration_accepted_response();
+        }
+        Ok(None) => {}
         Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+    }
+
+    // Hash password
+    let password_hash = match hash_password_blocking(body.password).await {
+        Ok(h) => h,
+        Err(()) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
     };
 
     // Insert user
@@ -197,7 +335,10 @@ pub async fn register(
     {
         Ok(id) => id,
         Err(e) if is_unique_violation(&e) => {
-            return (StatusCode::CONFLICT, "Email already exists").into_response();
+            // Concurrent registration raced past the pre-check; the
+            // uniform response still applies (no notice email — the
+            // winning request just sent a verification email here).
+            return registration_accepted_response();
         }
         Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
     };
@@ -232,13 +373,7 @@ pub async fn register(
         }
     });
 
-    (
-        StatusCode::CREATED,
-        Json(MessageResponse {
-            message: "Account created. Check your email to verify your account.".to_string(),
-        }),
-    )
-        .into_response()
+    registration_accepted_response()
 }
 
 /// Log in with email and password
@@ -287,15 +422,9 @@ pub async fn login(
         .as_ref()
         .and_then(|r| r.get::<Option<String>, _>("password_hash"));
     let hash_to_verify = stored_hash
-        .as_deref()
-        .unwrap_or_else(|| dummy_password_hash());
-    let password_ok = PasswordHash::new(hash_to_verify)
-        .map(|parsed| {
-            Argon2::default()
-                .verify_password(body.password.as_bytes(), &parsed)
-                .is_ok()
-        })
-        .unwrap_or(false);
+        .clone()
+        .unwrap_or_else(|| dummy_password_hash().to_string());
+    let password_ok = verify_password_blocking(body.password, hash_to_verify).await;
 
     // Reject with the same generic response whether the account is missing,
     // is OAuth-only (no password hash), or the password simply didn't match.
@@ -508,10 +637,9 @@ pub async fn reset_password(
     let user_id: Uuid = token_row.get("user_id");
 
     // Hash new password
-    let salt = SaltString::generate(&mut OsRng);
-    let new_hash = match Argon2::default().hash_password(body.password.as_bytes(), &salt) {
-        Ok(h) => h.to_string(),
-        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+    let new_hash = match hash_password_blocking(body.password).await {
+        Ok(h) => h,
+        Err(()) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
     };
 
     // Change the password and consume the token atomically: if the token
@@ -978,4 +1106,35 @@ fn dummy_password_hash() -> &'static str {
             .expect("hash dummy password")
             .to_string()
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{ACCOUNT_NOTICE_COOLDOWN, account_notice_due};
+    use time::OffsetDateTime;
+
+    #[test]
+    fn notice_due_when_never_sent() {
+        assert!(account_notice_due(None, OffsetDateTime::now_utc()));
+    }
+
+    #[test]
+    fn notice_throttled_within_cooldown() {
+        let now = OffsetDateTime::now_utc();
+        assert!(!account_notice_due(Some(now), now));
+        assert!(!account_notice_due(
+            Some(now - ACCOUNT_NOTICE_COOLDOWN + time::Duration::minutes(1)),
+            now
+        ));
+    }
+
+    #[test]
+    fn notice_due_after_cooldown() {
+        let now = OffsetDateTime::now_utc();
+        assert!(account_notice_due(Some(now - ACCOUNT_NOTICE_COOLDOWN), now));
+        assert!(account_notice_due(
+            Some(now - ACCOUNT_NOTICE_COOLDOWN - time::Duration::hours(1)),
+            now
+        ));
+    }
 }

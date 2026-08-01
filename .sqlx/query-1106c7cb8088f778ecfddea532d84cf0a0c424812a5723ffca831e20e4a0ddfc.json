@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE users SET account_notice_last_sent_at = now() WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "1106c7cb8088f778ecfddea532d84cf0a0c424812a5723ffca831e20e4a0ddfc"
+}

@@ -29,6 +29,9 @@ pub struct AppConfig {
     /// `http://nginx-cache:8080`). When unset, `cache::invalidate` is a
     /// no-op — convenient for local dev without the proxy stack up.
     pub cache_purge_url: Option<String>,
+    /// Full ntfy topic URL for operational alerts (same secret the
+    /// backup cronjob uses). When unset, `ntfy::alert` is a no-op.
+    pub ntfy_url: Option<String>,
 }
 
 impl AppConfig {
@@ -69,6 +72,7 @@ impl AppConfig {
             stripe_price_high: env::var("STRIPE_PRICE_HIGH")
                 .expect("STRIPE_PRICE_HIGH must be set"),
             cache_purge_url: env::var("CACHE_PURGE_URL").ok().filter(|s| !s.is_empty()),
+            ntfy_url: env::var("NTFY_URL").ok().filter(|s| !s.is_empty()),
         };
         cfg.verify_stripe_prices();
         cfg

@@ -10,6 +10,7 @@ pub mod config;
 pub mod email;
 pub mod error;
 pub mod migrate;
+pub mod ntfy;
 pub mod rate_limit;
 pub mod sanitize;
 pub mod serde_util;
