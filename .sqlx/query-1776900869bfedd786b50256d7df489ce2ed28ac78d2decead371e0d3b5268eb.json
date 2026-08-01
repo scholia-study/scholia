@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT EXISTS(SELECT 1 FROM series WHERE name = $1 AND id <> $2) AS \"taken!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "taken!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "1776900869bfedd786b50256d7df489ce2ed28ac78d2decead371e0d3b5268eb"
+}

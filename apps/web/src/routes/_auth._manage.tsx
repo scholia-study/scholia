@@ -36,6 +36,12 @@ export const BRIDGE_SECTIONS = [
         permission: "admin_panel",
     },
     {
+        to: "/manage/series",
+        label: "Series",
+        description: "Curated, ordered article collections",
+        permission: "series_manage",
+    },
+    {
         to: "/manage/resource-submissions",
         label: "Resource submissions",
         description:

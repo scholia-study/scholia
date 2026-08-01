@@ -4,8 +4,8 @@ use axum::extract::{Path, Query, State};
 use crate::modules::writing::articles::models::{
     ApplyEditorialLabelRequest, ArticleDetailResponse, ArticleListQuery, ArticleListResponse,
     BatchSentencesRequest, BatchSentencesResponse, CreateArticleRequest, CreateTopicRequest,
-    EditorialLabelListResponse, EditorialLabelResponse, PublicArticleListQuery,
-    PublishedArticleListResponse, TopicAdminListResponse, TopicAdminResponse, TopicListResponse,
+    EditorialLabelListResponse, EditorialLabelResponse, PublishedArticleListResponse,
+    PublishedArticleSearchQuery, TopicAdminListResponse, TopicAdminResponse, TopicListResponse,
     UpdateArticleRequest, UpdateTopicRequest,
 };
 use crate::system::auth::middleware::AuthUser;
@@ -227,6 +227,7 @@ pub async fn publish_article(
     .await?;
     let mut paths = article_cache_paths(&slug);
     paths.extend(sitemap_cache_paths());
+    paths.extend(member_series_cache_paths(&state, &slug).await?);
     cache::invalidate(&state, paths);
     Ok(Json(()))
 }
@@ -273,8 +274,26 @@ pub async fn archive_article(
     .await?;
     let mut paths = article_cache_paths(&slug);
     paths.extend(sitemap_cache_paths());
+    paths.extend(member_series_cache_paths(&state, &slug).await?);
     cache::invalidate(&state, paths);
     Ok(Json(()))
+}
+
+/// Publish/archive changes an article's visibility on the pages of every
+/// series it belongs to — purge those too.
+async fn member_series_cache_paths(
+    state: &AppState,
+    article_slug: &str,
+) -> Result<Vec<String>, AppError> {
+    let slugs = crate::modules::writing::series::db::series_slugs_for_article_slug(
+        &state.pool,
+        article_slug,
+    )
+    .await?;
+    Ok(slugs
+        .iter()
+        .flat_map(|s| crate::modules::writing::series::handlers::series_cache_paths(s))
+        .collect())
 }
 
 /// Cache paths to invalidate when a published article appears, changes,
@@ -303,7 +322,7 @@ pub(crate) fn sitemap_cache_paths() -> Vec<String> {
 #[utoipa::path(
     get,
     path = "/api/articles",
-    params(PublicArticleListQuery),
+    params(PublishedArticleSearchQuery),
     responses(
         (status = 200, description = "Published articles", body = PublishedArticleListResponse)
     ),
@@ -311,15 +330,23 @@ pub(crate) fn sitemap_cache_paths() -> Vec<String> {
 )]
 pub async fn list_published_articles(
     State(state): State<AppState>,
-    Query(params): Query<PublicArticleListQuery>,
+    Query(params): Query<PublishedArticleSearchQuery>,
 ) -> Result<Json<PublishedArticleListResponse>, AppError> {
     let page = params.page.unwrap_or(1).max(1);
     let per_page = params.per_page.unwrap_or(20).clamp(1, 100);
+    let q = params.q.as_deref().map(str::trim).filter(|s| !s.is_empty());
+    let author = params
+        .author
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty());
 
     let (articles, total) = crate::modules::writing::articles::db::list_published_articles(
         &state.pool,
         params.topic_slug.as_deref(),
         params.label_slug.as_deref(),
+        q,
+        author,
         page,
         per_page,
     )

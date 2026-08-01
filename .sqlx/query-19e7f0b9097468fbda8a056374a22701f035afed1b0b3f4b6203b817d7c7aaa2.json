@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO series (name, slug, description) VALUES ($1, $2, $3) RETURNING id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Text", "Text"]
+        },
+        "nullable": [false]
+    },
+    "hash": "19e7f0b9097468fbda8a056374a22701f035afed1b0b3f4b6203b817d7c7aaa2"
+}

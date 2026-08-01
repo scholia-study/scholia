@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ArticleSeriesContext } from "./articleSeriesContext.ts";
 import type { EditorialLabelResponse } from "./editorialLabelResponse.ts";
 import type { TopicResponse } from "./topicResponse.ts";
 
@@ -41,6 +42,12 @@ export interface ArticleDetailResponse {
      * Frontend uses this to toast the author.
      */
     revoked_labels?: EditorialLabelResponse[];
+    /**
+     * Series this article belongs to, with published prev/next
+     * neighbors — drives the article-page series strip. Empty for
+     * articles in no series (and on owner-facing endpoints).
+     */
+    series?: ArticleSeriesContext[];
     slug: string;
     status: string;
     title: string;

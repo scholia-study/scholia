@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO series_articles (series_id, article_id, position) VALUES ($1, $2, 1)",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "9bf40ee41b92e98c530e803ab552b671e373e7904dcf1f1ac6188919f22f02a2"
+}

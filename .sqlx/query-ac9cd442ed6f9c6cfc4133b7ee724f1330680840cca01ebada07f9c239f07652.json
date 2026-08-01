@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\"\n           FROM series_articles sa\n           JOIN articles a ON a.id = sa.article_id\n           WHERE sa.series_id = $1 AND a.status = 'published'",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "ac9cd442ed6f9c6cfc4133b7ee724f1330680840cca01ebada07f9c239f07652"
+}

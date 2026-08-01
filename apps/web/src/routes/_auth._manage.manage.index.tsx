@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { useAdminListTopics } from "../api/admin/admin";
+import { useAdminListSeries, useAdminListTopics } from "../api/admin/admin";
 import { useListUsers } from "../api/admin-users/admin-users";
 import { useListArticleReviewQueue } from "../api/article-reviews/article-reviews";
 import { useListFeedback } from "../api/feedback/feedback";
@@ -18,6 +18,7 @@ function BridgeDashboard() {
         "/manage/feedback": <FeedbackCount />,
         "/manage/users": <UsersCount />,
         "/manage/topics": <TopicsCount />,
+        "/manage/series": <SeriesCount />,
         "/manage/resource-submissions": <SubmissionsCount />,
         "/manage/article-reviews": <ReviewsCount />,
     } as const;
@@ -80,6 +81,12 @@ function UsersCount() {
 function TopicsCount() {
     const { data } = useAdminListTopics();
     const total = data?.data?.topics?.length;
+    return <CountBadge>{total ?? ""}</CountBadge>;
+}
+
+function SeriesCount() {
+    const { data } = useAdminListSeries();
+    const total = data?.data?.series?.length;
     return <CountBadge>{total ?? ""}</CountBadge>;
 }
 

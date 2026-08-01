@@ -131,7 +131,8 @@ export function Navbar() {
                                     <Divider />
                                     {(hasPermission("admin_panel") ||
                                         hasPermission("resources_manage") ||
-                                        hasPermission("articles_review")) && (
+                                        hasPermission("articles_review") ||
+                                        hasPermission("series_manage")) && (
                                         <MenuItem
                                             onClick={() => {
                                                 setAnchorEl(null);
@@ -145,7 +146,8 @@ export function Navbar() {
                                     )}
                                     {(hasPermission("admin_panel") ||
                                         hasPermission("resources_manage") ||
-                                        hasPermission("articles_review")) && (
+                                        hasPermission("articles_review") ||
+                                        hasPermission("series_manage")) && (
                                         <Divider />
                                     )}
                                     <MenuItem

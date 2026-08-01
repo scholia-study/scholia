@@ -52,6 +52,12 @@ export const SEO_COPY = {
     article: {
         title: (articleTitle: string) => siteTitle(articleTitle),
     },
+    series: {
+        title: (seriesName: string) => siteTitle(seriesName),
+        /** Fallback when the series has no description. */
+        description: (seriesName: string) =>
+            `Articles in the ${seriesName} series on Scholia.`,
+    },
     profile: {
         title: (displayName: string, handle: string) =>
             siteTitle(`${displayName} (@${handle})`),

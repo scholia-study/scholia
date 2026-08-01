@@ -32,6 +32,7 @@ import { Route as AuthUserNotesRouteImport } from './routes/_auth.user.notes'
 import { Route as AuthUserProfileRouteImport } from './routes/_auth.user.profile'
 import { Route as AuthUserQuotationsRouteImport } from './routes/_auth.user.quotations'
 import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
+import { Route as ArticlesSeriesSlugRouteImport } from './routes/articles.series.$slug'
 import { Route as BooksBookSlugIndexRouteImport } from './routes/books.$bookSlug.index'
 import { Route as BooksBookSlugNodeSlugRouteImport } from './routes/books.$bookSlug.$nodeSlug'
 import { Route as UsersByIdIdRouteImport } from './routes/users.by-id.$id'
@@ -45,6 +46,7 @@ import { Route as AuthManageManageArticleReviewsIndexRouteImport } from './route
 import { Route as AuthManageManageFeedbackIndexRouteImport } from './routes/_auth._manage.manage.feedback.index'
 import { Route as AuthManageManageFeedbackIdRouteImport } from './routes/_auth._manage.manage.feedback.$id'
 import { Route as AuthManageManageResourceSubmissionsIndexRouteImport } from './routes/_auth._manage.manage.resource-submissions.index'
+import { Route as AuthManageManageSeriesIndexRouteImport } from './routes/_auth._manage.manage.series.index'
 import { Route as AuthManageManageTopicsIndexRouteImport } from './routes/_auth._manage.manage.topics.index'
 import { Route as AuthManageManageUsersIndexRouteImport } from './routes/_auth._manage.manage.users.index'
 
@@ -161,6 +163,11 @@ const ArticlesByIdIdRoute = ArticlesByIdIdRouteImport.update({
   path: '/articles/by-id/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArticlesSeriesSlugRoute = ArticlesSeriesSlugRouteImport.update({
+  id: '/articles/series/$slug',
+  path: '/articles/series/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BooksBookSlugIndexRoute = BooksBookSlugIndexRouteImport.update({
   id: '/books/$bookSlug/',
   path: '/books/$bookSlug/',
@@ -231,6 +238,12 @@ const AuthManageManageResourceSubmissionsIndexRoute =
     path: '/manage/resource-submissions/',
     getParentRoute: () => AuthManageRoute,
   } as any)
+const AuthManageManageSeriesIndexRoute =
+  AuthManageManageSeriesIndexRouteImport.update({
+    id: '/manage/series/',
+    path: '/manage/series/',
+    getParentRoute: () => AuthManageRoute,
+  } as any)
 const AuthManageManageTopicsIndexRoute =
   AuthManageManageTopicsIndexRouteImport.update({
     id: '/manage/topics/',
@@ -266,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/user/profile': typeof AuthUserProfileRoute
   '/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
+  '/articles/series/$slug': typeof ArticlesSeriesSlugRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/users/by-id/$id': typeof UsersByIdIdRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
@@ -279,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/manage/article-reviews/': typeof AuthManageManageArticleReviewsIndexRoute
   '/manage/feedback/': typeof AuthManageManageFeedbackIndexRoute
   '/manage/resource-submissions/': typeof AuthManageManageResourceSubmissionsIndexRoute
+  '/manage/series/': typeof AuthManageManageSeriesIndexRoute
   '/manage/topics/': typeof AuthManageManageTopicsIndexRoute
   '/manage/users/': typeof AuthManageManageUsersIndexRoute
 }
@@ -304,6 +319,7 @@ export interface FileRoutesByTo {
   '/user/profile': typeof AuthUserProfileRoute
   '/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
+  '/articles/series/$slug': typeof ArticlesSeriesSlugRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/users/by-id/$id': typeof UsersByIdIdRoute
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
@@ -317,6 +333,7 @@ export interface FileRoutesByTo {
   '/manage/article-reviews': typeof AuthManageManageArticleReviewsIndexRoute
   '/manage/feedback': typeof AuthManageManageFeedbackIndexRoute
   '/manage/resource-submissions': typeof AuthManageManageResourceSubmissionsIndexRoute
+  '/manage/series': typeof AuthManageManageSeriesIndexRoute
   '/manage/topics': typeof AuthManageManageTopicsIndexRoute
   '/manage/users': typeof AuthManageManageUsersIndexRoute
 }
@@ -345,6 +362,7 @@ export interface FileRoutesById {
   '/_auth/user/profile': typeof AuthUserProfileRoute
   '/_auth/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
+  '/articles/series/$slug': typeof ArticlesSeriesSlugRoute
   '/books/$bookSlug/$nodeSlug': typeof BooksBookSlugNodeSlugRoute
   '/users/by-id/$id': typeof UsersByIdIdRoute
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
@@ -358,6 +376,7 @@ export interface FileRoutesById {
   '/_auth/_manage/manage/article-reviews/': typeof AuthManageManageArticleReviewsIndexRoute
   '/_auth/_manage/manage/feedback/': typeof AuthManageManageFeedbackIndexRoute
   '/_auth/_manage/manage/resource-submissions/': typeof AuthManageManageResourceSubmissionsIndexRoute
+  '/_auth/_manage/manage/series/': typeof AuthManageManageSeriesIndexRoute
   '/_auth/_manage/manage/topics/': typeof AuthManageManageTopicsIndexRoute
   '/_auth/_manage/manage/users/': typeof AuthManageManageUsersIndexRoute
 }
@@ -385,6 +404,7 @@ export interface FileRouteTypes {
     | '/user/profile'
     | '/user/quotations'
     | '/articles/by-id/$id'
+    | '/articles/series/$slug'
     | '/books/$bookSlug/$nodeSlug'
     | '/users/by-id/$id'
     | '/books/$bookSlug/'
@@ -398,6 +418,7 @@ export interface FileRouteTypes {
     | '/manage/article-reviews/'
     | '/manage/feedback/'
     | '/manage/resource-submissions/'
+    | '/manage/series/'
     | '/manage/topics/'
     | '/manage/users/'
   fileRoutesByTo: FileRoutesByTo
@@ -423,6 +444,7 @@ export interface FileRouteTypes {
     | '/user/profile'
     | '/user/quotations'
     | '/articles/by-id/$id'
+    | '/articles/series/$slug'
     | '/books/$bookSlug/$nodeSlug'
     | '/users/by-id/$id'
     | '/books/$bookSlug'
@@ -436,6 +458,7 @@ export interface FileRouteTypes {
     | '/manage/article-reviews'
     | '/manage/feedback'
     | '/manage/resource-submissions'
+    | '/manage/series'
     | '/manage/topics'
     | '/manage/users'
   id:
@@ -463,6 +486,7 @@ export interface FileRouteTypes {
     | '/_auth/user/profile'
     | '/_auth/user/quotations'
     | '/articles/by-id/$id'
+    | '/articles/series/$slug'
     | '/books/$bookSlug/$nodeSlug'
     | '/users/by-id/$id'
     | '/books/$bookSlug/'
@@ -476,6 +500,7 @@ export interface FileRouteTypes {
     | '/_auth/_manage/manage/article-reviews/'
     | '/_auth/_manage/manage/feedback/'
     | '/_auth/_manage/manage/resource-submissions/'
+    | '/_auth/_manage/manage/series/'
     | '/_auth/_manage/manage/topics/'
     | '/_auth/_manage/manage/users/'
   fileRoutesById: FileRoutesById
@@ -500,6 +525,7 @@ export interface RootRouteChildren {
   ArticlesIndexRoute: typeof ArticlesIndexRoute
   MembershipIndexRoute: typeof MembershipIndexRoute
   ArticlesByIdIdRoute: typeof ArticlesByIdIdRoute
+  ArticlesSeriesSlugRoute: typeof ArticlesSeriesSlugRoute
   BooksBookSlugNodeSlugRoute: typeof BooksBookSlugNodeSlugRoute
   UsersByIdIdRoute: typeof UsersByIdIdRoute
   BooksBookSlugIndexRoute: typeof BooksBookSlugIndexRoute
@@ -668,6 +694,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesByIdIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/articles/series/$slug': {
+      id: '/articles/series/$slug'
+      path: '/articles/series/$slug'
+      fullPath: '/articles/series/$slug'
+      preLoaderRoute: typeof ArticlesSeriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/books/$bookSlug/': {
       id: '/books/$bookSlug/'
       path: '/books/$bookSlug'
@@ -759,6 +792,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthManageManageResourceSubmissionsIndexRouteImport
       parentRoute: typeof AuthManageRoute
     }
+    '/_auth/_manage/manage/series/': {
+      id: '/_auth/_manage/manage/series/'
+      path: '/manage/series'
+      fullPath: '/manage/series/'
+      preLoaderRoute: typeof AuthManageManageSeriesIndexRouteImport
+      parentRoute: typeof AuthManageRoute
+    }
     '/_auth/_manage/manage/topics/': {
       id: '/_auth/_manage/manage/topics/'
       path: '/manage/topics'
@@ -782,6 +822,7 @@ interface AuthManageRouteChildren {
   AuthManageManageArticleReviewsIndexRoute: typeof AuthManageManageArticleReviewsIndexRoute
   AuthManageManageFeedbackIndexRoute: typeof AuthManageManageFeedbackIndexRoute
   AuthManageManageResourceSubmissionsIndexRoute: typeof AuthManageManageResourceSubmissionsIndexRoute
+  AuthManageManageSeriesIndexRoute: typeof AuthManageManageSeriesIndexRoute
   AuthManageManageTopicsIndexRoute: typeof AuthManageManageTopicsIndexRoute
   AuthManageManageUsersIndexRoute: typeof AuthManageManageUsersIndexRoute
 }
@@ -794,6 +835,7 @@ const AuthManageRouteChildren: AuthManageRouteChildren = {
   AuthManageManageFeedbackIndexRoute: AuthManageManageFeedbackIndexRoute,
   AuthManageManageResourceSubmissionsIndexRoute:
     AuthManageManageResourceSubmissionsIndexRoute,
+  AuthManageManageSeriesIndexRoute: AuthManageManageSeriesIndexRoute,
   AuthManageManageTopicsIndexRoute: AuthManageManageTopicsIndexRoute,
   AuthManageManageUsersIndexRoute: AuthManageManageUsersIndexRoute,
 }
@@ -848,6 +890,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArticlesIndexRoute: ArticlesIndexRoute,
   MembershipIndexRoute: MembershipIndexRoute,
   ArticlesByIdIdRoute: ArticlesByIdIdRoute,
+  ArticlesSeriesSlugRoute: ArticlesSeriesSlugRoute,
   BooksBookSlugNodeSlugRoute: BooksBookSlugNodeSlugRoute,
   UsersByIdIdRoute: UsersByIdIdRoute,
   BooksBookSlugIndexRoute: BooksBookSlugIndexRoute,

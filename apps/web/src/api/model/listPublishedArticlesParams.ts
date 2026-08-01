@@ -12,11 +12,21 @@ export type ListPublishedArticlesParams = {
     topic_slug?: string | null;
     /**
      * Filter the listing to articles bearing this editorial label slug
-     * (e.g. `featured`, `high-quality`). Single label per request — no
-     * AND-ing across labels in v1.
+     * (e.g. `featured`, `high-quality`).
      * @nullable
      */
     label_slug?: string | null;
+    /**
+     * Case-insensitive contains-match on the article title.
+     * @nullable
+     */
+    q?: string | null;
+    /**
+     * Case-insensitive contains-match on the author's display name or
+     * handle.
+     * @nullable
+     */
+    author?: string | null;
     /**
      * @nullable
      */

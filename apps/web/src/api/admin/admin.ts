@@ -24,14 +24,1351 @@ import type {
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { customFetch } from ".././fetcher";
 import type {
+    AddSeriesArticleRequest,
+    CreateSeriesRequest,
     CreateTopicRequest,
+    ReorderSeriesArticlesRequest,
+    SeriesAdminListResponse,
+    SeriesAdminResponse,
+    SeriesMemberListResponse,
     TopicAdminListResponse,
     TopicAdminResponse,
+    UpdateSeriesRequest,
     UpdateTopicRequest,
 } from "../model";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+export type adminListSeriesResponse200 = {
+    data: SeriesAdminListResponse;
+    status: 200;
+};
+
+export type adminListSeriesResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type adminListSeriesResponseSuccess = adminListSeriesResponse200 & {
+    headers: Headers;
+};
+export type adminListSeriesResponseError = adminListSeriesResponse403 & {
+    headers: Headers;
+};
+
+export const getAdminListSeriesUrl = () => {
+    return `/api/admin/series`;
+};
+
+/**
+ * @summary List series with member counts for the manage page
+ */
+export const adminListSeries = async (
+    options?: RequestInit,
+): Promise<adminListSeriesResponseSuccess> => {
+    return customFetch<adminListSeriesResponseSuccess>(
+        getAdminListSeriesUrl(),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
+};
+
+export const getAdminListSeriesQueryKey = () => {
+    return [`/api/admin/series`] as const;
+};
+
+export const getAdminListSeriesQueryOptions = <
+    TData = Awaited<ReturnType<typeof adminListSeries>>,
+    TError = void,
+>(options?: {
+    query?: Partial<
+        UseQueryOptions<
+            Awaited<ReturnType<typeof adminListSeries>>,
+            TError,
+            TData
+        >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getAdminListSeriesQueryKey();
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof adminListSeries>>
+    > = ({ signal }) => adminListSeries({ signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof adminListSeries>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdminListSeriesQueryResult = NonNullable<
+    Awaited<ReturnType<typeof adminListSeries>>
+>;
+export type AdminListSeriesQueryError = void;
+
+export function useAdminListSeries<
+    TData = Awaited<ReturnType<typeof adminListSeries>>,
+    TError = void,
+>(
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof adminListSeries>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof adminListSeries>>,
+                    TError,
+                    Awaited<ReturnType<typeof adminListSeries>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAdminListSeries<
+    TData = Awaited<ReturnType<typeof adminListSeries>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof adminListSeries>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof adminListSeries>>,
+                    TError,
+                    Awaited<ReturnType<typeof adminListSeries>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAdminListSeries<
+    TData = Awaited<ReturnType<typeof adminListSeries>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof adminListSeries>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List series with member counts for the manage page
+ */
+
+export function useAdminListSeries<
+    TData = Awaited<ReturnType<typeof adminListSeries>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof adminListSeries>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getAdminListSeriesQueryOptions(options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getAdminListSeriesSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof adminListSeries>>,
+    TError = void,
+>(options?: {
+    query?: Partial<
+        UseSuspenseQueryOptions<
+            Awaited<ReturnType<typeof adminListSeries>>,
+            TError,
+            TData
+        >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getAdminListSeriesQueryKey();
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof adminListSeries>>
+    > = ({ signal }) => adminListSeries({ signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof adminListSeries>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdminListSeriesSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof adminListSeries>>
+>;
+export type AdminListSeriesSuspenseQueryError = void;
+
+export function useAdminListSeriesSuspense<
+    TData = Awaited<ReturnType<typeof adminListSeries>>,
+    TError = void,
+>(
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof adminListSeries>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAdminListSeriesSuspense<
+    TData = Awaited<ReturnType<typeof adminListSeries>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof adminListSeries>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAdminListSeriesSuspense<
+    TData = Awaited<ReturnType<typeof adminListSeries>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof adminListSeries>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List series with member counts for the manage page
+ */
+
+export function useAdminListSeriesSuspense<
+    TData = Awaited<ReturnType<typeof adminListSeries>>,
+    TError = void,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof adminListSeries>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getAdminListSeriesSuspenseQueryOptions(options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export type createSeriesResponse200 = {
+    data: SeriesAdminResponse;
+    status: 200;
+};
+
+export type createSeriesResponse400 = {
+    data: void;
+    status: 400;
+};
+
+export type createSeriesResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type createSeriesResponseSuccess = createSeriesResponse200 & {
+    headers: Headers;
+};
+export type createSeriesResponseError = (
+    | createSeriesResponse400
+    | createSeriesResponse403
+) & {
+    headers: Headers;
+};
+
+export const getCreateSeriesUrl = () => {
+    return `/api/admin/series`;
+};
+
+/**
+ * @summary Create a series; the slug is generated from the name and immutable
+ */
+export const createSeries = async (
+    createSeriesRequest: CreateSeriesRequest,
+    options?: RequestInit,
+): Promise<createSeriesResponseSuccess> => {
+    return customFetch<createSeriesResponseSuccess>(getCreateSeriesUrl(), {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(createSeriesRequest),
+    });
+};
+
+export const getCreateSeriesMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof createSeries>>,
+        TError,
+        { data: CreateSeriesRequest },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof createSeries>>,
+    TError,
+    { data: CreateSeriesRequest },
+    TContext
+> => {
+    const mutationKey = ["createSeries"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof createSeries>>,
+        { data: CreateSeriesRequest }
+    > = (props) => {
+        const { data } = props ?? {};
+
+        return createSeries(data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type CreateSeriesMutationResult = NonNullable<
+    Awaited<ReturnType<typeof createSeries>>
+>;
+export type CreateSeriesMutationBody = CreateSeriesRequest;
+export type CreateSeriesMutationError = void;
+
+/**
+ * @summary Create a series; the slug is generated from the name and immutable
+ */
+export const useCreateSeries = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof createSeries>>,
+            TError,
+            { data: CreateSeriesRequest },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof createSeries>>,
+    TError,
+    { data: CreateSeriesRequest },
+    TContext
+> => {
+    return useMutation(getCreateSeriesMutationOptions(options), queryClient);
+};
+export type deleteSeriesResponse200 = {
+    data: void;
+    status: 200;
+};
+
+export type deleteSeriesResponse400 = {
+    data: void;
+    status: 400;
+};
+
+export type deleteSeriesResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type deleteSeriesResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type deleteSeriesResponseSuccess = deleteSeriesResponse200 & {
+    headers: Headers;
+};
+export type deleteSeriesResponseError = (
+    | deleteSeriesResponse400
+    | deleteSeriesResponse403
+    | deleteSeriesResponse404
+) & {
+    headers: Headers;
+};
+
+export const getDeleteSeriesUrl = (id: string) => {
+    return `/api/admin/series/${id}`;
+};
+
+/**
+ * @summary Delete a series; refused while any article is still attached
+ */
+export const deleteSeries = async (
+    id: string,
+    options?: RequestInit,
+): Promise<deleteSeriesResponseSuccess> => {
+    return customFetch<deleteSeriesResponseSuccess>(getDeleteSeriesUrl(id), {
+        ...options,
+        method: "DELETE",
+    });
+};
+
+export const getDeleteSeriesMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof deleteSeries>>,
+        TError,
+        { id: string },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof deleteSeries>>,
+    TError,
+    { id: string },
+    TContext
+> => {
+    const mutationKey = ["deleteSeries"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof deleteSeries>>,
+        { id: string }
+    > = (props) => {
+        const { id } = props ?? {};
+
+        return deleteSeries(id, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteSeriesMutationResult = NonNullable<
+    Awaited<ReturnType<typeof deleteSeries>>
+>;
+
+export type DeleteSeriesMutationError = void;
+
+/**
+ * @summary Delete a series; refused while any article is still attached
+ */
+export const useDeleteSeries = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof deleteSeries>>,
+            TError,
+            { id: string },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof deleteSeries>>,
+    TError,
+    { id: string },
+    TContext
+> => {
+    return useMutation(getDeleteSeriesMutationOptions(options), queryClient);
+};
+export type updateSeriesResponse200 = {
+    data: SeriesAdminResponse;
+    status: 200;
+};
+
+export type updateSeriesResponse400 = {
+    data: void;
+    status: 400;
+};
+
+export type updateSeriesResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type updateSeriesResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type updateSeriesResponseSuccess = updateSeriesResponse200 & {
+    headers: Headers;
+};
+export type updateSeriesResponseError = (
+    | updateSeriesResponse400
+    | updateSeriesResponse403
+    | updateSeriesResponse404
+) & {
+    headers: Headers;
+};
+
+export const getUpdateSeriesUrl = (id: string) => {
+    return `/api/admin/series/${id}`;
+};
+
+/**
+ * @summary Update series metadata (name, description, pinned, sort order)
+ */
+export const updateSeries = async (
+    id: string,
+    updateSeriesRequest: UpdateSeriesRequest,
+    options?: RequestInit,
+): Promise<updateSeriesResponseSuccess> => {
+    return customFetch<updateSeriesResponseSuccess>(getUpdateSeriesUrl(id), {
+        ...options,
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(updateSeriesRequest),
+    });
+};
+
+export const getUpdateSeriesMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof updateSeries>>,
+        TError,
+        { id: string; data: UpdateSeriesRequest },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof updateSeries>>,
+    TError,
+    { id: string; data: UpdateSeriesRequest },
+    TContext
+> => {
+    const mutationKey = ["updateSeries"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof updateSeries>>,
+        { id: string; data: UpdateSeriesRequest }
+    > = (props) => {
+        const { id, data } = props ?? {};
+
+        return updateSeries(id, data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateSeriesMutationResult = NonNullable<
+    Awaited<ReturnType<typeof updateSeries>>
+>;
+export type UpdateSeriesMutationBody = UpdateSeriesRequest;
+export type UpdateSeriesMutationError = void;
+
+/**
+ * @summary Update series metadata (name, description, pinned, sort order)
+ */
+export const useUpdateSeries = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof updateSeries>>,
+            TError,
+            { id: string; data: UpdateSeriesRequest },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof updateSeries>>,
+    TError,
+    { id: string; data: UpdateSeriesRequest },
+    TContext
+> => {
+    return useMutation(getUpdateSeriesMutationOptions(options), queryClient);
+};
+export type listSeriesMembersResponse200 = {
+    data: SeriesMemberListResponse;
+    status: 200;
+};
+
+export type listSeriesMembersResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type listSeriesMembersResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type listSeriesMembersResponseSuccess = listSeriesMembersResponse200 & {
+    headers: Headers;
+};
+export type listSeriesMembersResponseError = (
+    | listSeriesMembersResponse403
+    | listSeriesMembersResponse404
+) & {
+    headers: Headers;
+};
+
+export const getListSeriesMembersUrl = (id: string) => {
+    return `/api/admin/series/${id}/articles`;
+};
+
+/**
+ * @summary List a series' members in order, all statuses (manage drawer)
+ */
+export const listSeriesMembers = async (
+    id: string,
+    options?: RequestInit,
+): Promise<listSeriesMembersResponseSuccess> => {
+    return customFetch<listSeriesMembersResponseSuccess>(
+        getListSeriesMembersUrl(id),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
+};
+
+export const getListSeriesMembersQueryKey = (id: string) => {
+    return [`/api/admin/series/${id}/articles`] as const;
+};
+
+export const getListSeriesMembersQueryOptions = <
+    TData = Awaited<ReturnType<typeof listSeriesMembers>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listSeriesMembers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getListSeriesMembersQueryKey(id);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listSeriesMembers>>
+    > = ({ signal }) => listSeriesMembers(id, { signal, ...requestOptions });
+
+    return {
+        queryKey,
+        queryFn,
+        enabled: id !== null && id !== undefined,
+        ...queryOptions,
+    } as UseQueryOptions<
+        Awaited<ReturnType<typeof listSeriesMembers>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListSeriesMembersQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listSeriesMembers>>
+>;
+export type ListSeriesMembersQueryError = void;
+
+export function useListSeriesMembers<
+    TData = Awaited<ReturnType<typeof listSeriesMembers>>,
+    TError = void,
+>(
+    id: string,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listSeriesMembers>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listSeriesMembers>>,
+                    TError,
+                    Awaited<ReturnType<typeof listSeriesMembers>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListSeriesMembers<
+    TData = Awaited<ReturnType<typeof listSeriesMembers>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listSeriesMembers>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listSeriesMembers>>,
+                    TError,
+                    Awaited<ReturnType<typeof listSeriesMembers>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListSeriesMembers<
+    TData = Awaited<ReturnType<typeof listSeriesMembers>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listSeriesMembers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List a series' members in order, all statuses (manage drawer)
+ */
+
+export function useListSeriesMembers<
+    TData = Awaited<ReturnType<typeof listSeriesMembers>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listSeriesMembers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListSeriesMembersQueryOptions(id, options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getListSeriesMembersSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof listSeriesMembers>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listSeriesMembers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey = queryOptions?.queryKey ?? getListSeriesMembersQueryKey(id);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listSeriesMembers>>
+    > = ({ signal }) => listSeriesMembers(id, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listSeriesMembers>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListSeriesMembersSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listSeriesMembers>>
+>;
+export type ListSeriesMembersSuspenseQueryError = void;
+
+export function useListSeriesMembersSuspense<
+    TData = Awaited<ReturnType<typeof listSeriesMembers>>,
+    TError = void,
+>(
+    id: string,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listSeriesMembers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListSeriesMembersSuspense<
+    TData = Awaited<ReturnType<typeof listSeriesMembers>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listSeriesMembers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListSeriesMembersSuspense<
+    TData = Awaited<ReturnType<typeof listSeriesMembers>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listSeriesMembers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List a series' members in order, all statuses (manage drawer)
+ */
+
+export function useListSeriesMembersSuspense<
+    TData = Awaited<ReturnType<typeof listSeriesMembers>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listSeriesMembers>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListSeriesMembersSuspenseQueryOptions(id, options);
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export type addSeriesArticleResponse200 = {
+    data: void;
+    status: 200;
+};
+
+export type addSeriesArticleResponse400 = {
+    data: void;
+    status: 400;
+};
+
+export type addSeriesArticleResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type addSeriesArticleResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type addSeriesArticleResponseSuccess = addSeriesArticleResponse200 & {
+    headers: Headers;
+};
+export type addSeriesArticleResponseError = (
+    | addSeriesArticleResponse400
+    | addSeriesArticleResponse403
+    | addSeriesArticleResponse404
+) & {
+    headers: Headers;
+};
+
+export const getAddSeriesArticleUrl = (id: string) => {
+    return `/api/admin/series/${id}/articles`;
+};
+
+/**
+ * @summary Add a published article to a series (prepends at position 1)
+ */
+export const addSeriesArticle = async (
+    id: string,
+    addSeriesArticleRequest: AddSeriesArticleRequest,
+    options?: RequestInit,
+): Promise<addSeriesArticleResponseSuccess> => {
+    return customFetch<addSeriesArticleResponseSuccess>(
+        getAddSeriesArticleUrl(id),
+        {
+            ...options,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(addSeriesArticleRequest),
+        },
+    );
+};
+
+export const getAddSeriesArticleMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof addSeriesArticle>>,
+        TError,
+        { id: string; data: AddSeriesArticleRequest },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof addSeriesArticle>>,
+    TError,
+    { id: string; data: AddSeriesArticleRequest },
+    TContext
+> => {
+    const mutationKey = ["addSeriesArticle"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof addSeriesArticle>>,
+        { id: string; data: AddSeriesArticleRequest }
+    > = (props) => {
+        const { id, data } = props ?? {};
+
+        return addSeriesArticle(id, data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type AddSeriesArticleMutationResult = NonNullable<
+    Awaited<ReturnType<typeof addSeriesArticle>>
+>;
+export type AddSeriesArticleMutationBody = AddSeriesArticleRequest;
+export type AddSeriesArticleMutationError = void;
+
+/**
+ * @summary Add a published article to a series (prepends at position 1)
+ */
+export const useAddSeriesArticle = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof addSeriesArticle>>,
+            TError,
+            { id: string; data: AddSeriesArticleRequest },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof addSeriesArticle>>,
+    TError,
+    { id: string; data: AddSeriesArticleRequest },
+    TContext
+> => {
+    return useMutation(
+        getAddSeriesArticleMutationOptions(options),
+        queryClient,
+    );
+};
+export type reorderSeriesArticlesResponse200 = {
+    data: void;
+    status: 200;
+};
+
+export type reorderSeriesArticlesResponse400 = {
+    data: void;
+    status: 400;
+};
+
+export type reorderSeriesArticlesResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type reorderSeriesArticlesResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type reorderSeriesArticlesResponseSuccess =
+    reorderSeriesArticlesResponse200 & {
+        headers: Headers;
+    };
+export type reorderSeriesArticlesResponseError = (
+    | reorderSeriesArticlesResponse400
+    | reorderSeriesArticlesResponse403
+    | reorderSeriesArticlesResponse404
+) & {
+    headers: Headers;
+};
+
+export const getReorderSeriesArticlesUrl = (id: string) => {
+    return `/api/admin/series/${id}/articles/order`;
+};
+
+/**
+ * @summary Reorder a series' members (full permutation of current members)
+ */
+export const reorderSeriesArticles = async (
+    id: string,
+    reorderSeriesArticlesRequest: ReorderSeriesArticlesRequest,
+    options?: RequestInit,
+): Promise<reorderSeriesArticlesResponseSuccess> => {
+    return customFetch<reorderSeriesArticlesResponseSuccess>(
+        getReorderSeriesArticlesUrl(id),
+        {
+            ...options,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(reorderSeriesArticlesRequest),
+        },
+    );
+};
+
+export const getReorderSeriesArticlesMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof reorderSeriesArticles>>,
+        TError,
+        { id: string; data: ReorderSeriesArticlesRequest },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof reorderSeriesArticles>>,
+    TError,
+    { id: string; data: ReorderSeriesArticlesRequest },
+    TContext
+> => {
+    const mutationKey = ["reorderSeriesArticles"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof reorderSeriesArticles>>,
+        { id: string; data: ReorderSeriesArticlesRequest }
+    > = (props) => {
+        const { id, data } = props ?? {};
+
+        return reorderSeriesArticles(id, data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type ReorderSeriesArticlesMutationResult = NonNullable<
+    Awaited<ReturnType<typeof reorderSeriesArticles>>
+>;
+export type ReorderSeriesArticlesMutationBody = ReorderSeriesArticlesRequest;
+export type ReorderSeriesArticlesMutationError = void;
+
+/**
+ * @summary Reorder a series' members (full permutation of current members)
+ */
+export const useReorderSeriesArticles = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof reorderSeriesArticles>>,
+            TError,
+            { id: string; data: ReorderSeriesArticlesRequest },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof reorderSeriesArticles>>,
+    TError,
+    { id: string; data: ReorderSeriesArticlesRequest },
+    TContext
+> => {
+    return useMutation(
+        getReorderSeriesArticlesMutationOptions(options),
+        queryClient,
+    );
+};
+export type removeSeriesArticleResponse200 = {
+    data: void;
+    status: 200;
+};
+
+export type removeSeriesArticleResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type removeSeriesArticleResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type removeSeriesArticleResponseSuccess =
+    removeSeriesArticleResponse200 & {
+        headers: Headers;
+    };
+export type removeSeriesArticleResponseError = (
+    | removeSeriesArticleResponse403
+    | removeSeriesArticleResponse404
+) & {
+    headers: Headers;
+};
+
+export const getRemoveSeriesArticleUrl = (id: string, articleId: string) => {
+    return `/api/admin/series/${id}/articles/${articleId}`;
+};
+
+/**
+ * @summary Remove an article from a series
+ */
+export const removeSeriesArticle = async (
+    id: string,
+    articleId: string,
+    options?: RequestInit,
+): Promise<removeSeriesArticleResponseSuccess> => {
+    return customFetch<removeSeriesArticleResponseSuccess>(
+        getRemoveSeriesArticleUrl(id, articleId),
+        {
+            ...options,
+            method: "DELETE",
+        },
+    );
+};
+
+export const getRemoveSeriesArticleMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof removeSeriesArticle>>,
+        TError,
+        { id: string; articleId: string },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof removeSeriesArticle>>,
+    TError,
+    { id: string; articleId: string },
+    TContext
+> => {
+    const mutationKey = ["removeSeriesArticle"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof removeSeriesArticle>>,
+        { id: string; articleId: string }
+    > = (props) => {
+        const { id, articleId } = props ?? {};
+
+        return removeSeriesArticle(id, articleId, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type RemoveSeriesArticleMutationResult = NonNullable<
+    Awaited<ReturnType<typeof removeSeriesArticle>>
+>;
+
+export type RemoveSeriesArticleMutationError = void;
+
+/**
+ * @summary Remove an article from a series
+ */
+export const useRemoveSeriesArticle = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof removeSeriesArticle>>,
+            TError,
+            { id: string; articleId: string },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof removeSeriesArticle>>,
+    TError,
+    { id: string; articleId: string },
+    TContext
+> => {
+    return useMutation(
+        getRemoveSeriesArticleMutationOptions(options),
+        queryClient,
+    );
+};
 export type adminListTopicsResponse200 = {
     data: TopicAdminListResponse;
     status: 200;

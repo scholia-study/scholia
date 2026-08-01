@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE series SET updated_at = now() WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "9e8cafde0c74b8642139371b41df26952f967bf5c7bb60a3e3d07ae48101040b"
+}

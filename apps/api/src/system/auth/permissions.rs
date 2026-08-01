@@ -18,6 +18,7 @@ pub enum Permission {
     SourcesCreate,
     ArticleLabelsManage,
     ArticlesReview,
+    SeriesManage,
 }
 
 impl Permission {
@@ -38,6 +39,7 @@ impl Permission {
             Self::SourcesCreate => "sources_create",
             Self::ArticleLabelsManage => "article_labels_manage",
             Self::ArticlesReview => "articles_review",
+            Self::SeriesManage => "series_manage",
         }
     }
 }
@@ -114,12 +116,14 @@ impl Role {
                 perms.push(Permission::AdminPanel);
                 perms.push(Permission::ArticleLabelsManage);
                 perms.push(Permission::ArticlesReview);
+                perms.push(Permission::SeriesManage);
                 perms.extend_from_slice(ELEVATED_LIMITS);
             }
             Self::Editor => {
                 perms.push(Permission::ResourcesManage);
                 perms.push(Permission::ArticleLabelsManage);
                 perms.push(Permission::ArticlesReview);
+                perms.push(Permission::SeriesManage);
                 perms.extend_from_slice(ELEVATED_LIMITS);
             }
             Self::User => {}

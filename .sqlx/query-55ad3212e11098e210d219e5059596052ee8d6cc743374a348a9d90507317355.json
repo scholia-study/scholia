@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE series_articles SET position = $3\n               WHERE series_id = $1 AND article_id = $2",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid", "Int4"]
+        },
+        "nullable": []
+    },
+    "hash": "55ad3212e11098e210d219e5059596052ee8d6cc743374a348a9d90507317355"
+}

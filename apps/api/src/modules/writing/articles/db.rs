@@ -83,15 +83,16 @@ struct CountRow {
     archived: Option<i64>,
 }
 
-fn fmt_time(t: time::OffsetDateTime) -> String {
+pub(in crate::modules::writing) fn fmt_time(t: time::OffsetDateTime) -> String {
     t.format(&time::format_description::well_known::Rfc3339)
         .unwrap_or_default()
 }
 
 /// Base slugs that would shadow static frontend routes under
-/// `/articles/…` (the review page lives at `/articles/review/<id>`).
+/// `/articles/…` (the review page lives at `/articles/review/<id>`,
+/// series pages under `/articles/series/…`).
 /// Articles with these titles go straight to the suffixed form.
-const RESERVED_SLUGS: &[&str] = &["review", "reviews", "by-id"];
+const RESERVED_SLUGS: &[&str] = &["review", "reviews", "by-id", "series"];
 
 fn generate_slug(title: &str) -> String {
     let slug = slug::slugify(title);
@@ -111,6 +112,37 @@ async fn author_public_roles(pool: &PgPool, user_id: Uuid) -> Vec<String> {
         .ok()
         .and_then(|m| m.get(&user_id).cloned())
         .unwrap_or_default()
+}
+
+/// Batch-hydrate summary rows (topics, labels, author roles) into
+/// responses, preserving row order.
+async fn hydrate_article_summaries(
+    pool: &PgPool,
+    rows: Vec<ArticleSummaryRow>,
+) -> Result<Vec<ArticleResponse>, AppError> {
+    let article_ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
+    let topics_map = load_articles_topics(pool, &article_ids).await?;
+    let labels_map =
+        crate::modules::writing::articles::editorial_labels::list_for_articles(pool, &article_ids)
+            .await?;
+    let author_ids: Vec<Uuid> = rows.iter().map(|r| r.author_user_id).collect();
+    let roles_map = crate::modules::identity::list_public_roles_for(pool, &author_ids)
+        .await
+        .unwrap_or_default();
+
+    Ok(rows
+        .into_iter()
+        .map(|r| {
+            let id = r.id;
+            let author_id = r.author_user_id;
+            article_response(
+                r,
+                topics_map.get(&id).cloned().unwrap_or_default(),
+                labels_map.get(&id).cloned().unwrap_or_default(),
+                roles_map.get(&author_id).cloned().unwrap_or_default(),
+            )
+        })
+        .collect())
 }
 
 fn article_response(
@@ -161,6 +193,7 @@ fn article_detail_response(
         revoked_labels: Vec::new(),
         pending_review_request_id: None,
         latest_review_request_id: None,
+        series: Vec::new(),
         published_at: r.published_at.map(fmt_time),
         created_at: fmt_time(r.created_at),
         updated_at: fmt_time(r.updated_at),
@@ -1168,7 +1201,11 @@ pub async fn get_published_article_by_slug(
     let labels =
         crate::modules::writing::articles::editorial_labels::list_for_article(pool, row.id).await?;
     let public_roles = author_public_roles(pool, row.author_user_id).await;
-    Ok(article_detail_response(row, topics, labels, public_roles))
+    let series =
+        crate::modules::writing::series::db::list_article_series_contexts(pool, row.id).await?;
+    let mut article = article_detail_response(row, topics, labels, public_roles);
+    article.series = series;
+    Ok(article)
 }
 
 pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailResponse, AppError> {
@@ -1193,7 +1230,11 @@ pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailR
     let labels =
         crate::modules::writing::articles::editorial_labels::list_for_article(pool, row.id).await?;
     let public_roles = author_public_roles(pool, row.author_user_id).await;
-    Ok(article_detail_response(row, topics, labels, public_roles))
+    let series =
+        crate::modules::writing::series::db::list_article_series_contexts(pool, row.id).await?;
+    let mut article = article_detail_response(row, topics, labels, public_roles);
+    article.series = series;
+    Ok(article)
 }
 
 pub async fn list_user_articles(
@@ -1220,44 +1261,36 @@ pub async fn list_user_articles(
     .fetch_all(pool)
     .await?;
 
-    let article_ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
-    let topics_map = load_articles_topics(pool, &article_ids).await?;
-    let labels_map =
-        crate::modules::writing::articles::editorial_labels::list_for_articles(pool, &article_ids)
-            .await?;
-    let author_ids: Vec<Uuid> = rows.iter().map(|r| r.author_user_id).collect();
-    let roles_map = crate::modules::identity::list_public_roles_for(pool, &author_ids)
-        .await
-        .unwrap_or_default();
+    hydrate_article_summaries(pool, rows).await
+}
 
-    Ok(rows
-        .into_iter()
-        .map(|r| {
-            let id = r.id;
-            let author_id = r.author_user_id;
-            article_response(
-                r,
-                topics_map.get(&id).cloned().unwrap_or_default(),
-                labels_map.get(&id).cloned().unwrap_or_default(),
-                roles_map.get(&author_id).cloned().unwrap_or_default(),
-            )
-        })
-        .collect())
+/// Escape LIKE metacharacters and wrap in `%…%` for a contains-match.
+fn like_pattern(search: &str) -> String {
+    let escaped = search
+        .replace('\\', "\\\\")
+        .replace('%', "\\%")
+        .replace('_', "\\_");
+    format!("%{escaped}%")
 }
 
 pub async fn list_published_articles(
     pool: &PgPool,
     topic_slug: Option<&str>,
     label_slug: Option<&str>,
+    q: Option<&str>,
+    author: Option<&str>,
     page: i32,
     per_page: i32,
 ) -> Result<(Vec<ArticleResponse>, i64), AppError> {
     let offset = (page - 1).max(0) as i64 * per_page as i64;
     let limit = per_page as i64;
+    let q_pattern = q.map(like_pattern);
+    let author_pattern = author.map(like_pattern);
 
     let total = sqlx::query_scalar!(
         r#"SELECT COUNT(*) AS "count!"
            FROM articles a
+           JOIN users u ON u.id = a.user_id
            WHERE a.status = 'published'
              AND ($1::TEXT IS NULL OR EXISTS (
                  SELECT 1 FROM article_topics at2
@@ -1268,9 +1301,15 @@ pub async fn list_published_articles(
                  SELECT 1 FROM article_editorial_labels ael
                  JOIN editorial_labels el ON el.id = ael.label_id
                  WHERE ael.article_id = a.id AND el.slug = $2
-             ))"#,
+             ))
+             AND ($3::TEXT IS NULL OR a.title ILIKE $3)
+             AND ($4::TEXT IS NULL
+                  OR u.display_name ILIKE $4
+                  OR u.handle ILIKE $4)"#,
         topic_slug,
         label_slug,
+        q_pattern.as_deref(),
+        author_pattern.as_deref(),
     )
     .fetch_one(pool)
     .await?;
@@ -1296,40 +1335,70 @@ pub async fn list_published_articles(
                  JOIN editorial_labels el ON el.id = ael.label_id
                  WHERE ael.article_id = a.id AND el.slug = $2
              ))
+             AND ($3::TEXT IS NULL OR a.title ILIKE $3)
+             AND ($4::TEXT IS NULL
+                  OR u.display_name ILIKE $4
+                  OR u.handle ILIKE $4)
            ORDER BY a.published_at DESC NULLS LAST
-           LIMIT $3 OFFSET $4"#,
+           LIMIT $5 OFFSET $6"#,
         topic_slug,
         label_slug,
+        q_pattern.as_deref(),
+        author_pattern.as_deref(),
         limit,
         offset,
     )
     .fetch_all(pool)
     .await?;
 
-    let article_ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
-    let topics_map = load_articles_topics(pool, &article_ids).await?;
-    let labels_map =
-        crate::modules::writing::articles::editorial_labels::list_for_articles(pool, &article_ids)
-            .await?;
-    let author_ids: Vec<Uuid> = rows.iter().map(|r| r.author_user_id).collect();
-    let roles_map = crate::modules::identity::list_public_roles_for(pool, &author_ids)
-        .await
-        .unwrap_or_default();
+    let articles = hydrate_article_summaries(pool, rows).await?;
+    Ok((articles, total))
+}
 
-    let articles = rows
-        .into_iter()
-        .map(|r| {
-            let id = r.id;
-            let author_id = r.author_user_id;
-            article_response(
-                r,
-                topics_map.get(&id).cloned().unwrap_or_default(),
-                labels_map.get(&id).cloned().unwrap_or_default(),
-                roles_map.get(&author_id).cloned().unwrap_or_default(),
-            )
-        })
-        .collect();
+/// One page of a series' published members, position-ascending. The
+/// series pages read through this; the manage drawer uses
+/// `series::db::list_series_members` (all statuses) instead.
+pub(in crate::modules::writing) async fn list_published_articles_in_series(
+    pool: &PgPool,
+    series_id: Uuid,
+    page: i32,
+    per_page: i32,
+) -> Result<(Vec<ArticleResponse>, i64), AppError> {
+    let offset = (page - 1).max(0) as i64 * per_page as i64;
+    let limit = per_page as i64;
 
+    let total = sqlx::query_scalar!(
+        r#"SELECT COUNT(*) AS "count!"
+           FROM series_articles sa
+           JOIN articles a ON a.id = sa.article_id
+           WHERE sa.series_id = $1 AND a.status = 'published'"#,
+        series_id,
+    )
+    .fetch_one(pool)
+    .await?;
+
+    let rows = sqlx::query_as!(
+        ArticleSummaryRow,
+        r#"SELECT a.id, a.title, a.slug, a.description,
+                  a.status::TEXT AS "status!",
+                  u.id AS "author_user_id!",
+                  u.display_name AS "author_display_name!",
+                  u.handle AS "author_handle?",
+                  a.published_at, a.created_at, a.updated_at
+           FROM series_articles sa
+           JOIN articles a ON a.id = sa.article_id
+           JOIN users u ON u.id = a.user_id
+           WHERE sa.series_id = $1 AND a.status = 'published'
+           ORDER BY sa.position
+           LIMIT $2 OFFSET $3"#,
+        series_id,
+        limit,
+        offset,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let articles = hydrate_article_summaries(pool, rows).await?;
     Ok((articles, total))
 }
 

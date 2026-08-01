@@ -1,0 +1,74 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT s.id, s.name, s.slug, s.description, s.pinned, s.sort_order,\n                  s.created_at, s.updated_at,\n                  COUNT(a.id) AS \"article_count!\",\n                  COUNT(a.id) FILTER (WHERE a.status = 'published') AS \"published_count!\"\n           FROM series s\n           LEFT JOIN series_articles sa ON sa.series_id = s.id\n           LEFT JOIN articles a ON a.id = sa.article_id\n           WHERE s.id = $1\n           GROUP BY s.id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "description",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "pinned",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 5,
+                "name": "sort_order",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 6,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 7,
+                "name": "updated_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 8,
+                "name": "article_count!",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 9,
+                "name": "published_count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            null,
+            null
+        ]
+    },
+    "hash": "31456495bb5a6448710a4579a342c0a50be26948332e0cc7009a312984132ee5"
+}

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { BLOG_SERIES_SLUG } from "../modules/series";
 
 /**
  * Single source of truth for the site's "info" pages — surfaced in the
@@ -7,12 +8,30 @@ import type { ReactNode } from "react";
  */
 export const INFO_LINKS = [
     { to: "/about" as const, label: "About" },
+    {
+        to: "/articles/series/$slug" as const,
+        params: { slug: BLOG_SERIES_SLUG },
+        label: "Blog",
+    },
     { to: "/contribute" as const, label: "Contribute" },
     { to: "/membership" as const, label: "Membership" },
     { to: "/licence" as const, label: "Licence" },
     { to: "/terms" as const, label: "Terms" },
     { to: "/privacy" as const, label: "Privacy" },
 ];
+
+type InfoLink = (typeof INFO_LINKS)[number];
+
+/** Concrete pathname of a link — `$param` segments substituted. Used by
+ * the subnav to match the current location (route-pattern matching would
+ * light up every series page, not just the blog's). */
+export function infoLinkPath(link: InfoLink): string {
+    if (!("params" in link) || !link.params) return link.to;
+    return Object.entries(link.params).reduce(
+        (path, [key, value]) => path.replace(`$${key}`, value),
+        link.to as string,
+    );
+}
 
 interface InfoLinksProps {
     className?: string;
@@ -28,11 +47,26 @@ export function InfoLinks({
 }: InfoLinksProps) {
     return (
         <div className={className}>
-            {INFO_LINKS.map((link) => (
-                <Link key={link.to} to={link.to} className={linkClassName}>
-                    {link.label}
-                </Link>
-            ))}
+            {INFO_LINKS.map((link) =>
+                "params" in link ? (
+                    <Link
+                        key={link.label}
+                        to={link.to}
+                        params={link.params}
+                        className={linkClassName}
+                    >
+                        {link.label}
+                    </Link>
+                ) : (
+                    <Link
+                        key={link.label}
+                        to={link.to}
+                        className={linkClassName}
+                    >
+                        {link.label}
+                    </Link>
+                ),
+            )}
             {trailing}
         </div>
     );

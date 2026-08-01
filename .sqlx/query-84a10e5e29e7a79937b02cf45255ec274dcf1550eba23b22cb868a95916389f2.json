@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "WITH ranked AS (\n               SELECT article_id, ROW_NUMBER() OVER (ORDER BY position) AS rn\n               FROM series_articles WHERE series_id = $1\n           )\n           UPDATE series_articles sa\n           SET position = ranked.rn::INT\n           FROM ranked\n           WHERE sa.series_id = $1 AND sa.article_id = ranked.article_id",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "84a10e5e29e7a79937b02cf45255ec274dcf1550eba23b22cb868a95916389f2"
+}

@@ -24,6 +24,7 @@ import {
     seoHead,
     stripHtml,
 } from "../modules/seo";
+import { SeriesPrevNext, SeriesStrip } from "../modules/series";
 
 export const Route = createFileRoute("/articles/$slug")({
     loader: async ({ context, params }) => {
@@ -230,6 +231,8 @@ function PublishedArticlePage() {
                     )}
                 </header>
 
+                <SeriesStrip series={article.series ?? []} />
+
                 {/* Article body with clickable sentences */}
                 <div className="prose prose-stone max-w-none">
                     <ArticleSentences
@@ -239,6 +242,8 @@ function PublishedArticlePage() {
                         disabled={article.status === "archived"}
                     />
                 </div>
+
+                <SeriesPrevNext series={article.series ?? []} />
             </div>
         </div>
     );

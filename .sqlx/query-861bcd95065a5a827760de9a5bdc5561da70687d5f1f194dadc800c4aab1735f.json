@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT s.slug\n           FROM series s\n           JOIN series_articles sa ON sa.series_id = s.id\n           JOIN articles a ON a.id = sa.article_id\n           WHERE a.slug = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "slug",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [false]
+    },
+    "hash": "861bcd95065a5a827760de9a5bdc5561da70687d5f1f194dadc800c4aab1735f"
+}

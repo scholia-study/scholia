@@ -6,6 +6,8 @@ use crate::system::error::AppError;
 
 pub const MAX_ARTICLE_TITLE: usize = 255;
 pub const MAX_TOPIC_NAME: usize = 60;
+pub const MAX_SERIES_NAME: usize = 80;
+pub const MAX_SERIES_DESCRIPTION: usize = 500;
 pub const MAX_ARTICLE_DESCRIPTION: usize = 250;
 pub const MAX_ARTICLE_MARKDOWN: usize = 200_000;
 pub const MAX_ARTICLE_TOPICS: usize = 5;

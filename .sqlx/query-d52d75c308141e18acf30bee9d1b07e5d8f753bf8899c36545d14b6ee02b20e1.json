@@ -1,0 +1,43 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT s.name, s.slug,\n                  pm.prev_title AS \"prev_title?\", pm.prev_slug AS \"prev_slug?\",\n                  pm.next_title AS \"next_title?\", pm.next_slug AS \"next_slug?\"\n           FROM (\n               SELECT sa.series_id, sa.article_id,\n                      LAG(a.title)  OVER w AS prev_title,\n                      LAG(a.slug)   OVER w AS prev_slug,\n                      LEAD(a.title) OVER w AS next_title,\n                      LEAD(a.slug)  OVER w AS next_slug\n               FROM series_articles sa\n               JOIN articles a ON a.id = sa.article_id\n               WHERE a.status = 'published'\n                 AND sa.series_id IN (\n                     SELECT series_id FROM series_articles WHERE article_id = $1\n                 )\n               WINDOW w AS (PARTITION BY sa.series_id ORDER BY sa.position)\n           ) pm\n           JOIN series s ON s.id = pm.series_id\n           WHERE pm.article_id = $1\n           ORDER BY s.name",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 1,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "prev_title?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "prev_slug?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "next_title?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "next_slug?",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, null, null, null, null]
+    },
+    "hash": "d52d75c308141e18acf30bee9d1b07e5d8f753bf8899c36545d14b6ee02b20e1"
+}

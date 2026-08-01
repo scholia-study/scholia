@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "DELETE FROM series WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "93ea8e8962d0a608b50ac9ee6606dba9886c0efb80be18366aea72a972eb6da6"
+}

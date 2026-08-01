@@ -112,7 +112,12 @@ function RootComponent() {
                             <Navbar />
                             <UserSubnav />
                             <InfoSubnav />
-                            <main className="flex-1 overflow-y-auto">
+                            {/* scrollbar-gutter: main is the page scroller
+                                (body is overflow-hidden), so reserve its
+                                scrollbar space — otherwise content that
+                                toggles between scrollable and short shifts
+                                every centered layout horizontally. */}
+                            <main className="flex-1 overflow-y-auto [scrollbar-gutter:stable]">
                                 <div
                                     className={`${isReader ? "h-full" : "min-h-full"} flex flex-col`}
                                 >

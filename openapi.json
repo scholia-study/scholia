@@ -546,6 +546,296 @@
                 }
             }
         },
+        "/api/admin/series": {
+            "get": {
+                "tags": ["admin"],
+                "summary": "List series with member counts for the manage page",
+                "operationId": "admin_list_series",
+                "responses": {
+                    "200": {
+                        "description": "Series with member counts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SeriesAdminListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["admin"],
+                "summary": "Create a series; the slug is generated from the name and immutable",
+                "operationId": "create_series",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateSeriesRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Series created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SeriesAdminResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or duplicate name"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    }
+                }
+            }
+        },
+        "/api/admin/series/{id}": {
+            "delete": {
+                "tags": ["admin"],
+                "summary": "Delete a series; refused while any article is still attached",
+                "operationId": "delete_series",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Series ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Series deleted"
+                    },
+                    "400": {
+                        "description": "Series still has articles"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Series not found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": ["admin"],
+                "summary": "Update series metadata (name, description, pinned, sort order)",
+                "operationId": "update_series",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Series ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateSeriesRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Series updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SeriesAdminResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or duplicate name"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Series not found"
+                    }
+                }
+            }
+        },
+        "/api/admin/series/{id}/articles": {
+            "get": {
+                "tags": ["admin"],
+                "summary": "List a series' members in order, all statuses (manage drawer)",
+                "operationId": "list_series_members",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Series ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ordered members",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SeriesMemberListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Series not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["admin"],
+                "summary": "Add a published article to a series (prepends at position 1)",
+                "operationId": "add_series_article",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Series ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSeriesArticleRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Article added"
+                    },
+                    "400": {
+                        "description": "Article not published or already in the series"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Series or article not found"
+                    }
+                }
+            }
+        },
+        "/api/admin/series/{id}/articles/order": {
+            "put": {
+                "tags": ["admin"],
+                "summary": "Reorder a series' members (full permutation of current members)",
+                "operationId": "reorder_series_articles",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Series ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReorderSeriesArticlesRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Members reordered"
+                    },
+                    "400": {
+                        "description": "Not a permutation of the current members"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Series not found"
+                    }
+                }
+            }
+        },
+        "/api/admin/series/{id}/articles/{article_id}": {
+            "delete": {
+                "tags": ["admin"],
+                "summary": "Remove an article from a series",
+                "operationId": "remove_series_article",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Series ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "article_id",
+                        "in": "path",
+                        "description": "Article ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Article removed"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Series, article, or membership not found"
+                    }
+                }
+            }
+        },
         "/api/admin/topics": {
             "get": {
                 "tags": ["admin"],
@@ -965,7 +1255,25 @@
                     {
                         "name": "label_slug",
                         "in": "query",
-                        "description": "Filter the listing to articles bearing this editorial label slug\n(e.g. `featured`, `high-quality`). Single label per request — no\nAND-ing across labels in v1.",
+                        "description": "Filter the listing to articles bearing this editorial label slug\n(e.g. `featured`, `high-quality`).",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Case-insensitive contains-match on the article title.",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
+                        "name": "author",
+                        "in": "query",
+                        "description": "Case-insensitive contains-match on the author's display name or\nhandle.",
                         "required": false,
                         "schema": {
                             "type": ["string", "null"]
@@ -3168,6 +3476,87 @@
                 }
             }
         },
+        "/api/series": {
+            "get": {
+                "tags": ["series"],
+                "summary": "List series, pinned first, then by editor-set sort order",
+                "operationId": "list_series",
+                "parameters": [
+                    {
+                        "name": "pinned",
+                        "in": "query",
+                        "description": "`true` restricts the list to pinned series.",
+                        "required": false,
+                        "schema": {
+                            "type": ["boolean", "null"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All series",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SeriesListResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/series/{slug}": {
+            "get": {
+                "tags": ["series"],
+                "summary": "Get a series with one page of its published articles",
+                "operationId": "get_series",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Series slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Series detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SeriesDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Series not found"
+                    }
+                }
+            }
+        },
         "/api/sources": {
             "get": {
                 "tags": ["sources"],
@@ -4024,6 +4413,15 @@
                     }
                 }
             },
+            "AddSeriesArticleRequest": {
+                "type": "object",
+                "required": ["article_id"],
+                "properties": {
+                    "article_id": {
+                        "type": "string"
+                    }
+                }
+            },
             "AdminUserListResponse": {
                 "type": "object",
                 "required": ["users", "total", "page", "per_page"],
@@ -4168,6 +4566,13 @@
                             "$ref": "#/components/schemas/EditorialLabelResponse"
                         },
                         "description": "Labels whose `revokes_on_edit` flag is `true` and which were\nstripped by the most recent author edit. Empty unless this\nresponse is the result of a markdown update that revoked chips.\nFrontend uses this to toast the author."
+                    },
+                    "series": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ArticleSeriesContext"
+                        },
+                        "description": "Series this article belongs to, with published prev/next\nneighbors — drives the article-page series strip. Empty for\narticles in no series (and on owner-facing endpoints)."
                     },
                     "slug": {
                         "type": "string"
@@ -4638,6 +5043,39 @@
                         "type": "string"
                     },
                     "submitted_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ArticleSeriesContext": {
+                "type": "object",
+                "description": "A series the article belongs to, as shown on the article page strip.\nNeighbors are published members only; `prev` is toward position 1\n(the newest end for prepend-ordered series like the blog).",
+                "required": ["name", "slug"],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "next": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/SeriesNeighbor"
+                            }
+                        ]
+                    },
+                    "prev": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/SeriesNeighbor"
+                            }
+                        ]
+                    },
+                    "slug": {
                         "type": "string"
                     }
                 }
@@ -5190,6 +5628,19 @@
                     "message": {
                         "type": ["string", "null"],
                         "description": "Optional note posted as the first message in the article's\nreview channel."
+                    }
+                }
+            },
+            "CreateSeriesRequest": {
+                "type": "object",
+                "description": "`slug` is generated from the name at creation and immutable after —\nit appears in shareable URLs (`/articles/series/<slug>`).",
+                "required": ["name"],
+                "properties": {
+                    "description": {
+                        "type": ["string", "null"]
+                    },
+                    "name": {
+                        "type": "string"
                     }
                 }
             },
@@ -6478,6 +6929,19 @@
                     }
                 }
             },
+            "ReorderSeriesArticlesRequest": {
+                "type": "object",
+                "description": "The full member list in its new order — must be an exact permutation\nof the series' current members.",
+                "required": ["article_ids"],
+                "properties": {
+                    "article_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "ResetPasswordRequest": {
                 "type": "object",
                 "required": ["token", "password"],
@@ -6844,6 +7308,195 @@
                         "type": ["string", "null"]
                     },
                     "text": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SeriesAdminListResponse": {
+                "type": "object",
+                "required": ["series"],
+                "properties": {
+                    "series": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SeriesAdminResponse"
+                        }
+                    }
+                }
+            },
+            "SeriesAdminResponse": {
+                "type": "object",
+                "description": "Series row for the manage page: public fields plus member counts of\nevery status (delete is refused while `article_count` is non-zero).",
+                "required": [
+                    "id",
+                    "name",
+                    "slug",
+                    "pinned",
+                    "sort_order",
+                    "article_count",
+                    "published_count",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "article_count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Members of any status."
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": ["string", "null"]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "pinned": {
+                        "type": "boolean"
+                    },
+                    "published_count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Members currently visible on public series surfaces."
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SeriesDetailResponse": {
+                "type": "object",
+                "required": ["id", "name", "slug", "articles", "total"],
+                "properties": {
+                    "articles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ArticleResponse"
+                        },
+                        "description": "One page of published members, position-ascending."
+                    },
+                    "description": {
+                        "type": ["string", "null"]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "total": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Total published members across all pages."
+                    }
+                }
+            },
+            "SeriesListResponse": {
+                "type": "object",
+                "required": ["series"],
+                "properties": {
+                    "series": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SeriesResponse"
+                        }
+                    }
+                }
+            },
+            "SeriesMemberListResponse": {
+                "type": "object",
+                "required": ["articles"],
+                "properties": {
+                    "articles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SeriesMemberResponse"
+                        }
+                    }
+                }
+            },
+            "SeriesMemberResponse": {
+                "type": "object",
+                "description": "Ordered member row for the manage drawer. Unlike the public surfaces\nthis includes non-published members (rendered greyed with their\nstatus) — membership survives unpublish.",
+                "required": [
+                    "article_id",
+                    "title",
+                    "slug",
+                    "status",
+                    "author_display_name",
+                    "position"
+                ],
+                "properties": {
+                    "article_id": {
+                        "type": "string"
+                    },
+                    "author_display_name": {
+                        "type": "string"
+                    },
+                    "position": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SeriesNeighbor": {
+                "type": "object",
+                "required": ["title", "slug"],
+                "properties": {
+                    "slug": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SeriesResponse": {
+                "type": "object",
+                "required": ["id", "name", "slug", "pinned", "article_count"],
+                "properties": {
+                    "article_count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Published members only."
+                    },
+                    "description": {
+                        "type": ["string", "null"]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "pinned": {
+                        "type": "boolean"
+                    },
+                    "slug": {
                         "type": "string"
                     }
                 }
@@ -7486,6 +8139,25 @@
                 "properties": {
                     "resolved": {
                         "type": "boolean"
+                    }
+                }
+            },
+            "UpdateSeriesRequest": {
+                "type": "object",
+                "description": "Partial update; the slug never changes. An empty-string `description`\nclears it.",
+                "properties": {
+                    "description": {
+                        "type": ["string", "null"]
+                    },
+                    "name": {
+                        "type": ["string", "null"]
+                    },
+                    "pinned": {
+                        "type": ["boolean", "null"]
+                    },
+                    "sort_order": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
                     }
                 }
             },

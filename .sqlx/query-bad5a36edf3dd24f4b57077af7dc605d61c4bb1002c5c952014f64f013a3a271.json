@@ -1,0 +1,43 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT s.id, s.name, s.slug, s.description, s.pinned,\n                  COUNT(a.id) FILTER (WHERE a.status = 'published') AS \"article_count!\"\n           FROM series s\n           LEFT JOIN series_articles sa ON sa.series_id = s.id\n           LEFT JOIN articles a ON a.id = sa.article_id\n           WHERE $1::BOOLEAN IS NULL OR s.pinned = $1\n           GROUP BY s.id\n           ORDER BY s.pinned DESC, s.sort_order, s.name",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "description",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "pinned",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 5,
+                "name": "article_count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Bool"]
+        },
+        "nullable": [false, false, false, true, false, null]
+    },
+    "hash": "bad5a36edf3dd24f4b57077af7dc605d61c4bb1002c5c952014f64f013a3a271"
+}

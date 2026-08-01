@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
+use crate::modules::writing::series::models::ArticleSeriesContext;
+
 #[derive(Debug, Clone, Serialize, ToSchema)]
 pub struct TopicResponse {
     pub id: String,
@@ -128,6 +130,11 @@ pub struct ArticleDetailResponse {
     /// author's entry point to the review page and its history.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub latest_review_request_id: Option<String>,
+    /// Series this article belongs to, with published prev/next
+    /// neighbors — drives the article-page series strip. Empty for
+    /// articles in no series (and on owner-facing endpoints).
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub series: Vec<ArticleSeriesContext>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub published_at: Option<String>,
     pub created_at: String,
@@ -245,6 +252,31 @@ pub struct UpdateArticleRequest {
 pub struct ArticleListQuery {
     #[serde(default)]
     pub status: Option<String>,
+}
+
+/// Query for the public article listing. A superset of
+/// `PublicArticleListQuery` — kept separate so the profile endpoint
+/// (which reuses that struct) doesn't advertise search params it
+/// ignores. `q`/`author` also serve the series manage drawer's finder.
+#[derive(Debug, Deserialize, IntoParams)]
+pub struct PublishedArticleSearchQuery {
+    #[serde(default)]
+    pub topic_slug: Option<String>,
+    /// Filter the listing to articles bearing this editorial label slug
+    /// (e.g. `featured`, `high-quality`).
+    #[serde(default)]
+    pub label_slug: Option<String>,
+    /// Case-insensitive contains-match on the article title.
+    #[serde(default)]
+    pub q: Option<String>,
+    /// Case-insensitive contains-match on the author's display name or
+    /// handle.
+    #[serde(default)]
+    pub author: Option<String>,
+    #[serde(default)]
+    pub page: Option<i32>,
+    #[serde(default)]
+    pub per_page: Option<i32>,
 }
 
 #[derive(Debug, Deserialize, IntoParams)]

@@ -95,6 +95,7 @@ pub async fn book_sitemap(
 pub async fn site_sitemap(State(state): State<AppState>) -> Result<Response, AppError> {
     let origin = origin(&state);
     let articles = db::published_article_entries(&state.pool).await?;
+    let series = db::series_entries(&state.pool).await?;
     let authors = db::author_entries(&state.pool).await?;
 
     let mut xml = String::from(URLSET_OPEN);
@@ -107,6 +108,14 @@ pub async fn site_sitemap(State(state): State<AppState>) -> Result<Response, App
             "  <url><loc>{origin}/articles/{}</loc><lastmod>{}</lastmod></url>",
             xml_escape(&article.slug),
             article.lastmod.date(),
+        );
+    }
+    for entry in series {
+        let _ = writeln!(
+            xml,
+            "  <url><loc>{origin}/articles/series/{}</loc><lastmod>{}</lastmod></url>",
+            xml_escape(&entry.slug),
+            entry.lastmod.date(),
         );
     }
     for author in authors {

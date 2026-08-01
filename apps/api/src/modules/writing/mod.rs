@@ -1,14 +1,16 @@
 //! The writing domain: user-authored articles, quotations (with notes and
-//! tags), the article↔quotation embeds linking them, and the derived
-//! passage-reference index (which articles quote which passages). Features
-//! are flat siblings; `quotations` and `article_quotations` are mutually
-//! coupled. Other domains reach writing only through the re-exports below.
+//! tags), the article↔quotation embeds linking them, the derived
+//! passage-reference index (which articles quote which passages), and
+//! editor-curated article series. Features are flat siblings;
+//! `quotations` and `article_quotations` are mutually coupled. Other
+//! domains reach writing only through the re-exports below.
 
 mod article_passage_references;
 mod article_quotations;
 mod article_reviews;
 mod articles;
 mod quotations;
+mod series;
 
 use utoipa_axum::router::OpenApiRouter;
 
@@ -109,6 +111,8 @@ pub fn public_router() -> OpenApiRouter<AppState> {
         .routes(utoipa_axum::routes!(
             articles::handlers::list_editorial_labels
         ))
+        .routes(utoipa_axum::routes!(series::handlers::list_series))
+        .routes(utoipa_axum::routes!(series::handlers::get_series))
         .routes(utoipa_axum::routes!(articles::handlers::batch_sentences))
         .routes(utoipa_axum::routes!(
             article_quotations::handlers::get_article_quotation
@@ -148,5 +152,23 @@ pub fn admin_router() -> OpenApiRouter<AppState> {
         .routes(utoipa_axum::routes!(
             articles::handlers::update_topic,
             articles::handlers::delete_topic
+        ))
+        .routes(utoipa_axum::routes!(
+            series::handlers::admin_list_series,
+            series::handlers::create_series
+        ))
+        .routes(utoipa_axum::routes!(
+            series::handlers::update_series,
+            series::handlers::delete_series
+        ))
+        .routes(utoipa_axum::routes!(
+            series::handlers::list_series_members,
+            series::handlers::add_series_article
+        ))
+        .routes(utoipa_axum::routes!(
+            series::handlers::remove_series_article
+        ))
+        .routes(utoipa_axum::routes!(
+            series::handlers::reorder_series_articles
         ))
 }

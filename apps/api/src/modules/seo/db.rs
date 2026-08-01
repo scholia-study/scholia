@@ -79,6 +79,20 @@ pub async fn published_article_entries(pool: &PgPool) -> Result<Vec<SitemapEntry
     Ok(rows)
 }
 
+/// All series pages. `updated_at` is bumped on every membership change,
+/// so it doubles as a faithful lastmod.
+pub async fn series_entries(pool: &PgPool) -> Result<Vec<SitemapEntry>, AppError> {
+    let rows = sqlx::query_as!(
+        SitemapEntry,
+        r#"SELECT slug, updated_at AS "lastmod"
+           FROM series
+           ORDER BY slug"#,
+    )
+    .fetch_all(pool)
+    .await?;
+    Ok(rows)
+}
+
 /// Profiles worth indexing: users with a handle and at least one
 /// published article (the profile route noindexes everyone else).
 pub async fn author_entries(pool: &PgPool) -> Result<Vec<SitemapEntry>, AppError> {

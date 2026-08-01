@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE series SET\n               name = COALESCE($2, name),\n               description = CASE\n                   WHEN $3::TEXT IS NULL THEN description\n                   WHEN $3 = '' THEN NULL\n                   ELSE $3\n               END,\n               pinned = COALESCE($4, pinned),\n               sort_order = COALESCE($5, sort_order),\n               updated_at = now()\n           WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Text", "Text", "Bool", "Int4"]
+        },
+        "nullable": []
+    },
+    "hash": "a7c0f46228fc4929bd152673c970cafd45156bf6d3ed6599aabad94aa23a567e"
+}
