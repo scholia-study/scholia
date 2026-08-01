@@ -42,7 +42,7 @@ fn validate_reorder(current: &[Uuid], requested: &[Uuid]) -> Result<(), AppError
 }
 
 /// All series, pinned first (each block in editor-set order) — the
-/// order both the series index page and the landing sidebar show.
+/// order the landing-page series directory shows.
 pub async fn list_series(
     pool: &PgPool,
     pinned: Option<bool>,
