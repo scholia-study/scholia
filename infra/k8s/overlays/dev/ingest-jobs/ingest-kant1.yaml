@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-kant1-e4700c2c9d89
+  name: ingest-kant1-48440c14fc6b
   labels:
     ingest: kant1
   annotations:
@@ -31,7 +31,7 @@ spec:
             - name: CORPUS
               value: kant1
             - name: DERIVED_HASH
-              value: "e4700c2c9d89"
+              value: "48440c14fc6b"
             - name: NTFY_URL
               valueFrom:
                 secretKeyRef:
