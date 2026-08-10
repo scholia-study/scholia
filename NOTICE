@@ -11,3 +11,9 @@ derived editorial materials — are NOT covered by the Apache License.
 They are licensed under the Creative Commons
 Attribution-NonCommercial-NoDerivatives 4.0 International License
 (CC BY-NC-ND 4.0). See assets/LICENSE.
+
+Some corpora within assets/ carry a different licence on part or all
+of their material, inherited from the source they derive from (for
+example a share-alike transcription). Each corpus directory's README
+states the provenance and licence of its layers; where it does, that
+statement takes precedence over the blanket assets/ licence above.
