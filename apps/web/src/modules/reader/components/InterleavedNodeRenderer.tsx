@@ -130,6 +130,18 @@ function alignSentences(
         return alignBySentenceLink(primarySentences, companionSentences);
     }
 
+    // Reverse direction: the primary IS the translation (viewing the
+    // English book with its source as companion). Its sentences carry the
+    // links, so align with roles swapped and flip the groups back.
+    const hasReverseLink = primarySentences.some(
+        (ps) => ps.source_sentence_start_id,
+    );
+    if (hasReverseLink) {
+        return alignBySentenceLink(companionSentences, primarySentences).map(
+            (g) => ({ primary: g.companion, companion: g.primary }),
+        );
+    }
+
     const sharedSystem = pickSharedMarkerSystem(
         primarySentences,
         companionSentences,
