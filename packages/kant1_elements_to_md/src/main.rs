@@ -77,7 +77,18 @@ fn main() {
     );
 
     // 6. Build MdTocNodes from page elements
-    let flat_entries = toc::flat_toc_entries();
+    // This pre-curation pipeline reasons about AA pages numerically
+    // (section ownership is a page-order scan), so the shared string-typed
+    // flat entries convert back at the boundary — kant1 pages are all Arabic.
+    let flat_entries: Vec<(usize, u16, u16, &str, Option<&str>)> = toc::flat_toc_entries()
+        .into_iter()
+        .map(|(i, page, depth, label, so)| {
+            let page = page
+                .and_then(|p| p.parse().ok())
+                .expect("kant1 TOC pages are numeric");
+            (i, page, depth, label, so)
+        })
+        .collect();
     let nodes = build_md_nodes(&flat_entries, &page_elements);
 
     // 7. Write markdown files

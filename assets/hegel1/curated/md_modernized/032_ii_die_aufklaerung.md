@@ -1,0 +1,16 @@
+---
+position: 32
+label: "II. Die Aufklärung"
+depth: 4
+page_1807: 486
+---
+
+## {{{ 486 }}} II. Die Aufklärung
+
+Der eigentümliche Gegenstand, gegen welchen die reine Einsicht die Kraft des Begriffes richtet, ist der Glauben, als die ihr in demselben Elemente gegenüberstehende Form des reinen Bewusstseins. Sie hat aber auch Beziehung auf die wirkliche Welt, denn sie ist wie jener, die Rückkehr aus derselben in das reine Bewusstsein. Es ist zuerst zu sehen, wie ihre Tätigkeit gegen die unlautern Absichten und verkehrten Einsichten derselben beschaffen ist.
+
+Oben wurde schon des ruhigen Bewusstseins erwähnt, das diesem sich in sich auflösenden und wieder erzeugenden Wirbel gegenübersteht; es macht die Seite der reinen Einsicht und Absicht aus. In dies ruhige Bewusstsein fällt aber, wie wir sahen, keine _besondere Einsicht_ über die Welt der Bildung; diese hat vielmehr selbst das schmerzlichste Gefühl und die wahrste Einsicht über sich selbst, — das Gefühl, die Auflösung alles sich befestigenden, durch alle Momente ihres Daseins hindurch gerädert, und an allen Knochen zerschlagen zu sein; — ebenso ist sie die Sprache dieses Gefühls und die beurteilende {{{ 487 }}} geistreiche Rede über alle Seiten ihres Zustands. Die reine Einsicht kann daher hier keine eigene Tätigkeit und Inhalt haben, und sich also nur als das formelle treue _Auffassen_ dieser eignen geistreichen Einsicht der Welt und ihrer Sprache verhalten. Indem diese Sprache zerstreut, die Beurteilung eine Faselei des Augenblicks, die sich sogleich wieder vergisst, und ein Ganzes nur für ein drittes Bewusstsein ist, so kann sich dieses als _reine_ Einsicht nur dadurch unterscheiden, dass es jene sich zerstreuenden Züge in ein allgemeines Bild zusammenfasst, und sie dann zu einer Einsicht aller macht.
+
+{{ 293 }} Sie wird durch dies einfache Mittel die Verwirrung dieser Welt zur Auflösung bringen. Denn es hat sich ergeben, dass nicht die Massen, und die bestimmten Begriffe und Individualitäten das Wesen dieser Wirklichkeit sind, sondern dass sie ihre Substanz und Halt allein in dem Geiste hat, der als Urteilen und Besprechen existiert, und dass das Interesse, für dies Räsonieren und Schwatzen einen Inhalt zu haben, allein das Ganze und die Massen seiner Gegliederung erhält. In dieser Sprache der Einsicht ist ihr Selbstbewusstsein sich noch ein _für sich seiendes, dieses Einzelne_; aber die Eitelkeit des Inhalts ist zugleich Eitelkeit des ihn eitel wissenden Selbsts. Indem nun das ruhig auffassende Bewusstsein von diesem ganzen geistreichen Geschwätze der Eitelkeit die treffendsten und die Sache durchschneidenden Fassungen in eine Sammlung bringt, geht zu der {{{ 488 }}} übrigen Eitelkeit des Daseins die das Ganze noch erhaltende Seele, die Eitelkeit des geistreichen Beurteilens, zu Grunde. Die Sammlung zeigt den Meisten einen bessern, oder allen wenigstens einen vielfachern Witz, als der ihrige ist, und das Besserwissen und Beurteilen überhaupt, als etwas allgemeines und nun allgemein bekanntes; damit tilgt sich das einzige Interesse, das noch vorhanden war, und das einzelne Einsehen löst sich in die allgemeine Einsicht auf.
+
+Noch aber steht über dem eiteln Wissen das Wissen von dem Wesen fest, und die reine Einsicht erscheint erst in eigentlicher Tätigkeit, insofern sie gegen den Glauben auftritt.

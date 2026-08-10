@@ -23,7 +23,7 @@ if ! scholia_corpus_known "$corpus"; then
 fi
 
 case "$corpus" in
-    kant1 | kant3)
+    kant1 | kant3 | hegel1)
         cargo run -p md_prose_to_struct -- --corpus "$corpus"
         cargo run -p md_prose_to_struct -- --corpus "$corpus" --translation
         ;;

@@ -10,6 +10,12 @@ export interface PageMarkerResponse {
     char_offset?: number | null;
     /** @nullable */
     image_url?: string | null;
+    /**
+     * Margin display prefix, concatenated verbatim with `ref_value`
+     * ("B " → "B 344", "9." → "9.53"); absent = bare number.
+     * @nullable
+     */
+    margin_prefix?: string | null;
     ref_value: string;
     sort_order: number;
     system_slug: string;

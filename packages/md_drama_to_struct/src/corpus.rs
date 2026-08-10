@@ -65,6 +65,7 @@ fn page_system() -> Vec<ReferenceSystemData> {
         ref_type: "block".into(),
         cite_priority: Some(0),
         cite_template: Some("{parent}, {self} · p. {ref}".into()),
+        margin_prefix: None,
     }]
 }
 

@@ -16,13 +16,13 @@ use crate::model::{ContentBlockData, PageMarkerData, SentenceData};
 use crate::parse::{
     MarkerKind, ParsedBlock, RawMarker, figure_caption, prepend_figcaption_label, strip_html_tags,
 };
-use crate::roman::roman_to_int;
+use crate::roman::{block_sort_order, roman_to_int};
 
 /// Map a raw page marker to its DB-ready form, resolving the reference-system
 /// slug and a numeric sort order.
 pub fn marker_to_page_marker(marker: &RawMarker) -> PageMarkerData {
     let (system, sort_order) = match marker.kind {
-        MarkerKind::Aa => ("aa_iii", marker.value.parse::<i32>().unwrap_or(0)),
+        MarkerKind::Aa => ("aa_iii", block_sort_order(&marker.value)),
         MarkerKind::BEdition => (
             "b_edition",
             roman_to_int(&marker.value).map(|v| v as i32).unwrap_or(0),

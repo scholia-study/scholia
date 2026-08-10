@@ -1,0 +1,71 @@
+file	page	search	replace	note
+003_einleitung.md	5	nichts, sie in Resultate abzuziehen	nichts, sie im Resultate abzuziehen	in > im
+003_einleitung.md	11	welcher es gleichgültig ist, eigene oder fremde	welche es gleichgültig ist, eigene oder fremde	* welcher > welche
+004_i_die_sinnliche_gewissheit_oder_das_diese_und_das_meynen.md	25	nicht über ihn zu reflectiren und nachdenken	nicht über ihn zu reflectiren und nachzudenken	insert zu after nach (nachzudenken)
+004_i_die_sinnliche_gewissheit_oder_das_diese_und_das_meynen.md	26	was wir sagen, ist; _Dieses_	was wir sagen, ist: _Dieses_	semicolon > colon
+005_ii_die_wahrnehmung_oder_das_ding_und_die_taeuschung.md	45	als die Continuität so bestimmte	als die Continuität bestimmte	delete so
+005_ii_die_wahrnehmung_oder_das_ding_und_die_taeuschung.md	53	sein Wesen in einem andern zu heben	sein Wesen in einem andern zu haben	heben > haben
+005_ii_die_wahrnehmung_oder_das_ding_und_die_taeuschung.md	56	weist sich in Einer und derselben Rücksicht	erweiſst sich in Einer und derselben Rücksicht	weist > erweiſst
+006_iii_krafft_und_verstand_erscheinung_und_uebersinnliche_welt.md	59	selbst wieder nicht anders, als das auf eine Seite	selbst wieder nichts anders, als das auf eine Seite	nicht > nichts
+006_iii_krafft_und_verstand_erscheinung_und_uebersinnliche_welt.md	70	in eine unterschiedene Einheit zusammen	in eine ununterschiedene Einheit zusammen	* unterſch > ununterſch
+006_iii_krafft_und_verstand_erscheinung_und_uebersinnliche_welt.md	74	etwas wahr zu nehmen, von dem wir wissen	etwas als wahr zu nehmen, von dem wir wissen	insert als before wahr
+009_b_freyheit_des_selbstbewusstseyns_stoicismus_skepticismus_und_das_unglueckliche_bewusstseyn.md	148	eine warme Nebenerfüllung	eine warme Nebelerfüllung	* Nebenerfüllung > Nebelerfüllung
+009_b_freyheit_des_selbstbewusstseyns_stoicismus_skepticismus_und_das_unglueckliche_bewusstseyn.md	152	löst sich nur daher eine Oberfläche	löst sich daher nur eine Oberfläche	nur daher > daher nur
+010_v_gewissheit_und_wahrheit_der_vernunft.md	164	spricht der Idealismus ihren Begriffe aus	spricht der Idealismus ihren Begriff aus	Begriffe > Begriff
+012_a_beobachtung_der_natur.md	177	nur ums Wahrnehmen zu thun, und z. B.	nur ums Wahrnehmen zu thun sey, und z. B.	insert sey after thun; errata prints ſey
+012_a_beobachtung_der_natur.md	205	der Menge der weggenommenen _zunimmt;_	der Menge des weggenommenen _zunimmt;_	der > des
+012_a_beobachtung_der_natur.md	211	Bedeutung; und die Vorstellung des Gesetzes legt	Bedeutung; und der Vorstellung des Gesetzes legt	die > der
+012_a_beobachtung_der_natur.md	224	Was nur in diesem Hauffen	Was nun in diesem Hauffen	nur > nun
+012_a_beobachtung_der_natur.md	226	diſs ist hiedurch an sich allgemeine	diſs ist hiedurch an sich allgemein	allgemeine > allgemein
+014_c_beobachtung_der_beziehung_des_selbstbewusstseyns_auf_seine_unmittelbare_wirklichkeit_physiognomik_und_schaedellehre.md	244	welche vorhin auſser dem Individuum vorfand	welche die Beobachtung vorhin auſser dem Individuum vorfand	* insert die Beobachtung after welche
+014_c_beobachtung_der_beziehung_des_selbstbewusstseyns_auf_seine_unmittelbare_wirklichkeit_physiognomik_und_schaedellehre.md	249	weil in ihnen das Thun _als Thun_ gegenwärtig, {{{ 250 }}} das Thun _als Thun_ gegenwärtig, das Thun _als That_	weil in ihnen das Thun _als Thun_ gegenwärtig, {{{ 250 }}} das Thun _als That_	strike duplicated das Thun als Thun gegenwärtig
+014_c_beobachtung_der_beziehung_des_selbstbewusstseyns_auf_seine_unmittelbare_wirklichkeit_physiognomik_und_schaedellehre.md	259	Gegenwart des Individuums ist, welcher in seiner	Gegenwart des Individuums ist, das in seiner	welcher > das
+014_c_beobachtung_der_beziehung_des_selbstbewusstseyns_auf_seine_unmittelbare_wirklichkeit_physiognomik_und_schaedellehre.md	278	und gewesen sey, was es an und für sich seyn sollte	und gewesen sey; was es an und für sich seyn sollte	comma > semicolon before was
+014_c_beobachtung_der_beziehung_des_selbstbewusstseyns_auf_seine_unmittelbare_wirklichkeit_physiognomik_und_schaedellehre.md	280	als eines seyendes ist	als eines seyenden ist	seyendes > seyenden
+015_b_die_verwirklichung_des_vernuenftigen_selbstbewusstseyns_durch_sich_selbst.md	294	es aber ist als dieses Ist sich die lebendige Wahrheit	es aber ist als dieses Ich sich die lebendige Wahrheit	* Ist > Ich
+015_b_die_verwirklichung_des_vernuenftigen_selbstbewusstseyns_durch_sich_selbst.md	294	verdoppeln, sich diesen als sein seyendes Gegenbild	verdoppeln, sich als Diesen als sein seyendes Gegenbild	sich diesen > sich als Diesen
+016_a_die_lust_und_die_nothwendigkeit.md	300	Die genossene Luft hat wohl	Die genossene Lust hat wohl	* Luft > Lust; errata line garbled
+017_b_das_gesetz_des_herzens_und_der_wahnsinn_des_eigenduenkels.md	305	daſs ihr diſs für _Fürsichseyn_ als nothwendiges	daſs ihr diſs _Fürsichseyn_ als nothwendiges	delete für
+018_c_die_tugend_und_der_weltlauff.md	324	daſs es für ihm nur als ein solches gilt	daſs es für ihn nur als ein solches gilt	ihm > ihn
+020_a_das_geistige_thierreich_und_der_betrug_oder_die_sache_selbs.md	335	nicht Beschränkung, über welche er hinauswollte	nicht Beschränkung, über welche es hinauswollte	er > es
+025_a_die_sittliche_welt_das_menschliche_und_goettliche_gesetz_der_mann_und_das_weib.md	400	die abstracte Momente jener leeren Kategorie	die abstracten Momente jener leeren Kategorie	abstracte > abstracten
+026_b_die_sittliche_handlung_das_menschliche_und_goettliche_wissen_die_schuld_und_das_schicksal.md	404	aus ihrer unmittelbarer substantieller Wesenheit	aus ihrer unmittelbaren substantiellen Wesenheit	errata says S.402; text is on p404
+026_b_die_sittliche_handlung_das_menschliche_und_goettliche_wissen_die_schuld_und_das_schicksal.md	414	Erst in dergleichen Unterwerfung	Erst in der gleichen Unterwerfung	* dergleichen > der gleichen
+026_b_die_sittliche_handlung_das_menschliche_und_goettliche_wissen_die_schuld_und_das_schicksal.md	414	und gerechte _Schicksale_ aufgetreten	und gerechte _Schicksal_ aufgetreten	Schicksale > Schicksal
+026_b_die_sittliche_handlung_das_menschliche_und_goettliche_wissen_die_schuld_und_das_schicksal.md	417	stummen Substanz Aller in den Wässern	stummen Substanz Aller, in den Wässern	comma after Aller
+027_c_rechtszustand.md	426	geistlosen Punkte gesammelt ist	geistlosen Punkt gesammelt ist	Puncte > Punct; k kept as file reads
+027_c_rechtszustand.md	428	nur als die einzige Ansicht des Pewuſstseyns	nur als die einseitige Ansicht des Pewuſstseyns	* einzige > einseitige
+030_a_die_bildung_und_ihr_reich_der_wirklichkeit.md	455	zu welchen beyden Seiten gereinigt	zu welchen beyde Seiten gereinigt	* beyden > beyde
+033_a_der_kampf_der_aufklaerung_mit_dem_aberglauben.md	494	ihre Momente in beſtimmten offenbarem Daseyn	ihre Momente in beſtimmtem offenbarem Daseyn	bestimmten > bestimmtem
+033_a_der_kampf_der_aufklaerung_mit_dem_aberglauben.md	501	oder nach welchen Weſen ſonſt der Glauben’	oder nach welchen Weiſen ſonſt der Glauben’	* Wesen > Weisen
+033_a_der_kampf_der_aufklaerung_mit_dem_aberglauben.md	506	Betrug, welche eine _innerliche_ Erhebung	Betrug, welcher eine _innerliche_ Erhebung	welche > welcher
+033_a_der_kampf_der_aufklaerung_mit_dem_aberglauben.md	516	Das iſolirte dem _Ansich_ entgegengeſetzten Thun	Das iſolirte dem _Ansich_ entgegengeſetzte Thun	* entgegengesetzten > entgegengesetzte
+033_a_der_kampf_der_aufklaerung_mit_dem_aberglauben.md	517	und ihre Bewegung kein _Geſchehen_	und ihre Bewegung ein _Geſchehen_	* kein > ein
+035_iii_die_absolute_freyheit_und_der_schrecken.md	542	und dieſe in ihm ſich darin nur poſitiv	und dieſe in ihm ſich nur poſitiv	delete darin
+037_a_die_moralische_weltanschauung.md	552	diſs Moment aus aus ſeinem abſoluten Zwecke	diſs Moment aus ſeinem abſoluten Zwecke	delete duplicated aus
+037_a_die_moralische_weltanschauung.md	557	nicht mehr deutlich {{{ 557 }}} zu unterſcheiden	nicht mehr deutlich {{{ 557 }}} unterſcheiden	delete zu
+038_b_die_verstellung.md	574	dem Moralischen oft ſchlecht will, dem Unmoralischen	dem Moralischen oft ſchlecht, dem Unmoralischen	delete will
+039_c_das_gewissen_die_schoene_seele_das_boese_und_seine_verzeyhung.md	598	von ihr iſt, dem Selbſt, der Gewiſsheit ſeiner, angehört	von ihr, dem Selbſt, der Gewiſsheit ſeiner, angehört	delete ist
+039_c_das_gewissen_die_schoene_seele_das_boese_und_seine_verzeyhung.md	602	frey von der _nun seyenden beſtimmten_ Handlung	frey von der _nur seyenden beſtimmten_ Handlung	* nun > nur
+039_c_das_gewissen_die_schoene_seele_das_boese_und_seine_verzeyhung.md	607	dem alle Aeuſſerlichkeit also ſolche verschwindet	dem alle Aeuſſerlichkeit als ſolche verschwindet	* also > als
+039_c_das_gewissen_die_schoene_seele_das_boese_und_seine_verzeyhung.md	607	wodurch es real oder nach _Bewuſstſeyn_ iſt	wodurch es real oder noch _Bewuſstſeyn_ iſt	* nach > noch
+039_c_das_gewissen_die_schoene_seele_das_boese_und_seine_verzeyhung.md	619	geschehen ist, für das wahre Abwerfen gelten zu laſſen	geschehen ist, nicht für das wahre Abwerfen gelten zu laſſen	** insert nicht before für das wahre
+039_c_das_gewissen_die_schoene_seele_das_boese_und_seine_verzeyhung.md	619	Gegensatzes, — seiner Unmittelbarkeit	Gegensatzes, — einer Unmittelbarkeit	seiner > einer
+039_c_das_gewissen_die_schoene_seele_das_boese_und_seine_verzeyhung.md	623	seines abgesonderten Insichseyns selbſt das vollkommen allgemeine	seines abgesonderten Insichseyns willen selbſt das vollkommen allgemeine	insert willen after Insichseyns
+042_a_das_lichtwesen.md	642	geht darum dazu über sich in der Form des Selbsts	geht darum dazu über, sich in der Form des Selbsts	comma after über
+042_a_das_lichtwesen.md	642	und gibt sie dem Fürsichseyn zum Opfer	und gibt sich dem Fürsichseyn zum Opfer	sie > sich
+045_b_die_kunst_religion.md	651	das Fürsichseyn des Selbstbewuſstseyn nur negativ	das Fürsichseyn des Selbstbewuſstseyns nur negativ	Selbstbewuſstseyn > Selbstbewuſstseyns
+048_c_das_geistige_kunstwerk.md	695	um was er in der Praxis zu thun iſt	um was es in der Praxis zu thun iſt	er > es
+049_c_die_offenbare_religion.md	702	weiſs, welche Bewandniſſes mit dem wirklichen Gelten	weiſs, welche Bewandniſs es mit dem wirklichen Gelten	Bewandnisses > Bewandniſs es
+049_c_die_offenbare_religion.md	704	denn er iſt die _Erinnerung_ des in ihnen noch	denn er iſt die _Er-Innerung_ des in ihnen noch	Erinnerung > Er-Innerung
+049_c_die_offenbare_religion.md	719	nur bey ſich das Fürſichſeyn, das ſich von dem Weſen	nur bey ſich, das Fürſichſeyn, das ſich von dem Weſen	comma after first ſich
+049_c_die_offenbare_religion.md	731	als Unterſchied an ſich von ſich ſelbſt unterſchieden	als Unterſchied an ſich, von ſich ſelbſt unterſchieden	comma after an ſich
+049_c_die_offenbare_religion.md	740	göttliche Mensch einen <i>anſich</i>ſeyenden Vater	göttliche Mensch, einen <i>anſich</i>ſeyenden Vater	comma after Menſch
+050_viii_das_absolute_wissen.md	746	nur seine leere Hülfe zu	nur seine leere Hülſe zu	* Hülfe > Hülſe
+050_viii_das_absolute_wissen.md	748	voneinander, das jene diese Versöhnung	voneinander, daſs jene diese Versöhnung	das > daſs
+050_viii_das_absolute_wissen.md	751	der Begriff, auf welche es Verzicht thut	der Begriff, auf welchen es Verzicht thut	* welche > welchen
+012_a_beobachtung_der_natur.md		unmittelbar _All gemeinheit_	unmittelbar _Allgemeinheit_	print-split repair (not in 1807 list)
+046_a_das_abstracte_kunstwerk.md		überlegte Hand lung selbſt	überlegte Handlung selbſt	print-split repair (not in 1807 list)
+048_c_das_geistige_kunstwerk.md		Mächten voll bracht zu werden	Mächten vollbracht zu werden	print-split repair (not in 1807 list)
+033_a_der_kampf_der_aufklaerung_mit_dem_aberglauben.md		völlig thör icht	völlig thöricht	print-split repair (not in 1807 list)
+039_c_das_gewissen_die_schoene_seele_das_boese_und_seine_verzeyhung.md		diese wis: sende Pflicht	diese wiſſende Pflicht	print-split repair (not in 1807 list)

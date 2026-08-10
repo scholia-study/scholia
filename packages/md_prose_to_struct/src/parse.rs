@@ -2,9 +2,10 @@ use common::sentences::RUN_BREAK;
 use regex::Regex;
 use std::sync::LazyLock;
 
-// {{{ N }}} — AA page marker
+// {{{ N }}} — AA page marker. Arabic or Roman: a single block system may
+// paginate a preface in Roman and the body in Arabic (hegel1's 1807 edition).
 static AA_MARKER_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"\{\{\{\s*(\d+)\s*\}\}\}").unwrap());
+    LazyLock::new(|| Regex::new(r"\{\{\{\s*([0-9]+|[IVXLCDM]+)\s*\}\}\}").unwrap());
 
 // {{ VALUE }} — B-edition page marker
 static B_MARKER_RE: LazyLock<Regex> =

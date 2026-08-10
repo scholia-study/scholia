@@ -6350,6 +6350,10 @@
                     "image_url": {
                         "type": ["string", "null"]
                     },
+                    "margin_prefix": {
+                        "type": ["string", "null"],
+                        "description": "Margin display prefix, concatenated verbatim with `ref_value`\n(\"B \" → \"B 344\", \"9.\" → \"9.53\"); absent = bare number."
+                    },
                     "ref_value": {
                         "type": "string"
                     },

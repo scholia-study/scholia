@@ -16,7 +16,10 @@ pub struct FrontMatter {
     pub position: u32,
     pub label: String,
     pub depth: i16,
-    pub aa_page: Option<u16>,
+    /// The corpus page key's value as written, quotes stripped: kant's
+    /// numeric `aa_page`, hegel1's Roman-or-Arabic `page_1807`. `None` when
+    /// the node opens before the first numbered page.
+    pub page: Option<String>,
 }
 
 /// Parse the front matter, returning it and the body. BOM-tolerant; the label
@@ -34,7 +37,7 @@ pub fn parse_front_matter(content: &str) -> Option<(FrontMatter, &str)> {
         .strip_prefix('\n')
         .unwrap_or(&rest[close + "\n---".len()..]);
 
-    let (mut position, mut label, mut depth, mut aa_page) = (None, None, None, None);
+    let (mut position, mut label, mut depth, mut page) = (None, None, None, None);
     for line in fm_text.lines() {
         let line = line.trim();
         if let Some(v) = line.strip_prefix("position:") {
@@ -43,8 +46,11 @@ pub fn parse_front_matter(content: &str) -> Option<(FrontMatter, &str)> {
             label = Some(v.trim().trim_matches('"').replace("\\\"", "\"").to_string());
         } else if let Some(v) = line.strip_prefix("depth:") {
             depth = v.trim().parse().ok();
-        } else if let Some(v) = line.strip_prefix("aa_page:") {
-            aa_page = v.trim().parse().ok();
+        } else if let Some(v) = line
+            .strip_prefix("aa_page:")
+            .or_else(|| line.strip_prefix("page_1807:"))
+        {
+            page = Some(v.trim().trim_matches('"').to_string());
         }
     }
     Some((
@@ -52,7 +58,7 @@ pub fn parse_front_matter(content: &str) -> Option<(FrontMatter, &str)> {
             position: position?,
             label: label?,
             depth: depth?,
-            aa_page,
+            page,
         },
         body,
     ))
@@ -107,13 +113,13 @@ mod tests {
         assert_eq!(fm.position, 3);
         assert_eq!(fm.label, "Første handling");
         assert_eq!(fm.depth, 1);
-        assert_eq!(fm.aa_page, None);
+        assert_eq!(fm.page, None);
         // exactly one newline consumed; the blank line stays for the caller
         assert_eq!(body, "\nBody");
     }
 
     #[test]
-    fn front_matter_with_aa_page_and_escaped_quote() {
+    fn front_matter_with_page_and_escaped_quote() {
         // Interior escaped quotes unescape; kant labels never *end* in one
         // (trailing `\""` would be eaten by the quote trim, a quirk kept
         // verbatim from the original kant parser).
@@ -122,7 +128,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(fm.label, "Die \"Idee\" selbst");
-        assert_eq!(fm.aa_page, Some(251));
+        assert_eq!(fm.page, Some("251".to_string()));
     }
 
     #[test]

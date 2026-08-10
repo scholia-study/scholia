@@ -1,0 +1,14 @@
+[package]
+name = "hegel1_tei_to_md"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# roxmltree gives a read-only DOM with namespaces, document order, mixed content
+# and node identity — what this converter's page-marker lookahead and <w>-scoped
+# hyphen rejoin need. (The workspace's quick-xml is serde struct-mapping, which
+# can't express document-order mixed-content serialization.)
+roxmltree = "0.21"
+regex = "1"
+clap = { version = "4", features = ["derive"] }
+common = { path = "../common" }

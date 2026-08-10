@@ -27,16 +27,16 @@ use crate::figure::build_figure_block;
 use crate::html::{FOOTNOTE_REF_RE, md_to_html, md_to_plain};
 use crate::model::*;
 use crate::parse::{MarkerKind, ParsedBlock, ParsedBlockType, strip_markers};
-use crate::roman::roman_to_int;
+use crate::roman::{block_sort_order, roman_to_int};
 use crate::separator::build_separator_block;
 
 /// Regex to find `<sup>NUMBER</sup>` in rendered HTML (only footnote refs produce these).
 static SUP_NUMBER_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<sup>(\d+)</sup>").unwrap());
 
-/// A TOC entry with an owned label: (flat_index, aa_page, depth, label,
+/// A TOC entry with an owned label: (flat_index, page, depth, label,
 /// slug_override). Source mode borrows from the static TOC tables; translation
 /// mode may carry labels captured from front matter, so the label is owned.
-pub type Entry = (usize, u16, u16, String, Option<&'static str>);
+pub type Entry = (usize, Option<String>, u16, String, Option<&'static str>);
 
 /// Intermediate per-file parsed data.
 pub struct ParsedFile {
@@ -140,12 +140,12 @@ pub fn build_output(corpus: &Corpus, translation: bool, parsed_files: &[ParsedFi
         corpus
             .toc_modernized
             .iter()
-            .map(|&(idx, aa, depth, de_label, slug_override)| {
+            .map(|(idx, page, depth, de_label, slug_override)| {
                 let label = en_labels
-                    .get(&idx)
+                    .get(idx)
                     .map(|s| s.to_string())
                     .unwrap_or_else(|| de_label.to_string());
-                (idx, aa, depth, label, slug_override)
+                (*idx, page.clone(), *depth, label, *slug_override)
             })
             .collect()
     };
@@ -238,8 +238,14 @@ pub fn build_output(corpus: &Corpus, translation: bool, parsed_files: &[ParsedFi
 fn to_owned_entries(entries: &[crate::corpus::FlatEntry]) -> Vec<Entry> {
     entries
         .iter()
-        .map(|&(idx, aa, depth, label, slug_override)| {
-            (idx, aa, depth, label.to_string(), slug_override)
+        .map(|(idx, page, depth, label, slug_override)| {
+            (
+                *idx,
+                page.clone(),
+                *depth,
+                label.to_string(),
+                *slug_override,
+            )
         })
         .collect()
 }
@@ -485,10 +491,7 @@ fn build_block(
         }
 
         let (system_slug, sort_order) = match marker.kind {
-            MarkerKind::Aa => {
-                let sort = marker.value.parse::<i32>().unwrap_or(0);
-                (ctx.aa_system_slug, sort)
-            }
+            MarkerKind::Aa => (ctx.aa_system_slug, block_sort_order(&marker.value)),
             MarkerKind::BEdition => {
                 let sort = roman_to_int(&marker.value)
                     .map(|v| v as i32)

@@ -106,7 +106,7 @@ function MarginNotes({
                         key={`${pm.system_slug}-${pm.ref_value}-${i}`}
                         title={`${pm.system_slug}: ${pm.ref_value}`}
                     >
-                        {pm.ref_value}
+                        {(pm.margin_prefix ?? "") + pm.ref_value}
                     </span>
                 ))}
         </span>

@@ -91,6 +91,7 @@ struct SentenceRow {
 struct MarkerRow {
     sentence_id: Uuid,
     system_slug: String,
+    margin_prefix: Option<String>,
     ref_value: String,
     sort_order: i32,
     char_offset: Option<i32>,
@@ -158,7 +159,7 @@ pub async fn get_node_content(
 
     let markers = sqlx::query_as!(
         MarkerRow,
-        r#"SELECT pm.sentence_id, rs.slug AS system_slug, pm.ref_value, pm.sort_order, pm.char_offset,
+        r#"SELECT pm.sentence_id, rs.slug AS system_slug, rs.margin_prefix, pm.ref_value, pm.sort_order, pm.char_offset,
                   fp.storage_key AS "storage_key?"
            FROM page_markers pm
            JOIN reference_systems rs ON rs.id = pm.system_id
@@ -257,6 +258,7 @@ pub async fn get_node_content(
             .or_default()
             .push(PageMarkerResponse {
                 system_slug: m.system_slug,
+                margin_prefix: m.margin_prefix,
                 ref_value: m.ref_value,
                 sort_order: m.sort_order,
                 char_offset: m.char_offset,

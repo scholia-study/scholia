@@ -6,8 +6,11 @@
 
 use text_struct::model::{BookData, ReferenceSystemData};
 
-/// One flattened TOC row: (flat_index, aa_page, depth, label, slug_override).
-pub type FlatEntry = (usize, u16, u16, &'static str, Option<&'static str>);
+/// One flattened TOC row: (flat_index, page, depth, label, slug_override).
+/// The page is the corpus page key's value as a string — kant's numeric AA
+/// page, hegel1's Roman-or-Arabic 1807 page — `None` for a node that opens
+/// before the first numbered page.
+pub type FlatEntry = common::FlatTocEntry;
 
 /// The English-TOC config a corpus may carry for its translation edition.
 /// kant1 has a curated English TOC (labels validated against it, English
@@ -58,6 +61,7 @@ struct SystemSpec {
     label: &'static str,
     template: &'static str,
     priority: Option<i16>,
+    margin_prefix: Option<&'static str>,
 }
 
 // Default-citation system per corpus, matching scholarly convention:
@@ -72,6 +76,7 @@ fn systems(aa: SystemSpec, edition: SystemSpec) -> Vec<ReferenceSystemData> {
             ref_type: "block".to_string(),
             cite_priority: aa.priority,
             cite_template: Some(aa.template.to_string()),
+            margin_prefix: aa.margin_prefix.map(str::to_string),
         },
         ReferenceSystemData {
             slug: edition.slug.to_string(),
@@ -79,6 +84,7 @@ fn systems(aa: SystemSpec, edition: SystemSpec) -> Vec<ReferenceSystemData> {
             ref_type: "inline".to_string(),
             cite_priority: edition.priority,
             cite_template: Some(edition.template.to_string()),
+            margin_prefix: edition.margin_prefix.map(str::to_string),
         },
     ]
 }
@@ -166,6 +172,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         },
                         template: meta::AA_CITE_TEMPLATE,
                         priority: None,
+                        margin_prefix: Some("AA "),
                     },
                     SystemSpec {
                         slug: meta::EDITION_SYSTEM_SLUG,
@@ -176,6 +183,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         },
                         template: meta::EDITION_CITE_TEMPLATE,
                         priority: Some(0),
+                        margin_prefix: Some("B "),
                     },
                 ),
                 toc_reviewed: toc::flat_toc_entries(),
@@ -256,6 +264,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         },
                         template: meta::AA_CITE_TEMPLATE,
                         priority: Some(0),
+                        margin_prefix: Some("AA "),
                     },
                     SystemSpec {
                         slug: meta::EDITION_SYSTEM_SLUG,
@@ -266,6 +275,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         },
                         template: meta::EDITION_CITE_TEMPLATE,
                         priority: None,
+                        margin_prefix: Some("E "),
                     },
                 ),
                 toc_reviewed: toc::flat_toc_entries(),
@@ -283,6 +293,105 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 edition_system_slug: meta::EDITION_SYSTEM_SLUG,
                 edition_sort_arabic_fallback: true,
                 marker_labels: ("AA Bd. V", "1790"),
+            })
+        }
+        "hegel1" => {
+            use common::hegel1::{filenames, filenames_en, meta, toc, toc_en, toc_mod};
+            let (book, figure_label, output_file) = if translation {
+                (
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG_EN,
+                        title: meta::BOOK_TITLE_EN,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE_EN,
+                        source: meta::SOURCE_EN,
+                        year: meta::YEAR_EN,
+                        about: meta::ABOUT_EN,
+                        imprint: Imprint {
+                            publisher: Some(meta::PUBLISHER_EN),
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                        },
+                    }),
+                    "Figure",
+                    meta::TRANSLATION_OUTPUT_FILE,
+                )
+            } else {
+                (
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG,
+                        title: meta::BOOK_TITLE,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE,
+                        source: meta::SOURCE,
+                        year: meta::YEAR,
+                        about: meta::ABOUT,
+                        imprint: Imprint {
+                            publisher: Some(meta::PUBLISHER),
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                        },
+                    }),
+                    "Abbildung",
+                    meta::OUTPUT_FILE,
+                )
+            };
+            Some(Corpus {
+                name: "hegel1",
+                book,
+                // Two systems: the 1807 pages ({{{ }}}, displayable, non-
+                // default) and the GW 9 pages ({{ }}, the scholarly citation
+                // standard, hence the citation default).
+                reference_systems: vec![
+                    ReferenceSystemData {
+                        slug: meta::PAGE_SYSTEM_SLUG.to_string(),
+                        label: if translation {
+                            meta::PAGE_SYSTEM_LABEL_EN.to_string()
+                        } else {
+                            meta::PAGE_SYSTEM_LABEL.to_string()
+                        },
+                        ref_type: meta::PAGE_SYSTEM_REF_TYPE.to_string(),
+                        cite_priority: None,
+                        cite_template: Some(meta::PAGE_CITE_TEMPLATE.to_string()),
+                        margin_prefix: None,
+                    },
+                    ReferenceSystemData {
+                        slug: meta::GW_SYSTEM_SLUG.to_string(),
+                        label: if translation {
+                            meta::GW_SYSTEM_LABEL_EN.to_string()
+                        } else {
+                            meta::GW_SYSTEM_LABEL.to_string()
+                        },
+                        ref_type: "inline".to_string(),
+                        cite_priority: Some(meta::GW_CITE_PRIORITY),
+                        cite_template: Some(meta::GW_CITE_TEMPLATE.to_string()),
+                        margin_prefix: Some(meta::GW_MARGIN_PREFIX.to_string()),
+                    },
+                ],
+                toc_reviewed: toc::flat_toc_entries(),
+                toc_modernized: toc_mod::flat_toc_entries(),
+                toc_en: Some(EnToc {
+                    entries: toc_en::flat_toc_entries_en(),
+                    filenames: filenames_en::all_filenames_en(),
+                }),
+                filenames: filenames::all_filenames(),
+                position_number: filenames::position_number,
+                slugify: filenames::slugify,
+                modernized_dir: meta::MODERNIZED_DIR.to_string(),
+                reviewed_dir: meta::REVIEWED_DIR.to_string(),
+                translated_dir: meta::TRANSLATED_DIR.to_string(),
+                output_file: output_file.to_string(),
+                figure_label,
+                aa_system_slug: meta::PAGE_SYSTEM_SLUG,
+                edition_system_slug: meta::GW_SYSTEM_SLUG,
+                // GW pages are Arabic throughout; without the fallback every
+                // marker would land on sort 0 (the kant1 b_edition bug).
+                edition_sort_arabic_fallback: true,
+                marker_labels: ("1807", "GW"),
             })
         }
         _ => None,

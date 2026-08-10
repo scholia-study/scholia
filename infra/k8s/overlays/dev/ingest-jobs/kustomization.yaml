@@ -37,6 +37,7 @@ kind: Kustomization
 resources:
   - ingest-kant1.yaml
   - ingest-kant3.yaml
+  - ingest-hegel1.yaml
   - ingest-shakespeare1.yaml
   - ingest-milton1.yaml
   - ingest-ibsen1.yaml

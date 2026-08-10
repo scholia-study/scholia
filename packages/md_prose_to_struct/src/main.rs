@@ -42,8 +42,12 @@ struct Cli {
 
 fn main() {
     let cli = Cli::parse();
-    let mut corpus = corpus::by_name(&cli.corpus, cli.translation)
-        .unwrap_or_else(|| panic!("unknown corpus {:?} (expected kant1 | kant3)", cli.corpus));
+    let mut corpus = corpus::by_name(&cli.corpus, cli.translation).unwrap_or_else(|| {
+        panic!(
+            "unknown corpus {:?} (expected kant1 | kant3 | hegel1)",
+            cli.corpus
+        )
+    });
     if let Some(d) = cli.modernized_dir {
         corpus.modernized_dir = d;
     }
@@ -84,7 +88,7 @@ fn validate_front_matter(
     position_number: fn(usize) -> usize,
     check_label: bool,
 ) {
-    let (_, aa_page, depth, label, _) = *entry;
+    let (_, ref page, depth, label, _) = *entry;
     if fm.position as usize != position_number(flat_index) {
         panic!(
             "{}: position mismatch: file has {}, expected {}",
@@ -105,13 +109,10 @@ fn validate_front_matter(
             file_label, fm.depth, depth
         );
     }
-    let file_aa = fm
-        .aa_page
-        .unwrap_or_else(|| panic!("{file_label}: missing aa_page in front matter"));
-    if file_aa != aa_page {
+    if fm.page != *page {
         panic!(
-            "{}: aa_page mismatch: file has {}, expected {}",
-            file_label, file_aa, aa_page
+            "{}: page mismatch: file has {:?}, expected {:?}",
+            file_label, fm.page, page
         );
     }
 }

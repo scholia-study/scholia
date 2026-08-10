@@ -58,6 +58,11 @@ case "$corpus" in
         "$BIN" --input-file assets/kant3/derived/translation_output.json \
                --source-book-slug kritik-der-urteilskraft "$@"
         ;;
+    hegel1)
+        "$BIN" --input-file assets/hegel1/derived/output.json "$@"
+        "$BIN" --input-file assets/hegel1/derived/translation_output.json \
+               --source-book-slug phaenomenologie-des-geistes "$@"
+        ;;
     shakespeare1)
         "$BIN" --input-file assets/shakespeare1/derived/output.json "$@"
         ;;

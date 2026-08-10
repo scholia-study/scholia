@@ -38,7 +38,7 @@ See ADR 0006.
                                  │
   PARSERS (curated MD → struct JSON; one crate per GENRE, corpus = config)
   ─────────────────────────────────────────────────────────────────────────
-  md_prose_to_struct    --corpus kant1|kant3        annotated prose: footnotes,
+  md_prose_to_struct    --corpus kant1|kant3|hegel1 annotated prose: footnotes,
                         [--translation]             figures, dual page systems
   md_poetry_to_struct   --corpus shakespeare1|milton1  verse: line-per-sentence,
                                                     indent levels
@@ -94,7 +94,7 @@ flowchart TB
 
     subgraph parsers ["genre parsers (corpus = config)"]
         direction LR
-        prose["md_prose_to_struct<br/>--corpus kant1|kant3"]
+        prose["md_prose_to_struct<br/>--corpus kant1|kant3|hegel1"]
         poetry["md_poetry_to_struct<br/>--corpus shakespeare1|milton1"]
         drama["md_drama_to_struct<br/>--corpus ibsen1"]
     end

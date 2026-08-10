@@ -719,10 +719,18 @@ const TOC: &[FlatEntry] = &[
 
 /// Return the flat English TOC entries in document order.
 /// Each entry: (index_in_flat_list, aa_page, depth, label)
-pub fn flat_toc_entries_en() -> Vec<(usize, u16, u16, &'static str, Option<&'static str>)> {
+pub fn flat_toc_entries_en() -> Vec<crate::FlatTocEntry> {
     TOC.iter()
         .enumerate()
-        .map(|(i, e)| (i, e.aa_page, e.depth, e.label, e.slug_override))
+        .map(|(i, e)| {
+            (
+                i,
+                Some(e.aa_page.to_string()),
+                e.depth,
+                e.label,
+                e.slug_override,
+            )
+        })
         .collect()
 }
 
@@ -760,9 +768,18 @@ mod tests {
     #[test]
     fn test_en_first_entries() {
         let flat = flat_toc_entries_en();
-        assert_eq!(flat[0], (0, 2, 1, "Motto", None));
-        assert_eq!(flat[1], (1, 3, 1, "Dedication", None));
-        assert_eq!(flat[2], (2, 7, 1, "Preface to the Second Edition", None));
+        assert_eq!(flat[0], (0, Some("2".to_string()), 1, "Motto", None));
+        assert_eq!(flat[1], (1, Some("3".to_string()), 1, "Dedication", None));
+        assert_eq!(
+            flat[2],
+            (
+                2,
+                Some("7".to_string()),
+                1,
+                "Preface to the Second Edition",
+                None
+            )
+        );
     }
 
     #[test]

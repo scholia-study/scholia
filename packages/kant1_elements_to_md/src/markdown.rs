@@ -95,7 +95,15 @@ fn maybe_prepend_aa_page(text: String, aa_page: u16, prev: &mut Option<u16>) -> 
 /// Each entry is indented by depth and links to the corresponding markdown file.
 /// Entries that have a generated file get a clickable link; others are listed plain.
 pub fn render_toc(emitted: &[&MdTocNode]) -> String {
-    let flat = toc::flat_toc_entries();
+    let flat: Vec<(usize, u16, u16, &str, Option<&str>)> = toc::flat_toc_entries()
+        .into_iter()
+        .map(|(i, page, depth, label, so)| {
+            let page = page
+                .and_then(|p| p.parse().ok())
+                .expect("kant1 TOC pages are numeric");
+            (i, page, depth, label, so)
+        })
+        .collect();
     // Build a set of flat_indices that have emitted files
     let emitted_set: std::collections::HashMap<usize, &MdTocNode> =
         emitted.iter().map(|n| (n.flat_index, *n)).collect();

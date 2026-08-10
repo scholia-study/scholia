@@ -15,6 +15,12 @@ static SPERRDRUCK_RE: LazyLock<Regex> =
 // Bold: **text**
 static BOLD_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\*\*([^*]+)\*\*").unwrap());
 
+// Antiqua that starts or ends mid-word, authored as <i>…</i>. CommonMark reads
+// `_` as a delimiter only at a word boundary, so a print that italicises part of
+// a word (`Tavt<i>a</i>logie` in the 1807 Phänomenologie) cannot use it. Both
+// spellings mean the same thing and render identically.
+static ITALIC_TAG_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<i>([^<]*)</i>").unwrap());
+
 /// Strip markdown formatting markers, returning plain text.
 ///
 /// Same processing order as md_to_html but replaces with content only.
@@ -24,6 +30,7 @@ pub fn md_to_plain(text: &str) -> String {
     let result = SPERRDRUCK_RE.replace_all(&result, "$1");
     let result = BOLD_RE.replace_all(&result, "$1");
     let result = EMPHASIS_RE.replace_all(&result, "$1");
+    let result = ITALIC_TAG_RE.replace_all(&result, "$1");
     result.into_owned()
 }
 
@@ -34,6 +41,7 @@ pub fn md_to_plain(text: &str) -> String {
 /// 2. Sperrdruck `***text***` → `<span class="sperrdruck">text</span>` (before bold)
 /// 3. Bold `**text**` → `<b>text</b>`
 /// 4. Emphasis `_text_` → `<span class="antiqua">text</span>`
+/// 5. Intraword antiqua `<i>text</i>` → the same span
 pub fn md_to_html(text: &str) -> String {
     // 1. Footnote refs — use placeholder for stars to prevent bold regex matching across <sup> tags
     let result = FOOTNOTE_REF_RE.replace_all(text, |caps: &regex::Captures| {
@@ -46,13 +54,24 @@ pub fn md_to_html(text: &str) -> String {
     let result = BOLD_RE.replace_all(&result, "<b>$1</b>");
     // 4. Emphasis
     let result = EMPHASIS_RE.replace_all(&result, "<span class=\"antiqua\">$1</span>");
-    // 5. Restore star placeholders
+    // 5. Intraword antiqua, which `_` cannot express — same class, same look
+    let result = ITALIC_TAG_RE.replace_all(&result, "<span class=\"antiqua\">$1</span>");
+    // 6. Restore star placeholders
     result.replace('\u{FFFC}', "*")
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn intraword_italic_tags_render_as_antiqua() {
+        assert_eq!(
+            md_to_html("Tavt<i>a</i>logie"),
+            "Tavt<span class=\"antiqua\">a</span>logie"
+        );
+        assert_eq!(md_to_plain("Tavt<i>a</i>logie"), "Tavtalogie");
+    }
 
     #[test]
     fn test_emphasis() {

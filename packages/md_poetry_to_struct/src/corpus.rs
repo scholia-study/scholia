@@ -72,6 +72,7 @@ fn line_system(cite_priority: Option<i16>, cite_template: &str) -> Vec<Reference
         ref_type: "block".into(),
         cite_priority,
         cite_template: Some(cite_template.to_string()),
+        margin_prefix: None,
     }]
 }
 

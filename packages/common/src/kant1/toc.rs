@@ -720,10 +720,18 @@ const TOC: &[FlatEntry] = &[
 
 /// Return the flat TOC entries in document order for content assignment.
 /// Each entry: (index_in_flat_list, aa_page, depth, label, slug_override)
-pub fn flat_toc_entries() -> Vec<(usize, u16, u16, &'static str, Option<&'static str>)> {
+pub fn flat_toc_entries() -> Vec<crate::FlatTocEntry> {
     TOC.iter()
         .enumerate()
-        .map(|(i, e)| (i, e.aa_page, e.depth, e.label, e.slug_override))
+        .map(|(i, e)| {
+            (
+                i,
+                Some(e.aa_page.to_string()),
+                e.depth,
+                e.label,
+                e.slug_override,
+            )
+        })
         .collect()
 }
 
@@ -755,8 +763,17 @@ mod tests {
     #[test]
     fn test_front_matter_entries() {
         let flat = flat_toc_entries();
-        assert_eq!(flat[0], (0, 2, 1, "Motto", None));
-        assert_eq!(flat[1], (1, 3, 1, "Zueignung", None));
-        assert_eq!(flat[2], (2, 7, 1, "Vorrede zur zweiten Auflage", None));
+        assert_eq!(flat[0], (0, Some("2".to_string()), 1, "Motto", None));
+        assert_eq!(flat[1], (1, Some("3".to_string()), 1, "Zueignung", None));
+        assert_eq!(
+            flat[2],
+            (
+                2,
+                Some("7".to_string()),
+                1,
+                "Vorrede zur zweiten Auflage",
+                None
+            )
+        );
     }
 }

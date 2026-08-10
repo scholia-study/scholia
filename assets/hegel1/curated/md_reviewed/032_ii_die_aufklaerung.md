@@ -1,0 +1,16 @@
+---
+position: 32
+label: "II. Die Aufklärung"
+depth: 4
+page_1807: 486
+---
+
+## {{{ 486 }}} II. Die Aufklärung
+
+Der eigenthümliche Gegenſtand, gegen welchen die reine Einsicht die Krafft des Begriffes richtet, ist der Glauben, als die ihr in demselben Elemente gegenüberſtehende Form des reinen Bewuſstseyns. Sie hat aber auch Beziehung auf die wirkliche Welt, denn sie ist wie jener, die Rückkehr aus derselben in das reine Bewuſstseyn. Es ist zuerſt zu sehen, wie ihre Thätigkeit gegen die unlautern Absichten und verkehrten Einsichten derſelben beschaffen ist.
+
+Oben wurde schon des ruhigen Bewuſstseyns erwähnt, das diesem sich in sich auflösenden und wieder erzeugenden Wirbel gegenüberſteht; es macht die Seite der reinen Einsicht und Absicht aus. In diſs ruhige Bewuſstseyn fällt aber, wie wir sahen, keine _besondere Einsicht_ über die Welt der Bildung; diese hat vielmehr selbſt das schmerzlichſte Gefühl und die wahrſte Einsicht über sich selbſt, — das Gefühl, die Auflösung alles sich befeſtigenden, durch alle Momente ihres Daseyns hindurch gerädert, und an allen Knochen zerschlagen zu seyn; — ebenso ist sie die Sprache dieses Gefühls und die beurtheilende {{{ 487 }}} geiſtreiche Rede über alle Seiten ihres Zuſtands. Die reine Einsicht kann daher hier keine eigene Thätigkeit und Inhalt haben, und sich also nur als das formelle treue _Auffaſſen_ dieser eignen geistreichen Einsicht der Welt und ihrer Sprache verhalten. Indem diese Sprache zerſtreut, die Beurtheilung eine Faſeley des Augenbliks, die sich sogleich wieder vergiſst, und ein Ganzes nur für ein drittes Bewuſstseyn ist, so kann sich dieses als _reine_ Einsicht nur dadurch unterscheiden, daſs es jene sich zerſtreuenden Züge in ein allgemeines Bild zusammenfaſst, und sie dann zu einer Einsicht aller macht.
+
+{{ 293 }} Sie wird durch diſs eiufache Mittel die Verwirrung dieser Welt zur Auflösung bringen. Denn es hat sich ergeben, daſs nicht die Maſſen, und die bestimmten Begriffe und Individualitäten das Wesen dieser Wirklichkeit sind, sondern daſs sie ihre Subſtanz und Halt allein in dem Geiſte hat, der als Urtheilen und Besprechen exiſtirt, und daſs das Indreſſe, für diſs Räsonniren und Schwatzen einen Inhalt zu haben, allein das Ganze und die Maſſen seiner Gegliederung erhält. In dieser Sprache der Einsicht ist ihr Selbstbewuſstseyn sich noch ein _für sich seyendes, dieſes Einzelne_; aber die Eitelkeit des Inhalts ist zugleich Eitelkeit des ihn eitel wiſſenden Selbſts. Indem nun das ruhig auffaſſende Bewuſstseyn von diesem ganzen geistreichen Geschwätze der Eitelkeit die treffendſten und die Sache durchschneidenden Faſſungen in eine Sammlung bringt, geht zu der {{{ 488 }}} übrigen Eitelkeit des Daseyns die das Ganze noch erhaltende Seele, die Eitelkeit des geiſtreichen Beurtheilens, zu Grunde. Die Sammlung zeigt den Meiſten einen beſſern, oder allen wenigſtens einen vielfachern Witz, als der ihrige ist, und das Beſſerwiſſen und Beurtheilen überhaupt, als etwas allgemeines und nun allgemein bekanntes; damit tilgt sich das einzige Intereſſe, das noch vorhanden war, und das einzelne Einsehen löſst sich in die allgemeine Einsicht auf.
+
+Noch aber ſteht über dem eiteln Wiſſen das Wiſſen von dem Wesen feſt, und die reine Einsicht erscheint erſt in eigentlicher Thätigkeit, insofern sie gegen den Glauben auftritt.

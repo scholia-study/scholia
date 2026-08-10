@@ -1,0 +1,1719 @@
+surface	cab_norm	count	class	ruling	result	reason
+—	--	1286	residual	reject	—	em-dash mangled by CAB; keep
+Bewuſstseyn	Bewußtsein	971	residual	rewrite	Bewusstsein	house post-1996: -wusstsein
+diſs	dies	583	residual	rewrite	dies	plan: accept modernization, lowercase
+andern	anderen	316	residual	reject	andern	morphological; valid modern German
+Bewuſstseyns	Bewußtseins	282	residual	rewrite	Bewusstseins	house post-1996: -wusstsein
+Selbstbewuſstseyn	Selbstbewußtsein	244	residual	rewrite	Selbstbewusstsein	house post-1996: -wusstsein
+Einzelnheit	Einzelheit	203	residual	reject	Einzelnheit	Hegelian term of art
+weiſs	weiß	186	residual	accept	weiß	post-1996 keeps ß after diphthong
+nemlich	nämlich	181	residual	accept	nämlich	plan: straight modernization
+Diſs	Diss	150	ss_audit	rewrite	Dies	plan: Diss is not a word
+hiemit	hiermit	146	residual	accept	hiermit	plan: straight modernization
+Bewuſstſeyn	Bewusstsein	135	ss_audit	rewrite	Bewusstsein	house post-1996: -wusstsein
+heiſst	heißt	131	residual	accept	heißt	post-1996 keeps ß after diphthong
+Selbstbewuſstseyns	Selbstbewusstseins	121	ss_audit	rewrite	Selbstbewusstseins	house post-1996: -wusstsein
+Ansich	An_sich	104	residual	rewrite	Ansich	CAB underscore artifact; keep word
+Innern	Inneren	87	residual	reject	Innern	morphological; valid modern German
+Selbſtbewuſstseyn	Selbstbewußtsein	85	residual	rewrite	Selbstbewusstsein	house post-1996: -wusstsein
+andre	andere	84	residual	reject	andre	morphological; valid modern German
+eigne	eigene	75	residual	reject	eigne	morphological; valid modern German
+Andern	Anderen	73	residual	reject	Andern	morphological; valid modern German
+Selbſtbewuſstſeyn	Selbstbewußtsein	66	residual	rewrite	Selbstbewusstsein	house post-1996: -wusstsein
+itzt	jetzt	66	residual	reject	itzt	das Itzt is the argument of ch. I
+hiedurch	hierdurch	61	residual	accept	hierdurch	plan: straight modernization
+eignen	eigenen	61	residual	reject	eignen	morphological; valid modern German
+Itzt	Jetzt	56	residual	reject	Itzt	das Itzt is the argument of ch. I
+Bewuſstſeyns	Bewußtseins	50	residual	rewrite	Bewusstseins	house post-1996: -wusstsein
+Anſich	An_sich	43	residual	rewrite	Ansich	CAB underscore artifact; keep word
+eignes	eigenes	37	residual	reject	eignes	morphological; valid modern German
+Selbſtbewuſstseyns	Selbstbewusstseins	31	ss_audit	rewrite	Selbstbewusstseins	house post-1996: -wusstsein
+Selbſtbewuſstſeyns	Selbstbewusstseins	25	ss_audit	rewrite	Selbstbewusstseins	house post-1996: -wusstsein
+Andre	Andere	22	residual	reject	Andre	morphological; valid modern German
+ansich	an_sich	15	residual	rewrite	ansich	CAB underscore artifact; keep word
+ebendadurch	eben_dadurch	14	residual	rewrite	ebendadurch	CAB underscore artifact; keep word
+anſich	an_sich	14	residual	rewrite	ansich	CAB underscore artifact; keep word
+Hiedurch	Hierdurch	13	residual	accept	Hierdurch	plan: straight modernization
+eigner	eigener	10	residual	reject	eigner	morphological; valid modern German
+Selbstbewuſstſeyns	Selbstbewusstseins	7	ss_audit	rewrite	Selbstbewusstseins	house post-1996: -wusstsein
+Hiemit	Hiermit	6	residual	accept	Hiermit	plan: straight modernization
+andres	anderes	5	residual	reject	andres	morphological; valid modern German
+Selbstbewuſstſeyn	Selbstbewußtsein	4	residual	rewrite	Selbstbewusstsein	house post-1996: -wusstsein
+‒	-	3	residual	reject	‒	figure dash; keep
+Einzelnheiten	Einzelheiten	2	residual	reject	Einzelnheiten	Hegelian term of art
+ebendaſſelbe	eben_dasselbe	2	residual	rewrite	ebendasselbe	CAB underscore artifact; keep word
+Nemlich	Nämlich	1	residual	accept	Nämlich	plan: straight modernization
+Sebstbewuſstseyn	Sebstbewusstseyn	1	ss_audit	rewrite	Sebstbewusstsein	house post-1996: -wusstsein
+Selbstbebewuſstseyn	Selbstbebewusstseyn	1	ss_audit	rewrite	Selbstbebewusstsein	house post-1996: -wusstsein
+Bewuſstsein	Bewusstsein	1	ss_audit	rewrite	Bewusstsein	house post-1996: -wusstsein
+Pflichtbewuſstseyns	Pflichtbewusstseins	1	ss_audit	rewrite	Pflichtbewusstseins	house post-1996: -wusstsein
+daſs	dass	1179	ss_audit	accept	dass	ss after short vowel
+Gewiſsheit	Gewissheit	242	ss_audit	accept	Gewissheit	ss after short i
+Wiſſen	Wissen	217	ss_audit	accept	Wissen	ss after short i
+muſs	muss	183	ss_audit	accept	muss	ss after short u
+Verhältniſs	Verhältnis	91	residual	accept	Verhältnis	modern -nis suffix single s
+deſſelben	desselben	82	ss_audit	accept	desselben	ss after short e
+daſſelbe	dasselbe	72	ss_audit	accept	dasselbe	ss after short a
+deſſen	dessen	69	ss_audit	accept	dessen	ss after short e
+bewuſst	bewusst	60	ss_audit	accept	bewusst	ss after short u
+Wiſſens	Wissens	60	ss_audit	accept	Wissens	ss after short i
+läſst	lässt	57	ss_audit	accept	lässt	ss after short ä
+willen	Willen	55	residual	reject	willen	um ... willen stays lowercase
+Princip	Prinzip	48	residual	accept	Prinzip	Latinate c to z
+auſser	außer	45	residual	accept	außer	ß after diphthong au
+Gewiſſen	Gewissen	45	ss_audit	accept	Gewissen	ss after short i
+Daſs	Dass	44	ss_audit	accept	Dass	ss after short a
+Entäuſſerung	Entäußerung	42	residual	accept	Entäußerung	ß after diphthong äu
+wiſſen	wissen	40	ss_audit	accept	wissen	ss after short i
+Wiſſenſchaft	Wissenschaft	38	ss_audit	accept	Wissenschaft	ss after short i
+innern	inneren	38	residual	reject	innern	elision stays, valid modern German
+Genuſs	Genuss	38	ss_audit	accept	Genuss	ss after short u
+Andersseyn	Anderssein	37	ss_audit	accept	Anderssein	ey to ei, one word
+Gröſse	Größe	36	residual	accept	Größe	ß after long ö
+Ueberzeugung	Überzeugung	35	residual	accept	Überzeugung	Ue to Ü
+auſſer	außer	35	residual	accept	außer	ß after diphthong au
+reflectirt	reflektiert	35	residual	accept	reflektiert	c to k, -irt to -iert
+erfaſst	erfasst	34	ss_audit	accept	erfasst	ss after short a
+Innre	Innere	34	residual	reject	Innre	elision stays, valid modern German
+Andersſeyn	Anderssein	30	ss_audit	accept	Anderssein	ey to ei, one word
+bewuſste	bewusste	30	ss_audit	accept	bewusste	ss after short u
+Uebergang	Übergang	29	residual	accept	Übergang	Ue to Ü
+innre	innere	27	residual	reject	innre	elision stays
+müſste	müsste	26	ss_audit	accept	müsste	ss after short ü
+gemäſs	gemäß	26	residual	accept	gemäß	ß after long ä
+aufgehobne	aufgehobene	26	residual	reject	aufgehobne	elision stays
+Aeuſsere	äußere	26	residual	rewrite	Äußere	noun keeps capital; äu takes ß
+wiſſende	wissende	25	ss_audit	accept	wissende	ss after short i
+gewuſst	gewusst	24	ss_audit	accept	gewusst	ss after short u
+selbstbewuſsten	selbstbewussten	24	ss_audit	accept	selbstbewussten	ss after short u
+Aeuſserung	Äusserung	23	residual	rewrite	Äußerung	ß after diphthong äu
+Verhältniſſe	Verhältnisse	22	ss_audit	accept	Verhältnisse	ss after short i
+Willkühr	Willkür	21	residual	accept	Willkür	silent h dropped
+deſswegen	deswegen	21	residual	accept	deswegen	modern single s
+äuſsere	äußere	21	residual	accept	äußere	ß after diphthong äu
+letztern	letzteren	20	residual	reject	letztern	elision stays
+bloſs	bloß	20	residual	accept	bloß	ß after long o
+Skepticismus	Skeptizismus	20	residual	accept	Skeptizismus	Latinate c to z
+selbstständig	selbständig	20	residual	reject	selbstständig	valid post-1996 form
+aufgefaſst	aufgefasst	19	ss_audit	accept	aufgefasst	ss after short a
+zufälliges	Zufälliges	19	residual	reject	zufälliges	adjective keeps its lowercase
+Proceſs	Prozess	19	residual	accept	Prozess	c to z, ss short e
+todte	tote	19	residual	accept	tote	dt to t
+gewiſs	gewiss	19	ss_audit	accept	gewiss	ss after short i
+wiſſenden	wissenden	18	ss_audit	accept	wissenden	ss after short i
+Aeuſsern	äußern	18	residual	rewrite	Äußern	noun keeps capital; äu takes ß
+Mannichfaltigkeit	Mannigfaltigkeit	17	residual	accept	Mannigfaltigkeit	ch to g
+Maſſen	Massen	17	ss_audit	accept	Massen	Masse (mass) plural, short a
+Electricität	Elektrizität	17	residual	accept	Elektrizität	c to k and z
+Maſsstab	Massstab	17	ss_audit	rewrite	Maßstab	long a takes ß
+selbstbewuſste	selbstbewusste	17	ss_audit	accept	selbstbewusste	ss after short u
+bewuſstlose	bewusstlose	16	ss_audit	accept	bewusstlose	ss after short u
+gewiſſe	gewisse	16	ss_audit	accept	gewisse	ss after short i
+Kenntniſs	Kenntnis	15	residual	accept	Kenntnis	modern -nis suffix single s
+Erkenntniſs	Erkenntnis	15	residual	accept	Erkenntnis	modern -nis suffix single s
+Realisirung	Realisierung	15	residual	accept	Realisierung	-irung to -ierung
+Aeuſserlichkeit	Äusserlichkeit	15	residual	rewrite	Äußerlichkeit	ß after diphthong äu
+Foderung	Forderung	14	residual	accept	Forderung	modern Forderung
+beſondern	besonderen	14	residual	reject	besondern	elision stays
+fürsichseyn	Für-sich-sein	14	residual	rewrite	fürsichsein	one word, lowercase as printed
+Aeuſseres	Äußeres	14	residual	accept	Äußeres	Ae to Ä, äu takes ß
+besondern	besonderen	14	residual	reject	besondern	elision stays
+entäuſſert	entäußert	14	residual	accept	entäußert	ß after diphthong äu
+Intereſſe	Interesse	13	ss_audit	accept	Interesse	ss after short e
+vollkommne	vollkommene	13	residual	reject	vollkommne	elision stays
+Innres	Inneres	13	residual	reject	Innres	elision stays
+kömmt	kommt	13	residual	reject	kömmt	archaic inflection, not orthography
+Uebergehen	Übergehen	13	residual	accept	Übergehen	Ue to Ü
+schlieſst	schließt	13	residual	accept	schließt	ß after long ie
+ſelbſtbewuſsten	selbstbewussten	13	ss_audit	accept	selbstbewussten	ss after short u
+reflectirte	reflektierte	13	residual	accept	reflektierte	c to k, -irte to -ierte
+existirt	existiert	13	residual	accept	existiert	-irt to -iert
+frühern	früheren	12	residual	reject	frühern	elision stays
+müſſen	müssen	12	ss_audit	accept	müssen	ss after short ü
+faſſen	fassen	12	ss_audit	accept	fassen	ss after short a
+ausſpricht	ausspricht	12	ss_audit	accept	ausspricht	glyph folding only
+Wiſſenschaft	Wissenschaft	12	ss_audit	accept	Wissenschaft	ss after short i
+Gewiſſens	Gewissens	12	ss_audit	accept	Gewissens	ss after short i
+sollicitirende	sollizitierende	12	residual	accept	sollizitierende	c to z, -irende to -ierende
+faſst	fasst	12	ss_audit	accept	fasst	ss after short a
+vorhandne	vorhandene	12	residual	reject	vorhandne	elision stays
+bewuſsten	bewussten	12	ss_audit	accept	bewussten	ss after short u
+Entäuſserung	Entäusserung	12	ss_audit	rewrite	Entäußerung	ß after diphthong äu
+aufgehobnes	aufgehobenes	12	residual	reject	aufgehobnes	elision stays
+Nahmen	Namen	11	residual	accept	Namen	silent h dropped
+laſſen	lassen	11	ss_audit	accept	lassen	ss after short a
+Gräntze	Grenze	11	residual	accept	Grenze	modern Grenze
+äuſserliche	äußerliche	11	residual	accept	äußerliche	ß after diphthong äu
+Wissenschafft	Wissenschaft	11	ss_audit	accept	Wissenschaft	ff to f
+Stoicismus	Stoizismus	11	residual	accept	Stoizismus	Latinate c to z
+gewiſſen	gewissen	11	ss_audit	accept	gewissen	ss after short i
+äuſſerlich	äußerlich	10	residual	accept	äußerlich	ß after diphthong äu
+Statt	Stadt	10	residual	reject	Statt	statt/Statt, not Stadt
+Ausſprechen	Aussprechen	10	ss_audit	accept	Aussprechen	glyph folding only
+Prüffen	prüfen	10	residual	rewrite	Prüfen	ff to f; keeps capital
+sollicitirt	sollizitiert	10	residual	accept	sollizitiert	c to z, -irt to -iert
+abstöſst	abstößt	10	residual	accept	abstößt	ß after long ö
+specifische	spezifische	10	residual	accept	spezifische	Latinate c to z
+höhern	höheren	10	residual	reject	höhern	elision stays
+bewuſstlosen	bewusstlosen	10	ss_audit	accept	bewusstlosen	ss after short u
+äuſſern	äußeren	9	residual	rewrite	äußern	elision stays; äu takes ß
+Genuſſe	Genusse	9	ss_audit	accept	Genusse	ss after short u
+Zerriſſenheit	Zerrissenheit	9	ss_audit	accept	Zerrissenheit	ss after short i
+äuſſerliche	äußerliche	9	residual	accept	äußerliche	ß after diphthong äu
+vergiſst	vergisst	9	ss_audit	accept	vergisst	ss after short i
+anderemal	andermal	9	residual	reject	anderemal	word form stays
+andremal	anderemal	9	residual	reject	andremal	word form stays
+genieſst	genießt	9	residual	accept	genießt	ß after long ie
+fixirt	fixiert	9	residual	accept	fixiert	-irt to -iert
+äuſſere	äußere	8	residual	accept	äußere	ß after diphthong äu
+gefaſst	gefaßt	8	residual	reject	gefasst	post-1996 ss, CAB gave ß
+groſs	groß	8	residual	accept	groß	ß after long o
+mannichfaltigen	mannigfaltigen	8	residual	accept	mannigfaltigen	ch to g
+gewordne	gewordene	8	residual	reject	gewordne	elision stays
+reflectirtes	reflektiertes	8	residual	accept	reflektiertes	c to k, -irtes to -iertes
+befaſst	befasst	8	ss_audit	accept	befasst	ss after short a
+Andersſeyns	Andersseins	8	ss_audit	accept	Andersseins	ey to ei, one word
+äuſſerliches	Äußerliches	8	residual	rewrite	äußerliches	adjective keeps its lowercase
+äuſſerlichen	äußerlichen	8	residual	accept	äußerlichen	ß after diphthong äu
+äuſserlich	äußerlich	8	residual	accept	äußerlich	ß after diphthong äu
+unterschiednen	unterschiedenen	8	residual	reject	unterschiednen	elision stays
+erweiſst	erweist	8	residual	accept	erweist	modern erweist, long ei
+afficirt	affiziert	8	residual	accept	affiziert	c to z, -irt to -iert
+Einsseyn	Einssein	8	ss_audit	accept	Einssein	ey to ei, one word
+Alsdenn	Alsdann	8	residual	accept	Alsdann	modern alsdann
+alsdenn	alsdann	8	residual	accept	alsdann	modern alsdann
+ebendiſs	ebendies	8	residual	accept	ebendies	diſs is dies, lowercase kept
+ausſagt	aussagt	8	ss_audit	accept	aussagt	glyph folding only
+ſchlieſst	schließt	7	residual	accept	schließt	ß after long ie
+ſelbſtbewuſste	selbstbewusste	7	ss_audit	accept	selbstbewusste	ss after short u
+bloſſe	bloße	7	residual	accept	bloße	ß after long o
+hievon	hiervon	7	residual	rewrite	hiervon	hie-→hier- per plan precedent
+ausſprechen	aussprechen	7	ss_audit	accept	aussprechen	glyph folding only
+Bedürfniſs	Bedürfnis	7	residual	accept	Bedürfnis	modern -nis suffix single s
+Zusammenhang	Zusammenhäng	7	residual	reject	Zusammenhang	CAB corrupted the word
+zusammengefaſst	zusammengefasst	7	ss_audit	accept	zusammengefasst	ss after short a
+Andersseyns	Andersseins	7	ss_audit	accept	Andersseins	ey to ei, one word
+reflectirtseyn	Reflektiertsein	7	residual	rewrite	reflektiertsein	one word, lowercase as printed
+unterschiedne	unterschiedene	7	residual	reject	unterschiedne	elision stays
+Schluſs	Schluss	7	ss_audit	accept	Schluss	ss after short u
+Processes	Prozesses	7	residual	accept	Prozesses	c to z, ss short e
+realisirt	realisiert	7	residual	accept	realisiert	-irt to -iert
+Wollens	Wollen_es	7	residual	reject	Wollens	CAB artifact Wollen_es
+äuſseres	äußeres	7	residual	accept	äußeres	ß after diphthong äu
+ansichseyende	an-sich-seiende	7	residual	rewrite	ansichseiende	compound stays one word
+Einfluſs	Einfluss	7	ss_audit	accept	Einfluss	ss after short u
+„	"	7	residual	reject	„	punctuation stays as printed
+isolirt	isoliert	7	residual	accept	isoliert	-irt to -iert
+Genuſse	Genusse	7	ss_audit	accept	Genusse	ss after short u
+aufgehobnen	aufgehobenen	7	residual	reject	aufgehobnen	elision stays
+Zevs	Zeus	7	residual	accept	Zeus	v-for-u convention; modern German Zeus
+Wiſſenſchafft	Wissenschaft	6	ss_audit	accept	Wissenschaft	ss short i, ff to f
+Verhältniſſes	Verhältnisses	6	ss_audit	accept	Verhältnisses	ss after short i
+exiſtirt	existiert	6	residual	accept	existiert	-irt to -iert
+groſse	große	6	residual	accept	große	ß after long o
+gefodert	gefordert	6	residual	accept	gefordert	modern gefordert
+fodern	fordern	6	residual	accept	fordern	modern fordern
+erfodert	erfordert	6	residual	accept	erfordert	modern erfordert
+Princips	Prinzips	6	residual	accept	Prinzips	Latinate c to z
+Andres	Anderes	6	residual	reject	Andres	elision stays
+Maſſe	Maße	6	residual	reject	Masse	Masse (mass), not Maße
+bloſſen	bloßen	6	residual	accept	bloßen	ß after long o
+verlaſſen	verlassen	6	ss_audit	accept	verlassen	ss after short a
+fodert	fordert	6	residual	accept	fordert	modern fordert
+ausschlieſsendes	ausschließendes	6	residual	accept	ausschließendes	ß after long ie
+mannichfaltige	mannigfaltige	6	residual	accept	mannigfaltige	ch to g
+äuſsern	äußeren	6	residual	rewrite	äußern	elision stays; äu takes ß
+Uebersinnliche	Übersinnliche	6	residual	accept	Übersinnliche	Ue to Ü
+Tavtologie	Tautologie	6	residual	accept	Tautologie	v-for-u convention
+bewuſstes	bewusstes	6	ss_audit	accept	bewusstes	ss after short u
+Erwiederung	Erwiderung	6	residual	accept	Erwiderung	modern Erwiderung
+reflectirende	reflektierende	6	residual	accept	reflektierende	c to k, -irende to -ierende
+worinn	worin	6	residual	accept	worin	nn to n
+selbſtbewuſste	selbstbewusste	6	ss_audit	accept	selbstbewusste	ss after short u
+vollkommnen	vollkommenen	6	residual	reject	vollkommnen	elision stays
+Aeuſſerlichkeit	Äußerlichkeit	6	residual	accept	Äußerlichkeit	Ae to Ä, äu takes ß
+anſichſeyende	an-sich-seiende	6	residual	rewrite	ansichseiende	compound stays one word
+willkührliche	willkürliche	5	residual	accept	willkürliche	silent h dropped
+Auffaſſen	Auffassen	5	ss_audit	accept	Auffassen	ss after short a
+Selbſtſtändigkeit	Selbständigkeit	5	residual	reject	Selbstständigkeit	surface form valid post-1996
+Ichs	Ich_es	5	residual	reject	Ichs	CAB artifact Ich_es
+hiebey	hierbei	5	residual	rewrite	hierbei	hie-→hier- per plan precedent
+Zuſammenhang	Zusammenhäng	5	residual	reject	Zusammenhang	CAB corrupted the word
+Schema’s	Schema's	5	residual	rewrite	Schemas	modern drops genitive apostrophe
+Rythmus	Rhythmus	5	residual	accept	Rhythmus	Greek stem keeps rh/th
+müſſe	müsse	5	ss_audit	accept	müsse	ss after short ü
+Bewandniſs	Bewandtnis	5	residual	accept	Bewandtnis	modern Bewandtnis
+anderseits	andererseits	5	residual	reject	anderseits	valid modern German variant
+ausschlieſst	ausschließt	5	residual	accept	ausschließt	ß after long ie
+äuſserer	äußerer	5	residual	accept	äußerer	ß after diphthong äu
+auffaſst	auffasst	5	ss_audit	accept	auffasst	ss after short a
+hienach	hiernach	5	residual	rewrite	hiernach	hie-→hier- per plan precedent
+auſsen	außen	5	residual	accept	außen	ß after diphthong au
+sollicitirte	sollizitierte	5	residual	accept	sollizitierte	c to z, -irte to -ierte
+Disseits	Diesseits	5	residual	accept	Diesseits	modern Diesseits
+bloſsen	bloßen	5	residual	accept	bloßen	ß after long o
+erstern	ersteren	5	residual	reject	erstern	elided inflection stays
+Processe	Prozesse	5	residual	accept	Prozesse	Latinate c to z
+fürsichseyenden	für-sich-seienden	5	residual	rewrite	fürsichseienden	compound stays one word
+Reflectirtseyn	Reflektiertsein	5	residual	accept	Reflektiertsein	c/k, -irt/-iert, seyn/sein
+“	"	5	residual	reject	“	punctuation stays as printed
+daseyenden	da-seienden	5	residual	rewrite	daseienden	no hyphenation; ey to ei
+Uebel	Übel	5	residual	accept	Übel	Ue to Ü
+Principe	Prinzip	5	residual	rewrite	Prinzipe	dative -e stays; c to z
+entäuſſerte	entäußerte	5	residual	accept	entäußerte	äu diphthong takes ß
+abgeschiednen	abgeschiedenen	5	residual	reject	abgeschiednen	elided inflection stays
+Zeugniſſe	Zeugnisse	5	ss_audit	accept	Zeugnisse	short i takes ss
+unrecht	Unrecht	5	residual	reject	unrecht	predicative adjective; surface case
+Genuſſes	Genusses	5	ss_audit	accept	Genusses	short u takes ss
+überflüſsig	überflüssig	4	ss_audit	accept	überflüssig	short ü takes ss
+bloſse	bloße	4	residual	accept	bloße	long o takes ß
+vergeſſen	vergessen	4	ss_audit	accept	vergessen	short e takes ss
+Aeuſſerung	Äußerung	4	residual	accept	Äußerung	Ae to Ä; äu takes ß
+löſst	löst	4	residual	accept	löst	lösen gives löst
+vermiſst	vermisst	4	ss_audit	accept	vermisst	short i takes ss
+zweckmäſsige	zweckmässige	4	ss_audit	rewrite	zweckmäßige	-mäßig has long ä
+Vorausſetzung	Voraussetzung	4	ss_audit	accept	Voraussetzung	compound s plus s
+Aether	Äther	4	residual	accept	Äther	Greek th kept
+iſolirt	isoliert	4	residual	accept	isoliert	-irt to -iert
+wüſste	wüsste	4	ss_audit	accept	wüsste	short ü takes ss
+todtes	totes	4	residual	accept	totes	dt to t
+Uebergange	Übergange	4	residual	accept	Übergange	Ue to Ü; dative -e kept
+abſtrahirt	abstrahiert	4	residual	accept	abstrahiert	-irt to -iert
+todten	toten	4	residual	accept	toten	dt to t
+überläſst	überlässt	4	ss_audit	accept	überlässt	short a takes ss
+Räsonniren	Räsonieren	4	residual	accept	Räsonieren	-iren to -ieren
+Accidenzen	Akzidenzen	4	residual	accept	Akzidenzen	Latinate c to k/z
+Philoſophiren	Philosophieren	4	residual	accept	Philosophieren	-iren to -ieren
+Maſsſtab	Massstab	4	ss_audit	rewrite	Maßstab	Maß has long a
+tode	Tode	4	residual	rewrite	tote	adjective; surface lowercase
+Miſstrauen	Misstrauen	4	ss_audit	accept	Misstrauen	miss- prefix, short i
+Ahndung	Ahnung	4	residual	accept	Ahnung	old spelling of Ahnung
+Innhalt	Inhalt	4	residual	accept	Inhalt	nn to n
+Sehens	Sehen_es	4	residual	reject	Sehens	CAB split artifact
+Geheimniſs	Geheimnis	4	residual	accept	Geheimnis	-nis ending
+müſsten	müssten	4	ss_audit	accept	müssten	short ü takes ss
+Negiren	Negieren	4	residual	accept	Negieren	-iren to -ieren
+ausschlieſsende	ausschließende	4	residual	accept	ausschließende	long ie takes ß
+zusammenschlieſst	zusammenschließt	4	residual	accept	zusammenschließt	long ie takes ß
+Unwesenheit	Unwesenhit	4	residual	reject	Unwesenheit	CAB typo
+reflectirten	reflektierten	4	residual	accept	reflektierten	c to k; -irt to -iert
+äuſsert	äußert	4	residual	accept	äußert	äu diphthong takes ß
+existiren	existieren	4	residual	accept	existieren	-iren to -ieren
+einemal	einmal	4	residual	reject	einemal	correlative form stays
+Gröſsen	Größen	4	residual	accept	Größen	long ö takes ß
+hieher	hierher	4	residual	rewrite	hierher	hie-→hier- per plan precedent
+Formiren	Formieren	4	residual	accept	Formieren	-iren to -ieren
+Genieſsen	Geniessen	4	ss_audit	rewrite	Genießen	genießen has long ie
+gebrochne	gebrochene	4	residual	reject	gebrochne	elided inflection stays
+abläſst	ablässt	4	ss_audit	accept	ablässt	short a takes ss
+fürsichseyns	Fürsichseins	4	residual	rewrite	fürsichseins	surface case; one word
+Merkmahle	Merkmale	4	residual	accept	Merkmale	silent h dropped
+verläſst	verlässt	4	ss_audit	accept	verlässt	short a takes ss
+Aeuſserungen	Äusserungen	4	residual	rewrite	Äußerungen	äu diphthong takes ß
+gröſsere	größere	4	residual	accept	größere	long ö takes ß
+specifischen	spezifischen	4	residual	accept	spezifischen	Latinate c to z
+Gebehrde	Gebärde	4	residual	accept	Gebärde	eh to ä
+bewuſstlos	bewusstlos	4	ss_audit	accept	bewusstlos	short u takes ss
+genieſsen	genießen	4	residual	accept	genießen	long ie takes ß
+realisiren	realisieren	4	residual	accept	realisieren	-iren to -ieren
+Principien	Prinzipien	4	residual	accept	Prinzipien	Latinate c to z
+umfaſst	umfasst	4	ss_audit	accept	umfasst	short a takes ss
+beweiſst	beweist	4	residual	accept	beweist	beweisen gives beweist
+Bewuſstlosen	Bewusstlosen	4	ss_audit	accept	Bewusstlosen	short u takes ss
+Rükkehr	Rückkehr	4	residual	accept	Rückkehr	kk to ck
+Edeln	Edlen	4	residual	reject	Edeln	Hegel's inflection stays
+Realiſirung	Realisierung	4	residual	accept	Realisierung	-irung to -ierung
+verschiednen	verschiedenen	4	residual	reject	verschiednen	elided inflection stays
+Uebereinſtimmung	Übereinstimmung	4	residual	accept	Übereinstimmung	Ue to Ü
+thörigt	töricht	4	residual	accept	töricht	archaic -igt to -icht
+ſelbſtbewuſstes	selbstbewusstes	4	ss_audit	accept	selbstbewusstes	short u takes ss
+poſtulirt	postuliert	4	residual	accept	postuliert	-irt to -iert
+selbſtbewuſsten	selbstbewussten	4	ss_audit	accept	selbstbewussten	short u takes ss
+geoffenbart	offenbart	4	residual	reject	geoffenbart	valid modern participle
+auſserdem	außerdem	3	residual	accept	außerdem	au diphthong takes ß
+Kenntniſſen	Kenntnissen	3	ss_audit	accept	Kenntnissen	short i takes ss
+nakte	nackte	3	residual	accept	nackte	k to ck
+gelaſſen	gelassen	3	ss_audit	accept	gelassen	short a takes ss
+Kenntniſſe	Kenntnisse	3	ss_audit	accept	Kenntnisse	short i takes ss
+wiſſenſchafftliche	wissenschaftliche	3	ss_audit	accept	wissenschaftliche	ff to f; short i ss
+Centrum	Zentrum	3	residual	accept	Zentrum	Latinate C to Z
+gebähren	gebären	3	residual	accept	gebären	äh to ä
+wiſſenſchaftliche	wissenschaftliche	3	ss_audit	accept	wissenschaftliche	short i takes ss
+vornemlich	vornehmlich	3	residual	accept	vornehmlich	nem to nehm
+Wiederhohlung	Wiederholung	3	residual	accept	Wiederholung	silent h dropped
+vorausſetzt	voraussetzt	3	ss_audit	accept	voraussetzt	compound s plus s
+Ueberlegung	Überlegung	3	residual	accept	Überlegung	Ue to Ü
+ausgeſchloſſen	ausgeschlossen	3	ss_audit	accept	ausgeschlossen	short o takes ss
+Zweckmäſsigkeit	Zweckmässigkeit	3	ss_audit	rewrite	Zweckmäßigkeit	-mäßig has long ä
+beſſer	besser	3	ss_audit	accept	besser	short e takes ss
+neuern	neueren	3	residual	reject	neuern	elided inflection stays
+besondre	besondere	3	residual	reject	besondre	elided inflection stays
+gesagte	Gesagte	3	residual	reject	gesagte	surface case kept
+Zusammenhange	Zusammenhänge	3	residual	reject	Zusammenhange	dative singular, not plural
+Todte	Tote	3	residual	accept	Tote	dt to t
+gröſste	größte	3	residual	accept	größte	long ö takes ß
+Flüſſigkeit	Flüssigkeit	3	ss_audit	accept	Flüssigkeit	short ü takes ss
+abstrahirt	abstrahiert	3	residual	accept	abstrahiert	-irt to -iert
+umfaſſen	umfassen	3	ss_audit	accept	umfassen	short a takes ss
+rechtwinklichten	rechtwinkligen	3	residual	accept	rechtwinkligen	archaic -icht to -ig
+zerriſſen	zerrissen	3	ss_audit	accept	zerrissen	short i takes ss
+Gröſſe	Größe	3	residual	accept	Größe	long ö takes ß
+abſtrahiren	abstrahieren	3	residual	accept	abstrahieren	-iren to -ieren
+auflöſst	auflöst	3	residual	accept	auflöst	auflösen gives auflöst
+unbegriffne	unbegriffene	3	residual	reject	unbegriffne	elided inflection stays
+zerflieſst	zerfließt	3	residual	accept	zerfließt	long ie takes ß
+groſsen	großen	3	residual	accept	großen	long o takes ß
+Unwiſſenheit	Unwissenheit	3	ss_audit	accept	Unwissenheit	short i takes ss
+Poëſie	Poesie	3	residual	accept	Poesie	diaeresis dropped
+Todten	Toten	3	residual	accept	Toten	dt to t
+Hülfe	Hilfe	3	residual	accept	Hilfe	ü to i
+eh	ehe	3	residual	rewrite	ehe	apocope; modern ehe
+Besorgniſs	Besorgnis	3	residual	accept	Besorgnis	-nis ending
+sicht	Sicht	3	residual	rewrite	sieht	print error for sieht
+mannichfaltiger	mannigfaltiger	3	residual	accept	mannigfaltiger	ch to g
+reflectiren	reflektieren	3	residual	accept	reflektieren	c to k; -iren to -ieren
+Brodes	Brotes	3	residual	accept	Brotes	d to t
+afficiren	affizieren	3	residual	accept	affizieren	c to z; -iren to -ieren
+unsre	unsere	3	residual	reject	unsre	elided form stays
+Finsterniſs	Finsternis	3	residual	accept	Finsternis	-nis ending
+reducirt	reduziert	3	residual	accept	reduziert	c to z; -irt to -iert
+stöſst	stößt	3	residual	accept	stößt	stoßen has long o
+fürsich	für-sich	3	residual	reject	fürsich	no hyphenation
+entläſst	entlässt	3	ss_audit	accept	entlässt	short a takes ss
+selbststandige	selbststantige	3	residual	rewrite	selbstständige	umlaut restored; CAB typo
+abstrahiren	abstrahieren	3	residual	accept	abstrahieren	-iren to -ieren
+äuſserliches	Äußerliches	3	residual	rewrite	äußerliches	surface lowercase kept
+ansichseyenden	an-sich-seienden	3	residual	rewrite	ansichseienden	one word; ey to ei
+Ergreiffen	ergreifen	3	residual	rewrite	Ergreifen	nominalized, capital kept
+verschwundne	verschwundene	3	residual	reject	verschwundne	elided inflection stays
+Verhaltniſs	Verhältnis	3	residual	accept	Verhältnis	umlaut restored; -nis
+entäuſsert	entäußert	3	residual	accept	entäußert	äu diphthong takes ß
+bewuſster	bewusster	3	ss_audit	accept	bewusster	short u takes ss
+Gesetzmäſsigkeit	Gesetzmässigkeit	3	ss_audit	rewrite	Gesetzmäßigkeit	-mäßig has long ä
+groſser	großer	3	residual	accept	großer	long o takes ß
+innres	inneres	3	residual	reject	innres	elided inflection stays
+existirenden	existierenden	3	residual	accept	existierenden	-iren to -ieren
+Gallerie	Galerie	3	residual	accept	Galerie	ll to l
+Stirne	Stirn	3	residual	reject	Stirne	valid modern variant
+Charakteren	Charaktern	3	residual	reject	Charakteren	valid modern dative plural
+toden	Toden	3	residual	rewrite	toten	adjective; surface lowercase
+Fürsich	Für-sich	3	residual	reject	Fürsich	no hyphenation
+Masse	Maße	3	residual	reject	Masse	context is mass, not Maße
+Ansichseyenden	An-sich-seienden	3	residual	rewrite	Ansichseienden	one word; ey to ei
+Uebergehens	Übergehens	3	residual	accept	Übergehens	Ue to Ü
+erhalt	erhalte	3	residual	rewrite	erhält	print error for erhält
+Hülffe	Hilfe	3	residual	accept	Hilfe	ü to i; ff to f
+vereinzelnten	vereinzelten	3	residual	reject	vereinzelnten	Hegel's -eln shape stays
+zusammenfaſst	zusammenfasst	3	ss_audit	accept	zusammenfasst	short a takes ss
+wuſste	wusste	3	ss_audit	accept	wusste	short u takes ss
+unterirrdische	unterirdische	3	residual	accept	unterirdische	rr to r
+organisirt	organisiert	3	residual	accept	organisiert	-irt to -iert
+mannichfaltiges	mannigfaltiges	3	residual	accept	mannigfaltiges	ch to g
+zuſammenſchlieſst	zusammenschließt	3	residual	accept	zusammenschließt	long ie takes ß
+ausſprechende	aussprechende	3	ss_audit	accept	aussprechende	compound s plus s
+zerriſſne	zerrissene	3	residual	reject	zerrissne	elided inflection stays
+negirt	negiert	3	residual	accept	negiert	-irt to -iert
+’	'	3	residual	reject	’	punctuation stays as printed
+äuſſeres	äußeres	3	residual	accept	äußeres	äu diphthong takes ß
+Zweckmäſſigkeit	Zweckmäßigkeit	3	residual	accept	Zweckmäßigkeit	-mäßig has long ä
+überflüſſig	überflüssig	3	ss_audit	accept	überflüssig	short ü takes ss
+Unangemeſſenheit	Unangemessenheit	3	ss_audit	accept	Unangemessenheit	short e takes ss
+desſelben	desselben	3	ss_audit	accept	desselben	short e takes ss
+paſſive	passive	3	ss_audit	accept	passive	short a takes ss
+gewuſste	gewusste	3	ss_audit	accept	gewusste	short u takes ss
+gewuſsten	gewussten	3	ss_audit	accept	gewussten	short u takes ss
+unvollkommne	unvollkommene	3	residual	reject	unvollkommne	elided inflection stays
+eingeschloſſen	eingeschlossen	3	ss_audit	accept	eingeschlossen	short o takes ss
+Anſichſeyende	An-sich-seiende	3	residual	rewrite	Ansichseiende	one word; ey to ei
+entäuſſern	entäußern	3	residual	accept	entäußern	äu diphthong takes ß
+ſelbſtbewuſster	selbstbewusster	3	ss_audit	accept	selbstbewusster	short u takes ss
+Vergeſſenheit	Vergessenheit	3	ss_audit	accept	Vergessenheit	short e takes ss
+Accidentalität	Akzidentalität	3	residual	accept	Akzidentalität	Latinate c to k/z
+Unterſchiedne	Unterschiedene	3	residual	reject	Unterschiedne	elided inflection stays
+Veranlaſſungen	Veranlassungen	2	ss_audit	accept	Veranlassungen	short a takes ss
+Wiſſenſchafften	Wissenschaften	2	ss_audit	accept	Wissenschaften	ff to f; short i ss
+Entwiklung	Entwicklung	2	residual	accept	Entwicklung	k to ck
+auffaſſende	auffassende	2	ss_audit	accept	auffassende	short a takes ss
+befaſſen	befassen	2	ss_audit	accept	befassen	short a takes ss
+aufzufaſſen	aufzufassen	2	ss_audit	accept	aufzufassen	short a takes ss
+Wiſſenſchaftlichkeit	Wissenschaftlichkeit	2	ss_audit	accept	Wissenschaftlichkeit	short i takes ss
+allgemeinern	allgemeineren	2	residual	reject	allgemeinern	elided inflection stays
+Zuſammenhange	Zusammenhänge	2	residual	reject	Zusammenhange	dative singular, not plural
+Bedürfniſſe	Bedürfnisse	2	ss_audit	accept	Bedürfnisse	short i takes ss
+Waſſer	Wasser	2	ss_audit	accept	Wasser	short a takes ss
+muſste	mußte	2	residual	reject	musste	post-1996 ss, not mußte
+Waſſers	Wassers	2	ss_audit	accept	Wassers	short a takes ss
+Maſses	Masses	2	ss_audit	rewrite	Maßes	Maß has long a
+unwiſſenſchaftlichen	unwissenschaftlichen	2	ss_audit	accept	unwissenschaftlichen	short i takes ss
+auſſenher	außen_her	2	residual	rewrite	außenher	außen has long au
+Hinderniſs	Hindernis	2	residual	accept	Hindernis	-nis ending
+erſtern	ersteren	2	residual	reject	erstern	elided inflection stays
+fürſichſeyenden	für-sich-seienden	2	residual	rewrite	fürsichseienden	one word; ey to ei
+Wiſſenden	Wissenden	2	ss_audit	accept	Wissenden	short i takes ss
+flieſsen	fließen	2	residual	accept	fließen	long ie takes ß
+reflectirter	reflektierter	2	residual	accept	reflektierter	c to k; -irt to -iert
+gekommne	gekommene	2	residual	reject	gekommne	elided inflection stays
+haſst	hasst	2	ss_audit	accept	hasst	short a takes ss
+Schlieſſen	Schließen	2	residual	accept	Schließen	long ie takes ß
+Veranlaſſung	Veranlassung	2	ss_audit	accept	Veranlassung	short a takes ss
+Gefäſſe	Gefäße	2	residual	accept	Gefäße	long ä takes ß
+Aeuſſere	Äußere	2	residual	accept	Äußere	Ae→Ä, ſſ→ß after diphthong
+zweckmäſsig	zweckmässig	2	ss_audit	rewrite	zweckmäßig	mäßig long ä keeps ß
+fixirte	fixierte	2	residual	accept	fixierte	-irt→-iert
+ſtöſst	stößt	2	residual	accept	stößt	stoßen long o keeps ß
+Vorausſetzungen	Voraussetzungen	2	ss_audit	accept	Voraussetzungen	ſſ→ss correct here
+räſonnirenden	räsonierenden	2	residual	accept	räsonierenden	modern räsonieren, single n
+Wiſſenſchafftlichkeit	Wissenschaftlichkeit	2	ss_audit	accept	Wissenschaftlichkeit	ſchafft→schaft
+gröſſer	größer	2	residual	accept	größer	long ö keeps ß
+Weiſse	Weiße	2	residual	accept	Weiße	das Weiße; diphthong keeps ß
+todter	toter	2	residual	accept	toter	dt→t
+rangirt	rangiert	2	residual	accept	rangiert	-irt→-iert
+unterlaſſen	unterlassen	2	ss_audit	accept	unterlassen	short a takes ss
+prädicirt	prädiziert	2	residual	accept	prädiziert	c→z, -irt→-iert
+Nus	Nuss	2	residual	reject	Nus	Greek nous, technical term
+ankömmt	ankommt	2	residual	reject	ankömmt	archaic inflection, word form kept
+willkührlich	willkürlich	2	residual	accept	willkürlich	silent h dropped
+Accidens	Akzidens	2	residual	accept	Akzidens	Latinate c→k/z
+Gegenstoſs	Gegenstoss	2	ss_audit	rewrite	Gegenstoß	Stoß long o keeps ß
+resultirt	resultiert	2	residual	accept	resultiert	-irt→-iert
+Accent	Akzent	2	residual	accept	Akzent	Latinate c→k/z
+wiederhohlt	wiederholt	2	residual	accept	wiederholt	silent h dropped
+Auſſer	Außer	2	residual	accept	Außer	diphthong au keeps ß
+räſonnirende	räsonnierende	2	residual	rewrite	räsonierende	modern räsonieren, single n
+vindiciren	vindizieren	2	residual	accept	vindizieren	c→z, -iren→-ieren
+Er-Innerung	Erinnerung	2	residual	reject	Er-Innerung	Hegel's deliberate hyphenation
+bessern	besseren	2	residual	reject	bessern	elided inflection stays
+trockne	trockene	2	residual	reject	trockne	elided inflection stays
+Maſsstabes	Massstabes	2	ss_audit	rewrite	Maßstabes	Maß long a keeps ß
+mannichfaltig	mannigfaltig	2	residual	accept	mannigfaltig	ch→g
+andersseyn	Anderssein	2	residual	rewrite	anderssein	ey→ei; surface case kept
+aufgehobenseyn	Aufgehobensein	2	residual	rewrite	aufgehobensein	ey→ei; surface case kept
+äussern	äußeren	2	residual	rewrite	äußern	long äu keeps ß; ending stays
+äusserer	äußerer	2	residual	accept	äußerer	long äu keeps ß
+fur	für	2	residual	accept	für	print omits umlaut
+Ausschlieſsen	Ausschliessen	2	ss_audit	rewrite	Ausschließen	schließen long ie keeps ß
+auffaſste	auffasste	2	ss_audit	accept	auffasste	short a takes ss
+Auchs	Auch	2	residual	reject	Auchs	genitive of nominalized Auch
+auſsern	außen	2	residual	rewrite	äußern	print omits umlaut; äußern
+sollicitirendes	sollizitierendes	2	residual	accept	sollizitierendes	c→z, -irend→-ierend
+sollicitirend	sollizitierend	2	residual	accept	sollizitierend	c→z, -irend→-ierend
+sollicitiren	sollizitieren	2	residual	accept	sollizitieren	c→z, -iren→-ieren
+Bezichung	Bezechung	2	residual	rewrite	Beziehung	print damage for Beziehung
+attrahirt	attrahiert	2	residual	accept	attrahiert	-irt→-iert
+selbststandigen	Selbststandchen	2	residual	rewrite	selbstständigen	print omits umlaut
+innrer	innerer	2	residual	reject	innrer	elided inflection stays
+abgestoſsene	abgestoßene	2	residual	accept	abgestoßene	stoßen long o keeps ß
+süſs	süß	2	residual	accept	süß	long ü keeps ß
+Abstoſsen	Abstossen	2	ss_audit	rewrite	Abstoßen	Stoß long o keeps ß
+Uebersinnlichen	Übersinnlichen	2	residual	accept	Übersinnlichen	Ue→Ü
+Unterschiednen	Unterschiedenen	2	residual	reject	Unterschiednen	elided inflection stays
+beschlieſst	beschließt	2	residual	accept	beschließt	schließen long ie keeps ß
+verläugnet	verleugnet	2	residual	accept	verleugnet	äu→eu spelling archaism
+unterschiednes	unterschiedenes	2	residual	reject	unterschiednes	elided inflection stays
+verlornes	verlorenes	2	residual	reject	verlornes	elided participle stays
+musicalisches	musikalisches	2	residual	accept	musikalisches	Latinate c→k
+Gewiſsheiten	Gewissheiten	2	ss_audit	accept	Gewissheiten	short i takes ss
+constituirt	konstituiert	2	residual	accept	konstituiert	c→k, -irt→-iert
+Anstoſses	Anstosses	2	ss_audit	rewrite	Anstoßes	Anstoß long o keeps ß
+Apperception	Apperzeption	2	residual	accept	Apperzeption	Latinate c→z
+Gedächtniſs	Gedächtnis	2	residual	accept	Gedächtnis	-niſs→-nis
+Gräntzen	Grenzen	2	residual	accept	Grenzen	tz→z, ä→e
+losreiſsen	losreissen	2	ss_audit	rewrite	losreißen	reißen long ei keeps ß
+gröſserer	größerer	2	residual	accept	größerer	long ö keeps ß
+electrisch	elektrisch	2	residual	accept	elektrisch	Latinate c→k
+reiſst	reißt	2	residual	accept	reißt	long ei keeps ß
+Auſserdem	Außerdem	2	residual	accept	Außerdem	diphthong au keeps ß
+Elasticität	Elastizität	2	residual	accept	Elastizität	Latinate c→z
+legitimirt	legitimiert	2	residual	accept	legitimiert	-irt→-iert
+reflectirenden	reflektierenden	2	residual	accept	reflektierenden	c→k, -irend→-ierend
+Representanten	Repräsentanten	2	residual	accept	Repräsentanten	e→ä modernized
+herausgeborne	herausgeboren	2	residual	reject	herausgeborne	CAB dropped the ending
+particularisirt	partikularisiert	2	residual	accept	partikularisiert	c→k, -irt→-iert
+angebohrne	angeborene	2	residual	rewrite	angeborne	drop silent h, keep elision
+durchdrungne	durchdrungene	2	residual	reject	durchdrungne	elided participle stays
+Menschenkenntniſs	Menschenkenntnis	2	residual	accept	Menschenkenntnis	-niſs→-nis
+erwiedert	erwidert	2	residual	accept	erwidert	ie→i graphical archaism
+bloſses	bloßes	2	residual	accept	bloßes	bloß long o keeps ß
+stoſsen	stoßen	2	residual	accept	stoßen	long o keeps ß
+prästabilirte	prästabilierte	2	residual	accept	prästabilierte	-irt→-iert
+innwohnende	innewohnende	2	residual	accept	innewohnende	inn→inne modern form
+Schädelwissenschafft	Schädelwissenschaft	2	ss_audit	accept	Schädelwissenschaft	ſchafft→schaft
+einfachern	einfacheren	2	residual	reject	einfachern	elided inflection stays
+Uebereinstimmung	Übereinstimmung	2	residual	accept	Übereinstimmung	Ue→Ü
+verlorne	verlorene	2	residual	reject	verlorne	elided participle stays
+gesetzmäſsige	gesetzmässige	2	ss_audit	rewrite	gesetzmäßige	mäßig long ä keeps ß
+gewalthabende	Gewaltabende	2	residual	reject	gewalthabende	valid compound; CAB garbled it
+Uebermacht	Übermacht	2	residual	accept	Übermacht	Ue→Ü
+angemaſst	angemaßt	2	residual	accept	angemaßt	anmaßen long a keeps ß
+Aufopfrung	Aufopferung	2	residual	reject	Aufopfrung	elided form stays
+misbraucht	missbraucht	2	residual	accept	missbraucht	post-1996 doubles the s
+Uebersetzens	Übersetzens	2	residual	accept	Übersetzens	Ue→Ü
+gewordnen	gewordenen	2	residual	reject	gewordnen	elided participle stays
+interessirt	interessiert	2	residual	accept	interessiert	-irt→-iert
+ausschlieſsen	ausschließen	2	residual	accept	ausschließen	schließen long ie keeps ß
+Haſs	Hass	2	ss_audit	accept	Hass	short a takes ss
+paſst	passt	2	ss_audit	accept	passt	short a takes ss
+willkührlichen	willkürlichen	2	residual	accept	willkürlichen	silent h dropped
+Aenderung	Änderung	2	residual	accept	Änderung	Ae→Ä
+fürsichseyendes	für-sich-seiendes	2	residual	rewrite	fürsichseiendes	compound stays one word
+zerreiſst	zerreißt	2	residual	accept	zerreißt	long ei keeps ß
+analysirt	analysiert	2	residual	accept	analysiert	-irt→-iert
+Isoliren	isolieren	2	residual	rewrite	Isolieren	keep surface capitalization
+vereinzelnte	vereinzelte	2	residual	reject	vereinzelnte	Hegel's vocabulary keeps its shape
+entreiſst	entreisst	2	ss_audit	rewrite	entreißt	reißen long ei keeps ß
+isolirenden	isolierenden	2	residual	accept	isolierenden	-irend→-ierend
+selbstbewuſstes	selbstbewusstes	2	ss_audit	accept	selbstbewusstes	short u takes ss
+Individualisirung	Individualisierung	2	residual	accept	Individualisierung	-irung→-ierung
+Bewuſsten	Bewussten	2	ss_audit	accept	Bewussten	short u takes ss
+angehörte	Angehörte	2	residual	reject	angehörte	CAB wrongly capitalized it
+Bewuſstes	Bewusstes	2	ss_audit	accept	Bewusstes	short u takes ss
+aufgelöſst	aufgelöst	2	residual	accept	aufgelöst	auflösen long ö, single s
+todt	tot	2	residual	accept	tot	dt→t
+abgeschiedne	abgeschiedene	2	residual	reject	abgeschiedne	elided participle stays
+Entäusserung	Entäußerung	2	residual	accept	Entäußerung	long äu keeps ß
+Besondern	Besonderen	2	residual	reject	Besondern	elided inflection stays
+Maſsstabe	Massstabe	2	ss_audit	rewrite	Maßstabe	Maß long a keeps ß
+darnach	danach	2	residual	reject	darnach	archaic variant, word form kept
+Weſſen	Wessen	2	ss_audit	accept	Wessen	relative pronoun; short e ss
+abgeſchiedne	abgeschiedene	2	residual	reject	abgeschiedne	elided participle stays
+eignem	eigenem	2	residual	reject	eignem	elided inflection stays
+edeln	edlen	2	residual	reject	edeln	Hegel's inflected form stays
+abgeſchiednen	abgeschiedenen	2	residual	reject	abgeschiednen	elided participle stays
+sichseyende	sich-seiende	2	residual	rewrite	sichseiende	ey→ei; no hyphen added
+selbſtbewuſstes	selbstbewusstes	2	ss_audit	accept	selbstbewusstes	short u takes ss
+zukömmt	zukommt	2	residual	reject	zukömmt	archaic inflection, word form kept
+Preiſses	Preises	2	residual	accept	Preises	genitive of Preis
+preiſsgegeben	preisgegeben	2	residual	accept	preisgegeben	Preis, single s
+entäuſſernden	entäußernden	2	residual	accept	entäußernden	long äu keeps ß
+Zerreiſſen	Zerreissen	2	ss_audit	rewrite	Zerreißen	reißen long ei keeps ß
+ablaſſen	ablassen	2	ss_audit	accept	ablassen	short a takes ss
+Augenbliks	Augenblicks	2	residual	accept	Augenblicks	k→ck
+preiſsgegebne	preisgegebene	2	residual	rewrite	preisgegebne	keep elided participle ending
+genieſſen	genießen	2	residual	accept	genießen	long ie keeps ß
+geiſtverlaſſne	geistverlassene	2	residual	reject	geistverlassne	elision kept; ss short vowel
+exiſtirende	existierende	2	residual	accept	existierende	-irend→-ierend
+auſſen	außen	2	residual	accept	außen	diphthong au keeps ß
+zerreiſſende	zerreißende	2	residual	accept	zerreißende	long ei keeps ß
+zerriſſene	zerrissene	2	ss_audit	accept	zerrissene	short i takes ss
+Verrüktheit	Verrücktheit	2	residual	accept	Verrücktheit	k→ck
+”	"	2	residual	reject	”	punctuation stays as printed
+erhobne	erhobene	2	residual	reject	erhobne	elided participle stays
+unterſchiednen	unterschiedenen	2	residual	reject	unterschiednen	elided inflection stays
+Eiteln	Eitlen	2	residual	reject	Eiteln	Hegel's inflected form stays
+eiteln	eitlen	2	residual	reject	eiteln	Hegel's inflected form stays
+betriegenden	betrügenden	2	residual	reject	betriegenden	archaic lexeme kept
+überlieſs	überließ	2	residual	accept	überließ	long ie keeps ß
+Aeuſſerungen	Äußerungen	2	residual	accept	Äußerungen	Ae→Ä, long äu keeps ß
+Brodteig	Brotteig	2	residual	accept	Brotteig	Brod→Brot
+fürſichſeyns	Fürsichseins	2	residual	rewrite	fürsichseins	one word; surface case kept
+fürſichſeyendes	für-sich-seiendes	2	residual	rewrite	fürsichseiendes	compound stays one word
+ausſchlieſſendes	ausschließendes	2	residual	accept	ausschließendes	schließen long ie keeps ß
+abſolvirt	absolviert	2	residual	accept	absolviert	-irt→-iert
+eſſen	essen	2	ss_audit	accept	essen	short e takes ss
+fürſichſeyn	Für-sich-sein	2	residual	rewrite	fürsichsein	one word; surface case kept
+reinern	reineren	2	residual	reject	reinern	elided inflection stays
+Maſs	Maß	2	residual	accept	Maß	long a keeps ß
+Geſtändniſs	Geständnis	2	residual	accept	Geständnis	-niſs→-nis
+ausſchlieſst	ausschließt	2	residual	accept	ausschließt	schließen long ie keeps ß
+bewuſstloſe	bewusstlose	2	ss_audit	accept	bewusstlose	short u takes ss
+iſolirte	isolierte	2	residual	accept	isolierte	-irt→-iert
+Diſſeits	Diesseits	2	residual	accept	Diesseits	dis→dies spelling archaism
+diſſeits	diesseits	2	residual	accept	diesseits	dis→dies spelling archaism
+verlaſſne	verlassene	2	residual	reject	verlassne	elision kept; ss short vowel
+Ueber	Über	2	residual	accept	Über	Ue→Ü
+verſchiednes	verschiedenes	2	residual	reject	verschiednes	elided inflection stays
+wiſſender	wissender	2	ss_audit	accept	wissender	short i takes ss
+darinn	darin	2	residual	accept	darin	nn→n
+betriegen	betrügen	2	residual	reject	betriegen	archaic lexeme kept
+Aeuſſeres	Äußeres	2	residual	accept	Äußeres	Ae→Ä, long äu keeps ß
+wiſſe	wisse	2	ss_audit	accept	wisse	short i takes ss
+realiſiren	realisieren	2	residual	accept	realisieren	-iren→-ieren
+Beſondre	Besondere	2	residual	reject	Besondre	elided form stays
+beschloſſen	beschlossen	2	ss_audit	accept	beschlossen	short o takes ss
+Laſſen	Lassen	2	ss_audit	accept	Lassen	short a takes ss
+Anſichs	Ansich	2	residual	reject	Ansichs	genitive s belongs to Hegel's noun
+gewiſſenhafft	gewissenhaft	2	ss_audit	accept	gewissenhaft	ſchafft→haft, short i ss
+Selbſtgewiſsheit	Selbstgewissheit	2	ss_audit	accept	Selbstgewissheit	short i takes ss
+Ungewiſsheit	Ungewissheit	2	ss_audit	accept	Ungewissheit	short i takes ss
+erfaſste	erfasste	2	ss_audit	accept	erfasste	short a takes ss
+ſelbſtwiſſende	selbstwissende	2	ss_audit	accept	selbstwissende	short i takes ss
+gewiſſenhafften	gewissenhaften	2	ss_audit	accept	gewissenhaften	hafft→haft
+Gewiſſenhafftigkeit	Gewissenhaftigkeit	2	ss_audit	accept	Gewissenhaftigkeit	hafft→haft
+Pflichtmäſsige	Pflichtmässige	2	ss_audit	rewrite	Pflichtmäßige	mäßig long ä keeps ß
+letztre	letztere	2	residual	reject	letztre	elided form stays
+Gewiſſenhaftigkeit	Gewissenhaftigkeit	2	ss_audit	accept	Gewissenhaftigkeit	short i takes ss
+vorhandnen	vorhandenen	2	residual	reject	vorhandnen	elided inflection stays
+paſſiv	passiv	2	ss_audit	accept	passiv	short a takes ss
+Bekenntniſſe	Bekenntnisse	2	ss_audit	accept	Bekenntnisse	short i takes ss
+eingeſchloſſen	eingeschlossen	2	ss_audit	accept	eingeschlossen	short o takes ss
+beſondre	besondere	2	residual	reject	besondre	elided form stays
+unvollkommnen	unvollkommenen	2	residual	reject	unvollkommnen	elided inflection stays
+Finſterniſs	Finsternis	2	residual	accept	Finsternis	-niſs→-nis
+beseeltern	beseelteren	2	residual	reject	beseeltern	elided inflection stays
+freygelaſſen	freigelassen	2	ss_audit	accept	freigelassen	ey→ei; short a ss
+Aeuſſern	Äußeren	2	residual	rewrite	Äußern	Ae→Ä; keep elided ending
+flüſſige	flüssige	2	ss_audit	accept	flüssige	short ü takes ss
+individualisirt	individualisiert	2	residual	accept	individualisiert	-irt→-iert
+Geburtsſtätte	Geburtsstätte	2	ss_audit	accept	Geburtsstätte	ſt→st
+realiſirt	realisiert	2	residual	accept	realisiert	-irt→-iert
+obern	oberen	2	residual	reject	obern	elided inflection stays
+Aufspreitzen	Aufspreizen	2	residual	accept	Aufspreizen	tz→z
+preiſst	preist	2	residual	accept	preist	verb preisen, single s
+Nichtwiſſens	Nichtwissens	2	ss_audit	accept	Nichtwissens	short i takes ss
+Heerdes	Herdes	2	residual	accept	Herdes	Heerd→Herd, hearth
+Hervorgangs	Herrvorgangs	2	residual	reject	Hervorgangs	already modern; CAB garbled it
+anſichſeyenden	an-sich-seienden	2	residual	rewrite	ansichseienden	compound stays one word
+entäuſſernde	entäußernde	2	residual	accept	entäußernde	aeusser- takes ss
+inſich	in-sich	2	residual	rewrite	insich	CAB hyphenated compound
+Daſſelbe	Dasselbe	2	ss_audit	accept	Dasselbe	short a takes ss
+vornen	vorne	2	residual	reject	vornen	archaic adverb form kept
+Verfaſſer	Verfasser	1	ss_audit	accept	Verfasser	short a takes ss
+unpaſſend	unpassend	1	ss_audit	accept	unpassend	short a takes ss
+flüſsige	flüssige	1	ss_audit	accept	flüssige	short vowel takes ss
+Gränze	Grenze	1	residual	accept	Grenze	old aa spelling modernizes
+Anmaſsung	Anmassung	1	ss_audit	rewrite	Anmaßung	long a takes sz
+beſaſs	besaß	1	residual	accept	besaß	long a takes sz
+Verſchloſſenheit	Verschlossenheit	1	ss_audit	accept	Verschlossenheit	short o takes ss
+aufſchlieſſen	aufschließen	1	residual	accept	aufschließen	long ie takes sz
+Anbeiſſen	Anbeissen	1	ss_audit	rewrite	Anbeißen	diphthong ei takes sz
+gährende	gehrende	1	residual	rewrite	gärende	gaehren is modern gaeren
+herauszureiſſen	herauszureissen	1	ss_audit	rewrite	herauszureißen	diphthong ei takes sz
+vergeſſend	vergessend	1	ss_audit	accept	vergessend	short e takes ss
+Ueberirdiſche	Überirdische	1	residual	accept	Überirdische	Ue digraph becomes U-umlaut
+Diſſeitigen	Diesseitigen	1	residual	accept	Diesseitigen	diss is dies
+intereſſant	interessant	1	ss_audit	accept	interessant	short vowel takes ss
+ermeſſen	ermessen	1	ss_audit	accept	ermessen	short e takes ss
+aufzuſpreitzen	aufzuspreizen	1	residual	accept	aufzuspreizen	tz becomes z
+hauſse	hause	1	residual	accept	hause	hausse is subjunctive hause
+ergieſst	ergießt	1	residual	accept	ergießt	long ie takes sz
+philoſophiren	philosophieren	1	residual	accept	philosophieren	-iren becomes -ieren
+Gähren	Gehren	1	residual	rewrite	Gären	gaehren is modern gaeren
+überlaſſen	überlassen	1	ss_audit	accept	überlassen	short a takes ss
+unſre	unsere	1	residual	reject	unsre	elision is valid modern German
+Uebergangs	Übergangs	1	residual	accept	Übergangs	Ue digraph becomes U-umlaut
+Allmähligkeit	Allmählichkeit	1	residual	accept	Allmählichkeit	allmaehlig is allmaehlich
+gebohren	geboren	1	residual	accept	geboren	silent h dropped
+Theilgen	Teilen	1	residual	rewrite	Teilchen	diminutive -gen is -chen
+einreiſſen	einreissen	1	ss_audit	rewrite	einreißen	diphthong ei takes sz
+allmählige	allmähliche	1	residual	accept	allmähliche	allmaehlig is allmaehlich
+Zerbrökeln	Zerbröckeln	1	residual	accept	Zerbröckeln	ck restored
+einemmahle	einemmal	1	residual	rewrite	einemmale	mahl becomes mal, form kept
+gebohrne	geborene	1	residual	rewrite	geborne	drop h, keep elision
+Aeſte	Äste	1	residual	accept	Äste	Ae digraph becomes A-umlaut
+verſchlungnen	verschlungenen	1	residual	reject	verschlungnen	elision kept
+Succeſsion	Succession	1	ss_audit	rewrite	Sukzession	Latinate c becomes k/z
+Foderungen	Forderungen	1	residual	accept	Forderungen	old Foderung is Forderung
+Deſſelben	Desselben	1	ss_audit	accept	Desselben	short e takes ss
+einfärbiger	einfarbiger	1	residual	reject	einfärbiger	faerbig is valid German
+ununterſchiedne	ununterschiedene	1	residual	reject	ununterschiedne	elision kept
+Ueberwinden	Überwinden	1	residual	accept	Überwinden	Ue digraph becomes U-umlaut
+Miſsverſtand	Missverstand	1	ss_audit	accept	Missverstand	short i takes ss
+perhorreſcirt	perhorresziert	1	residual	accept	perhorresziert	Latinate c becomes k/z
+Perhorreſciren	Perhorreszieren	1	residual	accept	Perhorreszieren	Latinate c becomes k/z
+miskannte	mißkannte	1	residual	rewrite	misskannte	mis- prefix becomes miss-
+Miſskredit	Misskredit	1	ss_audit	accept	Misskredit	short i takes ss
+Reflectirens	Reflektierens	1	residual	accept	Reflektierens	c to k, -iren to -ieren
+bloſſer	bloßer	1	residual	accept	bloßer	long o takes sz
+anticipirt	antizipiert	1	residual	accept	antizipiert	c to z, -iren to -ieren
+find	finde	1	residual	rewrite	sind	print damage for sind
+Anticipation	Antizipation	1	residual	accept	Antizipation	c to z
+verkännte	verkennte	1	residual	accept	verkennte	old ae spelling modernizes
+Auſſerſichſeyn	Außer-sich-sein	1	residual	rewrite	Außersichsein	compound stays one word
+wiſsen	wissen	1	ss_audit	accept	wissen	short i takes ss
+Schattirung	Schattierung	1	residual	accept	Schattierung	-irung becomes -ierung
+Vorbereitungskenntniſſe	Vorbereitungskenntnisse	1	ss_audit	accept	Vorbereitungskenntnisse	short i takes ss
+Bildungsſtuffen	Bildungsstufen	1	ss_audit	accept	Bildungsstufen	ff becomes f
+Uebungen	Übungen	1	residual	accept	Übungen	Ue digraph becomes U-umlaut
+Schattenriſſe	Schattenrisse	1	ss_audit	accept	Schattenrisse	short i takes ss
+vergangne	vergangene	1	residual	reject	vergangne	elision kept
+erworbnes	erworbenes	1	residual	reject	erworbnes	elision kept
+Vorhandne	Vorhandene	1	residual	reject	Vorhandne	elision kept
+séine	seine	1	residual	reject	séine	accent is printed emphasis
+bezwungne	bezwungene	1	residual	reject	bezwungne	elision kept
+zurückgenommne	zurückgenommene	1	residual	reject	zurückgenommne	elision kept
+dér	der	1	residual	reject	dér	accent is printed emphasis
+unbegriffnen	unbegriffenen	1	residual	reject	unbegriffnen	elision kept
+Prüſſen	Preussen	1	residual	rewrite	Prüfen	print damage for Pruefen
+Analyſiren	analysieren	1	residual	rewrite	Analysieren	keep surface capital
+Geschiedne	Geschiedene	1	residual	reject	Geschiedne	elision kept
+verwunderſamsten	wundersamsten	1	residual	reject	verwundersamsten	Hegel's lexeme kept
+gröſsten	größten	1	residual	accept	größten	long o takes sz
+geschloſſen	geschlossen	1	ss_audit	accept	geschlossen	short o takes ss
+verwundersame	wundersame	1	residual	reject	verwundersame	Hegel's lexeme kept
+Accidentelle	Akzidentelle	1	residual	accept	Akzidentelle	Latinate c becomes k/z
+gebundne	gebundene	1	residual	reject	gebundne	elision kept
+anderm	anderem	1	residual	reject	anderm	elision kept
+ſalsch	falsch	1	residual	accept	falsch	print damage for falsch
+philosophirend	philosophierend	1	residual	accept	philosophierend	-iren becomes -ieren
+abgeschnittne	abgeschnittene	1	residual	reject	abgeschnittne	elision kept
+flüſſig	flüssig	1	ss_audit	accept	flüssig	short vowel takes ss
+wegläſst	weglässt	1	ss_audit	accept	weglässt	short a takes ss
+Sichselbſtsetzens	Siechselbstsetzens	1	residual	reject	Sichselbstsetzens	CAB garbled the compound
+Wiſſenschaftlichkeit	Wissenschaftlichkeit	1	ss_audit	accept	Wissenschaftlichkeit	short i takes ss
+Philosophiren	Philosophieren	1	residual	accept	Philosophieren	-iren becomes -ieren
+Unerfahrne	Unerfahrene	1	residual	reject	Unerfahrne	elision kept
+weſswegen	weswegen	1	residual	accept	weswegen	modern weswegen has one s
+erfaſsten	erfassten	1	ss_audit	accept	erfassten	short a takes ss
+beſchlieſst	beschließt	1	residual	accept	beschließt	long ie takes sz
+organiſirt	organisiert	1	residual	accept	organisiert	-irt becomes -iert
+Oel	Öl	1	residual	accept	Öl	Oe digraph becomes O-umlaut
+betrift	betrifft	1	residual	accept	betrifft	modern spelling doubles f
+Meſſung	Messung	1	ss_audit	accept	Messung	short e takes ss
+äuſſerer	äußerer	1	residual	accept	äußerer	aeusser- takes sz
+Durchmeſſer	Durchmesser	1	ss_audit	accept	Durchmesser	short e takes ss
+Beweife	Beweise	1	residual	accept	Beweise	print damage for Beweise
+Gröſe	Größe	1	residual	accept	Größe	long oe takes sz
+begreiffloſen	begrifflosen	1	residual	accept	begrifflosen	Begreiff is Begriff
+paralyſirt	paralysiert	1	residual	accept	paralysiert	-irt becomes -iert
+bachantiſche	bacchantische	1	residual	accept	bacchantische	modern spelling doubles c
+unterſcheidot	Unterscheidod	1	residual	rewrite	unterscheidet	print damage for unterscheidet
+Zuſälligkeit	Zufälligkeit	1	residual	accept	Zufälligkeit	print damage, long s for f
+gewiſſes	gewisses	1	ss_audit	accept	gewisses	short i takes ss
+loſern	Losern	1	residual	reject	losern	elision kept, stays lowercase
+ſteifern	steiferen	1	residual	reject	steifern	elision kept
+wiſſenſchafftlichen	wissenschaftlichen	1	ss_audit	accept	wissenschaftlichen	ff becomes f
+Triplicität	Triplizität	1	residual	accept	Triplizität	Latinate c becomes z
+wiſſenſchafftliches	wissenschaftliches	1	ss_audit	accept	wissenschaftliches	ff becomes f
+Cirkel	Zirkel	1	residual	accept	Zirkel	Latinate C becomes Z
+unwiſſenſchaftlich	unwissenschaftlich	1	ss_audit	accept	unwissenschaftlich	short i takes ss
+Stikſtoff	Stickstoff	1	residual	accept	Stickstoff	ck restored
+Süd	Süden	1	residual	reject	Süd	CAB changed the word form
+repreſentire	repräsentiere	1	residual	accept	repräsentiere	e becomes ae, -ire to -iere
+nakt	nackt	1	residual	accept	nackt	ck restored
+Seelenverwandſchafft	Seelenverwandtschaft	1	residual	accept	Seelenverwandtschaft	modern Verwandtschaft has t
+glückwünſchen	Glückwünschen	1	residual	reject	glückwünschen	verb stays lowercase
+gleichtönigen	gleichtonigen	1	residual	reject	gleichtönigen	toenig keeps its umlaut
+Mahlers	Malers	1	residual	accept	Malers	silent h dropped
+irrdiſchen	irdischen	1	residual	accept	irdischen	double r reduced
+einzurangiren	einzurangieren	1	residual	accept	einzurangieren	-iren becomes -ieren
+verſchloſſner	verschlossener	1	residual	reject	verschlossner	elision kept
+aufgeheſteten	aufgehefteten	1	residual	accept	aufgehefteten	print damage, long s for f
+weggelaſſen	weggelassen	1	ss_audit	accept	weggelassen	short a takes ss
+einfärbigen	einfarbigen	1	residual	reject	einfärbigen	faerbig is valid German
+Mahlerey	Malerei	1	residual	accept	Malerei	silent h dropped, ey to ei
+Gleichfärbigkeit	Gleichfarbigkeit	1	residual	reject	Gleichfärbigkeit	faerbig is valid German
+organiſiren	organisieren	1	residual	accept	organisieren	-iren becomes -ieren
+Schematiſiren	Schematisieren	1	residual	accept	Schematisieren	-iren becomes -ieren
+todtem	totem	1	residual	accept	totem	th becomes t
+Ueberſicht	Übersicht	1	residual	accept	Übersicht	Ue digraph becomes U-umlaut
+emergirt	emergiert	1	residual	accept	emergiert	-irt becomes -iert
+Leiſst	Leisest	1	residual	rewrite	heißt	print damage for heisst
+graſsiren	grassieren	1	residual	accept	grassieren	-iren becomes -ieren
+wiſſenschafftlichen	wissenschaftlichen	1	ss_audit	accept	wissenschaftlichen	ff becomes f
+anticipirte	antizipierte	1	residual	accept	antizipierte	c to z, -irte to -ierte
+Erinnrung	Erinnerung	1	residual	reject	Erinnrung	elision kept
+andren	anderen	1	residual	reject	andren	elision kept
+räſonnirt	räsonniert	1	residual	rewrite	räsoniert	Duden spells raesonieren
+räsonnirenden	räsonierenden	1	residual	accept	räsonierenden	Duden spells raesonieren
+aufgefaſsten	aufgefassten	1	ss_audit	accept	aufgefassten	short a takes ss
+räsonnirende	räsonnierende	1	residual	rewrite	räsonierende	Duden spells raesonieren
+dagegegen	dagegen	1	residual	accept	dagegen	printed typo doubled syllable
+mehrern	mehreren	1	residual	reject	mehrern	elision kept
+Accente	Akzente	1	residual	accept	Akzente	Latinate cc becomes kz
+Räsonnirens	Räsonnierens	1	residual	rewrite	Räsonierens	Duden spells raesonieren
+vertieſt	vertieft	1	residual	accept	vertieft	print damage, long s for f
+ausſagte	aussagte	1	ss_audit	accept	aussagte	short a takes ss
+Vorwurſs	Vorwurfs	1	residual	accept	Vorwurfs	print damage, long s for f
+zulaſſe	zulasse	1	ss_audit	accept	zulasse	short a takes ss
+geſagte	Gesagte	1	residual	reject	gesagte	keep surface lowercase
+ausſchlöſſe	ausschlösse	1	ss_audit	accept	ausschlösse	short oe takes ss
+Expofitionen	Expositionen	1	residual	accept	Expositionen	print damage, f for long s
+ausgeſprochnen	ausgesprochenen	1	residual	reject	ausgesprochnen	elision kept
+Wiſſenſchaften	Wissenschaften	1	ss_audit	accept	Wissenschaften	short i takes ss
+Uebens	Übens	1	residual	accept	Übens	Ue digraph becomes U-umlaut
+philofophiren	philosophieren	1	residual	accept	philosophieren	print damage, f for long s
+Fuſſe	Fuße	1	residual	accept	Fuße	long u takes sz
+beſäſſe	besäße	1	residual	accept	besäße	long ae takes sz
+Räſonniren	Räsonieren	1	residual	accept	Räsonieren	Duden spells raesonieren
+andrem	anderem	1	residual	reject	andrem	elision kept
+Equivalent	Äquivalent	1	residual	accept	Äquivalent	E becomes Ae-umlaut
+Coſſees	Cossees	1	ss_audit	rewrite	Kaffees	Coffee is modern Kaffee
+form	Form	1	residual	reject	form	printed lowercase, form- ellipsis
+graſsirte	grassierte	1	residual	accept	grassierte	-irte becomes -ierte
+Produciren	Produzieren	1	residual	accept	Produzieren	Latinate c becomes z
+Proſe	Prosa	1	residual	reject	Prose	word form kept, like itzt
+poëtiſches	poetisches	1	residual	accept	poetisches	diaeresis dropped
+desorganiſirten	desorganisierten	1	residual	accept	desorganisierten	-irten becomes -ierten
+ruhigern	ruhigeren	1	residual	reject	ruhigern	elision kept
+fortflieſſend	fortfließend	1	residual	accept	fortfließend	long ie takes sz
+Unbedeutenheit	Unbedeutendheit	1	residual	reject	Unbedeutenheit	Hegel's word kept
+erſparrt	erspart	1	residual	accept	erspart	double r reduced
+ausgemachtermaſſen	ausgemachtermassen	1	ss_audit	rewrite	ausgemachtermaßen	-massen has long a
+Füſſen	Füßen	1	residual	accept	Füßen	long u takes sz
+Uebereinkunft	Übereinkunft	1	residual	accept	Übereinkunft	Ue digraph becomes U-umlaut
+Recenſionen	Rezensionen	1	residual	accept	Rezensionen	Latinate c becomes z
+Beurtheilte	beurteilte	1	residual	rewrite	Beurteilte	th to t, keep surface capital
+hohenprieſterlichen	hohepriesterlichen	1	residual	reject	hohenpriesterlichen	Hegel's form kept
+Dürſtigkeit	Durstigkeit	1	residual	rewrite	Dürftigkeit	print damage for Duerftigkeit
+äuſſre	äußere	1	residual	rewrite	äußre	keep elision, long ae takes sz
+Plato’s	Plato's	1	residual	reject	Plato’s	printed apostrophe kept
+wiſſenſchaftlich	wissenschaftlich	1	ss_audit	accept	wissenschaftlich	short i takes ss
+misverſtandne	missverstandene	1	residual	rewrite	missverstandne	miss- prefix, elision kept
+Hiebey	Hierbei	1	residual	rewrite	Hierbei	hie-→hier- per plan precedent
+Repreſentanten	Repräsentanten	1	residual	accept	Repräsentanten	e becomes ae
+Füſſe	Füße	1	residual	accept	Füße	long u takes sz
+imponirende	imponierende	1	residual	accept	imponierende	-irende becomes -ierende
+geſammten	gesamten	1	residual	accept	gesamten	mm reduced to m
+verbeſſern	verbessern	1	ss_audit	accept	verbessern	short e takes ss
+Geſete	Geste	1	residual	reject	Gesete	errata misprint cited verbatim
+tod	Tod	1	residual	reject	tod	errata misprint cited verbatim
+überſchen	übereschen	1	residual	rewrite	übersehen	print damage for uebersehen
+ſemicolon	Semikolon	1	residual	reject	semicolon	errata term as printed
+Bewandnisses	Bewandtnisse	1	residual	rewrite	Bewandtnisses	modern Bewandtnis has t
+Formirung	Formierung	1	residual	accept	Formierung	-irung becomes -ierung
+gewissermaſsen	gewissermaßen	1	residual	accept	gewissermaßen	long a takes sz
+Uebelstande	Übelstand	1	residual	rewrite	Übelstande	keep dative -e ending
+formirten	formierten	1	residual	accept	formierten	-irten becomes -ierten
+verbundne	verbundene	1	residual	reject	verbundne	elision kept
+Notitz	Notiz	1	residual	accept	Notiz	tz becomes z
+nichtrealisirte	nichtrealisierte	1	residual	accept	nichtrealisierte	-irte becomes -ierte
+produciren	produzieren	1	residual	accept	produzieren	Latinate -ciren to -zieren
+herkömmt	herkommt	1	residual	reject	herkömmt	archaic inflection stays
+heiſse	heisse	1	ss_audit	rewrite	heiße	ei diphthong takes ß
+Innhalts	Inhalts	1	residual	accept	Inhalts	archaic doubled n simplified
+ausser	außer	1	residual	accept	außer	au diphthong takes ß
+Maſsstäbe	Massstäbe	1	ss_audit	rewrite	Maßstäbe	Maß long a takes ß
+appliciren	applizieren	1	residual	accept	applizieren	Latinate -ciren to -zieren
+wissenschafftliche	wissenschaftliche	1	ss_audit	accept	wissenschaftliche	archaic ff simplified
+jedesmahlige	jedesmalige	1	residual	accept	jedesmalige	silent h dropped
+ausserdem	außerdem	1	residual	accept	außerdem	au diphthong takes ß
+Reflectiren	Reflektieren	1	residual	accept	Reflektieren	c to k, -iren to -ieren
+Auſschreiben	Ausschreiben	1	ss_audit	accept	Ausschreiben	glyph folding only
+schaal	schal	1	residual	accept	schal	archaic doubled a
+Einſachheit	Einfachheit	1	residual	accept	Einfachheit	long-s misread for f
+deduciren	deduzieren	1	residual	accept	deduzieren	Latinate -ciren to -zieren
+construiren	konstruieren	1	residual	accept	konstruieren	c to k, -iren to -ieren
+Gewiſswissende	Gewisswissende	1	ss_audit	accept	Gewisswissende	gewiss short i takes ss
+negire	negiere	1	residual	accept	negiere	-ire to -iere
+Vornen	Vorne	1	residual	reject	Vornen	nominalized adverb form stays
+anders-seyn	Anderssein	1	residual	rewrite	anders-sein	printed hyphen and case kept
+anticipiren	antizipieren	1	residual	accept	antizipieren	Latinate c to z
+allerallgemeinste	allgemeinste	1	residual	reject	allerallgemeinste	CAB dropped intensifier aller-
+Zusammengefaſstseyn	Zusammengefasstsein	1	ss_audit	accept	Zusammengefasstsein	short a ss, seyn to sein
+Saltz	Salz	1	residual	accept	Salz	archaic tz simplified
+negirende	negierende	1	residual	accept	negierende	-iren to -ieren
+ausschlieſsend	ausschließend	1	residual	accept	ausschließend	long ie takes ß
+faſste	fasste	1	ss_audit	accept	fasste	short a takes ss
+vorkömmt	vorkommt	1	residual	reject	vorkömmt	archaic inflection stays
+corrigirt	korrigiert	1	residual	accept	korrigiert	c to k, -irt to -iert
+umschlieſsenden	umschließenden	1	residual	accept	umschließenden	long ie takes ß
+einssetzen	einsetzen	1	residual	reject	einssetzen	einsetzen would change sense
+afficirte	affizierte	1	residual	accept	affizierte	Latinate c to z
+gediegne	gediegene	1	residual	reject	gediegne	elision stays
+gediegnem	gediegenem	1	residual	reject	gediegnem	elision stays
+negirte	negierte	1	residual	accept	negierte	-irte to -ierte
+abstrahirte	abstrahierte	1	residual	accept	abstrahierte	-irte to -ierte
+Paſſivität	Passivität	1	ss_audit	accept	Passivität	glyph folding only
+Selbststandigkeit	Selbststantigkeit	1	residual	rewrite	Selbstständigkeit	OCR dropped umlaut
+selbstseyn	Selbstsein	1	residual	rewrite	selbstsein	surface lowercase kept
+existirte	existierte	1	residual	accept	existierte	-irte to -ierte
+verselbstständigens	Verselbstständigens	1	residual	reject	verselbstständigens	surface lowercase kept
+aufhebens	Aufhebens	1	residual	reject	aufhebens	surface lowercase kept
+substantiirtes	substantiiertes	1	residual	accept	substantiiertes	-irtes to -iertes
+geäuſsert	geäußert	1	residual	accept	geäußert	äu diphthong takes ß
+Eins-seyn	Einssein	1	residual	rewrite	Eins-sein	printed hyphen kept
+Kraffte	Kraft	1	residual	rewrite	Kräfte	plural; OCR dropped umlaut
+sollicitirtes	sollizitiertes	1	residual	accept	sollizitiertes	Latinate c to z
+sollicitirtseyn	Sollizitiertsein	1	residual	rewrite	sollizitiertsein	surface lowercase kept
+obetrachten	trachten	1	residual	rewrite	betrachten	stray o, print damage
+Spiets	spitz	1	residual	rewrite	Spiels	OCR for Spiels der Kräfte
+Zusammengeschlossenseyns	Zusammengeschlossenseins	1	ss_audit	accept	Zusammengeschlossenseins	seyn to sein
+Zusammengeschlossenseyn	Zusammengeschlossensein	1	ss_audit	accept	Zusammengeschlossensein	seyn to sein
+bestandigen	bestandin	1	residual	rewrite	beständigen	OCR dropped umlaut
+gesetzmäſsig	gesetzmässig	1	ss_audit	rewrite	gesetzmäßig	gemäß long ä takes ß
+zurückgegangenseyns	Zurückgegangenseins	1	residual	rewrite	zurückgegangenseins	surface lowercase kept
+Elektricität	Elektrizität	1	residual	accept	Elektrizität	Latinate c to z
+hieſse	hieße	1	residual	accept	hieße	long ie takes ß
+verlieſsen	verließen	1	residual	accept	verließen	long ie takes ß
+Electricitäten	Elektrizitäten	1	residual	accept	Elektrizitäten	c to k and z
+sollicitirenden	sollizitierenden	1	residual	accept	sollizitierenden	Latinate c to z
+sollicitirten	sollizitierten	1	residual	accept	sollizitierten	Latinate c to z
+äuſsernden	äußernden	1	residual	accept	äußernden	äu diphthong takes ß
+abgestoſsen	abgestoßen	1	residual	accept	abgestoßen	long o takes ß
+schwartz	schwarz	1	residual	accept	schwarz	archaic tz simplified
+Aeuſserem	Äußerem	1	residual	accept	Äußerem	Ae to Ä, ß
+Uebersinnlichem	Übersinnlichem	1	residual	accept	Übersinnlichem	Ue to Ü
+abgestoſsenen	abgestoßenen	1	residual	accept	abgestoßenen	long o takes ß
+süſsen	süßen	1	residual	accept	süßen	long ü takes ß
+Weiſsen	Weißen	1	residual	accept	Weißen	ei diphthong takes ß
+ubergriffen	übergriffen	1	residual	accept	übergriffen	OCR dropped umlaut
+pulsirt	pulsiert	1	residual	accept	pulsiert	-irt to -iert
+tavtologisch	tautologisch	1	residual	accept	tautologisch	archaic v for u
+gleichwerden	Gleichwerden	1	residual	reject	gleichwerden	surface lowercase kept
+hiezu	hierzu	1	residual	rewrite	hierzu	hie-→hier- per plan precedent
+abstoſsen	abstoßen	1	residual	accept	abstoßen	long o takes ß
+derin	dein	1	residual	rewrite	darin	OCR for darin
+stoſse	stoße	1	residual	accept	stoße	long o takes ß
+Selbstbcwuſstseyn	Selbstbcwusstseyn	1	ss_audit	rewrite	Selbstbewusstsein	OCR bc for be
+Gewiſsheit.	Gewissheit.	1	ss_audit	accept	Gewissheit.	short i takes ss
+farbigten	farbigen	1	residual	reject	farbigten	archaic -igt suffix stays
+realisirenden	realisierenden	1	residual	accept	realisierenden	-iren to -ieren
+auſsersichseyn	Aussersichsein	1	residual	rewrite	außersichsein	lowercase kept, ß, sein
+Auſsersich	Außersiech	1	residual	rewrite	Außersich	CAB garbled; ß only
+Auſsersichseyn	Außer-sich-sein	1	residual	rewrite	Außersichsein	compound stays one word
+flüssigwerden	flüssigwerten	1	residual	reject	flüssigwerden	already modern, lowercase kept
+Gefuhl	Gefühl	1	residual	accept	Gefühl	OCR dropped umlaut
+formirende	Formierende	1	residual	rewrite	formierende	surface lowercase kept
+underes	unteres	1	residual	rewrite	anderes	OCR for anderes
+Formirt	Formiert	1	residual	accept	Formiert	-irt to -iert
+geheiſsen	geheißen	1	residual	accept	geheißen	ei diphthong takes ß
+zurückkömmt	zurückkommt	1	residual	reject	zurückkömmt	archaic inflection stays
+erheilt	erhielt	1	residual	rewrite	erhellt	OCR for erhellt
+zusammenstürtzte	zusammenstürzte	1	residual	accept	zusammenstürzte	archaic tz simplified
+ausgesprochne	ausgesprochene	1	residual	reject	ausgesprochne	elision stays
+einseitge	einseitige	1	residual	reject	einseitge	elision stays
+auſsere	ausser	1	residual	rewrite	äußere	modern äußere; umlaut and ß
+begriffner	begriffener	1	residual	reject	begriffner	elision stays
+arbeitends	arbeitendes	1	residual	rewrite	arbeitend	stray s; parallel to begehrend
+überlaſst	überlasst	1	ss_audit	rewrite	überlässt	3sg; OCR dropped umlaut
+aufgebens	Aufgebens	1	residual	reject	aufgebens	surface lowercase kept
+Genieſsens	Geniessens	1	ss_audit	rewrite	Genießens	long ie takes ß
+einzelnste	Einzelneste	1	residual	reject	einzelnste	Hegel's superlative stays
+Aermlichkeit	Ärmlichkeit	1	residual	accept	Ärmlichkeit	Ae to Ä
+fixirende	fixierende	1	residual	accept	fixierende	-iren to -ieren
+seeliger	seliger	1	residual	accept	seliger	archaic doubled e
+reducirten	reduzierten	1	residual	accept	reduzierten	Latinate c to z
+sanctionirt	sanktioniert	1	residual	accept	sanktioniert	c to k, -irt to -iert
+bewuſstwerdenden	bewusstwerdenden	1	ss_audit	accept	bewusstwerdenden	short u takes ss
+Anstoſs	Anstoss	1	ss_audit	rewrite	Anstoß	long o takes ß
+ahndend	ahnend	1	residual	accept	ahnend	archaic spelling of ahnen
+Souverainität	Souveränität	1	residual	accept	Souveränität	ai to ä
+Tabacksdose	Tabaksdose	1	residual	accept	Tabaksdose	c to k
+theil	Teil	1	residual	rewrite	teil	th to t; lowercase kept
+Elephant	Elefant	1	residual	accept	Elefant	ph to f
+unerschopflicher	unerschöpflicher	1	residual	accept	unerschöpflicher	OCR dropped umlaut
+unermeſslichen	unermesslichen	1	ss_audit	accept	unermesslichen	short e takes ss
+Schrancke	Schranke	1	residual	accept	Schranke	archaic ck simplified
+Unterscheidungsmerkmahle	Unterscheidungsmerkmale	1	residual	accept	Unterscheidungsmerkmale	silent h dropped
+Merkmahl	Merkmal	1	residual	accept	Merkmal	silent h dropped
+Uebergänge	Übergänge	1	residual	accept	Übergänge	Ue to Ü
+auſs	aus	1	residual	rewrite	aufs	context reads aufs Beobachten
+perennirenden	perennierenden	1	residual	accept	perennierenden	-iren to -ieren
+freygelassen	freigelassen	1	ss_audit	accept	freigelassen	ey to ei
+gröſster	größter	1	residual	accept	größter	long ö takes ß
+schlieſsen	schließen	1	residual	accept	schließen	long ie takes ß
+reduciren	reduzieren	1	residual	accept	reduzieren	Latinate c to z
+heiſst’	heisst	1	residual	rewrite	heißt’	ß; printed apostrophe kept
+Vernunftinstinckt	Vernunftinstinkt	1	residual	accept	Vernunftinstinkt	archaic ck simplified
+Harzelectricität	Harzelektrizität	1	residual	accept	Harzelektrizität	c to k and z
+Glaselectricität	Glaselektrizität	1	residual	accept	Glaselektrizität	c to k and z
+decidirte	dezidierte	1	residual	accept	dezidierte	Latinate c to z
+Funde	Fand	1	residual	reject	Funde	valid dative of Fund
+herauskömmt	herauskommt	1	residual	reject	herauskömmt	archaic inflection stays
+reagirend	reagierend	1	residual	accept	reagierend	-irend to -ierend
+Aeuſseren	Äußeren	1	residual	accept	Äußeren	Ae to Ä, ß
+sensibeln	sensiblen	1	residual	reject	sensibeln	inflected form stays
+vergröſsere	vergrössere	1	ss_audit	rewrite	vergrößere	long ö takes ß
+Groſses	großes	1	residual	rewrite	Großes	capital kept; long o ß
+Elektricitäten	Elektrizitäten	1	residual	accept	Elektrizitäten	Latinate c to z
+Reitze	Reize	1	residual	accept	Reize	archaic tz simplified
+Reitzempfänglichkeit	Reizempfänglichkeit	1	residual	accept	Reizempfänglichkeit	archaic tz simplified
+entbundne	entbundene	1	residual	reject	entbundne	elision stays
+flieſsendes	fließendes	1	residual	accept	fließendes	long ie takes ß
+isolirten	isolierten	1	residual	accept	isolierten	-irten to -ierten
+Gesetes	Gestes	1	residual	rewrite	Gesetzes	OCR for Gesetzes
+Aeuſserlichen	äußerlichen	1	residual	rewrite	Äußerlichen	capital kept; Ae to Ä, ß
+gemeinheit	Gemeinheit	1	residual	reject	gemeinheit	printed split of Allgemeinheit
+Aufgefaſste	Aufgefasste	1	ss_audit	accept	Aufgefasste	short a takes ss
+Potenzirung	Potenzierung	1	residual	accept	Potenzierung	-irung to -ierung
+gröſsern	größeren	1	residual	rewrite	größern	elision stays; long ö ß
+geringern	geringeren	1	residual	reject	geringern	elision stays
+hiebei	hierbei	1	residual	rewrite	hierbei	hie-→hier- per plan precedent
+niedern	niederen	1	residual	reject	niedern	elision stays
+aufgefaſste	aufgefasste	1	ss_audit	accept	aufgefasste	short a takes ss
+wirkchen	Werkchen	1	residual	rewrite	wirklichen	OCR for wirklichen
+verhieſs	verhieß	1	residual	accept	verhieß	long ie takes ß
+übergetragen	übertragen	1	residual	reject	übergetragen	archaic participle stays
+freygelassene	Freigelassene	1	residual	rewrite	freigelassene	ey to ei; lowercase kept
+Gröſsenbestimmtheiten	Grössenbestimmtheiten	1	ss_audit	rewrite	Größenbestimmtheiten	long ö takes ß
+zusammengefaſsten	zusammengefassten	1	ss_audit	accept	zusammengefassten	short a takes ss
+representiren	repräsentieren	1	residual	accept	repräsentieren	modern Latinate spelling
+Systematisiren	Systematisieren	1	residual	accept	Systematisieren	-iren to -ieren
+systematisirende	systematisierende	1	residual	accept	systematisierende	-iren to -ieren
+Lebendigheit	Lebendighit	1	residual	rewrite	Lebendigkeit	OCR h for k
+müssige	müßige	1	residual	accept	müßige	long ü takes ß
+Klimate	Klimata	1	residual	reject	Klimate	valid modern plural
+freyläſst	freilässt	1	ss_audit	accept	freilässt	ey to ei; short a ss
+äuſsre	äußere	1	residual	rewrite	äußre	elision stays; äu takes ß
+auſserhalb	außerhalb	1	residual	accept	außerhalb	au diphthong takes ß
+Wiederschein	Widerschein	1	residual	accept	Widerschein	wieder/wider now distinguished
+Umgränzung	Umgrenzung	1	residual	accept	Umgrenzung	ä to e
+einflieſsenden	einfließenden	1	residual	accept	einfließenden	long ie takes ß
+auseinanderſullen	aufeinandersollen	1	residual	rewrite	auseinanderfallen	OCR for auseinanderfallen
+Hiezu	Hierzu	1	residual	rewrite	Hierzu	hie-→hier- per plan precedent
+angebohrner	angeborener	1	residual	rewrite	angeborner	silent h dropped; elision stays
+Auſsenseite	Aussenseite	1	ss_audit	rewrite	Außenseite	au diphthong takes ß
+Wissenschafſten	Wissenschafsten	1	ss_audit	rewrite	Wissenschaften	OCR stray long-s
+Aeuſserlichkeiten	Äusserlichkeiten	1	residual	rewrite	Äußerlichkeiten	Ae to Ä; äu takes ß
+Chiromante	Chiromanta	1	residual	reject	Chiromante	archaic noun form stays
+vollbringens	Vollbringens	1	residual	reject	vollbringens	surface lowercase kept
+zurückgehaltne	zurückgehaltene	1	residual	reject	zurückgehaltne	elision stays
+Beauſsichtigen	Beaufsichtigen	1	residual	accept	Beaufsichtigen	long-s misread for f
+Bewandtniſs	Bewandtnis	1	residual	accept	Bewandtnis	-nis takes single s
+Entschluſs	Entschluss	1	ss_audit	accept	Entschluss	short u takes ss
+befestigtern	befestigteren	1	residual	reject	befestigtern	elision stays
+charakterisirt	charakterisiert	1	residual	accept	charakterisiert	-irt to -iert
+ächtes	echtes	1	residual	accept	echtes	archaic ä for e
+miſshandeln	misshandeln	1	ss_audit	accept	misshandeln	short i takes ss
+Auſsen	Aussen	1	ss_audit	rewrite	Außen	au diphthong takes ß
+ausgeschiedne	ausgeschiedene	1	residual	reject	ausgeschiedne	elision stays
+innwohnenden	innewohnenden	1	residual	reject	innwohnenden	archaic form stays
+bewiese	beweise	1	residual	reject	bewiese	valid Konjunktiv II
+construirt	konstruiert	1	residual	accept	konstruiert	c to k, -irt to -iert
+Erlaubniſs	Erlaubnis	1	residual	accept	Erlaubnis	-nis takes single s
+innwohnen	innewohnen	1	residual	reject	innwohnen	archaic form stays
+Deseyns	Daseins	1	residual	accept	Daseins	OCR e for a
+gefäſst	gefasst	1	residual	accept	gefasst	OCR umlaut; short a ss
+expandirteres	expandierteres	1	residual	accept	expandierteres	-irt to -iert
+contrahirteres	kontrahierteres	1	residual	accept	kontrahierteres	c to k, -irt to -iert
+vergröſserte	vergrösserte	1	ss_audit	rewrite	vergrößerte	long ö takes ß
+passiren	passieren	1	residual	accept	passieren	-iren to -ieren
+Wirklichheit	Wirklichhit	1	residual	rewrite	Wirklichkeit	OCR h for k
+subsumirt	subsumiert	1	residual	accept	subsumiert	-irt to -iert
+Yoriks	Yoricks	1	residual	reject	Yoriks	proper name, folding only
+reflectirendes	reflektierendes	1	residual	accept	reflektierendes	c to k, -irend to -ierend
+lieſsen	ließen	1	residual	accept	ließen	ss after long ie
+vergröſsern	vergrößern	1	residual	accept	vergrößern	gross takes ss
+formiren	formieren	1	residual	accept	formieren	-iren to -ieren
+wenu	wenn	1	residual	accept	wenn	print damage for wenn
+Schattirungen	Schattierungen	1	residual	accept	Schattierungen	-irungen to -ierungen
+vorbeygeht	vorbeiget	1	residual	rewrite	vorbeigeht	CAB mangled verb ending
+ehliche	eheliche	1	residual	accept	eheliche	ehlich not valid modern German
+geliebkost	liebkost	1	residual	reject	geliebkost	CAB dropped ge- prefix
+Verläugnung	Verleugnung	1	residual	accept	Verleugnung	aeu to eu modernization
+gröſser	größer	1	residual	accept	größer	gross takes ss
+grösserem	größerem	1	residual	accept	größerem	gross takes ss
+Uebersicht	Übersicht	1	residual	accept	Übersicht	Ue to U-umlaut
+verlohren	verloren	1	residual	accept	verloren	silent h dropped
+Proceſse	Prozesse	1	residual	accept	Prozesse	c to z Latinate
+existirende	existierende	1	residual	accept	existierende	-irende to -ierende
+existirend	existierend	1	residual	accept	existierend	-irend to -ierend
+unbewuſste	unbewusste	1	ss_audit	accept	unbewusste	ss after short u
+Aeuſsre	Äußre	1	residual	accept	Äußre	Ae to A-umlaut, diphthong ss
+Aeusserlichkeit	Äusserlichkeit	1	residual	rewrite	Äußerlichkeit	aeusser- takes ss not ss
+todes	Todes	1	residual	rewrite	totes	adjective in totes Ding
+giebt	gibt	1	residual	accept	gibt	silent e dropped
+entäuſserte	entäußerte	1	residual	accept	entäußerte	aeusser- takes ss
+albernern	alberneren	1	residual	reject	albernern	valid modern elided inflection
+wiederhohlte	wiederholte	1	residual	accept	wiederholte	silent h dropped
+Machens	Machen_es	1	residual	reject	Machens	CAB split artifact
+gesezt	gesetzt	1	residual	accept	gesetzt	tz restored
+practische	praktische	1	residual	accept	praktische	c to k Latinate
+unsern	unseren	1	residual	reject	unsern	valid modern elided form
+gehn	gehen	1	residual	reject	gehn	valid modern elided form
+dasselbige	dasselbe	1	residual	reject	dasselbige	word form, not orthography
+genieſsenden	genießenden	1	residual	accept	genießenden	ss after long ie
+seye	sei	1	residual	accept	sei	archaic seye to sei
+gestürtzt	gestürzt	1	residual	accept	gestürzt	tz simplified
+continuirlichen	kontinuierlichen	1	residual	accept	kontinuierlichen	c to k, -irlichen to -ierlichen
+erkännte	erkannte	1	residual	rewrite	erkennte	Konjunktiv II, not past indicative
+Entgegengesezte	Entgegengesetzte	1	residual	accept	Entgegengesetzte	tz restored
+blose	bloße	1	residual	accept	bloße	bloss takes ss
+itzigen	jetzigen	1	residual	reject	itzigen	itzt-family lexeme kept
+Ueberschreitung	Überschreitung	1	residual	accept	Überschreitung	Ue to U-umlaut
+gesetzmäſsigen	gesetzmässigen	1	ss_audit	rewrite	gesetzmäßigen	-maessig takes ss
+betrognen	betrogenen	1	residual	reject	betrognen	valid modern elided form
+heiſs	heiss	1	ss_audit	rewrite	heißt	context das heisst, t missing
+ausſprach	aussprach	1	ss_audit	accept	aussprach	aus+sprach, ss correct
+daraussetzen	daraufsetzen	1	residual	reject	daraussetzen	CAB guessed daraufsetzen
+Gesezes	Gesetzes	1	residual	accept	Gesetzes	tz restored
+unmittellbar	unmittelbar	1	residual	accept	unmittelbar	print doubled l
+anfaſst	anfasst	1	ss_audit	accept	anfasst	ss after short a
+Schwerdt	Schwert	1	residual	accept	Schwert	dt to t
+Ansichseyende	An-sich-seiende	1	residual	rewrite	Ansichseiende	compound stays one word
+Misbrauche	Missbrauche	1	residual	accept	Missbrauche	ss after short i
+existirendes	existierendes	1	residual	accept	existierendes	-irendes to -ierendes
+unsers	unseres	1	residual	reject	unsers	valid modern elided form
+aufzuspreitzen	aufzuspreizen	1	residual	accept	aufzuspreizen	tz simplified
+Chimären	Schimären	1	residual	reject	Chimären	Chimaere is modern spelling
+unmittelbarseyende	unmittelbarseiernde	1	residual	rewrite	unmittelbarseiende	ey to ei, CAB garbled
+odes	Odes	1	residual	rewrite	oder	print damage for oder
+vorgefundne	vorgefundene	1	residual	reject	vorgefundne	valid modern elided form
+unterschiedner	unterschiedener	1	residual	reject	unterschiedner	valid modern elided form
+selbs’	selbes	1	residual	rewrite	selbst	damaged heading die Sache selbst
+bestimmtern	bestimmteren	1	residual	reject	bestimmtern	valid modern elided form
+Beschränckung	Beschränkung	1	residual	accept	Beschränkung	ck to k
+Ueberganges	Überganges	1	residual	accept	Überganges	Ue to U-umlaut
+Gröſseunterschied	Grösseunterschied	1	ss_audit	rewrite	Größeunterschied	Groesse takes ss
+eber	Eber	1	residual	rewrite	aber	print damage for aber
+gereitzt	gereizt	1	residual	accept	gereizt	tz simplified
+dafur	dafür	1	residual	accept	dafür	missing umlaut in print
+Fürsichbehaltens	Vorsiechbehaltens	1	residual	reject	Fürsichbehaltens	CAB garbled the compound
+Groſsmuth	Großmut	1	residual	accept	Großmut	gross takes ss, th to t
+Mäſsigung	Mässigung	1	ss_audit	rewrite	Mäßigung	maessig takes ss
+ansspricht	anspricht	1	residual	accept	anspricht	print doubled s
+ausgesprochnen	ausgesprochenen	1	residual	reject	ausgesprochnen	valid modern elided form
+ungemäſs	ungemäss	1	ss_audit	rewrite	ungemäß	gemaess takes ss
+unserm	unserem	1	residual	reject	unserm	valid modern elided form
+isolirte	isolierte	1	residual	accept	isolierte	-irte to -ierte
+Ausschlieſsung	Ausschliessung	1	ss_audit	rewrite	Ausschließung	schliessen takes ss
+räsonnirt	räsonniert	1	residual	accept	räsonniert	-irt to -iert
+mackellose	makellose	1	residual	accept	makellose	ck to k
+ungeschriebnes	ungeschriebenes	1	residual	reject	ungeschriebnes	valid modern elided form
+legitimiren	legitimieren	1	residual	accept	legitimieren	-iren to -ieren
+räsonniren	räsonnieren	1	residual	accept	räsonnieren	-iren to -ieren
+tavtologischen	tautologischen	1	residual	accept	tautologischen	v to u restored
+gefundne	gefundene	1	residual	reject	gefundne	valid modern elided form
+revolutionirt	revolutioniert	1	residual	accept	revolutioniert	-irt to -iert
+betrognes	betrogenes	1	residual	reject	betrognes	valid modern elided form
+freyentlassenen	freientlassenen	1	ss_audit	accept	freientlassenen	ey to ei
+ers	er_es	1	residual	reject	ers	CAB split artifact
+Blutsverwandschafft	Blutsverwandtschaft	1	residual	accept	Blutsverwandtschaft	fft to ft, t restored
+bewuſstloser	bewusstloser	1	ss_audit	accept	bewusstloser	ss after short u
+Schoſse	Schosse	1	ss_audit	rewrite	Schoße	Schoss long o takes ss
+Einschlieſsung	Einschliessung	1	ss_audit	rewrite	Einschließung	schliessen takes ss
+losreiſst	losreisst	1	ss_audit	rewrite	losreißt	reisst takes ss, 3sg
+zurückreiſst	zurückreisst	1	ss_audit	rewrite	zurückreißt	reisst takes ss, 3sg
+organisiren	organisieren	1	residual	accept	organisieren	-iren to -ieren
+festwerden	Festwerden	1	residual	reject	festwerden	surface case is lowercase
+enthobne	enthobene	1	residual	reject	enthobne	valid modern elided form
+selbsthewuſste	selbsthewusste	1	ss_audit	rewrite	selbstbewusste	print h for b
+unbegriffner	unbegriffener	1	residual	reject	unbegriffner	valid modern elided form
+bewuſstloses	bewusstloses	1	ss_audit	accept	bewusstloses	ss after short u
+Weseen	Wesen	1	residual	accept	Wesen	print doubled e
+Individualitat	Individualetat	1	residual	rewrite	Individualität	missing umlaut, CAB garbled
+Ungewuſsten	Ungewussten	1	ss_audit	accept	Ungewussten	ss after short u
+auszuschliessen	auszuschließen	1	residual	accept	auszuschließen	schliessen takes ss
+verschlossne	verschlossene	1	residual	reject	verschlossne	valid modern elided form
+Gewuſsten	Gewussten	1	ss_audit	accept	Gewussten	ss after short u
+Nichtgewuſsten	Nichtgewussten	1	ss_audit	accept	Nichtgewussten	ss after short u
+Schaale	Schale	1	residual	accept	Schale	doubled vowel simplified
+Aeuſserliches	Äußerliches	1	residual	accept	Äußerliches	Ae to A-umlaut, diphthong ss
+lichtschene	lichteschene	1	residual	rewrite	lichtscheue	print n for u, lichtscheue Macht
+Unbewuſste	Unbewusste	1	ss_audit	accept	Unbewusste	ss after short u
+Unbewuſsten	Unbewussten	1	ss_audit	accept	Unbewussten	ss after short u
+Eigne	Eigene	1	residual	reject	Eigne	valid modern elided form
+Unbewuſstes	Unbewusstes	1	ss_audit	accept	Unbewusstes	ss after short u
+entriſs	entriss	1	ss_audit	accept	entriss	ss after short i
+spätern	späteren	1	residual	reject	spätern	valid modern elided form
+abgelöſst	abgelöst	1	residual	accept	abgelöst	single s after long o-umlaut
+ausgestossen	ausgestoßen	1	residual	accept	ausgestoßen	stossen takes ss
+individualisirten	individualisierten	1	residual	accept	individualisierten	-irten to -ierten
+Intrigue	Intrige	1	residual	accept	Intrige	modern loanword spelling
+unterdrükende	unterdrückende	1	residual	accept	unterdrückende	k to ck
+anerkännte	anerkennte	1	residual	accept	anerkennte	Konjunktiv II confirmed in context
+aussen	außen	1	residual	accept	außen	diphthong takes ss
+tapfre	tapfere	1	residual	reject	tapfre	valid modern elided form
+inwohnend	einwohnend	1	residual	reject	inwohnend	word form, not orthography
+selbstbewuſstlose	selbstbewusstlose	1	ss_audit	accept	selbstbewusstlose	ss after short u
+anerkanntseyn	Anerkanntsein	1	residual	rewrite	anerkanntsein	ey to ei, keep surface lowercase
+aufgelöſste	aufgelöste	1	residual	accept	aufgelöste	single s after long o-umlaut
+äusserlichen	äußerlichen	1	residual	accept	äußerlichen	aeusser- takes ss
+Selbstgenuſs	Selbstgenuss	1	ss_audit	accept	Selbstgenuss	ss after short u
+schliessen	schließen	1	residual	accept	schließen	schliessen takes ss
+bloses	bloßes	1	residual	accept	bloßes	bloss takes ss
+Pewuſstseyns	Bewusstseins	1	residual	accept	Bewusstseins	print P for B
+Selbstbewuſssteyns	Selbstbewussteins	1	residual	rewrite	Selbstbewusstseins	CAB dropped an s
+losgebundnen	losgebundenen	1	residual	reject	losgebundnen	valid modern elided form
+andrerseits	andererseits	1	residual	reject	andrerseits	valid modern German
+Geständlichkeit	Gesteendlichkeit	1	residual	rewrite	Gegenständlichkeit	print dropped syllable
+Berwandtschafft	Bewandtschaft	1	residual	rewrite	Verwandtschaft	print B for V, Blute der Verwandtschaft
+inwohnenden	innewohnenden	1	residual	reject	inwohnenden	word form, not orthography
+Bewuſstlosigheit	Bewusstlosigheit	1	ss_audit	rewrite	Bewusstlosigkeit	print h for k
+disseitigen	diesseitigen	1	residual	accept	diesseitigen	ie restored
+verläugnen	verleugnen	1	residual	accept	verleugnen	aeu to eu modernization
+verlaſst	verlasst	1	ss_audit	rewrite	verlässt	3sg present, umlaut restored
+entäussert	entäußert	1	residual	accept	entäußert	aeusser- takes ss
+entäussernde	entäußernde	1	residual	accept	entäußernde	aeusser- takes ss
+Spitznahmen	Spitznamen	1	residual	accept	Spitznamen	silent h dropped
+Mittelmäſsigkeit	Mittelmässigkeit	1	ss_audit	rewrite	Mittelmäßigkeit	-maessig takes ss
+zuläſst	zulässt	1	ss_audit	accept	zulässt	ss after short a
+verwircklichende	verwirklichende	1	residual	accept	verwirklichende	ck to k
+preiſsgibt	preisgibt	1	residual	accept	preisgibt	preis- plain s
+Aufgelöſstwerden	Aufgelöstwerden	1	residual	accept	Aufgelöstwerden	single s after long o-umlaut
+geniessen	genießen	1	residual	accept	genießen	ss after long ie
+preiſs	Preis	1	residual	rewrite	preis	keep surface lowercase, gibt sich preis
+gleichfinden	Gleichfinden	1	residual	reject	gleichfinden	surface case is lowercase
+ungleichfinden	Ungleichfinden	1	residual	reject	ungleichfinden	surface case is lowercase
+Fesel	Fessel	1	residual	accept	Fessel	print single s
+Schluſſe	Schlusse	1	ss_audit	accept	Schlusse	ss after short u
+zuſammengeſchloſsen	zusammengeschlossen	1	ss_audit	accept	zusammengeschlossen	ss after short o
+wiſſendes	wissendes	1	ss_audit	accept	wissendes	ss after short i
+Fürstchseyn	Vorstechsein	1	residual	rewrite	Fürsichsein	damaged Fuersichseyn
+besondres	besonderes	1	residual	reject	besondres	valid modern elided form
+beſtandne	bestandene	1	residual	reject	bestandne	valid modern elided form
+Beſste	beste	1	residual	rewrite	Beste	keep surface capital
+ausgeſchloſſener	ausgeschlossener	1	ss_audit	accept	ausgeschlossener	ss after short o
+fürsichſeyenden	für-sich-seienden	1	residual	rewrite	fürsichseienden	compound stays one word
+Erzeugniſs	Erzeugnis	1	residual	accept	Erzeugnis	-nis single s
+Zierrathen	Zieraten	1	residual	rewrite	Zierraten	modern Zierrat keeps rr
+zuſammenschlieſst	zusammenschließt	1	residual	accept	zusammenschließt	schliessen takes ss
+zusammengefloſſen	zusammengeflossen	1	ss_audit	accept	zusammengeflossen	ss after short o
+mächtigern	mächtigeren	1	residual	reject	mächtigern	valid modern elided form
+hieſs	hieß	1	residual	accept	hieß	ss after long ie
+sellbſt	selbst	1	residual	accept	selbst	print doubled l
+unterworfne	unterworfene	1	residual	reject	unterworfne	valid modern elided form
+Elaſticität	Elastizität	1	residual	accept	Elastizität	c to z Latinate
+äufgehoben	aufgehoben	1	residual	accept	aufgehoben	print stray umlaut
+preiſsgebende	preisgebende	1	residual	accept	preisgebende	preis- plain s
+ausſpendet	ausspendet	1	ss_audit	accept	ausspendet	aus+spendet, ss correct
+Uebermuth	Übermut	1	residual	accept	Übermut	Ue to U-umlaut, th to t
+Uebermuthe	Übermute	1	residual	accept	Übermute	Ue to U-umlaut, th to t
+Feſſel	Fessel	1	ss_audit	accept	Fessel	ss after short e
+unedeln	unedlen	1	residual	reject	unedeln	valid modern inflection
+preiſsgegebene	preisgegebene	1	residual	accept	preisgegebene	preis- plain s
+dreiſsig	dreissig	1	ss_audit	rewrite	dreißig	diphthong takes ss
+Baſſe	Basse	1	ss_audit	accept	Basse	ss after short a
+zerriſs	zerriss	1	ss_audit	accept	zerriss	ss after short i
+Geſchik	Geschick	1	residual	accept	Geschick	k to ck
+einsylbig	einsilbig	1	residual	accept	einsilbig	y to i
+Einsylbigkeit	Einsilbigkeit	1	residual	accept	Einsilbigkeit	y to i
+Sylben	Silben	1	residual	accept	Silben	y to i
+fingirten	fingierten	1	residual	accept	fingierten	-irten to -ierten
+vereinzelntes	vereinzelndes	1	residual	reject	vereinzelntes	Hegel's form, CAB changed it
+fingirt	fingiert	1	residual	accept	fingiert	-irt to -iert
+Faſſe	Fasse	1	ss_audit	accept	Fasse	ss after short a
+Wildniſs	Wildnis	1	residual	accept	Wildnis	-nis single s
+Begrifſs	Begriffs	1	residual	accept	Begriffs	print damaged Begriffs
+Vorgegebne	Vorgegebene	1	residual	reject	Vorgegebne	valid modern elided form
+zurückgekommnen	zurückgekommenen	1	residual	reject	zurückgekommnen	valid modern elided form
+genommnen	genommenen	1	residual	reject	genommnen	valid modern elided form
+gegenüberseyn	Gegenübersein	1	residual	rewrite	gegenübersein	ey to ei, keep surface lowercase
+zuſammenfaſſende	zusammenfassende	1	ss_audit	accept	zusammenfassende	ss after short a
+entrükt	entrückt	1	residual	accept	entrückt	k to ck
+unverrükt	unverrückt	1	residual	accept	unverrückt	k to ck
+gröſſere	größere	1	residual	accept	größere	gross takes ss
+ununterschiedne	ununterschiedene	1	residual	reject	ununterschiedne	valid modern elided form
+unlautern	unlauteren	1	residual	reject	unlautern	valid modern elided form
+Indreſſe	Interesse	1	residual	accept	Interesse	print damaged Interesse
+Faſſungen	Fassungen	1	ss_audit	accept	Fassungen	ss after short a
+beſſern	besseren	1	residual	reject	bessern	elision valid modern
+vielfachern	vielfacheren	1	residual	reject	vielfachern	elision valid modern
+Beſſerwiſſen	Besserwissen	1	ss_audit	accept	Besserwissen	short vowel takes ss
+Gemeinschafftliche	gemeinschaftliche	1	residual	rewrite	Gemeinschaftliche	ff to f; keep capital
+unbeſangenen	unbefangenen	1	residual	accept	unbefangenen	print damage; CAB word correct
+Ineinanderflieſſen	Ineinanderfliessen	1	ss_audit	rewrite	Ineinanderfließen	fliessen long ie takes ss-sharp
+insinuirt	insinuiert	1	residual	accept	insinuiert	-irt to -iert
+Anstekkung	Ansteckung	1	residual	accept	Ansteckung	kk to ck
+entgegengeseztes	entgegengesetztes	1	residual	accept	entgegengesetztes	sz to tz
+Bautz	Baus	1	residual	reject	Bautz	onomatopoeia kept as printed
+einläſst	einlässt	1	ss_audit	accept	einlässt	short a takes ss
+thör	Thor	1	residual	rewrite	tör	fragment of thoericht; th to t
+icht	ich	1	residual	reject	icht	fragment of thoericht
+Meſsing	Messing	1	ss_audit	accept	Messing	short e takes ss
+ächter	echter	1	residual	accept	echter	ae to e modern spelling
+Mehrern	Mehreren	1	residual	reject	Mehrern	elision valid; keep case
+hat’	hat	1	residual	rewrite	hat,	print comma misprinted as apostrophe
+anthropomorphoſire	Anthropomorphosire	1	residual	rewrite	anthropomorphosiere	-ire to -iere; keep lowercase
+ausgiebt	ausgibt	1	residual	accept	ausgibt	ie to i
+Uebertragung	Übertragung	1	residual	accept	Übertragung	Ue to U-umlaut
+Auffaſſung	Auffassung	1	ss_audit	accept	Auffassung	short a takes ss
+Zeugniſs	Zeugnis	1	residual	accept	Zeugnis	-nis modern
+Beſtättigung	Bestätigung	1	residual	accept	Bestätigung	tt to t
+Hienach	Hiernach	1	residual	rewrite	Hiernach	hie-→hier- per plan precedent
+Anfehung	Ansehung	1	residual	accept	Ansehung	print damage; CAB correct
+gefeſſelt	gefesselt	1	ss_audit	accept	gefesselt	short e takes ss
+Iſoliren	isolieren	1	residual	rewrite	Isolieren	-iren to -ieren; keep capital
+unzweckmäſſig	unzweckmässig	1	ss_audit	rewrite	unzweckmäßig	-maessig takes ss-sharp
+zweckmäſſiige	zweckmässiige	1	ss_audit	rewrite	zweckmäßige	double-i typo; ss-sharp
+Ausſehen	Aussehen	1	ss_audit	accept	Aussehen	short vowel takes ss
+ausgeſchloſſene	ausgeschlossene	1	ss_audit	accept	ausgeschlossene	short o takes ss
+bloſſes	bloßes	1	residual	accept	bloßes	long o takes ss-sharp
+Ienſeits	Jenseits	1	residual	accept	Jenseits	I to J
+Bewuſstſyen	Bewusstsein	1	residual	accept	Bewusstsein	typo; CAB form correct
+Uebermaſs	Übermaß	1	residual	accept	Übermaß	Mass long a ss-sharp
+Hiegegen	Hiergegen	1	residual	rewrite	Hiergegen	hie-→hier- per plan precedent
+Unmäſſigkeit	Unmässigkeit	1	ss_audit	rewrite	Unmäßigkeit	-maessig takes ss-sharp
+allernützlichſte	nützlichste	1	residual	reject	allernützlichste	CAB dropped aller-
+Nichtunterſchiedne	Nichtunterschieden	1	residual	reject	Nichtunterschiedne	CAB changed word form
+verlaſſenes	verlassenes	1	ss_audit	accept	verlassenes	short a takes ss
+vergewiſſernden	vergewissernden	1	ss_audit	accept	vergewissernden	short i takes ss
+unzweckmäſsig	unzweckmässig	1	ss_audit	rewrite	unzweckmäßig	-maessig takes ss-sharp
+isolirter	isolierter	1	residual	accept	isolierter	-irt to -iert
+Genieſſens	Geniessens	1	ss_audit	rewrite	Genießens	geniessen long ie ss-sharp
+zerreiſſen	zerreißen	1	residual	accept	zerreißen	diphthong ei ss-sharp
+riſs	riss	1	ss_audit	accept	riss	short i takes ss
+vindicirte	vindizierte	1	residual	accept	vindizierte	c to z; -irt to -iert
+gemäſser	gemässer	1	ss_audit	rewrite	gemäßer	gemaess long ae ss-sharp
+Nichtunterſchiednen	Nichtunterschiedenen	1	residual	reject	Nichtunterschiednen	elision valid modern
+bewuſstloſen	bewusstlosen	1	ss_audit	accept	bewusstlosen	short u takes ss
+fürsichſeyns	Fürsichseins	1	residual	rewrite	fürsichseins	keep lowercase; ey to ei
+ausſehen	aussehen	1	ss_audit	accept	aussehen	short u takes ss
+abſorbirt	absorbiert	1	residual	accept	absorbiert	-irt to -iert
+zurückgekehrtseyn	Zurückgekehrtsein	1	residual	rewrite	zurückgekehrtsein	keep lowercase; ey to ei
+zuſammengefaſst	zusammengefasst	1	ss_audit	accept	zusammengefasst	short a takes ss
+Ergäntzung	Ergänzung	1	residual	accept	Ergänzung	ntz to nz
+repreſentirte	repräsentierte	1	residual	accept	repräsentierte	modern loanword spelling
+organiſirte	organisierte	1	residual	accept	organisierte	-irt to -iert
+verſchwundnen	verschwundenen	1	residual	reject	verschwundnen	elision valid modern
+Etre	ädre	1	residual	reject	Etre	French phrase; folding only
+wornach	wonach	1	residual	reject	wornach	archaic form kept
+ſpeciellere	speziellere	1	residual	accept	speziellere	c to z
+Repreſentation	Repräsentation	1	residual	accept	Repräsentation	modern loanword spelling
+repreſentirt	repräsentiert	1	residual	accept	repräsentiert	modern loanword spelling
+Sylbe	Silbe	1	residual	accept	Silbe	y to i
+conſtituirt	konstituiert	1	residual	accept	konstituiert	c to k; -irt to -iert
+gegenuber	gegenüber	1	residual	accept	gegenüber	missing umlaut restored
+trocknen	trockenen	1	residual	reject	trocknen	elision valid modern
+wiederhohlen	wiederholen	1	residual	accept	wiederholen	hh to h
+ausſchlieſſende	ausschließende	1	residual	accept	ausschließende	long ie ss-sharp
+mannichfaltigem	mannigfaltigem	1	residual	accept	mannigfaltigem	ch to g modern spelling
+unmittelbarſeyende	unmittelbarseiernde	1	residual	rewrite	unmittelbarseiende	CAB garbled; ey to ei
+constituiren	konstituieren	1	residual	accept	konstituieren	c to k; -iren to -ieren
+gewiſse	gewisse	1	ss_audit	accept	gewisse	short i takes ss
+Zerreiſſung	Zerreißung	1	residual	accept	Zerreißung	diphthong ei ss-sharp
+beſchloſſen	beschlossen	1	ss_audit	accept	beschlossen	short o takes ss
+Audersſeyn	Audersseyn	1	ss_audit	rewrite	Anderssein	print damage for Andersseyn
+freygelaſſenes	freigelassenes	1	ss_audit	accept	freigelassenes	ey to ei; short a ss
+Unweſenheit	Unwesenhit	1	residual	reject	Unwesenheit	CAB typo; folding only
+weglaſſen	weglassen	1	ss_audit	accept	weglassen	short a takes ss
+realisirte	realisierte	1	residual	accept	realisierte	-irt to -iert
+Fodern	Fordern	1	residual	accept	Fordern	fodern to fordern
+ungewiſs	ungewiß	1	residual	reject	ungewiss	CAB used 1901 ss-sharp
+Bewuſtseyn	Bewußtsein	1	residual	rewrite	Bewusstsein	post-1996 ss; ey to ei
+poſtulirtes	postuliertes	1	residual	accept	postuliertes	-irt to -iert
+höhe	Höhe	1	residual	rewrite	höbe	print damage for hoebe
+dunkeln	dunklen	1	residual	reject	dunkeln	elision valid modern
+intereſſiren	interessieren	1	residual	accept	interessieren	short e ss; -ieren
+auſſerhalb	außerhalb	1	residual	accept	außerhalb	diphthong au ss-sharp
+poſtulirte	postulierte	1	residual	accept	postulierte	-irt to -iert
+unangemeſſen	unangemessen	1	ss_audit	accept	unangemessen	short e takes ss
+Eingeſchloſſenſeyn	Eingeschlossensein	1	ss_audit	accept	Eingeschlossensein	short o ss; ey to ei
+Angemeſſenheit	Angemessenheit	1	ss_audit	accept	Angemessenheit	short e takes ss
+paſſendſten	passendsten	1	ss_audit	accept	passendsten	short a takes ss
+verwirklicht’	verwirklichte	1	residual	rewrite	verwirklicht,	print comma misprinted as apostrophe
+umfaſſende	umfassende	1	ss_audit	accept	umfassende	short a takes ss
+harmonire	harmoniere	1	residual	accept	harmoniere	-iren to -ieren subjunctive
+Gemäſsheit	Gemässheit	1	ss_audit	rewrite	Gemäßheit	gemaess long ae ss-sharp
+neblichten	nebligen	1	residual	reject	neblichten	-icht adjective form kept
+Ausserdem	Außerdem	1	residual	accept	Außerdem	diphthong au ss-sharp
+Grösse	Größe	1	residual	accept	Größe	long oe ss-sharp
+Postulirens	Postulierens	1	residual	accept	Postulierens	-iren to -ieren
+Moralitat	Moraletat	1	residual	rewrite	Moralität	missing umlaut; CAB garbled
+geheiliget	geheiligt	1	residual	reject	geheiliget	archaic participle form kept
+postulirt	postuliert	1	residual	accept	postuliert	-irt to -iert
+Hinausſetzen	Hinaussetzen	1	ss_audit	accept	Hinaussetzen	short u takes ss
+Weltanschäuung	Weltanschauung	1	residual	accept	Weltanschauung	stray umlaut removed
+wiedergegebne	wiedergegebene	1	residual	reject	wiedergegebne	elision valid modern
+selbstauf	Selbsthauf	1	residual	rewrite	selbst auf	print fusion of two words
+pflichtmäſſiges	pflichtmässiges	1	ss_audit	rewrite	pflichtmäßiges	-maessig takes ss-sharp
+anſichseyende	an-sich-seiende	1	residual	rewrite	ansichseiende	no hyphens; ey to ei
+Gewiſsens	Gewissens	1	ss_audit	accept	Gewissens	short i takes ss
+Uebersetzen	übersetzen	1	residual	rewrite	Übersetzen	Ue to U-umlaut; keep capital
+Pflichtmäſſige	Pflichtmässige	1	ss_audit	rewrite	Pflichtmäßige	-maessig takes ss-sharp
+Wiſſendes	Wissendes	1	ss_audit	accept	Wissendes	short i takes ss
+gewiſſenhaffte	gewissenhafte	1	ss_audit	accept	gewissenhafte	ff to f; short i ss
+gefoderten	geforderten	1	residual	accept	geforderten	fodern to fordern
+Gewiſsheil	Gewissheil	1	ss_audit	rewrite	Gewissheit	print damage for Gewissheit
+heſſten	hassten	1	residual	rewrite	heften	print damage for heften
+Nützlichheit	Nützlichhit	1	residual	rewrite	Nützlichkeit	print damage for Nuetzlichkeit
+Pflichtmäſsigkeit	Pflichtmässigkeit	1	ss_audit	rewrite	Pflichtmäßigkeit	-maessig takes ss-sharp
+begienge	beginge	1	residual	accept	beginge	ie to i
+Befugniſs	Befugnis	1	residual	accept	Befugnis	-nis modern
+Erwerb	Erwerbe	1	residual	reject	Erwerb	CAB added inflection
+lieffe	lief	1	residual	rewrite	liefe	subjunctive; ff to f
+Avtarkie	Autarkie	1	residual	accept	Autarkie	v to u
+pflichtmäſſiige	pflichtmässiige	1	ss_audit	rewrite	pflichtmäßige	double-i typo; ss-sharp
+vollkommner	vollkommener	1	residual	reject	vollkommner	elision valid modern
+gewuſstſeyn	Gewusstsein	1	residual	rewrite	gewusstsein	keep lowercase; ey to ei
+zuſammenflieſst	zusammenfließt	1	residual	accept	zusammenfließt	long ie ss-sharp
+verschloſſen	verschlossen	1	ss_audit	accept	verschlossen	short o takes ss
+vorgegebnen	vorgegebenen	1	residual	reject	vorgegebnen	elision valid modern
+Ausſprechens	Aussprechens	1	ss_audit	accept	Aussprechens	short u takes ss
+bezognen	Bezogenen	1	residual	reject	bezognen	elision and lowercase kept
+erſchaffne	erschaffene	1	residual	reject	erschaffne	elision valid modern
+Zuſammenflieſſen	Zusammenfliessen	1	ss_audit	rewrite	Zusammenfließen	long ie ss-sharp
+gewiſſenhaft	gewissenhaft	1	ss_audit	accept	gewissenhaft	short i takes ss
+Reflectirtſeyns	Reflektiertseins	1	residual	accept	Reflektiertseins	c to k; -irt; ey to ei
+Auſſen	Außen	1	residual	accept	Außen	diphthong au ss-sharp
+conſtituirenden	konstituierenden	1	residual	accept	konstituierenden	c to k; -ieren
+Eignes	Eigenes	1	residual	reject	Eignes	elision valid modern
+mishandle	misshandle	1	residual	accept	misshandle	miss- prefix doubles s
+dasenige	dasige	1	residual	rewrite	dasjenige	print damage for dasjenige
+auffaſſendes	auffassendes	1	ss_audit	accept	auffassendes	short a takes ss
+auffaſſend	auffassend	1	ss_audit	accept	auffassend	short a takes ss
+auffaſſenden	auffassenden	1	ss_audit	accept	auffassenden	short a takes ss
+verſchiednen	verschiedenen	1	residual	reject	verschiednen	elision valid modern
+Pflichtgemäſsheit	Pflichtgemässheit	1	ss_audit	rewrite	Pflichtgemäßheit	gemaess long ae ss-sharp
+angemeſſen	angemessen	1	ss_audit	accept	angemessen	short e takes ss
+Vorschmacke	Vorschmack	1	residual	reject	Vorschmacke	dative -e inflection kept
+eſſender	essender	1	ss_audit	accept	essender	short e takes ss
+Bedürfniſſes	Bedürfnisses	1	ss_audit	accept	Bedürfnisses	short i takes ss
+beſſerwiſſens	Besserwissens	1	residual	reject	besserwissens	keep surface lowercase
+ausſprechend	aussprechend	1	ss_audit	accept	aussprechend	short u takes ss
+erwiedern	erwidern	1	residual	accept	erwidern	wider- correct modern
+Geſtändniſſe	Geständnisse	1	ss_audit	accept	Geständnisse	short i takes ss
+Eingeſtändniſs	Eingeständnis	1	residual	accept	Eingeständnis	-nis modern
+bins	bin_es	1	residual	reject	bins	elision without apostrophe allowed
+Geſtändniſſes	Geständnisses	1	ss_audit	accept	Geständnisses	short i takes ss
+verwirſt	wirst	1	residual	rewrite	verwirft	print damage; 3sg verwerfen
+Scene	Szene	1	residual	accept	Szene	c to z
+zurückgeſtoſſen	zurückgestoßen	1	residual	accept	zurückgestoßen	stossen long o ss-sharp
+absolutflüſſige	absolutflüssige	1	ss_audit	accept	absolutflüssige	short ue takes ss
+zurückgeſtoſſnen	zurückgestoßenen	1	residual	rewrite	zurückgestoßnen	keep elision; ss-sharp
+feſtgehaltnen	festgehaltenen	1	residual	reject	festgehaltnen	elision valid modern
+ausgedrükt	ausgedrückt	1	residual	accept	ausgedrückt	k to ck
+Maeht	Mäht	1	residual	rewrite	Macht	print damage for Macht
+wiederfahren	widerfahren	1	residual	accept	widerfahren	wider- correct modern
+Wiſſend	Wissend	1	ss_audit	accept	Wissend	short i takes ss
+wis	wies	1	residual	reject	wis	hyphenation fragment of wissende
+Diseretion	Desertion	1	residual	rewrite	Diskretion	print damage; c to k
+wiſſchde	wisschde	1	ss_audit	rewrite	wissende	print damage for wissende
+herausringende	herausringend	1	residual	reject	herausringende	CAB dropped adjective ending
+aufgehobner	aufgehobener	1	residual	reject	aufgehobner	elision valid modern
+unterſchiedner	unterschiedener	1	residual	reject	unterschiedner	elision valid modern
+selbſtständig	selbständig	1	residual	reject	selbstständig	post-1996 preferred form
+selbstbewuſster	selbstbewusster	1	ss_audit	accept	selbstbewusster	short u takes ss
+eingeſchloſſne	eingeschlossene	1	residual	reject	eingeschlossne	elision valid; short o ss
+vollkommnes	vollkommenes	1	residual	reject	vollkommnes	elision valid modern
+zusammengefaſste	zusammengefasste	1	ss_audit	accept	zusammengefasste	short a takes ss
+Totalitat	Totaletat	1	residual	rewrite	Totalität	missing umlaut; CAB garbled
+isoliren	isolieren	1	residual	accept	isolieren	-iren to -ieren
+gesammten	gesamten	1	residual	accept	gesamten	mm to m
+sichſeyn	Siechsein	1	residual	rewrite	sichsein	markup split; ey to ei
+unüberwundne	unüberwundene	1	residual	reject	unüberwundne	elision valid modern
+beziehens	Beziehens	1	residual	reject	beziehens	keep surface lowercase
+erhaltne	erhaltene	1	residual	reject	erhaltne	elision valid modern
+Hieher	Hierher	1	residual	rewrite	Hierher	hie-→hier- per plan precedent
+Prineip	Prinzip	1	residual	accept	Prinzip	print damage; c to z
+Lichtgüſſe	Lichtgüsse	1	ss_audit	accept	Lichtgüsse	short ue takes ss
+Maſslosen	Masslosen	1	ss_audit	rewrite	Maßlosen	Mass long a ss-sharp
+vielnahmigen	vielnamigen	1	residual	accept	vielnamigen	Nahme to Name
+mannichfachen	mannigfachen	1	residual	accept	mannigfachen	ch to g modern spelling
+vereinzelnter	vereinzelnder	1	residual	reject	vereinzelnter	CAB changed word form
+zerreiffenden	reifenden	1	residual	rewrite	zerreißenden	print damage; ei ss-sharp
+abstrachte	abstrakte	1	residual	accept	abstrakte	ch to k
+Vorhandnen	Vorhandenen	1	residual	reject	Vorhandnen	elision valid modern
+Kryſtalle	Kristalle	1	residual	accept	Kristalle	y to i
+Verhältniſſen	Verhältnissen	1	ss_audit	accept	Verhältnissen	short i takes ss
+verlaffen	Laffen	1	residual	rewrite	verlassen	print damage for verlassen
+äufferlich	äußerlich	1	residual	accept	äußerlich	aeusser- takes ss-sharp
+verborgne	verborgene	1	residual	reject	verborgne	elision valid modern
+Auffenseite	Aussenseite	1	residual	rewrite	Außenseite	ff to ss-sharp print damage
+strengern	strengeren	1	residual	reject	strengern	elision valid modern
+Architectur	Architektur	1	residual	accept	Architektur	c to k
+äusseres	äußeres	1	residual	accept	äußeres	äu diphthong takes ß
+vielformigen	vielförmigen	1	residual	accept	vielförmigen	umlaut restored, modern spelling
+Aeuffern	Äussern	1	residual	rewrite	Äußern	OCR ff=ſſ; Ae→Ä, ß
+ausſprechendes	aussprechendes	1	ss_audit	accept	aussprechendes	aus+sprechendes, ss correct
+äussert	äußert	1	residual	accept	äußert	äu diphthong takes ß
+gebährendes	gebärendes	1	residual	accept	gebärendes	silent h dropped
+auschaut	ausschaut	1	residual	rewrite	anschaut	context reads anschaut
+haſſender	hassender	1	ss_audit	accept	hassender	short a keeps ss
+erfaſſenden	erfassenden	1	ss_audit	accept	erfassenden	short a keeps ss
+geborne	geborene	1	residual	reject	geborne	elision valid modern German
+ward	wurde	1	residual	reject	ward	lexical swap, not orthography
+Krystall	Kristall	1	residual	accept	Kristall	y→i modernization
+behauſst	behaust	1	residual	accept	behaust	context: houses the dead
+Geäſte	Geäst	1	residual	reject	Geäste	dative Geäste; CAB drops ending
+Geradlinigte	Geradlinige	1	residual	reject	Geradlinigte	word form kept
+Ebne	Ebene	1	residual	reject	Ebne	elision valid modern German
+Krystalls	Kristalls	1	residual	accept	Kristalls	y→i modernization
+hervorgezogne	hervorgezogene	1	residual	reject	hervorgezogne	elision stays
+wüſte	wüsste	1	residual	reject	wüste	adjective wüste, not wüsste
+Ocean	Ozean	1	residual	accept	Ozean	c→z Latinate modernization
+zuſammenbefaſst	zusammenbefasst	1	ss_audit	accept	zusammenbefasst	short a takes ss
+Möment	Moment	1	residual	accept	Moment	print damage: stray umlaut
+exiſtirenden	existierenden	1	residual	accept	existierenden	-irt→-iert
+hiegegen	hiergegen	1	residual	accept	hiergegen	hie-→hier- per plan precedent
+Bekenntniſs	Bekenntnis	1	residual	accept	Bekenntnis	word-final ſs→s
+Hervorgang	Herrvorgang	1	residual	reject	Hervorgang	CAB garbles the word
+ſelbſtbewuſstlosen	selbstbewusstlosen	1	ss_audit	accept	selbstbewusstlosen	bewußt→bewusst, short u
+exiſtirte	existierte	1	residual	accept	existierte	-irt→-iert
+Untre	Untere	1	residual	reject	Untre	elision stays
+vindicirt	vindiziert	1	residual	accept	vindiziert	c→z, -irt→-iert
+Denkenſuchte	Denkensuche	1	residual	rewrite	Denken suchte	print fusion of two words
+hohlt	holt	1	residual	accept	holt	silent h dropped
+gährenden	gehrenden	1	residual	rewrite	gärenden	gähren→gären; CAB wrong
+Looſes	Loses	1	residual	accept	Loses	Loos→Los
+Loos	Los	1	residual	accept	Los	double vowel simplified
+zufalligen	zufallen	1	residual	rewrite	zufälligen	missing umlaut in print
+lung	Lunge	1	residual	reject	lung	print split of Handlung
+entlaſſen	entlassen	1	ss_audit	accept	entlassen	short a keeps ss
+verſchiedne	verschiedene	1	residual	reject	verschiedne	elision stays
+Geſänges	Gesänge	1	residual	reject	Gesänges	Hegel's genitive kept
+weiſſen	weißen	1	residual	accept	weißen	ei diphthong takes ß
+Straſſen	Straßen	1	residual	accept	Straßen	long a takes ß
+Seeligkeit	Seligkeit	1	residual	accept	Seligkeit	double vowel simplified
+vergieſst	vergießt	1	residual	accept	vergießt	long ie takes ß
+untern	unteren	1	residual	reject	untern	elision stays
+entſtandne	entstandene	1	residual	reject	entstandne	elision stays
+Schikſal	Schicksal	1	residual	accept	Schicksal	k→ck
+Schmauſs	Schmaus	1	residual	accept	Schmaus	Schmaus ends single s
+betriegt	betrügt	1	residual	accept	betrügt	archaic ie→ü, same verb
+flieſst	fließt	1	residual	accept	fließt	long ie takes ß
+groſsmüthigen	großmütigen	1	residual	accept	großmütigen	long o takes ß; th→t
+…	...	1	residual	reject	…	punctuation stays as printed
+verworfnen	verworfenen	1	residual	reject	verworfnen	elision stays
+gegeſſen	gegessen	1	ss_audit	accept	gegessen	short e keeps ss
+Gährung	Gehrung	1	residual	rewrite	Gärung	gähren→gären; CAB wrong
+Geheimniſſes	Geheimnisses	1	ss_audit	accept	Geheimnisses	short i keeps ss
+genieſſende	genießende	1	residual	accept	genießende	long ie takes ß
+lautre	lautere	1	residual	reject	lautre	elision stays
+vielnahmige	vielnamige	1	residual	accept	vielnamige	Nahme→Name
+abgelaſſen	abgelassen	1	ss_audit	accept	abgelassen	short a keeps ss
+Brods	Brots	1	residual	accept	Brots	Brod→Brot
+bewuſstloſer	bewusstloser	1	ss_audit	accept	bewusstloser	bewußt→bewusst, short u
+Erſtern	Ersteren	1	residual	reject	Erstern	elision stays
+mitlebendes	Mitlebendes	1	residual	reject	mitlebendes	CAB changes case
+ſchloſs	schloss	1	ss_audit	accept	schloss	short o takes ss
+Geſammtvolk	Gesamtvolk	1	residual	accept	Gesamtvolk	sammt→samt
+Geſammthimmel	Gesamthimmel	1	residual	accept	Gesamthimmel	sammt→samt
+Entſchlüſſen	Entschlüssen	1	ss_audit	accept	Entschlüssen	short ü keeps ss
+Innerlichkelt	Innerlichkelte	1	residual	rewrite	Innerlichkeit	OCR: keit misread
+aufgeschloſſen	aufgeschlossen	1	ss_audit	accept	aufgeschlossen	short o keeps ss
+Geschäſſte	Geschasste	1	residual	rewrite	Geschäfte	ff→f; Hegel's -e form kept
+Gesammtheit	Gesamtheit	1	residual	accept	Gesamtheit	sammt→samt
+bracht	brachte	1	residual	reject	bracht	print split of vollbracht
+überflüſſigerweise	überflüssigerweise	1	ss_audit	accept	überflüssigerweise	short ü keeps ss
+Ueberfluſs	Überfluß	1	residual	rewrite	Überfluss	short u takes ss post-1996
+Thatigen	Tatchen	1	residual	rewrite	Tätigen	th→t; missing umlaut
+Abei	Abi	1	residual	rewrite	Aber	OCR of Aber
+Selbstvergeſſenheit	Selbstvergessenheit	1	ss_audit	accept	Selbstvergessenheit	short e keeps ss
+Begräntzung	Begrenzung	1	residual	accept	Begrenzung	tz→z, ä→e
+sichres	sicheres	1	residual	reject	sichres	elision stays
+Uibergewicht	Übergewicht	1	residual	accept	Übergewicht	Ui→Ü
+traurend	trauernd	1	residual	accept	trauernd	trauren→trauern
+ausgeschloſſen	ausgeschlossen	1	ss_audit	accept	ausgeschlossen	short o keeps ss
+halt	halte	1	residual	rewrite	hält	context: hält, umlaut missing
+überlaſſene	überlassene	1	ss_audit	accept	überlassene	short a keeps ss
+Entschluſſes	Entschlusses	1	ss_audit	accept	Entschlusses	short u keeps ss
+auseinandergelaſſnen	auseinandergelassnen	1	ss_audit	accept	auseinandergelassnen	elision kept, ss correct
+bekömmt	bekommt	1	residual	reject	bekömmt	archaic inflection stays
+auseinandergeriſſen	auseinandergerissen	1	ss_audit	accept	auseinandergerissen	short i keeps ss
+vielformige	vielförmige	1	residual	accept	vielförmige	umlaut restored
+eigenlichen	Eigenlichen	1	residual	rewrite	eigentlichen	OCR: missing t; keep lowercase
+substantiirt	substantiiert	1	residual	accept	substantiiert	-irt→-iert
+Nichtwiſſen	Nichtwissen	1	ss_audit	accept	Nichtwissen	short i keeps ss
+aufzuschlieſsen	aufzuschließen	1	residual	accept	aufzuschließen	long ie takes ß
+Schicksalsschweſtern	Schicksalsschwestern	1	ss_audit	accept	Schicksalsschwestern	ſ→s only
+Verheiſſungen	Verheissungen	1	ss_audit	rewrite	Verheißungen	ei diphthong takes ß
+verlieſs	verließ	1	residual	accept	verließ	long ie takes ß
+untre	untere	1	residual	reject	untre	elision stays
+schloſs	schloss	1	ss_audit	accept	schloss	short o takes ss
+büſst	büßt	1	residual	accept	büßt	long ü takes ß
+Verborgnen	Verborgenen	1	residual	reject	Verborgnen	elision stays
+Persönen	Personen	1	residual	accept	Personen	print damage: stray umlaut
+selbſts	Selbsts	1	residual	reject	selbsts	CAB changes case
+bittrer	bitterer	1	residual	reject	bittrer	elision stays
+nothwendigere	Notwendigere	1	residual	rewrite	notwendigere	th→t; keep lowercase
+Schmauſſe	Schmause	1	residual	accept	Schmause	dative of Schmaus
+reſpectirenden	respektierenden	1	residual	accept	respektierenden	c→k, -irt→-iert
+Gemeinwesens’	Gemeinwesens	1	residual	reject	Gemeinwesens’	printed apostrophe stays
+anmaſst	anmaßt	1	residual	accept	anmaßt	long a takes ß
+Naktheit	Nacktheit	1	residual	accept	Nacktheit	k→ck
+Aengſtlichkeit	Ängstlichkeit	1	residual	accept	Ängstlichkeit	Ae→Ä
+Sich-wohlseyn-laſſen	Sich-wohlseyn-lassen	1	ss_audit	rewrite	Sich-wohlsein-lassen	seyn→sein
+entäuſſertes	entäußertes	1	residual	accept	entäußertes	äu diphthong takes ß
+Bewandniſſes	Bewandtnisse	1	residual	rewrite	Bewandtnisses	modern Bewandtnis; genitive kept
+Religiou	Religio	1	residual	rewrite	Religion	OCR of Religion
+Besondre	Besondere	1	residual	reject	Besondre	elision stays
+präsentirt	präsentiert	1	residual	accept	präsentiert	-irt→-iert
+Iahreszeiten	Jahreszeiten	1	residual	accept	Jahreszeiten	I→J typographic
+veräuſſerten	veräußerten	1	residual	accept	veräußerten	äu diphthong takes ß
+Entäuſſerungen	Entäusserungen	1	ss_audit	rewrite	Entäußerungen	äu diphthong takes ß
+freygelaſſenen	Freigelassenen	1	residual	rewrite	freigelassenen	ey→ei; keep lowercase
+baltlose	baltelose	1	residual	rewrite	haltlose	OCR of haltlose
+bewuſsiloſen	bewussilosen	1	ss_audit	rewrite	bewusstlosen	OCR of bewusstlosen
+Selbſtbewuſsſeyns	Selbstbewussseyns	1	ss_audit	rewrite	Selbstbewusstseins	missing t; seyn→sein
+Blöſſe	Blöße	1	residual	accept	Blöße	long ö takes ß
+Unmittelbarkeir	Unmittelbarkir	1	residual	rewrite	Unmittelbarkeit	OCR: final t
+innhaltslose	inhaltslose	1	residual	accept	inhaltslose	double n simplified
+insoſern	insofern	1	residual	accept	insofern	ſ is misread f
+oſſenbar	ossenbar	1	ss_audit	rewrite	offenbar	ſſ is misread ff
+ausdrükt	ausdrückt	1	residual	accept	ausdrückt	k→ck
+ſelbſts	Selbsts	1	residual	reject	selbsts	CAB changes case
+finnlichen	fennlichen	1	residual	rewrite	sinnlichen	f is misread ſ
+auſſtand	ausstand	1	ss_audit	rewrite	aufstand	context: aufstand, misread f
+Vermittelung	Vermittlung	1	residual	reject	Vermittelung	valid variant form
+äusserlich	äußerlich	1	residual	accept	äußerlich	äu diphthong takes ß
+Selbstbewuſsseyn	Selbstbewussseyn	1	ss_audit	rewrite	Selbstbewusstsein	missing t; seyn→sein
+ausgeſprochne	ausgesprochene	1	residual	reject	ausgesprochne	elision stays
+Ausſprechenden	Aussprechenden	1	ss_audit	accept	Aussprechenden	aus+sprechenden, ss correct
+zurückläſst	zurücklässt	1	ss_audit	accept	zurücklässt	short a takes ss
+bezichen	bezechen	1	residual	rewrite	beziehen	OCR of beziehen
+Aeuſſerliche	Äußerliche	1	residual	accept	Äußerliche	Ae→Ä; äu takes ß
+erkenntniſsloses	erkenntnissloses	1	ss_audit	rewrite	erkenntnisloses	Erkenntnis+los, single s
+Todtes	Totes	1	residual	accept	Totes	dt→t
+andersſeyn	Anderssein	1	residual	rewrite	anderssein	seyn→sein; keep lowercase
+Unmittelburkeit	Unmittelbarkeit	1	residual	accept	Unmittelbarkeit	OCR: u for a
+eingeſchloſſenen	eingeschlossenen	1	ss_audit	accept	eingeschlossenen	short o keeps ss
+auſſere	ausser	1	residual	rewrite	äußere	context: äußere Ordnung
+Erkenntniſſes	Erkenntnisses	1	ss_audit	accept	Erkenntnisses	short i keeps ss
+daſeyenden	da-seienden	1	residual	rewrite	daseienden	seyend→seiend; no hyphen
+erstgebohrne	erstgeborene	1	residual	rewrite	erstgeborne	silent h dropped; elision stays
+geheiſſen	geheißen	1	residual	accept	geheißen	ei diphthong takes ß
+Preiſſe	Preise	1	residual	accept	Preise	Preis has single s
+entäuſſerten	Entäußerten	1	residual	rewrite	entäußerten	CAB wrongly capitalizes
+gutgebliebne	gutgebliebene	1	residual	reject	gutgebliebne	elision stays
+h	h.	1	residual	reject	h	punctuation stays; from d. h.
+ſelbſtſtändig	selbständig	1	residual	reject	selbstständig	selbstständig valid modern
+angegebnen	angegebenen	1	residual	reject	angegebnen	elision stays
+Conſtituirung	Konstituierung	1	residual	accept	Konstituierung	C→K, -irung→-ierung
+Verſohnung	Versöhnung	1	residual	accept	Versöhnung	missing umlaut restored
+Misverſtändniſſe	Missverständnisse	1	residual	accept	Missverständnisse	miss- prefix, short i
+Ebendiſs	Ebendiss	1	ss_audit	rewrite	Ebendies	diſs=dies; case kept
+Dieſelbigkeit	Selbigkeit	1	residual	reject	Dieselbigkeit	CAB drops Die-
+meuſchlichen	muschligen	1	residual	rewrite	menschlichen	OCR of menschlichen
+insbeſondre	insbesondere	1	residual	reject	insbesondre	elision stays
+Vergeſſen	Vergessen	1	ss_audit	accept	Vergessen	short e keeps ss
+geſtorbne	gestorbene	1	residual	reject	gestorbne	elision stays
+hieſſe	hieße	1	residual	accept	hieße	long ie takes ß
+Verlaſſen	Verlassen	1	ss_audit	accept	Verlassen	short a keeps ss
+eigentlichern	eigentlicheren	1	residual	reject	eigentlichern	elision stays
+insich	in-sich	1	residual	reject	insich	compound stays unhyphenated
+Ergreiſſen	Ergreisen	1	residual	rewrite	Ergreifen	ſſ misread ff; Ergreifen
+angegebner	angegebener	1	residual	reject	angegebner	elision stays
+ergriffne	ergriffene	1	residual	reject	ergriffne	elision stays
+abgezogne	abgezogene	1	residual	reject	abgezogne	elision stays
+aufschlieſst	aufschließt	1	residual	accept	aufschließt	long ie takes ß
+Bewuſstſezu	Bewusstsezu	1	ss_audit	rewrite	Bewusstsein	OCR of Bewusstseyn
+Bewuſstsseyn	Bewusstsein	1	residual	accept	Bewusstsein	stray s; seyn→sein
+Ueberwindung	Überwindung	1	residual	accept	Überwindung	Ue→Ü
+Erfaſſens	Erfassens	1	ss_audit	accept	Erfassens	short a keeps ss
+preisgegebne	preisgegebene	1	residual	reject	preisgegebne	elision stays
+hinausſtellt	hinausstellt	1	ss_audit	accept	hinausstellt	hinaus+stellt, ss correct
+nehmlich	nämlich	1	residual	accept	nämlich	nehmlich→nämlich
+nichthandelnden	Nichthandelnden	1	residual	reject	nichthandelnden	CAB changes case
+Ablaſſen	Ablassen	1	ss_audit	accept	Ablassen	short a keeps ss
+Ungleichkeit	Ungleichkit	1	residual	reject	Ungleichkeit	CAB garbles the word
+exiſtirter	existierter	1	residual	rewrite	existierte er	print fusion: existirte er
+fürſichseyendes	für-sich-seiendes	1	residual	rewrite	fürsichseiendes	seyend→seiend; no hyphens
+Selbſtes	Selbsts	1	residual	reject	Selbstes	Hegel's genitive form kept
+entriſſen	entrissen	1	ss_audit	accept	entrissen	short i keeps ss
+begriffnes	begriffenes	1	residual	reject	begriffnes	elision stays
+Fürſich	Für-sich	1	residual	reject	Fürsich	no hyphenation
+Eh	Ehe	1	residual	rewrite	Ehe	apocope; modern ehe
+entdekt	entdeckt	1	residual	accept	entdeckt	k→ck
+überlaſſne	überlassene	1	residual	reject	überlassne	elision stays; ss correct
+Unterschiedne	Unterschiedene	1	residual	reject	Unterschiedne	elision stays
+unüberwundnen	unüberwundenen	1	residual	reject	unüberwundnen	elision stays
+wiſſens	Wissens	1	residual	reject	wissens	CAB changes case
+verschiedne	verschiedene	1	residual	reject	verschiedne	elision stays
+Entlaſſen	Entlassen	1	ss_audit	accept	Entlassen	short a keeps ss
+verschwundnes	verschwundenes	1	residual	reject	verschwundnes	elision stays
+neugeborne	neugeborene	1	residual	reject	neugeborne	elision stays
+begriffnen	begriffenen	1	residual	reject	begriffnen	elision stays
+begriffne	begriffene	1	residual	reject	begriffne	elision stays
+thöricht	töricht	0	ops	rewrite	töricht	ops patch target; th→t
+beſtimmtem	bestimmtem	0	ops	accept	bestimmtem	errata-introduced form
+Insichseyn	Insichseyn	5	cab_unnormalized	rewrite	Insichsein	CAB unnormalized; ey→ei, form kept
+Insichseyns	Insichseyns	3	cab_unnormalized	rewrite	Insichseins	CAB unnormalized; ey→ei, form kept
+inſichſeyn	inſichſeyn	3	cab_unnormalized	rewrite	insichsein	CAB unnormalized; ey→ei, form kept
+Inſichſeyns	Inſichſeyns	3	cab_unnormalized	rewrite	Insichseins	CAB unnormalized; ey→ei, form kept
+Inſichſeyn	Inſichſeyn	2	cab_unnormalized	rewrite	Insichsein	CAB unnormalized; ey→ei, form kept
+Fürmichseyn	Fürmichseyn	2	cab_unnormalized	rewrite	Fürmichsein	CAB unnormalized; ey→ei, form kept
+inſichſeyende	inſichſeyende	2	cab_unnormalized	rewrite	insichseiende	CAB unnormalized; ey→ei, form kept
+reflectirt-seyn	reflectirt-seyn	1	cab_unnormalized	rewrite	reflektiert-sein	printed hyphen kept; c→k, ey→ei
+inſichſeyenden	inſichſeyenden	1	cab_unnormalized	rewrite	insichseienden	CAB unnormalized; ey→ei, form kept
+nichtanſichſeyende	nichtanſichſeyende	1	cab_unnormalized	rewrite	nichtansichseiende	CAB unnormalized; ey→ei, form kept
+beyherspielende	beyherspielende	1	cab_unnormalized	rewrite	beiherspielende	CAB unnormalized; ey→ei, form kept
+Bewutstseyns	Bewutstseyns	1	cab_unnormalized	rewrite	Bewusstseins	print damage for Bewuſstseyns
+Einzelnheit-seyns	Einzelnheit-seyns	1	cab_unnormalized	rewrite	Einzelnheit-seins	CAB unnormalized; ey→ei, form kept
+beyherspielt	beyherspielt	1	cab_unnormalized	rewrite	beiherspielt	CAB unnormalized; ey→ei, form kept
+nichtdaſeyende	nichtdaſeyende	1	cab_unnormalized	rewrite	nichtdaseiende	CAB unnormalized; ey→ei, form kept
+Furſichſeyns	Furſichſeyns	1	cab_unnormalized	rewrite	Fürsichseins	print omits umlaut; ey→ei
+sichseyendes	sichseyendes	1	cab_unnormalized	rewrite	sichseiendes	CAB unnormalized; ey→ei, form kept
+Nichtseyende	Nichtseyende	1	cab_unnormalized	rewrite	Nichtseiende	CAB unnormalized; ey→ei, form kept
+Fürsichselbstseyn	Fürsichselbstseyn	1	cab_unnormalized	rewrite	Fürsichselbstsein	CAB unnormalized; ey→ei, form kept
+Zweyzüngigkeit	Zweyzüngigkeit	1	cab_unnormalized	rewrite	Zweizüngigkeit	CAB unnormalized; ey→ei, form kept
+Entzweyt-	Entzweyt-	1	cab_unnormalized	rewrite	Entzweit-	CAB unnormalized; ey→ei, form kept
+insichseyenden	insichseyenden	1	cab_unnormalized	rewrite	insichseienden	CAB unnormalized; ey→ei, form kept
+cheley	cheley	1	cab_unnormalized	rewrite	chelei	split tail of -cheley words
+Beyherspielen	Beyherspielen	1	cab_unnormalized	rewrite	Beiherspielen	CAB unnormalized; ey→ei, form kept
+Fursichseyn	Fursichseyn	1	cab_unnormalized	rewrite	Fürsichsein	print omits umlaut; ey→ei
+Daseyus	Daseyus	1	cab_unnormalized	rewrite	Daseins	print damage for Daseyns
+entzweytedie	entzweytedie	1	cab_unnormalized	rewrite	entzweite die	print fusion of two words
+fürsichseyend	fürsichseyend	1	cab_unnormalized	rewrite	fürsichseiend	CAB unnormalized; ey→ei, form kept
+fürsichseyendem	fürsichseyendem	1	cab_unnormalized	rewrite	fürsichseiendem	CAB unnormalized; ey→ei, form kept
+reinſeyende	reinſeyende	1	cab_unnormalized	rewrite	reinseiende	CAB unnormalized; ey→ei, form kept

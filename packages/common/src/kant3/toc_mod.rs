@@ -145,7 +145,7 @@ const MODERNIZED_LABELS: &[&str] = &[
 
 /// Flat TOC entries with modernized labels, reusing `toc`'s structural fields.
 /// Each entry: (index, aa_page, depth, modernized_label, slug_override).
-pub fn flat_toc_entries() -> Vec<(usize, u16, u16, &'static str, Option<&'static str>)> {
+pub fn flat_toc_entries() -> Vec<crate::FlatTocEntry> {
     toc::flat_toc_entries()
         .into_iter()
         .map(|(idx, aa_page, depth, _label, slug_override)| {

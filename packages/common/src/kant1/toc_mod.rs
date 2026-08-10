@@ -719,10 +719,18 @@ const TOC: &[FlatEntry] = &[
 
 /// Return the flat TOC entries in document order for content assignment.
 /// Each entry: (index_in_flat_list, aa_page, depth, label, slug_override)
-pub fn flat_toc_entries() -> Vec<(usize, u16, u16, &'static str, Option<&'static str>)> {
+pub fn flat_toc_entries() -> Vec<crate::FlatTocEntry> {
     TOC.iter()
         .enumerate()
-        .map(|(i, e)| (i, e.aa_page, e.depth, e.label, e.slug_override))
+        .map(|(i, e)| {
+            (
+                i,
+                Some(e.aa_page.to_string()),
+                e.depth,
+                e.label,
+                e.slug_override,
+            )
+        })
         .collect()
 }
 

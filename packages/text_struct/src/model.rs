@@ -67,6 +67,11 @@ pub struct ReferenceSystemData {
     /// Citation render template (tokens `{parent}`/`{self}`/`{ref}`).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cite_template: Option<String>,
+    /// Reader margin prefix, concatenated verbatim with the marker value —
+    /// spacing is part of the prefix (`"B "` → "B 344", `"9."` → "9.53").
+    /// `None` = bare number (the copy-text's own pagination, line numbers).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub margin_prefix: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

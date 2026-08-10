@@ -67,6 +67,10 @@ pub struct SentenceResponse {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct PageMarkerResponse {
     pub system_slug: String,
+    /// Margin display prefix, concatenated verbatim with `ref_value`
+    /// ("B " → "B 344", "9." → "9.53"); absent = bare number.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub margin_prefix: Option<String>,
     pub ref_value: String,
     pub sort_order: i32,
     pub char_offset: Option<i32>,
