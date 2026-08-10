@@ -28,6 +28,9 @@ assets/milton1/*
 !assets/ibsen1/
 assets/ibsen1/*
 !assets/ibsen1/curated/
+!assets/hegel1/
+assets/hegel1/*
+!assets/hegel1/curated/
 
 .env
 .env.master
