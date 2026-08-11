@@ -9,7 +9,7 @@
 # struct_to_db commits one transaction per edition and the replacement
 # re-runs both.
 #
-# Deliberate shape, shared by all five manifests:
+# Deliberate shape, shared by every manifest here:
 #   - No ttlSecondsAfterFinished: with selfHeal on, Argo would resurrect
 #     (= re-run) a TTL-deleted Job. Prune-on-rename is the cleanup.
 #   - sync-wave 1: waits for wave 0 (api — migrations run in its init
@@ -30,7 +30,7 @@
 #     Force+Replace deploys it as delete + recreate — one extra no-op
 #     reconcile, safe by design. DEPENDS on the Application's
 #     ApplyOutOfSyncOnly=true (application-prod.yaml): without it every
-#     sync would recreate (= re-run) all five Jobs. The normal
+#     sync would recreate (= re-run) every Job here. The normal
 #     hash-rename flow needs none of this (new name = new resource).
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -41,3 +41,4 @@ resources:
   - ingest-shakespeare1.yaml
   - ingest-milton1.yaml
   - ingest-ibsen1.yaml
+  - ingest-hegel1.yaml
