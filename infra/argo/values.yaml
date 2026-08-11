@@ -41,7 +41,7 @@ notifications:
       url: $ntfy-url
       headers:
         - name: Title
-          value: Argo scholia-dev
+          value: Argo Scholia
         - name: Priority
           value: high
         - name: Tags
