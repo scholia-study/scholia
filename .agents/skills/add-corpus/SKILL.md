@@ -4,8 +4,8 @@ description: Checklist for adding a new text corpus to Scholia's ingest pipeline
 ---
 
 Adding a corpus = **data, never code** (ADR 0006, the narrow waist).
-One `common::<corpus>` module + one builder arm + roster entries + two
-thin Job manifests. Zero new crates, Dockerfiles, or CI filters. Read
+One `common::<corpus>` module + one builder arm + roster entries + three
+thin Job manifests (manual, dev, prod). Zero new crates, Dockerfiles, or CI filters. Read
 `docs/architecture/overview.md` for the pipeline shape; hegel1
 (queued in `assets/hegel1/raw/`) is the standing acceptance test.
 
@@ -56,6 +56,9 @@ thin Job manifests. Zero new crates, Dockerfiles, or CI filters. Read
 - [ ] Add it to `infra/k8s/overlays/dev/ingest-jobs/kustomization.yaml`
       resources
 
+The prod overlay manifest is NOT created here — it lands at promotion
+time (step 6) with the dev-validated hash.
+
 **CI trap**: the `structs` job builds every corpus from
 `struct.sh --list`, and `bump` then patches
 `ingest-jobs/ingest-<corpus>.yaml` for every built corpus — if the
@@ -81,6 +84,14 @@ needed; that's the point.)
 - [ ] Run report appears: `scholia-assets-auto/<corpus>/reports/`
       (+ a low-priority ntfy ping)
 - [ ] Book renders in the dev reader; cache purge fired
+- [ ] Promote to prod once dev content is validated: copy the dev
+      overlay manifest verbatim to
+      `infra/k8s/overlays/prod/ingest-jobs/ingest-<corpus>.yaml`
+      (keeping the dev name suffix + `DERIVED_HASH` — CI's `bump`
+      only rewrites the dev overlay; prod hashes move by this manual
+      copy), add it to the prod `kustomization.yaml` resources, and
+      check `kubectl kustomize infra/k8s/overlays/prod/ingest-jobs`
+      renders. Committing this runs the ingest Job on prod.
 
 ## 7. Docs
 
