@@ -273,6 +273,18 @@ CREATE TABLE footnotes (
   FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
 );
 
+CREATE TABLE margin_notes (
+  id uuid NOT NULL,
+  book_id uuid NOT NULL,
+  number integer NOT NULL,
+  anchor_sentence_id uuid NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (anchor_sentence_id) REFERENCES sentences(id) ON DELETE CASCADE,
+  FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+);
+
 CREATE TABLE page_markers (
   id uuid NOT NULL,
   system_id uuid NOT NULL,
@@ -362,6 +374,7 @@ CREATE TABLE reference_systems (
   updated_at timestamp with time zone NOT NULL,
   cite_priority smallint,
   cite_template text,
+  margin_prefix text,
   PRIMARY KEY (id),
   FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
 );
@@ -444,14 +457,38 @@ CREATE TABLE sentences (
   indent smallint,
   tsv tsvector,
   canonical_passage_id uuid,
+  margin_note_id uuid,
   PRIMARY KEY (id),
   FOREIGN KEY (footnote_id) REFERENCES footnotes(id) ON DELETE CASCADE,
   FOREIGN KEY (block_id) REFERENCES content_blocks(id) ON DELETE CASCADE,
   FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
   FOREIGN KEY (canonical_passage_id) REFERENCES canonical_passages(id) ON DELETE SET NULL,
+  FOREIGN KEY (margin_note_id) REFERENCES margin_notes(id) ON DELETE CASCADE,
   FOREIGN KEY (node_id) REFERENCES toc_nodes(id) ON DELETE CASCADE,
   FOREIGN KEY (source_sentence_end_id) REFERENCES sentences(id) ON DELETE SET NULL,
   FOREIGN KEY (source_sentence_start_id) REFERENCES sentences(id) ON DELETE SET NULL
+);
+
+CREATE TABLE series (
+  id uuid NOT NULL,
+  name text NOT NULL,
+  slug text NOT NULL,
+  description text,
+  pinned boolean NOT NULL,
+  sort_order integer NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE series_articles (
+  series_id uuid NOT NULL,
+  article_id uuid NOT NULL,
+  position integer NOT NULL,
+  added_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (series_id, article_id),
+  FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+  FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE
 );
 
 CREATE TABLE source_persons (
@@ -485,6 +522,8 @@ CREATE TABLE sources (
   created_by uuid NOT NULL,
   created_at timestamp with time zone NOT NULL,
   updated_at timestamp with time zone NOT NULL,
+  publication_place text,
+  original_year smallint,
   PRIMARY KEY (id),
   FOREIGN KEY (created_by) REFERENCES users(id),
   FOREIGN KEY (parent_source_id) REFERENCES sources(id) ON DELETE SET NULL,
@@ -600,6 +639,7 @@ CREATE TABLE users (
   admin_notes text,
   created_at timestamp with time zone NOT NULL,
   updated_at timestamp with time zone NOT NULL,
+  account_notice_last_sent_at timestamp with time zone,
   PRIMARY KEY (id)
 );
 
