@@ -5,6 +5,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { FootnoteResponse } from "./footnoteResponse.ts";
+import type { MarginNoteResponse } from "./marginNoteResponse.ts";
 import type { PageMarkerResponse } from "./pageMarkerResponse.ts";
 
 export interface SentenceResponse {
@@ -16,6 +17,7 @@ export interface SentenceResponse {
     footnotes?: FootnoteResponse[];
     html: string;
     id: string;
+    margin_notes?: MarginNoteResponse[];
     /** @nullable */
     original_html?: string | null;
     /** @nullable */

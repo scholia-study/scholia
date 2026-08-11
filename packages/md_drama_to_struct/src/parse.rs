@@ -283,6 +283,7 @@ fn label_block(
             original_html: orig_html,
             page_markers,
             footnotes: Vec::new(),
+            margin_notes: Vec::new(),
         }],
     }
 }
@@ -331,6 +332,7 @@ fn list_block(m_items: &[String], r_items: Option<&[String]>, position: i16) -> 
             original_html: orig_html,
             page_markers: vec![],
             footnotes: Vec::new(),
+            margin_notes: Vec::new(),
         }],
     }
 }
@@ -463,6 +465,7 @@ fn prose_block(
             original_html: oh,
             page_markers: vec![],
             footnotes: Vec::new(),
+            margin_notes: Vec::new(),
         });
         *sentence_number += 1;
     }
@@ -533,6 +536,7 @@ fn verse_block(
             original_html: orig_html,
             page_markers,
             footnotes: Vec::new(),
+            margin_notes: Vec::new(),
         });
         *sentence_number += 1;
     }

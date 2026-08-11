@@ -26,7 +26,9 @@ use crate::corpus::Corpus;
 use crate::figure::build_figure_block;
 use crate::html::{FOOTNOTE_REF_RE, md_to_html, md_to_plain};
 use crate::model::*;
-use crate::parse::{MarkerKind, ParsedBlock, ParsedBlockType, strip_markers};
+use crate::parse::{
+    MARGIN_SENTINEL_RE, MARGIN_TOKEN_RE, MarkerKind, ParsedBlock, ParsedBlockType, strip_markers,
+};
 use crate::roman::{block_sort_order, roman_to_int};
 use crate::separator::build_separator_block;
 
@@ -56,6 +58,50 @@ pub struct ParsedFile {
 struct FootnoteContent {
     text: String,
     original_text: Option<String>,
+}
+
+/// Lift ``{{$m `…`}}`` margin-note tokens out of raw markdown before
+/// rendering — their backtick-delimited content would otherwise be mangled in
+/// place. Each token is replaced by an inert numbered sentinel (`{{$m N}}`)
+/// that `strip_markers` lifts off the rendered text, anchoring the note at
+/// the token's exact position. Returns the rewritten text plus the extracted
+/// (number, content) list in document order; `number_for(k)` supplies the
+/// kth token's number (fresh from the counter for the primary layer, the
+/// primary layer's numbers for the reviewed layer).
+fn extract_margin_tokens(
+    raw: &str,
+    flat_index: usize,
+    block_pos: usize,
+    mut number_for: impl FnMut(usize) -> i32,
+) -> (String, Vec<(i32, String)>) {
+    let mut notes: Vec<(i32, String)> = Vec::new();
+    let rewritten = MARGIN_TOKEN_RE
+        .replace_all(raw, |caps: &regex::Captures| {
+            let content = caps[1].trim().to_string();
+            if content.is_empty() || content.contains("{{") {
+                panic!(
+                    "Margin note in file index {flat_index}, block {block_pos} \
+                     has empty or marker-bearing content: {content:?}"
+                );
+            }
+            let number = number_for(notes.len());
+            notes.push((number, content));
+            format!("{{{{$m {number}}}}}")
+        })
+        .into_owned();
+
+    // Anything `{{$`-shaped left over is a token the regex could not consume:
+    // unterminated, or carrying a literal backtick. Fail loudly — the
+    // reviewer resolves it, never the pipeline.
+    let residue = MARGIN_SENTINEL_RE.replace_all(&rewritten, "");
+    if residue.contains("{{$") {
+        panic!(
+            "Malformed margin-note token in file index {flat_index}, block {block_pos} \
+             (unterminated or stray backtick)"
+        );
+    }
+
+    (rewritten, notes)
 }
 
 /// Rewrite footnote references in raw markdown text: `[^*]` → `[^1]` etc.
@@ -165,6 +211,7 @@ pub fn build_output(corpus: &Corpus, translation: bool, parsed_files: &[ParsedFi
         paragraph: 1,
         sentence: 1,
         figure: 1,
+        margin_note: 0,
     };
     let lookups = Lookups {
         marker_map: &marker_map,
@@ -254,6 +301,7 @@ struct Counters {
     paragraph: i32,
     sentence: i32,
     figure: i32,
+    margin_note: i32,
 }
 
 struct Lookups<'a> {
@@ -302,8 +350,15 @@ fn build_block(
         ParsedBlockType::Separator { .. } => unreachable!("separator blocks handled above"),
     };
 
-    // Rewrite footnote refs in raw text before conversion
-    let rewritten_text = rewrite_footnote_refs(&block.text, flat_index, lookups.marker_map);
+    // Lift margin-note tokens out of the raw markdown (they cannot ride
+    // through rendering — their content is markdown itself), then rewrite
+    // footnote refs.
+    let (margin_rewritten, primary_margin_notes) =
+        extract_margin_tokens(&block.text, flat_index, block_pos, |_| {
+            counters.margin_note += 1;
+            counters.margin_note
+        });
+    let rewritten_text = rewrite_footnote_refs(&margin_rewritten, flat_index, lookups.marker_map);
 
     // Primary layer. Page markers ride through md_to_plain/md_to_html inert
     // (no markdown chars), so we strip them off the RENDERED text rather than
@@ -332,28 +387,57 @@ fn build_block(
     // markers are positioned by the primary text). The sentence-count check
     // below guards alignment.
     let orig = original_block.map(|ob| {
-        let rewritten_orig = rewrite_footnote_refs(&ob.text, flat_index, lookups.marker_map);
+        // The reviewed layer's margin tokens pair positionally with the
+        // primary layer's (kth token ↔ kth token, same number).
+        let (orig_margin_rewritten, orig_margin_notes) =
+            extract_margin_tokens(&ob.text, flat_index, block_pos, |k| {
+                primary_margin_notes.get(k).map(|(n, _)| *n).unwrap_or(-1)
+            });
+        if orig_margin_notes.len() != primary_margin_notes.len() {
+            panic!(
+                "Margin-note count mismatch in file index {}, block {}: modernized has {}, reviewed has {}",
+                flat_index,
+                block_pos,
+                primary_margin_notes.len(),
+                orig_margin_notes.len(),
+            );
+        }
+        let rewritten_orig =
+            rewrite_footnote_refs(&orig_margin_rewritten, flat_index, lookups.marker_map);
         let (orig_plain_no_markers, _) = strip_markers(&md_to_plain(&rewritten_orig));
         let (orig_plain_tok, orig_forced) = strip_forced_splits_keep_runs(&orig_plain_no_markers);
         let (orig_html_no_markers, _) = strip_markers(&md_to_html(&rewritten_orig));
         let orig_html_tok = strip_forced_split_markers(&orig_html_no_markers);
         let orig_sentence_pairs = (ctx.splitter)(&orig_plain_tok, &orig_html_tok, &orig_forced);
-        (orig_plain_tok, orig_html_tok, orig_sentence_pairs)
+        (orig_plain_tok, orig_html_tok, orig_sentence_pairs, orig_margin_notes)
     });
 
     // Stored block text/html carry no sentinels.
     let block_plain = block_plain_tok.replace(RUN_BREAK, "");
     let block_html = block_html_tok.replace(RUN_BREAK, "");
     let (orig_plain, orig_html) = match &orig {
-        Some((p, h, _)) => (
+        Some((p, h, _, _)) => (
             Some(p.replace(RUN_BREAK, "")),
             Some(h.replace(RUN_BREAK, "")),
         ),
         None => (None, None),
     };
 
+    // Margin-note content by number: primary text paired with the reviewed
+    // layer's kth token (when a reviewed layer exists).
+    let margin_content: HashMap<i32, (String, Option<String>)> = primary_margin_notes
+        .iter()
+        .enumerate()
+        .map(|(k, (number, content))| {
+            let orig_content = orig
+                .as_ref()
+                .and_then(|(_, _, _, om)| om.get(k).map(|(_, c)| c.clone()));
+            (*number, (content.clone(), orig_content))
+        })
+        .collect();
+
     // Validate sentence counts match across the two layers
-    if let Some((_, _, orig_pairs)) = &orig
+    if let Some((_, _, orig_pairs, _)) = &orig
         && sentence_pairs.len() != orig_pairs.len()
     {
         panic!(
@@ -449,7 +533,7 @@ fn build_block(
         }
         let (_, sent_html_clean) = take_run_marker(sent_html);
         let (orig_text_clean, orig_html_clean) = match &orig {
-            Some((_, _, orig_pairs)) => {
+            Some((_, _, orig_pairs, _)) => {
                 let (ot, oh) = (&orig_pairs[sent_pos].0, &orig_pairs[sent_pos].1);
                 (
                     Some(take_run_marker(ot).1.to_string()),
@@ -470,10 +554,12 @@ fn build_block(
             original_html: orig_html_clean,
             page_markers: Vec::new(),
             footnotes,
+            margin_notes: Vec::new(),
         });
     }
 
-    // Assign page markers to their sentences (based on primary text positions)
+    // Assign page markers and margin notes to their sentences (based on
+    // primary text positions)
     for marker in &page_markers {
         if sentences.is_empty() {
             continue;
@@ -505,6 +591,22 @@ fn build_block(
                     .unwrap_or(0);
                 (ctx.edition_system_slug, sort)
             }
+            MarkerKind::Margin => {
+                // Anchoring is sentence-level; the sub-sentence offset has no
+                // rendering or citation value and is discarded.
+                let number: i32 = marker
+                    .value
+                    .parse()
+                    .expect("margin sentinel carries its note number");
+                let (content, orig_content) = &margin_content[&number];
+                sentences[sent_idx].margin_notes.push(build_margin_note(
+                    number,
+                    content,
+                    orig_content.as_deref(),
+                    ctx.splitter,
+                ));
+                continue;
+            }
         };
 
         sentences[sent_idx].page_markers.push(PageMarkerData {
@@ -525,6 +627,51 @@ fn build_block(
         original_text: orig_plain,
         original_html: orig_html,
         sentences,
+    }
+}
+
+/// Sentence-split a margin note's content for both layers. The reviewed
+/// layer splits at the primary layer's forced positions, the same
+/// sentence-for-sentence pairing footnote bodies use.
+fn build_margin_note(
+    number: i32,
+    content: &str,
+    original: Option<&str>,
+    splitter: Splitter,
+) -> MarginNoteData {
+    let (mn_plain, mn_forced) = strip_forced_splits(&md_to_plain(content));
+    let mn_html = strip_forced_split_markers(&md_to_html(content));
+    let mn_pairs = splitter(&mn_plain, &mn_html, &mn_forced);
+
+    let mn_orig_pairs: Option<Vec<(String, String)>> = original.map(|orig_content| {
+        let (mn_orig_plain, _) = strip_forced_splits(&md_to_plain(orig_content));
+        let mn_orig_html = strip_forced_split_markers(&md_to_html(orig_content));
+        splitter(&mn_orig_plain, &mn_orig_html, &mn_forced)
+    });
+    if let Some(op) = &mn_orig_pairs
+        && op.len() != mn_pairs.len()
+    {
+        panic!(
+            "Margin note {number}: sentence count mismatch between layers (modernized has {}, reviewed has {})",
+            mn_pairs.len(),
+            op.len(),
+        );
+    }
+
+    MarginNoteData {
+        number,
+        sentences: mn_pairs
+            .iter()
+            .enumerate()
+            .map(|(pos, (text, html))| MarginNoteSentenceData {
+                position: pos as i16,
+                sentence_number: None,
+                text: text.clone(),
+                html: html.clone(),
+                original_text: mn_orig_pairs.as_ref().map(|op| op[pos].0.clone()),
+                original_html: mn_orig_pairs.as_ref().map(|op| op[pos].1.clone()),
+            })
+            .collect(),
     }
 }
 
@@ -642,6 +789,7 @@ mod tests {
             paragraph: 1,
             sentence: 1,
             figure: 1,
+            margin_note: 0,
         };
 
         let block = build_block(&sep, Some(&sep), 4, 0, &mut counters, &lookups, &test_ctx());
@@ -679,6 +827,7 @@ mod tests {
             paragraph: 1,
             sentence: 1,
             figure: 1,
+            margin_note: 0,
         };
 
         let out = build_block(&block, None, 0, 0, &mut counters, &lookups, &test_ctx());
@@ -712,6 +861,7 @@ mod tests {
             paragraph: 1,
             sentence: 1,
             figure: 1,
+            margin_note: 0,
         };
 
         // Pass the same block as modernized + original (identical run structure).
@@ -775,6 +925,7 @@ Weil die Kategorien fortgehen.
             paragraph: 1,
             sentence: 1,
             figure: 1,
+            margin_note: 0,
         };
 
         let out = build_block(
@@ -812,6 +963,189 @@ Weil die Kategorien fortgehen.
                 .iter()
                 .any(|m| m.ref_value == "348")
         );
+    }
+
+    fn empty_lookups_and_counters() -> (
+        HashMap<(usize, String), i32>,
+        HashMap<(usize, String), FootnoteContent>,
+        HashMap<i32, (usize, String)>,
+    ) {
+        (HashMap::new(), HashMap::new(), HashMap::new())
+    }
+
+    #[test]
+    fn test_build_block_margin_notes_two_layers() {
+        // Two margin notes mid-paragraph, Leviathan-shaped, with a reviewed
+        // layer whose spelling differs but whose token count matches.
+        let text = "This Endeavour is called APPETITE; {{$m `_Appetite._`}} and when fromward something, AVERSION. {{$m `Aversion.`}} These words are from the Latines.".to_string();
+        let orig_text = "This Endeavour is called APPETITE; {{$m `_Appetite._`}} and when fromward some-thing, AVERSION. {{$m `Auersion.`}} These words are from the Latines.".to_string();
+
+        let block = ParsedBlock {
+            block_type: ParsedBlockType::Paragraph,
+            text,
+            markers: Vec::new(),
+        };
+        let orig_block = ParsedBlock {
+            block_type: ParsedBlockType::Paragraph,
+            text: orig_text,
+            markers: Vec::new(),
+        };
+
+        let (marker_map, footnote_content, number_to_key) = empty_lookups_and_counters();
+        let lookups = Lookups {
+            marker_map: &marker_map,
+            footnote_content: &footnote_content,
+            number_to_key: &number_to_key,
+        };
+        let mut counters = Counters {
+            paragraph: 1,
+            sentence: 1,
+            figure: 1,
+            margin_note: 0,
+        };
+
+        let ctx = BlockCtx {
+            splitter: split_sentences_en_forced,
+            ..test_ctx()
+        };
+        let out = build_block(
+            &block,
+            Some(&orig_block),
+            0,
+            0,
+            &mut counters,
+            &lookups,
+            &ctx,
+        );
+
+        assert_eq!(counters.margin_note, 2);
+
+        // Tokens never reach stored text/html, either layer.
+        assert!(!out.text.contains("$m"));
+        assert!(!out.html.contains("$m"));
+        assert!(!out.original_text.as_deref().unwrap().contains("$m"));
+        assert!(!out.text.contains("Appetite."));
+
+        // Each note anchors to the sentence its token sat in.
+        let with_notes: Vec<(usize, &SentenceData)> = out
+            .sentences
+            .iter()
+            .enumerate()
+            .filter(|(_, s)| !s.margin_notes.is_empty())
+            .collect();
+        assert_eq!(with_notes.len(), 2);
+
+        let first = &with_notes[0].1.margin_notes[0];
+        assert_eq!(first.number, 1);
+        assert_eq!(first.sentences.len(), 1);
+        assert_eq!(first.sentences[0].text, "Appetite.");
+        assert!(first.sentences[0].html.contains("antiqua"));
+        assert_eq!(first.sentences[0].sentence_number, None);
+        assert_eq!(
+            first.sentences[0].original_text.as_deref(),
+            Some("Appetite.")
+        );
+
+        let second = &with_notes[1].1.margin_notes[0];
+        assert_eq!(second.number, 2);
+        assert_eq!(second.sentences[0].text, "Aversion.");
+        assert_eq!(
+            second.sentences[0].original_text.as_deref(),
+            Some("Auersion.")
+        );
+    }
+
+    #[test]
+    fn test_margin_notes_coexist_with_page_markers() {
+        let text = "Before the break. {{{ 62 }}} After {{$m `Notes here.`}} the break.".to_string();
+        let block = ParsedBlock {
+            block_type: ParsedBlockType::Paragraph,
+            text,
+            markers: Vec::new(),
+        };
+
+        let (marker_map, footnote_content, number_to_key) = empty_lookups_and_counters();
+        let lookups = Lookups {
+            marker_map: &marker_map,
+            footnote_content: &footnote_content,
+            number_to_key: &number_to_key,
+        };
+        let mut counters = Counters {
+            paragraph: 1,
+            sentence: 1,
+            figure: 1,
+            margin_note: 0,
+        };
+
+        let ctx = BlockCtx {
+            splitter: split_sentences_en_forced,
+            ..test_ctx()
+        };
+        let out = build_block(&block, None, 0, 0, &mut counters, &lookups, &ctx);
+
+        assert_eq!(out.sentences.len(), 2);
+        assert!(
+            out.sentences[1]
+                .page_markers
+                .iter()
+                .any(|m| m.ref_value == "62")
+        );
+        assert_eq!(out.sentences[1].margin_notes.len(), 1);
+        assert_eq!(
+            out.sentences[1].margin_notes[0].sentences[0].text,
+            "Notes here."
+        );
+        assert!(out.sentences[0].margin_notes.is_empty());
+    }
+
+    #[test]
+    #[should_panic(expected = "Margin-note count mismatch")]
+    fn test_margin_note_layer_count_mismatch_panics() {
+        let block = ParsedBlock {
+            block_type: ParsedBlockType::Paragraph,
+            text: "One sentence {{$m `Note.`}} here.".to_string(),
+            markers: Vec::new(),
+        };
+        let orig_block = ParsedBlock {
+            block_type: ParsedBlockType::Paragraph,
+            text: "One sentence here.".to_string(),
+            markers: Vec::new(),
+        };
+
+        let (marker_map, footnote_content, number_to_key) = empty_lookups_and_counters();
+        let lookups = Lookups {
+            marker_map: &marker_map,
+            footnote_content: &footnote_content,
+            number_to_key: &number_to_key,
+        };
+        let mut counters = Counters {
+            paragraph: 1,
+            sentence: 1,
+            figure: 1,
+            margin_note: 0,
+        };
+
+        build_block(
+            &block,
+            Some(&orig_block),
+            0,
+            0,
+            &mut counters,
+            &lookups,
+            &test_ctx(),
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "Malformed margin-note token")]
+    fn test_unterminated_margin_token_panics() {
+        extract_margin_tokens("text {{$m `no closing backtick}} end", 0, 0, |_| 1);
+    }
+
+    #[test]
+    #[should_panic(expected = "empty or marker-bearing content")]
+    fn test_margin_token_with_page_marker_inside_panics() {
+        extract_margin_tokens("text {{$m `has {{ 5 }} inside`}} end", 0, 0, |_| 1);
     }
 
     #[test]

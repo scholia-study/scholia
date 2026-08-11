@@ -1,4 +1,6 @@
+import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import EditNoteOutlined from "@mui/icons-material/EditNoteOutlined";
+import { ClickAwayListener, IconButton, Paper, Popper } from "@mui/material";
 import parse, { Element } from "html-react-parser";
 import {
     Fragment,
@@ -10,6 +12,7 @@ import {
 } from "react";
 import type {
     ContentBlockResponse,
+    MarginNoteResponse,
     PageMarkerResponse,
     SentenceResponse,
 } from "../../../api/model";
@@ -28,7 +31,17 @@ export interface MarginSettings {
     /** Thin "line" markers to every Nth line (1 = every line). Optional so
      *  callers building partial settings can omit it; defaults to every line. */
     lineNumberInterval?: number;
+    /** Collapse margin-note prose to a gutter button + popover — set when the
+     *  panel is too narrow to fit a readable note column. */
+    marginNotesCompact?: boolean;
 }
+
+/**
+ * Pseudo-system slug under which margin notes join the margin-references
+ * menu (toggle + side), alongside the real reference systems. Margin notes
+ * are content, not a reference system, but they share the gutter plumbing.
+ */
+export const MARGIN_NOTES_SLUG = "notes";
 
 /**
  * Line-number markers can be thinned to every Nth line via the reader display
@@ -110,6 +123,111 @@ function MarginNotes({
                     </span>
                 ))}
         </span>
+    );
+}
+
+/**
+ * Authorial margin notes beside their anchor sentence. Wide panels render the
+ * note prose directly in the gutter (the 1651 look); compact panels render a
+ * small gutter button that opens the notes in a popover — the trigger always
+ * lives in the gutter, never in the text. Notes anchored to consecutive
+ * sentences can overlap vertically when a note outgrows its line spacing;
+ * accepted for now, the printer had the same problem.
+ */
+function MarginNoteGutter({
+    notes,
+    side,
+    showOriginal,
+    compact,
+}: {
+    notes: MarginNoteResponse[];
+    side: "left" | "right";
+    showOriginal?: boolean;
+    compact?: boolean;
+}) {
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+    const noteHtml = (s: MarginNoteResponse["sentences"][number]) =>
+        showOriginal && s.original_html ? s.original_html : s.html;
+
+    if (!compact) {
+        return (
+            <span
+                className={`absolute w-40 text-[11px] leading-snug italic text-stone-500 ${
+                    side === "left"
+                        ? "right-full mr-3 text-right"
+                        : "left-full ml-3"
+                }`}
+            >
+                {notes.map((note) => (
+                    <span key={note.id} className="block mb-1">
+                        {note.sentences.map((s) => (
+                            <Fragment key={s.id}>
+                                {parse(noteHtml(s))}{" "}
+                            </Fragment>
+                        ))}
+                    </span>
+                ))}
+            </span>
+        );
+    }
+
+    return (
+        <>
+            <span
+                className={`absolute select-none ${
+                    side === "left" ? "right-full mr-2" : "left-full ml-2"
+                }`}
+                style={{ lineHeight: "inherit" }}
+            >
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(anchorEl ? null : e.currentTarget);
+                    }}
+                    className="text-[10px] text-stone-400 hover:text-stone-600 cursor-pointer"
+                    title="Margin note"
+                >
+                    ※
+                </button>
+            </span>
+            <Popper
+                open={Boolean(anchorEl)}
+                anchorEl={anchorEl}
+                placement="bottom-end"
+                sx={{ zIndex: 1300 }}
+                modifiers={[{ name: "offset", options: { offset: [0, 4] } }]}
+            >
+                <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
+                    <Paper sx={{ maxWidth: 320, boxShadow: 3 }}>
+                        <div className="flex items-center justify-between px-3 py-2 border-b border-stone-200">
+                            <span className="text-xs font-medium text-stone-500">
+                                Margin note
+                            </span>
+                            <IconButton
+                                size="small"
+                                onClick={() => setAnchorEl(null)}
+                                title="Close"
+                            >
+                                <CloseOutlined fontSize="small" />
+                            </IconButton>
+                        </div>
+                        <div className="px-3 py-2 max-h-[40vh] overflow-y-auto leading-relaxed text-sm italic text-stone-600">
+                            {notes.map((note) => (
+                                <span key={note.id} className="block mb-1">
+                                    {note.sentences.map((s) => (
+                                        <Fragment key={s.id}>
+                                            {parse(noteHtml(s))}{" "}
+                                        </Fragment>
+                                    ))}
+                                </span>
+                            ))}
+                        </div>
+                    </Paper>
+                </ClickAwayListener>
+            </Popper>
+        </>
     );
 }
 
@@ -288,6 +406,13 @@ export function Sentence({
         }
     }
 
+    const marginNotes = sentence.margin_notes;
+    const showMarginNotes =
+        !!marginNotes?.length &&
+        !!marginSettings?.enabledSystems.has(MARGIN_NOTES_SLUG);
+    const marginNotesSide =
+        marginSettings?.systemSides[MARGIN_NOTES_SLUG] ?? "right";
+
     const highlightClass = isSelected
         ? isCorrespondent
             ? "bg-amber-100"
@@ -361,6 +486,14 @@ export function Sentence({
                     vAlign={markerVAlign}
                 />
             )}
+            {showMarginNotes && (
+                <MarginNoteGutter
+                    notes={marginNotes}
+                    side={marginNotesSide}
+                    showOriginal={showOriginal}
+                    compact={marginSettings?.marginNotesCompact}
+                />
+            )}
             <span
                 data-sentence-key={sentenceKey(sentence)}
                 onMouseDown={(e) => {
@@ -421,11 +554,27 @@ function HeadingSentence({
         }
     }
 
+    const marginNotes = sentence.margin_notes;
+    const showMarginNotes =
+        !!marginNotes?.length &&
+        !!marginSettings?.enabledSystems.has(MARGIN_NOTES_SLUG);
+
     return (
         <>
             {leftMarkers && <MarginNotes markers={leftMarkers} side="left" />}
             {rightMarkers && (
                 <MarginNotes markers={rightMarkers} side="right" />
+            )}
+            {showMarginNotes && (
+                <MarginNoteGutter
+                    notes={marginNotes}
+                    side={
+                        marginSettings?.systemSides[MARGIN_NOTES_SLUG] ??
+                        "right"
+                    }
+                    showOriginal={showOriginal}
+                    compact={marginSettings?.marginNotesCompact}
+                />
             )}
             <span>
                 {parse(

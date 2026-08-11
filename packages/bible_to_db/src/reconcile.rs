@@ -131,6 +131,7 @@ pub(crate) fn chapter_node_hash(
                         char_offset: None,
                     }],
                     footnotes: Vec::new(),
+                    margin_notes: Vec::new(),
                 })
                 .collect(),
         }],

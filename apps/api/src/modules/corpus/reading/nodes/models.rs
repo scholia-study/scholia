@@ -62,6 +62,8 @@ pub struct SentenceResponse {
     pub page_markers: Vec<PageMarkerResponse>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub footnotes: Vec<FootnoteResponse>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub margin_notes: Vec<MarginNoteResponse>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -87,6 +89,28 @@ pub struct FootnoteResponse {
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct FootnoteSentenceResponse {
+    pub id: String,
+    pub position: i16,
+    pub sentence_number: Option<i32>,
+    pub text: String,
+    pub html: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub original_text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub original_html: Option<String>,
+}
+
+/// Authorial margin note rendered in the reader gutter beside its anchor
+/// sentence (no in-text marker, unlike footnotes).
+#[derive(Debug, Serialize, ToSchema)]
+pub struct MarginNoteResponse {
+    pub id: String,
+    pub number: i32,
+    pub sentences: Vec<MarginNoteSentenceResponse>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct MarginNoteSentenceResponse {
     pub id: String,
     pub position: i16,
     pub sentence_number: Option<i32>,

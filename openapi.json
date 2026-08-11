@@ -6118,6 +6118,55 @@
                     }
                 }
             },
+            "MarginNoteResponse": {
+                "type": "object",
+                "description": "Authorial margin note rendered in the reader gutter beside its anchor\nsentence (no in-text marker, unlike footnotes).",
+                "required": ["id", "number", "sentences"],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "number": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "sentences": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MarginNoteSentenceResponse"
+                        }
+                    }
+                }
+            },
+            "MarginNoteSentenceResponse": {
+                "type": "object",
+                "required": ["id", "position", "text", "html"],
+                "properties": {
+                    "html": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "original_html": {
+                        "type": ["string", "null"]
+                    },
+                    "original_text": {
+                        "type": ["string", "null"]
+                    },
+                    "position": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "sentence_number": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    },
+                    "text": {
+                        "type": "string"
+                    }
+                }
+            },
             "MessageResponse": {
                 "type": "object",
                 "required": ["message"],
@@ -7283,6 +7332,12 @@
                     },
                     "id": {
                         "type": "string"
+                    },
+                    "margin_notes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MarginNoteResponse"
+                        }
                     },
                     "original_html": {
                         "type": ["string", "null"]

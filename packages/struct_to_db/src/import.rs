@@ -194,6 +194,23 @@ pub async fn run(
             fn_sent_rows.len()
         );
         validate_translation_parity(&output, &source_sentence_map, &source_fn_sentence_counts)?;
+
+        // Margin notes have no translation plumbing (no source-sentence map,
+        // no parity rule) — reject rather than import them unlinked.
+        let translated_margin_notes = output
+            .toc_nodes
+            .iter()
+            .flat_map(|n| &n.content_blocks)
+            .flat_map(|b| &b.sentences)
+            .map(|s| s.margin_notes.len())
+            .sum::<usize>();
+        if translated_margin_notes > 0 {
+            return Err(format!(
+                "translation edition carries {translated_margin_notes} margin note(s), but margin \
+                 notes are not supported on translation editions yet"
+            )
+            .into());
+        }
     }
 
     // A book already in the DB is reconciled in place — matching the freshly
@@ -409,14 +426,16 @@ pub async fn run(
         }
     }
 
-    // 3. Nodes -> blocks -> sentences -> page markers -> footnotes.
+    // 3. Nodes -> blocks -> sentences -> page markers -> footnotes -> margin notes.
     let mut node_ids: HashMap<String, Uuid> = HashMap::new();
     let (mut node_count, mut block_count, mut sentence_count, mut marker_count) =
         (0u32, 0u32, 0u32, 0u32);
     let (mut footnote_count, mut footnote_sentence_count) = (0u32, 0u32);
-    // Footnote sentences are numbered in one book-global sequence, separate
-    // from the block-sentence numbering.
+    let (mut margin_note_count, mut margin_note_sentence_count) = (0u32, 0u32);
+    // Footnote and margin-note sentences are each numbered in their own
+    // book-global sequence, separate from the block-sentence numbering.
     let mut footnote_sentence_number = 1i32;
+    let mut margin_note_sentence_number = 1i32;
     let mut source_count = 1u32; // the compilation source; sub-work sources add on
     // Node content hashes accumulate as we insert; the root is stored on `books`
     // after the loop, so the first *reconcile* is already in the fast state.
@@ -627,6 +646,53 @@ pub async fn run(
                         sentence_count += 1;
                     }
                 }
+
+                // Margin notes anchored to this sentence; their sentences live
+                // in `sentences` with `margin_note_id` set (block_id and
+                // footnote_id NULL).
+                for margin_note in &sent.margin_notes {
+                    let margin_note_id: Uuid = sqlx::query_scalar(
+                        "INSERT INTO margin_notes (book_id, number, anchor_sentence_id)
+                         VALUES ($1, $2, $3)
+                         RETURNING id",
+                    )
+                    .bind(book_id)
+                    .bind(margin_note.number)
+                    .bind(sentence_id)
+                    .fetch_one(&mut *tx)
+                    .await?;
+                    margin_note_count += 1;
+
+                    for mn_sent in &margin_note.sentences {
+                        let mn_sent_num = margin_note_sentence_number;
+                        margin_note_sentence_number += 1;
+
+                        let mn_natural_key = reconcile::margin_note_natural_key(
+                            &node.source_ref,
+                            margin_note.number,
+                            mn_sent.position,
+                        );
+
+                        sqlx::query(
+                            "INSERT INTO sentences (book_id, node_id, margin_note_id, position, sentence_number, text, html, original_text, original_html, natural_key)
+                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+                        )
+                        .bind(book_id)
+                        .bind(node_id)
+                        .bind(margin_note_id)
+                        .bind(mn_sent.position)
+                        .bind(mn_sent_num)
+                        .bind(&mn_sent.text)
+                        .bind(&mn_sent.html)
+                        .bind(&mn_sent.original_text)
+                        .bind(&mn_sent.original_html)
+                        .bind(&mn_natural_key)
+                        .execute(&mut *tx)
+                        .await?;
+                        margin_note_sentence_count += 1;
+                        sentence_count += 1;
+                    }
+                }
             }
         }
     }
@@ -669,6 +735,8 @@ pub async fn run(
     eprintln!("  sentences:      {sentence_count}");
     eprintln!("  footnotes:      {footnote_count}");
     eprintln!("  fn_sentences:   {footnote_sentence_count}");
+    eprintln!("  margin_notes:   {margin_note_count}");
+    eprintln!("  mn_sentences:   {margin_note_sentence_count}");
     eprintln!("  page_markers:   {marker_count}");
     Ok(())
 }

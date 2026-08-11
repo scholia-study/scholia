@@ -1,0 +1,53 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, margin_note_id AS \"margin_note_id!\", position, sentence_number, text, html, original_text, original_html\n               FROM sentences\n               WHERE margin_note_id = ANY($1)\n               ORDER BY margin_note_id, position",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "margin_note_id!",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "position",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 3,
+                "name": "sentence_number",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 4,
+                "name": "text",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "original_text",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "original_html",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, true, false, true, false, false, true, true]
+    },
+    "hash": "210cdbe6529bcb74b3fdb26dc92c03f803e703c4c00421028893de79abc91b20"
+}

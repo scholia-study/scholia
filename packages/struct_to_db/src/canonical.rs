@@ -42,6 +42,7 @@ pub async fn seed_sentence_basis(
                (work_root, basis, sentence_kind, ordinal, root_sentence_id)
            SELECT wr.root, 'sentence',
                   CASE WHEN se.footnote_id IS NOT NULL THEN 'footnote'
+                       WHEN se.margin_note_id IS NOT NULL THEN 'margin'
                        ELSE 'body' END::sentence_kind,
                   se.sentence_number, se.id
            FROM sentences se CROSS JOIN wr

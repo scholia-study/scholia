@@ -16,6 +16,16 @@ pub fn footnote_natural_key(
     format!("{source_ref}/fn{footnote_number}/s{sentence_position}")
 }
 
+/// `<source_ref>/mn<margin_note_number>/s<sentence_position>` — a margin-note
+/// sentence.
+pub fn margin_note_natural_key(
+    source_ref: &str,
+    margin_note_number: i32,
+    sentence_position: i16,
+) -> String {
+    format!("{source_ref}/mn{margin_note_number}/s{sentence_position}")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

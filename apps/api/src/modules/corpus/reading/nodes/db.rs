@@ -1,10 +1,11 @@
 use sqlx::PgPool;
+use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::modules::corpus::reading::facsimile::db as facsimile;
 use crate::modules::corpus::reading::nodes::models::{
-    ContentBlockResponse, FootnoteResponse, FootnoteSentenceResponse, NodeDetail,
-    PageMarkerResponse, SentenceResponse,
+    ContentBlockResponse, FootnoteResponse, FootnoteSentenceResponse, MarginNoteResponse,
+    MarginNoteSentenceResponse, NodeDetail, PageMarkerResponse, SentenceResponse,
 };
 use crate::system::error::AppError;
 
@@ -115,6 +116,99 @@ struct FootnoteSentenceRow {
     original_html: Option<String>,
 }
 
+struct MarginNoteRow {
+    id: Uuid,
+    number: i32,
+    anchor_sentence_id: Uuid,
+}
+
+struct MarginNoteSentenceRow {
+    id: Uuid,
+    margin_note_id: Uuid,
+    position: i16,
+    sentence_number: Option<i32>,
+    text: String,
+    html: String,
+    original_text: Option<String>,
+    original_html: Option<String>,
+}
+
+/// Margin notes anchored to any of `sentence_ids`, grouped by anchor
+/// sentence. Shared by the three node-content assembly paths (page window,
+/// by-ids, single node) so the fetch + grouping cannot drift.
+pub(crate) async fn margin_notes_by_anchor(
+    pool: &PgPool,
+    sentence_ids: &[Uuid],
+    include_original: bool,
+) -> Result<HashMap<Uuid, Vec<MarginNoteResponse>>, AppError> {
+    if sentence_ids.is_empty() {
+        return Ok(HashMap::new());
+    }
+
+    let notes = sqlx::query_as!(
+        MarginNoteRow,
+        r#"SELECT id, number, anchor_sentence_id
+           FROM margin_notes
+           WHERE anchor_sentence_id = ANY($1)
+           ORDER BY number"#,
+        sentence_ids,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let note_ids: Vec<Uuid> = notes.iter().map(|n| n.id).collect();
+    let note_sentences = if note_ids.is_empty() {
+        vec![]
+    } else {
+        sqlx::query_as!(
+            MarginNoteSentenceRow,
+            r#"SELECT id, margin_note_id AS "margin_note_id!", position, sentence_number, text, html, original_text, original_html
+               FROM sentences
+               WHERE margin_note_id = ANY($1)
+               ORDER BY margin_note_id, position"#,
+            &note_ids,
+        )
+        .fetch_all(pool)
+        .await?
+    };
+
+    let mut mn_sentence_map: HashMap<Uuid, Vec<MarginNoteSentenceResponse>> = HashMap::new();
+    for ms in note_sentences {
+        mn_sentence_map
+            .entry(ms.margin_note_id)
+            .or_default()
+            .push(MarginNoteSentenceResponse {
+                id: ms.id.to_string(),
+                position: ms.position,
+                sentence_number: ms.sentence_number,
+                text: ms.text,
+                html: ms.html,
+                original_text: if include_original {
+                    ms.original_text
+                } else {
+                    None
+                },
+                original_html: if include_original {
+                    ms.original_html
+                } else {
+                    None
+                },
+            });
+    }
+
+    let mut map: HashMap<Uuid, Vec<MarginNoteResponse>> = HashMap::new();
+    for n in notes {
+        map.entry(n.anchor_sentence_id)
+            .or_default()
+            .push(MarginNoteResponse {
+                id: n.id.to_string(),
+                number: n.number,
+                sentences: mn_sentence_map.remove(&n.id).unwrap_or_default(),
+            });
+    }
+    Ok(map)
+}
+
 pub async fn get_node_content(
     pool: &PgPool,
     book_slug: &str,
@@ -174,8 +268,10 @@ pub async fn get_node_content(
     .fetch_all(pool)
     .await?;
 
-    // Fetch footnotes anchored to sentences in this node
+    // Fetch footnotes + margin notes anchored to sentences in this node
     let anchor_sentence_ids: Vec<Uuid> = sentences.iter().map(|s| s.id).collect();
+    let mut margin_note_map =
+        margin_notes_by_anchor(pool, &anchor_sentence_ids, include_original).await?;
 
     let footnotes = if anchor_sentence_ids.is_empty() {
         vec![]
@@ -295,6 +391,7 @@ pub async fn get_node_content(
                 source_sentence_end_id: s.source_sentence_end_id.map(|id| id.to_string()),
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
                 footnotes: footnote_map.remove(&s.id).unwrap_or_default(),
+                margin_notes: margin_note_map.remove(&s.id).unwrap_or_default(),
             });
     }
 

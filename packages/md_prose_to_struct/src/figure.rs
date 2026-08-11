@@ -27,6 +27,9 @@ pub fn marker_to_page_marker(marker: &RawMarker) -> PageMarkerData {
             "b_edition",
             roman_to_int(&marker.value).map(|v| v as i32).unwrap_or(0),
         ),
+        // strip_markers panics on any `$m` token in figure text before a
+        // Margin marker can reach here.
+        MarkerKind::Margin => unreachable!("figures do not carry margin notes"),
     };
     PageMarkerData {
         system: system.to_string(),
@@ -90,6 +93,7 @@ pub fn build_figure_block(
         original_html: orig_caption,
         page_markers,
         footnotes: Vec::new(),
+        margin_notes: Vec::new(),
     };
 
     ContentBlockData {

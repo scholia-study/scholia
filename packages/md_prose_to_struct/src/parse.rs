@@ -15,6 +15,20 @@ static B_MARKER_RE: LazyLock<Regex> =
 static ANY_MARKER_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\{\{\{?\s*[^}]+?\s*\}?\}\}").unwrap());
 
+// {{$m `content`}} — authored margin-note token ($LETTER = typed special
+// input). Content is backtick-delimited so quotes and `}}` need no escaping;
+// a literal backtick in content is unrepresentable and fails the residue
+// check in `extract_margin_tokens`.
+pub static MARGIN_TOKEN_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\{\{\$m\s+`([^`]*)`\}\}").unwrap());
+
+// {{$m N}} — the inert numbered sentinel margin tokens are rewritten to
+// before markdown rendering (no markdown-active chars, so it rides through
+// md_to_plain/md_to_html and is lifted off the rendered text like a page
+// marker).
+pub static MARGIN_SENTINEL_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\{\{\$m (\d+)\}\}").unwrap());
+
 // <figcaption>…</figcaption> — the editorial label inside a figure block.
 // `(?s)` lets `.` span newlines so multi-line captions match.
 static FIGCAPTION_RE: LazyLock<Regex> =
@@ -22,6 +36,14 @@ static FIGCAPTION_RE: LazyLock<Regex> =
 
 // Any HTML tag — used to flatten figure markup to plain text.
 static HTML_TAG_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<[^>]+>").unwrap());
+
+/// Remove raw margin-note tokens wholesale. For consumers that only need the
+/// body prose (the translation parity counter) — margin notes are gutter
+/// apparatus, not sentences, and their raw backtick form cannot ride through
+/// rendering.
+pub fn strip_margin_tokens(text: &str) -> String {
+    MARGIN_TOKEN_RE.replace_all(text, "").into_owned()
+}
 
 /// A raw page marker found in the text.
 #[derive(Debug, Clone)]
@@ -36,6 +58,8 @@ pub struct RawMarker {
 pub enum MarkerKind {
     Aa,
     BEdition,
+    /// A margin-note sentinel; `value` is the note's book-global number.
+    Margin,
 }
 
 /// A parsed block from the markdown content.
@@ -117,7 +141,18 @@ pub fn strip_markers(text: &str) -> (String, Vec<RawMarker>) {
         let char_offset = stripped.chars().count();
         let matched = m.as_str();
 
-        if let Some(caps) = AA_MARKER_RE.captures(matched) {
+        if let Some(caps) = MARGIN_SENTINEL_RE.captures(matched) {
+            markers.push(RawMarker {
+                kind: MarkerKind::Margin,
+                value: caps[1].to_string(),
+                char_offset,
+            });
+        } else if matched.contains("$m") {
+            // A margin token that never went through sentinel rewriting —
+            // either malformed, or authored in a context that doesn't support
+            // margin notes (footnote/figure blocks). The reviewer decides.
+            panic!("Unprocessed margin-note token in text: {matched}");
+        } else if let Some(caps) = AA_MARKER_RE.captures(matched) {
             markers.push(RawMarker {
                 kind: MarkerKind::Aa,
                 value: caps[1].to_string(),
@@ -326,6 +361,24 @@ mod tests {
         assert_eq!(markers[0].kind, MarkerKind::BEdition);
         assert_eq!(markers[0].value, "XIV");
         assert_eq!(markers[0].char_offset, 12); // "text before " = 12 chars
+    }
+
+    #[test]
+    fn test_strip_margin_sentinel() {
+        let (text, markers) = strip_markers("is called APPETITE; {{$m 7}} and the other");
+        assert_eq!(text, "is called APPETITE; and the other");
+        assert_eq!(markers.len(), 1);
+        assert_eq!(markers[0].kind, MarkerKind::Margin);
+        assert_eq!(markers[0].value, "7");
+        assert_eq!(markers[0].char_offset, 20);
+    }
+
+    #[test]
+    #[should_panic(expected = "Unprocessed margin-note token")]
+    fn test_raw_margin_token_in_strip_markers_panics() {
+        // A raw (backtick) token reaching strip_markers means it was authored
+        // in a context that never went through sentinel rewriting.
+        strip_markers("some text {{$m `Memory.`}} more");
     }
 
     #[test]

@@ -16,7 +16,8 @@ pub async fn sentence_has_dependents(
            (SELECT count(*) FROM quotations WHERE anchor_sentence_start_id = $1 OR anchor_sentence_end_id = $1)
          + (SELECT count(*) FROM resources  WHERE anchor_sentence_start_id = $1 OR anchor_sentence_end_id = $1)
          + (SELECT count(*) FROM cross_references WHERE source_sentence_start_id = $1 OR source_sentence_end_id = $1 OR target_sentence_start_id = $1 OR target_sentence_end_id = $1)
-         + (SELECT count(*) FROM footnotes WHERE anchor_sentence_id = $1)",
+         + (SELECT count(*) FROM footnotes WHERE anchor_sentence_id = $1)
+         + (SELECT count(*) FROM margin_notes WHERE anchor_sentence_id = $1)",
     )
     .bind(id)
     .fetch_one(&mut **tx)
@@ -42,6 +43,7 @@ pub async fn migrate_dependents(
         "UPDATE cross_references SET target_sentence_start_id = $2 WHERE target_sentence_start_id = $1",
         "UPDATE cross_references SET target_sentence_end_id = $2 WHERE target_sentence_end_id = $1",
         "UPDATE footnotes SET anchor_sentence_id = $2 WHERE anchor_sentence_id = $1",
+        "UPDATE margin_notes SET anchor_sentence_id = $2 WHERE anchor_sentence_id = $1",
         // translation links from the peer book
         "UPDATE sentences SET source_sentence_start_id = $2 WHERE source_sentence_start_id = $1",
         "UPDATE sentences SET source_sentence_end_id = $2 WHERE source_sentence_end_id = $1",

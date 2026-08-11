@@ -160,6 +160,7 @@ fn build_node(
                         original_html: Some(md_to_html(r_text)),
                         page_markers: vec![],
                         footnotes: Vec::new(),
+                        margin_notes: Vec::new(),
                     }],
                 });
             }
@@ -193,6 +194,7 @@ fn build_node(
                             char_offset: 0,
                         }],
                         footnotes: Vec::new(),
+                        margin_notes: Vec::new(),
                     });
                     *sentence_number += 1;
                 }
@@ -254,6 +256,7 @@ fn build_node(
                         original_html: Some(rh.clone()),
                         page_markers: vec![],
                         footnotes: Vec::new(),
+                        margin_notes: Vec::new(),
                     });
                     *sentence_number += 1;
                 }

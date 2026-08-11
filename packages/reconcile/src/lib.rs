@@ -27,11 +27,11 @@ pub mod orchestrate;
 pub use align::{BlockPlan, Existing, plan_block};
 pub use deps::{extend_anchors_to, migrate_dependents, sentence_has_dependents};
 pub use hash::{
-    BlockContent, FootnoteContent, MarkerContent, NodeContent, SentenceContent, node_hash,
-    root_hash,
+    BlockContent, FootnoteContent, MarginNoteContent, MarkerContent, NodeContent, SentenceContent,
+    node_hash, root_hash,
 };
-pub use keys::{footnote_natural_key, natural_key};
+pub use keys::{footnote_natural_key, margin_note_natural_key, natural_key};
 pub use orchestrate::{
-    BlockInput, FootnoteInput, MarkerInput, NodeAnchor, NodeInput, ReconcileInput, ReconcileReport,
-    SentenceInput, reconcile_book,
+    BlockInput, FootnoteInput, MarginNoteInput, MarkerInput, NodeAnchor, NodeInput, ReconcileInput,
+    ReconcileReport, SentenceInput, reconcile_book,
 };

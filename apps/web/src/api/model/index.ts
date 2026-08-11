@@ -93,6 +93,8 @@ export * from "./listSeriesParams.ts";
 export * from "./listUserArticlesParams.ts";
 export * from "./listUsersParams.ts";
 export * from "./loginRequest.ts";
+export * from "./marginNoteResponse.ts";
+export * from "./marginNoteSentenceResponse.ts";
 export * from "./messageResponse.ts";
 export * from "./nodeDetail.ts";
 export * from "./nodeMetaResponse.ts";

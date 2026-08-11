@@ -3,8 +3,8 @@
 //! (Shakespeare's Sonnets, Milton's *Paradise Lost*), and drama (Ibsen).
 //! Genre-specific features are optional fields that serialize only when
 //! present: `SentenceData.indent` for verse (ADR 0003),
-//! `SentenceData.footnotes` for annotated prose, `TocNodeData.source` for
-//! compilation-shape sub-works.
+//! `SentenceData.footnotes` and `SentenceData.margin_notes` for annotated
+//! prose, `TocNodeData.source` for compilation-shape sub-works.
 
 use serde::{Deserialize, Serialize};
 
@@ -138,12 +138,37 @@ pub struct SentenceData {
     pub page_markers: Vec<PageMarkerData>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub footnotes: Vec<FootnoteData>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub margin_notes: Vec<MarginNoteData>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FootnoteData {
     pub number: i32,
     pub sentences: Vec<FootnoteSentenceData>,
+}
+
+/// Authorial margin note anchored to the sentence carrying it (e.g. the
+/// topical side-notes of Hobbes's Leviathan). Unlike footnotes there is no
+/// in-text marker glyph; `number` is a book-global document-order identity
+/// for reconcile, not a printed number.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MarginNoteData {
+    pub number: i32,
+    pub sentences: Vec<MarginNoteSentenceData>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MarginNoteSentenceData {
+    pub position: i16,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sentence_number: Option<i32>,
+    pub text: String,
+    pub html: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_text: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_html: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

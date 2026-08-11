@@ -35,11 +35,19 @@ pub struct SentenceContent<'a> {
     pub segment: Option<i16>,
     pub markers: Vec<MarkerContent<'a>>,
     pub footnotes: Vec<FootnoteContent<'a>>,
+    pub margin_notes: Vec<MarginNoteContent<'a>>,
 }
 
 /// A footnote anchored to a sentence: its number plus its own sentences.
 /// Footnote sentences carry no markers or nested footnotes of their own.
 pub struct FootnoteContent<'a> {
+    pub number: i32,
+    pub sentences: Vec<SentenceContent<'a>>,
+}
+
+/// A margin note anchored to a sentence: its number plus its own sentences,
+/// the footnote shape exactly.
+pub struct MarginNoteContent<'a> {
     pub number: i32,
     pub sentences: Vec<SentenceContent<'a>>,
 }
@@ -119,6 +127,22 @@ fn feed_sentence(h: &mut Hasher, s: &SentenceContent) {
             feed_sentence(h, fs);
         }
     }
+
+    // Fed only when present, so every margin-note-free corpus keeps its
+    // stored hashes byte-identical to the pre-margin-note encoding — no
+    // --full-rewrite needed on upgrade. The `MN` tag keeps the stream
+    // unambiguous against the unconditional fields around it.
+    if !s.margin_notes.is_empty() {
+        h.update(b"MN");
+        feed_int(h, s.margin_notes.len() as i64);
+        for mn in &s.margin_notes {
+            feed_int(h, i64::from(mn.number));
+            feed_int(h, mn.sentences.len() as i64);
+            for ms in &mn.sentences {
+                feed_sentence(h, ms);
+            }
+        }
+    }
 }
 
 /// Hash of one node's full content subtree. Hex-encoded blake3.
@@ -167,6 +191,7 @@ mod tests {
             segment: None,
             markers,
             footnotes: Vec::new(),
+            margin_notes: Vec::new(),
         }
     }
 
@@ -231,6 +256,18 @@ mod tests {
         let mut b = sample();
         b.blocks[0].original_text = Some("");
         assert_ne!(node_hash(&a), node_hash(&b));
+    }
+
+    #[test]
+    fn margin_notes_change_the_hash() {
+        let mut with_note = sample();
+        with_note.blocks[0].sentences[0]
+            .margin_notes
+            .push(MarginNoteContent {
+                number: 1,
+                sentences: vec![sentence("Memory.", Vec::new())],
+            });
+        assert_ne!(node_hash(&sample()), node_hash(&with_note));
     }
 
     #[test]

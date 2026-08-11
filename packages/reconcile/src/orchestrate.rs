@@ -4,7 +4,8 @@
 //!
 //! Identity is anchored to the block: a split/merge only reshuffles ordinals
 //! inside the one affected paragraph, so we reconcile per block, aligning old
-//! rows against the new struct by text — paragraphs and footnotes alike. A change
+//! rows against the new struct by text — paragraphs, footnotes, and margin
+//! notes alike. A change
 //! we cannot attribute confidently (a removed/reordered TOC node, a removed or
 //! shifted paragraph or footnote, or two structural edits in one paragraph)
 //! aborts to `db:reset`.
@@ -80,6 +81,15 @@ pub struct FootnoteInput {
     pub sentences: Vec<SentenceInput>,
 }
 
+/// A margin note's sentences — the footnote shape exactly (number identity,
+/// anchored to its carrying sentence, strictly-additive growth). Margin notes
+/// are not yet plumbed for translation editions (no source-sentence map); the
+/// importer rejects them in translation mode.
+pub struct MarginNoteInput {
+    pub number: i32,
+    pub sentences: Vec<SentenceInput>,
+}
+
 pub struct SentenceInput {
     pub position: i16,
     pub sentence_number: Option<i32>,
@@ -91,6 +101,7 @@ pub struct SentenceInput {
     pub original_html: Option<String>,
     pub markers: Vec<MarkerInput>,
     pub footnotes: Vec<FootnoteInput>,
+    pub margin_notes: Vec<MarginNoteInput>,
 }
 
 pub struct BlockInput {
@@ -129,6 +140,7 @@ pub struct ReconcileReport {
     pub nodes_added: u32,
     pub blocks_added: u32,
     pub footnotes_added: u32,
+    pub margin_notes_added: u32,
     pub updated: u32,
     pub split: u32,
     pub merged: u32,
@@ -137,6 +149,7 @@ pub struct ReconcileReport {
     pub deps_repointed: u32,
     pub markers_rebuilt: u32,
     pub footnote_sentences_updated: u32,
+    pub margin_note_sentences_updated: u32,
     pub renumbered: bool,
 }
 
@@ -159,6 +172,7 @@ impl ReconcileReport {
         eprintln!("  nodes added:         {}", self.nodes_added);
         eprintln!("  blocks added:        {}", self.blocks_added);
         eprintln!("  footnotes added:     {}", self.footnotes_added);
+        eprintln!("  margin notes added:  {}", self.margin_notes_added);
         eprintln!("  sentences updated:   {}", self.updated);
         eprintln!("  splits:              {}", self.split);
         eprintln!("  merges:              {}", self.merged);
@@ -167,6 +181,10 @@ impl ReconcileReport {
         eprintln!("  dependents repointed:{}", self.deps_repointed);
         eprintln!("  page markers rebuilt:{}", self.markers_rebuilt);
         eprintln!("  footnote sents upd.: {}", self.footnote_sentences_updated);
+        eprintln!(
+            "  margin note sents upd.: {}",
+            self.margin_note_sentences_updated
+        );
         eprintln!(
             "  global renumber:     {}",
             if self.renumbered { "yes" } else { "skipped" }
@@ -284,6 +302,13 @@ pub async fn reconcile_book(
             .await?;
     let footnote_id_by_number: HashMap<i32, Uuid> = footnote_rows.iter().copied().collect();
 
+    let margin_note_rows: Vec<(i32, Uuid)> =
+        sqlx::query_as("SELECT number, id FROM margin_notes WHERE book_id = $1")
+            .bind(book_id)
+            .fetch_all(&mut **tx)
+            .await?;
+    let margin_note_id_by_number: HashMap<i32, Uuid> = margin_note_rows.iter().copied().collect();
+
     // Where each existing footnote is anchored — (node source_ref, block
     // position). Footnote identity is its number, so a footnote whose desired
     // anchor location differs from the stored one signals a numbering shift
@@ -295,6 +320,19 @@ pub async fn reconcile_book(
          JOIN content_blocks cb ON s.block_id = cb.id
          JOIN toc_nodes tn ON cb.node_id = tn.id
          WHERE f.book_id = $1",
+    )
+    .bind(book_id)
+    .fetch_all(&mut **tx)
+    .await?;
+
+    // Same for margin notes — same identity rule, same shift detection.
+    let mn_anchor_rows: Vec<(i32, String, i16)> = sqlx::query_as(
+        "SELECT mn.number, tn.source_ref, cb.position
+         FROM margin_notes mn
+         JOIN sentences s ON mn.anchor_sentence_id = s.id
+         JOIN content_blocks cb ON s.block_id = cb.id
+         JOIN toc_nodes tn ON cb.node_id = tn.id
+         WHERE mn.book_id = $1",
     )
     .bind(book_id)
     .fetch_all(&mut **tx)
@@ -391,7 +429,28 @@ pub async fn reconcile_book(
         .into_iter()
         .map(|(number, sref, pos)| (number, (sref, pos)))
         .collect();
-    let added_fn_numbers = classify_added_footnotes(&desired_fn_anchor, &existing_fn_anchor)?;
+    let added_fn_numbers =
+        classify_added_notes("footnote", &desired_fn_anchor, &existing_fn_anchor)?;
+
+    // Margin notes: same strictly-additive rule as footnotes.
+    let desired_mn_anchor: HashMap<i32, (String, i16)> = nodes
+        .iter()
+        .flat_map(|n| {
+            n.blocks.iter().flat_map(move |b| {
+                b.sentences.iter().flat_map(move |s| {
+                    s.margin_notes
+                        .iter()
+                        .map(move |mn| (mn.number, (n.source_ref.clone(), b.position)))
+                })
+            })
+        })
+        .collect();
+    let existing_mn_anchor: HashMap<i32, (String, i16)> = mn_anchor_rows
+        .into_iter()
+        .map(|(number, sref, pos)| (number, (sref, pos)))
+        .collect();
+    let added_mn_numbers =
+        classify_added_notes("margin note", &desired_mn_anchor, &existing_mn_anchor)?;
 
     // --- Insert added nodes (skeleton rows only) ----------------------------
     // Registered in `node_id_by_ref`, an added node flows through the same
@@ -516,6 +575,14 @@ pub async fn reconcile_book(
         .flat_map(|s| &s.footnotes)
         .map(|f| f.number)
         .collect();
+    let changed_mn_numbers: Vec<i32> = nodes
+        .iter()
+        .filter(|n| changed_refs.contains(&n.source_ref))
+        .flat_map(|n| &n.blocks)
+        .flat_map(|b| &b.sentences)
+        .flat_map(|s| &s.margin_notes)
+        .map(|mn| mn.number)
+        .collect();
 
     // --- Load existing sentence content, scoped to changed nodes -----------
     let sent_rows: Vec<BlockSentRow> = sqlx::query_as(
@@ -569,6 +636,38 @@ pub async fn reconcile_book(
     let mut existing_fn_by_number: HashMap<i32, Vec<Existing>> = HashMap::new();
     for (id, number, text, html, original_text, original_html) in fn_sent_rows {
         existing_fn_by_number
+            .entry(number)
+            .or_default()
+            .push(Existing {
+                id,
+                text: text.clone(),
+            });
+        existing_content.insert(
+            id,
+            ExistingSentence {
+                text,
+                html,
+                original_text,
+                original_html,
+                segment: None,
+                indent: None,
+            },
+        );
+    }
+
+    let mn_sent_rows: Vec<FnSentRow> = sqlx::query_as(
+        "SELECT s.id, mn.number, s.text, s.html, s.original_text, s.original_html
+             FROM sentences s JOIN margin_notes mn ON s.margin_note_id = mn.id
+             WHERE s.book_id = $1 AND mn.number = ANY($2)
+             ORDER BY mn.number, s.position",
+    )
+    .bind(book_id)
+    .bind(&changed_mn_numbers)
+    .fetch_all(&mut **tx)
+    .await?;
+    let mut existing_mn_by_number: HashMap<i32, Vec<Existing>> = HashMap::new();
+    for (id, number, text, html, original_text, original_html) in mn_sent_rows {
+        existing_mn_by_number
             .entry(number)
             .or_default()
             .push(Existing {
@@ -662,13 +761,13 @@ pub async fn reconcile_book(
         }
     }
 
-    // Plan each changed footnote's sentences (footnote number is stable; its
-    // sentences may split/merge just like a paragraph's).
-    struct FnWork {
+    // Plan each changed footnote's / margin note's sentences (the note number
+    // is stable; its sentences may split/merge just like a paragraph's).
+    struct NoteWork {
         number: i32,
-        // None = added footnote: the row is inserted during apply, anchored to
+        // None = added note: the row is inserted during apply, anchored to
         // the resolved anchor sentence.
-        footnote_id: Option<Uuid>,
+        note_id: Option<Uuid>,
         node_id: Uuid,
         anchor_key: (String, i16, i16),
         // The anchor sentence only moves when its containing block changed count.
@@ -676,7 +775,8 @@ pub async fn reconcile_book(
         plan: BlockPlan,
         count_delta: bool,
     }
-    let mut fn_works: Vec<FnWork> = Vec::new();
+    let mut fn_works: Vec<NoteWork> = Vec::new();
+    let mut mn_works: Vec<NoteWork> = Vec::new();
     for work in &works {
         let node = &nodes[work.node_idx];
         let block = &node.blocks[work.block_idx];
@@ -702,9 +802,43 @@ pub async fn reconcile_book(
                     (plan, count_delta)
                 };
                 all_retired.extend(plan.retired.iter().copied());
-                fn_works.push(FnWork {
+                fn_works.push(NoteWork {
                     number: footnote.number,
-                    footnote_id: footnote_id_by_number.get(&footnote.number).copied(),
+                    note_id: footnote_id_by_number.get(&footnote.number).copied(),
+                    node_id: work.node_id,
+                    anchor_key: (node.source_ref.clone(), block.position, sent.position),
+                    anchor_block_count_delta: work.count_delta,
+                    plan,
+                    count_delta,
+                });
+            }
+            for margin_note in &sent.margin_notes {
+                let (plan, count_delta) = if added_mn_numbers.contains(&margin_note.number) {
+                    let plan = BlockPlan {
+                        assignment: vec![None; margin_note.sentences.len()],
+                        retired: Vec::new(),
+                        splits: Vec::new(),
+                    };
+                    (plan, true)
+                } else {
+                    let empty: Vec<Existing> = Vec::new();
+                    let old = existing_mn_by_number
+                        .get(&margin_note.number)
+                        .unwrap_or(&empty);
+                    let new: Vec<&str> = margin_note
+                        .sentences
+                        .iter()
+                        .map(|s| s.text.as_str())
+                        .collect();
+                    let label = format!("margin note {}", margin_note.number);
+                    let plan = plan_block(&label, old, &new)?;
+                    let count_delta = full_rewrite || old.len() != new.len();
+                    (plan, count_delta)
+                };
+                all_retired.extend(plan.retired.iter().copied());
+                mn_works.push(NoteWork {
+                    number: margin_note.number,
+                    note_id: margin_note_id_by_number.get(&margin_note.number).copied(),
                     node_id: work.node_id,
                     anchor_key: (node.source_ref.clone(), block.position, sent.position),
                     anchor_block_count_delta: work.count_delta,
@@ -715,8 +849,9 @@ pub async fn reconcile_book(
         }
     }
 
-    let any_count_delta =
-        works.iter().any(|w| w.count_delta) || fn_works.iter().any(|w| w.count_delta);
+    let any_count_delta = works.iter().any(|w| w.count_delta)
+        || fn_works.iter().any(|w| w.count_delta)
+        || mn_works.iter().any(|w| w.count_delta);
 
     // Pure deletes (no survivor) that still carry user data are unsafe.
     for (retired_id, survivor) in &all_retired {
@@ -759,7 +894,7 @@ pub async fn reconcile_book(
     let offset_fn_ids: Vec<Uuid> = fn_works
         .iter()
         .filter(|w| w.count_delta)
-        .filter_map(|w| w.footnote_id)
+        .filter_map(|w| w.note_id)
         .collect();
     if !offset_fn_ids.is_empty() {
         sqlx::query(
@@ -767,6 +902,20 @@ pub async fn reconcile_book(
              WHERE footnote_id = ANY($1)",
         )
         .bind(&offset_fn_ids)
+        .execute(&mut **tx)
+        .await?;
+    }
+    let offset_mn_ids: Vec<Uuid> = mn_works
+        .iter()
+        .filter(|w| w.count_delta)
+        .filter_map(|w| w.note_id)
+        .collect();
+    if !offset_mn_ids.is_empty() {
+        sqlx::query(
+            "UPDATE sentences SET position = position + 10000, natural_key = NULL
+             WHERE margin_note_id = ANY($1)",
+        )
+        .bind(&offset_mn_ids)
         .execute(&mut **tx)
         .await?;
     }
@@ -909,7 +1058,7 @@ pub async fn reconcile_book(
     let mut next_fn_temp: i32 = TEMP_SENTENCE_NUMBER_BASE;
     for work in &fn_works {
         let anchor_id = resolved[&work.anchor_key];
-        let footnote_id = match work.footnote_id {
+        let footnote_id = match work.note_id {
             Some(id) => {
                 if work.anchor_block_count_delta {
                     sqlx::query(
@@ -1044,6 +1193,145 @@ pub async fn reconcile_book(
                     .execute(&mut **tx)
                     .await?;
                     report.footnote_sentences_updated += 1;
+                }
+                existing_id
+            };
+            idx_uuid.push(sid);
+        }
+        for (first_half_id, second_idx) in &work.plan.splits {
+            fn_split_new_ids.push((*first_half_id, idx_uuid[*second_idx]));
+            report.split += 1;
+        }
+    }
+
+    // 3c. Apply margin-note sentences — the footnote apply, verbatim, against
+    //     the margin_notes table. No translation links (margin notes are
+    //     rejected on translation editions at input mapping).
+    for work in &mn_works {
+        let anchor_id = resolved[&work.anchor_key];
+        let margin_note_id = match work.note_id {
+            Some(id) => {
+                if work.anchor_block_count_delta {
+                    sqlx::query(
+                        "UPDATE margin_notes SET anchor_sentence_id = $2 WHERE book_id = $1 AND number = $3",
+                    )
+                    .bind(book_id)
+                    .bind(anchor_id)
+                    .bind(work.number)
+                    .execute(&mut **tx)
+                    .await?;
+                }
+                id
+            }
+            None => {
+                let id: Uuid = sqlx::query_scalar(
+                    "INSERT INTO margin_notes (book_id, number, anchor_sentence_id)
+                     VALUES ($1, $2, $3)
+                     RETURNING id",
+                )
+                .bind(book_id)
+                .bind(work.number)
+                .bind(anchor_id)
+                .fetch_one(&mut **tx)
+                .await?;
+                report.margin_notes_added += 1;
+                id
+            }
+        };
+
+        let node = nodes
+            .iter()
+            .find(|n| node_id_by_ref.get(&n.source_ref) == Some(&work.node_id))
+            .expect("margin note node present");
+        let margin_note = node
+            .blocks
+            .iter()
+            .flat_map(|b| &b.sentences)
+            .flat_map(|s| &s.margin_notes)
+            .find(|mn| mn.number == work.number)
+            .expect("margin note present in desired struct");
+
+        let mut idx_uuid: Vec<Uuid> = Vec::with_capacity(margin_note.sentences.len());
+        for (i, mn_sent) in margin_note.sentences.iter().enumerate() {
+            let sid = if work.count_delta {
+                let natural_key = crate::keys::margin_note_natural_key(
+                    &node.source_ref,
+                    work.number,
+                    mn_sent.position,
+                );
+                match work.plan.assignment[i] {
+                    Some(existing_id) => {
+                        sqlx::query(
+                            "UPDATE sentences
+                             SET position = $2,
+                                 text = $3, html = $4, original_text = $5, original_html = $6,
+                                 natural_key = $7, updated_at = now()
+                             WHERE id = $1",
+                        )
+                        .bind(existing_id)
+                        .bind(mn_sent.position)
+                        .bind(&mn_sent.text)
+                        .bind(&mn_sent.html)
+                        .bind(&mn_sent.original_text)
+                        .bind(&mn_sent.original_html)
+                        .bind(&natural_key)
+                        .execute(&mut **tx)
+                        .await?;
+                        report.margin_note_sentences_updated += 1;
+                        existing_id
+                    }
+                    None => {
+                        let temp_number = next_fn_temp;
+                        next_fn_temp += 1;
+                        let id: Uuid = sqlx::query_scalar(
+                            "INSERT INTO sentences (book_id, node_id, margin_note_id, position, sentence_number, text, html, original_text, original_html, natural_key)
+                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                             RETURNING id",
+                        )
+                        .bind(book_id)
+                        .bind(work.node_id)
+                        .bind(margin_note_id)
+                        .bind(mn_sent.position)
+                        .bind(temp_number)
+                        .bind(&mn_sent.text)
+                        .bind(&mn_sent.html)
+                        .bind(&mn_sent.original_text)
+                        .bind(&mn_sent.original_html)
+                        .bind(&natural_key)
+                        .fetch_one(&mut **tx)
+                        .await?;
+                        report.inserted += 1;
+                        id
+                    }
+                }
+            } else {
+                let existing_id = work.plan.assignment[i].expect(
+                    "same-count margin note: every desired sentence maps to an existing row",
+                );
+                let differs = match existing_content.get(&existing_id) {
+                    Some(c) => {
+                        c.text != mn_sent.text
+                            || c.html != mn_sent.html
+                            || c.original_text != mn_sent.original_text
+                            || c.original_html != mn_sent.original_html
+                    }
+                    None => true,
+                };
+                if differs {
+                    sqlx::query(
+                        "UPDATE sentences
+                         SET text = $2, html = $3, original_text = $4, original_html = $5,
+                             updated_at = now()
+                         WHERE id = $1",
+                    )
+                    .bind(existing_id)
+                    .bind(&mn_sent.text)
+                    .bind(&mn_sent.html)
+                    .bind(&mn_sent.original_text)
+                    .bind(&mn_sent.original_html)
+                    .execute(&mut **tx)
+                    .await?;
+                    report.margin_note_sentences_updated += 1;
                 }
                 existing_id
             };
@@ -1196,6 +1484,33 @@ pub async fn reconcile_book(
         .bind(book_id)
         .execute(&mut **tx)
         .await?;
+
+        // Margin-note sentence sequence — same document order rule as the
+        // footnote sequence, over its own partial unique index.
+        sqlx::query(
+            "UPDATE sentences SET sentence_number = sentence_number + 1000000
+             WHERE book_id = $1 AND sentence_number IS NOT NULL AND margin_note_id IS NOT NULL",
+        )
+        .bind(book_id)
+        .execute(&mut **tx)
+        .await?;
+        sqlx::query(
+            "WITH ordered AS (
+                 SELECT s.id, ROW_NUMBER() OVER (
+                     ORDER BY tn.sort_order, cb.position, a.position, mn.number, s.position
+                 ) AS rn
+                 FROM sentences s
+                 JOIN margin_notes mn ON s.margin_note_id = mn.id
+                 JOIN sentences a ON mn.anchor_sentence_id = a.id
+                 JOIN content_blocks cb ON a.block_id = cb.id
+                 JOIN toc_nodes tn ON cb.node_id = tn.id
+                 WHERE s.book_id = $1 AND s.sentence_number IS NOT NULL AND s.margin_note_id IS NOT NULL
+             )
+             UPDATE sentences s SET sentence_number = o.rn FROM ordered o WHERE s.id = o.id",
+        )
+        .bind(book_id)
+        .execute(&mut **tx)
+        .await?;
         report.renumbered = true;
     }
 
@@ -1301,12 +1616,14 @@ fn classify_added_block_positions(
     Ok(tail.iter().map(|(pos, _, _)| *pos).collect())
 }
 
-/// Desired footnote numbers must be a superset of existing ones, and every
-/// existing footnote must keep its anchor location (node source_ref + block
-/// position). Identity is the number, so a moved anchor signals that footnote
-/// numbering shifted (a footnote added/removed mid-book) — the alignment below
-/// would then compare unrelated footnotes' sentences.
-fn classify_added_footnotes(
+/// Desired note numbers (footnotes or margin notes — same identity rules)
+/// must be a superset of existing ones, and every existing note must keep its
+/// anchor location (node source_ref + block position). Identity is the
+/// number, so a moved anchor signals that numbering shifted (a note
+/// added/removed mid-book) — the alignment below would then compare unrelated
+/// notes' sentences.
+fn classify_added_notes(
+    kind: &str,
     desired_anchor: &HashMap<i32, (String, i16)>,
     existing_anchor: &HashMap<i32, (String, i16)>,
 ) -> Result<HashSet<i32>, String> {
@@ -1318,7 +1635,7 @@ fn classify_added_footnotes(
     if !removed.is_empty() {
         removed.sort();
         return Err(format!(
-            "footnotes removed ({removed:?}); not reconcilable — use `just db-reload`"
+            "{kind}s removed ({removed:?}); not reconcilable — use `just db-reload`"
         ));
     }
     let mut added = HashSet::new();
@@ -1329,8 +1646,8 @@ fn classify_added_footnotes(
             }
             Some((stored_ref, stored_pos)) if (stored_ref, stored_pos) != (sref, block_pos) => {
                 return Err(format!(
-                    "footnote {number}: anchor moved from node {stored_ref} / block {stored_pos} \
-                     to node {sref} / block {block_pos} — footnote numbering shifted; \
+                    "{kind} {number}: anchor moved from node {stored_ref} / block {stored_pos} \
+                     to node {sref} / block {block_pos} — {kind} numbering shifted; \
                      use `just db-reload`"
                 ));
             }
@@ -1467,7 +1784,7 @@ mod tests {
     fn footnotes_unchanged_yields_no_additions() {
         let existing = anchors(&[(1, "010", 2), (2, "011", 0)]);
         let desired = anchors(&[(1, "010", 2), (2, "011", 0)]);
-        let added = classify_added_footnotes(&desired, &existing).unwrap();
+        let added = classify_added_notes("footnote", &desired, &existing).unwrap();
         assert!(added.is_empty());
     }
 
@@ -1475,7 +1792,7 @@ mod tests {
     fn new_footnotes_in_new_sections_are_added() {
         let existing = anchors(&[(1, "010", 2)]);
         let desired = anchors(&[(1, "010", 2), (2, "074", 0), (3, "075", 1)]);
-        let added = classify_added_footnotes(&desired, &existing).unwrap();
+        let added = classify_added_notes("footnote", &desired, &existing).unwrap();
         assert_eq!(added, HashSet::from([2, 3]));
     }
 
@@ -1483,7 +1800,7 @@ mod tests {
     fn removed_footnote_aborts() {
         let existing = anchors(&[(1, "010", 2), (2, "011", 0)]);
         let desired = anchors(&[(1, "010", 2)]);
-        let err = classify_added_footnotes(&desired, &existing).unwrap_err();
+        let err = classify_added_notes("footnote", &desired, &existing).unwrap_err();
         assert!(err.contains("removed"), "{err}");
     }
 
@@ -1494,7 +1811,7 @@ mod tests {
         // desired 3 — caught by the anchor check, not the set check.
         let existing = anchors(&[(1, "010", 2), (2, "020", 0)]);
         let desired = anchors(&[(1, "010", 2), (2, "015", 1), (3, "020", 0)]);
-        let err = classify_added_footnotes(&desired, &existing).unwrap_err();
+        let err = classify_added_notes("footnote", &desired, &existing).unwrap_err();
         assert!(err.contains("anchor moved"), "{err}");
     }
 }

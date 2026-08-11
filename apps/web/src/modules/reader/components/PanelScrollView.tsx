@@ -17,7 +17,7 @@ import type { NodeDetail, SentenceResponse } from "../../../api/model";
 import { getNodePage } from "../../../api/nodes/nodes";
 import { getNodePageSuspenseQueryOptions } from "../nodePageQuery";
 import type { MarginSettings } from "./BlockRenderer";
-import { Block } from "./BlockRenderer";
+import { Block, MARGIN_NOTES_SLUG } from "./BlockRenderer";
 import { InterleavedNodeRenderer } from "./InterleavedNodeRenderer";
 
 export interface PanelScrollViewHandle {
@@ -135,6 +135,10 @@ export const PanelScrollView = forwardRef<
                 for (const sentence of block.sentences) {
                     for (const pm of sentence.page_markers) {
                         systems.add(pm.system_slug);
+                    }
+                    // Margin notes join the margin menu as a pseudo-system.
+                    if (sentence.margin_notes?.length) {
+                        systems.add(MARGIN_NOTES_SLUG);
                     }
                 }
             }

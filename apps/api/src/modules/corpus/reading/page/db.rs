@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::modules::corpus::reading::facsimile::db as facsimile;
+use crate::modules::corpus::reading::nodes::db as nodes_db;
 use crate::modules::corpus::reading::nodes::models::{
     ContentBlockResponse, FootnoteResponse, FootnoteSentenceResponse, NodeDetail,
     PageMarkerResponse, SentenceResponse,
@@ -212,8 +213,10 @@ pub async fn get_node_page(
     .fetch_all(pool)
     .await?;
 
-    // Fetch footnotes anchored to sentences in these nodes
+    // Fetch footnotes + margin notes anchored to sentences in these nodes
     let anchor_sentence_ids: Vec<Uuid> = sentences.iter().map(|s| s.id).collect();
+    let mut margin_note_map =
+        nodes_db::margin_notes_by_anchor(pool, &anchor_sentence_ids, include_original).await?;
 
     let footnotes = if anchor_sentence_ids.is_empty() {
         vec![]
@@ -329,6 +332,7 @@ pub async fn get_node_page(
                 source_sentence_end_id: s.source_sentence_end_id.map(|id| id.to_string()),
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
                 footnotes: footnote_map.remove(&s.id).unwrap_or_default(),
+                margin_notes: margin_note_map.remove(&s.id).unwrap_or_default(),
             });
     }
 
@@ -524,6 +528,8 @@ async fn assemble_node_page(
     .await?;
 
     let sentence_ids: Vec<Uuid> = sentences.iter().map(|s| s.id).collect();
+    let mut margin_note_map =
+        nodes_db::margin_notes_by_anchor(pool, &sentence_ids, include_original).await?;
 
     let footnotes = if sentence_ids.is_empty() {
         vec![]
@@ -639,6 +645,7 @@ async fn assemble_node_page(
                 source_sentence_end_id: s.source_sentence_end_id.map(|id| id.to_string()),
                 page_markers: marker_map.remove(&s.id).unwrap_or_default(),
                 footnotes: footnote_map.remove(&s.id).unwrap_or_default(),
+                margin_notes: margin_note_map.remove(&s.id).unwrap_or_default(),
             });
     }
 

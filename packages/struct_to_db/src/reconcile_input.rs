@@ -8,11 +8,13 @@
 use std::collections::HashMap;
 
 use reconcile::{
-    BlockContent, BlockInput, FootnoteContent, FootnoteInput, MarkerContent, MarkerInput,
-    NodeAnchor, NodeContent, NodeInput, ReconcileInput, SentenceContent, SentenceInput, node_hash,
-    root_hash,
+    BlockContent, BlockInput, FootnoteContent, FootnoteInput, MarginNoteContent, MarginNoteInput,
+    MarkerContent, MarkerInput, NodeAnchor, NodeContent, NodeInput, ReconcileInput,
+    SentenceContent, SentenceInput, node_hash, root_hash,
 };
-use text_struct::model::{ContentBlockData, FootnoteData, Output, SentenceData, TocNodeData};
+use text_struct::model::{
+    ContentBlockData, FootnoteData, MarginNoteData, Output, SentenceData, TocNodeData,
+};
 use uuid::Uuid;
 
 // --- Content hashing (tier-2 incremental reconcile) ------------------------
@@ -62,6 +64,7 @@ fn sentence_content(s: &SentenceData) -> SentenceContent<'_> {
             })
             .collect(),
         footnotes: s.footnotes.iter().map(footnote_content).collect(),
+        margin_notes: s.margin_notes.iter().map(margin_note_content).collect(),
     }
 }
 
@@ -79,6 +82,27 @@ fn footnote_content(f: &FootnoteData) -> FootnoteContent<'_> {
                 segment: None,
                 markers: Vec::new(),
                 footnotes: Vec::new(),
+                margin_notes: Vec::new(),
+            })
+            .collect(),
+    }
+}
+
+fn margin_note_content(mn: &MarginNoteData) -> MarginNoteContent<'_> {
+    MarginNoteContent {
+        number: mn.number,
+        sentences: mn
+            .sentences
+            .iter()
+            .map(|ms| SentenceContent {
+                text: &ms.text,
+                html: &ms.html,
+                original_text: ms.original_text.as_deref(),
+                original_html: ms.original_html.as_deref(),
+                segment: None,
+                markers: Vec::new(),
+                footnotes: Vec::new(),
+                margin_notes: Vec::new(),
             })
             .collect(),
     }
@@ -203,6 +227,7 @@ fn sentence_input(s: &SentenceData) -> SentenceInput {
             })
             .collect(),
         footnotes: s.footnotes.iter().map(footnote_input).collect(),
+        margin_notes: s.margin_notes.iter().map(margin_note_input).collect(),
     }
 }
 
@@ -223,6 +248,30 @@ fn footnote_input(f: &FootnoteData) -> FootnoteInput {
                 original_html: fs.original_html.clone(),
                 markers: Vec::new(),
                 footnotes: Vec::new(),
+                margin_notes: Vec::new(),
+            })
+            .collect(),
+    }
+}
+
+fn margin_note_input(mn: &MarginNoteData) -> MarginNoteInput {
+    MarginNoteInput {
+        number: mn.number,
+        sentences: mn
+            .sentences
+            .iter()
+            .map(|ms| SentenceInput {
+                position: ms.position,
+                sentence_number: ms.sentence_number,
+                segment: None,
+                indent: None,
+                text: ms.text.clone(),
+                html: ms.html.clone(),
+                original_text: ms.original_text.clone(),
+                original_html: ms.original_html.clone(),
+                markers: Vec::new(),
+                footnotes: Vec::new(),
+                margin_notes: Vec::new(),
             })
             .collect(),
     }

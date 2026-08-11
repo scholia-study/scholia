@@ -65,6 +65,9 @@ const getSentenceNumber = (s: { sentence_number?: number | null }) =>
 // between the text and the floating panel.
 const RESOURCE_PANEL_PX = 320;
 const OVERLAY_GUTTER_PX = 24;
+// Margin-note gutter column: mirrors MarginNoteGutter's `w-40` (160px) plus
+// its `ml-3`/`mr-3` offset.
+const MARGIN_NOTE_COL_PX = 172;
 
 function findNodeInTocBySourceRef(
     nodes: TocNodeResponse[],
@@ -361,11 +364,24 @@ export function TextPanel({
         selectedSentence != null &&
         sentenceMatchesKey(selectedSentence, selectedSentenceId);
     const availableSystems = Object.keys(marginSettings.systemSides);
+    // Margin-note prose needs a readable gutter column on each side of the
+    // reading width; when the panel can't fit one, notes collapse to a gutter
+    // button + popover. Same measurement pattern as `overlayResources`.
+    const marginNotesCompact = useMemo(() => {
+        if (panelWidth == null) return false;
+        const rem = Number.parseFloat(readingWidth);
+        if (!Number.isFinite(rem)) return false;
+        const rootFontPx =
+            Number.parseFloat(
+                getComputedStyle(document.documentElement).fontSize,
+            ) || 16;
+        return panelWidth < rem * rootFontPx + 2 * MARGIN_NOTE_COL_PX;
+    }, [panelWidth, readingWidth]);
     // The line-number interval is a persisted display pref, not session margin
     // state — merge it in here so BlockRenderer sees one settings object.
     const effectiveMarginSettings = useMemo(
-        () => ({ ...marginSettings, lineNumberInterval }),
-        [marginSettings, lineNumberInterval],
+        () => ({ ...marginSettings, lineNumberInterval, marginNotesCompact }),
+        [marginSettings, lineNumberInterval, marginNotesCompact],
     );
 
     const onMainSelect = useCallback(

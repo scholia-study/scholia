@@ -534,6 +534,7 @@ function forceMarginSide(
     return {
         enabledSystems: settings.enabledSystems,
         systemSides: forcedSides,
+        marginNotesCompact: settings.marginNotesCompact,
     };
 }
 
