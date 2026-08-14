@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-hobbes1-bootstrap
+  name: ingest-hobbes1-602b17095328
   labels:
     ingest: hobbes1
   annotations:
@@ -31,7 +31,7 @@ spec:
             - name: CORPUS
               value: hobbes1
             - name: DERIVED_HASH
-              value: ""
+              value: "602b17095328"
             - name: NTFY_URL
               valueFrom:
                 secretKeyRef:
