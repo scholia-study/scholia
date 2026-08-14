@@ -34,6 +34,10 @@ case "$corpus" in
         cargo run -p md_drama_to_struct -- --corpus "$corpus"
         cargo run -p md_drama_to_struct -- --corpus "$corpus" --translation
         ;;
+    hobbes1)
+        # English single-edition prose (two layers, no translation build).
+        cargo run -p md_prose_to_struct -- --corpus "$corpus"
+        ;;
     *)
         # Unreachable: membership in SCHOLIA_CORPORA is checked above. Hitting
         # this means the array and the case arms drifted apart.

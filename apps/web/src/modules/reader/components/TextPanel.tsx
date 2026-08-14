@@ -51,6 +51,7 @@ import {
 } from "../keys";
 import type { Panel } from "../state";
 import type { MarginSettings } from "./BlockRenderer";
+import { MARGIN_NOTES_SLUG } from "./BlockRenderer";
 import type { PanelScrollViewHandle } from "./PanelScrollView";
 import { PanelScrollView } from "./PanelScrollView";
 import { ResourcesPanel } from "./ResourcesPanel";
@@ -300,12 +301,21 @@ export function TextPanel({
             let changed = false;
             const newEnabled = new Set(prev.enabledSystems);
             const newSides = { ...prev.systemSides };
+            // A book with margin notes follows the 1651 print convention:
+            // note prose takes the right (outer) gutter, page references
+            // move left — otherwise both would land on the same lines.
+            const hasNotes =
+                systems.includes(MARGIN_NOTES_SLUG) ||
+                MARGIN_NOTES_SLUG in prev.systemSides;
             for (const s of systems) {
                 if (!(s in newSides)) {
                     newEnabled.add(s);
                     // Line-number systems (poetry/verse) sit in the left gutter
                     // by convention; other systems (page numbers) on the right.
-                    newSides[s] = s === "line" ? "left" : "right";
+                    newSides[s] =
+                        s === "line" || (hasNotes && s !== MARGIN_NOTES_SLUG)
+                            ? "left"
+                            : "right";
                     changed = true;
                 }
             }

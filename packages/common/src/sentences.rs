@@ -190,6 +190,15 @@ static ROMAN_LABEL_RE: LazyLock<Regex> =
 static SECTION_LABEL_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"§\s*\d{1,2}\.\s*$").unwrap());
 
+/// 17th-century ordinal references: "in the 35. Chapter" ("the 35th
+/// chapter"). The number's period must not end the sentence, but only when
+/// the next word is one of the English reference nouns — scripture verse
+/// citations ("Mat. 19. 28. You…") and numbered enumerations keep their
+/// splits, and German ordinals ("35. Kapitel") are not affected.
+static ORDINAL_NUM_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b\d{1,3}\.$").unwrap());
+static ORDINAL_REF_NOUN_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^(Chapters?\b|Cha\.|Psalms?\b|Epistles?\b|Elders\b)").unwrap());
+
 /// Split a paragraph into sentences, returning (text, html) pairs.
 ///
 /// The algorithm:
@@ -477,9 +486,12 @@ static SINGLE_ABBREVS_EN: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
 /// English multi-word abbreviation patterns.
 static MULTI_ABBREV_RE_EN: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     let patterns = vec![
-        r"e\.?\s*g\.", // e.g.
-        r"i\.?\s*e\.", // i.e.
-        r"c\.?\s*f\.", // c.f.
+        // \b guards keep these from matching word tails: "Philosophie." is
+        // not "i.e." (the 1651 Leviathan's -ie. spellings before a capital
+        // were being swallowed as abbreviations).
+        r"\be\.?\s*g\.", // e.g.
+        r"\bi\.?\s*e\.", // i.e.
+        r"\bc\.?\s*f\.", // c.f.
     ];
     patterns
         .into_iter()
@@ -495,6 +507,26 @@ pub fn split_sentences_en(text: &str, html: &str) -> Vec<(String, String)> {
 }
 
 /// Split English text into sentences with additional forced split positions.
+/// Strong-colon split positions, for corpora whose copy-text uses the colon
+/// as a period-strength stop (Early Modern pointing — hobbes1): a new
+/// sentence begins after ": " when the next word is capitalized; lowercase
+/// continuations stay joined.
+static STRONG_COLON_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r":\s+[A-Z]").unwrap());
+
+/// [`split_sentences_en_forced`] plus Early Modern strong-colon splitting.
+pub fn split_sentences_en_strong_colon_forced(
+    text: &str,
+    html: &str,
+    forced: &[usize],
+) -> Vec<(String, String)> {
+    let mut with_colons: Vec<usize> = STRONG_COLON_RE
+        .find_iter(text)
+        .map(|m| m.end() - 1)
+        .collect();
+    with_colons.extend_from_slice(forced);
+    split_sentences_en_forced(text, html, &with_colons)
+}
+
 pub fn split_sentences_en_forced(
     text: &str,
     html: &str,
@@ -579,6 +611,11 @@ fn find_text_split_positions_with(
 
         // Check section labels (e.g. § 3.)
         if SECTION_LABEL_RE.is_match(preceding) {
+            continue;
+        }
+
+        // Check ordinal references ("in the 35. Chapter")
+        if ORDINAL_NUM_RE.is_match(trimmed) && ORDINAL_REF_NOUN_RE.is_match(&text[split_pos..]) {
             continue;
         }
 

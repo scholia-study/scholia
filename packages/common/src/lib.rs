@@ -14,6 +14,7 @@ pub type FlatTocEntry = (
 pub mod content;
 pub mod epub_reader;
 pub mod hegel1;
+pub mod hobbes1;
 pub mod ibsen1;
 pub mod kant1;
 pub mod kant3;

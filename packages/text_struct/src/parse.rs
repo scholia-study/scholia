@@ -49,6 +49,7 @@ pub fn parse_front_matter(content: &str) -> Option<(FrontMatter, &str)> {
         } else if let Some(v) = line
             .strip_prefix("aa_page:")
             .or_else(|| line.strip_prefix("page_1807:"))
+            .or_else(|| line.strip_prefix("page_1651:"))
         {
             page = Some(v.trim().trim_matches('"').to_string());
         }

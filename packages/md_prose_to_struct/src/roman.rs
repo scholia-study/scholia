@@ -36,7 +36,8 @@ pub fn roman_to_int(s: &str) -> Option<u32> {
 /// two series colliding (1807 Phänomenologie: Vorrede II–XCI, body 4–765).
 const ROMAN_SORT_FLOOR: i32 = -10_000;
 
-/// Sort order for a block page marker whose value may be Arabic or Roman.
+/// Sort order for a block page marker whose value may be Arabic, Roman, or
+/// suffixed Arabic.
 ///
 /// Arabic keeps its face value, so corpora whose block system is entirely
 /// Arabic (kant1, kant3) are unaffected. Roman maps below every Arabic page
@@ -45,8 +46,21 @@ pub fn block_sort_order(value: &str) -> i32 {
     value
         .parse::<i32>()
         .ok()
+        .or_else(|| suffixed_arabic(value))
         .or_else(|| roman_to_int(value).map(|n| ROMAN_SORT_FLOOR + n as i32))
         .unwrap_or(0)
+}
+
+/// "247b" → 247: the twice-printed 1651 Leviathan pages carry a letter suffix
+/// on their second occurrence; they sort by the printed number (document
+/// order breaks the tie).
+fn suffixed_arabic(value: &str) -> Option<i32> {
+    let digits = value.trim_end_matches(|c: char| c.is_ascii_lowercase());
+    if digits.len() < value.len() && !digits.is_empty() {
+        digits.parse().ok()
+    } else {
+        None
+    }
 }
 
 #[cfg(test)]

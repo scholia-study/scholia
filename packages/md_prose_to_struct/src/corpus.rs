@@ -54,6 +54,14 @@ pub struct Corpus {
     pub edition_sort_arabic_fallback: bool,
     /// Summary labels for the two marker systems (stderr only).
     pub marker_labels: (&'static str, &'static str),
+    /// The source edition's own language is English (hobbes1), so both layers
+    /// split with the English sentence splitter; false = German source
+    /// (kant1/kant3/hegel1).
+    pub source_splitter_en: bool,
+    /// The copy-text points with period-strength colons (Early Modern
+    /// convention — hobbes1): a capitalized word after ": " begins a new
+    /// sentence.
+    pub strong_colon_splits: bool,
 }
 
 struct SystemSpec {
@@ -204,6 +212,8 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 edition_system_slug: meta::EDITION_SYSTEM_SLUG,
                 edition_sort_arabic_fallback: false,
                 marker_labels: ("AA", "B-edition"),
+                source_splitter_en: false,
+                strong_colon_splits: false,
             })
         }
         "kant3" => {
@@ -293,6 +303,8 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 edition_system_slug: meta::EDITION_SYSTEM_SLUG,
                 edition_sort_arabic_fallback: true,
                 marker_labels: ("AA Bd. V", "1790"),
+                source_splitter_en: false,
+                strong_colon_splits: false,
             })
         }
         "hegel1" => {
@@ -392,6 +404,62 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 // marker would land on sort 0 (the kant1 b_edition bug).
                 edition_sort_arabic_fallback: true,
                 marker_labels: ("1807", "GW"),
+                source_splitter_en: false,
+                strong_colon_splits: false,
+            })
+        }
+        "hobbes1" => {
+            use common::hobbes1::{filenames, meta, toc, toc_mod};
+            if translation {
+                panic!("hobbes1 is a single-edition English corpus — no --translation build");
+            }
+            Some(Corpus {
+                name: "hobbes1",
+                book: book_data(BookSpec {
+                    slug: meta::BOOK_SLUG,
+                    title: meta::BOOK_TITLE,
+                    author: meta::AUTHOR,
+                    language: meta::LANGUAGE,
+                    source: meta::SOURCE,
+                    year: meta::YEAR,
+                    about: meta::ABOUT,
+                    imprint: Imprint {
+                        publisher: Some(meta::PUBLISHER),
+                        place: Some(meta::PUBLICATION_PLACE),
+                        volume: None,
+                        edition: None,
+                        original_year: None,
+                    },
+                }),
+                // One system: the printed 1651 folio numbers, the scholarly
+                // citation standard for the Head edition.
+                reference_systems: vec![ReferenceSystemData {
+                    slug: meta::PAGE_SYSTEM_SLUG.to_string(),
+                    label: meta::PAGE_SYSTEM_LABEL.to_string(),
+                    ref_type: meta::PAGE_SYSTEM_REF_TYPE.to_string(),
+                    cite_priority: Some(meta::PAGE_CITE_PRIORITY),
+                    cite_template: Some(meta::PAGE_CITE_TEMPLATE.to_string()),
+                    margin_prefix: None,
+                }],
+                toc_reviewed: toc::flat_toc_entries(),
+                toc_modernized: toc_mod::flat_toc_entries(),
+                toc_en: None,
+                filenames: filenames::all_filenames(),
+                position_number: filenames::position_number,
+                slugify: filenames::slugify,
+                modernized_dir: meta::MODERNIZED_DIR.to_string(),
+                reviewed_dir: meta::REVIEWED_DIR.to_string(),
+                translated_dir: String::new(),
+                output_file: meta::OUTPUT_FILE.to_string(),
+                figure_label: "Figure",
+                aa_system_slug: meta::PAGE_SYSTEM_SLUG,
+                // No `{{ }}` system in this corpus; the empty slug fails
+                // loudly at import if such a marker ever appears.
+                edition_system_slug: "",
+                edition_sort_arabic_fallback: false,
+                marker_labels: ("1651", "(none)"),
+                source_splitter_en: true,
+                strong_colon_splits: true,
             })
         }
         _ => None,

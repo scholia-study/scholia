@@ -130,25 +130,47 @@ function MarginNotes({
  * Authorial margin notes beside their anchor sentence. Wide panels render the
  * note prose directly in the gutter (the 1651 look); compact panels render a
  * small gutter button that opens the notes in a popover — the trigger always
- * lives in the gutter, never in the text. Notes anchored to consecutive
- * sentences can overlap vertically when a note outgrows its line spacing;
- * accepted for now, the printer had the same problem.
+ * lives in the gutter, never in the text. When the same gutter side also
+ * carries page-reference markers, they render as a small row INSIDE this
+ * block (above the note text) instead of a separate absolute span that
+ * would overlap it. Notes anchored to consecutive sentences can overlap
+ * vertically when a note outgrows its line spacing; accepted for now, the
+ * printer had the same problem.
  */
 function MarginNoteGutter({
     notes,
     side,
     showOriginal,
     compact,
+    markers,
 }: {
     notes: MarginNoteResponse[];
     side: "left" | "right";
     showOriginal?: boolean;
     compact?: boolean;
+    /** Same-side page markers, folded in above the note text. */
+    markers?: PageMarkerResponse[];
 }) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const noteHtml = (s: MarginNoteResponse["sentences"][number]) =>
         showOriginal && s.original_html ? s.original_html : s.html;
+
+    const markerRow = markers && markers.length > 0 && (
+        <span className="block not-italic text-[10px] text-stone-400 select-none">
+            {[...markers]
+                .sort((a, b) => a.system_slug.localeCompare(b.system_slug))
+                .map((pm, i) => (
+                    <span
+                        key={`${pm.system_slug}-${pm.ref_value}-${i}`}
+                        title={`${pm.system_slug}: ${pm.ref_value}`}
+                        className="mr-1"
+                    >
+                        {(pm.margin_prefix ?? "") + pm.ref_value}
+                    </span>
+                ))}
+        </span>
+    );
 
     if (!compact) {
         return (
@@ -159,6 +181,7 @@ function MarginNoteGutter({
                         : "left-full ml-3"
                 }`}
             >
+                {markerRow}
                 {notes.map((note) => (
                     <span key={note.id} className="block mb-1">
                         {note.sentences.map((s) => (
@@ -175,11 +198,20 @@ function MarginNoteGutter({
     return (
         <>
             <span
-                className={`absolute select-none ${
+                className={`absolute select-none whitespace-nowrap ${
                     side === "left" ? "right-full mr-2" : "left-full ml-2"
                 }`}
                 style={{ lineHeight: "inherit" }}
             >
+                {markers?.map((pm, i) => (
+                    <span
+                        key={`${pm.system_slug}-${pm.ref_value}-${i}`}
+                        className="text-[10px] text-stone-400 mr-1"
+                        title={`${pm.system_slug}: ${pm.ref_value}`}
+                    >
+                        {(pm.margin_prefix ?? "") + pm.ref_value}
+                    </span>
+                ))}
                 <button
                     type="button"
                     onClick={(e) => {
@@ -472,26 +504,31 @@ export function Sentence({
                     <EditNoteOutlined sx={{ fontSize: 14 }} />
                 </span>
             )}
-            {leftMarkers && (
-                <MarginNotes
-                    markers={leftMarkers}
-                    side="left"
-                    vAlign={markerVAlign}
-                />
-            )}
-            {rightMarkers && (
-                <MarginNotes
-                    markers={rightMarkers}
-                    side="right"
-                    vAlign={markerVAlign}
-                />
-            )}
+            {leftMarkers &&
+                !(showMarginNotes && marginNotesSide === "left") && (
+                    <MarginNotes
+                        markers={leftMarkers}
+                        side="left"
+                        vAlign={markerVAlign}
+                    />
+                )}
+            {rightMarkers &&
+                !(showMarginNotes && marginNotesSide === "right") && (
+                    <MarginNotes
+                        markers={rightMarkers}
+                        side="right"
+                        vAlign={markerVAlign}
+                    />
+                )}
             {showMarginNotes && (
                 <MarginNoteGutter
                     notes={marginNotes}
                     side={marginNotesSide}
                     showOriginal={showOriginal}
                     compact={marginSettings?.marginNotesCompact}
+                    markers={
+                        marginNotesSide === "left" ? leftMarkers : rightMarkers
+                    }
                 />
             )}
             <span
@@ -558,22 +595,28 @@ function HeadingSentence({
     const showMarginNotes =
         !!marginNotes?.length &&
         !!marginSettings?.enabledSystems.has(MARGIN_NOTES_SLUG);
+    const marginNotesSide =
+        marginSettings?.systemSides[MARGIN_NOTES_SLUG] ?? "right";
 
     return (
         <>
-            {leftMarkers && <MarginNotes markers={leftMarkers} side="left" />}
-            {rightMarkers && (
-                <MarginNotes markers={rightMarkers} side="right" />
-            )}
+            {leftMarkers &&
+                !(showMarginNotes && marginNotesSide === "left") && (
+                    <MarginNotes markers={leftMarkers} side="left" />
+                )}
+            {rightMarkers &&
+                !(showMarginNotes && marginNotesSide === "right") && (
+                    <MarginNotes markers={rightMarkers} side="right" />
+                )}
             {showMarginNotes && (
                 <MarginNoteGutter
                     notes={marginNotes}
-                    side={
-                        marginSettings?.systemSides[MARGIN_NOTES_SLUG] ??
-                        "right"
-                    }
+                    side={marginNotesSide}
                     showOriginal={showOriginal}
                     compact={marginSettings?.marginNotesCompact}
+                    markers={
+                        marginNotesSide === "left" ? leftMarkers : rightMarkers
+                    }
                 />
             )}
             <span>

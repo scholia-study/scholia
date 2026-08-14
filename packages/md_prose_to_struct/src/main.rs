@@ -447,6 +447,8 @@ fn print_summary(corpus: &Corpus, output: &text_struct::model::Output) {
     let mut numbered_sentences = 0;
     let mut footnote_count = 0;
     let mut footnote_sentence_count = 0;
+    let mut margin_note_count = 0;
+    let mut margin_note_sentence_count = 0;
     let mut aa_markers = 0;
     let mut ed_markers = 0;
     let mut aa_sort_values = Vec::new();
@@ -468,6 +470,10 @@ fn print_summary(corpus: &Corpus, output: &text_struct::model::Output) {
                 for footnote in &sent.footnotes {
                     footnote_count += 1;
                     footnote_sentence_count += footnote.sentences.len();
+                }
+                for margin_note in &sent.margin_notes {
+                    margin_note_count += 1;
+                    margin_note_sentence_count += margin_note.sentences.len();
                 }
                 for pm in &sent.page_markers {
                     if pm.system == corpus.aa_system_slug {
@@ -501,6 +507,10 @@ fn print_summary(corpus: &Corpus, output: &text_struct::model::Output) {
     eprintln!(
         "  footnotes:      {} ({} footnote sentences)",
         footnote_count, footnote_sentence_count
+    );
+    eprintln!(
+        "  margin_notes:   {} ({} note sentences)",
+        margin_note_count, margin_note_sentence_count
     );
     eprintln!(
         "  page_markers:   {} ({} {}, {} {})",

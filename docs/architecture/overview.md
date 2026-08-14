@@ -33,13 +33,15 @@ See ADR 0006.
   ─────────────────────────────────────────────────────────────────────────
   kant1_ocr_to_lines → kant1_lines_to_elements → kant1_elements_to_md   (Kant OCR)
   ibsen1_xml_to_md                                                      (HIS TEI)
+  hobbes1_tei_to_md                                                     (EEBO-TCP TEI)
 
                     assets/<corpus>/curated/  (tracked, human-edited MD)
                                  │
   PARSERS (curated MD → struct JSON; one crate per GENRE, corpus = config)
   ─────────────────────────────────────────────────────────────────────────
-  md_prose_to_struct    --corpus kant1|kant3|hegel1 annotated prose: footnotes,
-                        [--translation]             figures, dual page systems
+  md_prose_to_struct    --corpus kant1|kant3|      annotated prose: footnotes,
+                          hegel1|hobbes1            margin notes, figures, dual
+                        [--translation]             page systems
   md_poetry_to_struct   --corpus shakespeare1|milton1  verse: line-per-sentence,
                                                     indent levels
   md_drama_to_struct    --corpus ibsen1             drama: @ speaker / @stage /
@@ -48,7 +50,7 @@ See ADR 0006.
                                  ▼
   THE WAIST ────────── text_struct ──────────────────────────────────────────
                        model  — the one struct-JSON schema (superset:
-                                footnotes, indent, NodeSource, …)
+                                footnotes, margin notes, indent, NodeSource, …)
                        html   — curated-markdown → HTML helpers
                        parse  — front matter, dir scan, marker resolution
                                  │
@@ -94,7 +96,7 @@ flowchart TB
 
     subgraph parsers ["genre parsers (corpus = config)"]
         direction LR
-        prose["md_prose_to_struct<br/>--corpus kant1|kant3|hegel1"]
+        prose["md_prose_to_struct<br/>--corpus kant1|kant3|hegel1|hobbes1"]
         poetry["md_poetry_to_struct<br/>--corpus shakespeare1|milton1"]
         drama["md_drama_to_struct<br/>--corpus ibsen1"]
     end

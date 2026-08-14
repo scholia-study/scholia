@@ -10,7 +10,7 @@ SCHOLIA_DB_URL_DEFAULT="postgres://prospero:prospero@localhost:5433/prospero"
 # `just db-reload` iterates), so a new corpus can never fall out of the reload
 # path. Bible is NOT here: it has its own importer, image, and fetch flow.
 # Adding a corpus: add it here + a case arm in ingest.sh and struct.sh.
-SCHOLIA_CORPORA=(kant1 kant3 hegel1 shakespeare1 milton1 ibsen1)
+SCHOLIA_CORPORA=(kant1 kant3 hegel1 shakespeare1 milton1 ibsen1 hobbes1)
 
 scholia_corpus_known() {
     local c

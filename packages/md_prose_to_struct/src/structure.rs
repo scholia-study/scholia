@@ -14,8 +14,9 @@
 //! and resolved to the sentence they fall in.
 
 use common::sentences::{
-    RUN_BREAK, split_sentences_en_forced, split_sentences_forced, strip_forced_split_markers,
-    strip_forced_splits, strip_forced_splits_keep_runs, take_run_marker,
+    RUN_BREAK, split_sentences_en_forced, split_sentences_en_strong_colon_forced,
+    split_sentences_forced, strip_forced_split_markers, strip_forced_splits,
+    strip_forced_splits_keep_runs, take_run_marker,
 };
 use regex::Regex;
 use std::collections::HashMap;
@@ -197,7 +198,9 @@ pub fn build_output(corpus: &Corpus, translation: bool, parsed_files: &[ParsedFi
     };
 
     let ctx = BlockCtx {
-        splitter: if translation {
+        splitter: if corpus.strong_colon_splits {
+            split_sentences_en_strong_colon_forced
+        } else if translation || corpus.source_splitter_en {
             split_sentences_en_forced
         } else {
             split_sentences_forced
@@ -965,14 +968,6 @@ Weil die Kategorien fortgehen.
         );
     }
 
-    fn empty_lookups_and_counters() -> (
-        HashMap<(usize, String), i32>,
-        HashMap<(usize, String), FootnoteContent>,
-        HashMap<i32, (usize, String)>,
-    ) {
-        (HashMap::new(), HashMap::new(), HashMap::new())
-    }
-
     #[test]
     fn test_build_block_margin_notes_two_layers() {
         // Two margin notes mid-paragraph, Leviathan-shaped, with a reviewed
@@ -991,7 +986,9 @@ Weil die Kategorien fortgehen.
             markers: Vec::new(),
         };
 
-        let (marker_map, footnote_content, number_to_key) = empty_lookups_and_counters();
+        let marker_map = HashMap::new();
+        let footnote_content = HashMap::new();
+        let number_to_key = HashMap::new();
         let lookups = Lookups {
             marker_map: &marker_map,
             footnote_content: &footnote_content,
@@ -1064,7 +1061,9 @@ Weil die Kategorien fortgehen.
             markers: Vec::new(),
         };
 
-        let (marker_map, footnote_content, number_to_key) = empty_lookups_and_counters();
+        let marker_map = HashMap::new();
+        let footnote_content = HashMap::new();
+        let number_to_key = HashMap::new();
         let lookups = Lookups {
             marker_map: &marker_map,
             footnote_content: &footnote_content,
@@ -1112,7 +1111,9 @@ Weil die Kategorien fortgehen.
             markers: Vec::new(),
         };
 
-        let (marker_map, footnote_content, number_to_key) = empty_lookups_and_counters();
+        let marker_map = HashMap::new();
+        let footnote_content = HashMap::new();
+        let number_to_key = HashMap::new();
         let lookups = Lookups {
             marker_map: &marker_map,
             footnote_content: &footnote_content,

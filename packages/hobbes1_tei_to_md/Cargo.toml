@@ -1,0 +1,12 @@
+[package]
+name = "hobbes1_tei_to_md"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Same rationale as hegel1_tei_to_md: read-only DOM with document order and
+# mixed content, which the inline walker (margin notes, EOL-hyphen rejoin,
+# page-break markers) depends on.
+roxmltree = "0.21"
+regex = "1"
+clap = { version = "4", features = ["derive"] }

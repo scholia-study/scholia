@@ -31,6 +31,9 @@ assets/ibsen1/*
 !assets/hegel1/
 assets/hegel1/*
 !assets/hegel1/curated/
+!assets/hobbes1/
+assets/hobbes1/*
+!assets/hobbes1/curated/
 
 .env
 .env.master

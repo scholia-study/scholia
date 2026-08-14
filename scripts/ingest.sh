@@ -74,6 +74,9 @@ case "$corpus" in
         "$BIN" --input-file assets/ibsen1/derived/translation_output.json \
                --source-book-slug keiser-og-galileer "$@"
         ;;
+    hobbes1)
+        "$BIN" --input-file assets/hobbes1/derived/output.json "$@"
+        ;;
     *)
         # Unreachable: membership in SCHOLIA_CORPORA is checked above. Hitting
         # this means the array and the case arms drifted apart.

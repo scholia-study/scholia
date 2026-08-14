@@ -41,3 +41,4 @@ resources:
   - ingest-shakespeare1.yaml
   - ingest-milton1.yaml
   - ingest-ibsen1.yaml
+  - ingest-hobbes1.yaml
