@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
+import { FetchError } from "../api/fetcher";
 import {
     getGetSeriesSuspenseQueryOptions,
     useGetSeriesSuspense,
@@ -32,19 +33,26 @@ export const Route = createFileRoute("/articles/series/$slug")({
     },
     loaderDeps: ({ search: { page } }) => ({ page }),
     loader: async ({ context, params, deps }) => {
-        const res = await context.queryClient.ensureQueryData(
-            getGetSeriesSuspenseQueryOptions(params.slug, {
-                page: deps.page,
-                per_page: PER_PAGE,
-            }),
-        );
-        const series = res.data;
-        return {
-            name: series.name,
-            description: series.description
-                ? metaDescription(series.description)
-                : SEO_COPY.series.description(series.name),
-        };
+        try {
+            const res = await context.queryClient.ensureQueryData(
+                getGetSeriesSuspenseQueryOptions(params.slug, {
+                    page: deps.page,
+                    per_page: PER_PAGE,
+                }),
+            );
+            const series = res.data;
+            return {
+                name: series.name,
+                description: series.description
+                    ? metaDescription(series.description)
+                    : SEO_COPY.series.description(series.name),
+            };
+        } catch (err) {
+            if (err instanceof FetchError && err.status === 404) {
+                throw notFound();
+            }
+            throw err;
+        }
     },
     head: ({ loaderData, params }) => {
         if (!loaderData) return {};

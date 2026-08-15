@@ -1,8 +1,14 @@
-import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
+import {
+    createFileRoute,
+    Link,
+    notFound,
+    useLocation,
+} from "@tanstack/react-router";
 import {
     getGetBookSuspenseQueryOptions,
     useGetBookSuspense,
 } from "../api/books/books";
+import { FetchError } from "../api/fetcher";
 import {
     getGetTocSuspenseQueryOptions,
     useGetTocSuspense,
@@ -22,10 +28,17 @@ export const Route = createFileRoute("/books/$bookSlug/")({
         context.queryClient.prefetchQuery(
             getGetTocSuspenseQueryOptions(params.bookSlug),
         );
-        const bookRes = await context.queryClient.ensureQueryData(
-            getGetBookSuspenseQueryOptions(params.bookSlug),
-        );
-        return { bookMeta: toBookMeta(bookRes.data) };
+        try {
+            const bookRes = await context.queryClient.ensureQueryData(
+                getGetBookSuspenseQueryOptions(params.bookSlug),
+            );
+            return { bookMeta: toBookMeta(bookRes.data) };
+        } catch (err) {
+            if (err instanceof FetchError && err.status === 404) {
+                throw notFound();
+            }
+            throw err;
+        }
     },
     head: ({ loaderData, params }) => {
         if (!loaderData) return {};

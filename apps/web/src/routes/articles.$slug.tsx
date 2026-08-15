@@ -1,10 +1,11 @@
 import { Chip } from "@mui/material";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import type { Element } from "html-react-parser";
 import {
     getGetPublishedArticleSuspenseQueryOptions,
     useGetPublishedArticleSuspense,
 } from "../api/articles/articles";
+import { FetchError } from "../api/fetcher";
 import { useAuth } from "../hooks/useAuth";
 import {
     ArticlePageUI,
@@ -28,21 +29,28 @@ import { SeriesPrevNext, SeriesStrip } from "../modules/series";
 
 export const Route = createFileRoute("/articles/$slug")({
     loader: async ({ context, params }) => {
-        const res = await context.queryClient.ensureQueryData(
-            getGetPublishedArticleSuspenseQueryOptions(params.slug),
-        );
-        const article = res.data;
-        return {
-            title: article.title,
-            description: article.description
-                ? metaDescription(article.description)
-                : metaDescription(stripHtml(article.html)),
-            archived: article.status === "archived",
-            authorName: article.author_display_name,
-            authorHandle: article.author_handle ?? null,
-            publishedAt: article.published_at ?? null,
-            updatedAt: article.updated_at,
-        };
+        try {
+            const res = await context.queryClient.ensureQueryData(
+                getGetPublishedArticleSuspenseQueryOptions(params.slug),
+            );
+            const article = res.data;
+            return {
+                title: article.title,
+                description: article.description
+                    ? metaDescription(article.description)
+                    : metaDescription(stripHtml(article.html)),
+                archived: article.status === "archived",
+                authorName: article.author_display_name,
+                authorHandle: article.author_handle ?? null,
+                publishedAt: article.published_at ?? null,
+                updatedAt: article.updated_at,
+            };
+        } catch (err) {
+            if (err instanceof FetchError && err.status === 404) {
+                throw notFound();
+            }
+            throw err;
+        }
     },
     head: ({ loaderData, params }) => {
         if (!loaderData) return {};
@@ -77,6 +85,7 @@ export const Route = createFileRoute("/articles/$slug")({
     component: PublishedArticlePage,
     pendingComponent: () => <ArticlePageUI kind="loading" />,
     errorComponent: () => <ArticlePageUI kind="error" />,
+    notFoundComponent: () => <ArticlePageUI kind="error" />,
 });
 
 function replaceEmbed(domNode: Element) {
