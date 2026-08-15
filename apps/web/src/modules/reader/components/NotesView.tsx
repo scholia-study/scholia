@@ -420,7 +420,9 @@ function NoteCard({
                 <span className="text-[10px] text-stone-400 mx-auto">
                     {dateStr}
                 </span>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-0.5">
+                {/* Hover-reveal only where hovering exists; touch devices
+                    always show the buttons. */}
+                <div className="pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 transition-opacity flex gap-0.5">
                     <IconButton
                         size="small"
                         onClick={onEdit}
