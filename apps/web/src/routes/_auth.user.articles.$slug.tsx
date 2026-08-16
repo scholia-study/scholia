@@ -1,7 +1,14 @@
 import ArchiveOutlined from "@mui/icons-material/ArchiveOutlined";
 import PublishOutlined from "@mui/icons-material/PublishOutlined";
 import SaveOutlined from "@mui/icons-material/SaveOutlined";
-import { Autocomplete, Button, Chip, TextField } from "@mui/material";
+import {
+    Alert,
+    AlertTitle,
+    Autocomplete,
+    Button,
+    Chip,
+    TextField,
+} from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -59,6 +66,16 @@ MemoizedEditor.displayName = "MemoizedEditor";
 export const Route = createFileRoute("/_auth/user/articles/$slug")({
     component: ArticleEditorPage,
 });
+
+function BibliographyNote() {
+    return (
+        <Alert severity="info">
+            <AlertTitle>Bibliography</AlertTitle>
+            All inserted quotations and citations automatically produce a
+            Chicago-style bibliography at the end of the published article.
+        </Alert>
+    );
+}
 
 function ArticleEditorPage() {
     const { slug } = Route.useParams();
@@ -266,7 +283,12 @@ function ArticleEditorPage() {
 
     return (
         <div className="flex-1 bg-white">
-            <div className="max-w-4xl mx-auto px-8 py-16">
+            <div className="relative max-w-4xl mx-auto px-8 py-16">
+                <aside className="hidden 2xl:block absolute left-full top-16 bottom-16 ml-10 w-64">
+                    <div className="sticky top-8">
+                        <BibliographyNote />
+                    </div>
+                </aside>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2">
@@ -497,6 +519,10 @@ function ArticleEditorPage() {
                     }
                     sx={{ mb: 4 }}
                 />
+
+                <div className="2xl:hidden mb-4">
+                    <BibliographyNote />
+                </div>
 
                 {/* MDXEditor */}
                 <MemoizedEditor
