@@ -1,6 +1,13 @@
 packages:
   - apps/*
 
+allowBuilds:
+  '@sentry/cli': true
+  core-js: false
+  es5-ext: false
+  esbuild: false
+  lefthook: true
+
 onlyBuiltDependencies:
   - "@parcel/watcher"
   - esbuild

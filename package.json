@@ -1,7 +1,7 @@
 {
     "name": "scholia",
     "private": true,
-    "packageManager": "pnpm@10.31.0",
+    "packageManager": "pnpm@11.22.0",
     "scripts": {
         "h": "jq '.scripts' package.json",
         "validate": "pnpm exec turbo lint ct test check:modules",
@@ -20,7 +20,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "2.4.5",
-        "lefthook": "^2.1.9",
+        "lefthook": "^2.1.10",
         "turbo": "2.9.18"
     }
 }
