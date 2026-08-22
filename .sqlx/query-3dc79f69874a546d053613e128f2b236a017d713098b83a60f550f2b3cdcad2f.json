@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "INSERT INTO articles (user_id, title, slug)\n               VALUES ($1, $2, $3)\n               RETURNING\n                   id, title, slug, description, markdown, html,\n                   status AS \"status: ArticleStatus\",\n                   $1 AS \"author_user_id!\",\n                   (SELECT display_name FROM users WHERE id = $1) AS \"author_display_name!\",\n                   (SELECT handle FROM users WHERE id = $1) AS \"author_handle?\",\n                   published_at, created_at, updated_at",
+    "query": "SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,\n                  a.status AS \"status: ArticleStatus\",\n                  u.id AS \"author_user_id!\",\n                  u.display_name AS \"author_display_name!\",\n                  u.handle AS \"author_handle?\",\n                  a.quoting_disabled,\n                  a.published_at, a.created_at, a.updated_at\n           FROM articles a\n           JOIN users u ON u.id = a.user_id\n           WHERE a.id = $1 AND a.status IN ('published', 'archived')",
     "describe": {
         "columns": [
             {
@@ -62,22 +62,27 @@
             },
             {
                 "ordinal": 10,
+                "name": "quoting_disabled",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 11,
                 "name": "published_at",
                 "type_info": "Timestamptz"
             },
             {
-                "ordinal": 11,
+                "ordinal": 12,
                 "name": "created_at",
                 "type_info": "Timestamptz"
             },
             {
-                "ordinal": 12,
+                "ordinal": 13,
                 "name": "updated_at",
                 "type_info": "Timestamptz"
             }
         ],
         "parameters": {
-            "Left": ["Uuid", "Text", "Text"]
+            "Left": ["Uuid"]
         },
         "nullable": [
             false,
@@ -87,13 +92,14 @@
             false,
             false,
             false,
-            null,
-            null,
-            null,
+            false,
+            false,
+            true,
+            false,
             true,
             false,
             false
         ]
     },
-    "hash": "eb3bb55048bbb3f7adea5eb89aae742c5249a315ffff036111f8961a3e3f9fec"
+    "hash": "3dc79f69874a546d053613e128f2b236a017d713098b83a60f550f2b3cdcad2f"
 }

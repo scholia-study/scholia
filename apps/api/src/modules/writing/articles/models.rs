@@ -79,6 +79,17 @@ pub struct ApplyEditorialLabelRequest {
     pub label_slug: String,
 }
 
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct SetArticleQuotingRequest {
+    pub quoting_disabled: bool,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ArticleQuotingResponse {
+    pub slug: String,
+    pub quoting_disabled: bool,
+}
+
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ArticleResponse {
     pub id: String,
@@ -146,6 +157,9 @@ pub struct ArticleDetailResponse {
     /// articles in no series (and on owner-facing endpoints).
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub series: Vec<ArticleSeriesContext>,
+    /// Admin-set: suppress the reader's sentence-selection layer, for
+    /// articles that read as blog posts rather than quotable scholarship.
+    pub quoting_disabled: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub published_at: Option<String>,
     pub created_at: String,

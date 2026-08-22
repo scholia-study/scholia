@@ -36,6 +36,7 @@ import type {
     ApplyEditorialLabelRequest,
     ArticleDetailResponse,
     ArticleListResponse,
+    ArticleQuotingResponse,
     CreateArticleRequest,
     EditorialLabelListResponse,
     EditorialLabelResponse,
@@ -44,6 +45,7 @@ import type {
     ListUserArticlesParams,
     PassageArticleListResponse,
     PublishedArticleListResponse,
+    SetArticleQuotingRequest,
     UpdateArticleRequest,
 } from "../model";
 
@@ -314,6 +316,134 @@ export const useRemoveArticleLabel = <TError = void, TContext = unknown>(
 > => {
     return useMutation(
         getRemoveArticleLabelMutationOptions(options),
+        queryClient,
+    );
+};
+export type setArticleQuotingResponse200 = {
+    data: ArticleQuotingResponse;
+    status: 200;
+};
+
+export type setArticleQuotingResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type setArticleQuotingResponse403 = {
+    data: void;
+    status: 403;
+};
+
+export type setArticleQuotingResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type setArticleQuotingResponseSuccess = setArticleQuotingResponse200 & {
+    headers: Headers;
+};
+export type setArticleQuotingResponseError = (
+    | setArticleQuotingResponse401
+    | setArticleQuotingResponse403
+    | setArticleQuotingResponse404
+) & {
+    headers: Headers;
+};
+
+export const getSetArticleQuotingUrl = (slug: string) => {
+    return `/api/admin/articles/${slug}/quoting`;
+};
+
+/**
+ * @summary Turn the reader's sentence-selection layer on or off for one
+article. Admin only — authors do not control this.
+ */
+export const setArticleQuoting = async (
+    slug: string,
+    setArticleQuotingRequest: SetArticleQuotingRequest,
+    options?: Parameters<typeof customFetch>[1],
+): Promise<setArticleQuotingResponseSuccess> => {
+    return customFetch<setArticleQuotingResponseSuccess>(
+        getSetArticleQuotingUrl(slug),
+        {
+            ...options,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: JSON.stringify(setArticleQuotingRequest),
+        },
+    );
+};
+
+export const getSetArticleQuotingMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof setArticleQuoting>>,
+        TError,
+        { slug: string; data: SetArticleQuotingRequest },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof setArticleQuoting>>,
+    TError,
+    { slug: string; data: SetArticleQuotingRequest },
+    TContext
+> => {
+    const mutationKey = ["setArticleQuoting"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof setArticleQuoting>>,
+        { slug: string; data: SetArticleQuotingRequest }
+    > = (props) => {
+        const { slug, data } = props ?? {};
+
+        return setArticleQuoting(slug, data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type SetArticleQuotingMutationResult = NonNullable<
+    Awaited<ReturnType<typeof setArticleQuoting>>
+>;
+export type SetArticleQuotingMutationBody = SetArticleQuotingRequest;
+export type SetArticleQuotingMutationError = void;
+
+/**
+ * @summary Turn the reader's sentence-selection layer on or off for one
+article. Admin only — authors do not control this.
+ */
+export const useSetArticleQuoting = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof setArticleQuoting>>,
+            TError,
+            { slug: string; data: SetArticleQuotingRequest },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof setArticleQuoting>>,
+    TError,
+    { slug: string; data: SetArticleQuotingRequest },
+    TContext
+> => {
+    return useMutation(
+        getSetArticleQuotingMutationOptions(options),
         queryClient,
     );
 };

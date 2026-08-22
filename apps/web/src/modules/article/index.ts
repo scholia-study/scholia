@@ -4,6 +4,7 @@ export {
     ArticleEditorLazy,
 } from "./components/ArticleEditorLazy";
 export { ArticlePageUI } from "./components/ArticlePageUI";
+export { ArticleQuotingToggle } from "./components/ArticleQuotingToggle";
 export { EditorialLabelChips } from "./components/EditorialLabelChips";
 export { EditorialLabelManager } from "./components/EditorialLabelManager";
 export {

@@ -290,6 +290,55 @@
                 }
             }
         },
+        "/api/admin/articles/{slug}/quoting": {
+            "put": {
+                "tags": ["articles"],
+                "summary": "Turn the reader's sentence-selection layer on or off for one\narticle. Admin only — authors do not control this.",
+                "operationId": "set_article_quoting",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Article slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SetArticleQuotingRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Setting updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleQuotingResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    },
+                    "404": {
+                        "description": "Article not found"
+                    }
+                }
+            }
+        },
         "/api/admin/feedback": {
             "get": {
                 "tags": ["feedback"],
@@ -5117,6 +5166,7 @@
                     "author_public_roles",
                     "topics",
                     "labels",
+                    "quoting_disabled",
                     "created_at",
                     "updated_at"
                 ],
@@ -5167,6 +5217,10 @@
                     },
                     "published_at": {
                         "type": ["string", "null"]
+                    },
+                    "quoting_disabled": {
+                        "type": "boolean",
+                        "description": "Admin-set: suppress the reader's sentence-selection layer, for\narticles that read as blog posts rather than quotable scholarship."
                     },
                     "revoked_labels": {
                         "type": "array",
@@ -5291,6 +5345,18 @@
                         "format": "int64"
                     },
                     "text": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ArticleQuotingResponse": {
+                "type": "object",
+                "required": ["slug", "quoting_disabled"],
+                "properties": {
+                    "quoting_disabled": {
+                        "type": "boolean"
+                    },
+                    "slug": {
                         "type": "string"
                     }
                 }
@@ -8584,6 +8650,15 @@
                     },
                     "slug": {
                         "type": "string"
+                    }
+                }
+            },
+            "SetArticleQuotingRequest": {
+                "type": "object",
+                "required": ["quoting_disabled"],
+                "properties": {
+                    "quoting_disabled": {
+                        "type": "boolean"
                     }
                 }
             },

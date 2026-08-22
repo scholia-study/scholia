@@ -68,8 +68,10 @@ CREATE TABLE article_review_messages (
   sender_id uuid,
   body text NOT NULL,
   created_at timestamp with time zone NOT NULL,
+  collegium_id uuid,
   PRIMARY KEY (id),
   FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+  FOREIGN KEY (collegium_id) REFERENCES collegia(id),
   FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
@@ -85,9 +87,12 @@ CREATE TABLE article_review_requests (
   resolved_at timestamp with time zone,
   updated_at timestamp with time zone NOT NULL,
   assigned_to uuid,
+  collegium_id uuid,
+  member_visible boolean,
   PRIMARY KEY (id),
   FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
   FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (collegium_id) REFERENCES collegia(id),
   FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
@@ -111,6 +116,7 @@ CREATE TABLE articles (
   published_at timestamp with time zone,
   created_at timestamp with time zone NOT NULL,
   updated_at timestamp with time zone NOT NULL,
+  quoting_disabled boolean NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -143,6 +149,45 @@ CREATE TABLE canonical_passages (
   PRIMARY KEY (id),
   FOREIGN KEY (root_sentence_id) REFERENCES sentences(id) ON DELETE CASCADE,
   FOREIGN KEY (work_root) REFERENCES sources(id) ON DELETE CASCADE
+);
+
+CREATE TABLE collegia (
+  id uuid NOT NULL,
+  name text NOT NULL,
+  slug text NOT NULL,
+  description text,
+  is_private boolean NOT NULL,
+  invite_token text,
+  created_by uuid,
+  created_at timestamp with time zone NOT NULL,
+  deleted_at timestamp with time zone,
+  review_visibility collegium_review_visibility NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE collegium_join_requests (
+  id uuid NOT NULL,
+  collegium_id uuid NOT NULL,
+  user_id uuid NOT NULL,
+  status collegium_join_request_status NOT NULL,
+  decided_by uuid,
+  decided_at timestamp with time zone,
+  created_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (collegium_id) REFERENCES collegia(id) ON DELETE CASCADE,
+  FOREIGN KEY (decided_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE collegium_members (
+  collegium_id uuid NOT NULL,
+  user_id uuid NOT NULL,
+  role collegium_member_role NOT NULL,
+  joined_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (collegium_id, user_id),
+  FOREIGN KEY (collegium_id) REFERENCES collegia(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE content_blocks (

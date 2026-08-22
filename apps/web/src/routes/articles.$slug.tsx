@@ -9,6 +9,7 @@ import { FetchError } from "../api/fetcher";
 import { useAuth } from "../hooks/useAuth";
 import {
     ArticlePageUI,
+    ArticleQuotingToggle,
     EditorialLabelChips,
     EditorialLabelManager,
 } from "../modules/article";
@@ -139,6 +140,10 @@ function PublishedArticlePage() {
     const article = articleData.data;
     const { hasPermission } = useAuth();
     const canManageLabels = hasPermission("article_labels_manage");
+    const canManageQuoting = hasPermission("articles_quoting_manage");
+    const showLabels =
+        (article.labels.length > 0 || canManageLabels) &&
+        article.status === "published";
 
     return (
         <div className="flex-1 bg-white">
@@ -148,21 +153,30 @@ function PublishedArticlePage() {
                     <h1 className="text-3xl font-bold text-stone-900 mb-3">
                         {article.title}
                     </h1>
-                    {(article.labels.length > 0 || canManageLabels) &&
-                        article.status === "published" && (
-                            <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                                <EditorialLabelChips
-                                    labels={article.labels}
-                                    clickable={true}
-                                />
-                                {canManageLabels && (
-                                    <EditorialLabelManager
-                                        articleSlug={article.slug}
-                                        appliedLabels={article.labels}
+                    {(showLabels || canManageQuoting) && (
+                        <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                            {showLabels && (
+                                <>
+                                    <EditorialLabelChips
+                                        labels={article.labels}
+                                        clickable={true}
                                     />
-                                )}
-                            </div>
-                        )}
+                                    {canManageLabels && (
+                                        <EditorialLabelManager
+                                            articleSlug={article.slug}
+                                            appliedLabels={article.labels}
+                                        />
+                                    )}
+                                </>
+                            )}
+                            {canManageQuoting && (
+                                <ArticleQuotingToggle
+                                    articleSlug={article.slug}
+                                    quotingDisabled={article.quoting_disabled}
+                                />
+                            )}
+                        </div>
+                    )}
                     {article.description && (
                         <p className="text-lg text-stone-500 mb-4">
                             {article.description}
@@ -249,7 +263,10 @@ function PublishedArticlePage() {
                         html={article.html}
                         articleId={article.id}
                         replaceEmbed={replaceEmbed}
-                        disabled={article.status === "archived"}
+                        disabled={
+                            article.status === "archived" ||
+                            article.quoting_disabled
+                        }
                     />
                 </div>
 

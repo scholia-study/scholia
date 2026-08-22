@@ -18,7 +18,16 @@ const HTML = [
     "<p>Tail paragraph.</p>",
 ].join("\n");
 
-function renderComponent() {
+// Inline markup that must survive segmentation: emphasis wholly inside
+// one sentence, a link and code in another, and emphasis straddling the
+// boundary between two sentences.
+const INLINE_HTML = [
+    '<p>A <em>bold</em> claim. See <a href="https://x.test">the docs</a> ',
+    "and <code>run()</code>.</p>",
+    "<p><strong>First. Second.</strong></p>",
+].join("");
+
+function renderComponent(html = HTML) {
     const qc = new QueryClient({
         defaultOptions: { queries: { retry: false } },
     });
@@ -26,13 +35,19 @@ function renderComponent() {
         <QueryClientProvider client={qc}>
             <AuthProvider>
                 <ArticleSentences
-                    html={HTML}
+                    html={html}
                     articleId="a1"
                     replaceEmbed={() => <div data-testid="embed" />}
                 />
             </AuthProvider>
         </QueryClientProvider>,
     );
+}
+
+function sentenceHtml(container: HTMLElement): string[] {
+    return Array.from(
+        container.querySelectorAll("[data-article-sentence]"),
+    ).map((el) => el.innerHTML);
 }
 
 describe("ArticleSentences", () => {
@@ -43,6 +58,33 @@ describe("ArticleSentences", () => {
         ).map((el) => el.getAttribute("data-article-sentence"));
         expect(spanKeys.length).toBeGreaterThan(0);
         expect(spanKeys).toEqual(buildSentenceList(HTML).map((s) => s.key));
+    });
+
+    it("keeps inline markup inside a sentence", () => {
+        const { container } = renderComponent(INLINE_HTML);
+        const [first, second] = sentenceHtml(container);
+        expect(first).toBe("A <em>bold</em> claim. ");
+        expect(second).toBe(
+            'See <a href="https://x.test">the docs</a> and <code>run()</code>.',
+        );
+    });
+
+    it("splits an inline element that straddles a sentence boundary", () => {
+        const { container } = renderComponent(INLINE_HTML);
+        expect(sentenceHtml(container).slice(-2)).toEqual([
+            "<strong>First. </strong>",
+            "<strong>Second.</strong>",
+        ]);
+    });
+
+    it("snapshots sentence html byte-identically to the rendered spans", () => {
+        for (const source of [HTML, INLINE_HTML]) {
+            const { container, unmount } = renderComponent(source);
+            expect(sentenceHtml(container)).toEqual(
+                buildSentenceList(source).map((s) => s.html),
+            );
+            unmount();
+        }
     });
 
     it("counts a blockquote as one block and skips embed internals", () => {

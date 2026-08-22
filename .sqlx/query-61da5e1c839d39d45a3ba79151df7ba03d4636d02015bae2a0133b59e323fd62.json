@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,\n                  a.status AS \"status: ArticleStatus\",\n                  u.id AS \"author_user_id!\",\n                  u.display_name AS \"author_display_name!\",\n                  u.handle AS \"author_handle?\",\n                  a.published_at, a.created_at, a.updated_at\n           FROM articles a\n           JOIN users u ON u.id = a.user_id\n           WHERE a.slug = $1 AND a.user_id = $2",
+    "query": "SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,\n                  a.status AS \"status: ArticleStatus\",\n                  u.id AS \"author_user_id!\",\n                  u.display_name AS \"author_display_name!\",\n                  u.handle AS \"author_handle?\",\n                  a.quoting_disabled,\n                  a.published_at, a.created_at, a.updated_at\n           FROM articles a\n           JOIN users u ON u.id = a.user_id\n           WHERE a.slug = $1 AND a.user_id = $2",
     "describe": {
         "columns": [
             {
@@ -62,16 +62,21 @@
             },
             {
                 "ordinal": 10,
+                "name": "quoting_disabled",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 11,
                 "name": "published_at",
                 "type_info": "Timestamptz"
             },
             {
-                "ordinal": 11,
+                "ordinal": 12,
                 "name": "created_at",
                 "type_info": "Timestamptz"
             },
             {
-                "ordinal": 12,
+                "ordinal": 13,
                 "name": "updated_at",
                 "type_info": "Timestamptz"
             }
@@ -90,10 +95,11 @@
             false,
             false,
             true,
+            false,
             true,
             false,
             false
         ]
     },
-    "hash": "1c47bec5a538bcfe8e21d804460ddf37f4c679818f7f05e96adc81006055e11c"
+    "hash": "61da5e1c839d39d45a3ba79151df7ba03d4636d02015bae2a0133b59e323fd62"
 }

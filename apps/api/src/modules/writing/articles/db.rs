@@ -4,9 +4,9 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::modules::writing::articles::models::{
-    ArticleDetailResponse, ArticleLimitsResponse, ArticleResponse, ArticleStatus,
-    BatchSentenceResponseItem, CitationPart, EditorialLabelResponse, SentenceData, SourceContext,
-    TopicAdminResponse, TopicResponse,
+    ArticleDetailResponse, ArticleLimitsResponse, ArticleQuotingResponse, ArticleResponse,
+    ArticleStatus, BatchSentenceResponseItem, CitationPart, EditorialLabelResponse, SentenceData,
+    SourceContext, TopicAdminResponse, TopicResponse,
 };
 use crate::system::auth::permissions::{Permission, resolve_permissions};
 use crate::system::error::{AppError, SqlxResultExt};
@@ -46,6 +46,7 @@ struct ArticleRow {
     author_user_id: Uuid,
     author_display_name: String,
     author_handle: Option<String>,
+    quoting_disabled: bool,
     published_at: Option<time::OffsetDateTime>,
     created_at: time::OffsetDateTime,
     updated_at: time::OffsetDateTime,
@@ -194,6 +195,7 @@ fn article_detail_response(
         pending_review_request_id: None,
         latest_review_request_id: None,
         series: Vec::new(),
+        quoting_disabled: r.quoting_disabled,
         published_at: r.published_at.map(fmt_time),
         created_at: fmt_time(r.created_at),
         updated_at: fmt_time(r.updated_at),
@@ -905,6 +907,7 @@ pub async fn create_article(
                    $1 AS "author_user_id!",
                    (SELECT display_name FROM users WHERE id = $1) AS "author_display_name!",
                    (SELECT handle FROM users WHERE id = $1) AS "author_handle?",
+                   quoting_disabled,
                    published_at, created_at, updated_at"#,
             user_id,
             title,
@@ -940,6 +943,7 @@ pub async fn get_user_article_by_slug(
                   u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
+                  a.quoting_disabled,
                   a.published_at, a.created_at, a.updated_at
            FROM articles a
            JOIN users u ON u.id = a.user_id
@@ -969,6 +973,7 @@ pub async fn get_published_article_by_slug(
                   u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
+                  a.quoting_disabled,
                   a.published_at, a.created_at, a.updated_at
            FROM articles a
            JOIN users u ON u.id = a.user_id
@@ -998,6 +1003,7 @@ pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailR
                   u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
+                  a.quoting_disabled,
                   a.published_at, a.created_at, a.updated_at
            FROM articles a
            JOIN users u ON u.id = a.user_id
@@ -1480,6 +1486,35 @@ pub async fn archive_article(pool: &PgPool, slug: &str, user_id: Uuid) -> Result
     .await?
     .ok_or_else(|| AppError::NotFound("Article not found or not in published status".into()))?;
     Ok(id)
+}
+
+/// Flip the reader's sentence-selection layer on one article. Admin
+/// action, so it is not scoped to an owner. Applies to any article
+/// regardless of status — a draft flipped now keeps the setting when it
+/// publishes. Existing quotations are snapshots and are left alone.
+pub async fn set_article_quoting(
+    pool: &PgPool,
+    slug: &str,
+    quoting_disabled: bool,
+) -> Result<ArticleQuotingResponse, AppError> {
+    let row = sqlx::query!(
+        // Deliberately leaves `updated_at` alone: this is site chrome,
+        // not an edit to the article, and it feeds the public "updated"
+        // date and the article JSON-LD.
+        r#"UPDATE articles SET quoting_disabled = $2
+           WHERE slug = $1
+           RETURNING slug, quoting_disabled"#,
+        slug,
+        quoting_disabled,
+    )
+    .fetch_optional(pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound("Article not found".into()))?;
+
+    Ok(ArticleQuotingResponse {
+        slug: row.slug,
+        quoting_disabled: row.quoting_disabled,
+    })
 }
 
 /// Returns the IDs of the N oldest non-archived articles for a user,

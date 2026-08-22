@@ -29,6 +29,7 @@ import { useAuth } from "../hooks/useAuth";
 import {
     ArticleEditorLazy as ArticleEditor,
     type ArticleEditorHandle,
+    ArticleQuotingToggle,
     QuotationPickerModal,
     type QuotationPickerResult,
     useArchiveArticleDialog,
@@ -90,6 +91,7 @@ function ArticleEditorPage() {
 
     const { hasPermission } = useAuth();
     const hasUnlimitedArticles = hasPermission("articles_limit_1000");
+    const canManageQuoting = hasPermission("articles_quoting_manage");
     const { data: userArticlesData } = useListUserArticles(
         {},
         { query: { enabled: !hasUnlimitedArticles } },
@@ -311,6 +313,12 @@ function ArticleEditorPage() {
                                   ? "Unsaved changes"
                                   : "Saved"}
                         </span>
+                        {canManageQuoting && (
+                            <ArticleQuotingToggle
+                                articleSlug={currentSlug.current}
+                                quotingDisabled={article.quoting_disabled}
+                            />
+                        )}
                     </div>
                     <div className="flex items-center gap-2">
                         <ReviewControls article={article} />

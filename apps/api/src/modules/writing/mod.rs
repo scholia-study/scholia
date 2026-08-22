@@ -133,8 +133,10 @@ pub fn public_router() -> OpenApiRouter<AppState> {
 }
 
 /// Admin/editor endpoints: applying and removing editorial labels on
-/// articles (gated by `Permission::ArticleLabelsManage`) and the article
-/// review queue (gated by `Permission::ArticlesReview` — editors qualify).
+/// articles (gated by `Permission::ArticleLabelsManage`), the per-article
+/// quoting toggle (gated by `Permission::ArticlesQuotingManage` — admin
+/// only), and the article review queue (gated by
+/// `Permission::ArticlesReview` — editors qualify).
 pub fn admin_router() -> OpenApiRouter<AppState> {
     OpenApiRouter::new()
         .routes(utoipa_axum::routes!(
@@ -142,6 +144,9 @@ pub fn admin_router() -> OpenApiRouter<AppState> {
         ))
         .routes(utoipa_axum::routes!(
             articles::handlers::remove_article_label
+        ))
+        .routes(utoipa_axum::routes!(
+            articles::handlers::set_article_quoting
         ))
         .routes(utoipa_axum::routes!(
             article_reviews::handlers::list_article_review_queue

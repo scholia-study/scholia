@@ -37,6 +37,11 @@ export interface ArticleDetailResponse {
     /** @nullable */
     published_at?: string | null;
     /**
+     * Admin-set: suppress the reader's sentence-selection layer, for
+     * articles that read as blog posts rather than quotable scholarship.
+     */
+    quoting_disabled: boolean;
+    /**
      * Labels whose `revokes_on_edit` flag is `true` and which were
      * stripped by the most recent author edit. Empty unless this
      * response is the result of a markdown update that revoked chips.

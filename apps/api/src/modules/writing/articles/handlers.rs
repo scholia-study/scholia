@@ -3,10 +3,11 @@ use axum::extract::{Path, Query, State};
 
 use crate::modules::writing::articles::models::{
     ApplyEditorialLabelRequest, ArticleDetailResponse, ArticleListQuery, ArticleListResponse,
-    BatchSentencesRequest, BatchSentencesResponse, CreateArticleRequest, CreateTopicRequest,
-    EditorialLabelListResponse, EditorialLabelResponse, PublishedArticleListResponse,
-    PublishedArticleSearchQuery, TopicAdminListResponse, TopicAdminResponse, TopicListResponse,
-    UpdateArticleRequest, UpdateTopicRequest,
+    ArticleQuotingResponse, BatchSentencesRequest, BatchSentencesResponse, CreateArticleRequest,
+    CreateTopicRequest, EditorialLabelListResponse, EditorialLabelResponse,
+    PublishedArticleListResponse, PublishedArticleSearchQuery, SetArticleQuotingRequest,
+    TopicAdminListResponse, TopicAdminResponse, TopicListResponse, UpdateArticleRequest,
+    UpdateTopicRequest,
 };
 use crate::system::auth::middleware::AuthUser;
 use crate::system::auth::permissions::Permission;
@@ -609,6 +610,44 @@ pub async fn remove_article_label(
     )
     .await?;
     Ok(Json(()))
+}
+
+/// Turn the reader's sentence-selection layer on or off for one
+/// article. Admin only — authors do not control this.
+#[utoipa::path(
+    put,
+    path = "/api/admin/articles/{slug}/quoting",
+    params(("slug" = String, Path, description = "Article slug")),
+    request_body = SetArticleQuotingRequest,
+    responses(
+        (status = 200, description = "Setting updated", body = ArticleQuotingResponse),
+        (status = 401, description = "Not authenticated"),
+        (status = 403, description = "Insufficient permissions"),
+        (status = 404, description = "Article not found")
+    ),
+    tag = "articles"
+)]
+pub async fn set_article_quoting(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(slug): Path<String>,
+    Json(body): Json<SetArticleQuotingRequest>,
+) -> Result<Json<ArticleQuotingResponse>, AppError> {
+    user.require_permission(Permission::ArticlesQuotingManage)
+        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
+
+    let result = crate::modules::writing::articles::db::set_article_quoting(
+        &state.pool,
+        &slug,
+        body.quoting_disabled,
+    )
+    .await?;
+
+    // The flag rides in the cached article response, so readers keep
+    // seeing the old apparatus until the URL cache is purged.
+    cache::invalidate(&state, article_cache_paths(&slug));
+
+    Ok(Json(result))
 }
 
 /// Batch fetch sentences for quotation card hydration

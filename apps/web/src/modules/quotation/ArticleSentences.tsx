@@ -1,10 +1,17 @@
 import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
 import { Popover } from "@mui/material";
 import { Link } from "@tanstack/react-router";
-import parse, { type DOMNode, Element, Text } from "html-react-parser";
+import parse, {
+    attributesToProps,
+    type DOMNode,
+    Element,
+    Text,
+} from "html-react-parser";
 import {
+    createElement,
     type JSX,
     type MouseEvent,
+    type ReactNode,
     useCallback,
     useEffect,
     useMemo,
@@ -19,6 +26,13 @@ import { useAuth } from "../../hooks/useAuth";
 interface SegmentedSentence {
     key: string;
     text: string;
+    html: string;
+}
+
+interface SegmentRange {
+    text: string;
+    from: number;
+    to: number;
 }
 
 const MAX_RANGE = 10;
@@ -32,6 +46,148 @@ function segmentText(text: string): string[] {
     }
     // Fallback: split on sentence-ending punctuation followed by space
     return text.split(/(?<=[.!?])\s+/).filter(Boolean);
+}
+
+/**
+ * Sentence segments paired with their offsets into the block's text
+ * stream, so the render pass can cut the block's DOM at the same points
+ * `segmentText` cut its flattened text.
+ */
+function segmentRanges(text: string): SegmentRange[] {
+    const ranges: SegmentRange[] = [];
+    let cursor = 0;
+    for (const segment of segmentText(text)) {
+        const from = text.indexOf(segment, cursor);
+        if (from < 0) continue;
+        cursor = from + segment.length;
+        ranges.push({ text: segment, from, to: cursor });
+    }
+    return ranges;
+}
+
+/**
+ * Rebuild the part of `nodes` covering text offsets [from, to), keeping
+ * inline elements (emphasis, code, links, citation spans) intact around
+ * the cut. Without this a sentence would render as the bare text
+ * `blockText` flattened it to, silently dropping all inline markup.
+ * `cursor` tracks the position in the block's text stream across the
+ * whole recursion.
+ */
+function sliceInline(
+    nodes: DOMNode[],
+    from: number,
+    to: number,
+    cursor: { pos: number },
+): ReactNode[] {
+    const out: ReactNode[] = [];
+
+    nodes.forEach((node, i) => {
+        if (node instanceof Text) {
+            const start = cursor.pos;
+            cursor.pos += node.data.length;
+            const lo = Math.max(start, from);
+            const hi = Math.min(cursor.pos, to);
+            if (hi > lo) out.push(node.data.slice(lo - start, hi - start));
+            return;
+        }
+        if (!(node instanceof Element)) return;
+
+        const start = cursor.pos;
+        const children = sliceInline(
+            (node.children ?? []) as DOMNode[],
+            from,
+            to,
+            cursor,
+        );
+        // Childless elements (<br>, <img>) carry no text to overlap the
+        // range, so place them by their own offset instead.
+        const empty = cursor.pos === start;
+        if (children.length === 0 && !(empty && start >= from && start < to)) {
+            return;
+        }
+
+        const props = { ...attributesToProps(node.attribs), key: `e${i}` };
+        out.push(
+            children.length > 0
+                ? createElement(node.name, props, children)
+                : createElement(node.name, props),
+        );
+    });
+
+    return out;
+}
+
+const VOID_TAGS = new Set([
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "source",
+    "track",
+    "wbr",
+]);
+
+function escapeText(value: string): string {
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+/**
+ * String counterpart of `sliceInline`, for the `html` a saved quotation
+ * stores — the reader sees emphasis and links in the article, so the
+ * snapshot has to keep them too. The two must agree byte for byte; the
+ * suite pins that against the rendered spans' `innerHTML`.
+ */
+function sliceHtml(
+    nodes: DOMNode[],
+    from: number,
+    to: number,
+    cursor: { pos: number },
+): string {
+    let out = "";
+
+    for (const node of nodes) {
+        if (node instanceof Text) {
+            const start = cursor.pos;
+            cursor.pos += node.data.length;
+            const lo = Math.max(start, from);
+            const hi = Math.min(cursor.pos, to);
+            if (hi > lo)
+                out += escapeText(node.data.slice(lo - start, hi - start));
+            continue;
+        }
+        if (!(node instanceof Element)) continue;
+
+        const start = cursor.pos;
+        const inner = sliceHtml(
+            (node.children ?? []) as DOMNode[],
+            from,
+            to,
+            cursor,
+        );
+        const empty = cursor.pos === start;
+        if (!inner && !(empty && start >= from && start < to)) continue;
+
+        const attrs = Object.entries(node.attribs ?? {})
+            .map(
+                ([name, value]) =>
+                    ` ${name}="${escapeText(value).replace(/"/g, "&quot;")}"`,
+            )
+            .join("");
+        out += VOID_TAGS.has(node.name)
+            ? `<${node.name}${attrs}>`
+            : `<${node.name}${attrs}>${inner}</${node.name}>`;
+    }
+
+    return out;
 }
 
 function blockText(el: Element): string {
@@ -91,13 +247,17 @@ export function buildSentenceList(html: string): SegmentedSentence[] {
                     (tag === "p" || tag === "blockquote") &&
                     !insideReplacedContainer(domNode)
                 ) {
+                    const children = (domNode.children ?? []) as DOMNode[];
                     let sentIdx = 0;
-                    for (const segment of segmentText(blockText(domNode))) {
-                        const trimmed = segment.trim();
+                    for (const range of segmentRanges(blockText(domNode))) {
+                        const trimmed = range.text.trim();
                         if (!trimmed) continue;
                         sentences.push({
                             key: `b${blockIndex}-s${sentIdx}`,
                             text: trimmed,
+                            html: sliceHtml(children, range.from, range.to, {
+                                pos: 0,
+                            }),
                         });
                         sentIdx++;
                     }
@@ -201,7 +361,13 @@ export function ArticleSentences({
         const hi = Math.max(startIdx, endIdx);
         const selected = allSentences.slice(lo, hi + 1);
         const text = selected.map((s) => s.text).join(" ");
-        return { text, html: text };
+        // Each slice already carries the whitespace that followed its
+        // sentence, so the pieces concatenate without a joiner.
+        const html = selected
+            .map((s) => s.html)
+            .join("")
+            .trim();
+        return { text, html };
     }, [selectedRange, sentenceKeys, allSentences]);
 
     const handleSave = useCallback(async () => {
@@ -272,7 +438,8 @@ export function ArticleSentences({
             if (disabled) return undefined;
 
             if (tag === "p" || tag === "blockquote") {
-                const segments = segmentText(blockText(domNode));
+                const children = (domNode.children ?? []) as DOMNode[];
+                const ranges = segmentRanges(blockText(domNode));
                 const currentBlock = blockIndex;
                 blockIndex++;
 
@@ -281,9 +448,8 @@ export function ArticleSentences({
 
                 return (
                     <Tag>
-                        {segments.map((segment) => {
-                            const trimmed = segment.trim();
-                            if (!trimmed) return null;
+                        {ranges.map((range) => {
+                            if (!range.text.trim()) return null;
                             const key = `b${currentBlock}-s${sentIdx}`;
                             sentIdx++;
                             const selected = isInRange(key);
@@ -295,14 +461,30 @@ export function ArticleSentences({
                                     onMouseDown={(e) => {
                                         if (e.shiftKey) e.preventDefault();
                                     }}
-                                    onClick={(e) => handleSentenceClick(key, e)}
+                                    onClick={(e) => {
+                                        // Let embedded links navigate
+                                        // instead of selecting the sentence.
+                                        if (
+                                            (e.target as HTMLElement).closest(
+                                                "a",
+                                            )
+                                        ) {
+                                            return;
+                                        }
+                                        handleSentenceClick(key, e);
+                                    }}
                                     className={`cursor-pointer transition-colors rounded-sm ${
                                         selected
                                             ? "bg-amber-200"
                                             : "hover:bg-stone-100"
                                     }`}
                                 >
-                                    {segment}
+                                    {sliceInline(
+                                        children,
+                                        range.from,
+                                        range.to,
+                                        { pos: 0 },
+                                    )}
                                 </span>
                             );
                         })}

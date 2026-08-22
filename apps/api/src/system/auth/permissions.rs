@@ -20,6 +20,7 @@ pub enum Permission {
     ArticlesReview,
     SeriesManage,
     CollegiaLimit5,
+    ArticlesQuotingManage,
 }
 
 impl Permission {
@@ -42,6 +43,7 @@ impl Permission {
             Self::ArticlesReview => "articles_review",
             Self::SeriesManage => "series_manage",
             Self::CollegiaLimit5 => "collegia_limit_5",
+            Self::ArticlesQuotingManage => "articles_quoting_manage",
         }
     }
 }
@@ -120,6 +122,7 @@ impl Role {
                 perms.push(Permission::ArticleLabelsManage);
                 perms.push(Permission::ArticlesReview);
                 perms.push(Permission::SeriesManage);
+                perms.push(Permission::ArticlesQuotingManage);
                 perms.extend_from_slice(ELEVATED_LIMITS);
             }
             Self::Editor => {
@@ -180,4 +183,22 @@ pub fn resolve_permission_names(role_names: &[String]) -> Vec<String> {
         .collect();
     names.sort();
     names
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn quoting_toggle_is_admin_only() {
+        let admin = resolve_permissions(&["admin".to_string()]);
+        let editor = resolve_permissions(&["editor".to_string()]);
+        let user = resolve_permissions(&["user".to_string()]);
+
+        assert!(admin.contains(&Permission::ArticlesQuotingManage));
+        assert!(!editor.contains(&Permission::ArticlesQuotingManage));
+        assert!(!user.contains(&Permission::ArticlesQuotingManage));
+        // The neighbouring label control stays open to editors.
+        assert!(editor.contains(&Permission::ArticleLabelsManage));
+    }
 }
