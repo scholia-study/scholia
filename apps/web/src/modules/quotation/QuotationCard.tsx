@@ -2,6 +2,7 @@ import { Paper, Skeleton } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import parse from "html-react-parser";
+import type { SentenceKind } from "../../api/model";
 import { batchSentences } from "../../api/sentences/sentences";
 import { formatPassageCitation } from "./citation";
 
@@ -10,7 +11,7 @@ export interface QuotationCardProps {
     node: string;
     start: number;
     end?: number;
-    kind: string;
+    kind: SentenceKind;
     mode: "source" | "translation" | "source+translation";
     layout:
         | "stacked"
@@ -232,4 +233,12 @@ export function QuotationCard({
             )}
         </Paper>
     );
+}
+
+/**
+ * Boundary guard for kind strings parsed out of article HTML/markdown
+ * attributes — anything unknown renders as a body anchor.
+ */
+export function asSentenceKind(value: string | null | undefined): SentenceKind {
+    return value === "footnote" || value === "figure" ? value : "body";
 }

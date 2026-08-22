@@ -1,6 +1,17 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
+/// An article's lifecycle state. Stored as the Postgres enum
+/// `article_status`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
+#[sqlx(type_name = "article_status", rename_all = "lowercase")]
+pub enum ArticleStatus {
+    Draft,
+    Published,
+    Archived,
+}
+
 use crate::modules::writing::series::models::ArticleSeriesContext;
 
 #[derive(Debug, Clone, Serialize, ToSchema)]
@@ -75,7 +86,7 @@ pub struct ArticleResponse {
     pub slug: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
-    pub status: String,
+    pub status: ArticleStatus,
     pub author_user_id: String,
     pub author_display_name: String,
     /// Current handle of the author. Use `/users/<handle>` for the
@@ -108,7 +119,7 @@ pub struct ArticleDetailResponse {
     pub description: Option<String>,
     pub markdown: String,
     pub html: String,
-    pub status: String,
+    pub status: ArticleStatus,
     pub author_user_id: String,
     pub author_display_name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -168,7 +179,7 @@ pub struct BatchSentenceRequest {
     pub start_number: i32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub end_number: Option<i32>,
-    pub kind: String,
+    pub kind: crate::modules::corpus::SentenceKind,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]

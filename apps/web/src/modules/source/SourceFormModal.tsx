@@ -16,7 +16,9 @@ import { FetchError } from "../../api/fetcher";
 import type {
     PersonResponse,
     SourcePersonResponse,
+    SourcePersonRole,
     SourceResponse,
+    SourceType,
 } from "../../api/model";
 import { useSearchPersons } from "../../api/persons/persons";
 import {
@@ -54,7 +56,7 @@ export function SourceFormModal({
     onCreated,
 }: SourceFormModalProps) {
     // Source fields
-    const [sourceType, setSourceType] = useState<string>("book");
+    const [sourceType, setSourceType] = useState<SourceType>("book");
     const [title, setTitle] = useState("");
     const [publicationYear, setPublicationYear] = useState("");
     const [originalYear, setOriginalYear] = useState("");
@@ -82,7 +84,8 @@ export function SourceFormModal({
     const [persons, setPersons] = useState<SourcePersonResponse[]>([]);
     const [personSearch, setPersonSearch] = useState("");
     const debouncedPersonSearch = useDebouncedValue(personSearch);
-    const [addPersonRole, setAddPersonRole] = useState<string>("author");
+    const [addPersonRole, setAddPersonRole] =
+        useState<SourcePersonRole>("author");
     const { data: personResults } = useSearchPersons(
         { q: debouncedPersonSearch },
         { query: { enabled: debouncedPersonSearch.length >= 3 } },
@@ -270,7 +273,7 @@ export function SourceFormModal({
         setPersonSearch("");
     };
 
-    const removePerson = (personId: string, role: string) => {
+    const removePerson = (personId: string, role: SourcePersonRole) => {
         setPersons(
             persons.filter(
                 (p) => !(p.person_id === personId && p.role === role),

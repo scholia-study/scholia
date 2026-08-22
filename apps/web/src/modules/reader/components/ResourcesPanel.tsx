@@ -30,6 +30,7 @@ import type {
     FootnoteSentenceResponse,
     NoteResponse,
     ResourceResponse,
+    SentenceKind,
     SentenceResponse,
     TocNodeResponse,
 } from "../../../api/model";
@@ -165,7 +166,7 @@ export function ResourcesPanel({
         type: "verbatim" | "paraphrase" | "allusion";
         start: number;
         end: number | undefined;
-        kind: string;
+        kind: SentenceKind;
         quotedText: string;
     } | null>(null);
 
@@ -173,7 +174,7 @@ export function ResourcesPanel({
         type: "verbatim" | "paraphrase" | "allusion",
         start: number,
         end: number | undefined,
-        kind: string,
+        kind: SentenceKind,
     ) => {
         setEditingResource(undefined);
         setModalDefaults({

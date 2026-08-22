@@ -1,0 +1,51 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, source_type AS \"source_type: SourceType\", title, publication_year, publisher\n               FROM sources\n               WHERE id = ANY($1)",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "source_type: SourceType",
+                "type_info": {
+                    "Custom": {
+                        "name": "source_type",
+                        "kind": {
+                            "Enum": [
+                                "book",
+                                "article",
+                                "chapter",
+                                "journal",
+                                "web"
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 2,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "publication_year",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 4,
+                "name": "publisher",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["UuidArray"]
+        },
+        "nullable": [false, false, false, true, true]
+    },
+    "hash": "345106b1cd90f43b42f3ed52c09560949fdd3fa97f175a9b7d4829b1a986c8d1"
+}

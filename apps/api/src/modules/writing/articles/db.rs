@@ -4,9 +4,9 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::modules::writing::articles::models::{
-    ArticleDetailResponse, ArticleLimitsResponse, ArticleResponse, BatchSentenceResponseItem,
-    CitationPart, EditorialLabelResponse, SentenceData, SourceContext, TopicAdminResponse,
-    TopicResponse,
+    ArticleDetailResponse, ArticleLimitsResponse, ArticleResponse, ArticleStatus,
+    BatchSentenceResponseItem, CitationPart, EditorialLabelResponse, SentenceData, SourceContext,
+    TopicAdminResponse, TopicResponse,
 };
 use crate::system::auth::permissions::{Permission, resolve_permissions};
 use crate::system::error::{AppError, SqlxResultExt};
@@ -42,7 +42,7 @@ struct ArticleRow {
     description: Option<String>,
     markdown: String,
     html: String,
-    status: String,
+    status: ArticleStatus,
     author_user_id: Uuid,
     author_display_name: String,
     author_handle: Option<String>,
@@ -56,7 +56,7 @@ struct ArticleSummaryRow {
     title: String,
     slug: String,
     description: Option<String>,
-    status: String,
+    status: ArticleStatus,
     author_user_id: Uuid,
     author_display_name: String,
     author_handle: Option<String>,
@@ -901,7 +901,7 @@ pub async fn create_article(
                VALUES ($1, $2, $3)
                RETURNING
                    id, title, slug, description, markdown, html,
-                   status::TEXT AS "status!",
+                   status AS "status: ArticleStatus",
                    $1 AS "author_user_id!",
                    (SELECT display_name FROM users WHERE id = $1) AS "author_display_name!",
                    (SELECT handle FROM users WHERE id = $1) AS "author_handle?",
@@ -936,7 +936,7 @@ pub async fn get_user_article_by_slug(
     let row = sqlx::query_as!(
         ArticleRow,
         r#"SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,
-                  a.status::TEXT AS "status!",
+                  a.status AS "status: ArticleStatus",
                   u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
@@ -965,7 +965,7 @@ pub async fn get_published_article_by_slug(
     let row = sqlx::query_as!(
         ArticleRow,
         r#"SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,
-                  a.status::TEXT AS "status!",
+                  a.status AS "status: ArticleStatus",
                   u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
@@ -994,7 +994,7 @@ pub async fn get_article_by_id(pool: &PgPool, id: Uuid) -> Result<ArticleDetailR
     let row = sqlx::query_as!(
         ArticleRow,
         r#"SELECT a.id, a.title, a.slug, a.description, a.markdown, a.html,
-                  a.status::TEXT AS "status!",
+                  a.status AS "status: ArticleStatus",
                   u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
@@ -1027,7 +1027,7 @@ pub async fn list_user_articles(
     let rows = sqlx::query_as!(
         ArticleSummaryRow,
         r#"SELECT a.id, a.title, a.slug, a.description,
-                  a.status::TEXT AS "status!",
+                  a.status AS "status: ArticleStatus",
                   u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
@@ -1099,7 +1099,7 @@ pub async fn list_published_articles(
     let rows = sqlx::query_as!(
         ArticleSummaryRow,
         r#"SELECT a.id, a.title, a.slug, a.description,
-                  a.status::TEXT AS "status!",
+                  a.status AS "status: ArticleStatus",
                   u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
@@ -1162,7 +1162,7 @@ pub(in crate::modules::writing) async fn list_published_articles_in_series(
     let rows = sqlx::query_as!(
         ArticleSummaryRow,
         r#"SELECT a.id, a.title, a.slug, a.description,
-                  a.status::TEXT AS "status!",
+                  a.status AS "status: ArticleStatus",
                   u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
@@ -1207,7 +1207,7 @@ pub async fn list_published_articles_by_author(
     let rows = sqlx::query_as!(
         ArticleSummaryRow,
         r#"SELECT a.id, a.title, a.slug, a.description,
-                  a.status::TEXT AS "status!",
+                  a.status AS "status: ArticleStatus",
                   u.id AS "author_user_id!",
                   u.display_name AS "author_display_name!",
                   u.handle AS "author_handle?",
@@ -1271,7 +1271,7 @@ pub async fn update_article(
 
     // Fetch article and verify ownership
     let row = sqlx::query!(
-        r#"SELECT id, status AS "status: String" FROM articles
+        r#"SELECT id, status AS "status: ArticleStatus" FROM articles
            WHERE slug = $1 AND user_id = $2"#,
         slug,
         user_id,
@@ -1280,7 +1280,7 @@ pub async fn update_article(
     .await
     .on_missing(|| AppError::NotFound("Article not found".into()))?;
 
-    if row.status == "archived" {
+    if row.status == ArticleStatus::Archived {
         return Err(AppError::BadRequest(
             "Archived articles cannot be edited".into(),
         ));
@@ -1391,7 +1391,7 @@ pub async fn publish_article(
     roles: &[String],
 ) -> Result<(), AppError> {
     let row = sqlx::query!(
-        r#"SELECT id, status AS "status: String" FROM articles
+        r#"SELECT id, status AS "status: ArticleStatus" FROM articles
            WHERE slug = $1 AND user_id = $2"#,
         slug,
         user_id,
@@ -1400,7 +1400,7 @@ pub async fn publish_article(
     .await?
     .ok_or_else(|| AppError::NotFound("Article not found".into()))?;
 
-    if row.status != "draft" {
+    if row.status != ArticleStatus::Draft {
         return Err(AppError::BadRequest(
             "Article is not in draft status".into(),
         ));
@@ -1831,10 +1831,10 @@ pub async fn batch_get_sentences(
     node_slug: &str,
     start_number: i32,
     end_number: Option<i32>,
-    kind: &str,
+    kind: crate::modules::corpus::SentenceKind,
 ) -> Result<BatchSentenceResponseItem, AppError> {
     let end = end_number.unwrap_or(start_number);
-    let is_body = kind == "body";
+    let is_body = kind == crate::modules::corpus::SentenceKind::Body;
 
     struct BookNodeRow {
         book_title: String,

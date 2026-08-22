@@ -9,6 +9,7 @@ import { useGetBook } from "../../../api/books/books";
 import type {
     FootnoteSentenceResponse,
     ResourceResponse,
+    SentenceKind,
     SentenceResponse,
 } from "../../../api/model";
 import {
@@ -35,14 +36,14 @@ interface CommentaryViewProps {
         type: ResourceType,
         start: number,
         end: number | undefined,
-        kind: string,
+        kind: SentenceKind,
     ) => void;
     onEdit: (resource: ResourceResponse) => void;
 }
 
 export function getSentenceRange(
     selectedSentence: CommentaryViewProps["selectedSentence"],
-): { start: number; end: number; kind: string } | null {
+): { start: number; end: number; kind: SentenceKind } | null {
     if (!selectedSentence) return null;
 
     if (Array.isArray(selectedSentence)) {

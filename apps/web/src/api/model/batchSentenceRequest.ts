@@ -4,12 +4,13 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { SentenceKind } from "./sentenceKind.ts";
 
 export interface BatchSentenceRequest {
     book_slug: string;
     /** @nullable */
     end_number?: number | null;
-    kind: string;
+    kind: SentenceKind;
     node_slug: string;
     start_number: number;
 }

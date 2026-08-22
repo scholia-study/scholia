@@ -2008,7 +2008,7 @@
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/SentenceKind"
                         }
                     },
                     {
@@ -2640,7 +2640,7 @@
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/SentenceKind"
                         }
                     }
                 ],
@@ -4200,7 +4200,14 @@
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "type": ["string", "null"]
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/SourceType"
+                                }
+                            ]
                         }
                     },
                     {
@@ -5179,7 +5186,7 @@
                         "type": "string"
                     },
                     "status": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ArticleStatus"
                     },
                     "title": {
                         "type": "string"
@@ -5348,7 +5355,7 @@
                         "type": "string"
                     },
                     "status": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ArticleStatus"
                     },
                     "title": {
                         "type": "string"
@@ -5567,7 +5574,7 @@
                         "type": "string"
                     },
                     "article_status": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ArticleStatus"
                     },
                     "article_title": {
                         "type": "string"
@@ -5595,7 +5602,7 @@
                         "type": "string"
                     },
                     "intent": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ReviewIntent"
                     },
                     "open_comment_count": {
                         "type": "integer",
@@ -5606,7 +5613,7 @@
                         "type": ["string", "null"]
                     },
                     "status": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ReviewRequestStatus"
                     },
                     "submitted_at": {
                         "type": "string"
@@ -5653,13 +5660,13 @@
                         "type": "string"
                     },
                     "intent": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ReviewIntent"
                     },
                     "resolved_at": {
                         "type": ["string", "null"]
                     },
                     "status": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ReviewRequestStatus"
                     },
                     "submitted_at": {
                         "type": "string"
@@ -5698,6 +5705,11 @@
                         "type": "string"
                     }
                 }
+            },
+            "ArticleStatus": {
+                "type": "string",
+                "description": "An article's lifecycle state. Stored as the Postgres enum\n`article_status`.",
+                "enum": ["draft", "published", "archived"]
             },
             "AssignReviewRequest": {
                 "type": "object",
@@ -5756,7 +5768,7 @@
                         "format": "int32"
                     },
                     "kind": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SentenceKind"
                     },
                     "node_slug": {
                         "type": "string"
@@ -6291,7 +6303,7 @@
                         "format": "int32"
                     },
                     "sentence_kind": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SentenceKind"
                     },
                     "sentence_start": {
                         "type": "integer",
@@ -6332,18 +6344,25 @@
                         "type": ["string", "null"]
                     },
                     "resource_type": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ResourceType"
                     },
                     "scope": {
-                        "type": ["string", "null"],
-                        "description": "\"work\" (default) | \"language\" | \"edition\" — see ResourceResponse.scope."
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ResourceScope",
+                                "description": "\"work\" (default) | \"language\" | \"edition\" — see ResourceResponse.scope."
+                            }
+                        ]
                     },
                     "sentence_end": {
                         "type": ["integer", "null"],
                         "format": "int32"
                     },
                     "sentence_kind": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SentenceKind"
                     },
                     "sentence_start": {
                         "type": "integer",
@@ -6364,7 +6383,14 @@
                         "format": "int32"
                     },
                     "verbatim_kind": {
-                        "type": ["string", "null"]
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/VerbatimKind"
+                            }
+                        ]
                     }
                 }
             },
@@ -6422,8 +6448,8 @@
                         "description": "Review audience: a collegium the author belongs to, or absent for the\neditorial team. Collegium reviews are feedback-only."
                     },
                     "intent": {
-                        "type": "string",
-                        "description": "`feedback` — the author wants comments; the editor closes the\nrequest as `resolved`. `publication` — a hand-off: approving\npublishes the article (if still a draft) and applies the\n`imprimatur` label."
+                        "$ref": "#/components/schemas/ReviewIntent",
+                        "description": "`feedback` — the author wants comments; the reviewing side closes\nthe request as `resolved`. `publication` — a hand-off to the\neditors: approving publishes the article (if still a draft) and\napplies the `imprimatur` label."
                     },
                     "message": {
                         "type": ["string", "null"],
@@ -6489,7 +6515,7 @@
                         "type": ["string", "null"]
                     },
                     "source_type": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SourceType"
                     },
                     "title": {
                         "type": "string"
@@ -6976,7 +7002,7 @@
                         "format": "int32"
                     },
                     "role": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SourcePersonRole"
                     }
                 }
             },
@@ -7279,7 +7305,7 @@
                         "type": "string"
                     },
                     "sentence_kind": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SentenceKind"
                     },
                     "tags": {
                         "type": "array",
@@ -7344,7 +7370,7 @@
                         "type": ["string", "null"]
                     },
                     "source_type": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SourceType"
                     },
                     "title": {
                         "type": "string"
@@ -7677,7 +7703,7 @@
                         "description": "Target-local verse `ref_value` for the start of the projection.\nFrontend uses `(projected_source_ref, projected_verse_start)`\nas the marker placement key, falling back to `anchor_*` when\nthe projection fields are absent (Kant/no-verse-system books)."
                     },
                     "sentence_kind": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SentenceKind"
                     },
                     "translation_label": {
                         "type": ["string", "null"],
@@ -7760,7 +7786,7 @@
                         "description": "When the cited source is a child of a compilation, the compilation's\ndisplay title. Frontend renders as \"[book_title] (in: [parent])\"."
                     },
                     "sentence_kind": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SentenceKind"
                     },
                     "start_text_snippet": {
                         "type": ["string", "null"]
@@ -8001,18 +8027,18 @@
                         "type": ["string", "null"]
                     },
                     "resource_type": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ResourceType"
                     },
                     "review_status": {
-                        "type": "string",
+                        "$ref": "#/components/schemas/ResourceReviewStatus",
                         "description": "Lifecycle: \"approved\" for live resources, \"pending\" for a community\nsubmission awaiting review, \"rejected\" for a declined one. The reader\nonly ever receives \"approved\" rows plus the caller's own \"pending\" ones."
                     },
                     "scope": {
-                        "type": "string",
+                        "$ref": "#/components/schemas/ResourceScope",
                         "description": "Cataloguer's claim about what the resource is about: \"work\" (the\npassage in any form), \"language\" (this language's translation layer),\nor \"edition\" (this one edition's actual text). Label only — never\naffects which editions the resource appears on."
                     },
                     "sentence_kind": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SentenceKind"
                     },
                     "source": {
                         "oneOf": [
@@ -8036,7 +8062,14 @@
                         "format": "int32"
                     },
                     "verbatim_kind": {
-                        "type": ["string", "null"]
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/VerbatimKind"
+                            }
+                        ]
                     }
                 }
             },
@@ -8044,6 +8077,11 @@
                 "type": "string",
                 "description": "Review state of a resource that entered via community submission.",
                 "enum": ["pending", "approved", "rejected"]
+            },
+            "ResourceScope": {
+                "type": "string",
+                "description": "Stored as the Postgres enum `resource_scope` (ADR 0008).",
+                "enum": ["work", "language", "edition"]
             },
             "ResourceSubmissionListResponse": {
                 "type": "object",
@@ -8117,6 +8155,11 @@
                     }
                 }
             },
+            "ResourceType": {
+                "type": "string",
+                "description": "Stored as the Postgres enum `resource_type`.",
+                "enum": ["verbatim", "paraphrase", "allusion"]
+            },
             "ReviewArticleMeta": {
                 "type": "object",
                 "description": "Article metadata shown on the review page. Distinct from the public\narticle DTOs because the article may still be a draft here.",
@@ -8152,7 +8195,7 @@
                         "type": "string"
                     },
                     "status": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ArticleStatus"
                     },
                     "title": {
                         "type": "string"
@@ -8190,6 +8233,11 @@
                     }
                 }
             },
+            "ReviewDecision": {
+                "type": "string",
+                "description": "The subset of statuses an editor may decide a pending request into\n(`pending`/`withdrawn` are unrepresentable by construction). Binds to\nthe same Postgres enum as `ReviewRequestStatus`.",
+                "enum": ["approved", "declined", "resolved"]
+            },
             "ReviewDecisionRequest": {
                 "type": "object",
                 "required": ["status"],
@@ -8199,10 +8247,15 @@
                         "description": "Optional message posted to the article's review channel alongside\nthe decision."
                     },
                     "status": {
-                        "type": "string",
+                        "$ref": "#/components/schemas/ReviewDecision",
                         "description": "`approved` | `declined` (publication intent) or `resolved`\n(feedback intent)."
                     }
                 }
+            },
+            "ReviewIntent": {
+                "type": "string",
+                "description": "What the author asks of the reviewing side. Stored as the Postgres\nenum `article_review_intent`.",
+                "enum": ["feedback", "publication"]
             },
             "ReviewParticipant": {
                 "type": "object",
@@ -8219,6 +8272,17 @@
                         "type": "string"
                     }
                 }
+            },
+            "ReviewRequestStatus": {
+                "type": "string",
+                "description": "A review request's lifecycle state. Stored as the Postgres enum\n`article_review_request_status`.",
+                "enum": [
+                    "pending",
+                    "approved",
+                    "declined",
+                    "resolved",
+                    "withdrawn"
+                ]
             },
             "ReviewSubmissionRequest": {
                 "type": "object",
@@ -8265,6 +8329,11 @@
                         "format": "int32"
                     }
                 }
+            },
+            "SentenceKind": {
+                "type": "string",
+                "description": "Stored as the Postgres enum `sentence_kind`.",
+                "enum": ["body", "footnote", "figure"]
             },
             "SentenceResponse": {
                 "type": "object",
@@ -8473,7 +8542,7 @@
                         "type": "string"
                     },
                     "status": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ArticleStatus"
                     },
                     "title": {
                         "type": "string"
@@ -8598,12 +8667,17 @@
                         "type": "boolean"
                     },
                     "role": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SourcePersonRole"
                     },
                     "sort_name": {
                         "type": ["string", "null"]
                     }
                 }
+            },
+            "SourcePersonRole": {
+                "type": "string",
+                "description": "Stored as the Postgres enum `source_person_role`.",
+                "enum": ["author", "editor", "translator", "contributor"]
             },
             "SourceResponse": {
                 "type": "object",
@@ -8680,7 +8754,7 @@
                         "type": ["string", "null"]
                     },
                     "source_type": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SourceType"
                     },
                     "title": {
                         "type": "string"
@@ -8730,12 +8804,17 @@
                         "format": "int32"
                     },
                     "source_type": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/SourceType"
                     },
                     "title": {
                         "type": "string"
                     }
                 }
+            },
+            "SourceType": {
+                "type": "string",
+                "description": "Stored as the Postgres enum `source_type`.",
+                "enum": ["book", "article", "chapter", "journal", "web"]
             },
             "TagListResponse": {
                 "type": "object",
@@ -8947,7 +9026,7 @@
                                 "format": "int64"
                             },
                             "sentence_kind": {
-                                "type": "string"
+                                "$ref": "#/components/schemas/SentenceKind"
                             },
                             "source_type": {
                                 "type": "string",
@@ -9150,18 +9229,39 @@
                         "type": ["string", "null"]
                     },
                     "resource_type": {
-                        "type": ["string", "null"]
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ResourceType"
+                            }
+                        ]
                     },
                     "scope": {
-                        "type": ["string", "null"],
-                        "description": "NOT NULL column: plain Option — omit to leave unchanged."
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ResourceScope",
+                                "description": "NOT NULL column: plain Option — omit to leave unchanged."
+                            }
+                        ]
                     },
                     "sentence_end": {
                         "type": ["integer", "null"],
                         "format": "int32"
                     },
                     "sentence_kind": {
-                        "type": ["string", "null"]
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/SentenceKind"
+                            }
+                        ]
                     },
                     "sentence_start": {
                         "type": ["integer", "null"],
@@ -9182,7 +9282,14 @@
                         "format": "int32"
                     },
                     "verbatim_kind": {
-                        "type": ["string", "null"]
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/VerbatimKind"
+                            }
+                        ]
                     }
                 }
             },
@@ -9262,7 +9369,14 @@
                         "type": ["string", "null"]
                     },
                     "source_type": {
-                        "type": ["string", "null"]
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/SourceType"
+                            }
+                        ]
                     },
                     "title": {
                         "type": ["string", "null"]
@@ -9299,6 +9413,11 @@
                         "type": "string"
                     }
                 }
+            },
+            "VerbatimKind": {
+                "type": "string",
+                "description": "Stored as the Postgres enum `verbatim_kind`.",
+                "enum": ["entirety", "fragmentary"]
             }
         }
     }

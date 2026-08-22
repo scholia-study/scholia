@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ArticleStatus } from "./articleStatus.ts";
 import type { EditorialLabelResponse } from "./editorialLabelResponse.ts";
 
 /**
@@ -18,6 +19,6 @@ export interface ReviewArticleMeta {
     id: string;
     labels: EditorialLabelResponse[];
     slug: string;
-    status: string;
+    status: ArticleStatus;
     title: string;
 }

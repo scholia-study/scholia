@@ -40,7 +40,7 @@ pub async fn list_article_references(
         book_id,
         params.start,
         params.end,
-        &params.kind,
+        params.kind,
         limit,
         offset,
     )

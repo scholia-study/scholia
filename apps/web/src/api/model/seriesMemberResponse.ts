@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ArticleStatus } from "./articleStatus.ts";
 
 /**
  * Ordered member row for the manage drawer. Unlike the public surfaces
@@ -15,6 +16,6 @@ export interface SeriesMemberResponse {
     author_display_name: string;
     position: number;
     slug: string;
-    status: string;
+    status: ArticleStatus;
     title: string;
 }

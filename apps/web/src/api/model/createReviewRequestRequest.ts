@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ReviewIntent } from "./reviewIntent.ts";
 
 export interface CreateReviewRequestRequest {
     /**
@@ -13,12 +14,12 @@ export interface CreateReviewRequestRequest {
      */
     collegium_id?: string | null;
     /**
-     * `feedback` — the author wants comments; the editor closes the
-     * request as `resolved`. `publication` — a hand-off: approving
-     * publishes the article (if still a draft) and applies the
-     * `imprimatur` label.
+     * `feedback` — the author wants comments; the reviewing side closes
+     * the request as `resolved`. `publication` — a hand-off to the
+     * editors: approving publishes the article (if still a draft) and
+     * applies the `imprimatur` label.
      */
-    intent: string;
+    intent: ReviewIntent;
     /**
      * Optional note posted as the first message in the article's
      * review channel.

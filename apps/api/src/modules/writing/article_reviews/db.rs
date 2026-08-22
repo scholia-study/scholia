@@ -3,8 +3,10 @@ use uuid::Uuid;
 
 use crate::modules::writing::article_reviews::models::{
     ArticleReviewCommentResponse, ArticleReviewMessageResponse, ArticleReviewQueueItem,
-    ArticleReviewRequestResponse, ReviewParticipant,
+    ArticleReviewRequestResponse, ReviewDecision, ReviewIntent, ReviewParticipant,
+    ReviewRequestStatus,
 };
+use crate::modules::writing::articles::models::ArticleStatus;
 use crate::system::error::AppError;
 
 fn fmt_time(t: time::OffsetDateTime) -> String {
@@ -27,8 +29,8 @@ fn participant(
 struct RequestRow {
     id: Uuid,
     article_id: Uuid,
-    intent: String,
-    status: String,
+    intent: ReviewIntent,
+    status: ReviewRequestStatus,
     submitted_at: time::OffsetDateTime,
     resolved_at: Option<time::OffsetDateTime>,
     collegium_id: Option<Uuid>,
@@ -52,7 +54,7 @@ fn request_response(r: RequestRow) -> ArticleReviewRequestResponse {
 /// owner in one query.
 pub struct SubmissionArticle {
     pub id: Uuid,
-    pub status: String,
+    pub status: ArticleStatus,
     pub markdown: String,
 }
 
@@ -63,7 +65,7 @@ pub async fn get_article_for_submission(
 ) -> Result<Option<SubmissionArticle>, AppError> {
     let row = sqlx::query_as!(
         SubmissionArticle,
-        r#"SELECT id, status::TEXT AS "status!", markdown
+        r#"SELECT id, status AS "status: ArticleStatus", markdown
            FROM articles WHERE slug = $1 AND user_id = $2"#,
         slug,
         user_id,
@@ -82,7 +84,7 @@ pub async fn get_article_owner(pool: &PgPool, article_id: Uuid) -> Result<Option
 
 pub struct ReviewRequestCreate<'a> {
     pub article_id: Uuid,
-    pub intent: &'a str,
+    pub intent: ReviewIntent,
     pub collegium_id: Option<Uuid>,
     /// Snapshot of the collegium's review visibility at submission: true =
     /// all members review, false = admins only. None for editorial.
@@ -102,11 +104,12 @@ pub async fn create_request(
                    (article_id, intent, collegium_id, member_visible,
                     snapshot_markdown, snapshot_html)
                VALUES ($1, $2::article_review_intent, $3, $4, $5, $6)
-               RETURNING id, article_id,
-                   intent::TEXT AS intent, status::TEXT AS status,
+               RETURNING id, article_id, intent, status,
                    submitted_at, resolved_at, collegium_id
            )
-           SELECT i.id, i.article_id, i.intent AS "intent!", i.status AS "status!",
+           SELECT i.id, i.article_id,
+               i.intent AS "intent: ReviewIntent",
+               i.status AS "status: ReviewRequestStatus",
                i.submitted_at, i.resolved_at, i.collegium_id,
                g.name AS "collegium_name?"
            FROM inserted i
@@ -168,14 +171,14 @@ pub async fn count_recent_posts_by_user(pool: &PgPool, user_id: Uuid) -> Result<
 pub struct RequestWithArticle {
     pub id: Uuid,
     pub article_id: Uuid,
-    pub intent: String,
-    pub status: String,
+    pub intent: ReviewIntent,
+    pub status: ReviewRequestStatus,
     pub submitted_at: time::OffsetDateTime,
     pub resolved_at: Option<time::OffsetDateTime>,
     pub snapshot_html: String,
     pub article_title: String,
     pub article_slug: String,
-    pub article_status: String,
+    pub article_status: ArticleStatus,
     pub article_updated_at: time::OffsetDateTime,
     pub author_user_id: Uuid,
     pub author_display_name: String,
@@ -202,8 +205,8 @@ impl RequestWithArticle {
         ArticleReviewRequestResponse {
             id: self.id.to_string(),
             article_id: self.article_id.to_string(),
-            intent: self.intent.clone(),
-            status: self.status.clone(),
+            intent: self.intent,
+            status: self.status,
             submitted_at: fmt_time(self.submitted_at),
             resolved_at: self.resolved_at.map(fmt_time),
             collegium_id: self.collegium_id.map(|id| id.to_string()),
@@ -219,10 +222,11 @@ pub async fn get_request(
     let row = sqlx::query_as!(
         RequestWithArticle,
         r#"SELECT arr.id, arr.article_id,
-               arr.intent::TEXT AS "intent!", arr.status::TEXT AS "status!",
+               arr.intent AS "intent: ReviewIntent",
+               arr.status AS "status: ReviewRequestStatus",
                arr.submitted_at, arr.resolved_at, arr.snapshot_html,
                a.title AS article_title, a.slug AS article_slug,
-               a.status::TEXT AS "article_status!",
+               a.status AS "article_status: ArticleStatus",
                a.updated_at AS article_updated_at,
                a.user_id AS author_user_id,
                u.display_name AS author_display_name,
@@ -267,7 +271,8 @@ pub async fn list_requests_for_article(
     let rows = sqlx::query_as!(
         RequestRow,
         r#"SELECT arr.id, arr.article_id,
-               arr.intent::TEXT AS "intent!", arr.status::TEXT AS "status!",
+               arr.intent AS "intent: ReviewIntent",
+               arr.status AS "status: ReviewRequestStatus",
                arr.submitted_at, arr.resolved_at,
                arr.collegium_id, g.name AS "collegium_name?"
            FROM article_review_requests arr
@@ -434,12 +439,12 @@ pub async fn list_collegium_queue(
         article_id: Uuid,
         article_title: String,
         article_slug: String,
-        article_status: String,
+        article_status: ArticleStatus,
         author_user_id: Uuid,
         author_display_name: String,
         author_handle: Option<String>,
-        intent: String,
-        status: String,
+        intent: ReviewIntent,
+        status: ReviewRequestStatus,
         submitted_at: time::OffsetDateTime,
         resolved_at: Option<time::OffsetDateTime>,
         open_comment_count: i64,
@@ -448,11 +453,12 @@ pub async fn list_collegium_queue(
         CollegiumQueueRow,
         r#"SELECT arr.id, arr.article_id,
                a.title AS article_title, a.slug AS article_slug,
-               a.status::TEXT AS "article_status!",
+               a.status AS "article_status: ArticleStatus",
                a.user_id AS author_user_id,
                u.display_name AS author_display_name,
                u.handle AS author_handle,
-               arr.intent::TEXT AS "intent!", arr.status::TEXT AS "status!",
+               arr.intent AS "intent: ReviewIntent",
+               arr.status AS "status: ReviewRequestStatus",
                arr.submitted_at, arr.resolved_at,
                (SELECT COUNT(*) FROM article_review_comments arc
                 WHERE arc.request_id = arr.id
@@ -595,8 +601,8 @@ pub async fn user_is_reviewer(pool: &PgPool, user_id: Uuid) -> Result<bool, AppE
     Ok(exists)
 }
 
-pub struct ReviewDecision<'a> {
-    pub status: &'a str,
+pub struct ReviewDecisionPatch {
+    pub status: ReviewDecision,
     pub reviewed_by: Uuid,
 }
 
@@ -605,7 +611,7 @@ pub struct ReviewDecision<'a> {
 pub async fn decide_request(
     pool: &PgPool,
     request_id: Uuid,
-    patch: ReviewDecision<'_>,
+    patch: ReviewDecisionPatch,
 ) -> Result<bool, AppError> {
     let result = sqlx::query!(
         r#"UPDATE article_review_requests
@@ -651,12 +657,12 @@ pub async fn list_queue(
         article_id: Uuid,
         article_title: String,
         article_slug: String,
-        article_status: String,
+        article_status: ArticleStatus,
         author_user_id: Uuid,
         author_display_name: String,
         author_handle: Option<String>,
-        intent: String,
-        status: String,
+        intent: ReviewIntent,
+        status: ReviewRequestStatus,
         submitted_at: time::OffsetDateTime,
         resolved_at: Option<time::OffsetDateTime>,
         open_comment_count: i64,
@@ -669,11 +675,12 @@ pub async fn list_queue(
         QueueRow,
         r#"SELECT arr.id, arr.article_id,
                a.title AS article_title, a.slug AS article_slug,
-               a.status::TEXT AS "article_status!",
+               a.status AS "article_status: ArticleStatus",
                a.user_id AS author_user_id,
                u.display_name AS author_display_name,
                u.handle AS author_handle,
-               arr.intent::TEXT AS "intent!", arr.status::TEXT AS "status!",
+               arr.intent AS "intent: ReviewIntent",
+               arr.status AS "status: ReviewRequestStatus",
                arr.submitted_at, arr.resolved_at,
                (SELECT COUNT(*) FROM article_review_comments arc
                 WHERE arc.request_id = arr.id
@@ -960,7 +967,7 @@ pub struct CommentContext {
     pub id: Uuid,
     pub request_id: Uuid,
     pub parent_id: Option<Uuid>,
-    pub request_status: String,
+    pub request_status: ReviewRequestStatus,
     pub request_collegium_id: Option<Uuid>,
     pub request_member_visible: Option<bool>,
     pub author_user_id: Uuid,
@@ -973,7 +980,7 @@ pub async fn get_comment_context(
     let row = sqlx::query_as!(
         CommentContext,
         r#"SELECT c.id, c.request_id, c.parent_id,
-               arr.status::TEXT AS "request_status!",
+               arr.status AS "request_status: ReviewRequestStatus",
                arr.collegium_id AS "request_collegium_id?",
                arr.member_visible AS "request_member_visible?",
                a.user_id AS author_user_id

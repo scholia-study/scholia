@@ -4,6 +4,10 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ResourceScope } from "./resourceScope.ts";
+import type { ResourceType } from "./resourceType.ts";
+import type { SentenceKind } from "./sentenceKind.ts";
+import type { VerbatimKind } from "./verbatimKind.ts";
 
 export interface UpdateResourceRequest {
     /** @nullable */
@@ -14,17 +18,11 @@ export interface UpdateResourceRequest {
     is_featured?: boolean | null;
     /** @nullable */
     quoted_text?: string | null;
-    /** @nullable */
-    resource_type?: string | null;
-    /**
-     * NOT NULL column: plain Option — omit to leave unchanged.
-     * @nullable
-     */
-    scope?: string | null;
+    resource_type?: null | ResourceType;
+    scope?: null | ResourceScope;
     /** @nullable */
     sentence_end?: number | null;
-    /** @nullable */
-    sentence_kind?: string | null;
+    sentence_kind?: null | SentenceKind;
     /** @nullable */
     sentence_start?: number | null;
     /** @nullable */
@@ -35,6 +33,5 @@ export interface UpdateResourceRequest {
     source_page_end?: number | null;
     /** @nullable */
     source_page_start?: number | null;
-    /** @nullable */
-    verbatim_kind?: string | null;
+    verbatim_kind?: null | VerbatimKind;
 }

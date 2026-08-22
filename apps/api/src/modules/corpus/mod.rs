@@ -15,6 +15,7 @@ use crate::system::state::AppState;
 
 // Cross-domain facade — the only corpus internals visible outside the
 // domain. The writing domain uses both when creating quotations.
+pub use bibliography::models::SentenceKind;
 pub use core::db::resolve_effective_source;
 pub use reading::get_book_id_by_slug;
 

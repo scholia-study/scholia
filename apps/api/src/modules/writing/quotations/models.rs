@@ -7,7 +7,7 @@ pub struct QuotationResponse {
     pub anchor_sentence_start_number: i32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub anchor_sentence_end_number: Option<i32>,
-    pub sentence_kind: String,
+    pub sentence_kind: crate::modules::corpus::SentenceKind,
     pub note_count: i64,
     pub created_at: String,
     /// Slug of the book this quotation lives in. Used to render the
@@ -132,7 +132,7 @@ pub struct QuotationWithContextResponse {
     pub anchor_sentence_start_number: i32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub anchor_sentence_end_number: Option<i32>,
-    pub sentence_kind: String,
+    pub sentence_kind: crate::modules::corpus::SentenceKind,
     /// For footnote-kind anchors: the body sentence number the footnote is
     /// attached to. None for body-kind anchors.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -177,7 +177,7 @@ pub struct NoteWithContextResponse {
     pub anchor_sentence_start_number: i32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub anchor_sentence_end_number: Option<i32>,
-    pub sentence_kind: String,
+    pub sentence_kind: crate::modules::corpus::SentenceKind,
     /// For footnote-kind anchors: the body sentence number the footnote is
     /// attached to. None for body-kind anchors.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -208,7 +208,7 @@ pub struct QuotationQuery {
 pub struct CreateQuotationRequest {
     pub sentence_start: i32,
     pub sentence_end: Option<i32>,
-    pub sentence_kind: String,
+    pub sentence_kind: crate::modules::corpus::SentenceKind,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]

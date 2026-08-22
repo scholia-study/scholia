@@ -4,16 +4,14 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { SourceType } from "./sourceType.ts";
 
 export type BrowseSourcesParams = {
     /**
      * @nullable
      */
     q?: string | null;
-    /**
-     * @nullable
-     */
-    source_type?: string | null;
+    source_type?: null | SourceType;
     /**
      * @nullable
      */

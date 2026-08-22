@@ -1,0 +1,50 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT q.id,\n                  COALESCE(ss.sentence_number, cbs.figure_number) AS \"start_number?\",\n                  se.sentence_number AS \"end_number?\",\n                  q.sentence_kind AS \"sentence_kind: SentenceKind\",\n                  COUNT(qn.id) AS \"note_count?\",\n                  q.created_at\n           FROM quotations q\n           JOIN sentences ss ON ss.id = q.anchor_sentence_start_id\n           LEFT JOIN content_blocks cbs ON cbs.id = ss.block_id\n           LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id\n           LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id\n           WHERE q.id = $1\n           GROUP BY q.id, ss.sentence_number, cbs.figure_number, se.sentence_number",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "start_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 2,
+                "name": "end_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 3,
+                "name": "sentence_kind: SentenceKind",
+                "type_info": {
+                    "Custom": {
+                        "name": "sentence_kind",
+                        "kind": {
+                            "Enum": ["body", "footnote", "figure", "margin"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 4,
+                "name": "note_count?",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 5,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, null, true, false, null, false]
+    },
+    "hash": "96e5a0ff5e449ed167c56c1453debf76603daf0c89c4d5fa93abaaac41998c1c"
+}

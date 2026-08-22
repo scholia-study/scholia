@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { SentenceKind } from "./sentenceKind.ts";
 
 export type UnifiedQuotationResponse =
     | {
@@ -27,7 +28,7 @@ export type UnifiedQuotationResponse =
           node_label: string;
           node_slug: string;
           note_count: number;
-          sentence_kind: string;
+          sentence_kind: SentenceKind;
           source_type: "book";
           /** @nullable */
           start_text_snippet?: string | null;

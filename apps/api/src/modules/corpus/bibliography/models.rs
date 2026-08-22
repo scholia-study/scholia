@@ -1,18 +1,103 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
+/// Stored as the Postgres enum `source_type`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
+#[sqlx(type_name = "source_type", rename_all = "lowercase")]
+pub enum SourceType {
+    Book,
+    Article,
+    Chapter,
+    Journal,
+    Web,
+}
+
+/// Stored as the Postgres enum `source_person_role`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
+#[sqlx(type_name = "source_person_role", rename_all = "lowercase")]
+pub enum SourcePersonRole {
+    Author,
+    Editor,
+    Translator,
+    Contributor,
+}
+
+/// Stored as the Postgres enum `resource_type`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
+#[sqlx(type_name = "resource_type", rename_all = "lowercase")]
+pub enum ResourceType {
+    Verbatim,
+    Paraphrase,
+    Allusion,
+}
+
+/// Stored as the Postgres enum `verbatim_kind`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
+#[sqlx(type_name = "verbatim_kind", rename_all = "lowercase")]
+pub enum VerbatimKind {
+    Entirety,
+    Fragmentary,
+}
+
+/// Stored as the Postgres enum `sentence_kind`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
+#[sqlx(type_name = "sentence_kind", rename_all = "lowercase")]
+pub enum SentenceKind {
+    Body,
+    Footnote,
+    /// Figure anchors sit outside the body enumeration and are addressed
+    /// by `content_blocks.figure_number` (migration 0012).
+    Figure,
+}
+
+impl SentenceKind {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Body => "body",
+            Self::Footnote => "footnote",
+            Self::Figure => "figure",
+        }
+    }
+
+    /// Graceful parse for untrusted content-derived strings (article
+    /// passage directives); None for anything unknown.
+    pub fn parse(value: &str) -> Option<Self> {
+        match value {
+            "body" => Some(Self::Body),
+            "footnote" => Some(Self::Footnote),
+            "figure" => Some(Self::Figure),
+            _ => None,
+        }
+    }
+}
+
+/// Stored as the Postgres enum `resource_scope` (ADR 0008).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
+#[sqlx(type_name = "resource_scope", rename_all = "lowercase")]
+pub enum ResourceScope {
+    Work,
+    Language,
+    Edition,
+}
+
 use crate::system::serde_util::double_option;
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ResourceResponse {
     pub id: String,
-    pub resource_type: String,
+    pub resource_type: ResourceType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub verbatim_kind: Option<String>,
+    pub verbatim_kind: Option<VerbatimKind>,
     pub anchor_sentence_start_number: i32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub anchor_sentence_end_number: Option<i32>,
-    pub sentence_kind: String,
+    pub sentence_kind: SentenceKind,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quoted_text: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -31,12 +116,12 @@ pub struct ResourceResponse {
     /// Lifecycle: "approved" for live resources, "pending" for a community
     /// submission awaiting review, "rejected" for a declined one. The reader
     /// only ever receives "approved" rows plus the caller's own "pending" ones.
-    pub review_status: String,
+    pub review_status: ResourceReviewStatus,
     /// Cataloguer's claim about what the resource is about: "work" (the
     /// passage in any form), "language" (this language's translation layer),
     /// or "edition" (this one edition's actual text). Label only — never
     /// affects which editions the resource appears on.
-    pub scope: String,
+    pub scope: ResourceScope,
     /// True when this entry is projected from a sibling edition of the same
     /// work (its anchor lives in `origin_book_slug`, not the requested book).
     /// Projected entries are read-only in the requesting edition.
@@ -125,7 +210,7 @@ pub struct ReviewSubmissionRequest {
 #[derive(Debug, Clone, Serialize, ToSchema)]
 pub struct SourceResponse {
     pub id: String,
-    pub source_type: String,
+    pub source_type: SourceType,
     pub title: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title_display: Option<String>,
@@ -168,7 +253,7 @@ pub struct SourceResponse {
 #[derive(Debug, Clone, Serialize, ToSchema)]
 pub struct ParentSourceResponse {
     pub id: String,
-    pub source_type: String,
+    pub source_type: SourceType,
     pub title: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publication_year: Option<i16>,
@@ -183,7 +268,7 @@ pub struct SourcePersonResponse {
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sort_name: Option<String>,
-    pub role: String,
+    pub role: SourcePersonRole,
     pub position: i16,
     pub created_by: String,
     pub protected: bool,
@@ -202,7 +287,7 @@ pub struct PersonResponse {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct SourceSearchResponse {
     pub id: String,
-    pub source_type: String,
+    pub source_type: SourceType,
     pub title: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publication_year: Option<i16>,
@@ -216,11 +301,11 @@ pub struct ResourceQuery {
     pub start: i32,
     pub end: i32,
     #[serde(default = "default_body")]
-    pub kind: String,
+    pub kind: SentenceKind,
 }
 
-fn default_body() -> String {
-    "body".to_string()
+fn default_body() -> SentenceKind {
+    SentenceKind::Body
 }
 
 #[derive(Debug, Deserialize, IntoParams)]
@@ -234,7 +319,7 @@ pub struct SourceBrowseQuery {
     #[serde(default)]
     pub q: Option<String>,
     #[serde(default)]
-    pub source_type: Option<String>,
+    pub source_type: Option<SourceType>,
     #[serde(default)]
     pub created_by_me: Option<bool>,
     #[serde(default)]
@@ -253,12 +338,12 @@ pub struct SourceBrowseResponse {
 
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateResourceRequest {
-    pub resource_type: String,
+    pub resource_type: ResourceType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub verbatim_kind: Option<String>,
+    pub verbatim_kind: Option<VerbatimKind>,
     pub sentence_start: i32,
     pub sentence_end: Option<i32>,
-    pub sentence_kind: String,
+    pub sentence_kind: SentenceKind,
     pub source_id: Option<String>,
     pub source_page_start: Option<i32>,
     pub source_page_end: Option<i32>,
@@ -268,17 +353,17 @@ pub struct CreateResourceRequest {
     pub is_featured: Option<bool>,
     pub admin_notes: Option<String>,
     /// "work" (default) | "language" | "edition" — see ResourceResponse.scope.
-    pub scope: Option<String>,
+    pub scope: Option<ResourceScope>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateResourceRequest {
-    pub resource_type: Option<String>,
+    pub resource_type: Option<ResourceType>,
     #[serde(default, deserialize_with = "double_option")]
-    pub verbatim_kind: Option<Option<String>>,
+    pub verbatim_kind: Option<Option<VerbatimKind>>,
     pub sentence_start: Option<i32>,
     pub sentence_end: Option<i32>,
-    pub sentence_kind: Option<String>,
+    pub sentence_kind: Option<SentenceKind>,
     #[serde(default, deserialize_with = "double_option")]
     pub source_id: Option<Option<String>>,
     #[serde(default, deserialize_with = "double_option")]
@@ -295,12 +380,12 @@ pub struct UpdateResourceRequest {
     #[serde(default, deserialize_with = "double_option")]
     pub admin_notes: Option<Option<String>>,
     /// NOT NULL column: plain Option — omit to leave unchanged.
-    pub scope: Option<String>,
+    pub scope: Option<ResourceScope>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateSourceRequest {
-    pub source_type: String,
+    pub source_type: SourceType,
     pub title: String,
     pub title_display: Option<String>,
     pub publication_year: Option<i16>,
@@ -325,7 +410,7 @@ pub struct CreateSourceRequest {
 /// stay plain `Option<T>`.
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateSourceRequest {
-    pub source_type: Option<String>,
+    pub source_type: Option<SourceType>,
     pub title: Option<String>,
     #[serde(default, deserialize_with = "double_option")]
     pub title_display: Option<Option<String>>,
@@ -375,7 +460,7 @@ pub struct UpdatePersonRequest {
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct LinkSourcePersonRequest {
     pub person_id: String,
-    pub role: String,
+    pub role: SourcePersonRole,
     pub position: Option<i16>,
 }
 

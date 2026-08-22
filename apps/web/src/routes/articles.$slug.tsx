@@ -15,6 +15,7 @@ import {
 import {
     ArticleQuotationCard,
     ArticleSentences,
+    asSentenceKind,
     QuotationCard,
 } from "../modules/quotation";
 import {
@@ -112,7 +113,7 @@ function replaceEmbed(domNode: Element) {
                         ? Number(attrs["data-quotation-end"])
                         : undefined
                 }
-                kind={attrs["data-quotation-kind"] ?? "body"}
+                kind={asSentenceKind(attrs["data-quotation-kind"])}
                 mode={
                     (attrs["data-quotation-mode"] as
                         | "source"

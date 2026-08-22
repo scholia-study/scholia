@@ -1,0 +1,35 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, status AS \"status: ArticleStatus\", markdown\n           FROM articles WHERE slug = $1 AND user_id = $2",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "status: ArticleStatus",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_status",
+                        "kind": {
+                            "Enum": ["draft", "published", "archived"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 2,
+                "name": "markdown",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Uuid"]
+        },
+        "nullable": [false, false, false]
+    },
+    "hash": "e4006bd33f0d17c657b61505e61e044733988122f732bb044b8a508e369bc75b"
+}

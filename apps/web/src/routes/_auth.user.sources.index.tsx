@@ -19,7 +19,11 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import type { SourceResponse, SourceSearchResponse } from "../api/model";
+import type {
+    SourceResponse,
+    SourceSearchResponse,
+    SourceType,
+} from "../api/model";
 import {
     getBrowseSourcesQueryKey,
     useBrowseSources,
@@ -42,7 +46,7 @@ function SourcesListPage() {
 
     const [q, setQ] = useState("");
     const debouncedQ = useDebouncedValue(q);
-    const [sourceType, setSourceType] = useState<string>("");
+    const [sourceType, setSourceType] = useState<SourceType | "">("");
     const [createdByMe, setCreatedByMe] = useState(false);
     const [protectedFilter, setProtectedFilter] = useState(false);
     const [page, setPage] = useState(1);
@@ -104,7 +108,7 @@ function SourcesListPage() {
                     <Select
                         value={sourceType}
                         onChange={(e) => {
-                            setSourceType(e.target.value);
+                            setSourceType(e.target.value as SourceType | "");
                             setPage(1);
                         }}
                         label="Type"

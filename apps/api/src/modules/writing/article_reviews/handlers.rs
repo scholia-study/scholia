@@ -8,8 +8,9 @@ use crate::modules::writing::article_reviews::models::{
     ArticleReviewDetailResponse, ArticleReviewMessageListResponse, ArticleReviewMessageResponse,
     ArticleReviewQueueResponse, ArticleReviewRequestResponse, AssignReviewRequest, ChannelQuery,
     CreateReviewCommentRequest, CreateReviewMessageRequest, CreateReviewReplyRequest,
-    CreateReviewRequestRequest, ReviewArticleMeta, ReviewCollegiumMeta, ReviewDecisionRequest,
-    ReviewQueueQuery, ReviewerListResponse, UpdateReviewCommentRequest,
+    CreateReviewRequestRequest, ReviewArticleMeta, ReviewCollegiumMeta, ReviewDecision,
+    ReviewDecisionRequest, ReviewIntent, ReviewQueueQuery, ReviewRequestStatus,
+    ReviewerListResponse, UpdateReviewCommentRequest,
 };
 use crate::modules::writing::article_reviews::snapshot::annotate_snapshot_html;
 use crate::system::auth::middleware::AuthUser;
@@ -68,7 +69,7 @@ async fn require_request_access(
     req: &db::RequestWithArticle,
 ) -> Result<(), AppError> {
     if req.author_user_id == user.id
-        || (req.status != "withdrawn"
+        || (req.status != ReviewRequestStatus::Withdrawn
             && is_audience_reviewer(state, user, req.collegium_id, req.member_visible).await?)
     {
         return Ok(());
@@ -124,14 +125,9 @@ pub async fn create_review_request(
     Path(slug): Path<String>,
     Json(body): Json<CreateReviewRequestRequest>,
 ) -> Result<Json<ArticleReviewRequestResponse>, AppError> {
-    if !matches!(body.intent.as_str(), "feedback" | "publication") {
-        return Err(AppError::BadRequest(
-            "Intent must be 'feedback' or 'publication'".into(),
-        ));
-    }
     let (collegium_id, member_visible) = match &body.collegium_id {
         Some(id) => {
-            if body.intent != "feedback" {
+            if body.intent != ReviewIntent::Feedback {
                 return Err(AppError::BadRequest(
                     "Collegium reviews are feedback-only".into(),
                 ));
@@ -161,7 +157,7 @@ pub async fn create_review_request(
     let article = db::get_article_for_submission(&state.pool, &slug, user.id)
         .await?
         .ok_or_else(|| AppError::NotFound("Article not found".into()))?;
-    if article.status == "archived" {
+    if article.status == crate::modules::writing::articles::models::ArticleStatus::Archived {
         return Err(AppError::BadRequest(
             "Archived articles cannot be submitted for review".into(),
         ));
@@ -186,7 +182,7 @@ pub async fn create_review_request(
         &state.pool,
         db::ReviewRequestCreate {
             article_id: article.id,
-            intent: &body.intent,
+            intent: body.intent,
             collegium_id,
             member_visible,
             snapshot_markdown: &article.markdown,
@@ -463,7 +459,7 @@ pub async fn create_review_comment(
     // Reviewers only — the author responds via replies, whatever the
     // audience.
     if req.author_user_id == user.id
-        || req.status == "withdrawn"
+        || req.status == ReviewRequestStatus::Withdrawn
         || !is_audience_reviewer(&state, &user, req.collegium_id, req.member_visible).await?
     {
         return Err(AppError::NotFound("Review request not found".into()));
@@ -528,7 +524,7 @@ pub async fn create_review_reply(
         return Err(AppError::BadRequest("Replies cannot be nested".into()));
     }
     let can_access = ctx.author_user_id == user.id
-        || (ctx.request_status != "withdrawn"
+        || (ctx.request_status != ReviewRequestStatus::Withdrawn
             && is_audience_reviewer(
                 &state,
                 &user,
@@ -763,10 +759,12 @@ pub async fn create_review_message(
 /// The editor decision matrix: publication requests are approved or
 /// declined; feedback requests close as resolved. Everything else
 /// (including any attempt to set `pending` or `withdrawn`) is invalid.
-fn decision_is_valid(intent: &str, status: &str) -> bool {
+fn decision_is_valid(intent: ReviewIntent, decision: ReviewDecision) -> bool {
     matches!(
-        (intent, status),
-        ("publication", "approved") | ("publication", "declined") | ("feedback", "resolved")
+        (intent, decision),
+        (ReviewIntent::Publication, ReviewDecision::Approved)
+            | (ReviewIntent::Publication, ReviewDecision::Declined)
+            | (ReviewIntent::Feedback, ReviewDecision::Resolved)
     )
 }
 
@@ -923,25 +921,27 @@ pub async fn decide_article_review(
     if req.collegium_id.is_some() {
         return Err(AppError::NotFound("Review request not found".into()));
     }
-    if req.status != "pending" {
+    if req.status != ReviewRequestStatus::Pending {
         return Err(AppError::Conflict("Request is no longer pending".into()));
     }
 
-    if !decision_is_valid(&req.intent, &body.status) {
+    if !decision_is_valid(req.intent, body.status) {
         return Err(AppError::BadRequest(format!(
             "'{}' is not a valid decision for a {} request",
-            body.status, req.intent
+            body.status.as_str(),
+            req.intent.as_str()
         )));
     }
 
     // Side effects before claiming the request: each is idempotent, so a
     // failure leaves the request pending and the decision retryable.
-    let newly_published = body.status == "approved" && req.article_status == "draft";
+    let newly_published = body.status == ReviewDecision::Approved
+        && req.article_status == crate::modules::writing::articles::models::ArticleStatus::Draft;
     if newly_published {
         crate::modules::writing::articles::db::publish_article_by_id(&state.pool, req.article_id)
             .await?;
     }
-    if body.status == "approved" {
+    if body.status == ReviewDecision::Approved {
         crate::modules::writing::articles::editorial_labels::apply_label(
             &state.pool,
             &req.article_slug,
@@ -954,8 +954,8 @@ pub async fn decide_article_review(
     let decided = db::decide_request(
         &state.pool,
         request_id,
-        db::ReviewDecision {
-            status: &body.status,
+        db::ReviewDecisionPatch {
+            status: body.status,
             reviewed_by: user.id,
         },
     )
@@ -964,7 +964,7 @@ pub async fn decide_article_review(
         return Err(AppError::Conflict("Request is no longer pending".into()));
     }
 
-    if body.status == "approved" {
+    if body.status == ReviewDecision::Approved {
         let mut paths =
             crate::modules::writing::articles::handlers::article_cache_paths(&req.article_slug);
         if newly_published {
@@ -1003,16 +1003,15 @@ mod tests {
 
     #[test]
     fn decision_matrix() {
-        assert!(decision_is_valid("publication", "approved"));
-        assert!(decision_is_valid("publication", "declined"));
-        assert!(decision_is_valid("feedback", "resolved"));
+        use ReviewDecision as D;
+        use ReviewIntent as I;
+        assert!(decision_is_valid(I::Publication, D::Approved));
+        assert!(decision_is_valid(I::Publication, D::Declined));
+        assert!(decision_is_valid(I::Feedback, D::Resolved));
 
-        assert!(!decision_is_valid("feedback", "approved"));
-        assert!(!decision_is_valid("feedback", "declined"));
-        assert!(!decision_is_valid("publication", "resolved"));
-        assert!(!decision_is_valid("publication", "pending"));
-        assert!(!decision_is_valid("publication", "withdrawn"));
-        assert!(!decision_is_valid("feedback", "withdrawn"));
+        assert!(!decision_is_valid(I::Feedback, D::Approved));
+        assert!(!decision_is_valid(I::Feedback, D::Declined));
+        assert!(!decision_is_valid(I::Publication, D::Resolved));
     }
 
     #[test]

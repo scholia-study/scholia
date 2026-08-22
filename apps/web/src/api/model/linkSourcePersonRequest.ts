@@ -4,10 +4,11 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { SourcePersonRole } from "./sourcePersonRole.ts";
 
 export interface LinkSourcePersonRequest {
     person_id: string;
     /** @nullable */
     position?: number | null;
-    role: string;
+    role: SourcePersonRole;
 }

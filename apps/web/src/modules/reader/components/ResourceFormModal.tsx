@@ -15,7 +15,13 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import type { ResourceResponse, SourceResponse } from "../../../api/model";
+import type {
+    ResourceResponse,
+    ResourceScope,
+    SentenceKind,
+    SourceResponse,
+    VerbatimKind,
+} from "../../../api/model";
 import {
     getListResourcesQueryKey,
     useCreateResource,
@@ -39,7 +45,7 @@ interface ResourceFormModalProps {
     defaultType?: ResourceType;
     defaultSentenceStart?: number;
     defaultSentenceEnd?: number;
-    defaultSentenceKind?: string;
+    defaultSentenceKind?: SentenceKind;
     /** Text of the highlighted selection, used to seed Quoted Text for a new
      * verbatim resource (editable). Ignored for other types and for edits. */
     defaultQuotedText?: string;
@@ -56,11 +62,11 @@ const SCOPES = [
 ] as const;
 
 interface InitialFormState {
-    resourceType: string;
-    verbatimKind: string;
+    resourceType: ResourceType;
+    verbatimKind: VerbatimKind;
     sentenceStart: string;
     sentenceEnd: string;
-    sentenceKind: string;
+    sentenceKind: SentenceKind;
     sourceId: string;
     sourceLabel: string;
     sourcePageStart: string;
@@ -71,14 +77,14 @@ interface InitialFormState {
     editorNote: string;
     isFeatured: boolean;
     adminNotes: string;
-    scope: string;
+    scope: ResourceScope;
 }
 
 interface FormDefaults {
     type?: ResourceType;
     sentenceStart?: number;
     sentenceEnd?: number;
-    sentenceKind?: string;
+    sentenceKind?: SentenceKind;
     quotedText?: string;
 }
 

@@ -3,8 +3,8 @@ use axum::extract::{Path, Query, State};
 
 use crate::modules::corpus::bibliography::models::{
     CreateSourceRequest, LinkSourcePersonRequest, ReferenceCheckResponse, SearchQuery,
-    SourceBrowseQuery, SourceBrowseResponse, SourceResponse, SourceSearchResponse,
-    UpdateSourceRequest,
+    SourceBrowseQuery, SourceBrowseResponse, SourcePersonRole, SourceResponse,
+    SourceSearchResponse, UpdateSourceRequest,
 };
 use crate::system::auth::middleware::AuthUser;
 use crate::system::auth::permissions::Permission;
@@ -207,7 +207,7 @@ pub async fn browse_sources(
     let (sources, total) = crate::modules::corpus::bibliography::sources::db::browse_sources(
         &state.pool,
         q_trimmed,
-        params.source_type.as_deref(),
+        params.source_type,
         created_by,
         protected,
         page,
@@ -304,7 +304,7 @@ pub async fn create_source(
     let source = crate::modules::corpus::bibliography::sources::db::create_source(
         &state.pool,
         crate::modules::corpus::bibliography::sources::db::SourceCreate {
-            source_type: &body.source_type,
+            source_type: body.source_type,
             title: &body.title,
             title_display: body.title_display.as_deref(),
             publication_year: body.publication_year,
@@ -476,7 +476,7 @@ pub async fn add_source_person(
         &state.pool,
         source_id,
         person_id,
-        &body.role,
+        body.role,
         body.position.unwrap_or(0),
     )
     .await?;
@@ -505,7 +505,7 @@ pub async fn add_source_person(
 pub async fn remove_source_person(
     State(state): State<AppState>,
     user: AuthUser,
-    Path((id, person_id, role)): Path<(String, String, String)>,
+    Path((id, person_id, role)): Path<(String, String, SourcePersonRole)>,
 ) -> Result<Json<()>, AppError> {
     let source_id =
         uuid::Uuid::parse_str(&id).map_err(|_| AppError::BadRequest("Invalid source ID".into()))?;
@@ -519,7 +519,7 @@ pub async fn remove_source_person(
         &state.pool,
         source_id,
         person_uuid,
-        &role,
+        role,
     )
     .await?;
 

@@ -185,7 +185,7 @@ pub async fn update_article(
     // Drafts have no public presence — nothing cached to purge. For a
     // published article, purge the old slug's paths (the URL caches
     // know) and, after a title-driven slug change, the new one too.
-    if article.status == "published" {
+    if article.status == crate::modules::writing::articles::models::ArticleStatus::Published {
         let mut paths = article_cache_paths(&slug);
         if article.slug != slug {
             paths.extend(article_cache_paths(&article.slug));
@@ -635,7 +635,7 @@ pub async fn batch_sentences(
             &req.node_slug,
             req.start_number,
             req.end_number,
-            &req.kind,
+            req.kind,
         )
         .await?;
         items.push(item);

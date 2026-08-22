@@ -1,0 +1,167 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT arr.id, arr.article_id,\n               arr.intent AS \"intent: ReviewIntent\",\n               arr.status AS \"status: ReviewRequestStatus\",\n               arr.submitted_at, arr.resolved_at, arr.snapshot_html,\n               a.title AS article_title, a.slug AS article_slug,\n               a.status AS \"article_status: ArticleStatus\",\n               a.updated_at AS article_updated_at,\n               a.user_id AS author_user_id,\n               u.display_name AS author_display_name,\n               u.handle AS author_handle,\n               arr.assigned_to,\n               au.display_name AS \"assignee_display_name?\",\n               au.handle AS \"assignee_handle?\",\n               arr.collegium_id,\n               g.name AS \"collegium_name?\",\n               g.slug AS \"collegium_slug?\",\n               arr.member_visible\n           FROM article_review_requests arr\n           JOIN articles a ON a.id = arr.article_id\n           JOIN users u ON u.id = a.user_id\n           LEFT JOIN users au ON au.id = arr.assigned_to\n           LEFT JOIN collegia g ON g.id = arr.collegium_id\n           WHERE arr.id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "article_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "intent: ReviewIntent",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_review_intent",
+                        "kind": {
+                            "Enum": ["feedback", "publication"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 3,
+                "name": "status: ReviewRequestStatus",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_review_request_status",
+                        "kind": {
+                            "Enum": [
+                                "pending",
+                                "approved",
+                                "declined",
+                                "resolved",
+                                "withdrawn"
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 4,
+                "name": "submitted_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 5,
+                "name": "resolved_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 6,
+                "name": "snapshot_html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "article_title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "article_slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 9,
+                "name": "article_status: ArticleStatus",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_status",
+                        "kind": {
+                            "Enum": ["draft", "published", "archived"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 10,
+                "name": "article_updated_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 11,
+                "name": "author_user_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 12,
+                "name": "author_display_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 13,
+                "name": "author_handle",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 14,
+                "name": "assigned_to",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 15,
+                "name": "assignee_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 16,
+                "name": "assignee_handle?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 17,
+                "name": "collegium_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 18,
+                "name": "collegium_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 19,
+                "name": "collegium_slug?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 20,
+                "name": "member_visible",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true,
+            false,
+            true,
+            true,
+            false,
+            false,
+            true
+        ]
+    },
+    "hash": "c8a2a9ae1e010fab08f1e7ed058782c2bbe4d8d929e3081990aa9b658be90a88"
+}

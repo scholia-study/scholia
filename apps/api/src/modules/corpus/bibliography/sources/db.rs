@@ -5,13 +5,13 @@ use uuid::Uuid;
 use crate::modules::corpus::bibliography::models::{
     ParentSourceResponse, ReferenceCheckResponse, ReferencedArticle, ReferencedArticles,
     ReferencedChildSource, ReferencedChildSources, ReferencedResources, SourcePersonResponse,
-    SourceResponse, SourceSearchResponse,
+    SourcePersonRole, SourceResponse, SourceSearchResponse, SourceType,
 };
 use crate::system::error::AppError;
 
 struct SourceRow {
     id: Uuid,
-    source_type: String,
+    source_type: SourceType,
     title: String,
     title_display: Option<String>,
     publication_year: Option<i16>,
@@ -37,7 +37,7 @@ struct SourcePersonRow {
     person_id: Uuid,
     name: String,
     sort_name: Option<String>,
-    role: String,
+    role: SourcePersonRole,
     position: i16,
     person_created_by: Uuid,
     person_protected: bool,
@@ -51,7 +51,7 @@ pub async fn search_sources(
 
     let rows = sqlx::query_as!(
         SourceRow,
-        r#"SELECT DISTINCT s.id, s.source_type::TEXT AS "source_type!", s.title, s.title_display,
+        r#"SELECT DISTINCT s.id, s.source_type AS "source_type: SourceType", s.title, s.title_display,
                   s.publication_year, s.original_year, s.publisher, s.publication_place,
                   s.isbn, s.doi, s.edition, s.volume,
                   s.journal_name, s.url, s.page_start, s.page_end,
@@ -91,7 +91,7 @@ pub async fn search_sources(
 pub async fn get_source(pool: &PgPool, source_id: Uuid) -> Result<SourceResponse, AppError> {
     let row = sqlx::query_as!(
         SourceRow,
-        r#"SELECT id, source_type::TEXT AS "source_type!", title, title_display, publication_year,
+        r#"SELECT id, source_type AS "source_type: SourceType", title, title_display, publication_year,
                   original_year, publisher, publication_place, isbn, doi, edition, volume,
                   journal_name, url,
                   page_start, page_end, parent_source_id, translation_of_id,
@@ -116,7 +116,7 @@ pub async fn get_source(pool: &PgPool, source_id: Uuid) -> Result<SourceResponse
 }
 
 pub struct SourceCreate<'a> {
-    pub source_type: &'a str,
+    pub source_type: SourceType,
     pub title: &'a str,
     pub title_display: Option<&'a str>,
     pub publication_year: Option<i16>,
@@ -306,7 +306,7 @@ pub async fn link_source_person(
     pool: &PgPool,
     source_id: Uuid,
     person_id: Uuid,
-    role: &str,
+    role: SourcePersonRole,
     position: i16,
 ) -> Result<(), AppError> {
     sqlx::query!(
@@ -329,7 +329,7 @@ pub async fn unlink_source_person(
     pool: &PgPool,
     source_id: Uuid,
     person_id: Uuid,
-    role: &str,
+    role: SourcePersonRole,
 ) -> Result<(), AppError> {
     sqlx::query!(
         r#"DELETE FROM source_persons
@@ -473,7 +473,7 @@ pub async fn source_used_by_others(
 pub async fn browse_sources(
     pool: &PgPool,
     q: Option<&str>,
-    source_type: Option<&str>,
+    source_type: Option<SourceType>,
     created_by: Option<Uuid>,
     protected: Option<bool>,
     page: i32,
@@ -500,7 +500,7 @@ pub async fn browse_sources(
 
     let rows = sqlx::query_as!(
         SourceRow,
-        r#"SELECT s.id, s.source_type::TEXT AS "source_type!", s.title, s.title_display,
+        r#"SELECT s.id, s.source_type AS "source_type: SourceType", s.title, s.title_display,
                   s.publication_year, s.original_year, s.publisher, s.publication_place,
                   s.isbn, s.doi, s.edition, s.volume,
                   s.journal_name, s.url, s.page_start, s.page_end,
@@ -591,7 +591,7 @@ pub async fn fetch_source_persons(
     let rows = sqlx::query_as!(
         SourcePersonRow,
         r#"SELECT sp.source_id, sp.person_id, p.name, p.sort_name,
-                  sp.role::TEXT AS "role!", sp.position,
+                  sp.role AS "role: SourcePersonRole", sp.position,
                   p.created_by AS "person_created_by!", p.protected AS "person_protected!"
            FROM source_persons sp
            JOIN persons p ON p.id = sp.person_id
@@ -625,7 +625,7 @@ pub async fn fetch_parent_source(
 ) -> Result<ParentSourceResponse, AppError> {
     struct ParentRow {
         id: Uuid,
-        source_type: String,
+        source_type: SourceType,
         title: String,
         publication_year: Option<i16>,
         publisher: Option<String>,
@@ -633,7 +633,7 @@ pub async fn fetch_parent_source(
 
     let row = sqlx::query_as!(
         ParentRow,
-        r#"SELECT id, source_type::TEXT AS "source_type!", title, publication_year, publisher
+        r#"SELECT id, source_type AS "source_type: SourceType", title, publication_year, publisher
            FROM sources
            WHERE id = $1"#,
         parent_id,

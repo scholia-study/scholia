@@ -1,0 +1,314 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT\n    r.id,\n    r.resource_type AS \"resource_type: ResourceType\",\n    r.verbatim_kind AS \"verbatim_kind?: VerbatimKind\",\n    ss.sentence_number AS \"start_number?\",\n    se.sentence_number AS \"end_number?\",\n    r.sentence_kind AS \"sentence_kind: SentenceKind\",\n    r.quoted_text, r.editor_note,\n    r.source_page_start, r.source_page_end, r.source_location_freeform,\n    r.is_featured, r.admin_notes,\n    r.review_status AS \"review_status: ResourceReviewStatus\",\n    r.scope AS \"scope: ResourceScope\",\n    r.created_at,\n    s.id AS \"src_id?\",\n    s.source_type AS \"src_type?: SourceType\",\n    s.title AS \"src_title?\",\n    s.title_display AS \"src_title_display?\",\n    s.publication_year AS \"src_year?\",\n    s.original_year AS \"src_original_year?\",\n    s.publisher AS \"src_publisher?\",\n    s.publication_place AS \"src_publication_place?\",\n    s.isbn AS \"src_isbn?\",\n    s.doi AS \"src_doi?\",\n    s.edition AS \"src_edition?\",\n    s.volume AS \"src_volume?\",\n    s.journal_name AS \"src_journal_name?\",\n    s.url AS \"src_url?\",\n    s.page_start AS \"src_page_start?\",\n    s.page_end AS \"src_page_end?\",\n    s.parent_source_id AS \"src_parent_id?\",\n    s.translation_of_id AS \"src_translation_of_id?\",\n    s.created_by AS \"src_created_by?\",\n    s.protected AS \"src_protected?\",\n    b.slug AS book_slug,\n    bs.title AS book_title,\n    su.id AS \"submitter_id?\",\n    su.display_name AS \"submitter_display_name?\",\n    r.review_note,\n    r.reviewed_at\n           FROM resources r\n           JOIN books b ON b.id = r.book_id\n           JOIN sources bs ON bs.id = b.source_id\n           JOIN sentences ss ON ss.id = r.anchor_sentence_start_id\n           LEFT JOIN sentences se ON se.id = r.anchor_sentence_end_id\n           LEFT JOIN sources s ON s.id = r.source_id\n           LEFT JOIN users su ON su.id = r.submitted_by\n           WHERE r.submitted_by IS NOT NULL\n             AND r.archived_at IS NULL\n             AND r.review_status::TEXT = ANY($1)\n           ORDER BY r.created_at DESC\n           LIMIT $2 OFFSET $3",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "resource_type: ResourceType",
+                "type_info": {
+                    "Custom": {
+                        "name": "resource_type",
+                        "kind": {
+                            "Enum": ["verbatim", "paraphrase", "allusion"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 2,
+                "name": "verbatim_kind?: VerbatimKind",
+                "type_info": {
+                    "Custom": {
+                        "name": "verbatim_kind",
+                        "kind": {
+                            "Enum": ["entirety", "fragmentary"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 3,
+                "name": "start_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 4,
+                "name": "end_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 5,
+                "name": "sentence_kind: SentenceKind",
+                "type_info": {
+                    "Custom": {
+                        "name": "sentence_kind",
+                        "kind": {
+                            "Enum": ["body", "footnote", "figure", "margin"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 6,
+                "name": "quoted_text",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "editor_note",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "source_page_start",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 9,
+                "name": "source_page_end",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 10,
+                "name": "source_location_freeform",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 11,
+                "name": "is_featured",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 12,
+                "name": "admin_notes",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 13,
+                "name": "review_status: ResourceReviewStatus",
+                "type_info": {
+                    "Custom": {
+                        "name": "resource_review_status",
+                        "kind": {
+                            "Enum": ["pending", "approved", "rejected"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 14,
+                "name": "scope: ResourceScope",
+                "type_info": {
+                    "Custom": {
+                        "name": "resource_scope",
+                        "kind": {
+                            "Enum": ["work", "language", "edition"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 15,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 16,
+                "name": "src_id?",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 17,
+                "name": "src_type?: SourceType",
+                "type_info": {
+                    "Custom": {
+                        "name": "source_type",
+                        "kind": {
+                            "Enum": [
+                                "book",
+                                "article",
+                                "chapter",
+                                "journal",
+                                "web"
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 18,
+                "name": "src_title?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 19,
+                "name": "src_title_display?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 20,
+                "name": "src_year?",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 21,
+                "name": "src_original_year?",
+                "type_info": "Int2"
+            },
+            {
+                "ordinal": 22,
+                "name": "src_publisher?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 23,
+                "name": "src_publication_place?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 24,
+                "name": "src_isbn?",
+                "type_info": "TextArray"
+            },
+            {
+                "ordinal": 25,
+                "name": "src_doi?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 26,
+                "name": "src_edition?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 27,
+                "name": "src_volume?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 28,
+                "name": "src_journal_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 29,
+                "name": "src_url?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 30,
+                "name": "src_page_start?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 31,
+                "name": "src_page_end?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 32,
+                "name": "src_parent_id?",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 33,
+                "name": "src_translation_of_id?",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 34,
+                "name": "src_created_by?",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 35,
+                "name": "src_protected?",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 36,
+                "name": "book_slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 37,
+                "name": "book_title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 38,
+                "name": "submitter_id?",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 39,
+                "name": "submitter_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 40,
+                "name": "review_note",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 41,
+                "name": "reviewed_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["TextArray", "Int8", "Int8"]
+        },
+        "nullable": [
+            false,
+            false,
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true
+        ]
+    },
+    "hash": "6f3bdda7593c32761110dea717b400ab268eb4b6ad012f86ee7b98bec40d3918"
+}

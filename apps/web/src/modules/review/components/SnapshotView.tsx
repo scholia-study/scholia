@@ -4,7 +4,11 @@ import parse, {
     type Element,
     type HTMLReactParserOptions,
 } from "html-react-parser";
-import { ArticleQuotationCard, QuotationCard } from "../../quotation";
+import {
+    ArticleQuotationCard,
+    asSentenceKind,
+    QuotationCard,
+} from "../../quotation";
 
 /** A sentence-range (or block-level, when start/end are null) anchor. */
 export interface SnapshotSelection {
@@ -100,7 +104,7 @@ export function SnapshotView({
                             ? Number(attrs["data-quotation-end"])
                             : undefined
                     }
-                    kind={attrs["data-quotation-kind"] ?? "body"}
+                    kind={asSentenceKind(attrs["data-quotation-kind"])}
                     mode={
                         (attrs["data-quotation-mode"] as
                             | "source"

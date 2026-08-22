@@ -6,6 +6,7 @@
  */
 import type { ParentSourceResponse } from "./parentSourceResponse.ts";
 import type { SourcePersonResponse } from "./sourcePersonResponse.ts";
+import type { SourceType } from "./sourceType.ts";
 
 export interface SourceResponse {
     created_by: string;
@@ -38,7 +39,7 @@ export interface SourceResponse {
     publication_year?: number | null;
     /** @nullable */
     publisher?: string | null;
-    source_type: string;
+    source_type: SourceType;
     title: string;
     /** @nullable */
     title_display?: string | null;

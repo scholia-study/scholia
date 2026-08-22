@@ -4,9 +4,10 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { SentenceKind } from "./sentenceKind.ts";
 
 export type ListResourcesParams = {
     start: number;
     end: number;
-    kind?: string;
+    kind?: SentenceKind;
 };

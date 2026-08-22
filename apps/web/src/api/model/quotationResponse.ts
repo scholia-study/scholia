@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { SentenceKind } from "./sentenceKind.ts";
 
 export interface QuotationResponse {
     /** @nullable */
@@ -68,7 +69,7 @@ export interface QuotationResponse {
      * @nullable
      */
     projected_verse_start?: string | null;
-    sentence_kind: string;
+    sentence_kind: SentenceKind;
     /**
      * Short display label for the translation badge — derived from
      * the source's `publisher` field (which the Bible importer sets

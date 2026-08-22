@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ReviewDecision } from "./reviewDecision.ts";
 
 export interface ReviewDecisionRequest {
     /**
@@ -16,5 +17,5 @@ export interface ReviewDecisionRequest {
      * `approved` | `declined` (publication intent) or `resolved`
      * (feedback intent).
      */
-    status: string;
+    status: ReviewDecision;
 }

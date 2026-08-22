@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { SourceType } from "./sourceType.ts";
 
 /**
  * Patch for a source. Nullable columns use `Option<Option<T>>` (via
@@ -36,8 +37,7 @@ export interface UpdateSourceRequest {
     publication_year?: number | null;
     /** @nullable */
     publisher?: string | null;
-    /** @nullable */
-    source_type?: string | null;
+    source_type?: null | SourceType;
     /** @nullable */
     title?: string | null;
     /** @nullable */

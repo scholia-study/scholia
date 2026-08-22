@@ -4,10 +4,11 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { SentenceKind } from "./sentenceKind.ts";
 
 export interface CreateQuotationRequest {
     /** @nullable */
     sentence_end?: number | null;
-    sentence_kind: string;
+    sentence_kind: SentenceKind;
     sentence_start: number;
 }

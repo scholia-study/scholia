@@ -2,6 +2,7 @@ use sqlx::PgPool;
 use std::collections::HashMap;
 use uuid::Uuid;
 
+use crate::modules::corpus::SentenceKind;
 use crate::modules::writing::quotations::models::{
     NoteLimitsResponse, NoteResponse, NoteWithContextResponse, QuotationLimitsResponse,
     QuotationResponse, QuotationWithContextResponse, TagResponse,
@@ -20,7 +21,7 @@ struct QuotationRow {
     id: Uuid,
     start_number: Option<i32>,
     end_number: Option<i32>,
-    sentence_kind: String,
+    sentence_kind: SentenceKind,
     note_count: Option<i64>,
     created_at: time::OffsetDateTime,
 }
@@ -37,7 +38,7 @@ struct QuotationRowEx {
     id: Uuid,
     start_number: Option<i32>,
     end_number: Option<i32>,
-    sentence_kind: String,
+    sentence_kind: SentenceKind,
     note_count: Option<i64>,
     created_at: time::OffsetDateTime,
     book_slug: Option<String>,
@@ -124,10 +125,10 @@ pub(crate) async fn resolve_sentence(
     pool: &PgPool,
     book_id: Uuid,
     sentence_number: i32,
-    sentence_kind: &str,
+    sentence_kind: SentenceKind,
 ) -> Result<SentenceLookup, AppError> {
     let sent = match sentence_kind {
-        "body" => {
+        SentenceKind::Body => {
             sqlx::query_as!(
                 SentenceLookup,
                 r#"SELECT id, node_id FROM sentences
@@ -140,7 +141,7 @@ pub(crate) async fn resolve_sentence(
         }
         // Figure anchors have no sentence_number (they sit outside the body
         // enumeration); they are addressed by the block's figure_number.
-        "figure" => {
+        SentenceKind::Figure => {
             sqlx::query_as!(
                 SentenceLookup,
                 r#"SELECT s.id, s.node_id FROM sentences s
@@ -152,7 +153,7 @@ pub(crate) async fn resolve_sentence(
             .fetch_optional(pool)
             .await?
         }
-        _ => {
+        SentenceKind::Footnote => {
             sqlx::query_as!(
                 SentenceLookup,
                 r#"SELECT id, node_id FROM sentences
@@ -166,7 +167,8 @@ pub(crate) async fn resolve_sentence(
     }
     .ok_or_else(|| {
         AppError::BadRequest(format!(
-            "Sentence {sentence_number} not found for kind '{sentence_kind}'"
+            "Sentence {sentence_number} not found for kind '{}'",
+            sentence_kind.as_str()
         ))
     })?;
     Ok(sent)
@@ -255,7 +257,7 @@ pub async fn list_quotations_for_node(
            SELECT q.id,
                   COALESCE(ss.sentence_number, cbs.figure_number) AS "start_number?",
                   se.sentence_number AS "end_number?",
-                  q.sentence_kind::TEXT AS "sentence_kind!",
+                  q.sentence_kind AS "sentence_kind: SentenceKind",
                   COUNT(qn.id) AS "note_count?",
                   q.created_at,
                   qb.slug AS "book_slug?",
@@ -377,7 +379,7 @@ pub async fn create_quotation(
     book_id: Uuid,
     sentence_start: i32,
     sentence_end: Option<i32>,
-    sentence_kind: &str,
+    sentence_kind: SentenceKind,
 ) -> Result<(QuotationResponse, bool), AppError> {
     let start_sent = resolve_sentence(pool, book_id, sentence_start, sentence_kind).await?;
 
@@ -442,7 +444,7 @@ pub async fn create_quotation(
         r#"SELECT q.id,
                   COALESCE(ss.sentence_number, cbs.figure_number) AS "start_number?",
                   se.sentence_number AS "end_number?",
-                  q.sentence_kind::TEXT AS "sentence_kind!",
+                  q.sentence_kind AS "sentence_kind: SentenceKind",
                   COUNT(qn.id) AS "note_count?",
                   q.created_at
            FROM quotations q
@@ -755,7 +757,7 @@ struct QuotationWithContextRow {
     node_slug: String,
     start_number: Option<i32>,
     end_number: Option<i32>,
-    sentence_kind: String,
+    sentence_kind: SentenceKind,
     main_number: Option<i32>,
     start_text: Option<String>,
     end_text: Option<String>,
@@ -789,7 +791,7 @@ pub async fn list_all_quotations(
                   n.slug AS "node_slug!",
                   COALESCE(ss.sentence_number, cbs.figure_number) AS "start_number?",
                   se.sentence_number AS "end_number?",
-                  q.sentence_kind::TEXT AS "sentence_kind!",
+                  q.sentence_kind AS "sentence_kind: SentenceKind",
                   ms.sentence_number AS "main_number?",
                   ss.text AS "start_text?",
                   se.text AS "end_text?",
@@ -869,7 +871,7 @@ struct NoteWithContextRow {
     node_slug: String,
     start_number: Option<i32>,
     end_number: Option<i32>,
-    sentence_kind: String,
+    sentence_kind: SentenceKind,
     main_number: Option<i32>,
     created_at: time::OffsetDateTime,
     updated_at: time::OffsetDateTime,
@@ -897,7 +899,7 @@ pub async fn list_all_notes(
                   n.slug AS "node_slug!",
                   COALESCE(ss.sentence_number, cbs.figure_number) AS "start_number?",
                   se.sentence_number AS "end_number?",
-                  q.sentence_kind::TEXT AS "sentence_kind!",
+                  q.sentence_kind AS "sentence_kind: SentenceKind",
                   ms.sentence_number AS "main_number?",
                   qn.created_at, qn.updated_at
            FROM quotation_notes qn

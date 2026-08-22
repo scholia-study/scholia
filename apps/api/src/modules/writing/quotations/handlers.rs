@@ -107,7 +107,7 @@ pub async fn create_quotation(
         book_id,
         body.sentence_start,
         body.sentence_end,
-        &body.sentence_kind,
+        body.sentence_kind,
     )
     .await?;
 

@@ -1,0 +1,137 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT arr.id, arr.article_id,\n               a.title AS article_title, a.slug AS article_slug,\n               a.status AS \"article_status: ArticleStatus\",\n               a.user_id AS author_user_id,\n               u.display_name AS author_display_name,\n               u.handle AS author_handle,\n               arr.intent AS \"intent: ReviewIntent\",\n               arr.status AS \"status: ReviewRequestStatus\",\n               arr.submitted_at, arr.resolved_at,\n               (SELECT COUNT(*) FROM article_review_comments arc\n                WHERE arc.request_id = arr.id\n                  AND arc.parent_id IS NULL\n                  AND arc.resolved_at IS NULL) AS \"open_comment_count!\",\n               arr.assigned_to,\n               au.display_name AS \"assignee_display_name?\",\n               au.handle AS \"assignee_handle?\"\n           FROM article_review_requests arr\n           JOIN articles a ON a.id = arr.article_id\n           JOIN users u ON u.id = a.user_id\n           LEFT JOIN users au ON au.id = arr.assigned_to\n           WHERE arr.collegium_id IS NULL\n             AND arr.status::TEXT = ANY($1)\n             AND ($4::uuid IS NULL OR arr.assigned_to = $4)\n             AND (NOT $5 OR arr.assigned_to IS NULL)\n           ORDER BY arr.submitted_at DESC\n           LIMIT $2 OFFSET $3",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "article_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "article_title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "article_slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "article_status: ArticleStatus",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_status",
+                        "kind": {
+                            "Enum": ["draft", "published", "archived"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 5,
+                "name": "author_user_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 6,
+                "name": "author_display_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "author_handle",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "intent: ReviewIntent",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_review_intent",
+                        "kind": {
+                            "Enum": ["feedback", "publication"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 9,
+                "name": "status: ReviewRequestStatus",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_review_request_status",
+                        "kind": {
+                            "Enum": [
+                                "pending",
+                                "approved",
+                                "declined",
+                                "resolved",
+                                "withdrawn"
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 10,
+                "name": "submitted_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 11,
+                "name": "resolved_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 12,
+                "name": "open_comment_count!",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 13,
+                "name": "assigned_to",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 14,
+                "name": "assignee_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 15,
+                "name": "assignee_handle?",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["TextArray", "Int8", "Int8", "Uuid", "Bool"]
+        },
+        "nullable": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            null,
+            true,
+            false,
+            true
+        ]
+    },
+    "hash": "22114926a7cf32bc80815b0d88a8bc751acd889163da553323bb9554a36b7598"
+}

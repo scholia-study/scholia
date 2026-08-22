@@ -4,12 +4,15 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ArticleStatus } from "./articleStatus.ts";
+import type { ReviewIntent } from "./reviewIntent.ts";
 import type { ReviewParticipant } from "./reviewParticipant.ts";
+import type { ReviewRequestStatus } from "./reviewRequestStatus.ts";
 
 export interface ArticleReviewQueueItem {
     article_id: string;
     article_slug: string;
-    article_status: string;
+    article_status: ArticleStatus;
     article_title: string;
     assignee?: null | ReviewParticipant;
     author_display_name: string;
@@ -17,11 +20,11 @@ export interface ArticleReviewQueueItem {
     author_handle?: string | null;
     author_user_id: string;
     id: string;
-    intent: string;
+    intent: ReviewIntent;
     /** Unresolved top-level comments on this request. */
     open_comment_count: number;
     /** @nullable */
     resolved_at?: string | null;
-    status: string;
+    status: ReviewRequestStatus;
     submitted_at: string;
 }

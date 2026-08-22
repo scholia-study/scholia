@@ -3,8 +3,8 @@ use axum::extract::{Path, Query, State};
 
 use crate::modules::corpus::bibliography::models::{
     CreateResourceRequest, ResourceListResponse, ResourceQuery, ResourceReviewStatus,
-    ResourceSubmissionListResponse, ResourceSubmissionResponse, ReviewSubmissionRequest,
-    SubmissionListQuery, UpdateResourceRequest,
+    ResourceScope, ResourceSubmissionListResponse, ResourceSubmissionResponse,
+    ReviewSubmissionRequest, SubmissionListQuery, UpdateResourceRequest,
 };
 use crate::system::auth::middleware::AuthUser;
 use crate::system::auth::permissions::Permission;
@@ -92,7 +92,7 @@ pub async fn list_resources(
         book_id,
         params.start,
         params.end,
-        &params.kind,
+        params.kind,
         viewer_id,
         include_admin_notes,
     )
@@ -158,7 +158,7 @@ pub async fn create_resource(
     // Non-editors go through review; rate-limit to bound spam (auth is the real
     // gate). Their `submitted_by` also lets them see the pending row inline.
     let (review_status, submitted_by) = if can_manage {
-        ("approved", None)
+        (ResourceReviewStatus::Approved, None)
     } else {
         let recent =
             crate::modules::corpus::bibliography::resources::db::count_recent_submissions_by_user(
@@ -171,18 +171,18 @@ pub async fn create_resource(
                 "Submission rate limit reached ({MAX_RESOURCE_SUBMISSIONS_PER_DAY} per 24h). Try again later."
             )));
         }
-        ("pending", Some(user.id))
+        (ResourceReviewStatus::Pending, Some(user.id))
     };
 
     crate::modules::corpus::bibliography::resources::db::create_resource(
         &state.pool,
         book_id,
         crate::modules::corpus::bibliography::resources::db::ResourceCreate {
-            resource_type: &body.resource_type,
-            verbatim_kind: body.verbatim_kind.as_deref(),
+            resource_type: body.resource_type,
+            verbatim_kind: body.verbatim_kind,
             sentence_start: body.sentence_start,
             sentence_end: body.sentence_end,
-            sentence_kind: &body.sentence_kind,
+            sentence_kind: body.sentence_kind,
             source_id,
             source_page_start: body.source_page_start,
             source_page_end: body.source_page_end,
@@ -193,7 +193,7 @@ pub async fn create_resource(
             admin_notes,
             review_status,
             submitted_by,
-            scope: body.scope.as_deref().unwrap_or("work"),
+            scope: body.scope.unwrap_or(ResourceScope::Work),
         },
     )
     .await?;
@@ -205,7 +205,7 @@ pub async fn create_resource(
         book_id,
         body.sentence_start,
         body.sentence_end.unwrap_or(body.sentence_start),
-        &body.sentence_kind,
+        body.sentence_kind,
         Some(user.id),
         can_manage,
     )
@@ -274,11 +274,11 @@ pub async fn update_resource(
         resource_id,
         book_id,
         crate::modules::corpus::bibliography::resources::db::ResourceUpdate {
-            resource_type: body.resource_type.as_deref(),
-            verbatim_kind: body.verbatim_kind.as_ref().map(|o| o.as_deref()),
+            resource_type: body.resource_type,
+            verbatim_kind: body.verbatim_kind,
             sentence_start: body.sentence_start,
             sentence_end: body.sentence_end,
-            sentence_kind: body.sentence_kind.as_deref(),
+            sentence_kind: body.sentence_kind,
             source_id,
             source_page_start: body.source_page_start,
             source_page_end: body.source_page_end,
@@ -287,7 +287,7 @@ pub async fn update_resource(
             editor_note: body.editor_note.as_ref().map(|o| o.as_deref()),
             is_featured: body.is_featured,
             admin_notes: body.admin_notes.as_ref().map(|o| o.as_deref()),
-            scope: body.scope.as_deref(),
+            scope: body.scope,
         },
     )
     .await?;

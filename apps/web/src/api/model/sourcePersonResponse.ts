@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { SourcePersonRole } from "./sourcePersonRole.ts";
 
 export interface SourcePersonResponse {
     created_by: string;
@@ -11,7 +12,7 @@ export interface SourcePersonResponse {
     person_id: string;
     position: number;
     protected: boolean;
-    role: string;
+    role: SourcePersonRole;
     /** @nullable */
     sort_name?: string | null;
 }

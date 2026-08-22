@@ -1,0 +1,50 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT sa.article_id, a.title, a.slug,\n                  a.status AS \"status: ArticleStatus\",\n                  u.display_name AS \"author_display_name!\",\n                  sa.position\n           FROM series_articles sa\n           JOIN articles a ON a.id = sa.article_id\n           JOIN users u ON u.id = a.user_id\n           WHERE sa.series_id = $1\n           ORDER BY sa.position",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "article_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "status: ArticleStatus",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_status",
+                        "kind": {
+                            "Enum": ["draft", "published", "archived"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 4,
+                "name": "author_display_name!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "position",
+                "type_info": "Int4"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, false, false, false, false]
+    },
+    "hash": "6faaab7a0a36fccd499ef90111dabaefe23b268e9d7750599338d4ccfa7331f4"
+}

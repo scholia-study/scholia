@@ -1,15 +1,69 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
-use crate::modules::writing::articles::models::EditorialLabelResponse;
+use crate::modules::writing::articles::models::{ArticleStatus, EditorialLabelResponse};
+
+/// What the author asks of the reviewing side. Stored as the Postgres
+/// enum `article_review_intent`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
+#[sqlx(type_name = "article_review_intent", rename_all = "lowercase")]
+pub enum ReviewIntent {
+    Feedback,
+    Publication,
+}
+
+impl ReviewIntent {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Feedback => "feedback",
+            Self::Publication => "publication",
+        }
+    }
+}
+
+/// A review request's lifecycle state. Stored as the Postgres enum
+/// `article_review_request_status`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
+#[sqlx(type_name = "article_review_request_status", rename_all = "lowercase")]
+pub enum ReviewRequestStatus {
+    Pending,
+    Approved,
+    Declined,
+    Resolved,
+    Withdrawn,
+}
+
+/// The subset of statuses an editor may decide a pending request into
+/// (`pending`/`withdrawn` are unrepresentable by construction). Binds to
+/// the same Postgres enum as `ReviewRequestStatus`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
+#[sqlx(type_name = "article_review_request_status", rename_all = "lowercase")]
+pub enum ReviewDecision {
+    Approved,
+    Declined,
+    Resolved,
+}
+
+impl ReviewDecision {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Approved => "approved",
+            Self::Declined => "declined",
+            Self::Resolved => "resolved",
+        }
+    }
+}
 
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateReviewRequestRequest {
-    /// `feedback` — the author wants comments; the editor closes the
-    /// request as `resolved`. `publication` — a hand-off: approving
-    /// publishes the article (if still a draft) and applies the
-    /// `imprimatur` label.
-    pub intent: String,
+    /// `feedback` — the author wants comments; the reviewing side closes
+    /// the request as `resolved`. `publication` — a hand-off to the
+    /// editors: approving publishes the article (if still a draft) and
+    /// applies the `imprimatur` label.
+    pub intent: ReviewIntent,
     /// Review audience: a collegium the author belongs to, or absent for the
     /// editorial team. Collegium reviews are feedback-only.
     #[serde(default)]
@@ -24,8 +78,8 @@ pub struct CreateReviewRequestRequest {
 pub struct ArticleReviewRequestResponse {
     pub id: String,
     pub article_id: String,
-    pub intent: String,
-    pub status: String,
+    pub intent: ReviewIntent,
+    pub status: ReviewRequestStatus,
     pub submitted_at: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_at: Option<String>,
@@ -43,7 +97,7 @@ pub struct ReviewArticleMeta {
     pub id: String,
     pub title: String,
     pub slug: String,
-    pub status: String,
+    pub status: ArticleStatus,
     pub author_user_id: String,
     pub author_display_name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -187,13 +241,13 @@ pub struct ArticleReviewQueueItem {
     pub article_id: String,
     pub article_title: String,
     pub article_slug: String,
-    pub article_status: String,
+    pub article_status: ArticleStatus,
     pub author_user_id: String,
     pub author_display_name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub author_handle: Option<String>,
-    pub intent: String,
-    pub status: String,
+    pub intent: ReviewIntent,
+    pub status: ReviewRequestStatus,
     pub submitted_at: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_at: Option<String>,
@@ -248,7 +302,7 @@ pub struct ReviewerListResponse {
 pub struct ReviewDecisionRequest {
     /// `approved` | `declined` (publication intent) or `resolved`
     /// (feedback intent).
-    pub status: String,
+    pub status: ReviewDecision,
     /// Optional message posted to the article's review channel alongside
     /// the decision.
     #[serde(default)]

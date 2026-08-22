@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { SentenceKind } from "./sentenceKind.ts";
 import type { TagResponse } from "./tagResponse.ts";
 
 export interface NoteWithContextResponse {
@@ -30,7 +31,7 @@ export interface NoteWithContextResponse {
      */
     parent_compilation_title?: string | null;
     quotation_id: string;
-    sentence_kind: string;
+    sentence_kind: SentenceKind;
     tags: TagResponse[];
     /**
      * See `QuotationWithContextResponse::translation_label`.

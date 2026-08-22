@@ -3,19 +3,20 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::modules::corpus::bibliography::models::{
-    ParentSourceResponse, ResourceResponse, ResourceReviewStatus, ResourceSubmissionListResponse,
-    ResourceSubmissionResponse, ResourceSubmitter, SourcePersonResponse, SourceResponse,
+    ParentSourceResponse, ResourceResponse, ResourceReviewStatus, ResourceScope,
+    ResourceSubmissionListResponse, ResourceSubmissionResponse, ResourceSubmitter, ResourceType,
+    SentenceKind, SourcePersonResponse, SourceResponse, SourceType, VerbatimKind,
 };
 use crate::modules::corpus::bibliography::sources::db::fetch_source_persons;
 use crate::system::error::{AppError, SqlxResultExt};
 
 struct ResourceRow {
     id: Uuid,
-    resource_type: String,
-    verbatim_kind: Option<String>,
+    resource_type: ResourceType,
+    verbatim_kind: Option<VerbatimKind>,
     start_number: Option<i32>,
     end_number: Option<i32>,
-    sentence_kind: String,
+    sentence_kind: SentenceKind,
     quoted_text: Option<String>,
     editor_note: Option<String>,
     source_page_start: Option<i32>,
@@ -23,12 +24,12 @@ struct ResourceRow {
     source_location_freeform: Option<String>,
     is_featured: bool,
     admin_notes: Option<String>,
-    review_status: String,
-    scope: String,
+    review_status: ResourceReviewStatus,
+    scope: ResourceScope,
     created_at: time::OffsetDateTime,
     // Source fields (joined)
     src_id: Option<Uuid>,
-    src_type: Option<String>,
+    src_type: Option<SourceType>,
     src_title: Option<String>,
     src_title_display: Option<String>,
     src_year: Option<i16>,
@@ -54,7 +55,7 @@ pub async fn list_resources(
     book_id: Uuid,
     start: i32,
     end: i32,
-    kind: &str,
+    kind: SentenceKind,
     // The reader only sees approved resources, plus the caller's own pending
     // submissions (so a submitter gets immediate feedback that their suggestion
     // landed). `None` for anonymous callers → approved only. Rejected rows are
@@ -68,19 +69,19 @@ pub async fn list_resources(
     let rows = sqlx::query_as!(
         ResourceRow,
         r#"SELECT r.id,
-                  r.resource_type::TEXT AS "resource_type!",
-                  r.verbatim_kind::TEXT AS "verbatim_kind?",
+                  r.resource_type AS "resource_type: ResourceType",
+                  r.verbatim_kind AS "verbatim_kind?: VerbatimKind",
                   ss.sentence_number AS "start_number?",
                   se.sentence_number AS "end_number?",
-                  r.sentence_kind::TEXT AS "sentence_kind!",
+                  r.sentence_kind AS "sentence_kind: SentenceKind",
                   r.quoted_text, r.editor_note,
                   r.source_page_start, r.source_page_end, r.source_location_freeform,
                   r.is_featured, r.admin_notes,
-                  r.review_status::TEXT AS "review_status!",
-                  r.scope::TEXT AS "scope!",
+                  r.review_status AS "review_status: ResourceReviewStatus",
+                  r.scope AS "scope: ResourceScope",
                   r.created_at,
                   s.id AS "src_id?",
-                  s.source_type::TEXT AS "src_type?",
+                  s.source_type AS "src_type?: SourceType",
                   s.title AS "src_title?",
                   s.title_display AS "src_title_display?",
                   s.publication_year AS "src_year?",
@@ -190,7 +191,7 @@ async fn build_resource_responses(
     let parent_rows = if !parent_ids.is_empty() {
         sqlx::query_as!(
             ParentRow,
-            r#"SELECT id, source_type::TEXT AS "source_type!", title, publication_year, publisher
+            r#"SELECT id, source_type AS "source_type: SourceType", title, publication_year, publisher
                FROM sources
                WHERE id = ANY($1)"#,
             &parent_ids,
@@ -231,7 +232,7 @@ async fn build_resource_responses(
                     .map(Box::new);
                 SourceResponse {
                     id: sid.to_string(),
-                    source_type: r.src_type.unwrap_or_default(),
+                    source_type: r.src_type.unwrap_or(SourceType::Book),
                     title: r.src_title.unwrap_or_default(),
                     title_display: r.src_title_display,
                     publication_year: r.src_year,
@@ -296,11 +297,11 @@ async fn build_resource_responses(
 /// the target-local placement range.
 struct PeerResourceRow {
     id: Uuid,
-    resource_type: String,
-    verbatim_kind: Option<String>,
+    resource_type: ResourceType,
+    verbatim_kind: Option<VerbatimKind>,
     start_number: Option<i32>,
     end_number: Option<i32>,
-    sentence_kind: String,
+    sentence_kind: SentenceKind,
     quoted_text: Option<String>,
     editor_note: Option<String>,
     source_page_start: Option<i32>,
@@ -308,11 +309,11 @@ struct PeerResourceRow {
     source_location_freeform: Option<String>,
     is_featured: bool,
     admin_notes: Option<String>,
-    review_status: String,
-    scope: String,
+    review_status: ResourceReviewStatus,
+    scope: ResourceScope,
     created_at: time::OffsetDateTime,
     src_id: Option<Uuid>,
-    src_type: Option<String>,
+    src_type: Option<SourceType>,
     src_title: Option<String>,
     src_title_display: Option<String>,
     src_year: Option<i16>,
@@ -408,7 +409,7 @@ async fn list_projected_resources(
     book_id: Uuid,
     start: i32,
     end: i32,
-    kind: &str,
+    kind: SentenceKind,
 ) -> Result<Vec<ResourceResponse>, AppError> {
     let rows = sqlx::query_as!(
         PeerResourceRow,
@@ -422,20 +423,20 @@ async fn list_projected_resources(
                GROUP BY cp.work_root
            )
            SELECT r.id,
-                  r.resource_type::TEXT AS "resource_type!",
-                  r.verbatim_kind::TEXT AS "verbatim_kind?",
+                  r.resource_type AS "resource_type: ResourceType",
+                  r.verbatim_kind AS "verbatim_kind?: VerbatimKind",
                   ss.sentence_number AS "start_number?",
                   se.sentence_number AS "end_number?",
-                  r.sentence_kind::TEXT AS "sentence_kind!",
+                  r.sentence_kind AS "sentence_kind: SentenceKind",
                   r.quoted_text, r.editor_note,
                   r.source_page_start, r.source_page_end, r.source_location_freeform,
                   r.is_featured,
                   NULL::TEXT AS "admin_notes?",
-                  r.review_status::TEXT AS "review_status!",
-                  r.scope::TEXT AS "scope!",
+                  r.review_status AS "review_status: ResourceReviewStatus",
+                  r.scope AS "scope: ResourceScope",
                   r.created_at,
                   s.id AS "src_id?",
-                  s.source_type::TEXT AS "src_type?",
+                  s.source_type AS "src_type?: SourceType",
                   s.title AS "src_title?",
                   s.title_display AS "src_title_display?",
                   s.publication_year AS "src_year?",
@@ -521,11 +522,11 @@ struct SentenceLookup {
 }
 
 pub struct ResourceCreate<'a> {
-    pub resource_type: &'a str,
-    pub verbatim_kind: Option<&'a str>,
+    pub resource_type: ResourceType,
+    pub verbatim_kind: Option<VerbatimKind>,
     pub sentence_start: i32,
     pub sentence_end: Option<i32>,
-    pub sentence_kind: &'a str,
+    pub sentence_kind: SentenceKind,
     pub source_id: Option<Uuid>,
     pub source_page_start: Option<i32>,
     pub source_page_end: Option<i32>,
@@ -536,11 +537,11 @@ pub struct ResourceCreate<'a> {
     pub admin_notes: Option<&'a str>,
     /// "approved" when an editor creates directly, "pending" for a community
     /// submission awaiting review.
-    pub review_status: &'a str,
+    pub review_status: ResourceReviewStatus,
     /// The community submitter, when this arrived through the review flow.
     pub submitted_by: Option<Uuid>,
     /// "work" | "language" | "edition" (ADR 0008).
-    pub scope: &'a str,
+    pub scope: ResourceScope,
 }
 
 pub async fn create_resource(
@@ -557,7 +558,7 @@ pub async fn create_resource(
     }
 
     // Resolve start sentence
-    let is_body = entry.sentence_kind == "body";
+    let is_body = entry.sentence_kind == SentenceKind::Body;
     let start_sent = if is_body {
         sqlx::query_as!(
             SentenceLookup,
@@ -582,7 +583,8 @@ pub async fn create_resource(
     .map_err(|_| {
         AppError::BadRequest(format!(
             "Sentence {} not found for kind '{}'",
-            entry.sentence_start, entry.sentence_kind
+            entry.sentence_start,
+            entry.sentence_kind.as_str()
         ))
     })?;
 
@@ -612,7 +614,7 @@ pub async fn create_resource(
         .map_err(|_| {
             AppError::BadRequest(format!(
                 "Sentence {end_num} not found for kind '{}'",
-                entry.sentence_kind
+                entry.sentence_kind.as_str()
             ))
         })?;
         Some(end_sent.id)
@@ -661,11 +663,11 @@ pub async fn create_resource(
 }
 
 pub struct ResourceUpdate<'a> {
-    pub resource_type: Option<&'a str>,
-    pub verbatim_kind: Option<Option<&'a str>>,
+    pub resource_type: Option<ResourceType>,
+    pub verbatim_kind: Option<Option<VerbatimKind>>,
     pub sentence_start: Option<i32>,
     pub sentence_end: Option<i32>,
-    pub sentence_kind: Option<&'a str>,
+    pub sentence_kind: Option<SentenceKind>,
     pub source_id: Option<Option<Uuid>>,
     pub source_page_start: Option<Option<i32>>,
     pub source_page_end: Option<Option<i32>>,
@@ -674,7 +676,7 @@ pub struct ResourceUpdate<'a> {
     pub editor_note: Option<Option<&'a str>>,
     pub is_featured: Option<bool>,
     pub admin_notes: Option<Option<&'a str>>,
-    pub scope: Option<&'a str>,
+    pub scope: Option<ResourceScope>,
 }
 
 pub async fn update_resource(
@@ -720,8 +722,8 @@ pub async fn update_resource(
             ));
         }
 
-        let kind = patch.sentence_kind.unwrap_or("body");
-        let is_body = kind == "body";
+        let kind = patch.sentence_kind.unwrap_or(SentenceKind::Body);
+        let is_body = kind == SentenceKind::Body;
 
         let start_sent = if is_body {
             sqlx::query_as!(
@@ -878,7 +880,7 @@ pub async fn get_resource_book_id(pool: &PgPool, resource_id: Uuid) -> Result<Uu
 
 struct ParentRow {
     id: Uuid,
-    source_type: String,
+    source_type: SourceType,
     title: String,
     publication_year: Option<i16>,
     publisher: Option<String>,
@@ -909,11 +911,11 @@ pub async fn count_recent_submissions_by_user(
 struct SubmissionRow {
     // Resource core (mirrors ResourceRow).
     id: Uuid,
-    resource_type: String,
-    verbatim_kind: Option<String>,
+    resource_type: ResourceType,
+    verbatim_kind: Option<VerbatimKind>,
     start_number: Option<i32>,
     end_number: Option<i32>,
-    sentence_kind: String,
+    sentence_kind: SentenceKind,
     quoted_text: Option<String>,
     editor_note: Option<String>,
     source_page_start: Option<i32>,
@@ -921,11 +923,11 @@ struct SubmissionRow {
     source_location_freeform: Option<String>,
     is_featured: bool,
     admin_notes: Option<String>,
-    review_status: String,
-    scope: String,
+    review_status: ResourceReviewStatus,
+    scope: ResourceScope,
     created_at: time::OffsetDateTime,
     src_id: Option<Uuid>,
-    src_type: Option<String>,
+    src_type: Option<SourceType>,
     src_title: Option<String>,
     src_title_display: Option<String>,
     src_year: Option<i16>,
@@ -1066,19 +1068,19 @@ pub async fn list_submissions(
         SubmissionRow,
         r#"SELECT
     r.id,
-    r.resource_type::TEXT AS "resource_type!",
-    r.verbatim_kind::TEXT AS "verbatim_kind?",
+    r.resource_type AS "resource_type: ResourceType",
+    r.verbatim_kind AS "verbatim_kind?: VerbatimKind",
     ss.sentence_number AS "start_number?",
     se.sentence_number AS "end_number?",
-    r.sentence_kind::TEXT AS "sentence_kind!",
+    r.sentence_kind AS "sentence_kind: SentenceKind",
     r.quoted_text, r.editor_note,
     r.source_page_start, r.source_page_end, r.source_location_freeform,
     r.is_featured, r.admin_notes,
-    r.review_status::TEXT AS "review_status!",
-    r.scope::TEXT AS "scope!",
+    r.review_status AS "review_status: ResourceReviewStatus",
+    r.scope AS "scope: ResourceScope",
     r.created_at,
     s.id AS "src_id?",
-    s.source_type::TEXT AS "src_type?",
+    s.source_type AS "src_type?: SourceType",
     s.title AS "src_title?",
     s.title_display AS "src_title_display?",
     s.publication_year AS "src_year?",
@@ -1149,19 +1151,19 @@ pub async fn get_submission(
         SubmissionRow,
         r#"SELECT
     r.id,
-    r.resource_type::TEXT AS "resource_type!",
-    r.verbatim_kind::TEXT AS "verbatim_kind?",
+    r.resource_type AS "resource_type: ResourceType",
+    r.verbatim_kind AS "verbatim_kind?: VerbatimKind",
     ss.sentence_number AS "start_number?",
     se.sentence_number AS "end_number?",
-    r.sentence_kind::TEXT AS "sentence_kind!",
+    r.sentence_kind AS "sentence_kind: SentenceKind",
     r.quoted_text, r.editor_note,
     r.source_page_start, r.source_page_end, r.source_location_freeform,
     r.is_featured, r.admin_notes,
-    r.review_status::TEXT AS "review_status!",
-    r.scope::TEXT AS "scope!",
+    r.review_status AS "review_status: ResourceReviewStatus",
+    r.scope AS "scope: ResourceScope",
     r.created_at,
     s.id AS "src_id?",
-    s.source_type::TEXT AS "src_type?",
+    s.source_type AS "src_type?: SourceType",
     s.title AS "src_title?",
     s.title_display AS "src_title_display?",
     s.publication_year AS "src_year?",

@@ -26,7 +26,11 @@ import {
 import { Popover } from "@mui/material";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useGetBook } from "../../../api/books/books";
-import { ArticleQuotationCard, QuotationCard } from "../../quotation";
+import {
+    ArticleQuotationCard,
+    asSentenceKind,
+    QuotationCard,
+} from "../../quotation";
 import { type CitationEntry, CitationPopover } from "./CitationPopover";
 import type { QuotationPickerResult } from "./QuotationPickerModal";
 
@@ -84,7 +88,7 @@ function QuotationDirectiveEditor({
                 node={attrs.node ?? ""}
                 start={Number(attrs.start) || 0}
                 end={attrs.end ? Number(attrs.end) : undefined}
-                kind={attrs.kind ?? "body"}
+                kind={asSentenceKind(attrs.kind)}
                 mode={effectiveMode}
                 layout={layout}
             />

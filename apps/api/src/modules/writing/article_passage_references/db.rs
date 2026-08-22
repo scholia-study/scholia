@@ -29,7 +29,7 @@ pub(crate) struct PassageDirective {
     pub book_slug: String,
     pub start: i32,
     pub end: Option<i32>,
-    pub kind: String,
+    pub kind: crate::modules::corpus::SentenceKind,
 }
 
 /// Attr grammar as accepted by `render_article_markdown`: quoted
@@ -67,13 +67,11 @@ pub(crate) fn parse_quotation_directives(markdown: &str) -> Vec<PassageDirective
             let book_slug = attrs.get("book").filter(|s| !s.is_empty())?.clone();
             let start: i32 = attrs.get("start")?.parse().ok()?;
             let end: Option<i32> = attrs.get("end").and_then(|e| e.parse().ok());
-            let kind = attrs
+            let kind_raw = attrs
                 .get("kind")
                 .cloned()
                 .unwrap_or_else(|| "body".to_string());
-            if !matches!(kind.as_str(), "body" | "footnote" | "figure") {
-                return None;
-            }
+            let kind = crate::modules::corpus::SentenceKind::parse(&kind_raw)?;
             let (start, end) = match end {
                 Some(e) if e < start => (e, Some(start)),
                 Some(e) if e == start => (start, None),
@@ -94,7 +92,7 @@ struct ResolvedAnchor {
     node_id: Uuid,
     start_id: Uuid,
     end_id: Option<Uuid>,
-    kind: String,
+    kind: crate::modules::corpus::SentenceKind,
 }
 
 /// Resolve one directive endpoint, separating "this directive points
@@ -106,12 +104,12 @@ async fn resolve_directive_sentence(
     book_slug: &str,
     book_id: Uuid,
     number: i32,
-    kind: &str,
+    kind: crate::modules::corpus::SentenceKind,
 ) -> Result<Option<crate::modules::writing::quotations::db::SentenceLookup>, AppError> {
     match resolve_sentence(pool, book_id, number, kind).await {
         Ok(s) => Ok(Some(s)),
         Err(AppError::BadRequest(_)) => {
-            tracing::warn!(book = %book_slug, number, kind = %kind,
+            tracing::warn!(book = %book_slug, number, kind = kind.as_str(),
                 "article passage ref: sentence not found, skipping directive");
             Ok(None)
         }
@@ -155,13 +153,13 @@ pub async fn sync_article_passage_references(
         };
 
         let Some(start) =
-            resolve_directive_sentence(pool, &d.book_slug, book_id, d.start, &d.kind).await?
+            resolve_directive_sentence(pool, &d.book_slug, book_id, d.start, d.kind).await?
         else {
             continue;
         };
         let end_id = match d.end {
             Some(n) => {
-                match resolve_directive_sentence(pool, &d.book_slug, book_id, n, &d.kind).await? {
+                match resolve_directive_sentence(pool, &d.book_slug, book_id, n, d.kind).await? {
                     Some(s) => Some(s.id),
                     None => continue,
                 }
@@ -250,7 +248,7 @@ pub async fn list_article_references(
     book_id: Uuid,
     start: i32,
     end: i32,
-    kind: &str,
+    kind: crate::modules::corpus::SentenceKind,
     limit: i64,
     offset: i64,
 ) -> Result<(Vec<PassageArticleResponse>, i64), AppError> {
@@ -440,7 +438,7 @@ Outro."#;
                 book_slug: "kjv-bible".into(),
                 start: 101,
                 end: Some(103),
-                kind: "body".into(),
+                kind: crate::modules::corpus::SentenceKind::Body,
             }]
         );
     }
@@ -454,7 +452,7 @@ Outro."#;
                 book_slug: "milton".into(),
                 start: 7,
                 end: None,
-                kind: "body".into(),
+                kind: crate::modules::corpus::SentenceKind::Body,
             }]
         );
     }
@@ -468,7 +466,7 @@ Outro."#;
                 book_slug: "milton".into(),
                 start: 4,
                 end: Some(9),
-                kind: "body".into(),
+                kind: crate::modules::corpus::SentenceKind::Body,
             }]
         );
     }
@@ -490,7 +488,10 @@ Some prose.
 ::quotation{book="kant" start=6 end=8}"#;
         let parsed = parse_quotation_directives(md);
         assert_eq!(parsed.len(), 2);
-        assert_eq!(parsed[0].kind, "footnote");
+        assert_eq!(
+            parsed[0].kind,
+            crate::modules::corpus::SentenceKind::Footnote
+        );
         assert_eq!(parsed[1].end, Some(8));
     }
 }

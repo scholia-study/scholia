@@ -6,13 +6,13 @@ pub struct ArticleReferenceQuery {
     pub start: i32,
     pub end: i32,
     #[serde(default = "default_body")]
-    pub kind: String,
+    pub kind: crate::modules::corpus::SentenceKind,
     pub limit: Option<i64>,
     pub offset: Option<i64>,
 }
 
-fn default_body() -> String {
-    "body".to_string()
+fn default_body() -> crate::modules::corpus::SentenceKind {
+    crate::modules::corpus::SentenceKind::Body
 }
 
 #[derive(Debug, Serialize, ToSchema)]

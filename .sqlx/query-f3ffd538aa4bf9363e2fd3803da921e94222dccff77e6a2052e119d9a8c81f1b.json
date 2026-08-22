@@ -1,0 +1,30 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, status AS \"status: ArticleStatus\" FROM articles\n           WHERE slug = $1 AND user_id = $2",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "status: ArticleStatus",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_status",
+                        "kind": {
+                            "Enum": ["draft", "published", "archived"]
+                        }
+                    }
+                }
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Uuid"]
+        },
+        "nullable": [false, false]
+    },
+    "hash": "f3ffd538aa4bf9363e2fd3803da921e94222dccff77e6a2052e119d9a8c81f1b"
+}

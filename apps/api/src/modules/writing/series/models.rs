@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
-use crate::modules::writing::articles::models::ArticleResponse;
+use crate::modules::writing::articles::models::{ArticleResponse, ArticleStatus};
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct SeriesResponse {
@@ -88,7 +88,7 @@ pub struct SeriesMemberResponse {
     pub article_id: String,
     pub title: String,
     pub slug: String,
-    pub status: String,
+    pub status: ArticleStatus,
     pub author_display_name: String,
     pub position: i32,
 }

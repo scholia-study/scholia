@@ -2,6 +2,7 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::modules::writing::articles::db::fmt_time;
+use crate::modules::writing::articles::models::ArticleStatus;
 use crate::modules::writing::series::models::{
     ArticleSeriesContext, SeriesAdminResponse, SeriesDetailResponse, SeriesMemberResponse,
     SeriesNeighbor, SeriesResponse,
@@ -319,14 +320,14 @@ pub async fn list_series_members(
         article_id: Uuid,
         title: String,
         slug: String,
-        status: String,
+        status: ArticleStatus,
         author_display_name: String,
         position: i32,
     }
     let rows = sqlx::query_as!(
         Row,
         r#"SELECT sa.article_id, a.title, a.slug,
-                  a.status::TEXT AS "status!",
+                  a.status AS "status: ArticleStatus",
                   u.display_name AS "author_display_name!",
                   sa.position
            FROM series_articles sa
@@ -365,13 +366,13 @@ pub async fn add_series_article(
         .on_missing(|| AppError::NotFound("Series not found".into()))?;
 
     let article = sqlx::query!(
-        r#"SELECT slug, status::TEXT AS "status!" FROM articles WHERE id = $1"#,
+        r#"SELECT slug, status AS "status: ArticleStatus" FROM articles WHERE id = $1"#,
         article_id,
     )
     .fetch_one(pool)
     .await
     .on_missing(|| AppError::NotFound("Article not found".into()))?;
-    if article.status != "published" {
+    if article.status != ArticleStatus::Published {
         return Err(AppError::BadRequest(
             "Only published articles can be added to a series".into(),
         ));

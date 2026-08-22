@@ -27,6 +27,7 @@ import type {
     PersonResponse,
     ReferenceCheckResponse,
     SourcePersonResponse,
+    SourcePersonRole,
     SourceResponse,
 } from "../api/model";
 import { useSearchPersons, useUpdatePerson } from "../api/persons/persons";
@@ -509,7 +510,7 @@ function ContributorsBlock({
 
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebouncedValue(search);
-    const [role, setRole] = useState<string>("author");
+    const [role, setRole] = useState<SourcePersonRole>("author");
     const { data: personResults } = useSearchPersons(
         { q: debouncedSearch },
         { query: { enabled: debouncedSearch.length >= 3 && canEdit } },

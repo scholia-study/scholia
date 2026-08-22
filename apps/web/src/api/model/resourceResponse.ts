@@ -4,7 +4,12 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ResourceReviewStatus } from "./resourceReviewStatus.ts";
+import type { ResourceScope } from "./resourceScope.ts";
+import type { ResourceType } from "./resourceType.ts";
+import type { SentenceKind } from "./sentenceKind.ts";
 import type { SourceResponse } from "./sourceResponse.ts";
+import type { VerbatimKind } from "./verbatimKind.ts";
 
 export interface ResourceResponse {
     /** @nullable */
@@ -38,21 +43,21 @@ export interface ResourceResponse {
     projected_sentence_start_number?: number | null;
     /** @nullable */
     quoted_text?: string | null;
-    resource_type: string;
+    resource_type: ResourceType;
     /**
      * Lifecycle: "approved" for live resources, "pending" for a community
      * submission awaiting review, "rejected" for a declined one. The reader
      * only ever receives "approved" rows plus the caller's own "pending" ones.
      */
-    review_status: string;
+    review_status: ResourceReviewStatus;
     /**
      * Cataloguer's claim about what the resource is about: "work" (the
      * passage in any form), "language" (this language's translation layer),
      * or "edition" (this one edition's actual text). Label only — never
      * affects which editions the resource appears on.
      */
-    scope: string;
-    sentence_kind: string;
+    scope: ResourceScope;
+    sentence_kind: SentenceKind;
     source?: null | SourceResponse;
     /** @nullable */
     source_location_freeform?: string | null;
@@ -60,6 +65,5 @@ export interface ResourceResponse {
     source_page_end?: number | null;
     /** @nullable */
     source_page_start?: number | null;
-    /** @nullable */
-    verbatim_kind?: string | null;
+    verbatim_kind?: null | VerbatimKind;
 }

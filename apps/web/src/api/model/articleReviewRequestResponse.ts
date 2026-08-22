@@ -4,6 +4,8 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ReviewIntent } from "./reviewIntent.ts";
+import type { ReviewRequestStatus } from "./reviewRequestStatus.ts";
 
 export interface ArticleReviewRequestResponse {
     article_id: string;
@@ -15,9 +17,9 @@ export interface ArticleReviewRequestResponse {
     /** @nullable */
     collegium_name?: string | null;
     id: string;
-    intent: string;
+    intent: ReviewIntent;
     /** @nullable */
     resolved_at?: string | null;
-    status: string;
+    status: ReviewRequestStatus;
     submitted_at: string;
 }

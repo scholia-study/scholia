@@ -5,6 +5,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { SourcePersonResponse } from "./sourcePersonResponse.ts";
+import type { SourceType } from "./sourceType.ts";
 
 export interface ParentSourceResponse {
     id: string;
@@ -13,6 +14,6 @@ export interface ParentSourceResponse {
     publication_year?: number | null;
     /** @nullable */
     publisher?: string | null;
-    source_type: string;
+    source_type: SourceType;
     title: string;
 }

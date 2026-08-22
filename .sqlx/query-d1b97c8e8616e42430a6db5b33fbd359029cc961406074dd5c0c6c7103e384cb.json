@@ -1,0 +1,73 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT arr.id, arr.article_id,\n               arr.intent AS \"intent: ReviewIntent\",\n               arr.status AS \"status: ReviewRequestStatus\",\n               arr.submitted_at, arr.resolved_at,\n               arr.collegium_id, g.name AS \"collegium_name?\"\n           FROM article_review_requests arr\n           LEFT JOIN collegia g ON g.id = arr.collegium_id\n           WHERE arr.article_id = $1 AND ($2 OR arr.status <> 'withdrawn')\n             AND (NOT $3 OR arr.collegium_id IS NOT DISTINCT FROM $4)\n             AND (NOT $5 OR arr.member_visible IS NOT DISTINCT FROM true)\n           ORDER BY arr.submitted_at DESC",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "article_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "intent: ReviewIntent",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_review_intent",
+                        "kind": {
+                            "Enum": ["feedback", "publication"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 3,
+                "name": "status: ReviewRequestStatus",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_review_request_status",
+                        "kind": {
+                            "Enum": [
+                                "pending",
+                                "approved",
+                                "declined",
+                                "resolved",
+                                "withdrawn"
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 4,
+                "name": "submitted_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 5,
+                "name": "resolved_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 6,
+                "name": "collegium_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 7,
+                "name": "collegium_name?",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Bool", "Bool", "Uuid", "Bool"]
+        },
+        "nullable": [false, false, false, false, false, true, true, false]
+    },
+    "hash": "d1b97c8e8616e42430a6db5b33fbd359029cc961406074dd5c0c6c7103e384cb"
+}

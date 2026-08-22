@@ -4,6 +4,7 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ArticleStatus } from "./articleStatus.ts";
 import type { EditorialLabelResponse } from "./editorialLabelResponse.ts";
 import type { TopicResponse } from "./topicResponse.ts";
 
@@ -37,7 +38,7 @@ export interface ArticleResponse {
     /** @nullable */
     published_at?: string | null;
     slug: string;
-    status: string;
+    status: ArticleStatus;
     title: string;
     topics: TopicResponse[];
     updated_at: string;
