@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\" FROM collegium_join_requests\n                   WHERE collegium_id = $1 AND status = 'pending'",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "d7f7cdfb1903db3430a880c710af346ecb71d8ab5225d21a1642f89fe1b9b332"
+}

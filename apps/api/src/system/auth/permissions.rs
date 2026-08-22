@@ -19,6 +19,7 @@ pub enum Permission {
     ArticleLabelsManage,
     ArticlesReview,
     SeriesManage,
+    CollegiaLimit5,
 }
 
 impl Permission {
@@ -40,6 +41,7 @@ impl Permission {
             Self::ArticleLabelsManage => "article_labels_manage",
             Self::ArticlesReview => "articles_review",
             Self::SeriesManage => "series_manage",
+            Self::CollegiaLimit5 => "collegia_limit_5",
         }
     }
 }
@@ -74,6 +76,7 @@ const ELEVATED_LIMITS: &[Permission] = &[
     Permission::ArticlesArchiveLimit1000,
     Permission::QuotationsLimit10000,
     Permission::NotesLimit10000,
+    Permission::CollegiaLimit5,
 ];
 
 impl FromStr for Role {

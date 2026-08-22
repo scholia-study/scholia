@@ -4,15 +4,22 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    FormControl,
     FormControlLabel,
+    InputLabel,
+    MenuItem,
     Radio,
     RadioGroup,
+    Select,
     TextField,
 } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useCreateReviewRequest } from "#/api/article-reviews/article-reviews";
+import { useListMyCollegia } from "#/api/collegia/collegia";
 import { FetchError } from "#/api/fetcher";
+
+const EDITORS = "editors";
 
 interface SubmitReviewDialogProps {
     open: boolean;
@@ -24,9 +31,10 @@ interface SubmitReviewDialogProps {
 }
 
 /**
- * Author-facing dialog to submit an article for editorial review, with
- * the intent choice: plain feedback, or a publication hand-off where an
- * approving editor publishes the draft and applies the Imprimatur label.
+ * Author-facing dialog to submit an article for review, choosing the
+ * audience — the Scholia editors, or one of the author's collegia. Editor
+ * review carries the intent choice (feedback or publication hand-off);
+ * collegium review is feedback-only.
  */
 export function SubmitReviewDialog({
     open,
@@ -35,20 +43,32 @@ export function SubmitReviewDialog({
     articleStatus,
     onSubmitted,
 }: SubmitReviewDialogProps) {
+    const [audience, setAudience] = useState<string>(EDITORS);
     const [intent, setIntent] = useState<"feedback" | "publication">(
         "feedback",
     );
     const [message, setMessage] = useState("");
     const createMutation = useCreateReviewRequest();
+    // Membership can change from another client (a steward approving a
+    // join request), so bypass the app-wide staleTime: refetch every
+    // time the dialog opens.
+    const { data: myCollegiaData } = useListMyCollegia({
+        query: { enabled: open, staleTime: 0, refetchOnMount: "always" },
+    });
+    const myCollegia = myCollegiaData?.data?.collegia ?? [];
 
     const isDraft = articleStatus === "draft";
+    const isCollegiumAudience = audience !== EDITORS;
+    const effectiveIntent = isCollegiumAudience ? "feedback" : intent;
+    const audienceCollegium = myCollegia.find((g) => g.id === audience);
 
     const submit = async () => {
         try {
             const result = await createMutation.mutateAsync({
                 slug: articleSlug,
                 data: {
-                    intent,
+                    intent: effectiveIntent,
+                    collegium_id: isCollegiumAudience ? audience : undefined,
                     message: message.trim() ? message.trim() : undefined,
                 },
             });
@@ -69,40 +89,71 @@ export function SubmitReviewDialog({
             <DialogContent
                 sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}
             >
+                {myCollegia.length > 0 && (
+                    <FormControl size="small" sx={{ mt: 1 }}>
+                        <InputLabel id="review-audience-label">
+                            Reviewed by
+                        </InputLabel>
+                        <Select
+                            labelId="review-audience-label"
+                            label="Reviewed by"
+                            value={audience}
+                            onChange={(e) => setAudience(e.target.value)}
+                        >
+                            <MenuItem value={EDITORS}>
+                                The Scholia editors
+                            </MenuItem>
+                            {myCollegia.map((collegium) => (
+                                <MenuItem
+                                    key={collegium.id}
+                                    value={collegium.id}
+                                >
+                                    {collegium.name} (collegium)
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                )}
                 <p className="text-sm text-stone-600">
-                    An editor will read a snapshot of the article as it is right
-                    now and respond with comments. Submitting shares the article
-                    with the editorial team, even while it is a draft.
+                    {isCollegiumAudience
+                        ? audienceCollegium?.review_visibility === "stewards"
+                            ? `The stewards of ${audienceCollegium?.name ?? "the collegium"} will read a snapshot of the article as it is right now and respond with comments. Only the collegium's stewards will see this submission, even while it is a draft — other members won't.`
+                            : `The members of ${audienceCollegium?.name ?? "the collegium"} will read a snapshot of the article as it is right now and respond with comments. Submitting shares the article with the collegium, even while it is a draft.`
+                        : "An editor will read a snapshot of the article as it is right now and respond with comments. Submitting shares the article with the editorial team, even while it is a draft."}
                 </p>
-                <RadioGroup
-                    value={intent}
-                    onChange={(e) =>
-                        setIntent(e.target.value as "feedback" | "publication")
-                    }
-                >
-                    <FormControlLabel
-                        value="feedback"
-                        control={<Radio size="small" />}
-                        label={
-                            <span className="text-sm">
-                                <strong>Feedback</strong> — I'd like comments
-                                and suggestions.
-                            </span>
+                {!isCollegiumAudience && (
+                    <RadioGroup
+                        value={intent}
+                        onChange={(e) =>
+                            setIntent(
+                                e.target.value as "feedback" | "publication",
+                            )
                         }
-                    />
-                    <FormControlLabel
-                        value="publication"
-                        control={<Radio size="small" />}
-                        label={
-                            <span className="text-sm">
-                                <strong>Publication</strong> — if everything
-                                looks good, approve it
-                                {isDraft ? " and publish it for me" : ""}.
-                            </span>
-                        }
-                    />
-                </RadioGroup>
-                {intent === "publication" && (
+                    >
+                        <FormControlLabel
+                            value="feedback"
+                            control={<Radio size="small" />}
+                            label={
+                                <span className="text-sm">
+                                    <strong>Feedback</strong> — I'd like
+                                    comments and suggestions.
+                                </span>
+                            }
+                        />
+                        <FormControlLabel
+                            value="publication"
+                            control={<Radio size="small" />}
+                            label={
+                                <span className="text-sm">
+                                    <strong>Publication</strong> — if everything
+                                    looks good, approve it
+                                    {isDraft ? " and publish it for me" : ""}.
+                                </span>
+                            }
+                        />
+                    </RadioGroup>
+                )}
+                {!isCollegiumAudience && intent === "publication" && (
                     <p className="text-xs text-stone-500">
                         {isDraft
                             ? "If approved, the editor will publish this article on your behalf and apply the Imprimatur label. "
@@ -114,8 +165,21 @@ export function SubmitReviewDialog({
                         you can resubmit to earn it back.
                     </p>
                 )}
+                {isCollegiumAudience && (
+                    <p className="text-xs text-stone-500">
+                        {audienceCollegium?.review_visibility === "stewards"
+                            ? "Collegium reviews are feedback-only: the collegium's stewards comment on the snapshot and close the round; you can withdraw your submission at any time. "
+                            : "Collegium reviews are feedback-only: members comment on the snapshot, and you (or a steward) close the round when you have what you need. "}
+                        Publishing and the Imprimatur label remain with the
+                        Scholia editors.
+                    </p>
+                )}
                 <TextField
-                    label="Message to the editors (optional)"
+                    label={
+                        isCollegiumAudience
+                            ? "Message to the collegium (optional)"
+                            : "Message to the editors (optional)"
+                    }
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     size="small"

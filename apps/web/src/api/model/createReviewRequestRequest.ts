@@ -7,6 +7,12 @@
 
 export interface CreateReviewRequestRequest {
     /**
+     * Review audience: a collegium the author belongs to, or absent for the
+     * editorial team. Collegium reviews are feedback-only.
+     * @nullable
+     */
+    collegium_id?: string | null;
+    /**
      * `feedback` — the author wants comments; the editor closes the
      * request as `resolved`. `publication` — a hand-off: approving
      * publishes the article (if still a draft) and applies the

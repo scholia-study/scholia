@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "DELETE FROM collegium_members WHERE collegium_id = $1 AND user_id = $2",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "1ec506358cbc8871d2da896d55d5dd626fa40590d16102d4e8b30a93585e20e0"
+}

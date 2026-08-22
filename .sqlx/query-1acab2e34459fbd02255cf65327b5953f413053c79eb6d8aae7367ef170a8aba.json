@@ -1,0 +1,45 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT gm.user_id, u.display_name, u.handle,\n               gm.role AS \"role: CollegiumRole\", gm.joined_at\n           FROM collegium_members gm\n           JOIN users u ON u.id = gm.user_id\n           WHERE gm.collegium_id = $1\n           ORDER BY gm.role, gm.joined_at",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "user_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "display_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "handle",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "role: CollegiumRole",
+                "type_info": {
+                    "Custom": {
+                        "name": "collegium_member_role",
+                        "kind": {
+                            "Enum": ["steward", "member"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 4,
+                "name": "joined_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, true, false, false]
+    },
+    "hash": "1acab2e34459fbd02255cf65327b5953f413053c79eb6d8aae7367ef170a8aba"
+}

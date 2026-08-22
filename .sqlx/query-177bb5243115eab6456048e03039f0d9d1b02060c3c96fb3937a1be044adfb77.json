@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\"\n           FROM collegia g\n           WHERE g.deleted_at IS NULL AND NOT g.is_private\n             AND ($1::TEXT IS NULL\n                  OR g.name ILIKE '%' || $1 || '%'\n                  OR COALESCE(g.description, '') ILIKE '%' || $1 || '%')",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [null]
+    },
+    "hash": "177bb5243115eab6456048e03039f0d9d1b02060c3c96fb3937a1be044adfb77"
+}

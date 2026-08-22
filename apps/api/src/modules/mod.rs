@@ -5,6 +5,7 @@
 //! domain's public facade (its `mod.rs` re-exports), never its internals.
 
 pub mod billing;
+pub mod collegia;
 pub mod corpus;
 pub mod feedback;
 pub mod identity;

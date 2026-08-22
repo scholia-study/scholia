@@ -8,17 +8,20 @@ interface ChannelPanelProps {
     viewerUserId: string | null;
     busy: boolean;
     onSend: (body: string) => void;
+    /** Who is on the other side of the channel, for the empty state. */
+    audienceLabel?: string;
 }
 
 /**
- * The per-article conversation between the author and the editorial
- * team, shared across review rounds.
+ * The per-article, per-audience conversation between the author and the
+ * reviewing side (editorial team or collegium), shared across review rounds.
  */
 export function ChannelPanel({
     messages,
     viewerUserId,
     busy,
     onSend,
+    audienceLabel = "the editorial team",
 }: ChannelPanelProps) {
     const [draft, setDraft] = useState("");
 
@@ -37,7 +40,7 @@ export function ChannelPanel({
                 {messages.length === 0 && (
                     <p className="text-sm text-stone-400">
                         No messages yet. This channel is shared between the
-                        author and the editorial team.
+                        author and {audienceLabel}.
                     </p>
                 )}
                 {messages.map((m) => {

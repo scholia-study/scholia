@@ -40,6 +40,8 @@ import { Route as AuthManageManageIndexRouteImport } from './routes/_auth._manag
 import { Route as AuthArticlesReviewRequestIdRouteImport } from './routes/_auth.articles.review.$requestId'
 import { Route as AuthUserArticlesIndexRouteImport } from './routes/_auth.user.articles.index'
 import { Route as AuthUserArticlesSlugRouteImport } from './routes/_auth.user.articles.$slug'
+import { Route as AuthUserCollegiaIndexRouteImport } from './routes/_auth.user.collegia.index'
+import { Route as AuthUserCollegiaSlugRouteImport } from './routes/_auth.user.collegia.$slug'
 import { Route as AuthUserSourcesIndexRouteImport } from './routes/_auth.user.sources.index'
 import { Route as AuthUserSourcesIdRouteImport } from './routes/_auth.user.sources.$id'
 import { Route as AuthManageManageArticleReviewsIndexRouteImport } from './routes/_auth._manage.manage.article-reviews.index'
@@ -49,6 +51,7 @@ import { Route as AuthManageManageResourceSubmissionsIndexRouteImport } from './
 import { Route as AuthManageManageSeriesIndexRouteImport } from './routes/_auth._manage.manage.series.index'
 import { Route as AuthManageManageTopicsIndexRouteImport } from './routes/_auth._manage.manage.topics.index'
 import { Route as AuthManageManageUsersIndexRouteImport } from './routes/_auth._manage.manage.users.index'
+import { Route as AuthUserCollegiaJoinTokenRouteImport } from './routes/_auth.user.collegia.join.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -204,6 +207,16 @@ const AuthUserArticlesSlugRoute = AuthUserArticlesSlugRouteImport.update({
   path: '/user/articles/$slug',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthUserCollegiaIndexRoute = AuthUserCollegiaIndexRouteImport.update({
+  id: '/user/collegia/',
+  path: '/user/collegia/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthUserCollegiaSlugRoute = AuthUserCollegiaSlugRouteImport.update({
+  id: '/user/collegia/$slug',
+  path: '/user/collegia/$slug',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthUserSourcesIndexRoute = AuthUserSourcesIndexRouteImport.update({
   id: '/user/sources/',
   path: '/user/sources/',
@@ -256,6 +269,12 @@ const AuthManageManageUsersIndexRoute =
     path: '/manage/users/',
     getParentRoute: () => AuthManageRoute,
   } as any)
+const AuthUserCollegiaJoinTokenRoute =
+  AuthUserCollegiaJoinTokenRouteImport.update({
+    id: '/user/collegia/join/$token',
+    path: '/user/collegia/join/$token',
+    getParentRoute: () => AuthRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -285,11 +304,14 @@ export interface FileRoutesByFullPath {
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
   '/articles/review/$requestId': typeof AuthArticlesReviewRequestIdRoute
   '/user/articles/$slug': typeof AuthUserArticlesSlugRoute
+  '/user/collegia/$slug': typeof AuthUserCollegiaSlugRoute
   '/user/sources/$id': typeof AuthUserSourcesIdRoute
   '/manage/': typeof AuthManageManageIndexRoute
   '/user/articles/': typeof AuthUserArticlesIndexRoute
+  '/user/collegia/': typeof AuthUserCollegiaIndexRoute
   '/user/sources/': typeof AuthUserSourcesIndexRoute
   '/manage/feedback/$id': typeof AuthManageManageFeedbackIdRoute
+  '/user/collegia/join/$token': typeof AuthUserCollegiaJoinTokenRoute
   '/manage/article-reviews/': typeof AuthManageManageArticleReviewsIndexRoute
   '/manage/feedback/': typeof AuthManageManageFeedbackIndexRoute
   '/manage/resource-submissions/': typeof AuthManageManageResourceSubmissionsIndexRoute
@@ -325,11 +347,14 @@ export interface FileRoutesByTo {
   '/books/$bookSlug': typeof BooksBookSlugIndexRoute
   '/articles/review/$requestId': typeof AuthArticlesReviewRequestIdRoute
   '/user/articles/$slug': typeof AuthUserArticlesSlugRoute
+  '/user/collegia/$slug': typeof AuthUserCollegiaSlugRoute
   '/user/sources/$id': typeof AuthUserSourcesIdRoute
   '/manage': typeof AuthManageManageIndexRoute
   '/user/articles': typeof AuthUserArticlesIndexRoute
+  '/user/collegia': typeof AuthUserCollegiaIndexRoute
   '/user/sources': typeof AuthUserSourcesIndexRoute
   '/manage/feedback/$id': typeof AuthManageManageFeedbackIdRoute
+  '/user/collegia/join/$token': typeof AuthUserCollegiaJoinTokenRoute
   '/manage/article-reviews': typeof AuthManageManageArticleReviewsIndexRoute
   '/manage/feedback': typeof AuthManageManageFeedbackIndexRoute
   '/manage/resource-submissions': typeof AuthManageManageResourceSubmissionsIndexRoute
@@ -368,11 +393,14 @@ export interface FileRoutesById {
   '/books/$bookSlug/': typeof BooksBookSlugIndexRoute
   '/_auth/articles/review/$requestId': typeof AuthArticlesReviewRequestIdRoute
   '/_auth/user/articles/$slug': typeof AuthUserArticlesSlugRoute
+  '/_auth/user/collegia/$slug': typeof AuthUserCollegiaSlugRoute
   '/_auth/user/sources/$id': typeof AuthUserSourcesIdRoute
   '/_auth/_manage/manage/': typeof AuthManageManageIndexRoute
   '/_auth/user/articles/': typeof AuthUserArticlesIndexRoute
+  '/_auth/user/collegia/': typeof AuthUserCollegiaIndexRoute
   '/_auth/user/sources/': typeof AuthUserSourcesIndexRoute
   '/_auth/_manage/manage/feedback/$id': typeof AuthManageManageFeedbackIdRoute
+  '/_auth/user/collegia/join/$token': typeof AuthUserCollegiaJoinTokenRoute
   '/_auth/_manage/manage/article-reviews/': typeof AuthManageManageArticleReviewsIndexRoute
   '/_auth/_manage/manage/feedback/': typeof AuthManageManageFeedbackIndexRoute
   '/_auth/_manage/manage/resource-submissions/': typeof AuthManageManageResourceSubmissionsIndexRoute
@@ -410,11 +438,14 @@ export interface FileRouteTypes {
     | '/books/$bookSlug/'
     | '/articles/review/$requestId'
     | '/user/articles/$slug'
+    | '/user/collegia/$slug'
     | '/user/sources/$id'
     | '/manage/'
     | '/user/articles/'
+    | '/user/collegia/'
     | '/user/sources/'
     | '/manage/feedback/$id'
+    | '/user/collegia/join/$token'
     | '/manage/article-reviews/'
     | '/manage/feedback/'
     | '/manage/resource-submissions/'
@@ -450,11 +481,14 @@ export interface FileRouteTypes {
     | '/books/$bookSlug'
     | '/articles/review/$requestId'
     | '/user/articles/$slug'
+    | '/user/collegia/$slug'
     | '/user/sources/$id'
     | '/manage'
     | '/user/articles'
+    | '/user/collegia'
     | '/user/sources'
     | '/manage/feedback/$id'
+    | '/user/collegia/join/$token'
     | '/manage/article-reviews'
     | '/manage/feedback'
     | '/manage/resource-submissions'
@@ -492,11 +526,14 @@ export interface FileRouteTypes {
     | '/books/$bookSlug/'
     | '/_auth/articles/review/$requestId'
     | '/_auth/user/articles/$slug'
+    | '/_auth/user/collegia/$slug'
     | '/_auth/user/sources/$id'
     | '/_auth/_manage/manage/'
     | '/_auth/user/articles/'
+    | '/_auth/user/collegia/'
     | '/_auth/user/sources/'
     | '/_auth/_manage/manage/feedback/$id'
+    | '/_auth/user/collegia/join/$token'
     | '/_auth/_manage/manage/article-reviews/'
     | '/_auth/_manage/manage/feedback/'
     | '/_auth/_manage/manage/resource-submissions/'
@@ -750,6 +787,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthUserArticlesSlugRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/user/collegia/': {
+      id: '/_auth/user/collegia/'
+      path: '/user/collegia'
+      fullPath: '/user/collegia/'
+      preLoaderRoute: typeof AuthUserCollegiaIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/user/collegia/$slug': {
+      id: '/_auth/user/collegia/$slug'
+      path: '/user/collegia/$slug'
+      fullPath: '/user/collegia/$slug'
+      preLoaderRoute: typeof AuthUserCollegiaSlugRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/user/sources/': {
       id: '/_auth/user/sources/'
       path: '/user/sources'
@@ -813,6 +864,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthManageManageUsersIndexRouteImport
       parentRoute: typeof AuthManageRoute
     }
+    '/_auth/user/collegia/join/$token': {
+      id: '/_auth/user/collegia/join/$token'
+      path: '/user/collegia/join/$token'
+      fullPath: '/user/collegia/join/$token'
+      preLoaderRoute: typeof AuthUserCollegiaJoinTokenRouteImport
+      parentRoute: typeof AuthRoute
+    }
   }
 }
 
@@ -851,9 +909,12 @@ interface AuthRouteChildren {
   AuthUserQuotationsRoute: typeof AuthUserQuotationsRoute
   AuthArticlesReviewRequestIdRoute: typeof AuthArticlesReviewRequestIdRoute
   AuthUserArticlesSlugRoute: typeof AuthUserArticlesSlugRoute
+  AuthUserCollegiaSlugRoute: typeof AuthUserCollegiaSlugRoute
   AuthUserSourcesIdRoute: typeof AuthUserSourcesIdRoute
   AuthUserArticlesIndexRoute: typeof AuthUserArticlesIndexRoute
+  AuthUserCollegiaIndexRoute: typeof AuthUserCollegiaIndexRoute
   AuthUserSourcesIndexRoute: typeof AuthUserSourcesIndexRoute
+  AuthUserCollegiaJoinTokenRoute: typeof AuthUserCollegiaJoinTokenRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
@@ -863,9 +924,12 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthUserQuotationsRoute: AuthUserQuotationsRoute,
   AuthArticlesReviewRequestIdRoute: AuthArticlesReviewRequestIdRoute,
   AuthUserArticlesSlugRoute: AuthUserArticlesSlugRoute,
+  AuthUserCollegiaSlugRoute: AuthUserCollegiaSlugRoute,
   AuthUserSourcesIdRoute: AuthUserSourcesIdRoute,
   AuthUserArticlesIndexRoute: AuthUserArticlesIndexRoute,
+  AuthUserCollegiaIndexRoute: AuthUserCollegiaIndexRoute,
   AuthUserSourcesIndexRoute: AuthUserSourcesIndexRoute,
+  AuthUserCollegiaJoinTokenRoute: AuthUserCollegiaJoinTokenRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)

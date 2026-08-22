@@ -1,0 +1,43 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT m.id, m.sender_id,\n               u.display_name AS \"sender_display_name?\",\n               u.handle AS \"sender_handle?\",\n               m.body, m.created_at\n           FROM article_review_messages m\n           LEFT JOIN users u ON u.id = m.sender_id\n           WHERE m.article_id = $1 AND m.collegium_id IS NOT DISTINCT FROM $2\n           ORDER BY m.created_at",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "sender_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "sender_display_name?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "sender_handle?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "body",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": [false, true, false, true, false, false]
+    },
+    "hash": "3e8749729b5dd04943f4d2a58a4dbf85d66fd5201697ac5be9d1c43367645804"
+}

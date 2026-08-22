@@ -55,5 +55,6 @@ export function getCurrentTier(
 export const MEMBERSHIP_PERKS = [
     "Unlimited notes and saved quotations",
     "Unlimited articles to draft and publish",
+    "Create up to 5 collegia (instead of 1)",
     "Advanced search (coming soon)",
 ];

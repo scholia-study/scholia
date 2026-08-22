@@ -1,0 +1,32 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO collegia\n               (name, slug, description, is_private, review_visibility, created_by)\n           VALUES ($1, $2, $3, $4, $5::collegium_review_visibility, $6)\n           RETURNING id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": [
+                "Text",
+                "Text",
+                "Text",
+                "Bool",
+                {
+                    "Custom": {
+                        "name": "collegium_review_visibility",
+                        "kind": {
+                            "Enum": ["members", "stewards"]
+                        }
+                    }
+                },
+                "Uuid"
+            ]
+        },
+        "nullable": [false]
+    },
+    "hash": "a2d46821a04d37aa45a20b0675b5721880dd9062fef63c01486974654946efc0"
+}

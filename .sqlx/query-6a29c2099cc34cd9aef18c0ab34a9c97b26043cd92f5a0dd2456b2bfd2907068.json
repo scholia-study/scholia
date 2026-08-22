@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE article_review_requests arr\n           SET status = 'withdrawn', resolved_at = now(), updated_at = now()\n           FROM articles a\n           WHERE arr.collegium_id = $1 AND arr.status = 'pending'\n             AND a.id = arr.article_id\n             AND ($2::uuid IS NULL OR a.user_id = $2)",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "6a29c2099cc34cd9aef18c0ab34a9c97b26043cd92f5a0dd2456b2bfd2907068"
+}

@@ -5,6 +5,7 @@ const USER_ROUTES = [
     { to: "/user/notes" as const, label: "My Notes" },
     { to: "/user/articles" as const, label: "My Articles" },
     { to: "/user/sources" as const, label: "Sources" },
+    { to: "/user/collegia" as const, label: "Collegia" },
     { to: "/user/profile" as const, label: "Profile" },
 ];
 

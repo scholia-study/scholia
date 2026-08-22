@@ -1,0 +1,30 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT g.id, gm.role AS \"role: CollegiumRole\"\n           FROM collegia g\n           JOIN collegium_members gm ON gm.collegium_id = g.id AND gm.user_id = $2\n           WHERE g.slug = $1 AND g.deleted_at IS NULL",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "role: CollegiumRole",
+                "type_info": {
+                    "Custom": {
+                        "name": "collegium_member_role",
+                        "kind": {
+                            "Enum": ["steward", "member"]
+                        }
+                    }
+                }
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Uuid"]
+        },
+        "nullable": [false, false]
+    },
+    "hash": "1e0526912ea3f334a11f20becbadcf0736095b4e5679f3052931591e9934c546"
+}

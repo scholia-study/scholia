@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id FROM collegia WHERE slug = $1 AND deleted_at IS NULL FOR UPDATE",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [false]
+    },
+    "hash": "c5df70d45624e4ed4163e99cdf384a51af15a0d0c79d8200254919c33addab27"
+}

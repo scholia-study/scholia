@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\" FROM collegium_join_requests\n           WHERE user_id = $1 AND created_at > now() - INTERVAL '24 hours'",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "9fdf3f12c0447ff97898f1a900a1a18148ff178a889962275ab927265832fcd4"
+}

@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE collegium_join_requests\n               SET status = 'approved', decided_at = now()\n               WHERE collegium_id = $1 AND user_id = $2 AND status = 'pending'",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "2af85e9b912cb01c0ded1e7e25287d199cfd5f5e9d9d241a3ce1387eedec1a63"
+}

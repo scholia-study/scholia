@@ -1,0 +1,38 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT jr.id, jr.user_id, u.display_name, u.handle, jr.created_at\n           FROM collegium_join_requests jr\n           JOIN users u ON u.id = jr.user_id\n           WHERE jr.collegium_id = $1 AND jr.status = 'pending'\n           ORDER BY jr.created_at",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "user_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "display_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "handle",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, false, true, false]
+    },
+    "hash": "ab5a81528b8e899027587b15c7966dc5f7e4aa7165642416a5a55857e0680a3c"
+}

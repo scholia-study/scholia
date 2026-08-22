@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT EXISTS(SELECT 1 FROM collegia WHERE slug = $1) AS \"taken!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "taken!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [null]
+    },
+    "hash": "c3582a080216b77d3e4e4ef2abde0b332f3296c67e18ec7694d91c09f78ba480"
+}

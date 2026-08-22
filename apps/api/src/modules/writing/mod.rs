@@ -19,6 +19,10 @@ use crate::system::state::AppState;
 // Cross-domain facade — what the identity domain needs to render an
 // author's public profile (their published articles).
 pub use articles::db::list_published_articles_by_author;
+// What the collegia domain needs when membership changes: departing
+// members' (or a deleted collegium's) pending review requests get withdrawn
+// inside the membership transaction.
+pub use article_reviews::db::withdraw_pending_collegium_requests;
 pub use articles::models::{ArticleResponse, PublicArticleListQuery};
 // Orphan schemas (no referencing route) re-exported so `crate::ApiDoc`
 // can keep registering them to hold the OpenAPI surface byte-identical.
@@ -72,6 +76,12 @@ pub fn user_router() -> OpenApiRouter<AppState> {
         ))
         .routes(utoipa_axum::routes!(
             article_reviews::handlers::withdraw_review_request
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::resolve_review_request
+        ))
+        .routes(utoipa_axum::routes!(
+            article_reviews::handlers::list_collegium_review_queue
         ))
         .routes(utoipa_axum::routes!(
             article_reviews::handlers::get_review_request

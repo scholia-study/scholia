@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO collegium_join_requests (collegium_id, user_id) VALUES ($1, $2)",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "5cba2bdeff6f1c9eb46ec7e5393b1e7b596b24e5af08b7633de1164d47c158d3"
+}

@@ -24,6 +24,7 @@ import {
     useGetReviewRequest,
     useListReviewComments,
     useListReviewMessages,
+    useResolveReviewRequest,
     useUpdateReviewComment,
     useWithdrawReviewRequest,
 } from "#/api/article-reviews/article-reviews";
@@ -69,17 +70,26 @@ export function ReviewPage({ requestId }: { requestId: string }) {
     const { data: commentsData } = useListReviewComments(requestId);
     const comments = commentsData?.data?.comments ?? [];
     const articleId = detail?.article.id;
-    const { data: messagesData } = useListReviewMessages(articleId ?? "", {
-        query: { enabled: !!articleId },
-    });
+    // The channel is per-audience: a collegium's channel when this is a
+    // collegium review, the editorial one otherwise.
+    const channelParams = detail?.request.collegium_id
+        ? { collegium_id: detail.request.collegium_id }
+        : undefined;
+    const { data: messagesData } = useListReviewMessages(
+        articleId ?? "",
+        channelParams,
+        { query: { enabled: !!articleId } },
+    );
     const messages = messagesData?.data?.messages ?? [];
 
     // Page-local polling: a cheap activity stamp every 15s; when it
     // changes, invalidate the real queries. Stops when the page unmounts
     // and pauses in background tabs (React Query default).
-    const { data: activityData } = useGetReviewActivity(articleId ?? "", {
-        query: { enabled: !!articleId, refetchInterval: 15_000 },
-    });
+    const { data: activityData } = useGetReviewActivity(
+        articleId ?? "",
+        channelParams,
+        { query: { enabled: !!articleId, refetchInterval: 15_000 } },
+    );
     const activityToken = activityData
         ? JSON.stringify(activityData.data)
         : null;
@@ -109,6 +119,7 @@ export function ReviewPage({ requestId }: { requestId: string }) {
     const messageMutation = useCreateReviewMessage();
     const decideMutation = useDecideArticleReview();
     const withdrawMutation = useWithdrawReviewRequest();
+    const resolveRequestMutation = useResolveReviewRequest();
 
     const [selection, setSelection] = useState<SnapshotSelection | null>(null);
     const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
@@ -132,7 +143,23 @@ export function ReviewPage({ requestId }: { requestId: string }) {
     const request = detail.request;
     const isOwner = user?.id === detail.article.author_user_id;
     const isPending = request.status === "pending";
-    const canComment = isReviewer && request.status !== "withdrawn";
+    const isCollegiumReview = !!request.collegium_id;
+    // Anyone who can see a request without being its author is one of
+    // its audience's reviewers — the API enforces that. Editor decision
+    // buttons stay permission-gated and editorial-only.
+    const actsAsReviewer = isCollegiumReview ? !isOwner : isReviewer;
+    const canComment =
+        actsAsReviewer && !isOwner && request.status !== "withdrawn";
+    // Who closes a collegium round follows its visibility snapshot: writing
+    // rounds close by author or collegium steward, classroom rounds by a
+    // collegium steward alone (the student can only withdraw).
+    const isCollegiumSteward = detail.collegium?.my_role === "steward";
+    const canResolveCollegiumRound =
+        isCollegiumReview &&
+        isPending &&
+        (detail.collegium?.member_visible
+            ? isOwner || isCollegiumSteward
+            : isCollegiumSteward);
 
     const invalidateComments = () =>
         queryClient.invalidateQueries({
@@ -255,7 +282,11 @@ export function ReviewPage({ requestId }: { requestId: string }) {
     const sendMessage = async (body: string) => {
         if (!articleId) return;
         try {
-            await messageMutation.mutateAsync({ articleId, data: { body } });
+            await messageMutation.mutateAsync({
+                articleId,
+                params: channelParams,
+                data: { body },
+            });
             invalidateMessages();
         } catch (err) {
             toast.error(errorMessage(err, "Failed to send message"));
@@ -304,6 +335,21 @@ export function ReviewPage({ requestId }: { requestId: string }) {
         }
     };
 
+    // Closes a collegium feedback round (author or collegium steward, per the
+    // round's visibility); editorial rounds are closed by the deciding
+    // editor instead.
+    const resolveCollegiumRound = async () => {
+        try {
+            await resolveRequestMutation.mutateAsync({ id: requestId });
+            toast.success("Feedback round resolved.");
+            queryClient.invalidateQueries({
+                queryKey: getGetReviewRequestQueryKey(requestId),
+            });
+        } catch (err) {
+            toast.error(errorMessage(err, "Failed to resolve request"));
+        }
+    };
+
     const publishesOnApprove =
         request.intent === "publication" && detail.article.status === "draft";
 
@@ -327,6 +373,27 @@ export function ReviewPage({ requestId }: { requestId: string }) {
                             color={STATUS_COLORS[request.status] ?? "default"}
                             sx={{ height: 20, fontSize: "0.65rem" }}
                         />
+                        {detail.collegium && (
+                            <Tooltip title="This review is by the collegium, not the Scholia editors">
+                                <Link
+                                    to="/user/collegia/$slug"
+                                    params={{ slug: detail.collegium.slug }}
+                                    className="inline-flex items-center"
+                                >
+                                    <Chip
+                                        label={detail.collegium.name}
+                                        size="small"
+                                        color="info"
+                                        variant="outlined"
+                                        clickable
+                                        sx={{
+                                            height: 20,
+                                            fontSize: "0.65rem",
+                                        }}
+                                    />
+                                </Link>
+                            </Tooltip>
+                        )}
                         {detail.assignee && (
                             <Tooltip title="Assigned reviewer — set from the editor dashboard">
                                 <Chip
@@ -395,7 +462,11 @@ export function ReviewPage({ requestId }: { requestId: string }) {
                         <span className="flex-1" />
                         {isOwner && isPending && (
                             <Tooltip
-                                title="Cancels this review request. If it's your only submission, editors lose access to your draft until you submit again. The conversation is kept."
+                                title={
+                                    isCollegiumReview
+                                        ? "Cancels this review request. If it's your only submission to this collegium, its members lose access to your draft until you submit again. The conversation is kept."
+                                        : "Cancels this review request. If it's your only submission, editors lose access to your draft until you submit again. The conversation is kept."
+                                }
                                 arrow
                             >
                                 <span>
@@ -412,7 +483,32 @@ export function ReviewPage({ requestId }: { requestId: string }) {
                                 </span>
                             </Tooltip>
                         )}
-                        {isReviewer &&
+                        {canResolveCollegiumRound && (
+                            <Tooltip
+                                title={
+                                    isOwner
+                                        ? "Closes this feedback round — you got what you needed. The conversation stays open."
+                                        : "Closes this feedback round. The conversation stays open."
+                                }
+                                arrow
+                            >
+                                <span>
+                                    <Button
+                                        size="small"
+                                        variant="contained"
+                                        disabled={
+                                            resolveRequestMutation.isPending
+                                        }
+                                        onClick={resolveCollegiumRound}
+                                        sx={{ textTransform: "none" }}
+                                    >
+                                        Mark resolved
+                                    </Button>
+                                </span>
+                            </Tooltip>
+                        )}
+                        {!isCollegiumReview &&
+                            isReviewer &&
                             isPending &&
                             (request.intent === "publication" ? (
                                 <>
@@ -469,6 +565,11 @@ export function ReviewPage({ requestId }: { requestId: string }) {
                                 viewerUserId={user?.id ?? null}
                                 busy={messageMutation.isPending}
                                 onSend={sendMessage}
+                                audienceLabel={
+                                    detail.collegium
+                                        ? `the ${detail.collegium.name} collegium`
+                                        : "the editorial team"
+                                }
                             />
                         </div>
                     </aside>

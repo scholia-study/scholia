@@ -34,10 +34,13 @@ import type {
     ArticleReviewRequestResponse,
     AssignReviewRequest,
     CreateReviewCommentRequest,
+    CreateReviewMessageParams,
     CreateReviewMessageRequest,
     CreateReviewReplyRequest,
     CreateReviewRequestRequest,
+    GetReviewActivityParams,
     ListArticleReviewQueueParams,
+    ListReviewMessagesParams,
     ReviewDecisionRequest,
     ReviewerListResponse,
     UpdateReviewCommentRequest,
@@ -1003,6 +1006,341 @@ export function useListArticleReviewersSuspense<
     return withQueryKey(query, queryOptions.queryKey);
 }
 
+export type listCollegiumReviewQueueResponse200 = {
+    data: ArticleReviewQueueResponse;
+    status: 200;
+};
+
+export type listCollegiumReviewQueueResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type listCollegiumReviewQueueResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type listCollegiumReviewQueueResponseSuccess =
+    listCollegiumReviewQueueResponse200 & {
+        headers: Headers;
+    };
+export type listCollegiumReviewQueueResponseError = (
+    | listCollegiumReviewQueueResponse401
+    | listCollegiumReviewQueueResponse404
+) & {
+    headers: Headers;
+};
+
+export const getListCollegiumReviewQueueUrl = (slug: string) => {
+    return `/api/collegia/${slug}/review-requests`;
+};
+
+/**
+ * @summary A collegium's workshop queue: pending review requests submitted to it.
+Group members only (404 otherwise, so private collegia don't leak).
+ */
+export const listCollegiumReviewQueue = async (
+    slug: string,
+    options?: Parameters<typeof customFetch>[1],
+): Promise<listCollegiumReviewQueueResponseSuccess> => {
+    return customFetch<listCollegiumReviewQueueResponseSuccess>(
+        getListCollegiumReviewQueueUrl(slug),
+        {
+            ...options,
+            method: "GET",
+        },
+    );
+};
+
+export const getListCollegiumReviewQueueQueryKey = (slug: string) => {
+    return [`/api/collegia/${slug}/review-requests`] as const;
+};
+
+export const getListCollegiumReviewQueueQueryOptions = <
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getListCollegiumReviewQueueQueryKey(slug);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listCollegiumReviewQueue>>
+    > = ({ signal }) =>
+        listCollegiumReviewQueue(slug, { signal, ...requestOptions });
+
+    return {
+        queryKey,
+        queryFn,
+        enabled: slug !== null && slug !== undefined,
+        ...queryOptions,
+    } as UseQueryOptions<
+        Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListCollegiumReviewQueueQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listCollegiumReviewQueue>>
+>;
+export type ListCollegiumReviewQueueQueryError = void;
+
+export function useListCollegiumReviewQueue<
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options: {
+        query: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                    TError,
+                    Awaited<ReturnType<typeof listCollegiumReviewQueue>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListCollegiumReviewQueue<
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                    TError,
+                    Awaited<ReturnType<typeof listCollegiumReviewQueue>>
+                >,
+                "initialData"
+            >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListCollegiumReviewQueue<
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary A collegium's workshop queue: pending review requests submitted to it.
+Group members only (404 otherwise, so private collegia don't leak).
+ */
+
+export function useListCollegiumReviewQueue<
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListCollegiumReviewQueueQueryOptions(slug, options);
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+    return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const getListCollegiumReviewQueueSuspenseQueryOptions = <
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+        queryOptions?.queryKey ?? getListCollegiumReviewQueueQueryKey(slug);
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof listCollegiumReviewQueue>>
+    > = ({ signal }) =>
+        listCollegiumReviewQueue(slug, { signal, ...requestOptions });
+
+    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListCollegiumReviewQueueSuspenseQueryResult = NonNullable<
+    Awaited<ReturnType<typeof listCollegiumReviewQueue>>
+>;
+export type ListCollegiumReviewQueueSuspenseQueryError = void;
+
+export function useListCollegiumReviewQueueSuspense<
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options: {
+        query: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListCollegiumReviewQueueSuspense<
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListCollegiumReviewQueueSuspense<
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary A collegium's workshop queue: pending review requests submitted to it.
+Group members only (404 otherwise, so private collegia don't leak).
+ */
+
+export function useListCollegiumReviewQueueSuspense<
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+} {
+    const queryOptions = getListCollegiumReviewQueueSuspenseQueryOptions(
+        slug,
+        options,
+    );
+
+    const query = useSuspenseQuery(
+        queryOptions,
+        queryClient,
+    ) as UseSuspenseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
+
+    return withQueryKey(query, queryOptions.queryKey);
+}
+
 export type getReviewActivityResponse200 = {
     data: ArticleReviewActivityResponse;
     status: 200;
@@ -1028,8 +1366,26 @@ export type getReviewActivityResponseError = (
     headers: Headers;
 };
 
-export const getGetReviewActivityUrl = (articleId: string) => {
-    return `/api/review/articles/${articleId}/activity`;
+export const getGetReviewActivityUrl = (
+    articleId: string,
+    params?: GetReviewActivityParams,
+) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : String(value),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `/api/review/articles/${articleId}/activity?${stringifiedParams}`
+        : `/api/review/articles/${articleId}/activity`;
 };
 
 /**
@@ -1039,10 +1395,11 @@ comment, and message queries when it changes.
  */
 export const getReviewActivity = async (
     articleId: string,
+    params?: GetReviewActivityParams,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<getReviewActivityResponseSuccess> => {
     return customFetch<getReviewActivityResponseSuccess>(
-        getGetReviewActivityUrl(articleId),
+        getGetReviewActivityUrl(articleId, params),
         {
             ...options,
             method: "GET",
@@ -1050,8 +1407,14 @@ export const getReviewActivity = async (
     );
 };
 
-export const getGetReviewActivityQueryKey = (articleId: string) => {
-    return [`/api/review/articles/${articleId}/activity`] as const;
+export const getGetReviewActivityQueryKey = (
+    articleId: string,
+    params?: GetReviewActivityParams,
+) => {
+    return [
+        `/api/review/articles/${articleId}/activity`,
+        ...(params ? [params] : []),
+    ] as const;
 };
 
 export const getGetReviewActivityQueryOptions = <
@@ -1059,6 +1422,7 @@ export const getGetReviewActivityQueryOptions = <
     TError = void,
 >(
     articleId: string,
+    params?: GetReviewActivityParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -1073,12 +1437,13 @@ export const getGetReviewActivityQueryOptions = <
     const { query: queryOptions, request: requestOptions } = options ?? {};
 
     const queryKey =
-        queryOptions?.queryKey ?? getGetReviewActivityQueryKey(articleId);
+        queryOptions?.queryKey ??
+        getGetReviewActivityQueryKey(articleId, params);
 
     const queryFn: QueryFunction<
         Awaited<ReturnType<typeof getReviewActivity>>
     > = ({ signal }) =>
-        getReviewActivity(articleId, { signal, ...requestOptions });
+        getReviewActivity(articleId, params, { signal, ...requestOptions });
 
     return {
         queryKey,
@@ -1102,6 +1467,7 @@ export function useGetReviewActivity<
     TError = void,
 >(
     articleId: string,
+    params: undefined | GetReviewActivityParams,
     options: {
         query: Partial<
             UseQueryOptions<
@@ -1129,6 +1495,7 @@ export function useGetReviewActivity<
     TError = void,
 >(
     articleId: string,
+    params?: GetReviewActivityParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -1156,6 +1523,7 @@ export function useGetReviewActivity<
     TError = void,
 >(
     articleId: string,
+    params?: GetReviewActivityParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -1181,6 +1549,7 @@ export function useGetReviewActivity<
     TError = void,
 >(
     articleId: string,
+    params?: GetReviewActivityParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -1195,7 +1564,11 @@ export function useGetReviewActivity<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 } {
-    const queryOptions = getGetReviewActivityQueryOptions(articleId, options);
+    const queryOptions = getGetReviewActivityQueryOptions(
+        articleId,
+        params,
+        options,
+    );
 
     const query = useQuery(queryOptions, queryClient) as UseQueryResult<
         TData,
@@ -1210,6 +1583,7 @@ export const getGetReviewActivitySuspenseQueryOptions = <
     TError = void,
 >(
     articleId: string,
+    params?: GetReviewActivityParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1224,12 +1598,13 @@ export const getGetReviewActivitySuspenseQueryOptions = <
     const { query: queryOptions, request: requestOptions } = options ?? {};
 
     const queryKey =
-        queryOptions?.queryKey ?? getGetReviewActivityQueryKey(articleId);
+        queryOptions?.queryKey ??
+        getGetReviewActivityQueryKey(articleId, params);
 
     const queryFn: QueryFunction<
         Awaited<ReturnType<typeof getReviewActivity>>
     > = ({ signal }) =>
-        getReviewActivity(articleId, { signal, ...requestOptions });
+        getReviewActivity(articleId, params, { signal, ...requestOptions });
 
     return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getReviewActivity>>,
@@ -1248,6 +1623,7 @@ export function useGetReviewActivitySuspense<
     TError = void,
 >(
     articleId: string,
+    params: undefined | GetReviewActivityParams,
     options: {
         query: Partial<
             UseSuspenseQueryOptions<
@@ -1267,6 +1643,7 @@ export function useGetReviewActivitySuspense<
     TError = void,
 >(
     articleId: string,
+    params?: GetReviewActivityParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1286,6 +1663,7 @@ export function useGetReviewActivitySuspense<
     TError = void,
 >(
     articleId: string,
+    params?: GetReviewActivityParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1311,6 +1689,7 @@ export function useGetReviewActivitySuspense<
     TError = void,
 >(
     articleId: string,
+    params?: GetReviewActivityParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1327,6 +1706,7 @@ export function useGetReviewActivitySuspense<
 } {
     const queryOptions = getGetReviewActivitySuspenseQueryOptions(
         articleId,
+        params,
         options,
     );
 
@@ -1366,8 +1746,26 @@ export type listReviewMessagesResponseError = (
     headers: Headers;
 };
 
-export const getListReviewMessagesUrl = (articleId: string) => {
-    return `/api/review/articles/${articleId}/messages`;
+export const getListReviewMessagesUrl = (
+    articleId: string,
+    params?: ListReviewMessagesParams,
+) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : String(value),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `/api/review/articles/${articleId}/messages?${stringifiedParams}`
+        : `/api/review/articles/${articleId}/messages`;
 };
 
 /**
@@ -1375,10 +1773,11 @@ export const getListReviewMessagesUrl = (articleId: string) => {
  */
 export const listReviewMessages = async (
     articleId: string,
+    params?: ListReviewMessagesParams,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<listReviewMessagesResponseSuccess> => {
     return customFetch<listReviewMessagesResponseSuccess>(
-        getListReviewMessagesUrl(articleId),
+        getListReviewMessagesUrl(articleId, params),
         {
             ...options,
             method: "GET",
@@ -1386,8 +1785,14 @@ export const listReviewMessages = async (
     );
 };
 
-export const getListReviewMessagesQueryKey = (articleId: string) => {
-    return [`/api/review/articles/${articleId}/messages`] as const;
+export const getListReviewMessagesQueryKey = (
+    articleId: string,
+    params?: ListReviewMessagesParams,
+) => {
+    return [
+        `/api/review/articles/${articleId}/messages`,
+        ...(params ? [params] : []),
+    ] as const;
 };
 
 export const getListReviewMessagesQueryOptions = <
@@ -1395,6 +1800,7 @@ export const getListReviewMessagesQueryOptions = <
     TError = void,
 >(
     articleId: string,
+    params?: ListReviewMessagesParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -1409,12 +1815,13 @@ export const getListReviewMessagesQueryOptions = <
     const { query: queryOptions, request: requestOptions } = options ?? {};
 
     const queryKey =
-        queryOptions?.queryKey ?? getListReviewMessagesQueryKey(articleId);
+        queryOptions?.queryKey ??
+        getListReviewMessagesQueryKey(articleId, params);
 
     const queryFn: QueryFunction<
         Awaited<ReturnType<typeof listReviewMessages>>
     > = ({ signal }) =>
-        listReviewMessages(articleId, { signal, ...requestOptions });
+        listReviewMessages(articleId, params, { signal, ...requestOptions });
 
     return {
         queryKey,
@@ -1438,6 +1845,7 @@ export function useListReviewMessages<
     TError = void,
 >(
     articleId: string,
+    params: undefined | ListReviewMessagesParams,
     options: {
         query: Partial<
             UseQueryOptions<
@@ -1465,6 +1873,7 @@ export function useListReviewMessages<
     TError = void,
 >(
     articleId: string,
+    params?: ListReviewMessagesParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -1492,6 +1901,7 @@ export function useListReviewMessages<
     TError = void,
 >(
     articleId: string,
+    params?: ListReviewMessagesParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -1515,6 +1925,7 @@ export function useListReviewMessages<
     TError = void,
 >(
     articleId: string,
+    params?: ListReviewMessagesParams,
     options?: {
         query?: Partial<
             UseQueryOptions<
@@ -1529,7 +1940,11 @@ export function useListReviewMessages<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 } {
-    const queryOptions = getListReviewMessagesQueryOptions(articleId, options);
+    const queryOptions = getListReviewMessagesQueryOptions(
+        articleId,
+        params,
+        options,
+    );
 
     const query = useQuery(queryOptions, queryClient) as UseQueryResult<
         TData,
@@ -1544,6 +1959,7 @@ export const getListReviewMessagesSuspenseQueryOptions = <
     TError = void,
 >(
     articleId: string,
+    params?: ListReviewMessagesParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1558,12 +1974,13 @@ export const getListReviewMessagesSuspenseQueryOptions = <
     const { query: queryOptions, request: requestOptions } = options ?? {};
 
     const queryKey =
-        queryOptions?.queryKey ?? getListReviewMessagesQueryKey(articleId);
+        queryOptions?.queryKey ??
+        getListReviewMessagesQueryKey(articleId, params);
 
     const queryFn: QueryFunction<
         Awaited<ReturnType<typeof listReviewMessages>>
     > = ({ signal }) =>
-        listReviewMessages(articleId, { signal, ...requestOptions });
+        listReviewMessages(articleId, params, { signal, ...requestOptions });
 
     return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listReviewMessages>>,
@@ -1582,6 +1999,7 @@ export function useListReviewMessagesSuspense<
     TError = void,
 >(
     articleId: string,
+    params: undefined | ListReviewMessagesParams,
     options: {
         query: Partial<
             UseSuspenseQueryOptions<
@@ -1601,6 +2019,7 @@ export function useListReviewMessagesSuspense<
     TError = void,
 >(
     articleId: string,
+    params?: ListReviewMessagesParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1620,6 +2039,7 @@ export function useListReviewMessagesSuspense<
     TError = void,
 >(
     articleId: string,
+    params?: ListReviewMessagesParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1643,6 +2063,7 @@ export function useListReviewMessagesSuspense<
     TError = void,
 >(
     articleId: string,
+    params?: ListReviewMessagesParams,
     options?: {
         query?: Partial<
             UseSuspenseQueryOptions<
@@ -1659,6 +2080,7 @@ export function useListReviewMessagesSuspense<
 } {
     const queryOptions = getListReviewMessagesSuspenseQueryOptions(
         articleId,
+        params,
         options,
     );
 
@@ -1704,8 +2126,26 @@ export type createReviewMessageResponseError = (
     headers: Headers;
 };
 
-export const getCreateReviewMessageUrl = (articleId: string) => {
-    return `/api/review/articles/${articleId}/messages`;
+export const getCreateReviewMessageUrl = (
+    articleId: string,
+    params?: CreateReviewMessageParams,
+) => {
+    const normalizedParams = new URLSearchParams();
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(
+                key,
+                value === null ? "null" : String(value),
+            );
+        }
+    });
+
+    const stringifiedParams = normalizedParams.toString();
+
+    return stringifiedParams.length > 0
+        ? `/api/review/articles/${articleId}/messages?${stringifiedParams}`
+        : `/api/review/articles/${articleId}/messages`;
 };
 
 /**
@@ -1715,10 +2155,11 @@ channel exists once the article has been submitted at least once.
 export const createReviewMessage = async (
     articleId: string,
     createReviewMessageRequest: CreateReviewMessageRequest,
+    params?: CreateReviewMessageParams,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createReviewMessageResponseSuccess> => {
     return customFetch<createReviewMessageResponseSuccess>(
-        getCreateReviewMessageUrl(articleId),
+        getCreateReviewMessageUrl(articleId, params),
         {
             ...options,
             method: "POST",
@@ -1738,14 +2179,22 @@ export const getCreateReviewMessageMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createReviewMessage>>,
         TError,
-        { articleId: string; data: CreateReviewMessageRequest },
+        {
+            articleId: string;
+            data: CreateReviewMessageRequest;
+            params?: CreateReviewMessageParams;
+        },
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createReviewMessage>>,
     TError,
-    { articleId: string; data: CreateReviewMessageRequest },
+    {
+        articleId: string;
+        data: CreateReviewMessageRequest;
+        params?: CreateReviewMessageParams;
+    },
     TContext
 > => {
     const mutationKey = ["createReviewMessage"];
@@ -1759,11 +2208,15 @@ export const getCreateReviewMessageMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createReviewMessage>>,
-        { articleId: string; data: CreateReviewMessageRequest }
+        {
+            articleId: string;
+            data: CreateReviewMessageRequest;
+            params?: CreateReviewMessageParams;
+        }
     > = (props) => {
-        const { articleId, data } = props ?? {};
+        const { articleId, data, params } = props ?? {};
 
-        return createReviewMessage(articleId, data, requestOptions);
+        return createReviewMessage(articleId, data, params, requestOptions);
     };
 
     return { mutationFn, ...mutationOptions };
@@ -1784,7 +2237,11 @@ export const useCreateReviewMessage = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createReviewMessage>>,
             TError,
-            { articleId: string; data: CreateReviewMessageRequest },
+            {
+                articleId: string;
+                data: CreateReviewMessageRequest;
+                params?: CreateReviewMessageParams;
+            },
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1793,7 +2250,11 @@ export const useCreateReviewMessage = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createReviewMessage>>,
     TError,
-    { articleId: string; data: CreateReviewMessageRequest },
+    {
+        articleId: string;
+        data: CreateReviewMessageRequest;
+        params?: CreateReviewMessageParams;
+    },
     TContext
 > => {
     return useMutation(
@@ -2965,6 +3426,129 @@ export const useCreateReviewRequest = <TError = void, TContext = unknown>(
 > => {
     return useMutation(
         getCreateReviewRequestMutationOptions(options),
+        queryClient,
+    );
+};
+export type resolveReviewRequestResponse200 = {
+    data: void;
+    status: 200;
+};
+
+export type resolveReviewRequestResponse401 = {
+    data: void;
+    status: 401;
+};
+
+export type resolveReviewRequestResponse404 = {
+    data: void;
+    status: 404;
+};
+
+export type resolveReviewRequestResponseSuccess =
+    resolveReviewRequestResponse200 & {
+        headers: Headers;
+    };
+export type resolveReviewRequestResponseError = (
+    | resolveReviewRequestResponse401
+    | resolveReviewRequestResponse404
+) & {
+    headers: Headers;
+};
+
+export const getResolveReviewRequestUrl = (id: string) => {
+    return `/api/user/review-requests/${id}/resolve`;
+};
+
+/**
+ * @summary Close a pending collegium-review round. Who may close follows the
+round's visibility snapshot: writing-collegium rounds (member-visible)
+close by the author or a collegium steward; classroom rounds (stewards-only)
+close by a collegium steward alone — the student can only withdraw.
+Editorial rounds are decided by editors instead.
+ */
+export const resolveReviewRequest = async (
+    id: string,
+    options?: Parameters<typeof customFetch>[1],
+): Promise<resolveReviewRequestResponseSuccess> => {
+    return customFetch<resolveReviewRequestResponseSuccess>(
+        getResolveReviewRequestUrl(id),
+        {
+            ...options,
+            method: "POST",
+        },
+    );
+};
+
+export const getResolveReviewRequestMutationOptions = <
+    TError = void,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof resolveReviewRequest>>,
+        TError,
+        { id: string },
+        TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof resolveReviewRequest>>,
+    TError,
+    { id: string },
+    TContext
+> => {
+    const mutationKey = ["resolveReviewRequest"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof resolveReviewRequest>>,
+        { id: string }
+    > = (props) => {
+        const { id } = props ?? {};
+
+        return resolveReviewRequest(id, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type ResolveReviewRequestMutationResult = NonNullable<
+    Awaited<ReturnType<typeof resolveReviewRequest>>
+>;
+
+export type ResolveReviewRequestMutationError = void;
+
+/**
+ * @summary Close a pending collegium-review round. Who may close follows the
+round's visibility snapshot: writing-collegium rounds (member-visible)
+close by the author or a collegium steward; classroom rounds (stewards-only)
+close by a collegium steward alone — the student can only withdraw.
+Editorial rounds are decided by editors instead.
+ */
+export const useResolveReviewRequest = <TError = void, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof resolveReviewRequest>>,
+            TError,
+            { id: string },
+            TContext
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof resolveReviewRequest>>,
+    TError,
+    { id: string },
+    TContext
+> => {
+    return useMutation(
+        getResolveReviewRequestMutationOptions(options),
         queryClient,
     );
 };

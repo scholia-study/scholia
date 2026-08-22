@@ -7,6 +7,13 @@
 
 export interface ArticleReviewRequestResponse {
     article_id: string;
+    /**
+     * Review audience; absent for editorial rounds.
+     * @nullable
+     */
+    collegium_id?: string | null;
+    /** @nullable */
+    collegium_name?: string | null;
     id: string;
     intent: string;
     /** @nullable */

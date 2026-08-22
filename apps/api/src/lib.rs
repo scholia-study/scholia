@@ -37,6 +37,7 @@ pub fn api_router() -> OpenApiRouter<AppState> {
     let user_router = OpenApiRouter::new()
         .merge(crate::modules::identity::user_router())
         .merge(crate::modules::writing::user_router())
+        .merge(crate::modules::collegia::user_router())
         .merge(crate::modules::feedback::user_router())
         .merge(crate::modules::billing::user_router());
 

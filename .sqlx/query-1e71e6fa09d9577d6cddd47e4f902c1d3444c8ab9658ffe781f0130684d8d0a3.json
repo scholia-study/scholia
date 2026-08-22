@@ -1,0 +1,88 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT g.id, g.name, g.slug, g.description, g.is_private,\n               g.review_visibility AS \"review_visibility: ReviewVisibility\", g.created_at,\n               (SELECT COUNT(*) FROM collegium_members gm\n                WHERE gm.collegium_id = g.id) AS \"member_count!\",\n               my.role AS \"my_role?: CollegiumRole\",\n               EXISTS(SELECT 1 FROM collegium_join_requests jr\n                      WHERE jr.collegium_id = g.id AND jr.user_id = $1\n                        AND jr.status = 'pending') AS \"my_pending_request!\"\n           FROM collegia g\n           LEFT JOIN collegium_members my ON my.collegium_id = g.id AND my.user_id = $1\n           WHERE g.deleted_at IS NULL AND NOT g.is_private\n             AND ($2::TEXT IS NULL\n                  OR g.name ILIKE '%' || $2 || '%'\n                  OR COALESCE(g.description, '') ILIKE '%' || $2 || '%')\n           ORDER BY g.name\n           LIMIT $3 OFFSET $4",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "description",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "is_private",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 5,
+                "name": "review_visibility: ReviewVisibility",
+                "type_info": {
+                    "Custom": {
+                        "name": "collegium_review_visibility",
+                        "kind": {
+                            "Enum": ["members", "stewards"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 6,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 7,
+                "name": "member_count!",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 8,
+                "name": "my_role?: CollegiumRole",
+                "type_info": {
+                    "Custom": {
+                        "name": "collegium_member_role",
+                        "kind": {
+                            "Enum": ["steward", "member"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 9,
+                "name": "my_pending_request!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Text", "Int8", "Int8"]
+        },
+        "nullable": [
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            null,
+            true,
+            null
+        ]
+    },
+    "hash": "1e71e6fa09d9577d6cddd47e4f902c1d3444c8ab9658ffe781f0130684d8d0a3"
+}

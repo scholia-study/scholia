@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\"\n           FROM article_review_requests\n           WHERE collegium_id IS NULL\n             AND status::TEXT = ANY($1)\n             AND ($2::uuid IS NULL OR assigned_to = $2)\n             AND (NOT $3 OR assigned_to IS NULL)",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["TextArray", "Uuid", "Bool"]
+        },
+        "nullable": [null]
+    },
+    "hash": "23ca8e75e3ecfca4fd7e3a1e0aa31d2cedce986106dc13bcaadc4fc80c91050e"
+}

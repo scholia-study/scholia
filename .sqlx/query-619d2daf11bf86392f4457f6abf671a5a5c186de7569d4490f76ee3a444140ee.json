@@ -1,0 +1,67 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "WITH inserted AS (\n               INSERT INTO article_review_requests\n                   (article_id, intent, collegium_id, member_visible,\n                    snapshot_markdown, snapshot_html)\n               VALUES ($1, $2::article_review_intent, $3, $4, $5, $6)\n               RETURNING id, article_id,\n                   intent::TEXT AS intent, status::TEXT AS status,\n                   submitted_at, resolved_at, collegium_id\n           )\n           SELECT i.id, i.article_id, i.intent AS \"intent!\", i.status AS \"status!\",\n               i.submitted_at, i.resolved_at, i.collegium_id,\n               g.name AS \"collegium_name?\"\n           FROM inserted i\n           LEFT JOIN collegia g ON g.id = i.collegium_id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "article_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "intent!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "status!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "submitted_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 5,
+                "name": "resolved_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 6,
+                "name": "collegium_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 7,
+                "name": "collegium_name?",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "article_review_intent",
+                        "kind": {
+                            "Enum": ["feedback", "publication"]
+                        }
+                    }
+                },
+                "Uuid",
+                "Bool",
+                "Text",
+                "Text"
+            ]
+        },
+        "nullable": [false, false, null, null, false, true, true, true]
+    },
+    "hash": "619d2daf11bf86392f4457f6abf671a5a5c186de7569d4490f76ee3a444140ee"
+}

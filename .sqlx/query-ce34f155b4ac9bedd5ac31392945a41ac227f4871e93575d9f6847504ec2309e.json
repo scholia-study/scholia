@@ -1,0 +1,48 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT c.id, c.request_id, c.parent_id,\n               arr.status::TEXT AS \"request_status!\",\n               arr.collegium_id AS \"request_collegium_id?\",\n               arr.member_visible AS \"request_member_visible?\",\n               a.user_id AS author_user_id\n           FROM article_review_comments c\n           JOIN article_review_requests arr ON arr.id = c.request_id\n           JOIN articles a ON a.id = arr.article_id\n           WHERE c.id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "request_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "parent_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 3,
+                "name": "request_status!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "request_collegium_id?",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 5,
+                "name": "request_member_visible?",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 6,
+                "name": "author_user_id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [false, false, true, null, true, true, false]
+    },
+    "hash": "ce34f155b4ac9bedd5ac31392945a41ac227f4871e93575d9f6847504ec2309e"
+}

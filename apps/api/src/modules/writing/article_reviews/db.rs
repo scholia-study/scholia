@@ -31,6 +31,8 @@ struct RequestRow {
     status: String,
     submitted_at: time::OffsetDateTime,
     resolved_at: Option<time::OffsetDateTime>,
+    collegium_id: Option<Uuid>,
+    collegium_name: Option<String>,
 }
 
 fn request_response(r: RequestRow) -> ArticleReviewRequestResponse {
@@ -41,6 +43,8 @@ fn request_response(r: RequestRow) -> ArticleReviewRequestResponse {
         status: r.status,
         submitted_at: fmt_time(r.submitted_at),
         resolved_at: r.resolved_at.map(fmt_time),
+        collegium_id: r.collegium_id.map(|id| id.to_string()),
+        collegium_name: r.collegium_name,
     }
 }
 
@@ -79,6 +83,10 @@ pub async fn get_article_owner(pool: &PgPool, article_id: Uuid) -> Result<Option
 pub struct ReviewRequestCreate<'a> {
     pub article_id: Uuid,
     pub intent: &'a str,
+    pub collegium_id: Option<Uuid>,
+    /// Snapshot of the collegium's review visibility at submission: true =
+    /// all members review, false = admins only. None for editorial.
+    pub member_visible: Option<bool>,
     pub snapshot_markdown: &'a str,
     pub snapshot_html: &'a str,
 }
@@ -89,14 +97,24 @@ pub async fn create_request(
 ) -> Result<ArticleReviewRequestResponse, AppError> {
     let row = sqlx::query_as!(
         RequestRow,
-        r#"INSERT INTO article_review_requests
-               (article_id, intent, snapshot_markdown, snapshot_html)
-           VALUES ($1, $2::article_review_intent, $3, $4)
-           RETURNING id, article_id,
-               intent::TEXT AS "intent!", status::TEXT AS "status!",
-               submitted_at, resolved_at"#,
+        r#"WITH inserted AS (
+               INSERT INTO article_review_requests
+                   (article_id, intent, collegium_id, member_visible,
+                    snapshot_markdown, snapshot_html)
+               VALUES ($1, $2::article_review_intent, $3, $4, $5, $6)
+               RETURNING id, article_id,
+                   intent::TEXT AS intent, status::TEXT AS status,
+                   submitted_at, resolved_at, collegium_id
+           )
+           SELECT i.id, i.article_id, i.intent AS "intent!", i.status AS "status!",
+               i.submitted_at, i.resolved_at, i.collegium_id,
+               g.name AS "collegium_name?"
+           FROM inserted i
+           LEFT JOIN collegia g ON g.id = i.collegium_id"#,
         entry.article_id,
         entry.intent as _,
+        entry.collegium_id,
+        entry.member_visible,
         entry.snapshot_markdown,
         entry.snapshot_html,
     )
@@ -165,6 +183,10 @@ pub struct RequestWithArticle {
     pub assigned_to: Option<Uuid>,
     pub assignee_display_name: Option<String>,
     pub assignee_handle: Option<String>,
+    pub collegium_id: Option<Uuid>,
+    pub collegium_name: Option<String>,
+    pub collegium_slug: Option<String>,
+    pub member_visible: Option<bool>,
 }
 
 impl RequestWithArticle {
@@ -184,6 +206,8 @@ impl RequestWithArticle {
             status: self.status.clone(),
             submitted_at: fmt_time(self.submitted_at),
             resolved_at: self.resolved_at.map(fmt_time),
+            collegium_id: self.collegium_id.map(|id| id.to_string()),
+            collegium_name: self.collegium_name.clone(),
         }
     }
 }
@@ -205,11 +229,16 @@ pub async fn get_request(
                u.handle AS author_handle,
                arr.assigned_to,
                au.display_name AS "assignee_display_name?",
-               au.handle AS "assignee_handle?"
+               au.handle AS "assignee_handle?",
+               arr.collegium_id,
+               g.name AS "collegium_name?",
+               g.slug AS "collegium_slug?",
+               arr.member_visible
            FROM article_review_requests arr
            JOIN articles a ON a.id = arr.article_id
            JOIN users u ON u.id = a.user_id
            LEFT JOIN users au ON au.id = arr.assigned_to
+           LEFT JOIN collegia g ON g.id = arr.collegium_id
            WHERE arr.id = $1"#,
         request_id,
     )
@@ -218,53 +247,88 @@ pub async fn get_request(
     Ok(row)
 }
 
-/// All rounds for an article, newest first. `include_withdrawn` is true
-/// for the author's own view only.
+/// Rounds for an article, newest first. `include_withdrawn` is true for
+/// the author's own view only. `audience` restricts the list to one
+/// audience (editorial when `Some(None)`) — non-authors never see the
+/// other audiences' rounds; the author passes `None` for all of them.
+/// `member_visible_only` additionally hides stewards-only rounds from
+/// non-admin collegium members.
 pub async fn list_requests_for_article(
     pool: &PgPool,
     article_id: Uuid,
     include_withdrawn: bool,
+    audience: Option<Option<Uuid>>,
+    member_visible_only: bool,
 ) -> Result<Vec<ArticleReviewRequestResponse>, AppError> {
+    let (filter_audience, audience_collegium) = match audience {
+        None => (false, None),
+        Some(collegium_id) => (true, collegium_id),
+    };
     let rows = sqlx::query_as!(
         RequestRow,
-        r#"SELECT id, article_id,
-               intent::TEXT AS "intent!", status::TEXT AS "status!",
-               submitted_at, resolved_at
-           FROM article_review_requests
-           WHERE article_id = $1 AND ($2 OR status <> 'withdrawn')
-           ORDER BY submitted_at DESC"#,
+        r#"SELECT arr.id, arr.article_id,
+               arr.intent::TEXT AS "intent!", arr.status::TEXT AS "status!",
+               arr.submitted_at, arr.resolved_at,
+               arr.collegium_id, g.name AS "collegium_name?"
+           FROM article_review_requests arr
+           LEFT JOIN collegia g ON g.id = arr.collegium_id
+           WHERE arr.article_id = $1 AND ($2 OR arr.status <> 'withdrawn')
+             AND (NOT $3 OR arr.collegium_id IS NOT DISTINCT FROM $4)
+             AND (NOT $5 OR arr.member_visible IS NOT DISTINCT FROM true)
+           ORDER BY arr.submitted_at DESC"#,
         article_id,
         include_withdrawn,
+        filter_audience,
+        audience_collegium,
+        member_visible_only,
     )
     .fetch_all(pool)
     .await?;
     Ok(rows.into_iter().map(request_response).collect())
 }
 
-/// Whether editors have access to this article's review surface: at
-/// least one non-withdrawn request exists. Withdrawing the only request
-/// un-shares the draft.
-pub async fn editors_have_access(pool: &PgPool, article_id: Uuid) -> Result<bool, AppError> {
+/// Whether an audience (editors when `collegium_id` is None, a collegium
+/// otherwise) has access to this article's review surface: at least one
+/// non-withdrawn request addressed to it exists. Withdrawing the
+/// audience's only request un-shares the draft. `member_visible_only`
+/// is set for non-admin collegium members, whose access requires a
+/// member-visible request.
+pub async fn audience_has_access(
+    pool: &PgPool,
+    article_id: Uuid,
+    collegium_id: Option<Uuid>,
+    member_visible_only: bool,
+) -> Result<bool, AppError> {
     let exists = sqlx::query_scalar!(
         r#"SELECT EXISTS(
                SELECT 1 FROM article_review_requests
-               WHERE article_id = $1 AND status <> 'withdrawn'
+               WHERE article_id = $1 AND collegium_id IS NOT DISTINCT FROM $2
+                 AND status <> 'withdrawn'
+                 AND (NOT $3 OR member_visible IS NOT DISTINCT FROM true)
            ) AS "exists!""#,
         article_id,
+        collegium_id,
+        member_visible_only,
     )
     .fetch_one(pool)
     .await?;
     Ok(exists)
 }
 
-/// Whether any request exists at all — the channel comes into existence
-/// with the first submission.
-pub async fn any_request_exists(pool: &PgPool, article_id: Uuid) -> Result<bool, AppError> {
+/// Whether any request toward this audience exists at all — a channel
+/// comes into existence with the first submission addressed to it.
+pub async fn any_request_exists(
+    pool: &PgPool,
+    article_id: Uuid,
+    collegium_id: Option<Uuid>,
+) -> Result<bool, AppError> {
     let exists = sqlx::query_scalar!(
         r#"SELECT EXISTS(
-               SELECT 1 FROM article_review_requests WHERE article_id = $1
+               SELECT 1 FROM article_review_requests
+               WHERE article_id = $1 AND collegium_id IS NOT DISTINCT FROM $2
            ) AS "exists!""#,
         article_id,
+        collegium_id,
     )
     .fetch_one(pool)
     .await?;
@@ -331,6 +395,128 @@ pub async fn withdraw_request(
     Ok(result.rows_affected() > 0)
 }
 
+/// Close a pending collegium-review round as `resolved`. Authorization
+/// (author and/or collegium steward, per the round's visibility snapshot)
+/// happens in the handler; `reviewed_by` is set when a collegium steward
+/// closes it, mirroring editorial decisions. Editorial rounds are
+/// resolved via `decide_request`, never here. Returns false when no
+/// matching pending collegium request exists.
+pub async fn resolve_collegium_request(
+    pool: &PgPool,
+    request_id: Uuid,
+    reviewed_by: Option<Uuid>,
+) -> Result<bool, AppError> {
+    let result = sqlx::query!(
+        r#"UPDATE article_review_requests
+           SET status = 'resolved', reviewed_by = COALESCE($2, reviewed_by),
+               resolved_at = now(), updated_at = now()
+           WHERE id = $1 AND status = 'pending' AND collegium_id IS NOT NULL"#,
+        request_id,
+        reviewed_by,
+    )
+    .execute(pool)
+    .await?;
+    Ok(result.rows_affected() > 0)
+}
+
+/// A collegium's workshop queue: its pending review requests, oldest first.
+/// Stewards see everything; other members see member-visible
+/// requests plus their own (stewards-only submissions stay between the
+/// student and the admins).
+pub async fn list_collegium_queue(
+    pool: &PgPool,
+    collegium_id: Uuid,
+    viewer_id: Uuid,
+    viewer_is_admin: bool,
+) -> Result<Vec<ArticleReviewQueueItem>, AppError> {
+    struct CollegiumQueueRow {
+        id: Uuid,
+        article_id: Uuid,
+        article_title: String,
+        article_slug: String,
+        article_status: String,
+        author_user_id: Uuid,
+        author_display_name: String,
+        author_handle: Option<String>,
+        intent: String,
+        status: String,
+        submitted_at: time::OffsetDateTime,
+        resolved_at: Option<time::OffsetDateTime>,
+        open_comment_count: i64,
+    }
+    let rows = sqlx::query_as!(
+        CollegiumQueueRow,
+        r#"SELECT arr.id, arr.article_id,
+               a.title AS article_title, a.slug AS article_slug,
+               a.status::TEXT AS "article_status!",
+               a.user_id AS author_user_id,
+               u.display_name AS author_display_name,
+               u.handle AS author_handle,
+               arr.intent::TEXT AS "intent!", arr.status::TEXT AS "status!",
+               arr.submitted_at, arr.resolved_at,
+               (SELECT COUNT(*) FROM article_review_comments arc
+                WHERE arc.request_id = arr.id
+                  AND arc.parent_id IS NULL
+                  AND arc.resolved_at IS NULL) AS "open_comment_count!"
+           FROM article_review_requests arr
+           JOIN articles a ON a.id = arr.article_id
+           JOIN users u ON u.id = a.user_id
+           WHERE arr.collegium_id = $1 AND arr.status = 'pending'
+             AND ($2 OR arr.member_visible IS NOT DISTINCT FROM true
+                  OR a.user_id = $3)
+           ORDER BY arr.submitted_at"#,
+        collegium_id,
+        viewer_is_admin,
+        viewer_id,
+    )
+    .fetch_all(pool)
+    .await?;
+    Ok(rows
+        .into_iter()
+        .map(|r| ArticleReviewQueueItem {
+            id: r.id.to_string(),
+            article_id: r.article_id.to_string(),
+            article_title: r.article_title,
+            article_slug: r.article_slug,
+            article_status: r.article_status,
+            author_user_id: r.author_user_id.to_string(),
+            author_display_name: r.author_display_name,
+            author_handle: r.author_handle,
+            intent: r.intent,
+            status: r.status,
+            submitted_at: fmt_time(r.submitted_at),
+            resolved_at: r.resolved_at.map(fmt_time),
+            open_comment_count: r.open_comment_count,
+            assignee: None,
+        })
+        .collect())
+}
+
+/// Withdraw pending requests scoped to a collegium: all of them (`author_id`
+/// None — the collegium was soft-deleted) or one departing member's
+/// (`author_id` Some — leaving revokes the collegium's view of their draft).
+/// Runs on the caller's connection so the collegia domain can include it
+/// in its membership transactions.
+pub async fn withdraw_pending_collegium_requests(
+    conn: &mut sqlx::PgConnection,
+    collegium_id: Uuid,
+    author_id: Option<Uuid>,
+) -> Result<(), AppError> {
+    sqlx::query!(
+        r#"UPDATE article_review_requests arr
+           SET status = 'withdrawn', resolved_at = now(), updated_at = now()
+           FROM articles a
+           WHERE arr.collegium_id = $1 AND arr.status = 'pending'
+             AND a.id = arr.article_id
+             AND ($2::uuid IS NULL OR a.user_id = $2)"#,
+        collegium_id,
+        author_id,
+    )
+    .execute(&mut *conn)
+    .await?;
+    Ok(())
+}
+
 /// Withdraw any pending request on this article (author archived it).
 pub async fn withdraw_pending_for_article(pool: &PgPool, article_id: Uuid) -> Result<(), AppError> {
     sqlx::query!(
@@ -354,7 +540,7 @@ pub async fn assign_request(
     let result = sqlx::query!(
         r#"UPDATE article_review_requests
            SET assigned_to = $2, updated_at = now()
-           WHERE id = $1 AND status = 'pending'"#,
+           WHERE id = $1 AND status = 'pending' AND collegium_id IS NULL"#,
         request_id,
         patch,
     )
@@ -425,7 +611,7 @@ pub async fn decide_request(
         r#"UPDATE article_review_requests
            SET status = $2::article_review_request_status,
                reviewed_by = $3, resolved_at = now(), updated_at = now()
-           WHERE id = $1 AND status = 'pending'"#,
+           WHERE id = $1 AND status = 'pending' AND collegium_id IS NULL"#,
         request_id,
         patch.status as _,
         patch.reviewed_by,
@@ -500,7 +686,8 @@ pub async fn list_queue(
            JOIN articles a ON a.id = arr.article_id
            JOIN users u ON u.id = a.user_id
            LEFT JOIN users au ON au.id = arr.assigned_to
-           WHERE arr.status::TEXT = ANY($1)
+           WHERE arr.collegium_id IS NULL
+             AND arr.status::TEXT = ANY($1)
              AND ($4::uuid IS NULL OR arr.assigned_to = $4)
              AND (NOT $5 OR arr.assigned_to IS NULL)
            ORDER BY arr.submitted_at DESC
@@ -517,7 +704,8 @@ pub async fn list_queue(
     let total = sqlx::query_scalar!(
         r#"SELECT COUNT(*) AS "count!"
            FROM article_review_requests
-           WHERE status::TEXT = ANY($1)
+           WHERE collegium_id IS NULL
+             AND status::TEXT = ANY($1)
              AND ($2::uuid IS NULL OR assigned_to = $2)
              AND (NOT $3 OR assigned_to IS NULL)"#,
         statuses,
@@ -557,26 +745,33 @@ pub struct ActivityStamp {
     pub requests_updated_at: time::OffsetDateTime,
 }
 
+/// Scoped to one audience so a collegium member's polling never reflects
+/// (or reveals) editorial activity, and vice versa.
 pub async fn get_activity_stamp(
     pool: &PgPool,
     article_id: Uuid,
+    collegium_id: Option<Uuid>,
 ) -> Result<ActivityStamp, AppError> {
     let row = sqlx::query_as!(
         ActivityStamp,
         r#"SELECT
                (SELECT COUNT(*) FROM article_review_messages
-                WHERE article_id = $1) AS "messages!",
+                WHERE article_id = $1
+                  AND collegium_id IS NOT DISTINCT FROM $2) AS "messages!",
                (SELECT COUNT(*) FROM article_review_comments c
                 JOIN article_review_requests r ON r.id = c.request_id
-                WHERE r.article_id = $1) AS "comments!",
+                WHERE r.article_id = $1
+                  AND r.collegium_id IS NOT DISTINCT FROM $2) AS "comments!",
                (SELECT COUNT(*) FROM article_review_comments c
                 JOIN article_review_requests r ON r.id = c.request_id
-                WHERE r.article_id = $1 AND c.resolved_at IS NOT NULL)
-                   AS "resolved_comments!",
+                WHERE r.article_id = $1 AND r.collegium_id IS NOT DISTINCT FROM $2
+                  AND c.resolved_at IS NOT NULL) AS "resolved_comments!",
                (SELECT COALESCE(MAX(updated_at), 'epoch'::timestamptz)
                 FROM article_review_requests
-                WHERE article_id = $1) AS "requests_updated_at!""#,
+                WHERE article_id = $1
+                  AND collegium_id IS NOT DISTINCT FROM $2) AS "requests_updated_at!""#,
         article_id,
+        collegium_id,
     )
     .fetch_one(pool)
     .await?;
@@ -604,6 +799,7 @@ fn message_response(r: MessageRow) -> ArticleReviewMessageResponse {
 pub async fn list_messages(
     pool: &PgPool,
     article_id: Uuid,
+    collegium_id: Option<Uuid>,
 ) -> Result<Vec<ArticleReviewMessageResponse>, AppError> {
     let rows = sqlx::query_as!(
         MessageRow,
@@ -613,9 +809,10 @@ pub async fn list_messages(
                m.body, m.created_at
            FROM article_review_messages m
            LEFT JOIN users u ON u.id = m.sender_id
-           WHERE m.article_id = $1
+           WHERE m.article_id = $1 AND m.collegium_id IS NOT DISTINCT FROM $2
            ORDER BY m.created_at"#,
         article_id,
+        collegium_id,
     )
     .fetch_all(pool)
     .await?;
@@ -624,6 +821,7 @@ pub async fn list_messages(
 
 pub struct MessageCreate<'a> {
     pub article_id: Uuid,
+    pub collegium_id: Option<Uuid>,
     pub sender_id: Uuid,
     pub body: &'a str,
 }
@@ -635,8 +833,8 @@ pub async fn create_message(
     let row = sqlx::query_as!(
         MessageRow,
         r#"WITH inserted AS (
-               INSERT INTO article_review_messages (article_id, sender_id, body)
-               VALUES ($1, $2, $3)
+               INSERT INTO article_review_messages (article_id, collegium_id, sender_id, body)
+               VALUES ($1, $2, $3, $4)
                RETURNING id, sender_id, body, created_at
            )
            SELECT i.id, i.sender_id,
@@ -646,6 +844,7 @@ pub async fn create_message(
            FROM inserted i
            LEFT JOIN users u ON u.id = i.sender_id"#,
         entry.article_id,
+        entry.collegium_id,
         entry.sender_id,
         entry.body,
     )
@@ -762,6 +961,8 @@ pub struct CommentContext {
     pub request_id: Uuid,
     pub parent_id: Option<Uuid>,
     pub request_status: String,
+    pub request_collegium_id: Option<Uuid>,
+    pub request_member_visible: Option<bool>,
     pub author_user_id: Uuid,
 }
 
@@ -773,6 +974,8 @@ pub async fn get_comment_context(
         CommentContext,
         r#"SELECT c.id, c.request_id, c.parent_id,
                arr.status::TEXT AS "request_status!",
+               arr.collegium_id AS "request_collegium_id?",
+               arr.member_visible AS "request_member_visible?",
                a.user_id AS author_user_id
            FROM article_review_comments c
            JOIN article_review_requests arr ON arr.id = c.request_id

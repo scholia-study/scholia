@@ -2840,6 +2840,532 @@
                 }
             }
         },
+        "/api/collegia": {
+            "get": {
+                "tags": ["collegia"],
+                "summary": "Browse public collegia (Discover)",
+                "operationId": "discover_collegia",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Case-insensitive match against name and description.",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["integer", "null"],
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Public collegia",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DiscoverCollegiaResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["collegia"],
+                "summary": "Create a collegium; the creator becomes its first admin",
+                "operationId": "create_collegium",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCollegiumRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Collegium created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CollegiumDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid name or creation limit reached"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    }
+                }
+            }
+        },
+        "/api/collegia/join/{token}": {
+            "post": {
+                "tags": ["collegia"],
+                "summary": "Join a collegium via an invite link",
+                "operationId": "join_by_token",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "description": "Invite token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Joined (or already a member)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JoinByTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Invalid or revoked invite link"
+                    }
+                }
+            }
+        },
+        "/api/collegia/{slug}": {
+            "get": {
+                "tags": ["collegia"],
+                "summary": "Get a collegium's page (member list for members, steward fields for stewards)",
+                "operationId": "get_collegium",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Collegium slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Collegium detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CollegiumDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Collegium not found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": ["collegia"],
+                "summary": "Update collegium metadata (name, description, privacy) — collegium stewards only",
+                "operationId": "update_collegium",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Collegium slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateCollegiumRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Collegium updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CollegiumDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid name"
+                    },
+                    "403": {
+                        "description": "Not a collegium steward"
+                    },
+                    "404": {
+                        "description": "Collegium not found"
+                    }
+                }
+            }
+        },
+        "/api/collegia/{slug}/invite-token": {
+            "post": {
+                "tags": ["collegia"],
+                "summary": "Generate or rotate the collegium's invite link token — collegium stewards only",
+                "operationId": "rotate_invite_token",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Collegium slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "New invite token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InviteTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not a collegium steward"
+                    },
+                    "404": {
+                        "description": "Collegium not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["collegia"],
+                "summary": "Disable the collegium's invite link — collegium stewards only",
+                "operationId": "disable_invite_token",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Collegium slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invite link disabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InviteTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not a collegium steward"
+                    },
+                    "404": {
+                        "description": "Collegium not found"
+                    }
+                }
+            }
+        },
+        "/api/collegia/{slug}/join-requests": {
+            "get": {
+                "tags": ["collegia"],
+                "summary": "List pending join requests — collegium stewards only",
+                "operationId": "list_join_requests",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Collegium slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pending requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JoinRequestListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not a collegium steward"
+                    },
+                    "404": {
+                        "description": "Collegium not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["collegia"],
+                "summary": "Ask to join a public collegium",
+                "operationId": "create_join_request",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Collegium slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request filed"
+                    },
+                    "400": {
+                        "description": "Already a member or daily limit reached"
+                    },
+                    "404": {
+                        "description": "Collegium not found"
+                    },
+                    "409": {
+                        "description": "A request is already pending"
+                    }
+                }
+            }
+        },
+        "/api/collegia/{slug}/join-requests/{id}": {
+            "patch": {
+                "tags": ["collegia"],
+                "summary": "Approve or reject a join request — collegium stewards only",
+                "operationId": "decide_join_request",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Collegium slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Join request ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DecideJoinRequestRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Request decided"
+                    },
+                    "400": {
+                        "description": "Invalid status"
+                    },
+                    "403": {
+                        "description": "Not a collegium steward"
+                    },
+                    "404": {
+                        "description": "Collegium or request not found"
+                    },
+                    "409": {
+                        "description": "Request already decided"
+                    }
+                }
+            }
+        },
+        "/api/collegia/{slug}/members/{user_id}": {
+            "delete": {
+                "tags": ["collegia"],
+                "summary": "Leave a collegium (self) or remove a member (collegium stewards)",
+                "operationId": "remove_member",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Collegium slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "Member's user ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Member removed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RemoveMemberResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Last steward must promote a successor first"
+                    },
+                    "403": {
+                        "description": "Not allowed to remove this member"
+                    },
+                    "404": {
+                        "description": "Collegium or member not found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": ["collegia"],
+                "summary": "Promote a member to admin, or step down as steward (self only)",
+                "operationId": "update_member_role",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Collegium slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "Member's user ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateMemberRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Role updated"
+                    },
+                    "400": {
+                        "description": "Invalid role or last-steward violation"
+                    },
+                    "403": {
+                        "description": "Not allowed to change this role"
+                    },
+                    "404": {
+                        "description": "Collegium or member not found"
+                    }
+                }
+            }
+        },
+        "/api/collegia/{slug}/review-requests": {
+            "get": {
+                "tags": ["article-reviews"],
+                "summary": "A collegium's workshop queue: pending review requests submitted to it.\nGroup members only (404 otherwise, so private collegia don't leak).",
+                "operationId": "list_collegium_review_queue",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Collegium slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pending collegium review requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticleReviewQueueResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Collegium not found"
+                    }
+                }
+            }
+        },
         "/api/editorial-labels": {
             "get": {
                 "tags": ["articles"],
@@ -3122,6 +3648,14 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "collegium_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
                     }
                 ],
                 "responses": {
@@ -3158,6 +3692,14 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "collegium_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
+                        }
                     }
                 ],
                 "responses": {
@@ -3191,6 +3733,14 @@
                         "required": true,
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    {
+                        "name": "collegium_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": ["string", "null"]
                         }
                     }
                 ],
@@ -4245,6 +4795,57 @@
                 }
             }
         },
+        "/api/user/collegia": {
+            "get": {
+                "tags": ["collegia"],
+                "summary": "List the collegiums the current user belongs to",
+                "operationId": "list_my_collegia",
+                "responses": {
+                    "200": {
+                        "description": "My collegia",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MyCollegiaResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    }
+                }
+            }
+        },
+        "/api/user/review-requests/{id}/resolve": {
+            "post": {
+                "tags": ["article-reviews"],
+                "summary": "Close a pending collegium-review round. Who may close follows the\nround's visibility snapshot: writing-collegium rounds (member-visible)\nclose by the author or a collegium steward; classroom rounds (stewards-only)\nclose by a collegium steward alone — the student can only withdraw.\nEditorial rounds are decided by editors instead.",
+                "operationId": "resolve_review_request",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Review request ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request resolved"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "No pending collegium review request found"
+                    }
+                }
+            }
+        },
         "/api/user/review-requests/{id}/withdraw": {
             "post": {
                 "tags": ["article-reviews"],
@@ -4875,6 +5476,17 @@
                             }
                         ]
                     },
+                    "collegium": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ReviewCollegiumMeta",
+                                "description": "The collegium reviewing this request; absent for editorial rounds."
+                            }
+                        ]
+                    },
                     "draft_changed": {
                         "type": "boolean",
                         "description": "True when the article body was edited after this request was\nsubmitted — the snapshot no longer matches the live draft."
@@ -5029,6 +5641,13 @@
                 "properties": {
                     "article_id": {
                         "type": "string"
+                    },
+                    "collegium_id": {
+                        "type": ["string", "null"],
+                        "description": "Review audience; absent for editorial rounds."
+                    },
+                    "collegium_name": {
+                        "type": ["string", "null"]
                     },
                     "id": {
                         "type": "string"
@@ -5337,6 +5956,157 @@
                     }
                 }
             },
+            "CollegiumDetailResponse": {
+                "type": "object",
+                "description": "Full collegium page payload. Member-only and admin-only fields are absent\nfor viewers below that tier.",
+                "required": [
+                    "id",
+                    "name",
+                    "slug",
+                    "is_private",
+                    "member_count",
+                    "my_pending_request",
+                    "review_visibility",
+                    "created_at"
+                ],
+                "properties": {
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": ["string", "null"]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "invite_token": {
+                        "type": ["string", "null"],
+                        "description": "Admins only; absent for stewards too when no invite link is active\n(`my_role` tells the frontend whether the field is authoritative)."
+                    },
+                    "is_private": {
+                        "type": "boolean"
+                    },
+                    "member_count": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "members": {
+                        "type": ["array", "null"],
+                        "items": {
+                            "$ref": "#/components/schemas/CollegiumMemberResponse"
+                        },
+                        "description": "Members only."
+                    },
+                    "my_pending_request": {
+                        "type": "boolean"
+                    },
+                    "my_role": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollegiumRole"
+                            }
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "pending_join_request_count": {
+                        "type": ["integer", "null"],
+                        "format": "int64",
+                        "description": "Admins only."
+                    },
+                    "review_visibility": {
+                        "$ref": "#/components/schemas/ReviewVisibility"
+                    },
+                    "slug": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CollegiumMemberResponse": {
+                "type": "object",
+                "required": ["user_id", "display_name", "role", "joined_at"],
+                "properties": {
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "handle": {
+                        "type": ["string", "null"]
+                    },
+                    "joined_at": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "$ref": "#/components/schemas/CollegiumRole"
+                    },
+                    "user_id": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CollegiumResponse": {
+                "type": "object",
+                "description": "A collegium as shown on list surfaces (My collegia, Discover). `my_role`\nand `my_pending_request` are relative to the requesting user.",
+                "required": [
+                    "id",
+                    "name",
+                    "slug",
+                    "is_private",
+                    "member_count",
+                    "my_pending_request",
+                    "review_visibility",
+                    "created_at"
+                ],
+                "properties": {
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": ["string", "null"]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "is_private": {
+                        "type": "boolean"
+                    },
+                    "member_count": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "my_pending_request": {
+                        "type": "boolean"
+                    },
+                    "my_role": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollegiumRole",
+                                "description": "Absent for non-members."
+                            }
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "review_visibility": {
+                        "$ref": "#/components/schemas/ReviewVisibility"
+                    },
+                    "slug": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CollegiumRole": {
+                "type": "string",
+                "description": "A member's standing in a collegium. Stored as the Postgres enum\n`collegium_member_role`; stewards run the collegium (settings,\nmembership, invite links, closing rounds).",
+                "enum": ["steward", "member"]
+            },
             "ContentBlockResponse": {
                 "type": "object",
                 "required": [
@@ -5432,6 +6202,32 @@
                     "client_secret": {
                         "type": "string",
                         "description": "Pass to the Stripe Embedded Checkout React component."
+                    }
+                }
+            },
+            "CreateCollegiumRequest": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                    "description": {
+                        "type": ["string", "null"]
+                    },
+                    "is_private": {
+                        "type": ["boolean", "null"]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "review_visibility": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ReviewVisibility",
+                                "description": "Defaults to `members`."
+                            }
+                        ]
                     }
                 }
             },
@@ -5621,6 +6417,10 @@
                 "type": "object",
                 "required": ["intent"],
                 "properties": {
+                    "collegium_id": {
+                        "type": ["string", "null"],
+                        "description": "Review audience: a collegium the author belongs to, or absent for the\neditorial team. Collegium reviews are feedback-only."
+                    },
                     "intent": {
                         "type": "string",
                         "description": "`feedback` — the author wants comments; the editor closes the\nrequest as `resolved`. `publication` — a hand-off: approving\npublishes the article (if still a draft) and applies the\n`imprimatur` label."
@@ -5715,6 +6515,31 @@
                 "properties": {
                     "name": {
                         "type": "string"
+                    }
+                }
+            },
+            "DecideJoinRequestRequest": {
+                "type": "object",
+                "required": ["status"],
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/JoinRequestDecision"
+                    }
+                }
+            },
+            "DiscoverCollegiaResponse": {
+                "type": "object",
+                "required": ["collegia", "total"],
+                "properties": {
+                    "collegia": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CollegiumResponse"
+                        }
+                    },
+                    "total": {
+                        "type": "integer",
+                        "format": "int64"
                     }
                 }
             },
@@ -5924,6 +6749,67 @@
                 "required": ["email"],
                 "properties": {
                     "email": {
+                        "type": "string"
+                    }
+                }
+            },
+            "InviteTokenResponse": {
+                "type": "object",
+                "properties": {
+                    "invite_token": {
+                        "type": ["string", "null"]
+                    }
+                }
+            },
+            "JoinByTokenResponse": {
+                "type": "object",
+                "description": "Result of redeeming an invite link; the frontend navigates to the\ncollegium page at `slug`.",
+                "required": ["slug", "name", "already_member"],
+                "properties": {
+                    "already_member": {
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    }
+                }
+            },
+            "JoinRequestDecision": {
+                "type": "string",
+                "enum": ["approved", "rejected"]
+            },
+            "JoinRequestListResponse": {
+                "type": "object",
+                "required": ["requests"],
+                "properties": {
+                    "requests": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/JoinRequestResponse"
+                        }
+                    }
+                }
+            },
+            "JoinRequestResponse": {
+                "type": "object",
+                "required": ["id", "user_id", "display_name", "created_at"],
+                "properties": {
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "handle": {
+                        "type": ["string", "null"]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "user_id": {
                         "type": "string"
                     }
                 }
@@ -6173,6 +7059,28 @@
                 "properties": {
                     "message": {
                         "type": "string"
+                    }
+                }
+            },
+            "MyCollegiaResponse": {
+                "type": "object",
+                "required": ["collegia", "created_count", "max_created"],
+                "properties": {
+                    "collegia": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CollegiumResponse"
+                        }
+                    },
+                    "created_count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Lifetime collegia created (soft-deleted ones count)."
+                    },
+                    "max_created": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Lifetime creation cap for this user's tier."
                     }
                 }
             },
@@ -6986,6 +7894,16 @@
                     }
                 }
             },
+            "RemoveMemberResponse": {
+                "type": "object",
+                "description": "Membership removal result; `collegium_deleted` is true when the last\nmember left and the collegium was soft-deleted.",
+                "required": ["collegium_deleted"],
+                "properties": {
+                    "collegium_deleted": {
+                        "type": "boolean"
+                    }
+                }
+            },
             "ReorderSeriesArticlesRequest": {
                 "type": "object",
                 "description": "The full member list in its new order — must be an exact permutation\nof the series' current members.",
@@ -7241,6 +8159,37 @@
                     }
                 }
             },
+            "ReviewCollegiumMeta": {
+                "type": "object",
+                "description": "The reviewing collegium, for the review page header, links, and action\ngating.",
+                "required": ["id", "name", "slug", "member_visible"],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "member_visible": {
+                        "type": "boolean",
+                        "description": "This round's visibility snapshot: true = all members review\n(writing-collegium mode), false = stewards only (classroom mode)."
+                    },
+                    "my_role": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollegiumRole",
+                                "description": "The viewer's role in the collegium; absent for non-members\n(e.g. the author after leaving the collegium)."
+                            }
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    }
+                }
+            },
             "ReviewDecisionRequest": {
                 "type": "object",
                 "required": ["status"],
@@ -7283,6 +8232,11 @@
                         "$ref": "#/components/schemas/ResourceReviewStatus"
                     }
                 }
+            },
+            "ReviewVisibility": {
+                "type": "string",
+                "description": "Who reviews submissions: everyone (`members`, the writing-circle\nmode) or stewards only (`stewards`, the classroom mode). Stored as\nthe Postgres enum `collegium_review_visibility`; governs new\nsubmissions only (each review request snapshots it).",
+                "enum": ["members", "stewards"]
             },
             "ReviewerListResponse": {
                 "type": "object",
@@ -8070,6 +9024,32 @@
                     }
                 }
             },
+            "UpdateCollegiumRequest": {
+                "type": "object",
+                "description": "Partial update; the slug never changes. An empty-string `description`\nclears it.",
+                "properties": {
+                    "description": {
+                        "type": ["string", "null"]
+                    },
+                    "is_private": {
+                        "type": ["boolean", "null"]
+                    },
+                    "name": {
+                        "type": ["string", "null"]
+                    },
+                    "review_visibility": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ReviewVisibility",
+                                "description": "Changing it affects future submissions only — each request keeps\nthe visibility it was submitted under."
+                            }
+                        ]
+                    }
+                }
+            },
             "UpdateFeedbackRequest": {
                 "type": "object",
                 "properties": {
@@ -8086,6 +9066,16 @@
                                 "description": "Omit either field to leave it unchanged."
                             }
                         ]
+                    }
+                }
+            },
+            "UpdateMemberRequest": {
+                "type": "object",
+                "required": ["role"],
+                "properties": {
+                    "role": {
+                        "$ref": "#/components/schemas/CollegiumRole",
+                        "description": "`steward` promotes (stewards only); `member` steps down (self only)."
                     }
                 }
             },

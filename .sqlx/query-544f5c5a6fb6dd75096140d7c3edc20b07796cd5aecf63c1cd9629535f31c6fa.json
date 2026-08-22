@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO collegium_members (collegium_id, user_id)\n               VALUES ($1, $2)\n               ON CONFLICT (collegium_id, user_id) DO NOTHING",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "544f5c5a6fb6dd75096140d7c3edc20b07796cd5aecf63c1cd9629535f31c6fa"
+}

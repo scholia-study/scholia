@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id, slug, name FROM collegia\n           WHERE invite_token = $1 AND deleted_at IS NULL\n           FOR UPDATE",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "slug",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "name",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [false, false, false]
+    },
+    "hash": "989683f7e773f2d56d2beea4c6127d7be64cff995805347de02f79e2ab00dbb5"
+}

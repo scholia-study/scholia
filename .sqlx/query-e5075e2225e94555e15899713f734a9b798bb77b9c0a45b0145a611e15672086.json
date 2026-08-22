@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT EXISTS(\n               SELECT 1 FROM article_review_requests\n               WHERE article_id = $1 AND collegium_id IS NOT DISTINCT FROM $2\n           ) AS \"exists!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "exists!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "e5075e2225e94555e15899713f734a9b798bb77b9c0a45b0145a611e15672086"
+}

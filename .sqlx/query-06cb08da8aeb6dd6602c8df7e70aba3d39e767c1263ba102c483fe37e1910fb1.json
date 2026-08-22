@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE article_review_requests\n           SET status = 'resolved', reviewed_by = COALESCE($2, reviewed_by),\n               resolved_at = now(), updated_at = now()\n           WHERE id = $1 AND status = 'pending' AND collegium_id IS NOT NULL",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "06cb08da8aeb6dd6602c8df7e70aba3d39e767c1263ba102c483fe37e1910fb1"
+}

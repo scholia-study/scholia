@@ -1,0 +1,23 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) FILTER (WHERE role = 'steward') AS \"stewards!\",\n               COUNT(*) AS \"members!\"\n           FROM collegium_members WHERE collegium_id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "stewards!",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 1,
+                "name": "members!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [null, null]
+    },
+    "hash": "1a3e49d3fb12972aff791b341cc7f7a25e736e40fb79813538dd4ff181ce865f"
+}

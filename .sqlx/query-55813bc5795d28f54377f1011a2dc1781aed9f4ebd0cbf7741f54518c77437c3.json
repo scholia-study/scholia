@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE collegia SET invite_token = $2 WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid", "Text"]
+        },
+        "nullable": []
+    },
+    "hash": "55813bc5795d28f54377f1011a2dc1781aed9f4ebd0cbf7741f54518c77437c3"
+}

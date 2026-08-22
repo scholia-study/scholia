@@ -1,0 +1,25 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE collegia SET\n               name = COALESCE($2, name),\n               description = CASE\n                   WHEN $3::TEXT IS NULL THEN description\n                   WHEN $3 = '' THEN NULL\n                   ELSE $3\n               END,\n               is_private = COALESCE($4, is_private),\n               review_visibility = COALESCE(\n                   $5::collegium_review_visibility, review_visibility)\n           WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                "Text",
+                "Text",
+                "Bool",
+                {
+                    "Custom": {
+                        "name": "collegium_review_visibility",
+                        "kind": {
+                            "Enum": ["members", "stewards"]
+                        }
+                    }
+                }
+            ]
+        },
+        "nullable": []
+    },
+    "hash": "7f2187241fbaa26d4d5064a1bf11d2b1c49bc5c027e981b8e124763646eacb0a"
+}

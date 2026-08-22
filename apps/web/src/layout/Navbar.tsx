@@ -192,6 +192,18 @@ export function Navbar() {
                                             Sources
                                         </Typography>
                                     </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null);
+                                            navigate({
+                                                to: "/user/collegia",
+                                            });
+                                        }}
+                                    >
+                                        <Typography variant="body2">
+                                            Collegia
+                                        </Typography>
+                                    </MenuItem>
                                     <Divider />
                                     <MenuItem
                                         onClick={() => {

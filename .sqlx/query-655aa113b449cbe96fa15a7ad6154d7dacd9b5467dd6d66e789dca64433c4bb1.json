@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT COUNT(*) AS \"count!\" FROM collegia WHERE created_by = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "count!",
+                "type_info": "Int8"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [null]
+    },
+    "hash": "655aa113b449cbe96fa15a7ad6154d7dacd9b5467dd6d66e789dca64433c4bb1"
+}

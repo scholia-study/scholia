@@ -6,10 +6,10 @@ use crate::modules::writing::article_reviews::db;
 use crate::modules::writing::article_reviews::models::{
     ArticleReviewActivityResponse, ArticleReviewCommentListResponse, ArticleReviewCommentResponse,
     ArticleReviewDetailResponse, ArticleReviewMessageListResponse, ArticleReviewMessageResponse,
-    ArticleReviewQueueResponse, ArticleReviewRequestResponse, AssignReviewRequest,
+    ArticleReviewQueueResponse, ArticleReviewRequestResponse, AssignReviewRequest, ChannelQuery,
     CreateReviewCommentRequest, CreateReviewMessageRequest, CreateReviewReplyRequest,
-    CreateReviewRequestRequest, ReviewArticleMeta, ReviewDecisionRequest, ReviewQueueQuery,
-    ReviewerListResponse, UpdateReviewCommentRequest,
+    CreateReviewRequestRequest, ReviewArticleMeta, ReviewCollegiumMeta, ReviewDecisionRequest,
+    ReviewQueueQuery, ReviewerListResponse, UpdateReviewCommentRequest,
 };
 use crate::modules::writing::article_reviews::snapshot::annotate_snapshot_html;
 use crate::system::auth::middleware::AuthUser;
@@ -33,15 +33,56 @@ fn is_reviewer(user: &AuthUser) -> bool {
     user.has_permission(Permission::ArticlesReview)
 }
 
+/// Whether `user` acts as a reviewer for a request's audience: for
+/// editorial requests an `ArticlesReview` holder; for collegium requests a
+/// live member — every member when the request is member-visible, collegium
+/// admins only otherwise (the classroom mode). Editors have no standing
+/// on collegium reviews, and vice versa.
+async fn is_audience_reviewer(
+    state: &AppState,
+    user: &AuthUser,
+    collegium_id: Option<Uuid>,
+    member_visible: Option<bool>,
+) -> Result<bool, AppError> {
+    match collegium_id {
+        Some(collegium_id) => Ok(
+            match crate::modules::collegia::member_role(&state.pool, collegium_id, user.id).await? {
+                None => false,
+                Some(role) => {
+                    member_visible.unwrap_or(true)
+                        || role == crate::modules::collegia::CollegiumRole::Steward
+                }
+            },
+        ),
+        None => Ok(is_reviewer(user)),
+    }
+}
+
 /// Access rule for a request's review surface: the article's author
-/// always; reviewers unless the request was withdrawn (withdrawing
-/// un-shares the draft). Failures are 404 so review URLs don't leak the
-/// existence of someone's draft.
-fn require_request_access(user: &AuthUser, req: &db::RequestWithArticle) -> Result<(), AppError> {
-    if req.author_user_id == user.id || (is_reviewer(user) && req.status != "withdrawn") {
+/// always; the audience's reviewers unless the request was withdrawn
+/// (withdrawing un-shares the draft). Failures are 404 so review URLs
+/// don't leak the existence of someone's draft.
+async fn require_request_access(
+    state: &AppState,
+    user: &AuthUser,
+    req: &db::RequestWithArticle,
+) -> Result<(), AppError> {
+    if req.author_user_id == user.id
+        || (req.status != "withdrawn"
+            && is_audience_reviewer(state, user, req.collegium_id, req.member_visible).await?)
+    {
         return Ok(());
     }
     Err(AppError::NotFound("Review request not found".into()))
+}
+
+fn parse_channel_collegium(channel: &ChannelQuery) -> Result<Option<Uuid>, AppError> {
+    channel
+        .collegium_id
+        .as_deref()
+        .filter(|id| !id.is_empty())
+        .map(|id| parse_uuid(id, "collegium"))
+        .transpose()
 }
 
 fn check_body(field: &str, body: &str, max: usize) -> Result<(), AppError> {
@@ -88,6 +129,31 @@ pub async fn create_review_request(
             "Intent must be 'feedback' or 'publication'".into(),
         ));
     }
+    let (collegium_id, member_visible) = match &body.collegium_id {
+        Some(id) => {
+            if body.intent != "feedback" {
+                return Err(AppError::BadRequest(
+                    "Collegium reviews are feedback-only".into(),
+                ));
+            }
+            let collegium_id = parse_uuid(id, "collegium")?;
+            // Same 404 a non-member gets elsewhere — membership required,
+            // and private collegia must not leak.
+            crate::modules::collegia::member_role(&state.pool, collegium_id, user.id)
+                .await?
+                .ok_or_else(|| AppError::NotFound("Collegium not found".into()))?;
+            // Snapshot the collegium's review visibility onto the request so
+            // later setting flips never expose past submissions.
+            let visibility = crate::modules::collegia::review_visibility(&state.pool, collegium_id)
+                .await?
+                .ok_or_else(|| AppError::NotFound("Collegium not found".into()))?;
+            (
+                Some(collegium_id),
+                Some(visibility == crate::modules::collegia::ReviewVisibility::Members),
+            )
+        }
+        None => (None, None),
+    };
     if let Some(message) = &body.message {
         check_max_len("Message", message, MAX_REVIEW_MESSAGE)?;
     }
@@ -121,6 +187,8 @@ pub async fn create_review_request(
         db::ReviewRequestCreate {
             article_id: article.id,
             intent: &body.intent,
+            collegium_id,
+            member_visible,
             snapshot_markdown: &article.markdown,
             snapshot_html: &snapshot_html,
         },
@@ -137,6 +205,7 @@ pub async fn create_review_request(
             &state.pool,
             db::MessageCreate {
                 article_id: article.id,
+                collegium_id,
                 sender_id: user.id,
                 body: message,
             },
@@ -173,6 +242,88 @@ pub async fn withdraw_review_request(
     Ok(Json(()))
 }
 
+/// Close a pending collegium-review round. Who may close follows the
+/// round's visibility snapshot: writing-collegium rounds (member-visible)
+/// close by the author or a collegium steward; classroom rounds (stewards-only)
+/// close by a collegium steward alone — the student can only withdraw.
+/// Editorial rounds are decided by editors instead.
+#[utoipa::path(
+    post,
+    path = "/api/user/review-requests/{id}/resolve",
+    params(("id" = String, Path, description = "Review request ID")),
+    responses(
+        (status = 200, description = "Request resolved"),
+        (status = 401, description = "Not authenticated"),
+        (status = 404, description = "No pending collegium review request found")
+    ),
+    tag = "article-reviews"
+)]
+pub async fn resolve_review_request(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(id): Path<String>,
+) -> Result<Json<()>, AppError> {
+    let request_id = parse_uuid(&id, "review request")?;
+    let not_found = || AppError::NotFound("No pending collegium review request found".into());
+
+    let req = db::get_request(&state.pool, request_id)
+        .await?
+        .ok_or_else(not_found)?;
+    let collegium_id = req.collegium_id.ok_or_else(not_found)?;
+    let is_author = req.author_user_id == user.id;
+    let is_collegium_steward =
+        crate::modules::collegia::member_role(&state.pool, collegium_id, user.id).await?
+            == Some(crate::modules::collegia::CollegiumRole::Steward);
+    let allowed = if req.member_visible.unwrap_or(true) {
+        is_author || is_collegium_steward
+    } else {
+        is_collegium_steward
+    };
+    if !allowed {
+        return Err(not_found());
+    }
+
+    let reviewed_by = is_collegium_steward.then_some(user.id);
+    let resolved = db::resolve_collegium_request(&state.pool, request_id, reviewed_by).await?;
+    if !resolved {
+        return Err(not_found());
+    }
+    Ok(Json(()))
+}
+
+/// A collegium's workshop queue: pending review requests submitted to it.
+/// Group members only (404 otherwise, so private collegia don't leak).
+#[utoipa::path(
+    get,
+    path = "/api/collegia/{slug}/review-requests",
+    params(("slug" = String, Path, description = "Collegium slug")),
+    responses(
+        (status = 200, description = "Pending collegium review requests", body = ArticleReviewQueueResponse),
+        (status = 401, description = "Not authenticated"),
+        (status = 404, description = "Collegium not found")
+    ),
+    tag = "article-reviews"
+)]
+pub async fn list_collegium_review_queue(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(slug): Path<String>,
+) -> Result<Json<ArticleReviewQueueResponse>, AppError> {
+    let (collegium_id, role) =
+        crate::modules::collegia::member_role_by_slug(&state.pool, &slug, user.id)
+            .await?
+            .ok_or_else(|| AppError::NotFound("Collegium not found".into()))?;
+    let items = db::list_collegium_queue(
+        &state.pool,
+        collegium_id,
+        user.id,
+        role == crate::modules::collegia::CollegiumRole::Steward,
+    )
+    .await?;
+    let total = items.len() as i64;
+    Ok(Json(ArticleReviewQueueResponse { items, total }))
+}
+
 /// Review page payload: the request, its frozen snapshot, article
 /// metadata, and sibling rounds. Author or reviewer only (404 otherwise).
 #[utoipa::path(
@@ -195,10 +346,34 @@ pub async fn get_review_request(
     let req = db::get_request(&state.pool, request_id)
         .await?
         .ok_or_else(|| AppError::NotFound("Review request not found".into()))?;
-    require_request_access(&user, &req)?;
+    require_request_access(&state, &user, &req).await?;
 
+    // The author sees every round; audience reviewers only see rounds
+    // addressed to their own audience — and non-admin collegium members
+    // additionally only the member-visible ones.
     let is_owner = req.author_user_id == user.id;
-    let requests = db::list_requests_for_article(&state.pool, req.article_id, is_owner).await?;
+    let audience = if is_owner {
+        None
+    } else {
+        Some(req.collegium_id)
+    };
+    let collegium_role = match req.collegium_id {
+        Some(collegium_id) => {
+            crate::modules::collegia::member_role(&state.pool, collegium_id, user.id).await?
+        }
+        None => None,
+    };
+    let member_visible_only = !is_owner
+        && req.collegium_id.is_some()
+        && collegium_role != Some(crate::modules::collegia::CollegiumRole::Steward);
+    let requests = db::list_requests_for_article(
+        &state.pool,
+        req.article_id,
+        is_owner,
+        audience,
+        member_visible_only,
+    )
+    .await?;
     let labels = crate::modules::writing::articles::editorial_labels::list_for_article(
         &state.pool,
         req.article_id,
@@ -221,6 +396,16 @@ pub async fn get_review_request(
         },
         requests,
         draft_changed: req.article_updated_at > req.submitted_at,
+        collegium: match (&req.collegium_id, &req.collegium_name, &req.collegium_slug) {
+            (Some(id), Some(name), Some(slug)) => Some(ReviewCollegiumMeta {
+                id: id.to_string(),
+                name: name.clone(),
+                slug: slug.clone(),
+                member_visible: req.member_visible.unwrap_or(true),
+                my_role: collegium_role,
+            }),
+            _ => None,
+        },
     }))
 }
 
@@ -245,7 +430,7 @@ pub async fn list_review_comments(
     let req = db::get_request(&state.pool, request_id)
         .await?
         .ok_or_else(|| AppError::NotFound("Review request not found".into()))?;
-    require_request_access(&user, &req)?;
+    require_request_access(&state, &user, &req).await?;
 
     let comments = db::list_comments(&state.pool, request_id).await?;
     Ok(Json(ArticleReviewCommentListResponse { comments }))
@@ -275,7 +460,12 @@ pub async fn create_review_comment(
     let req = db::get_request(&state.pool, request_id)
         .await?
         .ok_or_else(|| AppError::NotFound("Review request not found".into()))?;
-    if !is_reviewer(&user) || req.status == "withdrawn" {
+    // Reviewers only — the author responds via replies, whatever the
+    // audience.
+    if req.author_user_id == user.id
+        || req.status == "withdrawn"
+        || !is_audience_reviewer(&state, &user, req.collegium_id, req.member_visible).await?
+    {
         return Err(AppError::NotFound("Review request not found".into()));
     }
 
@@ -337,8 +527,15 @@ pub async fn create_review_reply(
     if ctx.parent_id.is_some() {
         return Err(AppError::BadRequest("Replies cannot be nested".into()));
     }
-    let can_access =
-        ctx.author_user_id == user.id || (is_reviewer(&user) && ctx.request_status != "withdrawn");
+    let can_access = ctx.author_user_id == user.id
+        || (ctx.request_status != "withdrawn"
+            && is_audience_reviewer(
+                &state,
+                &user,
+                ctx.request_collegium_id,
+                ctx.request_member_visible,
+            )
+            .await?);
     if !can_access {
         return Err(AppError::NotFound("Comment not found".into()));
     }
@@ -382,9 +579,23 @@ pub async fn update_review_comment(
     Path(id): Path<String>,
     Json(body): Json<UpdateReviewCommentRequest>,
 ) -> Result<Json<ArticleReviewCommentResponse>, AppError> {
-    user.require_permission(Permission::ArticlesReview)
-        .map_err(|_| AppError::Forbidden("Insufficient permissions".into()))?;
     let comment_id = parse_uuid(&id, "comment")?;
+    let ctx = db::get_comment_context(&state.pool, comment_id)
+        .await?
+        .ok_or_else(|| AppError::NotFound("Comment not found".into()))?;
+    // Audience reviewers resolve threads; the author never does, for
+    // either audience. 404 like every other unauthorized review access.
+    if ctx.author_user_id == user.id
+        || !is_audience_reviewer(
+            &state,
+            &user,
+            ctx.request_collegium_id,
+            ctx.request_member_visible,
+        )
+        .await?
+    {
+        return Err(AppError::NotFound("Comment not found".into()));
+    }
 
     let updated = db::set_comment_resolved(
         &state.pool,
@@ -399,19 +610,45 @@ pub async fn update_review_comment(
     Ok(Json(updated))
 }
 
-/// Access rule for an article's review channel: the author, or a
-/// reviewer while at least one non-withdrawn request exists.
+/// Access rule for an article's per-audience review channel: the
+/// author, or one of the audience's reviewers while at least one
+/// non-withdrawn request addressed to that audience exists. Non-admin
+/// collegium members additionally need a member-visible request — an
+/// stewards-only submission keeps its channel between the author and the
+/// collegium's admins.
 async fn require_channel_access(
     state: &AppState,
     user: &AuthUser,
     article_id: Uuid,
+    collegium_id: Option<Uuid>,
 ) -> Result<(), AppError> {
     let owner = db::get_article_owner(&state.pool, article_id)
         .await?
         .ok_or_else(|| AppError::NotFound("Article not found".into()))?;
-    if owner == user.id
-        || (is_reviewer(user) && db::editors_have_access(&state.pool, article_id).await?)
-    {
+    if owner == user.id {
+        return Ok(());
+    }
+    let allowed = match collegium_id {
+        Some(gid) => {
+            match crate::modules::collegia::member_role(&state.pool, gid, user.id).await? {
+                None => false,
+                Some(role) => {
+                    db::audience_has_access(
+                        &state.pool,
+                        article_id,
+                        collegium_id,
+                        role != crate::modules::collegia::CollegiumRole::Steward,
+                    )
+                    .await?
+                }
+            }
+        }
+        None => {
+            is_reviewer(user)
+                && db::audience_has_access(&state.pool, article_id, None, false).await?
+        }
+    };
+    if allowed {
         return Ok(());
     }
     Err(AppError::NotFound("Article not found".into()))
@@ -421,7 +658,7 @@ async fn require_channel_access(
 #[utoipa::path(
     get,
     path = "/api/review/articles/{article_id}/messages",
-    params(("article_id" = String, Path, description = "Article ID")),
+    params(("article_id" = String, Path, description = "Article ID"), ChannelQuery),
     responses(
         (status = 200, description = "Channel messages", body = ArticleReviewMessageListResponse),
         (status = 401, description = "Not authenticated"),
@@ -433,10 +670,12 @@ pub async fn list_review_messages(
     State(state): State<AppState>,
     user: AuthUser,
     Path(article_id): Path<String>,
+    Query(channel): Query<ChannelQuery>,
 ) -> Result<Json<ArticleReviewMessageListResponse>, AppError> {
     let article_id = parse_uuid(&article_id, "article")?;
-    require_channel_access(&state, &user, article_id).await?;
-    let messages = db::list_messages(&state.pool, article_id).await?;
+    let collegium_id = parse_channel_collegium(&channel)?;
+    require_channel_access(&state, &user, article_id, collegium_id).await?;
+    let messages = db::list_messages(&state.pool, article_id, collegium_id).await?;
     Ok(Json(ArticleReviewMessageListResponse { messages }))
 }
 
@@ -446,7 +685,7 @@ pub async fn list_review_messages(
 #[utoipa::path(
     get,
     path = "/api/review/articles/{article_id}/activity",
-    params(("article_id" = String, Path, description = "Article ID")),
+    params(("article_id" = String, Path, description = "Article ID"), ChannelQuery),
     responses(
         (status = 200, description = "Activity stamp", body = ArticleReviewActivityResponse),
         (status = 401, description = "Not authenticated"),
@@ -458,10 +697,12 @@ pub async fn get_review_activity(
     State(state): State<AppState>,
     user: AuthUser,
     Path(article_id): Path<String>,
+    Query(channel): Query<ChannelQuery>,
 ) -> Result<Json<ArticleReviewActivityResponse>, AppError> {
     let article_id = parse_uuid(&article_id, "article")?;
-    require_channel_access(&state, &user, article_id).await?;
-    let stamp = db::get_activity_stamp(&state.pool, article_id).await?;
+    let collegium_id = parse_channel_collegium(&channel)?;
+    require_channel_access(&state, &user, article_id, collegium_id).await?;
+    let stamp = db::get_activity_stamp(&state.pool, article_id, collegium_id).await?;
     Ok(Json(ArticleReviewActivityResponse {
         messages: stamp.messages,
         comments: stamp.comments,
@@ -478,7 +719,7 @@ pub async fn get_review_activity(
 #[utoipa::path(
     post,
     path = "/api/review/articles/{article_id}/messages",
-    params(("article_id" = String, Path, description = "Article ID")),
+    params(("article_id" = String, Path, description = "Article ID"), ChannelQuery),
     request_body = CreateReviewMessageRequest,
     responses(
         (status = 200, description = "Message posted", body = ArticleReviewMessageResponse),
@@ -492,11 +733,13 @@ pub async fn create_review_message(
     State(state): State<AppState>,
     user: AuthUser,
     Path(article_id): Path<String>,
+    Query(channel): Query<ChannelQuery>,
     Json(body): Json<CreateReviewMessageRequest>,
 ) -> Result<Json<ArticleReviewMessageResponse>, AppError> {
     let article_id = parse_uuid(&article_id, "article")?;
-    require_channel_access(&state, &user, article_id).await?;
-    if !db::any_request_exists(&state.pool, article_id).await? {
+    let collegium_id = parse_channel_collegium(&channel)?;
+    require_channel_access(&state, &user, article_id, collegium_id).await?;
+    if !db::any_request_exists(&state.pool, article_id, collegium_id).await? {
         return Err(AppError::BadRequest(
             "The review channel opens when the article is first submitted for review".into(),
         ));
@@ -508,6 +751,7 @@ pub async fn create_review_message(
         &state.pool,
         db::MessageCreate {
             article_id,
+            collegium_id,
             sender_id: user.id,
             body: body.body.trim(),
         },
@@ -674,6 +918,11 @@ pub async fn decide_article_review(
     let req = db::get_request(&state.pool, request_id)
         .await?
         .ok_or_else(|| AppError::NotFound("Review request not found".into()))?;
+    // Collegium reviews are outside editorial authority; their requests
+    // don't exist as far as the editor surface is concerned.
+    if req.collegium_id.is_some() {
+        return Err(AppError::NotFound("Review request not found".into()));
+    }
     if req.status != "pending" {
         return Err(AppError::Conflict("Request is no longer pending".into()));
     }
@@ -734,6 +983,7 @@ pub async fn decide_article_review(
             &state.pool,
             db::MessageCreate {
                 article_id: req.article_id,
+                collegium_id: None,
                 sender_id: user.id,
                 body: message,
             },

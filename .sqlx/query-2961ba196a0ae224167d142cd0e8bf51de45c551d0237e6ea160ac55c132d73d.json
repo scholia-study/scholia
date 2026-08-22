@@ -1,0 +1,23 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE collegium_members SET role = $3::collegium_member_role\n           WHERE collegium_id = $1 AND user_id = $2",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                "Uuid",
+                {
+                    "Custom": {
+                        "name": "collegium_member_role",
+                        "kind": {
+                            "Enum": ["steward", "member"]
+                        }
+                    }
+                }
+            ]
+        },
+        "nullable": []
+    },
+    "hash": "2961ba196a0ae224167d142cd0e8bf51de45c551d0237e6ea160ac55c132d73d"
+}

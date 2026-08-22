@@ -10,6 +10,10 @@ pub struct CreateReviewRequestRequest {
     /// publishes the article (if still a draft) and applies the
     /// `imprimatur` label.
     pub intent: String,
+    /// Review audience: a collegium the author belongs to, or absent for the
+    /// editorial team. Collegium reviews are feedback-only.
+    #[serde(default)]
+    pub collegium_id: Option<String>,
     /// Optional note posted as the first message in the article's
     /// review channel.
     #[serde(default)]
@@ -25,6 +29,11 @@ pub struct ArticleReviewRequestResponse {
     pub submitted_at: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_at: Option<String>,
+    /// Review audience; absent for editorial rounds.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub collegium_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub collegium_name: Option<String>,
 }
 
 /// Article metadata shown on the review page. Distinct from the public
@@ -58,6 +67,25 @@ pub struct ArticleReviewDetailResponse {
     /// True when the article body was edited after this request was
     /// submitted — the snapshot no longer matches the live draft.
     pub draft_changed: bool,
+    /// The collegium reviewing this request; absent for editorial rounds.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub collegium: Option<ReviewCollegiumMeta>,
+}
+
+/// The reviewing collegium, for the review page header, links, and action
+/// gating.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReviewCollegiumMeta {
+    pub id: String,
+    pub name: String,
+    pub slug: String,
+    /// This round's visibility snapshot: true = all members review
+    /// (writing-collegium mode), false = stewards only (classroom mode).
+    pub member_visible: bool,
+    /// The viewer's role in the collegium; absent for non-members
+    /// (e.g. the author after leaving the collegium).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub my_role: Option<crate::modules::collegia::CollegiumRole>,
 }
 
 /// Who wrote a message or comment. Absent when the account was deleted.
@@ -179,6 +207,14 @@ pub struct ArticleReviewQueueItem {
 pub struct ArticleReviewQueueResponse {
     pub items: Vec<ArticleReviewQueueItem>,
     pub total: i64,
+}
+
+/// Selects the review channel: a collegium's channel, or the editorial one
+/// when absent. Channels are scoped per (article, audience).
+#[derive(Debug, Deserialize, IntoParams)]
+pub struct ChannelQuery {
+    #[serde(default)]
+    pub collegium_id: Option<String>,
 }
 
 #[derive(Debug, Deserialize, IntoParams)]

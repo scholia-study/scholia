@@ -54,6 +54,10 @@ pub const MAX_REVIEW_REQUESTS_PER_DAY: i64 = 10;
 /// Combined cap on channel messages + comments + replies per user/24h.
 pub const MAX_REVIEW_POSTS_PER_DAY: i64 = 200;
 
+pub const MAX_COLLEGIUM_NAME: usize = 80;
+pub const MAX_COLLEGIUM_DESCRIPTION: usize = 500;
+pub const MAX_COLLEGIUM_JOIN_REQUESTS_PER_DAY: i64 = 20;
+
 pub const MAX_EMAIL: usize = 254;
 pub const MAX_DISPLAY_NAME: usize = 100;
 pub const MIN_PASSWORD: usize = 8;

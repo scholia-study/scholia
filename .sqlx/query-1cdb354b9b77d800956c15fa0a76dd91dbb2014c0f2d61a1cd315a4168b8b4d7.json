@@ -1,0 +1,12 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "UPDATE collegia SET deleted_at = now(), invite_token = NULL WHERE id = $1",
+    "describe": {
+        "columns": [],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": []
+    },
+    "hash": "1cdb354b9b77d800956c15fa0a76dd91dbb2014c0f2d61a1cd315a4168b8b4d7"
+}

@@ -76,7 +76,7 @@ PostgreSQL 18+ with `ltree`. Append-only sqlx migrations named
 `NNNN_<semantic-name>.sql` (sequential, starting at `0000`). Embedded
 into the api binary via `sqlx::migrate!`; the cluster init container
 runs `api migrate`. Dev resets via `scripts/db_reset.sh` (uses `sqlx-cli`).
-~35 tables grouped into: users + auth (users, sessions, oauth, password reset, email verification, released_handles), bibliography (persons, sources, books, source_persons, resources), text content (toc_nodes, content_blocks, sentences, footnotes, margin_notes, page_markers, facsimile_pages, reference_systems, cross_references, **cross_translation_alignments** — see `docs/architecture/cross-translation-alignment.md`), user content (quotations, articles, article_quotations, quotation_notes, tags, topics, editorial_labels, feedback), and billing (subscriptions, stripe_processed_events).
+~35 tables grouped into: users + auth (users, sessions, oauth, password reset, email verification, released_handles), bibliography (persons, sources, books, source_persons, resources), text content (toc_nodes, content_blocks, sentences, footnotes, margin_notes, page_markers, facsimile_pages, reference_systems, cross_references, **cross_translation_alignments** — see `docs/architecture/cross-translation-alignment.md`), user content (quotations, articles, article_quotations, quotation_notes, tags, topics, editorial_labels, feedback), peer-review collegia (collegia, collegium_members, collegium_join_requests — soft-deleted only; `article_review_requests.collegium_id` NULL means editorial review; member role `steward` runs the collegium), and billing (subscriptions, stripe_processed_events).
 
 ### Rust packages (ingest CLIs)
 
