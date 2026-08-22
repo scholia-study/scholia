@@ -3,6 +3,7 @@ import {
     BlockTypeSelect,
     BoldItalicUnderlineToggles,
     CodeToggle,
+    CreateLink,
     DiffSourceToggleWrapper,
     type DirectiveDescriptor,
     type DirectiveEditorProps,
@@ -11,6 +12,8 @@ import {
     headingsPlugin,
     InsertThematicBreak,
     ListsToggle,
+    linkDialogPlugin,
+    linkPlugin,
     listsPlugin,
     MDXEditor,
     type MDXEditorMethods,
@@ -526,6 +529,8 @@ export const ArticleEditor = forwardRef<
                     listsPlugin(),
                     quotePlugin(),
                     thematicBreakPlugin(),
+                    linkPlugin(),
+                    linkDialogPlugin(),
                     markdownShortcutPlugin(),
                     directivesPlugin({
                         directiveDescriptors: [
@@ -545,6 +550,7 @@ export const ArticleEditor = forwardRef<
                             <DiffSourceToggleWrapper>
                                 <BoldItalicUnderlineToggles />
                                 <CodeToggle />
+                                <CreateLink />
                                 <Separator />
                                 <BlockTypeSelect />
                                 <Separator />
