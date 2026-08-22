@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import parse, {
     attributesToProps,
     type DOMNode,
+    domToReact,
     Element,
     Text,
 } from "html-react-parser";
@@ -106,7 +107,11 @@ function sliceInline(
             return;
         }
 
-        const props = { ...attributesToProps(node.attribs), key: `e${i}` };
+        const props = {
+            ...attributesToProps(node.attribs),
+            ...(node.name === "a" ? LINK_PROPS : {}),
+            key: `e${i}`,
+        };
         out.push(
             children.length > 0
                 ? createElement(node.name, props, children)
@@ -116,6 +121,15 @@ function sliceInline(
 
     return out;
 }
+
+/**
+ * Article links always leave the reader on a new tab — an article is a
+ * place you read to the end, not a jumping-off point. `rel` is restated
+ * because `target="_blank"` without it hands the opened page a handle on
+ * this one; the server sets the same pair, so this only covers html
+ * rendered before it did.
+ */
+const LINK_PROPS = { target: "_blank", rel: "noopener noreferrer" } as const;
 
 const VOID_TAGS = new Set([
     "area",
@@ -176,7 +190,11 @@ function sliceHtml(
         const empty = cursor.pos === start;
         if (!inner && !(empty && start >= from && start < to)) continue;
 
-        const attrs = Object.entries(node.attribs ?? {})
+        const attribs =
+            node.name === "a"
+                ? { ...node.attribs, ...LINK_PROPS }
+                : (node.attribs ?? {});
+        const attrs = Object.entries(attribs)
             .map(
                 ([name, value]) =>
                     ` ${name}="${escapeText(value).replace(/"/g, "&quot;")}"`,
@@ -433,6 +451,17 @@ export function ArticleSentences({
                 domNode.attribs?.class?.includes("article-quotation-embed")
             ) {
                 return replaceEmbed?.(domNode) ?? undefined;
+            }
+
+            // Links outside a segmented block — list items, headings,
+            // the generated bibliography — never reach `sliceInline`,
+            // and neither does anything when segmentation is off.
+            if (tag === "a") {
+                return (
+                    <a {...attributesToProps(domNode.attribs)} {...LINK_PROPS}>
+                        {domToReact((domNode.children ?? []) as DOMNode[])}
+                    </a>
+                );
             }
 
             if (disabled) return undefined;

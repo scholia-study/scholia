@@ -27,7 +27,7 @@ const INLINE_HTML = [
     "<p><strong>First. Second.</strong></p>",
 ].join("");
 
-function renderComponent(html = HTML) {
+function renderComponent(html = HTML, disabled = false) {
     const qc = new QueryClient({
         defaultOptions: { queries: { retry: false } },
     });
@@ -38,6 +38,7 @@ function renderComponent(html = HTML) {
                     html={html}
                     articleId="a1"
                     replaceEmbed={() => <div data-testid="embed" />}
+                    disabled={disabled}
                 />
             </AuthProvider>
         </QueryClientProvider>,
@@ -65,7 +66,8 @@ describe("ArticleSentences", () => {
         const [first, second] = sentenceHtml(container);
         expect(first).toBe("A <em>bold</em> claim. ");
         expect(second).toBe(
-            'See <a href="https://x.test">the docs</a> and <code>run()</code>.',
+            'See <a href="https://x.test" target="_blank" ' +
+                'rel="noopener noreferrer">the docs</a> and <code>run()</code>.',
         );
     });
 
@@ -84,6 +86,25 @@ describe("ArticleSentences", () => {
                 buildSentenceList(source).map((s) => s.html),
             );
             unmount();
+        }
+    });
+
+    it("opens links in a new tab, inside and outside segmented blocks", () => {
+        const html = '<ul><li><a href="https://x.test">list link</a></li></ul>';
+        for (const source of [INLINE_HTML, html]) {
+            for (const disabled of [false, true]) {
+                const { container, unmount } = renderComponent(
+                    source,
+                    disabled,
+                );
+                const anchors = container.querySelectorAll("a");
+                expect(anchors.length).toBeGreaterThan(0);
+                for (const a of anchors) {
+                    expect(a.getAttribute("target")).toBe("_blank");
+                    expect(a.getAttribute("rel")).toBe("noopener noreferrer");
+                }
+                unmount();
+            }
         }
     });
 
