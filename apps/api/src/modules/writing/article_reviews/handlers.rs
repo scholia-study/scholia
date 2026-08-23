@@ -384,7 +384,7 @@ pub async fn get_review_request(
             id: req.article_id.to_string(),
             title: req.article_title.clone(),
             slug: req.article_slug.clone(),
-            status: req.article_status.clone(),
+            status: req.article_status,
             author_user_id: req.author_user_id.to_string(),
             author_display_name: req.author_display_name.clone(),
             author_handle: req.author_handle.clone(),
