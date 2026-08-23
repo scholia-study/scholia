@@ -1,7 +1,7 @@
 ---
 position: 81
 label: "B. Extenſives und intenſives Quantum"
-depth: 5
+depth: 4
 page_1812: 169
 ---
 

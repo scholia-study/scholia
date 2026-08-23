@@ -1,7 +1,7 @@
 ---
 position: 7
 label: "Allgemeine Eintheilung des Seyns"
-depth: 3
+depth: 2
 page_1812: 19
 ---
 

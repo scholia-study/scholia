@@ -1,7 +1,7 @@
 ---
 position: 52
 label: "a.) das Moment ſeines Anſichſeyns,"
-depth: 7
+depth: 6
 page_1812: 93
 ---
 

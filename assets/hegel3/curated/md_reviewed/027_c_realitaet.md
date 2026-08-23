@@ -1,7 +1,7 @@
 ---
 position: 27
 label: "c) Realitaͤt"
-depth: 7
+depth: 6
 page_1812: 53
 ---
 

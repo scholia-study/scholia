@@ -1,7 +1,7 @@
 ---
 position: 77
 label: "Zweites Kapitel. Quantum"
-depth: 4
+depth: 3
 page_1812: 156
 ---
 

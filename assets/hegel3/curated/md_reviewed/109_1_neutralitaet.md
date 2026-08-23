@@ -1,7 +1,7 @@
 ---
 position: 109
 label: "1. Neutralitaͤt"
-depth: 6
+depth: 5
 page_1812: 291
 ---
 

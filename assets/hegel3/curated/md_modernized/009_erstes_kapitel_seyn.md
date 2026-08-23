@@ -1,7 +1,7 @@
 ---
 position: 9
 label: "Erstes Kapitel. Sein"
-depth: 4
+depth: 3
 page_1812: 22
 ---
 

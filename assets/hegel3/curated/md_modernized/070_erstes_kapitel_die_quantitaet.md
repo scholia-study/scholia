@@ -1,7 +1,7 @@
 ---
 position: 70
 label: "Erstes Kapitel. Die Quantität"
-depth: 4
+depth: 3
 page_1812: 134
 ---
 

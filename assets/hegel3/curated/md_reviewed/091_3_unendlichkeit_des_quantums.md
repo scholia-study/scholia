@@ -1,7 +1,7 @@
 ---
 position: 91
 label: "3. Unendlichkeit des Quantums"
-depth: 6
+depth: 5
 page_1812: 200
 ---
 

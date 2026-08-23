@@ -1,7 +1,7 @@
 ---
 position: 56
 label: "3. Werden des Eins"
-depth: 6
+depth: 5
 page_1812: 99
 ---
 

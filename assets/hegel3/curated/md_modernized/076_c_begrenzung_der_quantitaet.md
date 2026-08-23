@@ -1,7 +1,7 @@
 ---
 position: 76
 label: "C. Begrenzung der Quantität"
-depth: 5
+depth: 4
 page_1812: 154
 ---
 

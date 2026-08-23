@@ -1,7 +1,7 @@
 ---
 position: 24
 label: "2. Realität"
-depth: 6
+depth: 5
 page_1812: 48
 ---
 

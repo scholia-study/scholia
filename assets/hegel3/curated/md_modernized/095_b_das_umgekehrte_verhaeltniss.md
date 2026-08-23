@@ -1,7 +1,7 @@
 ---
 position: 95
 label: "B. Das umgekehrte Verhältnis"
-depth: 5
+depth: 4
 page_1812: 253
 ---
 

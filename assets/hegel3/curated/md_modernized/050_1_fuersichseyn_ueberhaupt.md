@@ -1,7 +1,7 @@
 ---
 position: 50
 label: "1. Fürsichsein überhaupt"
-depth: 6
+depth: 5
 page_1812: 92
 ---
 

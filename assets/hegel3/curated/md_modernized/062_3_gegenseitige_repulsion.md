@@ -1,7 +1,7 @@
 ---
 position: 62
 label: "3. Gegenseitige Repulsion"
-depth: 6
+depth: 5
 page_1812: 108
 ---
 

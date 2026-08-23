@@ -1,7 +1,7 @@
 ---
 position: 88
 label: "2. Der unendliche Progreß"
-depth: 6
+depth: 5
 page_1812: 183
 ---
 

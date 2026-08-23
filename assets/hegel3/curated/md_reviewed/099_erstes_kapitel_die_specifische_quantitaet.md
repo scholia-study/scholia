@@ -1,7 +1,7 @@
 ---
 position: 99
 label: "Erſtes Kapitel. Die ſpecifiſche Quantitaͤt"
-depth: 4
+depth: 3
 page_1812: 268
 ---
 

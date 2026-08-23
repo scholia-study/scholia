@@ -1,7 +1,7 @@
 ---
 position: 83
 label: "2. Identitaͤt der extenſiven und intenſiven Groͤße"
-depth: 6
+depth: 5
 page_1812: 174
 ---
 

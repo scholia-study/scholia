@@ -1,7 +1,7 @@
 ---
 position: 116
 label: "Drittes Kapitel. Das Werden des Weſens"
-depth: 4
+depth: 3
 page_1812: 321
 ---
 

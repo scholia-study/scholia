@@ -1,7 +1,7 @@
 ---
 position: 108
 label: "A. Das Verhältnis selbstständiger Masse"
-depth: 5
+depth: 4
 page_1812: 291
 ---
 

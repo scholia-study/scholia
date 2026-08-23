@@ -1,7 +1,7 @@
 ---
 position: 46
 label: "3. Rückkehr der Unendlichkeit in sich"
-depth: 6
+depth: 5
 page_1812: 85
 ---
 

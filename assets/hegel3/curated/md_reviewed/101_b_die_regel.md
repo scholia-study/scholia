@@ -1,7 +1,7 @@
 ---
 position: 101
 label: "B. Die Regel"
-depth: 5
+depth: 4
 page_1812: 271
 ---
 

@@ -1,7 +1,7 @@
 ---
 position: 45
 label: "2. Wechselbestimmung des Endlichen und Unendlichen"
-depth: 6
+depth: 5
 page_1812: 81
 ---
 

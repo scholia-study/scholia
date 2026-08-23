@@ -1,7 +1,7 @@
 ---
 position: 118
 label: "B. Das Selbstständige als umgekehrtes Verhältnis seiner Faktoren"
-depth: 5
+depth: 4
 page_1812: 323
 ---
 

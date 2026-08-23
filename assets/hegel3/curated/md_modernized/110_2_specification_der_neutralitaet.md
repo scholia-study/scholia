@@ -1,7 +1,7 @@
 ---
 position: 110
 label: "2. Spezifikation der Neutralität"
-depth: 6
+depth: 5
 page_1812: 293
 ---
 

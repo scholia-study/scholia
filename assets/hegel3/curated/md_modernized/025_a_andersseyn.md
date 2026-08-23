@@ -1,7 +1,7 @@
 ---
 position: 25
 label: "a) Anderssein"
-depth: 7
+depth: 6
 page_1812: 49
 ---
 

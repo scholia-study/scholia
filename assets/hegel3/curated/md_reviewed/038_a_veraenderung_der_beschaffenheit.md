@@ -1,7 +1,7 @@
 ---
 position: 38
 label: "a) Veraͤnderung der Beſchaffenheit"
-depth: 7
+depth: 6
 page_1812: 70
 ---
 

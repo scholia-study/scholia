@@ -1,7 +1,7 @@
 ---
 position: 102
 label: "1. Die qualitative und quantitative Größen-Bestimmtheit"
-depth: 6
+depth: 5
 page_1812: 271
 ---
 

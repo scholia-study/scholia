@@ -17,10 +17,14 @@ the German text layers here plus the editorial table that produces them
 (`md_reviewed/`, `md_modernized/`, `modernize_rulings.tsv`) carry that
 same share-alike licence; Scholia asserts no further rights in them.
 
-The converter is `hegel1_tei_to_md --page-key page_1812` — the same DTA
-`att.linguistic` TEI shape serves both Hegel corpora (the `<w>` tokens
-span `<lb/>`, which is what lets a hyphenated line break be rejoined on
-word boundaries rather than by guesswork).
+The converter is `hegel1_tei_to_md --page-key page_1812 --promote-head
+"Erstes Buch. Das Seyn"` — the same DTA `att.linguistic` TEI shape serves
+both Hegel corpora (the `<w>` tokens span `<lb/>`, which is what lets a
+hyphenated line break be rejoined on word boundaries rather than by
+guesswork). The one structural intervention: the DTA nests *Erstes Buch*
+inside the *Logik* division, while the print's own contents list it at
+top level — `--promote-head` lifts the Buch and its subtree one level to
+match the print.
 
 Two curated layers, 120 files each (one per TOC node, `NNN_slug.md`):
 

@@ -367,11 +367,22 @@ pub fn slugify(label: &str) -> String {
 
 /// Every content `<div>` in document order, with the page open when it starts.
 /// Front matter, contents and the publisher's leaves are not nodes.
-pub fn toc_nodes<'a, 'i>(root: Node<'a, 'i>, conv: &Conv) -> Vec<TocNode<'a, 'i>> {
+///
+/// `promote` lifts named divs (matched by slugified head) one level up,
+/// subtree and all — an editorial re-levelling of the TEI's nesting where
+/// the printed table of contents disagrees with it (the 1812 "Erstes Buch"
+/// sits inside the Logik division in the DTA markup but at top level in
+/// the print's own contents).
+pub fn toc_nodes<'a, 'i>(
+    root: Node<'a, 'i>,
+    conv: &Conv,
+    promote: &[String],
+) -> Vec<TocNode<'a, 'i>> {
     let headings = heading_markers(root);
     let mut page: Option<String> = None;
     let mut nodes = Vec::new();
     let mut taken: HashSet<String> = HashSet::new();
+    let mut promoted: HashSet<NodeId> = HashSet::new();
     for n in root.descendants().filter(Node::is_element) {
         match n.tag_name().name() {
             "pb" => {
@@ -384,6 +395,9 @@ pub fn toc_nodes<'a, 'i>(root: Node<'a, 'i>, conv: &Conv) -> Vec<TocNode<'a, 'i>
                     .map(|h| conv.label(h))
                     .filter(|l| !l.is_empty())
                     .unwrap_or_else(|| SUPPLIED_LABEL.to_string());
+                if promote.iter().any(|p| slugify(p) == slugify(&label)) {
+                    promoted.insert(n.id());
+                }
                 // repeated labels (the 1812 Anmerkungen) get a counter
                 // suffix so node slugs stay unique per book
                 let base = slugify(&label);
@@ -393,13 +407,16 @@ pub fn toc_nodes<'a, 'i>(root: Node<'a, 'i>, conv: &Conv) -> Vec<TocNode<'a, 'i>
                     k += 1;
                     slug = format!("{base}_{k}");
                 }
+                let lift = n.ancestors().filter(|a| promoted.contains(&a.id())).count() as u8;
+                let depth = n
+                    .ancestors()
+                    .filter(|a| a.is_element() && a.tag_name().name() == "div")
+                    .count() as u8;
+                assert!(depth > lift, "promotion would lift {label:?} past the root");
                 nodes.push(TocNode {
                     div: n,
                     position: nodes.len() as u32 + 1,
-                    depth: n
-                        .ancestors()
-                        .filter(|a| a.is_element() && a.tag_name().name() == "div")
-                        .count() as u8,
+                    depth: depth - lift,
                     page: page.clone(),
                     heading_page: headings.get(&n.id()).cloned(),
                     slug,
@@ -409,6 +426,11 @@ pub fn toc_nodes<'a, 'i>(root: Node<'a, 'i>, conv: &Conv) -> Vec<TocNode<'a, 'i>
             _ => {}
         }
     }
+    assert_eq!(
+        promoted.len(),
+        promote.len(),
+        "not every --promote-head matched a div"
+    );
     nodes
 }
 
@@ -1166,7 +1188,7 @@ mod tests {
             r#"<pb n="42"/><div><head>Kind.</head><p><w>zwey</w></p></div></div></text>"#,
         ));
         let conv = conv_of(&doc);
-        let nodes = toc_nodes(doc.root_element(), &conv);
+        let nodes = toc_nodes(doc.root_element(), &conv, &[]);
         assert_eq!(nodes.len(), 2);
         assert_eq!(nodes[0].heading_page, None);
         assert_eq!(nodes[1].heading_page.as_deref(), Some("42"));

@@ -1,7 +1,7 @@
 ---
 position: 120
 label: "C. Hervorgehen des Wesens"
-depth: 5
+depth: 4
 page_1812: 331
 ---
 

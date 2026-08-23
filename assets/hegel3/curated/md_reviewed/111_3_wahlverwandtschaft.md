@@ -1,7 +1,7 @@
 ---
 position: 111
 label: "3. Wahlverwandtſchaft"
-depth: 6
+depth: 5
 page_1812: 298
 ---
 

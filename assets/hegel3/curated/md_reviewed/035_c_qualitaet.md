@@ -1,7 +1,7 @@
 ---
 position: 35
 label: "c.) Qualitaͤt"
-depth: 7
+depth: 6
 page_1812: 67
 ---
 

@@ -1,7 +1,7 @@
 ---
 position: 41
 label: "c.) Negation"
-depth: 7
+depth: 6
 page_1812: 75
 ---
 

@@ -1,7 +1,7 @@
 ---
 position: 34
 label: "b.) Beschaffenheit"
-depth: 7
+depth: 6
 page_1812: 66
 ---
 

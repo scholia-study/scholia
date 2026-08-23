@@ -1,7 +1,7 @@
 ---
 position: 31
 label: "1. Grenze"
-depth: 6
+depth: 5
 page_1812: 60
 ---
 

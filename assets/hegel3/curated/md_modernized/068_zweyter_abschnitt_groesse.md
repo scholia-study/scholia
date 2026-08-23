@@ -1,7 +1,7 @@
 ---
 position: 68
 label: "Zweiter Abschnitt. Größe"
-depth: 3
+depth: 2
 page_1812: 130
 ---
 

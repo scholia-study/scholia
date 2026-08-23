@@ -1,7 +1,7 @@
 ---
 position: 113
 label: "B. Knotenlinie von Maaßverhaͤltniſſen"
-depth: 5
+depth: 4
 page_1812: 307
 ---
 

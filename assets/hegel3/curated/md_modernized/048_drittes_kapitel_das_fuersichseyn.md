@@ -1,7 +1,7 @@
 ---
 position: 48
 label: "Drittes Kapitel. Das Fürsichsein"
-depth: 4
+depth: 3
 page_1812: 91
 ---
 

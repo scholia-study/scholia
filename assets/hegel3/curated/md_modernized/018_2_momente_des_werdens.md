@@ -1,7 +1,7 @@
 ---
 position: 18
 label: "2. Momente des Werdens"
-depth: 6
+depth: 5
 page_1812: 43
 ---
 

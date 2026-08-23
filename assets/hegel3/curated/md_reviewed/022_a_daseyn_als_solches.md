@@ -1,7 +1,7 @@
 ---
 position: 22
 label: "A. Daſeyn als ſolches"
-depth: 5
+depth: 4
 page_1812: 47
 ---
 

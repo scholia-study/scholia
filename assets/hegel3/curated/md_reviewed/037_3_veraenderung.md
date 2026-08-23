@@ -1,7 +1,7 @@
 ---
 position: 37
 label: "3. Veraͤnderung"
-depth: 6
+depth: 5
 page_1812: 69
 ---
 

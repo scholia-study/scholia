@@ -1,7 +1,7 @@
 ---
 position: 106
 label: "C. Verhaͤltniß von Qualitaͤten"
-depth: 5
+depth: 4
 page_1812: 284
 ---
 

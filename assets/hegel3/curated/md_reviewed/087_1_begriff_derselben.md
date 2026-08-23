@@ -1,7 +1,7 @@
 ---
 position: 87
 label: "1. Begriff derſelben"
-depth: 6
+depth: 5
 page_1812: 182
 ---
 

@@ -1,7 +1,7 @@
 ---
 position: 21
 label: "Zweytes Kapitel. Das Daſeyn"
-depth: 4
+depth: 3
 page_1812: 47
 ---
 

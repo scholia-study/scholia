@@ -1,7 +1,7 @@
 ---
 position: 117
 label: "A. Die Indifferenz"
-depth: 5
+depth: 4
 page_1812: 321
 ---
 

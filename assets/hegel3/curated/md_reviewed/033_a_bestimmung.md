@@ -1,7 +1,7 @@
 ---
 position: 33
 label: "a.) Beſtimmung"
-depth: 7
+depth: 6
 page_1812: 66
 ---
 

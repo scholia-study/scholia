@@ -1,7 +1,7 @@
 ---
 position: 39
 label: "b.) Sollen und Schranke"
-depth: 7
+depth: 6
 page_1812: 71
 ---
 

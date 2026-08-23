@@ -1,7 +1,7 @@
 ---
 position: 8
 label: "Erster Abschnitt. Bestimmtheit"
-depth: 3
+depth: 2
 page_1812: 21
 ---
 

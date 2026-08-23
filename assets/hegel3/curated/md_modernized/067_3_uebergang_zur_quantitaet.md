@@ -1,7 +1,7 @@
 ---
 position: 67
 label: "3. Übergang zur Quantität"
-depth: 6
+depth: 5
 page_1812: 128
 ---
 

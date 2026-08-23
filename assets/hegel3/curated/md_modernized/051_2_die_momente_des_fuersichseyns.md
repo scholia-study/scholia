@@ -1,7 +1,7 @@
 ---
 position: 51
 label: "2. Die Momente des Fürsichseins"
-depth: 6
+depth: 5
 page_1812: 92
 ---
 

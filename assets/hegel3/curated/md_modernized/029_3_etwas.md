@@ -1,7 +1,7 @@
 ---
 position: 29
 label: "3. Etwas"
-depth: 6
+depth: 5
 page_1812: 57
 ---
 

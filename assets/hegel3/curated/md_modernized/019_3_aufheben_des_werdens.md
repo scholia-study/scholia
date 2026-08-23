@@ -1,7 +1,7 @@
 ---
 position: 19
 label: "3. Aufheben des Werdens"
-depth: 6
+depth: 5
 page_1812: 44
 ---
 

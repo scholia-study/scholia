@@ -1,7 +1,7 @@
 ---
 position: 94
 label: "A. Das direkte Verhältnis"
-depth: 5
+depth: 4
 page_1812: 249
 ---
 

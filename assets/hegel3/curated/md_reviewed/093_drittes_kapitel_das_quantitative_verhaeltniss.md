@@ -1,7 +1,7 @@
 ---
 position: 93
 label: "Drittes Kapitel. Das quantitative Verhaͤltniß"
-depth: 4
+depth: 3
 page_1812: 248
 ---
 

@@ -1,7 +1,7 @@
 ---
 position: 85
 label: "3. Veränderung des Quantums"
-depth: 6
+depth: 5
 page_1812: 179
 ---
 

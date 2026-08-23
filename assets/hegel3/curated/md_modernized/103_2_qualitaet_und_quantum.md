@@ -1,7 +1,7 @@
 ---
 position: 103
 label: "2. Qualität und Quantum"
-depth: 6
+depth: 5
 page_1812: 274
 ---
 

@@ -41,6 +41,11 @@ struct Cli {
     /// hegel1, "page_1812" for hegel3 — the same DTA TEI shape serves both.
     #[arg(long, default_value = "page_1807")]
     page_key: String,
+    /// Lift a div (matched by head text, slug-folded) one level up, subtree
+    /// and all — where the print's own contents disagree with the TEI
+    /// nesting. Repeatable.
+    #[arg(long)]
+    promote_head: Vec<String>,
 }
 
 fn main() {
@@ -90,7 +95,7 @@ fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
     // TOC structure — labels, slugs, filenames — always derives from the
     // reviewed rendering, so both layers emit the same 50 file names.
     let structure = Conv::new(rejoining_words(root));
-    let nodes = toc_nodes(root, &structure);
+    let nodes = toc_nodes(root, &structure, &cli.promote_head);
     std::fs::create_dir_all(&out_dir)?;
 
     let mut owners = HashMap::new();

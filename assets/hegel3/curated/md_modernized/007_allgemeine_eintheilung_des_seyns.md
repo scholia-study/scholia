@@ -1,7 +1,7 @@
 ---
 position: 7
 label: "Allgemeine Einteilung des Seins"
-depth: 3
+depth: 2
 page_1812: 19
 ---
 

@@ -1,7 +1,7 @@
 ---
 position: 104
 label: "3. Unterſcheidung beyder Seiten als Qualitaͤten"
-depth: 6
+depth: 5
 page_1812: 278
 ---
 

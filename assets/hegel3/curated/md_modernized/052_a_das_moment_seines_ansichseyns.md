@@ -1,7 +1,7 @@
 ---
 position: 52
 label: "a.) das Moment seines Ansichseins,"
-depth: 7
+depth: 6
 page_1812: 93
 ---
 

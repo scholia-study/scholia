@@ -1,7 +1,7 @@
 ---
 position: 26
 label: "b) Sein-für-Anderes und Ansichsein"
-depth: 7
+depth: 6
 page_1812: 51
 ---
 

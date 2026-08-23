@@ -1,7 +1,7 @@
 ---
 position: 53
 label: "b.) Fuͤr eines ſeyn"
-depth: 7
+depth: 6
 page_1812: 93
 ---
 

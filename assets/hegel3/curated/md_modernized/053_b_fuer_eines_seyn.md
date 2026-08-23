@@ -1,7 +1,7 @@
 ---
 position: 53
 label: "b.) Für eines sein"
-depth: 7
+depth: 6
 page_1812: 93
 ---
 

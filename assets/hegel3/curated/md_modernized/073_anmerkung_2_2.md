@@ -1,7 +1,7 @@
 ---
 position: 73
 label: "Anmerkung 2"
-depth: 6
+depth: 5
 page_1812: 138
 ---
 

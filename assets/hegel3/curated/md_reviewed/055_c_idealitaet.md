@@ -1,7 +1,7 @@
 ---
 position: 55
 label: "c.) Idealitaͤt"
-depth: 7
+depth: 6
 page_1812: 95
 ---
 

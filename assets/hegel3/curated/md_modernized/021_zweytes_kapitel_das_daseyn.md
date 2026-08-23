@@ -1,7 +1,7 @@
 ---
 position: 21
 label: "Zweites Kapitel. Das Dasein"
-depth: 4
+depth: 3
 page_1812: 47
 ---
 

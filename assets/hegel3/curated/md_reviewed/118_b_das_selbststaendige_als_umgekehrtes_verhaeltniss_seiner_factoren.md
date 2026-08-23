@@ -1,7 +1,7 @@
 ---
 position: 118
 label: "B. Das Selbſtſtaͤndige als umgekehrtes Verhaͤltniß ſeiner Factoren"
-depth: 5
+depth: 4
 page_1812: 323
 ---
 

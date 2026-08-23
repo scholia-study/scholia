@@ -1,7 +1,7 @@
 ---
 position: 13
 label: "Einheit des Seyns und Nichts"
-depth: 6
+depth: 5
 page_1812: 23
 ---
 

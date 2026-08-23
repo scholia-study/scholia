@@ -1,7 +1,7 @@
 ---
 position: 58
 label: "1. Das Eins und das Leere"
-depth: 6
+depth: 5
 page_1812: 101
 ---
 

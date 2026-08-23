@@ -1,7 +1,7 @@
 ---
 position: 5
 label: "Erſtes Buch. Das Seyn"
-depth: 2
+depth: 1
 page_1812: 6
 ---
 

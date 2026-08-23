@@ -1,7 +1,7 @@
 ---
 position: 107
 label: "Zweytes Kapitel. Verhaͤltniß ſelbſtſtaͤndiger Maaße"
-depth: 4
+depth: 3
 page_1812: 289
 ---
 

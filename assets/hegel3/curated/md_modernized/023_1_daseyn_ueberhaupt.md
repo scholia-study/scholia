@@ -1,7 +1,7 @@
 ---
 position: 23
 label: "1. Dasein überhaupt"
-depth: 6
+depth: 5
 page_1812: 47
 ---
 
