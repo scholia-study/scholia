@@ -6,7 +6,7 @@ set shell := ["bash", "-uc"]
 default:
     @just --list --unsorted
 
-# regenerate a corpus's struct JSON(s) from curated MD (kant1|kant3|shakespeare1|milton1|ibsen1)
+# regenerate a corpus's struct JSON(s) from curated MD (see `just struct --list`)
 [group("corpus")]
 struct corpus:
     bash scripts/struct.sh {{ corpus }}

@@ -408,6 +408,114 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
             })
         }
+        "hegel2" => {
+            use common::hegel2::{filenames, meta, toc, toc_mod};
+            if translation {
+                panic!("hegel2's English translation edition is not yet in scope");
+            }
+            Some(Corpus {
+                name: "hegel2",
+                book: book_data(BookSpec {
+                    slug: meta::BOOK_SLUG,
+                    title: meta::BOOK_TITLE,
+                    author: meta::AUTHOR,
+                    language: meta::LANGUAGE,
+                    source: meta::SOURCE,
+                    year: meta::YEAR,
+                    about: meta::ABOUT,
+                    imprint: Imprint {
+                        publisher: Some(meta::PUBLISHER),
+                        place: None,
+                        volume: None,
+                        edition: None,
+                        original_year: Some(meta::ORIGINAL_YEAR),
+                    },
+                }),
+                // One system: GW volume.page ("21.68"), the scholarly
+                // citation standard and therefore the citation default.
+                reference_systems: vec![ReferenceSystemData {
+                    slug: meta::GW_SYSTEM_SLUG.to_string(),
+                    label: meta::GW_SYSTEM_LABEL.to_string(),
+                    ref_type: meta::GW_SYSTEM_REF_TYPE.to_string(),
+                    cite_priority: Some(meta::GW_CITE_PRIORITY),
+                    cite_template: Some(meta::GW_CITE_TEMPLATE.to_string()),
+                    margin_prefix: None,
+                }],
+                toc_reviewed: toc::flat_toc_entries(),
+                toc_modernized: toc_mod::flat_toc_entries(),
+                toc_en: None,
+                filenames: filenames::all_filenames(),
+                position_number: filenames::position_number,
+                slugify: filenames::slugify,
+                modernized_dir: meta::MODERNIZED_DIR.to_string(),
+                reviewed_dir: meta::REVIEWED_DIR.to_string(),
+                translated_dir: String::new(),
+                output_file: meta::OUTPUT_FILE.to_string(),
+                figure_label: "Abbildung",
+                aa_system_slug: meta::GW_SYSTEM_SLUG,
+                // No `{{ }}` system in this corpus; the empty slug fails
+                // loudly at import if such a marker ever appears.
+                edition_system_slug: "",
+                edition_sort_arabic_fallback: false,
+                marker_labels: ("GW", "(none)"),
+                source_splitter_en: false,
+                strong_colon_splits: false,
+            })
+        }
+        "hegel3" => {
+            use common::hegel3::{filenames, meta, toc, toc_mod};
+            if translation {
+                panic!("hegel3 is a German-only corpus — no --translation build");
+            }
+            Some(Corpus {
+                name: "hegel3",
+                book: book_data(BookSpec {
+                    slug: meta::BOOK_SLUG,
+                    title: meta::BOOK_TITLE,
+                    author: meta::AUTHOR,
+                    language: meta::LANGUAGE,
+                    source: meta::SOURCE,
+                    year: meta::YEAR,
+                    about: meta::ABOUT,
+                    imprint: Imprint {
+                        publisher: Some(meta::PUBLISHER),
+                        place: None,
+                        volume: None,
+                        edition: None,
+                        original_year: Some(meta::ORIGINAL_YEAR),
+                    },
+                }),
+                // One system: the 1812 first edition's own pages (Roman
+                // front matter, Arabic body), the citation default.
+                reference_systems: vec![ReferenceSystemData {
+                    slug: meta::PAGE_SYSTEM_SLUG.to_string(),
+                    label: meta::PAGE_SYSTEM_LABEL.to_string(),
+                    ref_type: meta::PAGE_SYSTEM_REF_TYPE.to_string(),
+                    cite_priority: Some(meta::PAGE_CITE_PRIORITY),
+                    cite_template: Some(meta::PAGE_CITE_TEMPLATE.to_string()),
+                    margin_prefix: None,
+                }],
+                toc_reviewed: toc::flat_toc_entries(),
+                toc_modernized: toc_mod::flat_toc_entries(),
+                toc_en: None,
+                filenames: filenames::all_filenames(),
+                position_number: filenames::position_number,
+                slugify: filenames::slugify,
+                modernized_dir: meta::MODERNIZED_DIR.to_string(),
+                reviewed_dir: meta::REVIEWED_DIR.to_string(),
+                translated_dir: String::new(),
+                output_file: meta::OUTPUT_FILE.to_string(),
+                figure_label: "Abbildung",
+                aa_system_slug: meta::PAGE_SYSTEM_SLUG,
+                // No `{{ }}` system in this corpus; the empty slug fails
+                // loudly at import if such a marker ever appears.
+                edition_system_slug: "",
+                edition_sort_arabic_fallback: false,
+                marker_labels: ("1812", "(none)"),
+                source_splitter_en: false,
+                strong_colon_splits: false,
+            })
+        }
         "hobbes1" => {
             use common::hobbes1::{filenames, meta, toc, toc_mod};
             if translation {

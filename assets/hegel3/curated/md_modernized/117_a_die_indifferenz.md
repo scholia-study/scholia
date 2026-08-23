@@ -1,0 +1,12 @@
+---
+position: 117
+label: "A. Die Indifferenz"
+depth: 5
+page_1812: 321
+---
+
+## A. Die Indifferenz
+
+Das spezifische Selbstständige ist durch seine Negation mit sich selbst vermittelt, so ist es nicht mehr spezifische, sondern absolute Selbstständigkeit. — Zunächst ist zwar das Spezifische das unmittelbare Sein überhaupt, das Qualitative, die Negation desselben aber ist das Quantitative, wodurch es in sich zurückkehrt. Allein das Quantitative ist eben so sehr Qualität und damit spezifisches gegen die Qualität als solche, und diese ist seine Negation; beide haben also nur noch eine unbestimmte Bedeutung gegen einander. — Ferner ist das Spezifische nicht mehr Selbstständiges zu nennen; das Qualitative und das Quantitative sind schlechthin nur noch Momente. Das absolute Selbstständige, das ihr Unendliches ist, in welchem sie aufgehoben sind, ist ihre Einheit, insofern sie aus ihnen herkommt. Sie ist nicht das Werden derselben, — dies war die Knotenlinie und der unendliche Fortgang derselben, denn sie ist nicht ihre Einheit, in der sie noch ihren qualitativen Unterschied hätten. Noch ist sie auch in die Bestimmung ihrer ***unmittelbaren*** Einheit zurückgegangen; denn die Momente sind als ***im Unterschiede*** von einander eins, oder es ist nicht ihre Einheit vorhanden, in der sie nur als aufgehobene eins wären, sondern sie sind dies, eines im andern sich zu kontinuieren. Ihre Einheit ist daher {{{ 322 }}} die ***in ihnen gegen sie gleichgültige*** Einheit, ihre ***Indifferenz***.
+
+Diese Indifferenz des Qualitativen und Quantitativen ist die Gleichgültigkeit beider Bestimmungen überhaupt, deren jede in der andern nicht über-, sondern nur mit sich selbst zusammengeht. Darum ist sie aber ferner auch nur die ***an-sich-seiende***, noch nicht die ***fürsich-seiende*** Selbstständigkeit. Indem sie die ***Gleichgültigkeit*** gegen den Unterschied der beiden Bestimmungen ist, so hat sie denselben noch nicht an ihr selbst. Sie ist ansichseiende, gleichgültige Einheit, so ist in der Bestimmung der Quantität gesetzt, und der qualitative Unterschied steht ihr gegen über, als das wogegen sie gleichgültig ist. — Oder insofern sie das Unendliche ist, das aus dem Insichgehen des Qualitativen und Quantitativen ***resultiert***, so hat sie diese Bewegung ***hinter sich***, und ist auf sie bezogen. — Der Indifferenz mangelt also dies, an ihr selbst die qualitative Einheit mit sich, die absolute Negativität. Sie ist in der ***Bestimmung*** der Gleichgültigkeit gegen das Negative; also nicht das absolut Selbstständige.

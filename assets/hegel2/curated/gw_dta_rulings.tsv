@@ -1,0 +1,158 @@
+id	volume	gw_page	class	gw_text	dta_text	ruling	certainty	ctx_before	ctx_after	note
+h2-0001	11	251	ortho_tz_z	Voraussetzung	Voraussezung	keep_gw	sure	selbst voraus, und das Aufheben dieser	ist es selbst; umgekehrt ist diß	GW-Normalisierung (tz_z)
+h2-0002	11	253	ortho_tz_z	Setzen,	Sezen	keep_gw	sure	aufgehoben ist. Die Reflexion in ihrem	hebt unmittelbar ihr Setzen auf, so	GW-Normalisierung (tz_z)
+h2-0003	11	259	grouped	u.s.w. Denn Seyn, Daseyn u.s.f.	u. s. w. Denn Seyn Daseyn u. s. f.	keep_gw	sure	oder Alles hat eine Qualität Quantität	sind als logische Bestimmungen überhaupt Prädicate	Druckfehler (f/s) im Original, GW emendiert
+h2-0004	11	261	residual	vom	von	keep_gw	sure	Ungleichsetzen sey; ein Gleichsetzen, indem man	Unterschiede, ein Ungleichsetzen, indem man vom	vom Unterschiede: Parallelstelle im Kontext bestätigt vom
+h2-0005	11	262	residual	[es]		keep_gw	sure	und nicht weiter führe. So ist	die leere Identität, an welcher diejenigen	GW-Herausgeberergänzung in eckigen Klammern
+h2-0006	11	266	residual	u.s.f.	ꝛc.	keep_gw	sure	sind zwey Dinge unterschieden daß sie	Darin das heißt, in einer und	GW normalisiert ꝛc. zu u.s.f.
+h2-0007	11	274	near_word	Reflexionsbestimmung	Reflectionsbestimmung	keep_gw	sure	das Positive und Negative ist die	an und für sich; erst in	GW-Normalisierung Reflections- zu Reflexions-
+h2-0008	11	275	residual	Positive;	Negative	use_dta	uncertain	negativ ausser der Beziehung auf das	in dieser Bestimmung wird bloß an	Positive/Negative: inhaltlich; Verlese-Risiko in dichtem Kontext, GW-Druck ungeprüft
+h2-0009	11	277	near_word	vervielfältigtes	vervielfältiges	keep_gw	sure	ist, ist es dadurch ein sehr	Mittel. Nicht nur aber sind die	vervielfältiges = Druckfehler (fehlendes t), GW emendiert
+h2-0010	11	278	residual	a²	a 2	keep_gw	sure	gezogen werden, daß wenn a a	ist, umgekehrt a a a² gebe.	Exponenten-Wiedergabe (a² vs. a 2)
+h2-0011	11	278	residual	a²	a 2	keep_gw	sure	a a² ist, umgekehrt a a	gebe. Indem der eine Factor die	Exponenten-Wiedergabe (a² vs. a 2)
+h2-0012	11	278	grouped	der voranstehende wie gewöhnlich die erstere	die erstere wie gewöhnlich der voranstehende	keep_gw	uncertain	der andere die Einheit, und zwar	bedeutet, so unterscheiden sich die beyden	Wortumstellung: wohl bewusste GW-Emendation (Anzahl/Einheit-Stelle), Apparat ungeprüft
+h2-0013	11	278	residual	a².	a 2	keep_gw	sure	zu nehmen, und das Product ist	Wenn aber im zweyten Falle a	Exponenten-Wiedergabe (a² vs. a 2)
+h2-0014	11	278	residual	a²	a 2	keep_gw	sure	Falles folgt also, daß das Product	seyn müsse. Eben so bey der	Exponenten-Wiedergabe (a² vs. a 2)
+h2-0015	11	278	residual	a²,	a 2	keep_gw	sure	So ist denn auch a a	darum weil das negative a nicht	Exponenten-Wiedergabe (a² vs. a 2)
+h2-0016	11	283	residual	[auf]		keep_gw	sure	an das Vergleichen verwiesen werden, um	das Haltlose dieser Unterschiedenen, die von	GW-Herausgeberergänzung in eckigen Klammern
+h2-0017	11	284	near_word	seinem	seinen	keep_gw	sure	genommen, daß jenes (ob es gleich	Namen nach das Ponirtseyn Gesetztseyn ausdrückt)	seinem Namen nach: Dativ erforderlich
+h2-0018	11	285	residual	[werth]		keep_gw	sure	unbedeutend, daß es nicht der Mühe	ist, ihn zu sagen. Wenn die	GW-Herausgeberergänzung in eckigen Klammern
+h2-0019	11	291	near_word	wiederhergestellte,	wiedergestellte	keep_gw	sure	als Aufheben des Bestimmens die nur	gereinigte oder geoffenbarte Identität des Wesens,	wiedergestellte 2x im Druck; GW emendiert konsequent zu wiederhergestellte
+h2-0020	11	292	near_word	wiederhergestellte	wiedergestellte	keep_gw	sure	Unmittelbare ist das durch das Wesen	Seyn das Nichtseyn der Reflexion, durch	wie h2-0019
+h2-0021	11	293	near_word	Caussalität	Caus Cau salität	keep_gw	sure	das Zureichende des Grundes vornemlich der	in ihrem strengen Sinne, als der	DTA-Seite: Kustoden-Artefakt (Caus/Cau/salität)
+h2-0022	11	293	residual	treten	treffen	use_dta	uncertain	Bestimmtheit beschränkte Thätigkeit überhaupt ist, so	die durch sie gesetzten Bestimmungen äusserlich	treten/treffen: beide möglich, Fraktur tt/ff-Verwechslung
+h2-0023	11	296	grouped	ist es	es ist	keep_gw	sure	ist selbst wesentlich als bestimmtes; somit	auch wieder das Moment der Grundbeziehung	somit ist es: Verbzweitstellung erfordert GW-Lesart
+h2-0024	11	297	residual	[1.]		keep_gw	sure	formlose Identität; es ist die Materie	Das Wesen wird zur Materie, indem	GW-Herausgeberergänzung in eckigen Klammern
+h2-0025	11	297	grouped	u.s.f. was man sieht,	u. s. f. was man steht	keep_gw	sure	kann die Materie nicht sehen, fühlen	fühlt, ist eine bestimmte Materie d.	was man sieht, fühlt: semantisch eindeutig; Druck steht = ſieht/ſteht-Fehler
+h2-0026	11	304	near_word	Arrangement	Arra Arran gement	keep_gw	sure	so ist die daseyende Krystallisation diß	selbst, welches als Grund ausgedrückt wird.	DTA-Seite: Kustoden-Artefakt (Arra/Arran/gement)
+h2-0027	11	305	residual	denn	denu	keep_gw	sure	sie eine zu bekannte Qualität sey;	sie hat keinen andern Inhalt, als	denu = u/n-Verdrehung im Druck
+h2-0028	11	313	residual	[im]		keep_gw	sure	A, und die ganze Grundbeziehung ist	zweyten Etwas als Gesetztes oder Begründetes.	GW-Herausgeberergänzung in eckigen Klammern
+h2-0029	11	315	ortho_tz_z	Setzen	Sezen	keep_gw	sure	Grund. Indem dieses Vermitteln sich als	auf sich bezieht, ist es nach	GW-Normalisierung (tz_z)
+h2-0030	11	316	residual	das	des	keep_gw	sure	Bedingung zu seyn. Daß die Bedingung	Ansichseyn für den Grund ist, macht	das Ansichseyn: des wäre ungrammatisch (des Ansichseyn)
+h2-0031	11	317	residual		das	use_dta	uncertain	aufhebende Vermitteln vermittelte Unmittelbarkeit ist es	zugleich das Ansichseyn des Grundes, und	das im Druck vorhanden, evtl. bei Digitalisierung entfallen
+h2-0032	11	323	near_word	ihre	ihrer	keep_gw	sure	so das Hinausgehen über sich in	Unendlichkeit; der Welt der Erscheinung stellt	Hinausgehen in + Akkusativ: ihre
+h2-0033	11	324	near_word	welches	welche	keep_gw	sure	hervorgeht, noch ein ferneres Seyn gibt,	aus dem Begriffe hervorgeht, die Objectivität	welches: Bezug auf Seyn (Neutrum)
+h2-0034	11	324	residual	47.f.)	27. ff.	keep_gw	sure	oben (I. Th. I. Abth. S.	auf das, was Kant hiegegen erinnert,	Seitenverweis auf GW-Paginierung umgestellt
+h2-0035	11	331	residual	64.)	55.	keep_gw	sure	ist schon oben (I. Abth. S.	bey dem Momente des Daseyns, dem	Seitenverweis auf GW-Paginierung umgestellt
+h2-0036	11	332	near_word	unterscheiden.	unterschieden	keep_gw	sure	sich durch sich selbst von einander	Diese mehrern verschiedenen Dinge stehen in	sich ... unterscheiden: reflexiv, Infinitivform
+h2-0037	11	334	residual	[wie]		keep_gw	sure	genau anzugeben, ob diese und in	weit sie auch Dinge, oder etwa	GW-Herausgeberergänzung in eckigen Klammern
+h2-0038	11	337	residual	sind	find	keep_gw	sure	in ihre Bestimmtheit reflectirt sind, so	sie gleichgültig gegen einander, und berühren	Druckfehler (f/s) im Original, GW emendiert
+h2-0039	11	343	residual	zu	durch	use_dta	uncertain	die Rükkehr des Nichts durch Nichts	sich selbst zurück; die Selbstständigkeit des	zu/durch sich selbst zurück: beide möglich
+h2-0040	11	345	residual	ihren	seinen	use_dta	uncertain	geht in das Gesetz als in	Grund zurük; die Erscheinung enthält diß	ihren/seinen: Bezugswort nicht eindeutig
+h2-0041	11	346	near_word	hervorgetreten.	hervortreten	keep_gw	sure	Einheit ist noch nicht am Gesetze	So ist es nicht im Begriffe	ist ... hervorgetreten: Partizip erforderlich
+h2-0042	11	349	near_word	Inhalt	Inhalte	keep_gw	uncertain	erscheinende Welt hatte noch mannichfaltigen andern	als jenes Reich, weil ihr noch	mannichfaltigen andern Inhalt: Akkusativ; Dativ-e unüblich
+h2-0043	11	350	residual	[sie]		keep_gw	sure	zugleich das negative derselben, so ist	die derselben entgegengesetzte Welt. Nähmlich in	GW-Herausgeberergänzung in eckigen Klammern
+h2-0044	11	354	residual	[1.]		keep_gw	sure	der unmittelbaren und der reflectirten Existenz.	Das wesentliche Verhältniß enthält erstens die	GW-Herausgeberergänzung in eckigen Klammern
+h2-0045	11	358	residual	113.ff.)	139. ff.	keep_gw	sure	Es ist oben (I. Abth. S.	die Antinomie der unendlichen Theilbarkeit der	Seitenverweis auf GW-Paginierung umgestellt
+h2-0046	11	358	residual	das	des	use_dta	uncertain	Verhältniß des Ganzen und der Theile,	Eins der Quantität als Theil die	das/des Eins: ohne Volltext nicht entscheidbar
+h2-0047	11	360	residual	dem	der	keep_gw	sure	sollicitirt wird, und ein Anderes, von	sie anfängt. In ihren nähern Bestimmungen	von dem sie anfängt: Bezug ein Anderes (Neutrum)
+h2-0048	11	366	residual	erst	er	keep_gw	sure	nur ist ist eben darum nur	noch in ihrem Wesen Das Aeussere	nur erst noch: er ergibt keinen Sinn
+h2-0049	11	372	ortho_c_k	hindurchblicken	hindurchblikken	keep_gw	sure	das nur das Absolute durch sich	läßt, endigt in gänzliches Verschwinden; denn	GW-Normalisierung (c_k)
+h2-0050	11	373	residual	weil	well	keep_gw	sure	nur ihm äusserlich sondern unmittelbar darum	sie ihm äusserlich ist, ist sie	well = Druckfehler für weil
+h2-0051	11	378	residual	zurück	zuerst	keep_gw	sure	das nicht in das erste Licht	kehrt. Der Mangel der Reflexion in	zurück kehrt: zuerst ergibt keinen Sinn
+h2-0052	11	378	residual	das	des	keep_gw	sure	in ihr selbst. Sie ist Entelechie	Offenbahren ist ihr eigenes Thun. Dabey	das Offenbahren ist ihr eigenes Thun: Nominativ
+h2-0053	11	383	ortho_tz_z	Sätze	Säze	keep_gw	sure	Inhaltsbestimmung aus. Aber als diese identischen	sind sie gleichgültig gegen einander; es	GW-Normalisierung (tz_z)
+h2-0054	11	384	residual		Seyeudes	keep_gw	sure	ist es ein Unmittelbares, nur ein	Seyendes überhaupt; oder entgegengesetzt gegen die	Seyeudes = u/n-Verdrehung im Druck
+h2-0055	11	384	near_word	ein	eine	keep_gw	sure	entgegengesetzt gegen die Wirklichkeit, eben so	Wirklichkeits-loses Ansichseyn, nur ein Mögliches, aber	ein ... Ansichseyn: Neutrum
+h2-0056	11	386	near_word	unmittelbarer,	unmittelbaren	keep_gw	sure	nemlich der Wirklichkeit als formeller oder	und eben so der Möglichkeit, als	als formeller oder unmittelbarer: Genitiv-Parallele
+h2-0057	11	390	ortho_tz_z	Setzen	Sezen	keep_gw	sure	so sehr Aufheben dieses Gesetztseyns oder	der Unmittelbarkeit und des Ansichseyns so	GW-Normalisierung (tz_z)
+h2-0058	11	399	residual		darsiellt	keep_gw	sure	als Ursache, das anderemal als Wirkung	darstellt, dort als eigenthümliches Bestehen, hier	darsiellt = Druckfehler für darstellt
+h2-0059	11	403	near_word	diesem	diesen	keep_gw	sure	von Ursache zu Ursache ist. In	wurde die Ursache zur Wirkung welche	In diesem: Dativ erforderlich
+h2-0060	12	14	residual	376f.	225 f.	keep_gw	sure	2ten Buch der objectiven Logik S.	Anm. erinnert worden, daß die Philosophie,	Seitenverweis auf GW-Paginierung umgestellt
+h2-0061	12	17	near_word	Verhältniß	Verhältnisse	keep_gw	sure	habe. Kant ist über dieses äusserliche	des Verstands als des Vermögens der	über dieses Verhältniß hinaus: Akkusativ
+h2-0062	12	18	residual		Gesetztfeyn	keep_gw	sure	Anschauen und Vorstellen hat, in ein	Gesetztseyn verwandelt; Ich durchdringt ihn denkend	Gesetztfeyn = ſ/f-Fehler im Druck
+h2-0063	12	29	residual	er	sie	keep_gw	sure	ihm selbst aus; seine Unterschiede weil	unmittelbar das Anund Für-sichseyn ist, sind	weil er ... ist: Singularverb, Bezug der Begriff
+h2-0064	12	34	residual	seyen,	sey	use_dta	uncertain	der Inhalt des Abstracten ist, verschieden	als auch diese Operation des Weglassens	seyen/sey: Numerus ohne Volltext nicht entscheidbar
+h2-0065	12	37	near_word	immanente	immanentes	keep_gw	sure	sich so eben zeigte, das eigene	Moment des Allgemeinen; dieses ist daher	das eigene immanente Moment: schwache Flexion
+h2-0066	12	40	near_word	vielmehr	vielm hr	keep_gw	sure	diese leere Abstraction, dem Inhalte nach	die Totalität, aber sie ist darum	vielm hr = Druckdefekt
+h2-0067	12	44	residual	aus	auf	keep_gw	sure	ihn beziehenden Unterschiede aus psychologischen nicht	logischen Bestimmungen genommen sind. Der sogenannte	Druckfehler (f/s) im Original, GW emendiert
+h2-0068	12	48	grouped	genähert werden [kann],	genährt werden	keep_gw	sure	die Absonderung jenes sinnlichen Beywesens ihm	das ihn ausdrücken sollte. Die Einzelnheit	GW-Herausgeberergänzung in eckigen Klammern
+h2-0069	12	52	near_word	Abstraction	Abtraction	keep_gw	sure	ist in dieser Reflexion mit der	in eins, und ist die reflectirende	Abtraction = Druckfehler
+h2-0070	12	52	residual	[es]		keep_gw	sure	Moment ihrer selbst ist, so bezieht	sich eben so wesentlich auf sie.	GW-Herausgeberergänzung in eckigen Klammern
+h2-0071	12	54	residual	den	der	use_dta	uncertain	Seyn im Sinne des Subjects. Aber	Begriff oder wenigstens das Wesen und	den/der Begriff: Kasus ohne Volltext nicht entscheidbar
+h2-0072	12	55	near_word	Handling	Handlung	use_dta	sure	Subjects und Prädicats wieder aufgehoben: diese	ist gut die Copula zeigt an,	Handling: Autokorrektur-Artefakt der Digitalisierung; Druck hat Handlung
+h2-0073	12	56	residual		jede	use_dta	uncertain	jene Bestimmungen wenigstens so gleichgültig, daß,	indem die eine dem Subjecte, die	jede wohl bei Digitalisierung entfallen
+h2-0074	12	61	residual		Das Einzelne ist Allgemein	keep_gw	sure	positiven Urtheils ist daher der Satz:	Dieser Ausdruck muß nicht gefaßt werden:	Schauzeile ist im GW-Datensatz als heading-Unit vorhanden; kein Textverlust
+h2-0075	12	63	near_word	ergeben,	erheben	use_dta	uncertain	seine Bestimmungen erst durch die Reflexion-in-sich	wodurch die unmittelbaren Bestimmtheiten aufgehoben werden,	ergeben/erheben: beide möglich
+h2-0076	12	63	residual		Subject Prädicat Das Einzelne ist allgemein Das Allgemeine ist einzeln	keep_gw	sure	Sätze der Form und des Inhalts:	darum, weil sie in dem einen	Schauzeile ist im GW-Datensatz als heading-Unit vorhanden; kein Textverlust
+h2-0077	12	66	residual	u.s.f.,	ꝛc.	keep_gw	sure	so wohl das Rothe, Gelbe, Blaue	als das Schwarze. Das Weiße aber	GW normalisiert ꝛc. zu u.s.f.
+h2-0078	12	67	residual	steht,	sieht	keep_gw	sure	seyn, indem ihm das Positive entgegen	das Dritte ist ihr Grund das	entgegen steht: sieht ergibt keinen Sinn
+h2-0079	12	69	grouped	[ist] nicht roth, gelb u.s.f.	nicht roth gelb u. s. f.	keep_gw	sure	enthält; also z. B. der Geist	nicht sauer, nicht kalisch u.s.f. die	GW-Herausgeberergänzung in eckigen Klammern
+h2-0080	12	71	residual		das	use_dta	uncertain	verschiedener Bestimmungen überhaupt betrachtet, das sich	Zusammennehmen mannichfaltiger Eigenschaften und Existenzen. Wenn	das evtl. entfallen
+h2-0081	12	71	grouped	u.s.f. sind	u. s. f. sind solche	keep_gw	sure	Härte Elasticität der Körper die Glückseligkeit	solche eigenthümliche Prädicate. Sie drücken eine	Alignment-Artefakt: solche steht im GW-Kontext bereits
+h2-0082	12	71	residual	[aus],		keep_gw	sure	eigenthümliche Prädicate. Sie drücken eine Wesentlichkeit	welche aber eine Bestimmung im Verhältnisse	GW-Herausgeberergänzung in eckigen Klammern
+h2-0083	12	75	residual	[dieselbe]		keep_gw	sure	die anundfürsichseyende Allgemeinheit als vorausgesetzte enthält,	nun auch als gesetzte an ihm.	GW-Herausgeberergänzung in eckigen Klammern
+h2-0084	12	79	near_word	Causalität u.s.f.	Caussalität u. s. f.	keep_gw	sure	Grund und Folge Bedingung und Bedingtem	Wie im kategorischen Urtheile die Substantialität,	GW-Schreibung Causalität (Doppel-s des Drucks normalisiert)
+h2-0085	12	81	near_word	welcher	welche	keep_gw	sure	Einheit als ihre Wahrheit gesetzt, nach	jenes selbstständiges Bestehen als concrete Allgemeinheit	nach welcher: Femininum (Einheit)
+h2-0086	12	91	residual	er	es	keep_gw	sure	Bestimmungen (termini) desselben einfache abstracte Bestimmtheiten;	ist so Verstandesschluß Wenn bey dieser	er ist so Verstandesschluß: Bezug der Schluß
+h2-0087	12	94	residual		Einzelue	keep_gw	sure	das Allgemeine; daher ist auch das	Einzelne unter das Allgemeine subsumirt. Oder	Einzelue = u/n-Verdrehung im Druck
+h2-0088	12	95	residual	[werden],		keep_gw	sure	insofern als der qualitative Schluß angesehen	wie das Urtheil des Daseyns, dieselbe	GW-Herausgeberergänzung in eckigen Klammern
+h2-0089	12	98	grouped	E–B–A. Die beyden Beziehungen E–B und B–A	E B A Die beyden Beziehungen E B und B A	keep_gw	sure	Form ist die der Vermittlung als	sollen vermittelte seyn; geschieht diß auf	Druckfehler (f/s) im Original, GW emendiert
+h2-0090	12	99	grouped	B–E–A erhalten. E–B	B E A erhalten E B	keep_gw	sure	muß daher die Vermittlung die Gestalt	zu vermitteln ist A vorhanden; diese	Druckfehler (f/s) im Original, GW emendiert
+h2-0091	12	100	grouped	B–E, und E–A;	B E und E A	keep_gw	sure	diesem zweyten Schlusse sind die Prämissen:	nur die erstere dieser Prämissen ist	Druckfehler (f/s) im Original, GW emendiert
+h2-0092	12	100	residual	durch	nur	keep_gw	sure	E–A ist schon eine Vermittelte, nemlich	den ersten Schluß; der zweyte Schluß	nemlich durch den ersten Schluß: durch erforderlich
+h2-0093	12	101	grouped	B–E, oder E–B und E–A;	B E oder E B und E A	keep_gw	sure	nicht; die zwey Prämissen desselben sind	der Medius Terminus ist daher beydemal	Druckfehler (f/s) im Original, GW emendiert
+h2-0094	12	101	residual	E–B	B E	keep_gw	uncertain	hat, so müßte die andre Prämisse	das entgegengesetzte Verhältniß, das sie hat,	Schlussfiguren-Notation: GW emendiert Notationsfehler des Drucks dokumentiert
+h2-0095	12	103	near_word	Unmittelbarkeit	Unmittelbarkeiten	keep_gw	sure	die Totalität derselben ist, sondern eine	an ihm hat, deren Vermittlung sich	eine Unmittelbarkeit: Singular
+h2-0096	12	103	residual	[sind],		keep_gw	sure	sondern nur nach ihrer Allgemeinheit enthalten	vielmehr also das gerade nicht darin	GW-Herausgeberergänzung in eckigen Klammern
+h2-0097	12	103	residual	Inhaltsbestimmungen	Juhalsbestimmungen Jnhaltsbestimmungen	keep_gw	sure	sind, die sich noch nicht zu	reflectirt haben. 2. Die Mitte dieses	Druckdefekt (Juhals-/Jnhalts-)
+h2-0098	12	103	residual	B–A	A B	keep_gw	uncertain	gehörige Verhältniß hat, auch die andere	dasselbe erhalte. Diß geschieht in einem	wie h2-0094
+h2-0099	12	108	residual	einen	ein	keep_gw	sure	Es hilft nichts einen Satz durch	solchen Schluß erwiesen zu haben; um	durch einen solchen Schluß: Akkusativ maskulin
+h2-0100	12	109	residual	ist,	sind	keep_gw	sure	weitläuffige begrifflose Beschäftigung mit einem Gegenstande	dessen einziger Inhalt der Begriff selbst	Beschäftigung ... ist: Singular
+h2-0101	12	113	residual	e e A– –B. e e ins		keep_gw	sure	Der Schluß hat hienach die Gestalt:	unendliche. 2. Die zweyte Figur des	Induktions-Schema: DTA-Seite als <formula> ausgeklammert, kein Textverlust
+h2-0102	12	116	residual		auch	keep_gw	uncertain	enthält, nicht ankommen sollte, so käme	es auch bey dem ersten Schluß	doppeltes auch unwahrscheinlich; wohl DTA-Zeilenlage
+h2-0103	12	117	grouped	E–B; insofern E–B	E B insofern E B	keep_gw	sure	hat Bewohner) ist ein eben solches	ein Schlußsatz seyn soll, so liegt	Druckfehler (f/s) im Original, GW emendiert
+h2-0104	12	127	residual	47. f.	27. ff.	keep_gw	sure	beleuchtet worden; im ersten Theile S.	indem das Seyn in seinem nächsten	Seitenverweis auf GW-Paginierung umgestellt
+h2-0105	12	127	residual	64. f.	56.	keep_gw	sure	gesprochen werde. Ferner ist daselbst S.	und II. Th. S. 289 die	Seitenverweis auf GW-Paginierung umgestellt
+h2-0106	12	127	residual	289	81	keep_gw	sure	64. f. und II. Th. S.	die in dem ontologischen Beweise vorkommende	Seitenverweis auf GW-Paginierung umgestellt
+h2-0107	12	130	grouped	u.s.f. das Geld ist Metall[^fn-135-1];	u. s. f. das Geld ist Metall	keep_gw	sure	statt: diese Waare ist theuer, passend	Seyn aber und Erscheinen Erscheinung und	GW-Herausgeberergänzung in eckigen Klammern
+h2-0108	12	132	residual	[sich]		keep_gw	sure	aber gesetzt als an und für	selbst bezogen auf die Objectivität, als	GW-Herausgeberergänzung in eckigen Klammern
+h2-0109	12	133	residual		1.	use_dta	sure	solches Thun als ein bloß äusserliches.	Das Object ist, wie sich ergeben	Absatzzähler 1. des Drucks bei Digitalisierung entfallen
+h2-0110	12	138	near_word	mittheilbares	mitgetheilbares	use_dta	uncertain	Allgemeinheit erhält, in der er ein	wird. Aber das nicht nur durch	mittheilbares/mitgetheilbares: beide Formen zeitüblich
+h2-0111	12	139	residual	[sich]		keep_gw	sure	es, was es an und für	seyn sollte, ein zusammengesetztes vermischtes eine	GW-Herausgeberergänzung in eckigen Klammern
+h2-0112	12	140	residual		äufserliche	keep_gw	sure	durch ihn erhält, ist nur eine	äusserliche Ein eben so äusserliches ist	äufserliche = ſ/f-Fehler im Druck
+h2-0113	12	141	ortho_ey_ei	zweyten	zweiten	keep_gw	sure	ein Object ist nur nach dieser	Seite Fremdes für dasselbe. Die Macht	GW-Normalisierung (ey_ei)
+h2-0114	12	144	residual	die	das	keep_gw	sure	die Identität des Centralkörpers mit sich,	noch ein Streben ist, ist mit	die Identität ... die noch ein Streben ist: Femininum
+h2-0115	12	144	residual	wird.	werden	keep_gw	sure	oder formale Vereinzelung von ihr getragen	Auch diese Unselbstständigen sind die Mitte	Vereinzelung ... getragen wird: Singular
+h2-0116	12	146	residual	ist		keep_gw	uncertain	aber innre Begriff der objectiven Totalität	so freye Nothwendigkeit, daß das Gesetz	ist notwendig für den Satz; wohl GW-Emendation
+h2-0117	12	151	near_word	seinen	seinem	keep_gw	sure	so ist damit der Chemismus in	Anfang zurückgegangen, in welchem gegeneinander gespannte	in seinen Anfang zurückgegangen: Akkusativ (Richtung)
+h2-0118	12	154	near_word	gefodert.	gefordert	use_dta	uncertain	die eigene, freye Existenz des Begriffes	Die Teleologie wird vornemlich dem Mechanismus	gefodert/gefordert: beide Formen zeitüblich
+h2-0119	12	155	near_word	eine	ein	use_dta	uncertain	welchem die Bestimmtheit eines Objects als	äusserlich an ihm und durch ein	eine/ein: Kasusbezug ohne Volltext nicht entscheidbar
+h2-0120	12	155	residual	zu	von	use_dta	uncertain	theils aber durch die abstracte Allgemeinheit	einem All der Kräfte einem Ganzen	zu/von einem All: beide möglich
+h2-0121	12	156	residual	[nach]		keep_gw	sure	denn der Zweck ist seiner Form	eine in sich unendliche Totalität; besonders	GW-Herausgeberergänzung in eckigen Klammern
+h2-0122	12	156	residual		so	use_dta	uncertain	wie es sich trifft, bedeutender oder	geringfügiger sind, und die Zweckbeziehung der	so evtl. entfallen
+h2-0123	12	156	near_word	allgemeine	allgemeinere	use_dta	uncertain	absolutes aufstellt, in dem sich der	Gedanke nur unendlich beengt, und selbst	allgemeine/allgemeinere: beide möglich
+h2-0124	12	159	residual		reflectireudes	keep_gw	sure	die Zweckbeziehung ist darum nicht ein	reflectirendes Urtheilen, das die äusserlichen Objecte	reflectireudes = u/n-Verdrehung im Druck
+h2-0125	12	161	residual	Ebenso	Eben	keep_gw	uncertain	die gesetzten Unterschiede der Form ist.	unmittelbar ist diese Negativität durch ihre	Ebenso/Eben so: wohl Getrenntschreibung des Drucks, GW-Zusammenschreibung
+h2-0126	12	162	residual	die	der	keep_gw	sure	Diß Abstossen ist der Entschluß überhaupt,	Beziehung der negativen Einheit auf sich,	der Entschluß, die Beziehung: Apposition im Nominativ
+h2-0127	12	167	residual		Begriff	use_dta	uncertain	ist Uebersetzung des distinct als Begriffs	existirenden Begriffs in die Objectivität; es	Begriff evtl. entfallen
+h2-0128	12	170	residual	[die]		keep_gw	sure	gegen ihn selbstständiges ist. Dadurch ist	Bestimmung des Objects zum Mittel schlechthin	GW-Herausgeberergänzung in eckigen Klammern
+h2-0129	12	171	residual		sie	use_dta	uncertain	jedes der einzelnen Momente, durch welche	sich diese Vermittlung verläuft, selbst der	sie evtl. entfallen
+h2-0130	12	173	near_word	adäquater	ädäquater	keep_gw	sure	d. h. von ihm kein ihm	empirischer Gebrauch gemacht werden können. Die	ädäquater = Druckfehler
+h2-0131	12	175	residual	[wäre],		keep_gw	sure	Begriffs selbst mit sich, der Begriff	der den Begriff selbst zu seiner	GW-Herausgeberergänzung in eckigen Klammern
+h2-0132	12	175	near_word	dieser	diese	use_dta	uncertain	in die abgeschiedenen Regionen des Gedankens,	wäre in die einzelnen Individualitäten zerfallen;	dieser/diese: Bezugswort nicht eindeutig
+h2-0133	12	180	residual	ist.	sind	keep_gw	sure	der Idee eine Mannichfaltigkeit wirklicher Gestaltungen	Das Leben in der Idee ist	Mannichfaltigkeit ... ist: Singular
+h2-0134	12	182	residual	die	ihre	use_dta	uncertain	Seele. Um dieser Unmittelbarkeit willen ist	erste negative Beziehung der Idee in	die/ihre: beide möglich
+h2-0135	12	184	residual	diese	die	use_dta	uncertain	sie ihre Selbstauflösung und Rückkehr in	seine negative Einheit aufzeigt. Die Unruhe	diese/die: beide möglich
+h2-0136	12	187	residual	da	daß	use_dta	uncertain	die Form von objectiver Aeusserlichkeit, und	es zugleich identisch mit sich ist,	da/daß: beide Konstruktionen möglich
+h2-0137	12	192	residual	Leben	Laben	keep_gw	sure	und in den objectiven, der als	ist. Denken Geist Selbstbewußtseyn sind Bestimmungen	Laben = Druckfehler für Leben
+h2-0138	12	197	residual		lörperlicher	keep_gw	sure	einzelnen Subjecte dem Spiele ganz zufälliger	körperlicher Beschaffenheit, äusserlicher Einflüsse und einzelner	lörperlicher = Druckfehler für körperlicher
+h2-0139	12	197	near_word	fürsichseyendes	fürsischseyendes	keep_gw	sure	Form ist der freye Begriff als	Ich zurückgezogen aus der Objectivität, aber	fürsischseyendes = Druckfehler
+h2-0140	12	203	near_word	Begriffsbestimmungen,	Begriffsstimmungen	keep_gw	sure	hat zu ihren Producten wesentlich die	und zwar als solche, welche unmittelbar	Begriffsstimmungen = Druckfehler (Silbenausfall)
+h2-0141	12	205	near_word	erkannt	erkennt	keep_gw	sure	die Identität des Begriffes mit sich,	hat, nimmt er doch den bestimmten	erkannt hat: Partizip erforderlich
+h2-0142	12	207	residual	xᵐ−1=0	X m I O	keep_gw	sure	So ist die Auflösung der Gleichung	mit Hülfe der Sinus, auch die	Formelwiedergabe: GW-Unicode korrekt, DTA-Keying grob
+h2-0143	12	208	residual	xᵐ⁻¹−1	X m I I	keep_gw	sure	Hülfe der Betrachtung des Residuums von	durch m dividirt, und der sogenannten	wie h2-0142
+h2-0144	12	210	near_word	erfoderlich	erforderlich	use_dta	uncertain	streift seine Aeusserlichkeiten, welche zur Existenz	sind, ab; sie abstrahirt von dem,	erfoderlich/erforderlich: beide Formen zeitüblich
+h2-0145	12	210	residual	sind,	ist	keep_gw	sure	und wie sie gegen einander bestimmt	diß ist in dem Begriff enthalten.	wie sie ... bestimmt sind: Plural
+h2-0146	12	214	near_word	verächlichen	verächtlichen	use_dta	sure	schlechten Pflanze, einer schlechten Thiergattung, einem	Menschen, einem schlechten Staate sind Seiten	verächlichen fehlt das t; DTA bezeugt verächtlichen
+h2-0147	12	216	residual		auschaubares	keep_gw	sure	sie, wie die Raumfiguren sind ein	anschaubares, aber ihre Anschauung ist so	auschaubares = u/n-Verdrehung im Druck
+h2-0148	12	221	residual	[zu]		keep_gw	sure	mit Unrecht gewöhnlich als absolut-Erste genommen	werden, als ob sie an und	GW-Herausgeberergänzung in eckigen Klammern
+h2-0149	12	228	residual	gebracht.[^fn-233-1]	gebracht	keep_gw	sure	Anwendung gezeigt und um den Credit	Den Glauben an die Tauglichkeit und	GW-Herausgeberergänzung in eckigen Klammern
+h2-0150	12	232	near_word	solcher	solchen	keep_gw	sure	Ansichseyns Was so der Form als	nach, als Gegensatz erscheint, erscheint an	der Form als solcher nach: Genitiv/Dativ feminin
+h2-0151	12	233	residual	323ff.	548 ff.	keep_gw	sure	in der Phänomenologie des Geistes S.	näher betrachtet worden. Indem die Idee	Seitenverweis auf GW-Paginierung umgestellt
+h2-0152	12	234	residual		ausgeführtee	keep_gw	sure	nun in der Zweckbeziehung überhaupt der	ausgeführte Zweck zwar auch wieder nur	ausgeführtee = Druckdefekt
+h2-0153	12	244	near_word	untergegangen	untergangen	keep_gw	uncertain	dieser negativen Seite in dem Andern	aber das Andere ist wesentlich nicht	untergangen zeitübliche Form; GW wohl emendiert
+h2-0154	12	245	residual	den	dem	keep_gw	sure	erhalten Das Positive in seinem Negativen,	Inhalt der Voraussetzung im Resultate festzuhalten,	den Inhalt ... festzuhalten: Akkusativ
+h2-0155	12	247	residual	[ist]		keep_gw	sure	und daher ohne Folge aufgestellt worden,	gleichfalls als ein unendliches Verdienst der	GW-Herausgeberergänzung in eckigen Klammern
+h2-0156	12	250	residual	[an],		keep_gw	sure	die Methode keine neue Weise damit	daß sich durch das erste ihrer	GW-Herausgeberergänzung in eckigen Klammern
+h2-0157	12	253	residual		In der Verlagshandlung ist ferner erschienen und durch jede gute Buchhandlung zu haben Betrachtungen über den gegenwärtigen Zustand der Philosophie in Deutschland überhaupt und über die Schellingische Philosophie im Besondern. gr. 8. 1813 1 thlr. 6 gr. oder 1 fl. 57 kr Die Schellingische Philosophie hat ungeachtet eines vieljährigen Kampfes mit ihren zahlreichen Gegnern einen entschiedenen Einfluß auf alle Ansichten von der Religion Wissenschaft und Kunst errungen und Keiner kann sie nun mehr ignoriren wenn er sich ein selbstständiges Urtheil über den gegenwärtigen Zustand der höhern Kultur in Deutschland bilden will Nichts desto weniger herrschen über sie unter ihren Anhängern und Gegnern die verschiedenartigsten und mit unter verkehrtesten Meinungen welche in vielfacher Rücksicht sehr nachtheilig auf das Ganze zurückwürken Um so willkommener muß allen Freunden der philosophischen Wissenschaften und einer wahren höhern Bildung eine Schrift seyn in welcher die so viel besprochene und so wenig gekannte Schellingische Philosophie sowohl in Beziehung auf die gleichzeitigen Philosopheme als nach ihrer Eigenthümlichkeit und ihrem Zusammenhange mit andern Wissenschaften mit Umgehung unverständlicher Kunstausdrücke so faßlich dargestellt ist als es wohl noch in keinem zu diesem Zwecke erschienenen Werke geschehen ist Kritik der Schrift Darstellung des Wesens der Philosophie des Hrn. Friedr. Köppen von Friedr. Schafberger nebst Darlegung der eigenen Ansichten des Verfassers. gr. 8. 1813 1 thlr. oder 1 fl. 36 kr Diese eben so gründlich als geistreich verfaßte Prüfung der Philosophie eines Mannes der von vielseitiger Wirkung auf die Nation ist verdient um so mehr die allgemeine Aufmerksamkeit da diese Philosophie mit der eines andern Gelehrten von großem Ruf und Einfluß in der genauesten Verbindung steht weshalb vorliegende Schrift als ein merkwürdiger Beitrag zu dem jüngst begonnenen großen Kampf auf dem Gebiet deutscher Philosophie zu betrachten ist Kalkreuth Graf von der Dialog. gr. 8. 1811 1 thlr. 21 gr. oder 3 fl. 30 kr Ewig wird uns der göttliche Platon ein unerreichtes Muster des philosophischen Dialogs bleiben Als ein schöner Fortschritt zu diesem hohen Ziele darf gegenwärtiges Werk empfohlen werden Gleich befriedigend für die Anforderungen der Wissenschaft und Kunst werden hier die höchsten Aufgaben der Philosophie in freyer lebendiger Mittheilung entwickelt Mit geistreicher Leichtigkeit und wahrhaft platonischer Kunst leitet jedes dieser tiefsinnigen Gespräche sich ein und nicht selten wird der Leser auf Stellen treffen die aus der Tiefe der Weltanschauung hervorgegangen als ewige Gestirne in Platons unsterblichen Dialogen zu glänzen verdienten Allgemeine Zeitschrift von Deutschen für Deutsche herausgegeben von F. W. J. Schelling. 4 Hefte gr. 8 4 thlr. 16 gr. oder 7 fl. 12 kr Hegel Dr. G. W. Fr. Wissenschaft der Logik. I. Band 1te Abtheil Die Lehre vom Seyn 1 thlr. 12 gr. oder 2 fl. 24 kr I. Band 2te Abtheilung Die Lehre vom Wesen 1 thlr. 6 gr. oder 2 fl II. Band Die Lehre vom Begriff 2 thlr. 6 gr. oder 3 fl. 48 kr Das ganze Werk 68 Bogen stark kostet complett 5 thlr. oder 8 fl. 12 kr	keep_gw	sure	dem sich begreiffenden reinen Begriffe, findet.		Verlagsanzeige im Anhang des 1816-Drucks, nicht Werktext

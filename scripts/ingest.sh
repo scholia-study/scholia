@@ -63,6 +63,12 @@ case "$corpus" in
         "$BIN" --input-file assets/hegel1/derived/translation_output.json \
                --source-book-slug phaenomenologie-des-geistes "$@"
         ;;
+    hegel2)
+        "$BIN" --input-file assets/hegel2/derived/output.json "$@"
+        ;;
+    hegel3)
+        "$BIN" --input-file assets/hegel3/derived/output.json "$@"
+        ;;
     shakespeare1)
         "$BIN" --input-file assets/shakespeare1/derived/output.json "$@"
         ;;

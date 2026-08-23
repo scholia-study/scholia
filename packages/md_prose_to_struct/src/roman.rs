@@ -36,19 +36,30 @@ pub fn roman_to_int(s: &str) -> Option<u32> {
 /// two series colliding (1807 Phänomenologie: Vorrede II–XCI, body 4–765).
 const ROMAN_SORT_FLOOR: i32 = -10_000;
 
-/// Sort order for a block page marker whose value may be Arabic, Roman, or
-/// suffixed Arabic.
+/// Sort order for a block page marker whose value may be Arabic, Roman,
+/// suffixed Arabic, or dotted volume.page.
 ///
 /// Arabic keeps its face value, so corpora whose block system is entirely
 /// Arabic (kant1, kant3) are unaffected. Roman maps below every Arabic page
-/// while staying monotonic within its own series.
+/// while staying monotonic within its own series. A dotted volume.page
+/// (hegel2's GW system) blocks by volume — sort is only consulted within a
+/// sentence, where volumes never mix.
 pub fn block_sort_order(value: &str) -> i32 {
     value
         .parse::<i32>()
         .ok()
+        .or_else(|| dotted_volume_page(value))
         .or_else(|| suffixed_arabic(value))
         .or_else(|| roman_to_int(value).map(|n| ROMAN_SORT_FLOOR + n as i32))
         .unwrap_or(0)
+}
+
+/// "21.68" → 21_068: volume-blocked so pages stay monotonic per volume.
+fn dotted_volume_page(value: &str) -> Option<i32> {
+    let (vol, page) = value.split_once('.')?;
+    let vol: i32 = vol.parse().ok()?;
+    let page: i32 = page.parse().ok()?;
+    (page < 1000).then_some(vol * 1000 + page)
 }
 
 /// "247b" → 247: the twice-printed 1651 Leviathan pages carry a letter suffix

@@ -1,0 +1,14 @@
+---
+position: 76
+label: "C. Begrenzung der Quantitaͤt"
+depth: 5
+page_1812: 154
+---
+
+## {{{ 154 }}} C. Begrenzung der Quantitaͤt
+
+Die diſcrete Groͤße hat erſtlich das Eins zum Princip, zweytens iſt ſie weſentlich ſtaͤtig, ſie iſt das Eins zugleich als aufgehobenes, als ***Einheit***, das gleichſam breite, continuirte Eins. Inſofern aber das Eins, oder die vielen Eins gleich weſentlich und unmittelbar Einheit ſind, iſt damit nur Quantitaͤt uͤberhaupt, oder inſofern das Eins in der Einheit aufgehoben iſt, und als viele Eins in die Einheit zuſammenſinken, continuirliche Quantitaͤt geſetzt. Aber dieſe iſt umgekehrt in diſcrete Groͤße uͤbergegangen, und die Continuitaͤt das im Eins aufgehobene Moment. Das Eins iſt ſomit zwar einerſeits zur Einheit erweitert, und dieſe iſt nicht verſchwunden, ſondern vielmehr weſentlich vorhanden, aber ſie iſt mit einer Negation geſetzt; das Eins wird an der Einheit zur ***Grenze***. Die Continuitaͤt iſt weſentliches Moment, und hat die Negation an ihr, aber iſt unterſchieden zugleich von dieſer ihrer Negation, die in dieſer Beſtimmung Grenze iſt. Dieſe Grenze, auſſer dem, daß ſie auf die Einheit bezogen und die Negation ***an derſelben*** iſt, iſt ſie auch ***auf ſich bezogen***; ſie iſt als das, wie ſie an ſich iſt, nemlich als Eins, umſchlieſſende, befaſſende Grenze. Die Grenze unterſcheidet ſich hier nicht zuerſt von dem Inſichſeyn oder dem Etwas ihres Daſeyns, ſondern als Eins iſt ſie unmittelbar dieſer negative Punkt ſelbſt. Auf der andern Seite iſt das Seyn, das begrenzt iſt, weſentlich hier als Continuitaͤt, die uͤber die Grenze und diß Eins hinausgeht. Die wahrhafte diſcrete Quantitaͤt iſt alſo ***eine*** Quantitaͤt, oder ***Quantum***.
+
+{{{ 155 }}} Oder die Groͤße iſt zuerſt unmittelbare Einheit der Continuitaͤt und Diſcretion. Als Quantitaͤt iſt ſie ***die in ſich zuruͤckgekehrte*** Einheit dieſer Momente; als dieſe ihre negative Einheit hat ſie den in der unmittelbaren oder continuirlichen Groͤße nur verſchwundenen oder nur moͤglichen Unterſchied an ihr.
+
+Erſtens iſt dieſe ***negative*** Einheit nicht nur Einheit der Continuitaͤt und Diſcretion, als abſtracter Momente, ſondern auch derſelben betrachtet als continuirlicher und diſcreter Groͤße. Es iſt uͤberhaupt kein wahrhafter Unterſchied der continuirlichen und diſcreten Groͤße. — Zweytens aber iſt dieſe negative Einheit nicht eine Beſtimmtheit, in welche die Groͤße uͤbergeht, ſondern die ſie an ihr ſelbſt hat; ſie iſt das Eins, in welchem ſich als ihrer eigenen Beſtimmtheit ſich die Quantitaͤt ſetzt. Indem uͤberhaupt die Quantitaͤt die aufgehobene Qualitaͤt, indem ſie an ſich ſelbſt unendlich iſt, ſo iſt in ihrer Bewegung kein Uebergehen in abſolutes Andersſeyn vorhanden, ſondern ihr Beſtimmen beſteht eben ſo ſehr nur in dem Hervortreten der in ihr bereits vorhandenen Momente.

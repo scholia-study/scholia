@@ -1,0 +1,14 @@
+---
+position: 87
+label: "1. Begriff derselben"
+depth: 6
+page_1812: 182
+---
+
+## 1. Begriff derselben
+
+Das Quantum verändert sich und wird ein anderes Quantum; es ist aber eine weitere Bestimmung dieser Veränderung, daß sie ***ins Unendliche*** fortgeht.
+
+Das Quantum wird ein ***Anderes***; es kontinuiert sich in sein Anderssein; das Andre ist also auch ein Quantum. Aber das Andre ist zugleich das Andre nicht nur ***eines*** Quantums, sondern ***des*** Quantums selbst. Denn das Quantum ist die gleichgültige Bestimmtheit, welche gegen Anderes, aber auch ***gegen sich*** gleichgültig ist. Wie sich seine Momente in dem intensiven Quantum bestimmt haben, ist es die Bestimmtheit, die sich nicht auf anderes, sondern auf sich selbst bezieht; eben so sehr aber ist diese Bestimmtheit schlechthin nur die Bestimmtheit in einem Andern; die Beziehung auf Anderes ist ihm äußerlich, aber es ist selbst diese Äußerlichkeit seiner. Es ist also das Quantum selbst, welches sich widerspricht, und somit sich an sich auflöst; es selbst ist somit die Negation seiner selbst; die Veränderung betrifft nicht nur ***ein*** Quantum, sondern ***das*** Quantum. Das Quantum ist ein ***Sollen***; es enthält, ***an sich bestimmt zu sein***, und dieses An-sich-bestimmtsein selbst ist vielmehr das ***Bestimmtsein in einem Andern***; und umgekehrt ist es das aufgehobene Bestimmtsein in einem andern; es ist gleichgültiges Bestimmtsein. {{{ 183 }}} Es ist also gegen sich selbst ein Anderes und Äußerliches; es enthält dies, ***endlich*** zu sein, und über die Endlichkeit, über das Bestimmtse[…]n in einem Andern hinauszugehen, und ***unendlich*** zu sein.
+
+Bei der ***qualitativen*** und ***quantitativen Unendlichkeit*** ist es wesentlich zu bemerken, daß nicht von einem Dritten über das Endliche hinausgegangen wird, sondern daß die Bestimmtheit als sich in sich selbst auflösend, über sich hinausgeht. Aber das qualitative und quantitative Unendliche unterscheiden sich dadurch, daß im ersten der Gegensatz des Endlichen und Unendlichen qualitativ ist, und der Übergang des Endlichen in das Unendliche, oder die Beziehung beider auf einander nur im ***Ansich***, in ihrem Begriffe liegt. Die qualitative Bestimmtheit ist zunächst unmittelbar, seiend; und bezieht sich auf das Anderssein wesentlich als auf ein ihr Anderes, sie ist nicht gesetzt, ihre Negation, ihr Anderes an ihr selbst zu haben. Die Größe hingegen ist als solche, aufgehobene Bestimmtheit; sie ist gesetzt, die Negation, ungleich mit sich und das Veränderliche zu sein. Das qualitative Endliche und Unendliche stehen sich daher absolut gegeneinander über; ihre Einheit ist, die zu Grunde liegende ***innerliche*** Beziehung; das Endliche kontinuiert sich daher nicht unmittelbar in sein Anderes. Hingegen das quantitative Endliche bezieht sich an ihm selbst in sein Unendliches. Ihre Beziehung ist daher ***der unendliche Progreß***.

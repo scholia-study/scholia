@@ -237,6 +237,23 @@ fn line_break_between(first: Node, second: Node) -> bool {
 /// the marker belongs to the child node's heading. A `<pb>` inside a paragraph
 /// is emitted where it stands, so it never reaches a heading, and no page is
 /// ever marked twice.
+/// A `<pb n>` value as the page system uses it: DTA brackets around
+/// supplied (unprinted) numbers are apparatus, and a misprinted number
+/// carries its correction in brackets ("95[93]") — the corrected page keeps
+/// the series monotonic. Recorded in `page_gaps.tsv` either way.
+pub fn page_value(n: &str) -> String {
+    let t = n.trim();
+    if let Some(inner) = t.strip_prefix('[').and_then(|r| r.strip_suffix(']')) {
+        return inner.to_string();
+    }
+    if let Some((_, rest)) = t.split_once('[')
+        && let Some(corr) = rest.strip_suffix(']')
+    {
+        return corr.to_string();
+    }
+    t.to_string()
+}
+
 pub fn heading_markers(root: Node) -> HashMap<NodeId, String> {
     let mut markers = HashMap::new();
     let mut pending: Vec<String> = Vec::new();
@@ -246,7 +263,10 @@ pub fn heading_markers(root: Node) -> HashMap<NodeId, String> {
                 if let Some(p) = n.attribute("n")
                     && !in_paragraph(n)
                 {
-                    pending.push(p.to_string());
+                    // a run of empty leaves collapses to the page the
+                    // following content actually opens on
+                    pending.clear();
+                    pending.push(page_value(p));
                 }
             }
             "div" if is_content_div(n) => {
@@ -314,6 +334,15 @@ impl TocNode<'_, '_> {
 }
 
 pub fn slugify(label: &str) -> String {
+    // the 1812 TEI writes umlauts as combining e (aͤ); fold before the
+    // char-wise pass so they slug as ae/oe/ue like precomposed umlauts
+    let label = label
+        .replace("a\u{364}", "ä")
+        .replace("o\u{364}", "ö")
+        .replace("u\u{364}", "ü")
+        .replace("A\u{364}", "Ä")
+        .replace("O\u{364}", "Ö")
+        .replace("U\u{364}", "Ü");
     let mut folded = String::new();
     for ch in label.chars().flat_map(char::to_lowercase) {
         match ch {
@@ -342,11 +371,12 @@ pub fn toc_nodes<'a, 'i>(root: Node<'a, 'i>, conv: &Conv) -> Vec<TocNode<'a, 'i>
     let headings = heading_markers(root);
     let mut page: Option<String> = None;
     let mut nodes = Vec::new();
+    let mut taken: HashSet<String> = HashSet::new();
     for n in root.descendants().filter(Node::is_element) {
         match n.tag_name().name() {
             "pb" => {
                 if let Some(p) = n.attribute("n") {
-                    page = Some(p.to_string());
+                    page = Some(page_value(p));
                 }
             }
             "div" if is_content_div(n) => {
@@ -354,6 +384,15 @@ pub fn toc_nodes<'a, 'i>(root: Node<'a, 'i>, conv: &Conv) -> Vec<TocNode<'a, 'i>
                     .map(|h| conv.label(h))
                     .filter(|l| !l.is_empty())
                     .unwrap_or_else(|| SUPPLIED_LABEL.to_string());
+                // repeated labels (the 1812 Anmerkungen) get a counter
+                // suffix so node slugs stay unique per book
+                let base = slugify(&label);
+                let mut slug = base.clone();
+                let mut k = 1;
+                while !taken.insert(slug.clone()) {
+                    k += 1;
+                    slug = format!("{base}_{k}");
+                }
                 nodes.push(TocNode {
                     div: n,
                     position: nodes.len() as u32 + 1,
@@ -363,7 +402,7 @@ pub fn toc_nodes<'a, 'i>(root: Node<'a, 'i>, conv: &Conv) -> Vec<TocNode<'a, 'i>
                         .count() as u8,
                     page: page.clone(),
                     heading_page: headings.get(&n.id()).cloned(),
-                    slug: slugify(&label),
+                    slug,
                     label,
                 });
             }
@@ -398,6 +437,10 @@ pub struct Conv {
     replacements: HashMap<NodeId, modernized::Replacement>,
     pub unknown: RefCell<BTreeSet<String>>,
     pub dropped_separators: RefCell<Vec<DroppedSeparator>>,
+    /// Author footnotes collected while rendering the current div's blocks:
+    /// (per-file number, rendered text). Drained after each paragraph.
+    pending_notes: RefCell<Vec<(u32, String)>>,
+    note_counter: RefCell<u32>,
 }
 
 impl Conv {
@@ -408,6 +451,8 @@ impl Conv {
             replacements: HashMap::new(),
             unknown: RefCell::new(BTreeSet::new()),
             dropped_separators: RefCell::new(Vec::new()),
+            pending_notes: RefCell::new(Vec::new()),
+            note_counter: RefCell::new(0),
         }
     }
 
@@ -423,6 +468,8 @@ impl Conv {
             replacements,
             unknown: RefCell::new(BTreeSet::new()),
             dropped_separators: RefCell::new(Vec::new()),
+            pending_notes: RefCell::new(Vec::new()),
+            note_counter: RefCell::new(0),
         }
     }
 
@@ -454,7 +501,7 @@ impl Conv {
                 "pb" => {
                     if let (Mode::Markdown, Some(n)) = (mode, ch.attribute("n")) {
                         out.push(' ');
-                        out.push_str(&marker(n));
+                        out.push_str(&marker(&page_value(n)));
                         out.push(' ');
                     }
                 }
@@ -505,6 +552,32 @@ impl Conv {
                         Mode::Plain => out.push_str(&inner),
                     }
                 }
+                // TeX fractions in the ratio discussions (the 1812 prints
+                // 2/7 as a stacked fraction) — rendered as plain a/b.
+                "formula" => {
+                    let tex = text_of(ch);
+                    out.push_str(&render_formula(&tex));
+                }
+                // A char-level lacuna in the damaged copy; the DTA supplies
+                // restored readings around it, the gap itself shows as […].
+                "gap" => {
+                    if mode == Mode::Markdown {
+                        out.push_str("[…]");
+                    }
+                }
+                // Author footnote: a per-file [^N] reference at the anchor;
+                // the definition is emitted after the enclosing paragraph.
+                "note" => {
+                    if mode == Mode::Markdown {
+                        let mut counter = self.note_counter.borrow_mut();
+                        *counter += 1;
+                        let k = *counter;
+                        drop(counter);
+                        let text = normalize(&self.note_text(ch));
+                        self.pending_notes.borrow_mut().push((k, text));
+                        out.push_str(&format!("[^{k}]"));
+                    }
+                }
                 other => {
                     self.unknown.borrow_mut().insert(other.to_string());
                     out.push_str(&self.inline(ch, mode, in_word));
@@ -512,6 +585,21 @@ impl Conv {
             }
         }
         out
+    }
+
+    /// A footnote's rendered body: inner paragraphs joined with a space, the
+    /// printed marker glyph (the `n` attribute's `*)`) not repeated.
+    fn note_text(&self, note: Node) -> String {
+        let mut parts = Vec::new();
+        for ch in note.children().filter(Node::is_element) {
+            if ch.tag_name().name() == "p" {
+                parts.push(self.inline(ch, Mode::Markdown, false));
+            }
+        }
+        if parts.is_empty() {
+            return self.inline(note, Mode::Markdown, false);
+        }
+        parts.join(" ")
     }
 
     /// Head text as printed — hyphens rejoined exactly as in the body, markup
@@ -529,6 +617,8 @@ impl Conv {
     /// skipped: each is a node of its own. A `<pb>` between blocks rides the
     /// front of the next one, so a marker never stands alone.
     pub fn blocks(&self, div: Node) -> Vec<String> {
+        *self.note_counter.borrow_mut() = 0;
+        self.pending_notes.borrow_mut().clear();
         let mut emitted: Vec<Emitted> = Vec::new();
         let mut pending = String::new();
         for (index, ch) in div.children().filter(Node::is_element).enumerate() {
@@ -536,7 +626,7 @@ impl Conv {
                 "head" | "div" | "lb" | "fw" => {}
                 "pb" => {
                     if let Some(n) = ch.attribute("n") {
-                        pending = marker(n);
+                        pending = marker(&page_value(n));
                     }
                 }
                 "milestone" => emitted.push(Emitted::Separator(DroppedSeparator {
@@ -556,6 +646,9 @@ impl Conv {
                     }
                     emitted.push(Emitted::Block(prepend(&pending, &body)));
                     pending.clear();
+                    for (k, text) in self.pending_notes.borrow_mut().drain(..) {
+                        emitted.push(Emitted::Block(format!("[^{k}]: {text}")));
+                    }
                 }
                 "lg" => {
                     let mut lines = Vec::new();
@@ -645,14 +738,20 @@ fn soften_trailing_hyphen(word: &mut String) {
     }
 }
 
-pub fn frontmatter(position: u32, label: &str, depth: u8, page: Option<&str>) -> String {
+pub fn frontmatter(
+    page_key: &str,
+    position: u32,
+    label: &str,
+    depth: u8,
+    page: Option<&str>,
+) -> String {
     let mut out = format!("---\nposition: {position}\nlabel: \"{label}\"\ndepth: {depth}\n");
     if let Some(p) = page {
         // Roman numerals are not YAML numbers; quote them so the value round-trips.
         if p.chars().all(|c| c.is_ascii_digit()) {
-            out.push_str(&format!("page_1807: {p}\n"));
+            out.push_str(&format!("{page_key}: {p}\n"));
         } else {
-            out.push_str(&format!("page_1807: \"{p}\"\n"));
+            out.push_str(&format!("{page_key}: \"{p}\"\n"));
         }
     }
     out.push_str("---\n");
@@ -664,6 +763,18 @@ pub fn heading(label: &str, page: Option<&str>) -> String {
         Some(p) => format!("## {} {label}", marker(p)),
         None => format!("## {label}"),
     }
+}
+
+/// `\frac{a}{b}` → `a/b`; anything else keeps its TeX source verbatim.
+fn render_formula(tex: &str) -> String {
+    let tex = tex.trim();
+    if let Some(rest) = tex.strip_prefix("\\frac{")
+        && let Some((a, brest)) = rest.split_once('}')
+        && let Some(b) = brest.strip_prefix('{').and_then(|r| r.strip_suffix('}'))
+    {
+        return format!("{a}/{b}");
+    }
+    tex.to_string()
 }
 
 pub fn render(blocks: &[String]) -> String {
@@ -1163,8 +1274,11 @@ mod tests {
 
     #[test]
     fn front_matter_quotes_roman_pages_only() {
-        assert!(frontmatter(2, "Erster Theil", 1, Some("XCI")).contains("page_1807: \"XCI\"\n"));
-        assert!(frontmatter(4, "I.", 2, Some("22")).contains("page_1807: 22\n"));
-        assert!(!frontmatter(1, "Vorrede", 1, None).contains("page_1807"));
+        assert!(
+            frontmatter("page_1807", 2, "Erster Theil", 1, Some("XCI"))
+                .contains("page_1807: \"XCI\"\n")
+        );
+        assert!(frontmatter("page_1807", 4, "I.", 2, Some("22")).contains("page_1807: 22\n"));
+        assert!(!frontmatter("page_1807", 1, "Vorrede", 1, None).contains("page_1807"));
     }
 }

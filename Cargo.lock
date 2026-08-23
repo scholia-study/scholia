@@ -1651,6 +1651,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "hegel2_gw_to_md"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "common",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "hex"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"

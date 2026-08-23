@@ -5,9 +5,12 @@ use std::sync::LazyLock;
 // {{{ N }}} — AA page marker. Arabic or Roman: a single block system may
 // paginate a preface in Roman and the body in Arabic (hegel1's 1807 edition).
 // An Arabic value may carry a letter suffix — the twice-printed 1651
-// Leviathan pages are disambiguated as 247b etc.
-static AA_MARKER_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"\{\{\{\s*([0-9]+[a-z]?|[IVXLCDM]+)\s*\}\}\}").unwrap());
+// Leviathan pages are disambiguated as 247b etc. A dotted volume.page form
+// spans multiple volumes of one edition in a single system (hegel2's GW
+// pages: 21.68, 11.241, 12.5).
+static AA_MARKER_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\{\{\{\s*([0-9]+\.[0-9]+|[0-9]+[a-z]?|[IVXLCDM]+)\s*\}\}\}").unwrap()
+});
 
 // {{ VALUE }} — B-edition page marker
 static B_MARKER_RE: LazyLock<Regex> =

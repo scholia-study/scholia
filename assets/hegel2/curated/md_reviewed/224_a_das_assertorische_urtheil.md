@@ -1,0 +1,14 @@
+---
+position: 224
+label: "a. Das assertorische Urtheil"
+depth: 5
+page_gw: "12.85"
+---
+
+## a. Das assertorische Urtheil
+
+Das Urtheil des Begriffs ist zuerst _unmittelbar_; so ist es das _assertorische_ Urtheil. Das Subject ist ein concretes Einzelnes überhaupt, das Prädicat drückt dasselbe als die _Beziehung_ seiner _Wirklichkeit_, Bestimmtheit oder _Beschaffenheit_, auf seinen _Begriff_ aus. (Diß Haus ist _schlecht_, diese Handlung _ist_ _gut_.) Näher enthält es also, a) daß das Subject etwas _seyn_ _soll_; seine _allgemeine_ _Natur_ hat sich als der selbstständige Begriff gesetzt; b) die _Besonderheit_, welche nicht nur um ihrer Unmittelbarkeit, sondern um ihrer ausdrücklichen Unterscheidung willen von ihrer selbstständigen allgemeinen Natur, als _Beschaffenheit_ _und_ _äusserliche_ _Existenz_ ist; diese ist um der Selbstständigkeit des Begriffes willen ihrerseits auch gleichgültig gegen das Allgemeine, und kann ihm angemessen oder auch nicht seyn. – Diese Beschaffenheit ist die _Einzelnheit_, welche über die nothwendige _Bestimmung_ des Allgemeinen im disjunctiven Urtheil hinausliegt, eine Bestimmung, welche nur als die Besonderung der _Art_ und als negatives _Princip_ der Gattung ist. Insofern ist die concrete Allgemeinheit, die aus dem disjunctiven Urtheil hervorgegangen ist, in dem assertorischen Urtheil in die Form von _Extremen_ entzweyt, denen der Begriff selbst als _gesetzte_, sie beziehende Einheit noch fehlt.
+
+Das Urtheil ist darum nur erst _assertorisch_; seine _Bewährung_ ist eine _subjective_ _Versicherung_. Daß Etwas gut oder schlecht, richtig, passend oder nicht u.s.f. ist, hat seinen Zusammenhang in einem äussern Dritten. Daß er aber _äusserlich_ _gesetzt_ ist, ist dasselbe, daß er nur erst _an_ _sich_ oder _innerlich_ ist. – Wenn Etwas gut oder schlecht u.s.f. ist, wird daher wohl niemand meynen, {{{ 12.86 }}} daß es nur im _subjectiven_ _Bewußtseyn_ etwa gut, aber an sich vielleicht schlecht, oder daß gut und schlecht, richtig, passend, u.s.f. nicht Prädicate der Gegenstände selbst seyn. Das _blos_ _subjective_ der Assertion dieses Urtheils besteht also darin, daß der _an_ _sich_ seyende Zusammenhang des Subjects und Prädicats noch nicht _gesetzt_, oder was dasselbe ist, daß er nur _äusserlich_ ist; die Copula ist noch ein unmittelbares, _abstractes_ _Seyn_.
+
+Der Versicherung des assertorischen Urtheils steht daher mit eben dem Rechte die entgegengesetzte gegenüber. Wenn versichert wird: diese Handlung ist gut; so hat die entgegengesetzte: diese Handlung ist schlecht, noch gleiche Berechtigung. – Oder _an_ _sich_ betrachtet, weil das Subject des Urtheils _unmittelbares_ _Einzelnes_ ist, hat es in dieser Abstraction noch die _Bestimmtheit_ nicht _an_ _ihm_ gesetzt, welche seine Beziehung auf den allgemeinen Begriff enthielte; es ist so noch ein zufälliges, eben sowohl dem Begriffe zu entsprechen, oder auch nicht. Das Urtheil ist daher wesentlich _problematisch_.

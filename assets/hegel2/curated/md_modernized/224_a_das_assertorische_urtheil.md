@@ -1,0 +1,14 @@
+---
+position: 224
+label: "a. Das assertorische Urteil"
+depth: 5
+page_gw: "12.85"
+---
+
+## a. Das assertorische Urteil
+
+Das Urteil des Begriffs ist zuerst _unmittelbar_; so ist es das _assertorische_ Urteil. Das Subjekt ist ein konkretes Einzelnes überhaupt, das Prädikat drückt dasselbe als die _Beziehung_ seiner _Wirklichkeit_, Bestimmtheit oder _Beschaffenheit_, auf seinen _Begriff_ aus. (Dies Haus ist _schlecht_, diese Handlung _ist_ _gut_.) Näher enthält es also, a) dass das Subjekt etwas _sein_ _soll_; seine _allgemeine_ _Natur_ hat sich als der selbstständige Begriff gesetzt; b) die _Besonderheit_, welche nicht nur um ihrer Unmittelbarkeit, sondern um ihrer ausdrücklichen Unterscheidung willen von ihrer selbstständigen allgemeinen Natur, als _Beschaffenheit_ _und_ _äußerliche_ _Existenz_ ist; diese ist um der Selbstständigkeit des Begriffes willen ihrerseits auch gleichgültig gegen das Allgemeine, und kann ihm angemessen oder auch nicht sein. – Diese Beschaffenheit ist die _Einzelnheit_, welche über die notwendige _Bestimmung_ des Allgemeinen im disjunktiven Urteil hinausliegt, eine Bestimmung, welche nur als die Besonderung der _Art_ und als negatives _Prinzip_ der Gattung ist. Insofern ist die konkrete Allgemeinheit, die aus dem disjunktiven Urteil hervorgegangen ist, in dem assertorischen Urteil in die Form von _Extremen_ entzweit, denen der Begriff selbst als _gesetzte_, sie beziehende Einheit noch fehlt.
+
+Das Urteil ist darum nur erst _assertorisch_; seine _Bewährung_ ist eine _subjektive_ _Versicherung_. Dass Etwas gut oder schlecht, richtig, passend oder nicht u.s.f. ist, hat seinen Zusammenhang in einem äußern Dritten. Dass er aber _äußerlich_ _gesetzt_ ist, ist dasselbe, dass er nur erst _an_ _sich_ oder _innerlich_ ist. – Wenn Etwas gut oder schlecht u.s.f. ist, wird daher wohl niemand meinen, {{{ 12.86 }}} dass es nur im _subjektiven_ _Bewusstsein_ etwa gut, aber an sich vielleicht schlecht, oder dass gut und schlecht, richtig, passend, u.s.f. nicht Prädikate der Gegenstände selbst sein. Das _bloß_ _subjektive_ der Assertion dieses Urteils besteht also darin, dass der _an_ _sich_ seiende Zusammenhang des Subjekts und Prädikats noch nicht _gesetzt_, oder was dasselbe ist, dass er nur _äußerlich_ ist; die Kopula ist noch ein unmittelbares, _abstraktes_ _Sein_.
+
+Der Versicherung des assertorischen Urteils steht daher mit eben dem Rechte die entgegengesetzte gegenüber. Wenn versichert wird: diese Handlung ist gut; so hat die entgegengesetzte: diese Handlung ist schlecht, noch gleiche Berechtigung. – Oder _an_ _sich_ betrachtet, weil das Subjekt des Urteils _unmittelbares_ _Einzelnes_ ist, hat es in dieser Abstraktion noch die _Bestimmtheit_ nicht _an_ _ihm_ gesetzt, welche seine Beziehung auf den allgemeinen Begriff enthielte; es ist so noch ein zufälliges, eben sowohl dem Begriffe zu entsprechen, oder auch nicht. Das Urteil ist daher wesentlich _problematisch_.

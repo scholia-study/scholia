@@ -1,0 +1,24 @@
+---
+position: 62
+label: "3. Gegenſeitige Repulſion"
+depth: 6
+page_1812: 108
+---
+
+## 3. Gegenſeitige Repulſion
+
+1. Die Repulſion macht die Beziehung des Eins auf ſich ſelbſt aus, aber iſt eben ſo ſehr ſein Auſſer-ſichkommen. Diß Auſſerſichkommen, die Vielheit der Eins iſt die Repulſion des Eins von ſich ſelbſt; daher nicht eine dem Eins aͤuſſerliche Beſtimmung, nicht verſchieden von der Repulſion als einfacher Beziehung auf ſich. {{{ 109 }}} Diß naͤher betrachtet, ſo bezieht das Eins ſich auf ſich als auf ein unmittelbares; aber die Unmittelbarkeit iſt Seyn; die Repulſion, als die ſich auf ſich beziehende Negation aber iſt nicht Unmittelbarkeit oder Seyn. Eins bezieht ſich daher auf ſich zugleich als ſein abſolutes Nichtſeyn; es iſt Abſtoſſen ſeiner von ſich ſelbſt; das Abgeſtoſſene iſt einerſeits zwar es ſelbſt, aber eben ſo ſehr ***ſein Nichtſeyn***. Diß Abgeſtoſſene ſelbſt als Eins iſt ein Unmittelbares, und zugleich als Nichtſeyn des ſich auf ſich ſelbſt beziehenden beſtimmt; oder als ein abſolut ***Anderes***. Die Vielheit enthielt zunaͤchſt kein Andersſeyn; die Grenze war nur das Leere, oder nur das, worin die Eins ***nicht ſind***. Aber ſie ***ſind*** auch in der Grenze; ſie ſind im Leeren, oder ihre Repulſion iſt ihre gemeinſame Beziehung.
+
+Die Repulſion des Eins alſo, indem ſie Abſtoſſen ſeiner von ſich ſelbſt iſt, iſt zugleich ***Abſtoſſen des Eins als eines Andern von ſich***, und damit ein ***gegenſeitiges Repelliren*** der vielen Eins.
+
+Die Vielen ſtehen auf dieſe Weiſe als einander abſtoſſend, in Beziehung auf einander; ſie erhalten ſich als fuͤr ſich ſeyende in der Repulſion; ihre Beziehung beſteht darin, ***ihre Beziehung zu negiren***.
+
+Dieſe gegenſeitige Repulſion macht erſt das ***Daſeyn*** der vielen Eins aus; denn ſie iſt nicht ihr Fuͤrſichſeyn, das nur in einem Dritten unterſchieden waͤre, ſondern ihr eigenes ſich erhaltendes Unterſcheiden. Naͤher beſtimmt iſt ſie, inſofern darin jedes gegen die Andern ſich erhaͤlt, ein gegenſeitiges ***Ausſchlieſſen***. Oder dieſe Beziehung iſt eine nur ***relative*** Repulſion. Sie negiren ſich nemlich gegenſeitig, oder ſetzen ſich als ſolche, die nur ***fuͤr-eines*** ſind. Aber ſie ***negiren*** {{{ 110 }}} eben ſo ſehr zugleich diß, ***nur fuͤr-eines zu ſeyn***; ſie ***repelliren*** dieſe ihre ***Idealitaͤt***.
+
+2. In dieſem Daſeyn der vielen Eins trennen ſich ſomit die Momente, die in der Idealitaͤt ſchlechthin vereinigt ſind. Das Eins iſt in ſeinem Fuͤrſichſeyn zwar auch ſo ***fuͤr-eines***, daß diß Aufgehobenſeyn des Andersſeyns ſeine Beziehung auf ſich ſelbſt iſt. Aber zugleich iſt das Seyn-fuͤr-eines, wie es in der relativen Repulſion, dem Ausſchlieſſen beſtimmt iſt, ein Seyn-fuͤr-Anderes. Jedes wird von dem Andern repellirt, aufgehoben und zu einem gemacht, das nicht fuͤr ſich, ſondern fuͤr-eines iſt. Sein Seyn-fuͤr-eines faͤllt ſonach nicht nur in das Eins als ſolches ſelbſt, ſondern auch in ein anderes Eins, und iſt Seyn-fuͤr-Anderes.
+
+Das Fuͤrſichſeyn der vielen Eins iſt hiemit die Repulſion derſelben gegeneinander, wodurch ſie ſo ſich erhalten, daß ſie ſich gegenſeitig aufheben, und die andern als ein bloßes Seyn-fuͤr-Anderes ſetzen. Aber zugleich beſteht die Repulſion darin, dieſe Idealitaͤt zu repelliren, und ſich zu ſetzen, nicht fuͤr-ein-Anderes zu ſeyn. Aber beydes iſt wieder eine und dieſelbe Beziehung; die gegenſeitige Repulſion iſt gegenſeitiges Aufheben, jedes erhaͤlt ſich nur, indem es die Andern als ein Seyn-fuͤr-Anderes, als ein Nichtdaſeyn ſetzt, und eben ſo ſehr nur indem es diß aufhebt, fuͤr ein Anderes zu ſeyn.
+
+3. Das Seyn-fuͤr-Anderes iſt inſofern ſo ſehr aufgehoben als vorhanden. Aber es iſt in verſchiedener Ruͤckſicht geſetzt und aufgehoben. Die Eins ſind unmittelbare; ſie beziehen ſich repellirend, aufhebend gegeneinander; ſie ſetzen ſo gegenſeitig das Fuͤrſichſeyn der Andern auf das Seyn-fuͤr-Anderes herab; diß Moment hat alſo Statt in ***Beziehung auf Andere***. Aber {{{ 111 }}} das Eins hebt diß ſein Seyn-fuͤr-Anderes auf; diß Moment iſt ſeine ***Beziehung auf ſich ſelbſt***. Das Eins iſt Seyn-fuͤr-Anderes nur in Andern; aber diß Aufgehobenſeyn des Eins geht das Eins nichts an; in ihm ſind die Andern nicht als daſeyende, unmittelbare Andre, ſondern nur als Aufgehobene, dadurch bezieht es ſich auf ſich.
+
+Das Eins war Repulſion, indem es ſich von ſich abſtoͤßt, und indem ſomit das Abgeſtoſſene nur es ſelbſt iſt, iſt es damit unmittelbare Ruͤckkehr in ſich. Aber dieſes Repelliren iſt uͤbergegangen in die Repulſion Anderer und des Seyns-fuͤr-Andere von ſich. Das Eins erhaͤlt ſich nur dadurch fuͤr ſich, daß es ſich auf Andere negirend bezieht, und indem dieſe Negation gegenſeitig iſt, daß es das Seyn-fuͤr-eins, das es darin erhaͤlt, aufhebt. Die Repulſion, das Abſtoßen des Eins von ſich, iſt ſomit uͤbergegangen in Abſtoßen der Andern, in das Setzen der Andern als ſeyend nur fuͤr-eines, und damit das Aufheben ſeines Seyns-fuͤr-Anderes, in die ***Attraction***.

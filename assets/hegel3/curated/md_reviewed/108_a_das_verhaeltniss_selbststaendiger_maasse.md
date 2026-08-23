@@ -1,0 +1,8 @@
+---
+position: 108
+label: "A. Das Verhaͤltniß ſelbſtſtaͤndiger Maaße"
+depth: 5
+page_1812: 291
+---
+
+## {{{ 291 }}} A. Das Verhaͤltniß ſelbſtſtaͤndiger Maaße

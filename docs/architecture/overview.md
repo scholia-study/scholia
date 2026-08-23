@@ -40,8 +40,8 @@ See ADR 0006.
   PARSERS (curated MD → struct JSON; one crate per GENRE, corpus = config)
   ─────────────────────────────────────────────────────────────────────────
   md_prose_to_struct    --corpus kant1|kant3|      annotated prose: footnotes,
-                          hegel1|hobbes1            margin notes, figures, dual
-                        [--translation]             page systems
+                          hegel1|hegel2|hegel3|     margin notes, figures, dual
+                          hobbes1 [--translation]   page systems
   md_poetry_to_struct   --corpus shakespeare1|milton1  verse: line-per-sentence,
                                                     indent levels
   md_drama_to_struct    --corpus ibsen1             drama: @ speaker / @stage /
@@ -74,8 +74,8 @@ See ADR 0006.
   SHARED INFRA (both sides of the waist)
   ─────────────────────────────────────────────────────────────────────────
   common                sentence splitters (de/en/structural) · per-corpus
-                        data modules (kant1, kant3, shakespeare1, milton1,
-                        ibsen1) · textmatch · epub tooling
+                        data modules (kant1, kant3, hegel1..3, hobbes1,
+                        shakespeare1, milton1, ibsen1) · textmatch · epub tooling
   reconcile             align / deps / hash / keys / orchestrate — the
                         in-place re-import toolkit (struct_to_db + bible_to_db)
   dataduct              pg connect options · cache purge · system user
@@ -96,7 +96,7 @@ flowchart TB
 
     subgraph parsers ["genre parsers (corpus = config)"]
         direction LR
-        prose["md_prose_to_struct<br/>--corpus kant1|kant3|hegel1|hobbes1"]
+        prose["md_prose_to_struct<br/>--corpus kant1|kant3|hegel1|hegel2|hegel3|hobbes1"]
         poetry["md_poetry_to_struct<br/>--corpus shakespeare1|milton1"]
         drama["md_drama_to_struct<br/>--corpus ibsen1"]
     end

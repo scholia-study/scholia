@@ -37,6 +37,10 @@ struct Cli {
     /// The GW 9 page concordance; every row becomes a `{{ N }}` marker.
     #[arg(long, default_value = "assets/hegel1/curated/gw9_markers.tsv")]
     gw_markers: PathBuf,
+    /// Front-matter page key (the corpus's page system): "page_1807" for
+    /// hegel1, "page_1812" for hegel3 — the same DTA TEI shape serves both.
+    #[arg(long, default_value = "page_1807")]
+    page_key: String,
 }
 
 fn main() {
@@ -97,7 +101,13 @@ fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
         let label = node.display_label(&conv);
         let mut md = format!(
             "{}\n{}\n",
-            frontmatter(node.position, &label, node.depth, node.page.as_deref()),
+            frontmatter(
+                &cli.page_key,
+                node.position,
+                &label,
+                node.depth,
+                node.page.as_deref(),
+            ),
             heading(&label, node.heading_page.as_deref()),
         );
         if !blocks.is_empty() {
