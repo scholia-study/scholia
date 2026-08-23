@@ -14,9 +14,9 @@ generators:
 
 images:
   - name: ghcr.io/scholia-study/scholia-api
-    newTag: main-5842bb0
+    newTag: main-fb86160
   - name: ghcr.io/scholia-study/scholia-web
-    newTag: main-58c18b5
+    newTag: main-fb86160
   - name: ghcr.io/scholia-study/scholia-proxy
     newTag: main-e2918ec
 
