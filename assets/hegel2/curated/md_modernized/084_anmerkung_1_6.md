@@ -13,7 +13,7 @@ Bei folgenden Tiraden dieser Art ist zugleich ausgedrückt, in was solche Erhebu
 
 Diese Darstellung, außerdem dass sie den Inhalt des quantitativen Erhebens in einen Reichtum der Schilderung zusammendrängt, verdient wegen der Wahrhaftigkeit vornehmlich Lob, mit der sie es angibt, wie es dieser Erhebung am Ende ergeht: der Gedanke erliegt, das Ende ist Fallen und Schwindel. Was den Gedanken erliegen macht, und das Fallen desselben und den Schwindel hervorbringt, ist nichts anderes, als die _Langeweile_ der Wiederholung, welche eine Grenze verschwinden und wieder auftreten und wieder verschwinden, so immer das eine um das andere, und eins im andern, in dem Jenseits das Diesseits, in dem Diesseits das Jenseits perennierend entstehen und vergehen lässt, und nur das Gefühl der _Ohnmacht_ dieses Unendlichen oder dieses Sollens gibt, das über das Endliche Meister werden will und nicht kann.
 
-Auch die Hallesche, von Kant sogenannte _schauderhafte_ _Beschreibung_ der _Ewigkeit_ pflegt besonders bewundert zu werden, aber oft gerade nicht wegen derjenigen Seite, die das wahrhafte Verdienst derselben ausmacht:
+Auch die Hallersche, von Kant sogenannte _schauderhafte_ _Beschreibung_ der _Ewigkeit_ pflegt besonders bewundert zu werden, aber oft gerade nicht wegen derjenigen Seite, die das wahrhafte Verdienst derselben ausmacht:
 
 »Ich häufe ungeheure Zahlen, Gebirge Millionen auf, Ich setze Zeit auf Zeit, und Welt auf Welt zu Hauff, Und wenn ich von der grausen Höh Mit Schwindeln wieder nach dir seh, Ist alle Macht der Zahl, vermehrt zu Tausendmalen, Noch nicht ein Teil von dir.«
 

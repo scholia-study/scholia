@@ -127,6 +127,43 @@ const DISPLAY_LINES: [(u32, &str); 4] = [
 /// (GW 11.351): the DTA witness anchors it directly after this phrase.
 const MISSING_REFS: [(u8, &str, &str); 1] = [(11, "fn-351-1", "und ein Glück")];
 
+/// Citation runs re-set inside a single flat parenthesis (raw-orthography
+/// surface, exact match, each applied exactly once).
+const CITATION_PARENS: [(&str, &str); 8] = [
+    (
+        "Cicer. Tuscul. quaest. lib. II. cap. 1. Est",
+        "(Cicer. Tuscul. quaest. lib. II. cap. 1.) Est",
+    ),
+    (
+        "Kants Kritik der r. Vern. 2te Aufl. S. 628 ff.",
+        "(Kants Kritik der r. Vern. 2te Aufl. S. 628 ff.)",
+    ),
+    (
+        "s. Encykl. der philos. Wissenschaft 3te Ausg. §. 261. Anm.",
+        "(s. Encykl. der philos. Wissenschaft 3te Ausg. §. 261. Anm.)",
+    ),
+    (
+        "selbst III. Band I. Abth. (übers. von Wöhler S. 82. ff.) über",
+        "selbst (III. Band I. Abth. übers. von Wöhler S. 82. ff.) über",
+    ),
+    (
+        "Vergl. Phänomenologie des Geistes. S. 96. ff.",
+        "(Vergl. Phänomenologie des Geistes. S. 96. ff.)",
+    ),
+    (
+        "Logik S. 376f. Anm. erinnert",
+        "Logik (S. 376f. Anm.) erinnert",
+    ),
+    (
+        "indem er Kr. der r. Vern. S. 83. in Beziehung",
+        "indem er (Kr. der r. Vern. S. 83.) in Beziehung",
+    ),
+    (
+        "daselbst S. 64. f. und II. Th. S. 289 die",
+        "daselbst (S. 64. f. und II. Th. S. 289) die",
+    ),
+];
+
 struct VolumeFlow {
     volume: u8,
     blocks: Vec<Block>,
@@ -135,6 +172,16 @@ struct VolumeFlow {
 
 fn marker(volume: u8, page: u32) -> String {
     format!("{{{{{{ {volume}.{page} }}}}}}")
+}
+
+/// The source transcription drops the space after a sentence stop in a
+/// handful of places ("gesichert sei.Auch", "ankomme?Ausdrücke",
+/// "_Näherung_.Aber"); restore it. Two lowercase letters (optionally with a
+/// closing emphasis underscore) before the stop keep abbreviation chains
+/// ("u.s.f.") untouched.
+fn fix_missing_sentence_space(text: &str) -> String {
+    let re = Regex::new(r"([a-zäöüß]{2}[_*]?[.?!])([A-ZÄÖÜ])").unwrap();
+    re.replace_all(text, "$1 $2").into_owned()
 }
 
 /// Assemble one volume part into a block flow: page-kind filtering, stop
@@ -221,7 +268,7 @@ fn build_flow(
                         }
                         continue;
                     }
-                    let text = unit.text.trim().to_string();
+                    let text = fix_missing_sentence_space(unit.text.trim());
                     match pending_marker.take() {
                         Some((mpage, m)) => {
                             // first paragraph of the page: witness verdict
@@ -285,7 +332,7 @@ fn build_flow(
                         .footnote_id
                         .clone()
                         .unwrap_or_else(|| panic!("footnote without id on GW {volume}.{gw_page}"));
-                    let text = unit.text.trim().to_string();
+                    let text = fix_missing_sentence_space(unit.text.trim());
                     if unit.part.unwrap_or(1) > 1 {
                         let fnote = footnotes
                             .iter_mut()
@@ -766,15 +813,36 @@ fn assemble_nodes(flows: Vec<VolumeFlow>) -> (Vec<Node>, Vec<Footnote>, Vec<Stri
                 entry.position, entry.label, vol, page
             )
         });
-        // blocks since the previous anchor belong to the previous node
-        let tail: Vec<Block> = all_blocks
-            .splice(cursor..bi, std::iter::empty())
-            .map(|(_, b)| b)
-            .collect();
-        if let Some(prev) = nodes.last_mut() {
-            prev.blocks.extend(tail);
-        } else {
-            assert!(tail.is_empty(), "content before the first TOC anchor");
+        // blocks since the previous anchor belong to the previous node —
+        // volume-aware: a block from an earlier volume goes to the last
+        // node ANCHORED in that volume (the Wechselwirkung tail of GW 11
+        // precedes the synthesized vol-12 "Zweyter Theil" node and belongs
+        // to 199, not 200), while same-volume content may sit on a
+        // synthesized part node (the Cicero motto on the vol-21 title).
+        let tail: Vec<(u8, Block)> = all_blocks.splice(cursor..bi, std::iter::empty()).collect();
+        for (bvol, b) in tail {
+            let prefix = format!("{bvol}.");
+            let has_anchor = nodes.iter().any(|n| {
+                entries[n.flat_index]
+                    .page
+                    .is_some_and(|p| p.starts_with(&prefix))
+            });
+            let node = if has_anchor {
+                nodes
+                    .iter_mut()
+                    .rev()
+                    .find(|n| {
+                        entries[n.flat_index]
+                            .page
+                            .is_some_and(|p| p.starts_with(&prefix))
+                    })
+                    .unwrap()
+            } else {
+                nodes
+                    .last_mut()
+                    .expect("content before the first TOC anchor")
+            };
+            node.blocks.push(b);
         }
         // consume the anchor run; keep the first marker found in it
         let mut heading_marker: Option<String> = None;
@@ -879,12 +947,52 @@ fn main() {
             if let Block::Para { text, .. } = block
                 && let Some(pos) = text.find(anchor)
             {
-                text.insert_str(pos + anchor.len(), &format!("[^{id}]"));
+                // the digitization lost the ref but kept the printed
+                // footnote sign; the inserted ref supersedes it
+                let after = pos + anchor.len();
+                if text[after..].starts_with("∗)") {
+                    text.replace_range(after..after + "∗)".len(), &format!("[^{id}]"));
+                } else {
+                    text.insert_str(after, &format!("[^{id}]"));
+                }
                 placed = true;
                 break;
             }
         }
         assert!(placed, "missing-ref anchor {anchor:?} not found for {id}");
+    }
+
+    // citation runs re-set inside a single parenthesis: the splitter's
+    // paren protection then keeps the apparatus inside its host sentence
+    // instead of shedding abbreviation-period fragments ("Vern. 2te
+    // Aufl."). One flat parenthesis per run — 110's inner "(übers. …)"
+    // folds in. Applied to the raw surface before modernization, so both
+    // layers inherit the wrap; each row must land exactly once.
+    for (find, replace) in CITATION_PARENS {
+        let mut hits = 0;
+        for flow in [&mut flow21, &mut flow11, &mut flow12] {
+            for block in &mut flow.blocks {
+                let (Block::Para { text, .. } | Block::Heading { text, .. }) = block else {
+                    continue;
+                };
+                let n = text.matches(find).count();
+                if n > 0 {
+                    *text = text.replace(find, replace);
+                    hits += n;
+                }
+            }
+            for fnote in &mut flow.footnotes {
+                let n = fnote.text.matches(find).count();
+                if n > 0 {
+                    fnote.text = fnote.text.replace(find, replace);
+                    hits += n;
+                }
+            }
+        }
+        assert!(
+            hits == 1,
+            "citation-paren rule {find:?} applied {hits}x (want 1)"
+        );
     }
 
     let mut applied = 0;

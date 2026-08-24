@@ -1,0 +1,16 @@
+---
+position: 201
+label: "Foreword"
+depth: 2
+page_gw: "12.5"
+---
+
+## {{{ 12.5 }}} Foreword
+
+The part of the logic here presented, holding as it does the _doctrine_ _of_ _the_ _concept_ and forming the third part of the whole, is issued under a title of its own besides: _System_ _of_ _Subjective_ _Logic_; and this for the sake of those well-disposed toward the science who are used to caring more about the materials handled here, which fall within the range of what one ordinarily calls logic, than about the remaining logical topics that the first two parts went through. – As regards those earlier parts, I was in a position to appeal to the forbearance of equitable judges on the score of how little prior work there was that might have furnished me a support, materials, and a thread along which to advance. With the part now before the reader I have to appeal to that same forbearance on the very opposite score; for the logic of the _concept_ finds a material lying ready that is altogether finished and set hard, one might say ossified, and the task is to bring it back into flux and to strike the living concept afresh out of stuff so dead; building a new city on empty ground has its difficulties, yet there at least the material is plentiful, whereas hindrances of quite another kind abound where the business at hand is to give a fresh layout to a town long standing, firmly built, and never out of occupancy and use; among much else, one has to make up one's mind to leave a good deal of the available store, however highly it is otherwise prized, entirely unused. –
+
+But above all, the greatness of the subject matter itself may be adduced in excuse of the imperfect execution. For what subject matter is loftier for cognition than _truth_ itself? – Yet the doubt whether it is not precisely this subject matter that stands in need of an excuse is not far to seek, if one recalls the sense in which _Pilate_ said the question: _what_ _is_ _truth_? – according to the poet:
+
+– – – – with the mien of the courtier who, short-sighted yet smiling, condemns the cause of earnestness. {{{ 12.6 }}} That question then encloses within itself the sense, which may be regarded as a moment of politeness, and the reminder, that the goal of cognizing truth is something notoriously given up and long since settled, and that the unattainability of truth is something acknowledged even among philosophers and logicians by profession. – But if in our times the question of _religion_ about the worth of things, of insights and of actions, a question which as to its content has the same sense, is once more vindicating its right more fully, then philosophy may surely hope that it will no longer be found so striking when philosophy too, first of all in its own immediate field, asserts its genuine goal anew, and, after having sunk into the manner and into the unpretentiousness of the other sciences with regard to truth, strives to raise itself to that goal again. For the attempt itself no excuse can properly be permitted; but for the carrying out of it I may still mention, by way of one, that my official duties and other personal circumstances allowed me only a scattered labour in a science that requires, and is worthy of, an unscattered and undivided exertion.
+
+Nuremberg, 21. July 1816.

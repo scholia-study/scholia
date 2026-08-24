@@ -1,0 +1,22 @@
+---
+position: 189
+label: "Chapter 2. Actuality"
+depth: 4
+page_gw: "11.380"
+---
+
+## {{{ 11.380 }}} Chapter 2. Actuality
+
+The absolute is the unity of inner and outer as _first_ unity, one _that_ _is_ _in_ _itself_. The _exposition_ showed itself as an _external_ reflection which, for its part, has the immediate before it as something come upon, but which is at the same time the movement of that immediate and its reference to the absolute, and as such carries it back into the absolute and determines it to be nothing but a _way_ _and_ _manner_. Yet just this way and manner is the absolute's own determination, that is, the absolute's _first_ _identity_, or _its_ _unity_ _as_ _merely_ _being_ _in_ _itself_. And indeed through this reflection not only is that first being-in-itself posited as an essenceless determination, but, because the reflection is negative reference to itself, that mode comes about only through the reflection. This reflection, as sublating itself in its determinations, and generally as the movement returning into itself, is what alone is truly absolute identity, being at the same time the determining of the absolute, or the absolute's modality. The mode is accordingly the externality of the absolute, though equally only as that absolute's reflection into itself; – or the mode is the absolute's _own_ _manifestation_, such that this expression is the absolute's reflection-into-itself, and with that its being-in-and-for-itself.
+
+Being _manifestation_ in this sense, that the absolute is nothing further and has no content beyond being the manifestation of itself, the absolute is _the_ _absolute_ _form_. This reflected absoluteness is what _actuality_ is to be taken for. _Being_ is not yet something actual; it is immediacy in its first shape; the reflection of being is therefore becoming, a _passing_ _over_ _into_ _another_; or the immediacy of being is not being-in-and-for-itself. Higher than _concrete_ _existence_, too, stands actuality. Concrete existence is indeed that immediacy which has come forth out of ground and conditions, or out of essence and the reflection of essence. Hence it is, _in_ _itself_, what actuality is, namely _real_ _reflection_, but it is not yet the unity of reflection and immediacy as _posited_. By developing the reflection contained within it, concrete existence therefore passes over into _appearance_. Concrete existence is the foundered ground; its determination is that the ground be restored, and so it becomes essential relation, its final reflection being that its immediacy stands posited as the reflection-into-itself, and inversely; this unity, wherein concrete existence or immediacy, and being-in-itself, ground or the reflected, are moments outright, is now _actuality_. The {{{ 11.381 }}} actual is on that account _manifestation_; its externality does not draw it into the sphere of _alteration_, nor is it a _shining_ of itself within _an_ _other_; rather it manifests itself, which means that in its externality it is _itself_, and that only in that externality, namely only as the movement which differentiates and determines itself from itself, is it _itself_.
+
+In actuality, then, taken as this absolute form, the moments are present only as sublated or formal ones, not yet realized; their diversity thus belongs at the outset to external reflection and has not been determined as content.
+
+Actuality, being itself the _immediate_ form-unity of inner and outer, thereby falls under the determination of _immediacy_ as against the determination of reflection-into-itself; or it is an _actuality_ _over_ _against_ _a_ _possibility_. Their _reference_ to each other is the _third_ term, which determines the actual just as much as being reflected into itself, and determines this reflected being at the same time as immediately concretely existing. This third is _necessity_.
+
+But _at_ _first_, seeing that actual and possible are _formal_ _differences_, the reference between them is likewise only _formal_, and consists merely in this, that the one as well as the other is a _positedness_, or it consists in _contingency_.
+
+Now inasmuch as in contingency the actual, like the possible, is _positedness_, both have thereby acquired determination upon themselves; from this arises, _secondly_, _real_ _actuality_, and along with it real _possibility_ no less, and _relative_ _necessity_.
+
+The reflection of relative necessity into itself yields, _thirdly_, _absolute_ _necessity_, which is absolute _possibility_ and _actuality_.

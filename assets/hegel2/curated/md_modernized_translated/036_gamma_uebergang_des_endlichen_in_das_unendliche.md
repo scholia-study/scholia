@@ -1,0 +1,10 @@
+---
+position: 36
+label: "γ. Transition of the Finite into the Infinite"
+depth: 7
+page_gw: "21.123"
+---
+
+## γ. Transition of the Finite into the Infinite
+
+Taken for itself the ought contains the restriction, and the restriction contains the ought. What their reference to each other amounts to is the finite itself, which holds them both within its being-within-self. Qualitatively opposed to one another are these two moments of its determination: what determines the restriction is that it negates the ought, and what determines the ought is, in like manner, that it negates the restriction. The finite is in this way the contradiction of itself within itself; it sublates itself, passes away. Yet this result of its own, the negative as such, is α) nothing else than its own _determination_, since what stands here is a negative of what is negative. Hence the finite, in passing away, has not passed away; to begin with it has merely become an _other_ finite, which however is equally a passing-away in the shape of a transition into yet another finite, and so on, into _infinity_ perhaps. But β) should this result be examined more closely, then in passing away – in this its self-negation – the finite has reached its being-in-itself, having therein _come_ _together_ _with_ _its_ _own_ _self_. Just this result is contained in each of its moments; the ought goes out beyond the restriction, that is, beyond its own self; but the beyond of it, or its other, is nothing but the restriction itself. The restriction, in turn, proves to be immediately out beyond its own self towards its other, which is the ought; this ought, though, is the very same sundering {{{ 21.124 }}} of _being-in-itself_ and _existence_ that the restriction is, is the same thing; going out beyond itself, therefore, the restriction likewise does no more than come together with itself. This _identity_ _with_ _itself_, the negation of the negation, is affirmative being, and hence the other of the finite – the finite being that whose determinateness is supposed to lie in the first negation; – that other is _the_ _infinite_.

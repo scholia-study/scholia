@@ -1,0 +1,14 @@
+---
+position: 65
+label: "A. Pure Quantity"
+depth: 5
+page_gw: "21.176"
+---
+
+## A. Pure Quantity
+
+Quantity is being-for-itself in sublated shape; the repelling one, whose comportment towards the excluded one had been merely negative, has crossed over into _reference_ with that one, comports itself identically towards the other, and in doing so has forfeited its determination; into attraction, then, being-for-itself has crossed. Into this _unity_ the absolute brittleness of the repelling _one_ has melted away; yet the unity, since it contains that one and is determined at once by the repulsion dwelling within it, _is_ _unity_ _with_ _itself_ _as_ _unity_ _of_ _being-outside-itself_. Attraction stands in this way as the moment of _continuity_ within quantity.
+
+_Continuity_ is accordingly a simple, self-same reference to self, broken by no limit and no exclusion, yet _not_ an _immediate_ unity but the unity of the ones that are for themselves. Contained in it there is still the _outside-one-another_ _of_ _multiplicity_, though at the same time as something undifferentiated, _unbroken_. Multiplicity is posited in continuity as it is in itself; the many are each what the other is, each equal to the other, and multiplicity is therefore simple, differenceless equality. Continuity is this moment of the _self-sameness_ of being-outside-one-another, the self-continuation of the distinguished ones into those distinguished from them. {{{ 21.177 }}} Immediately, therefore, magnitude has in continuity the moment of _discreteness_, – repulsion as it is merely a moment in quantity. – Continuity is self-sameness, but self-sameness of the many, which nevertheless does not become something excluding; repulsion is what first expands self-sameness into continuity. Discreteness for its part is therefore a discreteness that flows together, whose ones do not have the void, the negative, for their reference, but their own continuity, and do not interrupt this equality with itself in the many.
+
+These two moments, continuity and discreteness, have their unity in quantity, though at first under the _form_ of just one of them, _continuity_, quantity being the result of that dialectic of being-for-itself which collapsed into the shape of a self-same immediacy. Quantity as such is this simple result insofar as it has not yet developed its moments and posited them upon itself. – At first it _contains_ them, being-for-itself being posited as it is in truth. By its determination, being-for-itself was the self-sublating referring to itself, a perennial coming-outside-itself. But what is repelled is being-for-itself itself; repulsion is accordingly the generative flowing-forth of itself. Since what is repelled is the selfsame, this discerning amounts to unbroken continuity; and since there is a coming-outside-itself, that unbroken continuity is at once a multiplicity, one that just as immediately abides in its equality with itself.

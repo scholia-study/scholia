@@ -6,4 +6,4 @@ depth: 1
 
 ## Erster Teil. Die objektive Logik
 
-{{{ 21.4 }}} Cicer. Tuscul. quaest. lib. II. cap. 1. Est enim philosophia paucis contenta judicibus, multitudinem consulto ipsa fugiens, eique suspecta et invisa.
+{{{ 21.4 }}} (Cicer. Tuscul. quaest. lib. II. cap. 1.) Est enim philosophia paucis contenta judicibus, multitudinem consulto ipsa fugiens, eique suspecta et invisa.

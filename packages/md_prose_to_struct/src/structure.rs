@@ -14,8 +14,9 @@
 //! and resolved to the sentence they fall in.
 
 use common::sentences::{
-    RUN_BREAK, split_sentences_en_forced, split_sentences_en_strong_colon_forced,
-    split_sentences_forced, strip_forced_split_markers, strip_forced_splits,
+    RUN_BREAK, split_sentences_en_forced, split_sentences_en_paren_protected_forced,
+    split_sentences_en_strong_colon_forced, split_sentences_forced,
+    split_sentences_paren_protected_forced, strip_forced_split_markers, strip_forced_splits,
     strip_forced_splits_keep_runs, take_run_marker,
 };
 use regex::Regex;
@@ -200,6 +201,12 @@ pub fn build_output(corpus: &Corpus, translation: bool, parsed_files: &[ParsedFi
     let ctx = BlockCtx {
         splitter: if corpus.strong_colon_splits {
             split_sentences_en_strong_colon_forced
+        } else if corpus.paren_protected_splits {
+            if translation || corpus.source_splitter_en {
+                split_sentences_en_paren_protected_forced
+            } else {
+                split_sentences_paren_protected_forced
+            }
         } else if translation || corpus.source_splitter_en {
             split_sentences_en_forced
         } else {

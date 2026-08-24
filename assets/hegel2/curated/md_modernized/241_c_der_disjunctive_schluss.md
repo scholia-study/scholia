@@ -23,7 +23,7 @@ A ist aber nicht C noch D
 
 Also ist es B.
 
-A ist nicht nur in den beiden Prämissen Subjekt, sondern auch im Schlußsatz. In der ersten ist es allgemeines und in seinem Prädikate die in die Totalität ihrer Arten besondere _allgemeine_ Sphäre; in der zweiten ist es als _Bestimmtes_, oder als eine Art; im Schlußsatz ist es als die ausschließende, _einzelne_ Bestimmtheit gesetzt. – Oder auch ist es schon im Untersatze als ausschließende Einzelnheit, und im Schlußsatze als das Bestimmte, was es ist, positiv gesetzt.
+A ist nicht nur in den beiden Prämissen Subjekt, sondern auch im Schlußsatz. In der ersten ist es allgemeines und in seinem Prädikate die in die Totalität ihrer Arten besonderte _allgemeine_ Sphäre; in der zweiten ist es als _Bestimmtes_, oder als eine Art; im Schlußsatz ist es als die ausschließende, _einzelne_ Bestimmtheit gesetzt. – Oder auch ist es schon im Untersatze als ausschließende Einzelnheit, und im Schlußsatze als das Bestimmte, was es ist, positiv gesetzt.
 
 Was hiermit überhaupt als das _Vermittelte_ erscheint, ist die _Allgemeinheit_ des A mit der _Einzelnheit_. Das _Vermittelnde_ aber ist dieses A, welches die _allgemeine_ Sphäre seiner Besonderungen und ein als _einzelnes_ bestimmtes ist. Was die Wahrheit des hypothetischen Schlusses ist, die Einheit des Vermittelnden und des Vermittelten, ist somit im disjunktiven Schlusse _gesetzt_, der aus diesem Grunde ebensosehr _kein_ _Schluss_ mehr ist. Die Mitte, welche in ihm als die Totalität des Begriffes gesetzt ist, enthält nämlich selbst die beiden Extreme in ihrer vollständigen Bestimmtheit. Die Extreme, im Unterschiede von dieser Mitte, sind nur als ein Gesetztsein, dem keine eigentümliche Bestimmtheit gegen die Mitte mehr zukommt.
 

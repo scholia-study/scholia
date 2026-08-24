@@ -204,7 +204,7 @@ pub const MODERNIZED_LABELS: &[&str] = &[
     "Drittes Kapitel. Das absolute Verhältnis",
     "A. Das Verhältnis der Substantialität",
     "B. Das Kausalitätsverhältnis",
-    "a. Die formelle Causalität",
+    "a. Die formelle Kausalität",
     "b. Das bestimmte Kausalitätsverhältnis",
     "c. Wirkung und Gegenwirkung",
     "C. Die Wechselwirkung",

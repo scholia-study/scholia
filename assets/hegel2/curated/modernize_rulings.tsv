@@ -330,7 +330,7 @@ Theilbarkeit	Teilbarkeit	9	cab	cab
 Skepticismus	Skeptizismus	9	hegel1+cab	sure	
 Continuirliche	Kontinuierliche	9	cab	cab	
 alsdenn	alsdann	9	hegel1+cab	sure	
-sichseyn	Siechsein	9	cab	cab	
+sichseyn	sichsein	9	cab-korrigiert	sure	Kompositumteil (Für-sichseyn); CAB-Halluzination Siechsein verworfen
 Maaßverhältnisse	Maßverhältnisse	9	cab	cab	ß beibehalten (Langvokal angenommen)
 specificirt	spezifiziert	9	manual	sure	
 Wahlverwandschaft	Wahlverwandtschaft	9	cab	cab	
@@ -359,7 +359,7 @@ blos	bloß	8	cab	cab	ß beibehalten (Langvokal angenommen)
 Aeusseres	Äußeres	8	hegel1+cab	sure	ß beibehalten (Langvokal angenommen)
 Entzweyung	Entzweiung	8	hegel1+cab	sure	
 Action	Aktion	8	hegel1+cab	sure	
-repellirt	rebelliert	8	cab	cab	
+repellirt	repelliert	8	cab-korrigiert	sure	CAB rebelliert verworfen
 Irrthum	Irrtum	8	hegel1+cab	sure	
 Ueberfluß	Überfluß	8	cab	cab	ß beibehalten (Langvokal angenommen)
 discreten	diskreten	8	cab	cab	
@@ -430,7 +430,6 @@ Addiren	Addieren	6	cab	cab
 grosse	große	6	hegel1+cab	sure	ß beibehalten (Langvokal angenommen)
 Existirenden	Existierenden	6	cab	cab	
 Ueberhaupt	Überhaupt	6	cab	cab	
-Newtonischen	Neutonischen	6	cab	cab	
 Increment	Inkrement	6	cab	cab	
 Hiedurch	Hierdurch	6	hegel1+cab	sure	
 durchloffenen	durchlaufenen	6	cab	cab	
@@ -482,7 +481,7 @@ Zweyheit	Zweiheit	5	hegel1+cab	sure
 Zurückgekehrtseyn	Zurückgekehrtsein	5	cab	cab	
 abstractere	abstraktere	5	cab	cab	
 Causalitätsverhältniß	Causalitätsverhältnis	5	cab	cab	
-Repelliren	Rebellieren	5	cab	cab	
+Repelliren	Repellieren	5	cab-korrigiert	sure	CAB verworfen
 ausgedrükt	ausgedrückt	5	hegel1+cab	sure	
 gewiß	gewiss	5	hegel1	sure	
 Roth	Rot	5	hegel1+cab	sure	
@@ -550,7 +549,7 @@ müßten	müssten	4	hegel1	sure
 perennirenden	perennierenden	4	hegel1+cab	sure	
 Kategorieen	Kategorien	4	cab	cab	
 fürsichseyend	fürsichseiend	4	hegel1	sure	
-repelliren	rebellieren	4	cab	cab	
+repelliren	repellieren	4	cab-korrigiert	sure	CAB verworfen
 daseyenden	daseienden	4	hegel1	sure	
 Attractiv	Attraktiv	4	manual	sure	
 willkührlichen	willkürlichen	4	hegel1+cab	sure	
@@ -657,7 +656,7 @@ bewußtlose	bewusstlose	3	hegel1	sure
 Fürsichseyende	Fürsichseiende	3	hegel1+cab	sure	
 attrahirend	attrahierend	3	cab	cab	
 manifestiren	manifestieren	3	cab	cab	
-repellirende	rebellierende	3	cab	cab	
+repellirende	repellierende	3	cab-korrigiert	sure	CAB verworfen
 beygelegt	beigelegt	3	hegel1+cab	sure	
 perennirendes	perennierendes	3	cab	cab	
 stätig	stetig	3	cab	cab	
@@ -677,13 +676,11 @@ addirt	addiert	3	cab	cab
 worinn	worin	3	manual	sure	
 Dreyeinigkeit	Dreieinigkeit	3	mech	mech	
 Nothbehelf	Notbehelf	3	cab	cab	
-Graden	Geraden	3	cab	cab	
 afficirt	affiziert	3	hegel1+cab	sure	
 Fürsichbestimmtseyn	Fürsichbestimmtsein	3	mech	mech	
 vertheilt	verteilt	3	hegel1+cab	sure	
 Producten	Produkten	3	cab	cab	
 Untheilbare	Unteilbare	3	cab	cab	
-Newtonische	Neutonische	3	cab	cab	
 incommensurabel	inkommensurabel	3	cab	cab	
 Zeittheilen	Zeitteilen	3	manual	sure	
 beyläuffig	beiläufig	3	cab	cab	
@@ -817,7 +814,7 @@ temperirt	temperiert	2	cab	cab
 Daseyenden	Daseienden	2	mech	mech	
 geläuffigsten	geläufigsten	2	cab	cab	
 Puncte	Punkte	2	hegel1+cab	sure	
-sichseyns	Siechseins	2	cab	cab	
+sichseyns	sichseins	2	cab-korrigiert	sure	wie sichseyn
 Daseyende	Daseiende	2	cab	cab	
 Aeußerlichkeit	Äußerlichkeit	2	hegel1	sure	ß beibehalten (Langvokal angenommen)
 abstossen	abstoßen	2	hegel1+cab	sure	ß beibehalten (Langvokal angenommen)
@@ -835,7 +832,7 @@ Fürsichseyenden	Fürsichseienden	2	mech	mech
 prästabilirt	prästabiliert	2	cab	cab	
 daseyendes	daseiendes	2	hegel1	sure	
 attrahirenden	attrahierenden	2	cab	cab	
-repellirend	rebellierend	2	cab	cab	
+repellirend	repellierend	2	cab-korrigiert	sure	CAB verworfen
 Uebersehen	Übersehen	2	cab	cab	
 Ueberganges	Überganges	2	hegel1	sure	
 daseyn	dasein	2	cab	cab	
@@ -850,7 +847,6 @@ tavtologischer	tautologischer	2	cab	cab
 Dinte	Tinte	2	cab	cab	
 Vorbeygehen	Vorbeigehen	2	cab	cab	
 folgendermassen	folgendermaßen	2	cab	cab	ß beibehalten (Langvokal angenommen)
-substanzielle	substantielle	2	cab	cab	
 Collision	Kollision	2	hegel1+cab	sure	
 herbeygebracht	herbeigebracht	2	cab	cab	
 getheilt	geteilt	2	hegel1+cab	sure	
@@ -926,7 +922,6 @@ absolutfreyen	absolutfreien	2	hegel1+cab	sure
 bestimmtseyns	bestimmtseins	2	mech	mech	
 Ausschliessens	Ausschließens	2	cab	cab	ß beibehalten (Langvokal angenommen)
 gefoderten	geforderten	2	hegel1+cab	sure	
-kalischen	Kaleschen	2	cab	cab	
 identificirt	identifiziert	2	manual	sure	
 Blösse	Blöße	2	hegel1	sure	ß beibehalten (Langvokal angenommen)
 Maaßverhältnisses	Maßverhältnisses	2	cab	cab	ß beibehalten (Langvokal angenommen)
@@ -974,7 +969,6 @@ vielerley	vielerlei	2	hegel1+cab	sure
 conträre	konträre	2	cab	cab	
 conträren	konträren	2	cab	cab	
 conträr	konträr	2	cab	cab	
-unvollkommnern	unvollkommeneren	2	cab	cab	
 verläßt	verlässt	2	hegel1	sure	
 fürsichseyn	fürsichsein	2	hegel1	sure	
 geurtheilt	geurteilt	2	cab	cab	
@@ -1018,7 +1012,7 @@ zweckmässige	zweckmäßige	2	hegel1	sure	ß beibehalten (Langvokal angenommen)
 transcendent	transzendent	2	cab	cab	
 congruiren	kongruieren	2	cab	cab	
 herausgebohren	herausgeboren	2	cab	cab	
-Lebensproceß	Lebensprozeß	2	cab	cab	ß beibehalten (Langvokal angenommen)
+Lebensproceß	Lebensprozess	2	cab-korrigiert	sure	ß nach Kurzvokal → ss
 zweckmässig	zweckmäßig	2	hegel1	sure	ß beibehalten (Langvokal angenommen)
 objectiviren	objektivieren	2	cab	cab	
 Cirkel	Zirkel	2	hegel1+cab	sure	
@@ -1069,7 +1063,6 @@ Theilnahme	Teilnahme	1	hegel1	sure
 räsonnirendem	räsonierendem	1	cab	cab	
 ungeschikt	ungeschickt	1	cab	cab	
 ohnediß	ohnedies	1	manual	sure	
-gäng	Gang	1	cab	cab	
 Verzichtthun	Verzichttun	1	hegel1+cab	sure	
 gerathe	gerate	1	cab	cab	
 zurükgeflohen	zurückgeflohen	1	cab	cab	
@@ -1086,7 +1079,6 @@ beylegt	beilegt	1	cab	cab
 preißt	preist	1	hegel1+cab	sure	
 zweytausendjähriges	zweitausendjähriges	1	cab	cab	
 schaal	schal	1	hegel1+cab	sure	
-Brillen	Brüllen	1	cab	cab	
 abgetheilt	abgeteilt	1	cab	cab	
 sortiren	sortieren	1	cab	cab	
 Gemählden	Gemälden	1	cab	cab	
@@ -1099,9 +1091,8 @@ Rythmus	Rhythmus	1	hegel1+cab	sure
 Ueberschrift	Überschrift	1	cab	cab	
 Abtheilungsbestimmungen	Abteilungsbestimmungen	1	cab	cab	
 directer	direkter	1	cab	cab	
-obenbesagte	obbesagte	1	cab	cab	
 Zuthaten	Zutaten	1	cab	cab	
-trokne	trockene	1	cab	cab	
+trokne	trockne	1	cab-korrigiert	sure	Elision bleibt (Hausstil)
 Reichthums	Reichtums	1	hegel1+cab	sure	
 bewußten	bewussten	1	hegel1	sure	
 Thieres	Tieres	1	hegel1	sure	
@@ -1153,7 +1144,7 @@ Zweyen	Zweien	1	mech	mech
 Bewußtseynslose	Bewusstseinslose	1	cab	cab	
 Zweyer	Zweier	1	mech	mech	
 Fürsichseyendem	Fürsichseiendem	1	mech	mech	
-repellirte	rebellierte	1	cab	cab	
+repellirte	repellierte	1	cab-korrigiert	sure	CAB verworfen
 Negirtwerden	Negiertwerden	1	cab	cab	
 attrahirt	attrahiert	1	hegel1+cab	sure	
 attrahirten	attrahierten	1	cab	cab	
@@ -1166,7 +1157,7 @@ construirend	konstruierend	1	cab	cab
 Festseyn	Festsein	1	mech	mech	
 Nöthige	Nötige	1	cab	cab	
 zurückgekehrtseyn	zurückgekehrtsein	1	hegel1	sure	
-repellirenden	rebellierenden	1	cab	cab	
+repellirenden	repellierenden	1	cab-korrigiert	sure	CAB verworfen
 innwohnende	innewohnende	1	hegel1+cab	sure	
 zusammenfliessende	zusammenfließende	1	cab	cab	ß beibehalten (Langvokal angenommen)
 Selbstproduciren	Selbstproduzieren	1	cab	cab	
@@ -1178,7 +1169,7 @@ Untheilbares	Unteilbares	1	cab	cab
 herbeyführen	herbeiführen	1	cab	cab	
 Künsteleyen	Künsteleien	1	cab	cab	
 stossen	stoßen	1	hegel1+cab	sure	ß beibehalten (Langvokal angenommen)
-Stätige	stetige	1	cab	cab	
+Stätige	Stetige	1	cab-korrigiert	sure	substantiviert, groß
 protestirt	protestiert	1	cab	cab	
 Advocatenbeweis	Advokatenbeweis	1	cab	cab	
 discursiver	diskursiver	1	cab	cab	
@@ -1203,12 +1194,10 @@ zehen	zehn	1	cab	cab
 Aeusserlichseyn	Äusserlichsein	1	mech	mech	
 hierbey	hierbei	1	mech	mech	
 Centnern	Zentnern	1	cab	cab	
-schmälerer	schmalerer	1	cab	cab	
-Thoncylinder	Thonzylinder	1	cab	cab	
+Thoncylinder	Tonzylinder	1	cab-korrigiert	sure	Thon→Ton + c→z
 weitgreiffendem	weitgreifendem	1	cab	cab	
 Nichtbegrenztseyn	Nichtbegrenztsein	1	mech	mech	
 Ueberfliegen	überfliegen	1	cab	cab	
-Hallersche	Hallesche	1	cab	cab	
 häuffe	häufe	1	cab	cab	
 Gebürge	Gebirge	1	cab	cab	
 tausendmahlen	Tausendmalen	1	cab	cab	
@@ -1367,7 +1356,6 @@ Unmannichfaltiges	Unmannigfaltiges	1	cab	cab
 Schooß	Schoß	1	cab	cab	ß beibehalten (Langvokal angenommen)
 Grundvorurtheile	Grundvorurteile	1	cab	cab	
 überzugreiffen	überzugreifen	1	cab	cab	
-geoffenbarte	offenbarte	1	cab	cab	
 Theilbestimmungen	Teilbestimmungen	1	cab	cab	
 rükschlagende	Rückschlagende	1	cab	cab	
 thätiges	tätiges	1	hegel1+cab	sure	
@@ -1487,7 +1475,6 @@ wegläst	weglässt	1	cab	cab
 vortreflicher	vortrefflicher	1	cab	cab	
 constitutives	Konstitutives	1	cab	cab	
 aufschliessen	aufschließen	1	hegel1+cab	sure	ß beibehalten (Langvokal angenommen)
-derem	dessem	1	cab	cab	
 grossem	großem	1	cab	cab	ß beibehalten (Langvokal angenommen)
 Vernunfterkenntniß	Vernunfterkenntnis	1	cab	cab	
 Freyen	Freien	1	cab	cab	
@@ -1509,7 +1496,7 @@ Ueberflüssigkeiten	Überflüssigkeiten	1	cab	cab
 contradictorische	kontradiktorische	1	cab	cab	
 subordinirte	subordinierte	1	cab	cab	
 coordinirte	koordinierte	1	cab	cab	
-Contrarietät	Kontrarität	1	cab	cab	
+Contrarietät	Kontrarietät	1	cab-korrigiert	sure	CAB Kontrarität verworfen
 Coordination	Koordination	1	cab	cab	
 Combiniren	Kombinieren	1	cab	cab	
 liessen	ließen	1	hegel1+cab	sure	ß beibehalten (Langvokal angenommen)
@@ -1525,11 +1512,11 @@ resultirte	resultierte	1	cab	cab
 continuirendes	kontinuierendes	1	cab	cab	
 Rothe	Rote	1	cab	cab	
 dreyeckigte	dreieckige	1	cab	cab	
-farbigtes	Farbiges	1	cab	cab	
+farbigtes	farbiges	1	cab-korrigiert	sure	Kleinschreibung; CAB Großschreibung verworfen
 Parthey	Partei	1	hegel1+cab	sure	
 Reflexionsurtheilen	Reflexionsurteilen	1	cab	cab	
 Continuitäten	Kontinuitäten	1	cab	cab	
-accidentelles	Akzidentelles	1	cab	cab	
+accidentelles	akzidentelles	1	cab-korrigiert	sure	Kleinschreibung; CAB Großschreibung verworfen
 comprehensiv	komprehensiv	1	cab	cab	
 anticipirte	antizipierte	1	hegel1+cab	sure	
 particularisirt	partikularisiert	1	hegel1+cab	sure	
@@ -1541,7 +1528,6 @@ sämmtlich	sämtlich	1	cab	cab
 Conträre	Konträre	1	cab	cab	
 Contradictorische	Kontradiktorische	1	cab	cab	
 Conträr	Konträr	1	cab	cab	
-Dunkeln	Dunklen	1	cab	cab	
 Räsonement	Räsonnement	1	cab	cab	
 Vereinzelnte	Vereinzelte	1	cab	cab	
 Begriffsurtheils	Begriffsurteils	1	cab	cab	
@@ -1583,7 +1569,6 @@ foderndes	forderndes	1	cab	cab
 Formthätigkeit	Formtätigkeit	1	cab	cab	
 Uebersetzens	Übersetzens	1	hegel1+cab	sure	
 befreyten	befreiten	1	cab	cab	
-besonderte	besondere	1	cab	cab	
 Schattirungen	Schattierungen	1	hegel1+cab	sure	
 Rechtthun	Rechttun	1	cab	cab	
 Selbstthätigkeit	Selbsttätigkeit	1	hegel1+cab	sure	
@@ -1647,7 +1632,7 @@ Todtes	Totes	1	hegel1+cab	sure
 Producirende	Produzierende	1	cab	cab	
 constituirten	konstituierten	1	cab	cab	
 Eröfnung	Eröffnung	1	cab	cab	
-Reproductionsproceß	Reproduktionsprozeß	1	cab	cab	ß beibehalten (Langvokal angenommen)
+Reproductionsproceß	Reproduktionsprozess	1	cab-korrigiert	sure	c→k + ß→ss
 realisirter	realisierter	1	cab	cab	
 transcendentales	transzendentales	1	cab	cab	
 vermeynte	vermeinte	1	hegel1+cab	sure	
@@ -1662,7 +1647,7 @@ Analysirens	Analysierens	1	cab	cab
 Verhältnißbegriffe	Verhältnisbegriffe	1	cab	cab	
 producirenden	produzierenden	1	cab	cab	
 Erkenntnißweise	Erkenntnisweise	1	cab	cab	
-Begränzen	begrenzen	1	cab	cab	
+Begränzen	Begrenzen	1	cab-korrigiert	sure	substantivierter Infinitiv, groß
 gelößt	gelöst	1	cab	cab	
 addire	addiere	1	cab	cab	
 Decimalzahlen	Dezimalzahlen	1	cab	cab	
@@ -1688,7 +1673,6 @@ demonstrirt	demonstriert	1	cab	cab
 deducirt	deduziert	1	cab	cab	
 Representant	Repräsentant	1	cab	cab	
 einschliessen	einschließen	1	cab	cab	ß beibehalten (Langvokal angenommen)
-vollkommnern	vollkommeneren	1	cab	cab	
 Herbeyschaffung	Herbeischaffung	1	cab	cab	
 dirigirtes	Dirigiertes	1	cab	cab	
 Figuriren	Figurieren	1	cab	cab	
@@ -1704,7 +1688,7 @@ mehrerley	mehrerlei	1	cab	cab
 postulirt	postuliert	1	hegel1+cab	sure	
 Verwirklichtseyn	Verwirklichtsein	1	cab	cab	
 reproducirt	reproduziert	1	cab	cab	
-wahrhaftseyende	wahrhaftseiernde	1	cab	cab	
+wahrhaftseyende	wahrhaftseiende	1	cab-korrigiert	sure	CAB seiernde verworfen
 beruffen	berufen	1	hegel1+cab	sure	
 begreiffendes	begreifendes	1	hegel1+cab	sure	
 Vorwartsgehen	Vorwärtsgehen	1	cab	cab	

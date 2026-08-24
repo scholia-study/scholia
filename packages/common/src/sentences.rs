@@ -140,6 +140,20 @@ static SINGLE_ABBREVS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
         "Beweisgr.",
         "Abschn.",
         "Hauptst.",
+        // Citation abbreviations of the Wissenschaft der Logik corpora
+        // (hegel2/hegel3); verified absent from the kant1/kant3/hegel1
+        // layers, so their split behaviour is untouched.
+        "Vol.",
+        "Sect.",
+        "Wissensch.",
+        "Uebers.",
+        "resp.",
+        "lect.",
+        "philos.",
+        // Standalone "s." (= siehe) — leading space/paren keeps word-final
+        // -s. (des., Dinges.) splitting as before.
+        " s.",
+        "(s.",
     ]
 });
 
@@ -159,6 +173,14 @@ static MULTI_ABBREV_RE: LazyLock<Vec<Regex>> = LazyLock::new(|| {
         r"s\.\s*o\.",   // s. o.
         r"s\.\s*u\.",   // s. u.
         r"o\.\s*ä\.",   // o. ä.
+        // Abbreviation pairs in the Logik corpora's cross-references —
+        // pair-anchored so a genuine sentence ending in "vor."/"rein." still
+        // splits (verified absent from kant1/kant3/hegel1).
+        r"vor\.\s*Anm\.",     // der vor. Anm.
+        r"vorherg\.\s*Anm\.", // der vorherg. Anm.
+        r"folg\.\s*Anm",      // der folg. Anm. / der folg. Anmerkung
+        r"betreff\.\s*Anm\.", // s. d. betreff. Anm.
+        r"rein\.\s*Vern\.",   // Kr. d. rein. Vern.
     ];
     patterns
         .into_iter()
@@ -251,6 +273,92 @@ pub fn split_sentences_forced(text: &str, html: &str, forced: &[usize]) -> Vec<(
 /// Find byte positions in `text` where new sentences begin (German).
 fn find_text_split_positions(text: &str) -> Vec<usize> {
     find_text_split_positions_with(text, &SINGLE_ABBREVS, &MULTI_ABBREV_RE)
+}
+
+/// Remove split candidates that fall inside parentheses, or that sit
+/// directly before an opening parenthesis. Citation apparatus — "(übers.
+/// von Wöhler S. 82. ff.)", "(a. a. O.)" — is riddled with abbreviation
+/// periods that are not sentence boundaries, and a parenthetical belongs
+/// to its host sentence. Opt-in per corpus (`paren_protected_splits`,
+/// hegel2); a stray unbalanced closing paren clamps to depth 0 so it
+/// cannot suppress the rest of a block.
+fn retain_splits_outside_parens(text: &str, positions: &mut Vec<usize>) {
+    let bytes = text.as_bytes();
+    let mut depths = Vec::with_capacity(bytes.len() + 1);
+    let mut depth: i32 = 0;
+    depths.push(depth);
+    for &b in bytes {
+        match b {
+            b'(' => depth += 1,
+            b')' => depth = (depth - 1).max(0),
+            _ => {}
+        }
+        depths.push(depth);
+    }
+    positions.retain(|&p| {
+        if depths[p.min(bytes.len())] > 0 {
+            return false;
+        }
+        bytes[p.min(bytes.len())..]
+            .iter()
+            .copied()
+            .find(|b| !b.is_ascii_whitespace())
+            .is_none_or(|b| b != b'(')
+    });
+}
+
+/// [`split_sentences_forced`] with parenthesis-protected candidates
+/// (forced positions are structural and stay untouched).
+pub fn split_sentences_paren_protected_forced(
+    text: &str,
+    html: &str,
+    forced: &[usize],
+) -> Vec<(String, String)> {
+    if text.is_empty() {
+        return vec![];
+    }
+    let mut split_positions = find_text_split_positions(text);
+    retain_splits_outside_parens(text, &mut split_positions);
+    split_positions.extend_from_slice(forced);
+    split_positions.sort_unstable();
+    split_positions.dedup();
+    assemble_splits(text, html, &split_positions)
+}
+
+/// [`split_sentences_en_forced`] with parenthesis-protected candidates.
+pub fn split_sentences_en_paren_protected_forced(
+    text: &str,
+    html: &str,
+    forced: &[usize],
+) -> Vec<(String, String)> {
+    if text.is_empty() {
+        return vec![];
+    }
+    let mut split_positions =
+        find_text_split_positions_with(text, &SINGLE_ABBREVS_EN, &MULTI_ABBREV_RE_EN);
+    retain_splits_outside_parens(text, &mut split_positions);
+    split_positions.extend_from_slice(forced);
+    split_positions.sort_unstable();
+    split_positions.dedup();
+    assemble_splits(text, html, &split_positions)
+}
+
+/// Steps 2–4 of sentence splitting: split the plain text, map the
+/// positions into the HTML, split and re-balance the HTML.
+fn assemble_splits(text: &str, html: &str, split_positions: &[usize]) -> Vec<(String, String)> {
+    if split_positions.is_empty() {
+        return vec![(text.to_string(), html.to_string())];
+    }
+    let text_parts = split_at_positions(text, split_positions);
+    let html_split_positions = map_text_positions_to_html(text, html, split_positions);
+    let html_parts = split_html_with_rebalance(html, &html_split_positions);
+    assert_eq!(text_parts.len(), html_parts.len());
+    text_parts
+        .into_iter()
+        .zip(html_parts)
+        .map(|(t, h)| (t.trim().to_string(), h.trim().to_string()))
+        .filter(|(t, _)| !t.is_empty())
+        .collect()
 }
 
 /// Split text at the given byte positions.
@@ -475,11 +583,54 @@ fn tag_name_of(full_tag: &str) -> &str {
 /// English single-word abbreviations that should NOT trigger a sentence split.
 static SINGLE_ABBREVS_EN: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
     vec![
-        "Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Rev.", "St.", "Jr.", "Sr.", "vs.", "Vol.", "No.",
-        "Gen.", "Gov.", "Sgt.", "Corp.", "Inc.", "Ltd.", "Jan.", "Feb.", "Mar.", "Apr.", "Aug.",
-        "Sept.", "Oct.", "Nov.", "Dec.", "Transc.", "transc.", "Aesth.", "aesth.", "Log.", "log.",
-        "Metaph.", "metaph.", "Sect.", "sect.", "Chap.", "chap.", "Introd.", "introd.", "Pref.",
+        "Mr.",
+        "Mrs.",
+        "Ms.",
+        "Dr.",
+        "Prof.",
+        "Rev.",
+        "St.",
+        "Jr.",
+        "Sr.",
+        "vs.",
+        "Vol.",
+        "No.",
+        "Gen.",
+        "Gov.",
+        "Sgt.",
+        "Corp.",
+        "Inc.",
+        "Ltd.",
+        "Jan.",
+        "Feb.",
+        "Mar.",
+        "Apr.",
+        "Aug.",
+        "Sept.",
+        "Oct.",
+        "Nov.",
+        "Dec.",
+        "Transc.",
+        "transc.",
+        "Aesth.",
+        "aesth.",
+        "Log.",
+        "log.",
+        "Metaph.",
+        "metaph.",
+        "Metaphys.",
+        "metaphys.",
+        "Sect.",
+        "sect.",
+        "Chap.",
+        "chap.",
+        "Introd.",
+        "introd.",
+        "Pref.",
         "pref.",
+        " s.",
+        "lect.",
+        "philos.",
     ]
 });
 

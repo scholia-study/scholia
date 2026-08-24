@@ -65,6 +65,8 @@ case "$corpus" in
         ;;
     hegel2)
         "$BIN" --input-file assets/hegel2/derived/output.json "$@"
+        "$BIN" --input-file assets/hegel2/derived/translation_output.json \
+               --source-book-slug wissenschaft-der-logik "$@"
         ;;
     hegel3)
         "$BIN" --input-file assets/hegel3/derived/output.json "$@"

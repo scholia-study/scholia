@@ -17,6 +17,6 @@ Das Leben in seiner Idee nun näher betrachtet, ist an und für sich absolute _A
 
 {{{ 12.182 }}} Das Leben ist daher _erstlich_ zu betrachten als _lebendiges_ _Individuum_, das für sich die subjektive Totalität, und als gleichgültig vorausgesetzt ist gegen eine ihm als gleichgültig gegenüberstehende Objektivität.
 
-_Zweitens_ ist es _der_ _Lebensprozeß_, seine Voraussetzung aufzuheben, die gegen dasselbe gleichgültige Objektivität als negativ zu setzen, und sich als ihre Macht und negative Einheit zu verwirklichen. Damit macht es sich zum Allgemeinen, das die Einheit seiner selbst und seines Andern ist. Das Leben ist daher
+_Zweitens_ ist es _der_ _Lebensprozess_, seine Voraussetzung aufzuheben, die gegen dasselbe gleichgültige Objektivität als negativ zu setzen, und sich als ihre Macht und negative Einheit zu verwirklichen. Damit macht es sich zum Allgemeinen, das die Einheit seiner selbst und seines Andern ist. Das Leben ist daher
 
 _Drittens_ der _Prozess_ _der_ _Gattung_, seine Vereinzelung aufzuheben, und sich zu seinem objektiven Dasein als zu sich selbst zu verhalten. Dieser Prozess ist hiermit einerseits die Rückkehr zu seinem Begriffe, und die Wiederholung der ersten Diremtion, das Werden einer neuen, und der Tod der ersten unmittelbaren Individualität; andererseits aber ist der _in_ _sich_ _gegangene_ _Begriff_ des Lebens das Werden des sich zu sich selbst verhaltenden, als allgemein und frei für sich existierenden Begriffes, der Übergang in _das_ _Erkennen_.

@@ -62,6 +62,10 @@ pub struct Corpus {
     /// convention — hobbes1): a capitalized word after ": " begins a new
     /// sentence.
     pub strong_colon_splits: bool,
+    /// Never split inside parentheses (or directly before one): citation
+    /// apparatus stays inside its host sentence instead of shedding
+    /// abbreviation-period fragments (hegel2, both editions).
+    pub paren_protected_splits: bool,
 }
 
 struct SystemSpec {
@@ -214,6 +218,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 marker_labels: ("AA", "B-edition"),
                 source_splitter_en: false,
                 strong_colon_splits: false,
+                paren_protected_splits: false,
             })
         }
         "kant3" => {
@@ -305,6 +310,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 marker_labels: ("AA Bd. V", "1790"),
                 source_splitter_en: false,
                 strong_colon_splits: false,
+                paren_protected_splits: false,
             })
         }
         "hegel1" => {
@@ -406,36 +412,66 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 marker_labels: ("1807", "GW"),
                 source_splitter_en: false,
                 strong_colon_splits: false,
+                paren_protected_splits: false,
             })
         }
         "hegel2" => {
             use common::hegel2::{filenames, meta, toc, toc_mod};
-            if translation {
-                panic!("hegel2's English translation edition is not yet in scope");
-            }
+            let (book, figure_label, output_file) = if translation {
+                (
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG_EN,
+                        title: meta::BOOK_TITLE_EN,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE_EN,
+                        source: meta::SOURCE_EN,
+                        year: meta::YEAR_EN,
+                        about: meta::ABOUT_EN,
+                        imprint: Imprint {
+                            publisher: Some(meta::PUBLISHER_EN),
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                        },
+                    }),
+                    "Figure",
+                    meta::TRANSLATION_OUTPUT_FILE,
+                )
+            } else {
+                (
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG,
+                        title: meta::BOOK_TITLE,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE,
+                        source: meta::SOURCE,
+                        year: meta::YEAR,
+                        about: meta::ABOUT,
+                        imprint: Imprint {
+                            publisher: Some(meta::PUBLISHER),
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                        },
+                    }),
+                    "Abbildung",
+                    meta::OUTPUT_FILE,
+                )
+            };
             Some(Corpus {
                 name: "hegel2",
-                book: book_data(BookSpec {
-                    slug: meta::BOOK_SLUG,
-                    title: meta::BOOK_TITLE,
-                    author: meta::AUTHOR,
-                    language: meta::LANGUAGE,
-                    source: meta::SOURCE,
-                    year: meta::YEAR,
-                    about: meta::ABOUT,
-                    imprint: Imprint {
-                        publisher: Some(meta::PUBLISHER),
-                        place: None,
-                        volume: None,
-                        edition: None,
-                        original_year: Some(meta::ORIGINAL_YEAR),
-                    },
-                }),
+                book,
                 // One system: GW volume.page ("21.68"), the scholarly
                 // citation standard and therefore the citation default.
                 reference_systems: vec![ReferenceSystemData {
                     slug: meta::GW_SYSTEM_SLUG.to_string(),
-                    label: meta::GW_SYSTEM_LABEL.to_string(),
+                    label: if translation {
+                        meta::GW_SYSTEM_LABEL_EN.to_string()
+                    } else {
+                        meta::GW_SYSTEM_LABEL.to_string()
+                    },
                     ref_type: meta::GW_SYSTEM_REF_TYPE.to_string(),
                     cite_priority: Some(meta::GW_CITE_PRIORITY),
                     cite_template: Some(meta::GW_CITE_TEMPLATE.to_string()),
@@ -443,15 +479,18 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 }],
                 toc_reviewed: toc::flat_toc_entries(),
                 toc_modernized: toc_mod::flat_toc_entries(),
+                // kant3-style: shared German filenames, the translated
+                // files' front-matter labels are the English authority
+                // (curated table: assets/hegel2/curated/translate_labels_en.tsv).
                 toc_en: None,
                 filenames: filenames::all_filenames(),
                 position_number: filenames::position_number,
                 slugify: filenames::slugify,
                 modernized_dir: meta::MODERNIZED_DIR.to_string(),
                 reviewed_dir: meta::REVIEWED_DIR.to_string(),
-                translated_dir: String::new(),
-                output_file: meta::OUTPUT_FILE.to_string(),
-                figure_label: "Abbildung",
+                translated_dir: meta::TRANSLATED_DIR.to_string(),
+                output_file: output_file.to_string(),
+                figure_label,
                 aa_system_slug: meta::GW_SYSTEM_SLUG,
                 // No `{{ }}` system in this corpus; the empty slug fails
                 // loudly at import if such a marker ever appears.
@@ -460,6 +499,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 marker_labels: ("GW", "(none)"),
                 source_splitter_en: false,
                 strong_colon_splits: false,
+                paren_protected_splits: true,
             })
         }
         "hegel3" => {
@@ -514,6 +554,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 marker_labels: ("1812", "(none)"),
                 source_splitter_en: false,
                 strong_colon_splits: false,
+                paren_protected_splits: false,
             })
         }
         "hobbes1" => {
@@ -568,6 +609,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 marker_labels: ("1651", "(none)"),
                 source_splitter_en: true,
                 strong_colon_splits: true,
+                paren_protected_splits: false,
             })
         }
         _ => None,

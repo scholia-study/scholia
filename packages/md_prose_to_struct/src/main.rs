@@ -9,7 +9,10 @@ use std::path::Path;
 
 use clap::Parser;
 
-use common::sentences::{split_sentences, split_sentences_en};
+use common::sentences::{
+    split_sentences, split_sentences_en, split_sentences_en_paren_protected_forced,
+    split_sentences_paren_protected_forced,
+};
 use md_prose_to_struct::corpus::{self, Corpus, FlatEntry};
 use md_prose_to_struct::html::{md_to_html, md_to_plain};
 use md_prose_to_struct::parse::{self, ParsedBlockType, parse_blocks};
@@ -359,12 +362,20 @@ fn collect_translation_files(corpus: &Corpus) -> Vec<ParsedFile> {
             let en_text = parse::strip_margin_tokens(&en_block.text);
             let (en_plain, _) = parse::strip_markers(&md_to_plain(&en_text));
             let (en_html, _) = parse::strip_markers(&md_to_html(&en_text));
-            let en_sentences = split_sentences_en(&en_plain, &en_html);
+            let en_sentences = if corpus.paren_protected_splits {
+                split_sentences_en_paren_protected_forced(&en_plain, &en_html, &[])
+            } else {
+                split_sentences_en(&en_plain, &en_html)
+            };
 
             let de_text = parse::strip_margin_tokens(&de_block.text);
             let (de_plain, _) = parse::strip_markers(&md_to_plain(&de_text));
             let (de_html, _) = parse::strip_markers(&md_to_html(&de_text));
-            let de_sentences = split_sentences(&de_plain, &de_html);
+            let de_sentences = if corpus.paren_protected_splits {
+                split_sentences_paren_protected_forced(&de_plain, &de_html, &[])
+            } else {
+                split_sentences(&de_plain, &de_html)
+            };
 
             if en_sentences.len() != de_sentences.len() {
                 let de_list = de_sentences

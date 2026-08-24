@@ -1,11 +1,11 @@
 ---
 position: 196
-label: "a. Die formelle Causalität"
+label: "a. Die formelle Kausalität"
 depth: 6
 page_gw: "11.397"
 ---
 
-## {{{ 11.397 }}} a. Die formelle Causalität
+## {{{ 11.397 }}} a. Die formelle Kausalität
 
 1. Die Ursache ist das _Ursprüngliche_ gegen die Wirkung. – Die Substanz _ist_ als Macht _das_ _Scheinen_, oder _hat_ Akzidentalität. Aber sie ist als Macht eben so sehr Reflexion-in-sich in ihrem Scheine; so _legt_ sie ihr Übergehen _aus_, _und_ _dies_ _Scheinen_ _ist_ _bestimmt_ _als_ _Schein_, oder die Akzidenz ist _gesetzt_, als das, dass sie nur ein _Gesetztes_ sei. – Die Substanz geht aber in ihrem Bestimmen nicht von der Akzidentalität aus, als ob diese _voraus_ ein _anderes_ wäre, und nun erst als Bestimmtheit gesetzt würde, sondern beides ist Eine Actuosität. Die Substanz, als Macht _bestimmt_ _sich_; aber dies Bestimmen ist unmittelbar selbst das Aufheben des Bestimmens und die Rückkehr. _Sie_ _bestimmt_ _sich_, – _sie_, das Bestimmende ist so das _Unmittelbare_, und das selbst schon Bestimmte; – indem sie _sich_ bestimmt, setzt sie also dies schon _Bestimmte_ als _bestimmt_; hat so das Gesetztsein aufgehoben, und ist in sich zurückgekehrt. – Umgekehrt ist diese Rückkehr, weil sie die _negative_ Beziehung der Substanz auf sich ist, selbst ein _Bestimmen_ oder Abstoßen ihrer von sich; durch diese Rückkehr _wird_ das Bestimmte, von dem sie anzufangen und es als vorgefundenes Bestimmtes nun als solches zu setzen scheint. – So ist die absolute Actuosität _Ursache_; – die Macht der Substanz in _ihrer_ _Wahrheit_ als Manifestation, die das, was _an_ _sich_ ist, die Akzidenz, die das Gesetztsein ist, unmittelbar im Werden derselben auch _auslegt_, sie _setzt_ als _Gesetztsein_; _die_ _Wirkung_. – Diese ist also _erstlich_ dasselbe, was die Akzidentalität des Substantialitätsverhältnisses ist, nämlich die Substanz als _Gesetztsein_; aber _zweitens_ ist die Akzidenz als solche substantiell nur durch ihr Verschwinden, als übergehendes; als Wirkung aber ist sie das Gesetztsein als mit sich identisch; die Ursache ist in der Wirkung als ganze Substanz manifestiert, nämlich als an dem Gesetztsein selbst als solchem in sich reflektiert.
 
