@@ -68,6 +68,34 @@ with a witness at an unruled site. The 1832 Being has no DTA witness;
 the Zeno.org Werke text (`assets/hegel2/control/wdl.json`) serves as its
 collation control in the verify gate only.
 
+## Editorial interventions
+
+Beyond the witness-ruled word adjudications, the converter applies a small
+set of deliberate interventions, each anchored to an exact text match so
+it cannot drift:
+
+- **Citation parenthesization** (`CITATION_PARENS` in
+  `packages/hegel2_gw_to_md`): eight citation runs that the print sets
+  outside parentheses — "III. Band I. Abth. (übers. von Wöhler …)", the
+  bare footnote citations, the Cicero motto's locus — are re-set inside a
+  single flat parenthesis each. This is the one place the German layers
+  knowingly depart from the print's punctuation (words untouched; the
+  witness gates still compare token-identical). Rationale: the sentence
+  splitter treats parentheses as split-free, so a parenthesized citation
+  stays inside its host sentence instead of shedding abbreviation-period
+  fragments ("Vern. 2te Aufl.") as spurious sentence records.
+- **Transcription repairs**: the digitization's handful of dropped
+  spaces after sentence stops ("gesichert sei.Auch") are restored; the
+  footnote reference the digitization lost at GW 11.351 is re-anchored
+  from the DTA witness, superseding the stranded printed `∗)` sign.
+
+The sentence splitter's paren protection is a per-corpus knob
+(`paren_protected_splits` in `md_prose_to_struct`), on for hegel2 in both
+editions. In the English layer the citation apparatus inside those
+parentheses is anglicized (S. → p., Band → Vol., Abth. → Division,
+Anm. → Remark, ebendas. → ibid.; canonical English titles for the
+Kant/Hegel classics, other German titles and Latin/French verbatim).
+
 ## Layers
 
 Three curated layers, one file per TOC node (`NNN_slug.md`):
