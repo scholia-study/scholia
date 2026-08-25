@@ -29,4 +29,4 @@ The relation of the science that I call the _Phenomenology_ _of_ _Spirit_ to log
 
 [^2]: (Bamberg and Würzburg, at Göbhard's, 1807). This title will no longer be attached to the second edition, which is to appear next Easter. – In place of the intention mentioned in what follows, of a second part that was to contain all the other philosophical sciences, I have since brought out the Encyclopaedia of the Philosophical Sciences, last year in its third edition (Note to the second edition).
 
-Nuremberg, 22. March 1812.
+Nuremberg, 22 March 1812.

@@ -146,6 +146,7 @@ static SINGLE_ABBREVS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
         "Vol.",
         "Sect.",
         "Wissensch.",
+        "Wiſſenſch.",
         "Uebers.",
         "resp.",
         "lect.",
@@ -154,6 +155,8 @@ static SINGLE_ABBREVS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
         // -s. (des., Dinges.) splitting as before.
         " s.",
         "(s.",
+        " ſ.",
+        "(ſ.",
     ]
 });
 
@@ -181,6 +184,11 @@ static MULTI_ABBREV_RE: LazyLock<Vec<Regex>> = LazyLock::new(|| {
         r"folg\.\s*Anm",      // der folg. Anm. / der folg. Anmerkung
         r"betreff\.\s*Anm\.", // s. d. betreff. Anm.
         r"rein\.\s*Vern\.",   // Kr. d. rein. Vern.
+        // Dateline day-periods ("Nürnberg, den 22. März 1812.", "den 21.
+        // Jul. 1816." — hegel2 002/201, hegel3 Vorrede): a dateline is one
+        // sentence, not two fragments. Pair-anchored to the occurring
+        // months; digit-period + month occurs in no other corpus.
+        r"\d\.\s*(März|Maͤrz|Jul\.)",
     ];
     patterns
         .into_iter()

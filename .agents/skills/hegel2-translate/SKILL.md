@@ -90,6 +90,16 @@ runs < 15 words from locked terms are expected and pass.
   actual splits, artifact or not.
 - No translator's notes or synthesized apparatus: the reader renders
   curated markdown only.
+- **Datelines are one sentence.** The German day-period is
+  splitter-protected ("den 22. März 1812."); English dates drop the
+  day-period ("Nuremberg, 22 March 1812."), which is correct English
+  date style and split-free by itself.
+- **Embedded questions stay lowercase.** The period-internal `? lowercase`
+  pointing ("Interesse finden? auch die sonstigen…") is authentic
+  19th-century convention, user-confirmed to keep: the question mark has
+  only comma strength inside a longer period. The English mirrors it with
+  a lowercase continuation ("…expected to arouse? the remaining proofs…")
+  — capitalizing would split the English where the German does not.
 - **Spell out German abbreviations in English** (`z. B.` → "for instance",
   `d. h.` → "that is", `u.s.f.` → "and so forth", `z. E.` → "say") rather
   than `e.g.`/`i.e.`/"etc." — no abbreviation period can then create a

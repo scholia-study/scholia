@@ -17,11 +17,25 @@ the German text layers here plus the editorial table that produces them
 (`md_reviewed/`, `md_modernized/`, `modernize_rulings.tsv`) carry that
 same share-alike licence; Scholia asserts no further rights in them.
 
-The converter is `hegel1_tei_to_md --page-key page_1812 --promote-head
-"Erstes Buch. Das Seyn"` — the same DTA `att.linguistic` TEI shape serves
-both Hegel corpora (the `<w>` tokens span `<lb/>`, which is what lets a
-hyphenated line break be rejoined on word boundaries rather than by
-guesswork). The one structural intervention: the DTA nests *Erstes Buch*
+The converter is `hegel1_tei_to_md` — the same DTA `att.linguistic` TEI
+shape serves both Hegel corpora (the `<w>` tokens span `<lb/>`, which is
+what lets a hyphenated line break be rejoined on word boundaries rather
+than by guesswork). The layers are generated once and thereafter treated
+as curated; should a table-driven regeneration ever be needed, the exact
+invocations (verified byte-stable against the checked-in layers) are:
+
+    hegel1_tei_to_md assets/hegel3/raw/hegel_logik0101_1812.xml \
+        assets/hegel3/curated/md_reviewed --layer reviewed \
+        --reports assets/hegel3/derived --page-key page_1812 \
+        --promote-head "Erstes Buch. Das Seyn" --gw-markers /dev/null
+    hegel1_tei_to_md assets/hegel3/raw/hegel_logik0101_1812.xml \
+        assets/hegel3/curated/md_modernized --layer modernized \
+        --rulings assets/hegel3/curated/modernize_rulings.tsv \
+        --page-key page_1812 --promote-head "Erstes Buch. Das Seyn" \
+        --gw-markers /dev/null
+
+(`--gw-markers /dev/null` because the 1812 volume has no `{{ }}`
+concordance system.) The one structural intervention: the DTA nests *Erstes Buch*
 inside the *Logik* division, while the print's own contents list it at
 top level — `--promote-head` lifts the Buch and its subtree one level to
 match the print.
