@@ -1,0 +1,16 @@
+---
+position: 46
+label: "3. Return of Infinity into Itself"
+depth: 5
+page_1812: 85
+---
+
+## 3. Return of Infinity into Itself
+
+In fact, however, the truth of this infinite is already contained in this reciprocal determining that passes over and back. For it is, as was recalled, ***itself finite***, being absolutely referred to the finite. The ***unity of the finite and the infinite*** is therefore not merely the inner, but is itself ***present***. The infinite is only as the going-beyond of the finite; the finite likewise only as that which is a limit and beyond which one must go. In each of them, therefore, lies that determination which {{{ 86 }}} in the supposing of the infinite progress or of the ought is merely shut out from it and stands over against it.
+
+But the ***unity*** of the finite and the infinite ***sublates them***; for finite and infinite is precisely what they are only in their separation. Each, however, is on its own self this unity and this sublating of itself. Finitude is only as a going out beyond itself; contained in it, therefore, is infinity, the other of itself. Just so, infinity is only as a going out beyond the finite; it has meaning only as the negative reference to the finite, it therefore essentially contains its other, and is thus on itself the other of itself. The finite is not sublated by the infinite as by something that is outside it; rather its infinity consists in sublating itself. — Further, this sublating is not otherness in general; rather the finite, according to its ***determination***, as what it is supposed to be ***in itself***, is ***negation***, is otherness, is existence as a non-being. Since it thus has the otherness of its determination on its own self, it is itself the otherness of otherness. — Thus infinity does not consist in the empty beyond, which is bounded only externally and receives a determination; rather infinity is likewise on itself the other of itself, which calls itself back out of its flight, and thus, as other of the empty otherness, as negation of negation, is return to itself and reference to itself.
+
+Neither the finite as such nor the infinite as such therefore has truth. Each is on its own self the opposite of itself, and unity with its other. Their ***determinateness over against each other*** has therefore vanished. With this there has entered ***true in*** {{{ 87 }}} ***finity***, in which both finitude and bad infinity are sublated. It consists in the going out beyond otherness, as the ***return to itself***; it is negation as ***referring itself to itself***; otherness insofar as it is not ***immediate*** otherness but the sublating of otherness, the ***restored equality with itself***.
+
+***Existence*** is at first ***determinate*** being, essentially referred to an other. Non-being is in existence as being; and existence has now made itself into this on its own self, namely as infinity. The determinateness of existence has vanished as reference to an other; it has become determinateness referring itself to itself, absolute, restrictionless being-determined. This pure being-determined within itself, not through an other, qualitative infinity, being that is equal to itself, as the negative reference to itself, is ***being-for-itself***.

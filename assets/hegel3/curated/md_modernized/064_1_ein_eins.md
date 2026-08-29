@@ -7,9 +7,9 @@ page_1812: 113
 
 ## {{{ 113 }}} 1. Ein Eins
 
-Die Repulsion macht die vielen Eins zu Seiendenfür-Anderes. Aber es sind die Vielen, denen dies Rebellieren zukommt, und zwar kommt es ihnen zu als Eins. Aber als Eins sind sie unendliche Beziehung auf sich selbst, als solche rebellieren sie eben so sehr dies Sein-für-Anderes, oder jenes Rebellieren. Diese Repulsion der Repulsion ist somit, als sich selbst aufhebend, Attraktion.
+Die Repulsion macht die vielen Eins zu Seiendenfür-Anderes. Aber es sind die Vielen, denen dies Repellieren zukommt, und zwar kommt es ihnen zu als Eins. Aber als Eins sind sie unendliche Beziehung auf sich selbst, als solche repellieren sie eben so sehr dies Sein-für-Anderes, oder jenes Repellieren. Diese Repulsion der Repulsion ist somit, als sich selbst aufhebend, Attraktion.
 
-Es tritt aber hier der erwähnte Unterschied ein; Eins setzt nämlich die ***andern*** Eins, als Sein-für-Anderes, und hebt, — insofern dies Rebellieren gegenseitig wäre, — ***sein*** Sein-für-Anderes, das es darin erhielte, auf; es erhält aber das Sein-für-Anderes der Andern.
+Es tritt aber hier der erwähnte Unterschied ein; Eins setzt nämlich die ***andern*** Eins, als Sein-für-Anderes, und hebt, — insofern dies Repellieren gegenseitig wäre, — ***sein*** Sein-für-Anderes, das es darin erhielte, auf; es erhält aber das Sein-für-Anderes der Andern.
 
 Die Attraktion ist nämlich Repulsion der Repulsion. Das Eins setzt die andern Eins ideell, als Sein-für-Anderes, aber hebt dies Sein-für-Anderes eben so sehr wieder auf. Es ist somit die Rückkehr des Eins in sich selbst gesetzt, oder dieselbe unendliche Beziehung auf sich, welche das Eins ***an sich*** ist. Aber es sind damit zweierlei Eins vorhanden; nämlich das ***unmittelbare*** Eins, oder das Eins, wie es an sich ist, und dann das Eins, ***das*** aus seiner Zerstreuung, ***aus der Vielheit in sich zurückkehrt***.
 

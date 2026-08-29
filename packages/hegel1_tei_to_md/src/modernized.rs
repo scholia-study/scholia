@@ -466,10 +466,17 @@ pub fn load_rulings(tsv: &str) -> Result<HashMap<String, String>, String> {
             return Err(format!("rulings line {}: expected ≥6 columns", i + 1));
         }
         let (surface, ruling, result) = (cols[0], cols[4], cols[5]);
-        if !matches!(ruling, "accept" | "reject" | "rewrite") {
+        if !matches!(ruling, "accept" | "reject" | "rewrite" | "drop") {
             return Err(format!("rulings line {}: bad ruling `{ruling}`", i + 1));
         }
-        if result.is_empty() {
+        // `drop` emits nothing (the DTA's empty apparatus tokens, whose CAB
+        // norm is a placeholder like "[Formel]"); every other ruling must
+        // carry a non-empty result.
+        if ruling == "drop" {
+            if !result.is_empty() {
+                return Err(format!("rulings line {}: drop rows carry no result", i + 1));
+            }
+        } else if result.is_empty() {
             return Err(format!("rulings line {}: empty result", i + 1));
         }
         if out

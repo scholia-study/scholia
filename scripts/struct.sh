@@ -39,9 +39,8 @@ case "$corpus" in
         cargo run -p md_prose_to_struct -- --corpus "$corpus" --translation
         ;;
     hegel3)
-        # German two-layer prose; the English translation edition is a
-        # separate later scope.
         cargo run -p md_prose_to_struct -- --corpus "$corpus"
+        cargo run -p md_prose_to_struct -- --corpus "$corpus" --translation
         ;;
     hobbes1)
         # English single-edition prose (two layers, no translation build).

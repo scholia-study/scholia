@@ -504,32 +504,62 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
         }
         "hegel3" => {
             use common::hegel3::{filenames, meta, toc, toc_mod};
-            if translation {
-                panic!("hegel3 is a German-only corpus — no --translation build");
-            }
+            let (book, figure_label, output_file) = if translation {
+                (
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG_EN,
+                        title: meta::BOOK_TITLE_EN,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE_EN,
+                        source: meta::SOURCE_EN,
+                        year: meta::YEAR_EN,
+                        about: meta::ABOUT_EN,
+                        imprint: Imprint {
+                            publisher: Some(meta::PUBLISHER_EN),
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                        },
+                    }),
+                    "Figure",
+                    meta::TRANSLATION_OUTPUT_FILE,
+                )
+            } else {
+                (
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG,
+                        title: meta::BOOK_TITLE,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE,
+                        source: meta::SOURCE,
+                        year: meta::YEAR,
+                        about: meta::ABOUT,
+                        imprint: Imprint {
+                            publisher: Some(meta::PUBLISHER),
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                        },
+                    }),
+                    "Abbildung",
+                    meta::OUTPUT_FILE,
+                )
+            };
             Some(Corpus {
                 name: "hegel3",
-                book: book_data(BookSpec {
-                    slug: meta::BOOK_SLUG,
-                    title: meta::BOOK_TITLE,
-                    author: meta::AUTHOR,
-                    language: meta::LANGUAGE,
-                    source: meta::SOURCE,
-                    year: meta::YEAR,
-                    about: meta::ABOUT,
-                    imprint: Imprint {
-                        publisher: Some(meta::PUBLISHER),
-                        place: None,
-                        volume: None,
-                        edition: None,
-                        original_year: Some(meta::ORIGINAL_YEAR),
-                    },
-                }),
+                book,
                 // One system: the 1812 first edition's own pages (Roman
                 // front matter, Arabic body), the citation default.
                 reference_systems: vec![ReferenceSystemData {
                     slug: meta::PAGE_SYSTEM_SLUG.to_string(),
-                    label: meta::PAGE_SYSTEM_LABEL.to_string(),
+                    label: if translation {
+                        meta::PAGE_SYSTEM_LABEL_EN
+                    } else {
+                        meta::PAGE_SYSTEM_LABEL
+                    }
+                    .to_string(),
                     ref_type: meta::PAGE_SYSTEM_REF_TYPE.to_string(),
                     cite_priority: Some(meta::PAGE_CITE_PRIORITY),
                     cite_template: Some(meta::PAGE_CITE_TEMPLATE.to_string()),
@@ -537,15 +567,18 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 }],
                 toc_reviewed: toc::flat_toc_entries(),
                 toc_modernized: toc_mod::flat_toc_entries(),
+                // kant3-style: shared German filenames, the translated
+                // files' front-matter labels are the English authority
+                // (curated table: assets/hegel3/curated/translate_labels_en.tsv).
                 toc_en: None,
                 filenames: filenames::all_filenames(),
                 position_number: filenames::position_number,
                 slugify: filenames::slugify,
                 modernized_dir: meta::MODERNIZED_DIR.to_string(),
                 reviewed_dir: meta::REVIEWED_DIR.to_string(),
-                translated_dir: String::new(),
-                output_file: meta::OUTPUT_FILE.to_string(),
-                figure_label: "Abbildung",
+                translated_dir: meta::TRANSLATED_DIR.to_string(),
+                output_file: output_file.to_string(),
+                figure_label,
                 aa_system_slug: meta::PAGE_SYSTEM_SLUG,
                 // No `{{ }}` system in this corpus; the empty slug fails
                 // loudly at import if such a marker ever appears.
@@ -554,7 +587,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 marker_labels: ("1812", "(none)"),
                 source_splitter_en: false,
                 strong_colon_splits: false,
-                paren_protected_splits: false,
+                paren_protected_splits: true,
             })
         }
         "hobbes1" => {

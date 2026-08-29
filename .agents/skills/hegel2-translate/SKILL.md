@@ -94,7 +94,14 @@ runs < 15 words from locked terms are expected and pass.
   splitter-protected ("den 22. März 1812."); English dates drop the
   day-period ("Nuremberg, 22 March 1812."), which is correct English
   date style and split-free by itself.
-- **Embedded questions stay lowercase.** The period-internal `? lowercase`
+- **Dash junctions split.** A sentence terminator followed by a spaced
+  dash and a capital (`. – Nichts…`, `. — Aber…`) is a sentence boundary
+  in hegel2/hegel3 — the paren-protected splitters treat the spaced en
+  dash as Gedankenstrich exactly like the Kant corpora's em dash, and
+  the new sentence keeps its leading `– `. Mirror the dash character the
+  German uses; a German `Anm.)`-style citation close (abbreviation
+  period + paren) also splits, so an anglicized citation must end
+  `Remark.)` to mirror it (022 precedent). The period-internal `? lowercase`
   pointing ("Interesse finden? auch die sonstigen…") is authentic
   19th-century convention, user-confirmed to keep: the question mark has
   only comma strength inside a longer period. The English mirrors it with
@@ -125,5 +132,31 @@ runs < 15 words from locked terms are expected and pass.
   boundary nearby rather than importing the honorific. Verify with the
   importer's `--dry-run` against a scratch DB when in doubt.
 - Mathematical expressions (`2/7`, `xᵐ−1=0`, series) carry verbatim.
+
+## hegel3 (the 1812 Doctrine of Being) uses this skill too
+
+Source `assets/hegel3/curated/md_modernized` → target
+`assets/hegel3/curated/md_modernized_translated`, same 120 German
+filenames; labels from `assets/hegel3/curated/translate_labels_en.tsv`;
+brief at `assets/hegel3/derived/translator_brief.md`; validator at
+`assets/hegel3/derived/validate_tr.py`; parity via `md_prose_to_struct
+--corpus hegel3 --translation`. The gate runs against the SAME hegel2
+controls: no published English translation of the 1812 first edition
+exists, so Miller/di Giovanni act as proxy controls — the 1812 parallels
+the 1832 closely enough that from-memory leakage surfaces as echoes of
+their 1832 renderings. Scholia's own hegel2 translation MAY be read as a
+voice/terminology reference (it is our own work); the 1812 German alone
+determines what is rendered. hegel3 particulars: emphasis is
+phrase-level `***…***` (NOT hegel2's per-word underscores) — mirror
+span-for-span, and note the emphasis markers do NOT defuse splitter
+traps (`…the ***subjective I***.` still ends on bare "I." after marker
+stripping — restructure per rule 13); front-matter key
+`page_1812` (quoted only for Roman numerals), plain `{{{ N }}}` markers,
+`[…]` lacunae carry as-is, some quantity-chapter sentences read past
+formulas the transcription lost (never invent them — see the corpus
+followups file), cross-block sentence strands occur (008), and one
+sentence runs ACROSS the heading of node 052
+("Dies macht / a.) das Moment seines Ansichseins, / aus.") — mirror the
+strand.
 
 If you encounter odd cases worth remembering, add them to this skill.

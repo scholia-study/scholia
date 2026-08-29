@@ -61,7 +61,6 @@ gewoͤhnlichen	gewöhnlichen	31	residual	accept	gewöhnlichen	hegel1-paare
 aͤuſſerliches	Äußerliches	31	residual	rewrite	äußerliches	hegel1-tabelle
 faͤllt	fällt	30	residual	accept	fällt	hegel1-paare
 Selbſtſtaͤndige	Selbstständige	29	residual	accept	Selbstständige	cab
-	[Formel]	29	residual	accept	[Formel]	cab
 koͤnne	könne	29	residual	accept	könne	hegel1-paare
 veraͤndert	verändert	27	residual	accept	verändert	hegel1-paare
 Sphaͤre	Sphäre	26	residual	accept	Sphäre	hegel1-paare
@@ -188,7 +187,7 @@ Zufaͤlligkeit	Zufälligkeit	7	residual	accept	Zufälligkeit	hegel1-paare
 ſelbſtſtaͤndigen	selbstständigen	7	residual	accept	selbstständigen	hegel1-paare
 Groͤßebeſtimmung	Größebestimmung	7	residual	accept	Größebestimmung	cab
 Kalien	Kali	7	residual	accept	Kali	cab
-repelliren	rebellieren	7	residual	accept	rebellieren	hegel2
+repelliren	repellieren	7	residual	accept	repellieren	hand (hegel2 pre-audit seed)
 aufloͤst	auflöst	7	residual	accept	auflöst	hegel1-paare
 erfuͤllen	erfüllen	7	residual	accept	erfüllen	hegel1-paare
 moͤglich	möglich	7	residual	accept	möglich	hegel1-paare
@@ -197,7 +196,7 @@ Abſtoſſen	Abstoßen	7	residual	accept	Abstoßen	hegel1-tabelle
 erſtern	ersteren	7	residual	rewrite	erstern	hegel1-tabelle
 haͤtten	hätten	7	residual	accept	hätten	hegel1-paare
 gruͤndet	gründet	7	residual	accept	gründet	hegel1-paare
-repellirt	rebelliert	7	residual	accept	rebelliert	hegel2
+repellirt	repelliert	7	residual	accept	repelliert	hand (hegel2 pre-audit seed)
 abſtrahirt	abstrahiert	7	residual	accept	abstrahiert	hegel1-tabelle
 eigenthuͤmlichen	eigentümlichen	7	residual	accept	eigentümlichen	hegel1-paare
 eigenthuͤmliche	eigentümliche	7	residual	accept	eigentümliche	hegel1-paare
@@ -238,7 +237,7 @@ Zehen	Zehn	6	residual	accept	Zehn	hegel2
 perennirende	perennierende	6	residual	accept	perennierende	hegel2
 uͤbrigen	übrigen	6	residual	accept	übrigen	hegel1-paare
 beſchraͤnkt	beschränkt	6	residual	accept	beschränkt	hegel1-paare
-Repelliren	Rebellieren	6	residual	accept	Rebellieren	hegel2
+Repelliren	Repellieren	6	residual	accept	Repellieren	hand (hegel2 pre-audit seed)
 Zunaͤchſt	Zunächst	6	residual	accept	Zunächst	hegel1-paare
 gleichguͤltiger	gleichgültiger	6	residual	accept	gleichgültiger	hegel1-paare
 deßwegen	deswegen	6	residual	accept	deswegen	hegel2
@@ -614,7 +613,7 @@ Groͤßen-	Größen-	2	residual	accept	Größen-	cab
 verfloſſen	verflossen	2	ss_audit	accept	verflossen	cab
 modificiren	modifizieren	2	residual	accept	modifizieren	hegel2
 vorausgeſchikt	vorausgeschickt	2	residual	accept	vorausgeschickt	hegel2
-Graden	Geraden	2	residual	accept	Geraden	hegel2
+Graden	Graden	2	residual	reject	Graden	hand (degrees, not lines; hegel2 attribution wrong)
 Maaßloſigkeit	Maßlosigkeit	2	residual	accept	Maßlosigkeit	hegel2
 eingehuͤllt	eingehüllt	2	residual	accept	eingehüllt	hegel1-paare
 anſichſeyenden	an-sich-seienden	2	residual	rewrite	ansichseienden	hegel1-tabelle
@@ -667,7 +666,7 @@ Himmelskoͤrper	Himmelskörper	2	residual	accept	Himmelskörper	cab
 Ruͤckſichten	Rücksichten	2	residual	accept	Rücksichten	hegel1-paare
 Aeuſſeres	Äußeres	2	residual	accept	Äußeres	hegel1-tabelle
 gemaͤß	gemäß	2	residual	accept	gemäß	cab
-repellirende	rebellierende	2	residual	accept	rebellierende	hegel2
+repellirende	repellierende	2	residual	accept	repellierende	hand (hegel2 pre-audit seed)
 Zuſammenhange	Zusammenhänge	2	residual	rewrite	Zusammenhange	hegel1-tabelle
 ſtaͤrker	stärker	2	residual	accept	stärker	hegel1-paare
 Bemuͤhungen	Bemühungen	2	residual	accept	Bemühungen	hegel1-paare
@@ -817,7 +816,7 @@ Erlaubniß	Erlaubnis	1	residual	accept	Erlaubnis	cab
 Quantumsveraͤnderung	Quantumsveränderung	1	residual	accept	Quantumsveränderung	cab
 angebohrne	angeborene	1	residual	rewrite	angeborne	hegel1-tabelle
 Ueberwiegende	Überwiegende	1	residual	accept	Überwiegende	mechanisch
-Brillen	Brüllen	1	residual	accept	Brüllen	hegel2
+Brillen	Brillen	1	residual	reject	Brillen	hand
 Qualitaͤtsloſes	Qualitätsloses	1	residual	accept	Qualitätsloses	cab
 unnuͤtz	unnütz	1	residual	accept	unnütz	hegel1-paare
 Geſchiklichkeit	Geschicklichkeit	1	residual	accept	Geschicklichkeit	hegel2
@@ -1008,14 +1007,14 @@ auffaſſen	auffassen	1	ss_audit	accept	auffassen	hegel1-paare
 aͤhnliche	ähnliche	1	residual	accept	ähnliche	cab
 ſpecifiſchem	spezifischem	1	residual	accept	spezifischem	hegel2
 Staͤtige	stetige	1	residual	accept	stetige	hegel2
-Nichtanalyſirbares	Nicht_Analysierbares	1	residual	accept	Nicht_Analysierbares	cab
+Nichtanalyſirbares	Nichtanalysierbares	1	residual	accept	Nichtanalysierbares	hand
 wuͤchſe	wüchse	1	residual	accept	wüchse	cab
 privativum	Privativum	1	residual	accept	Privativum	cab
 Moͤglichkeiten	Möglichkeiten	1	residual	accept	Möglichkeiten	cab
 lemmatiſch	Lemmatisch	1	residual	accept	Lemmatisch	hegel2
 Vor„ſtellen	Vorstellen	1	residual	accept	Vorstellen	cab
 Naturkenntniß	Naturkenntnis	1	residual	accept	Naturkenntnis	cab
-Beſchaſſenheit	Beschossenheit	1	residual	accept	Beschossenheit	cab
+Beſchaſſenheit	Beschaffenheit	1	residual	accept	Beschaffenheit	hand (print ſſ for ff)
 Kohaͤſion	Kohäsion	1	residual	accept	Kohäsion	hegel1-paare
 ungenuͤgend	ungenügend	1	residual	accept	ungenügend	cab
 lemmatiſcherweiſe	Lemmatischerweise	1	residual	accept	Lemmatischerweise	hegel2
@@ -1023,7 +1022,7 @@ Quantitaͤts-Beſtimmung	Quantitäts-Bestimmung	1	residual	accept	Quantitäts-Be
 geſchwaͤcht	geschwächt	1	residual	accept	geschwächt	cab
 Hoͤhere	Höhere	1	residual	accept	Höhere	cab
 Centrum	Zentrum	1	residual	accept	Zentrum	hegel1-tabelle
-Richts	Rechts	1	residual	accept	Rechts	cab
+Richts	Nichts	1	residual	accept	Nichts	hand
 ſtraͤuben	sträuben	1	residual	accept	sträuben	cab
 flieſſen	fließen	1	residual	accept	fließen	hegel1-tabelle
 abgeloͤst	abgelöst	1	residual	accept	abgelöst	cab
@@ -1158,7 +1157,7 @@ beſſeres	besseres	1	ss_audit	accept	besseres	cab
 Schlieſſens	Schließens	1	residual	accept	Schließens	hegel2
 proteſtirt	protestiert	1	residual	accept	protestiert	hegel2
 zuruͤckſtehende	zurückstehende	1	residual	accept	zurückstehende	cab
-Repellirens	Rebellierens	1	residual	accept	Rebellierens	cab
+Repellirens	Repellierens	1	residual	accept	Repellierens	hand (hegel2 pre-audit seed)
 hievon	hiervon	1	residual	accept	hiervon	hegel1-tabelle
 zuruͤckgenommene	zurückgenommene	1	residual	accept	zurückgenommene	hegel1-paare
 Maaßbeziehung	Maßbeziehung	1	residual	accept	Maßbeziehung	hegel2
@@ -1195,7 +1194,7 @@ reflectirterer	reflektierterer	1	residual	accept	reflektierterer	hegel2
 ausuͤben	ausüben	1	residual	accept	ausüben	hegel1-paare
 fuͤr-ſich-ſeyenden	für-sich-seyenden	1	residual	rewrite	für-sich-seienden	mechanisch
 aͤuſſerſte	äußerste	1	residual	accept	äußerste	hegel2
-ſi	sie	1	residual	accept	sie	cab
+ſi	si	1	residual	accept	si	hand (Latin, not German sie)
 Gruͤnde	Gründe	1	residual	accept	Gründe	hegel1-paare
 laſſe	lasse	1	ss_audit	accept	lasse	cab
 Maͤngeln	Mängeln	1	residual	accept	Mängeln	cab
@@ -1207,7 +1206,7 @@ bewundernswuͤrdig	bewundernswürdig	1	residual	accept	bewundernswürdig	cab
 unnoͤthig	unnötig	1	residual	accept	unnötig	hegel1-paare
 auf„gehoben	aufgehoben	1	residual	accept	aufgehoben	cab
 Unterſchiedne	Unterschiedene	1	residual	rewrite	Unterschiedne	hegel1-tabelle
-einfachgewordene	einfach_gewordene	1	residual	accept	einfach_gewordene	cab
+einfachgewordene	einfach gewordene	1	residual	accept	einfach gewordene	hand
 uͤberſteigt	übersteigt	1	residual	accept	übersteigt	cab
 gelaͤufig	geläufig	1	residual	accept	geläufig	cab
 zufaͤlligerweiſe	zufälligerweise	1	residual	accept	zufälligerweise	hegel1-paare
@@ -1313,7 +1312,7 @@ ei„nem	einem	1	residual	accept	einem	cab
 Anknuͤpfungspunkte	Anknüpfungspunkte	1	residual	accept	Anknüpfungspunkte	cab
 Staͤtigkeiten	Stetigkeiten	1	residual	accept	Stetigkeiten	hegel2
 Erkenntnißvermoͤgen	Erkenntnisvermögen	1	residual	accept	Erkenntnisvermögen	hegel2
-Seyus	Seyus	1	cab_unnormalized	rewrite	Seius	mechanisch
+Seyus	Seyus	1	cab_unnormalized	rewrite	Seins	hand (misprint for Seyns)
 Hieher	Hierher	1	residual	accept	Hierher	hegel1-paare
 fuͤnf	fünf	1	residual	accept	fünf	cab
 ſtuͤnden	stünden	1	residual	accept	stünden	hegel1-paare
@@ -1345,7 +1344,7 @@ Ruͤckſchlag	Rückschlag	1	residual	accept	Rückschlag	cab
 zuruͤkgefallen	zurückgefallen	1	residual	accept	zurückgefallen	hegel2
 Maaßverhaͤltniſſes	Maßverhältnisses	1	residual	accept	Maßverhältnisses	hegel2
 wefentlich	wesentlich	1	residual	accept	wesentlich	cab
-repellirenden	rebellierenden	1	residual	accept	rebellierenden	hegel2
+repellirenden	repellierenden	1	residual	accept	repellierenden	hand (hegel2 pre-audit seed)
 addirt	addiert	1	residual	accept	addiert	hegel2
 paͤdagogiſcher	pädagogischer	1	residual	accept	pädagogischer	cab
 Auf„hebung	Aufhebung	1	residual	accept	Aufhebung	cab
@@ -1377,7 +1376,7 @@ Naturverhaͤltniſſen	Naturverhältnissen	1	residual	accept	Naturverhältnissen
 populaͤre	populäre	1	residual	accept	populäre	cab
 thaͤtig	tätig	1	residual	accept	tätig	hegel1-paare
 abgeſchloſſene	abgeschlossene	1	ss_audit	accept	abgeschlossene	cab
-Regativitaͤt	Regativität	1	residual	accept	Regativität	cab
+Regativitaͤt	Negativität	1	residual	accept	Negativität	hand (R/N misread)
 geringern	geringeren	1	residual	reject	geringern	hegel1-paare
 einzufuͤhren	einzuführen	1	residual	accept	einzuführen	cab
 paſſen	passen	1	ss_audit	accept	passen	cab
@@ -1414,7 +1413,7 @@ Deſſen	Dessen	1	ss_audit	accept	Dessen	cab
 verbeſſert	verbessert	1	ss_audit	accept	verbessert	hegel1-paare
 herbeyfuͤhrt	herbeiführt	1	residual	accept	herbeiführt	hegel2
 Saͤttigungs-Geſetze	Sättigungs-Gesetze	1	residual	accept	Sättigungs-Gesetze	cab
-finnliche	sinnliche	1	residual	reject	finnliche	beibehalten (keine Quelle); prüfen
+finnliche	sinnliche	1	residual	accept	sinnliche	hand (ſ→f misread)
 unterdruͤcken	unterdrücken	1	residual	accept	unterdrücken	hegel1-paare
 Zuruͤckweiſung	Zurückweisung	1	residual	accept	Zurückweisung	cab
 Denkverhaͤltniſſe	Denkverhältnisse	1	residual	accept	Denkverhältnisse	cab
@@ -1425,7 +1424,7 @@ Talismann	Talisman	1	residual	accept	Talisman	cab
 Potenzen-Verhaͤltniß	Potenzen-Verhältnis	1	residual	accept	Potenzen-Verhältnis	cab
 Reflectirte	Reflektierte	1	residual	accept	Reflektierte	hegel2
 umſchlieſſenden	umschließenden	1	residual	accept	umschließenden	hegel1-paare
-ſiehenden	siechenden	1	residual	accept	siechenden	cab
+ſiehenden	stehenden	1	residual	accept	stehenden	hand (print drops t; gegenüber ſtehenden)
 ausfuͤhrlicher	ausführlicher	1	residual	accept	ausführlicher	cab
 abſtractern	abstrakteren	1	residual	accept	abstrakteren	hegel2
 Rein-vernuͤnftige	Rein-vernünftige	1	residual	accept	Rein-vernünftige	cab
@@ -1454,7 +1453,7 @@ uͤberraſchende	überraschende	1	residual	accept	überraschende	cab
 tauſendmahlen	Tausendmalen	1	residual	accept	Tausendmalen	hegel2
 fuͤrſich	für-sich	1	residual	rewrite	fürsich	hegel1-tabelle
 uͤberleitet	überleitet	1	residual	accept	überleitet	cab
-repellirte	rebellierte	1	residual	accept	rebellierte	hegel2
+repellirte	repellierte	1	residual	accept	repellierte	hand (hegel2 pre-audit seed)
 zuruͤckzutreten	zurückzutreten	1	residual	accept	zurückzutreten	cab
 An-und-fuͤr-ſich-Seyn	An-und-für-sich-Seyn	1	residual	rewrite	An-und-für-sich-Sein	mechanisch
 erſchoͤpfte	erschöpfte	1	residual	accept	erschöpfte	cab
@@ -1560,7 +1559,7 @@ Beduͤrfniſſe	Bedürfnisse	1	residual	accept	Bedürfnisse	hegel1-tabelle
 abzukuͤrzen	abzukürzen	1	residual	accept	abzukürzen	cab
 abloͤſen	ablösen	1	residual	accept	ablösen	hegel1-paare
 Ewig„keit	Ewigkeit	1	residual	accept	Ewigkeit	cab
-aſſicirt	assicirt	1	ss_audit	accept	assicirt	cab
+aſſicirt	affiziert	1	ss_audit	accept	affiziert	hand (print ſſ for ffi)
 naͤhernden	nähernden	1	residual	accept	nähernden	cab
 Gruͤnem	Grünem	1	residual	accept	Grünem	cab
 Misbrauch	Missbrauch	1	residual	accept	Missbrauch	hegel2
@@ -1591,7 +1590,7 @@ abſchlieſſen	abschließen	1	residual	accept	abschließen	hegel2
 ungetruͤbten	ungetrübten	1	residual	accept	ungetrübten	cab
 Loos	Los	1	residual	accept	Los	hegel1-paare
 uͤbertrift	übertrifft	1	residual	accept	übertrifft	hegel2
-repellirend	rebellierend	1	residual	accept	rebellierend	hegel2
+repellirend	repellierend	1	residual	accept	repellierend	hand (hegel2 pre-audit seed)
 ſproͤde	spröde	1	residual	accept	spröde	hegel1-paare
 Auſſer-ſich-gehen	Ausser-sich-gehen	1	ss_audit	accept	Ausser-sich-gehen	cab
 Elemen„tarſubſtanzen	Elementarsubstanzen	1	residual	accept	Elementarsubstanzen	cab
@@ -1621,7 +1620,6 @@ ausdruͤcklicher	ausdrücklicher	1	residual	accept	ausdrücklicher	cab
 ſchluͤßliche	schlüssliche	1	residual	accept	schlüssliche	cab
 geſchmaͤlert	geschmälert	1	residual	accept	geschmälert	cab
 perennirend	perennierend	1	residual	accept	perennierend	hegel2
-Aufbuͤrgen	Aufbürgen	1	residual	accept	Aufbürgen	cab
 zerſtoͤren	zerstören	1	residual	accept	zerstören	hegel1-paare
 aͤuſſerli„che	äußerliche	1	residual	accept	äußerliche	cab
 neutraliſirt	neutralisiert	1	residual	accept	neutralisiert	hegel2
@@ -1685,7 +1683,7 @@ zuwaͤchſt	zuwächst	1	residual	accept	zuwächst	cab
 Auſſereinanderſeyns	Auseinanderseins	1	residual	rewrite	Außereinanderseins	hegel2
 Groͤßenbeſtimmtheit	Größenbestimmtheit	1	residual	accept	Größenbestimmtheit	cab
 Negirtwerden	Negiertwerden	1	residual	accept	Negiertwerden	hegel2
-ſpeeifiſches	Speifisches	1	residual	accept	Speifisches	cab
+ſpeeifiſches	spezifisches	1	residual	accept	spezifisches	hand (print ee for ec)
 Uebung	Übung	1	residual	accept	Übung	hegel2
 qualitaͤtsloſen	qualitätslosen	1	residual	accept	qualitätslosen	cab
 ſchlieſſend	schließend	1	residual	accept	schließend	hegel2
@@ -1719,3 +1717,15 @@ aͤhnlich	ähnlich	1	residual	accept	ähnlich	hegel1-paare
 Heruͤber-	Herüber-	1	residual	accept	Herüber-	cab
 beſſern	besseren	1	residual	rewrite	bessern	hegel1-tabelle
 
+weißt	weist	3	residual	accept	weist	hand
+Richtſeyns	Nichtseins	1	residual	accept	Nichtseins	hand
+zn	zu	1	residual	accept	zu	hand
+	[Formel]	29	residual	drop		hand
+Regation	Negation	1	residual	accept	Negation	hand (R/N misread)
+emhalten	enthalten	1	residual	accept	enthalten	hand (nt misread)
+Jenſelts	Jenseits	1	residual	accept	Jenseits	hand (print lt for it)
+feyende	seiende	1	residual	accept	seiende	hand (print f for ſ)
+Aufbuͤrgen	Aufbürden	1	residual	accept	Aufbürden	hand (print g for d)
+Quanturt	Quantum	1	residual	accept	Quantum	hand (print rt for m)
+ſpeciſiſche	spezifische	1	residual	accept	spezifische	hand (print ſiſ for fiſ)
+Speciſiſche	Spezifische	1	residual	accept	Spezifische	hand (print ſiſ for fiſ)

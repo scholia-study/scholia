@@ -1,0 +1,6 @@
+file	page	search	replace	note
+011_b_nichts.md	23	oder vielmehr es {{{ 23 }}} das leere Anschauen	oder vielmehr ist es {{{ 23 }}} das leere Anschauen	print drops "ist" at the page break (haplography); 1832 parallel confirms
+002_einleitung.md	IX	des ***Dings-an ‒ sich***, dieses	des ***Dings-an-sich***, dieses	print sets a spaced figure dash inside the compound; normalized
+042_anmerkung_8.md	77	das An-undfür-sich-Sein hervorgeh	das An-und-für-sich-Sein hervorgeh	print drops the hyphen after "und"
+041_c_negation.md	73	des Ansichseins und des Seinsfür-Anderes	des Ansichseins und des Seins-für-Anderes	print sets "Seynsfuͤr" solid; hyphen restored
+084_anmerkung_16.md	176	Aber sie auch ein Eins, ***ein*** Zehn	Aber sie ist auch ein Eins, ***ein*** Zehn	print drops the copula; evident haplography

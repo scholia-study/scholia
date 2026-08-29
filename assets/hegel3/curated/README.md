@@ -31,6 +31,7 @@ invocations (verified byte-stable against the checked-in layers) are:
     hegel1_tei_to_md assets/hegel3/raw/hegel_logik0101_1812.xml \
         assets/hegel3/curated/md_modernized --layer modernized \
         --rulings assets/hegel3/curated/modernize_rulings.tsv \
+        --ops assets/hegel3/curated/modernize_ops.tsv \
         --page-key page_1812 --promote-head "Erstes Buch. Das Seyn" \
         --gw-markers /dev/null
 
@@ -40,14 +41,32 @@ inside the *Logik* division, while the print's own contents list it at
 top level — `--promote-head` lifts the Buch and its subtree one level to
 match the print.
 
-Two curated layers, 120 files each (one per TOC node, `NNN_slug.md`):
+One label emendation lives only in the curated files, not the converter:
+node 010's body head prints bare "A.", but the print's own Inhaltsanzeige
+reads "A. Seyn" — the label and heading follow the contents page
+("A. Seyn" / "A. Sein" / "A. Being"; the slug and filename keep the body
+head's bare `a`). A regeneration would emit "A" again and must re-apply
+this in all three layers plus the `common::hegel3` TOC tables.
+
+Three curated layers, 120 files each (one per TOC node, `NNN_slug.md`):
 
 - `md_reviewed/` — 1812 orthography exactly as printed, long-s (`ſ`)
   preserved, `<sic>` readings kept uncorrected. The diplomatic layer.
 - `md_modernized/` — modern German orthography, driven by
   `modernize_rulings.tsv` (seeded from hegel1's human-decided table and
   layer pairs, hegel2's table, and the DTA CAB readings; where the DTA
-  editors supplied a `<corr>` for a `<sic>`, the correction lands here).
+  editors supplied a `<corr>` for a `<sic>`, the correction lands here)
+  plus `modernize_ops.tsv` (grammatically compelled print-error repairs;
+  the diplomatic layer keeps every error as printed, and uncertain
+  readings stay unrepaired — see `translation_followups.md`).
+- `md_modernized_translated/` — Scholia's own English translation
+  (clean-room, gated against the 1832 translations as proxy controls —
+  no published English translation of the 1812 first edition existed
+  before this one). Kant3-style: shared German filenames, front-matter
+  labels are the English authority
+  (`translate_labels_en.tsv` is the label table). Unlike the German
+  layers (CC BY-SA 4.0 per the DTA terms), the translation is Scholia's
+  own work under the regular assets licence (CC BY-NC-ND 4.0).
 
 ## Markup conventions
 

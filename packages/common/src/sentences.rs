@@ -315,8 +315,21 @@ fn retain_splits_outside_parens(text: &str, positions: &mut Vec<usize>) {
     });
 }
 
-/// [`split_sentences_forced`] with parenthesis-protected candidates
-/// (forced positions are structural and stay untouched).
+/// The paren-protected corpora (hegel2) set their Gedankenstrich as a
+/// spaced EN dash (U+2013, correct German typography) where the Kant
+/// corpora use the em dash the split regex knows. Both encode the same
+/// sentence boundary, so candidates are found on a probe with en dashes
+/// swapped to em dashes — the two are byte-length-equal in UTF-8, so
+/// every position maps 1:1 back onto the real text, and the abbreviation
+/// filters apply unchanged. The split lands on the dash, as with the em
+/// dash: the new sentence keeps its leading `– `.
+fn en_dash_probe(text: &str) -> String {
+    text.replace('\u{2013}', "\u{2014}")
+}
+
+/// [`split_sentences_forced`] with parenthesis-protected candidates and
+/// en-dash Gedankenstrich splitting (forced positions are structural and
+/// stay untouched).
 pub fn split_sentences_paren_protected_forced(
     text: &str,
     html: &str,
@@ -325,7 +338,7 @@ pub fn split_sentences_paren_protected_forced(
     if text.is_empty() {
         return vec![];
     }
-    let mut split_positions = find_text_split_positions(text);
+    let mut split_positions = find_text_split_positions(&en_dash_probe(text));
     retain_splits_outside_parens(text, &mut split_positions);
     split_positions.extend_from_slice(forced);
     split_positions.sort_unstable();
@@ -333,7 +346,8 @@ pub fn split_sentences_paren_protected_forced(
     assemble_splits(text, html, &split_positions)
 }
 
-/// [`split_sentences_en_forced`] with parenthesis-protected candidates.
+/// [`split_sentences_en_forced`] with parenthesis-protected candidates
+/// and en-dash Gedankenstrich splitting.
 pub fn split_sentences_en_paren_protected_forced(
     text: &str,
     html: &str,
@@ -342,8 +356,11 @@ pub fn split_sentences_en_paren_protected_forced(
     if text.is_empty() {
         return vec![];
     }
-    let mut split_positions =
-        find_text_split_positions_with(text, &SINGLE_ABBREVS_EN, &MULTI_ABBREV_RE_EN);
+    let mut split_positions = find_text_split_positions_with(
+        &en_dash_probe(text),
+        &SINGLE_ABBREVS_EN,
+        &MULTI_ABBREV_RE_EN,
+    );
     retain_splits_outside_parens(text, &mut split_positions);
     split_positions.extend_from_slice(forced);
     split_positions.sort_unstable();

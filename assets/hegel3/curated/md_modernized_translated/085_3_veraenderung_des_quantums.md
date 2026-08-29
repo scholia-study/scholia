@@ -1,0 +1,20 @@
+---
+position: 85
+label: "3. Alteration of the Quantum"
+depth: 5
+page_1812: 179
+---
+
+## 3. Alteration of the Quantum
+
+The difference of the extensive and the intensive quantum is a matter of indifference to the determinateness of the quantum at its own self; it is only a difference of the quantum's existence, or the quantum has the determinations that make up the extensive and the intensive as its own moments within itself. But if the quantum is by contrast indifferent toward a difference of its existence, its moments have in exchange entered into an inner opposition. The extensive quantum has, as a one referring itself to itself, passed over into the intensive quantum. The latter, however, which alone is thus to be considered, is the determinateness of magnitude that is simple within itself yet, precisely in this determinateness referring itself to itself, is external to itself, consisting not within itself but in another several.
+
+{{{ 180 }}} Intensive magnitude is thus quantum that is for itself, and therein essentially referred to an other. This other is an other of ***this*** magnitude; another quantum. Intensive magnitude therefore is only as having its determination in another magnitude. But that it has its determination, its being-in-itself, in another magnitude means that it is not itself but another quantum. Or it passes over essentially into another magnitude.
+
+Intensive magnitude, however, is in general the real quantum. The quantum is the determinateness posited as sublated, the indifferent limit; which is to say that it is that determinateness which no less is the negation of its own self. So the quantum is posited as degree. The degree is the simple determinateness referring itself to itself which is the negation of its own self, since it has its determinateness not at itself but in another quantum; hence, in being this determinate quantum, it is rather essentially not itself but another quantum.
+
+A quantum stands accordingly, in general, in absolute continuity with its externality, with its otherness. Hence not only ***can*** every determinateness of magnitude be overstepped, not only ***can*** it be altered; it ***must*** alter itself. Quanta appeared at first as external ***to one another***, in the determination of numerical ones. But they are not merely external to one another; they are ***external to themselves***. The determination of magnitude therefore carries itself on into its otherness in such wise that its being lies for it solely in that continuity with something else. A quantum is thus itself, and just as essentially not itself but the negation of itself, an other. It is not a limit that ***is***, but one that ***becomes***.
+
+{{{ 181 }}} The one is infinite, or the negation referring itself to itself; it is therefore the repulsion of itself away from its own self. The quantum is likewise infinite and repels itself away from its own self. But the quantum is the ***determinate*** one, the one that has passed over into existence and into limit. The quantum is thus the repulsion of determinateness away from its own self; that repulsion is therefore not the generating of what is self-same, as the repulsion of the one is, but the generating of its otherness. As the one is not overstepped by any third thing, but repels itself away from itself, so it belongs likewise to the concept of the quantum to send itself out beyond itself and to become an other. It consists in increasing or diminishing itself; it is the externality of determinateness at its own self.
+
+The quantum sends its own self out beyond itself; this other, into which it becomes, is at first itself a quantum; a limit that is not one which merely is, but one which drives itself out past its own self; it continues itself into its otherness; it is external to itself; and this externality of its own self is itself. The limit that has arisen anew in this going-out is thus utterly nothing but one that sublates itself again, ***and so on into infinity***.

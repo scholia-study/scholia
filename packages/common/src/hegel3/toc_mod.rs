@@ -15,7 +15,7 @@ pub const MODERNIZED_LABELS: &[&str] = &[
     "Allgemeine Einteilung des Seins",
     "Erster Abschnitt. Bestimmtheit",
     "Erstes Kapitel. Sein",
-    "A",
+    "A. Sein",
     "B. Nichts",
     "C. Werden",
     "Einheit des Seins und Nichts",

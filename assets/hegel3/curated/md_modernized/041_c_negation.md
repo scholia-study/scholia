@@ -7,7 +7,7 @@ page_1812: 75
 
 ## {{{ 75 }}} c.) Negation
 
-1. Das Dasein, das ***bestimmte*** Sein, als Einheit seiner Momente, des Ansichseins und des Seinsfür-Anderes, war oben ***Realität***.
+1. Das Dasein, das ***bestimmte*** Sein, als Einheit seiner Momente, des Ansichseins und des Seins-für-Anderes, war oben ***Realität***.
 
 Die freigewordene Bestimmtheit ist, gleichfalls als Einheit der Bestimmung und der Beschaffenheit, ***Qualität***. Der Realität steht die ***Negation*** gegenüber. Die Qualität macht die Mitte und den Übergang zwischen Realität und Negation aus; sie enthält diese beiden in einfacher Einheit. Aber in der Negation tritt das Nichtsein als die Wahrheit hervor, in welche die Realität übergegangen ist.
 

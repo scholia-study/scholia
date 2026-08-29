@@ -1,0 +1,24 @@
+---
+position: 62
+label: "3. Mutual Repulsion"
+depth: 5
+page_1812: 108
+---
+
+## 3. Mutual Repulsion
+
+1. Repulsion makes up the reference of the one to itself, but is just as much its coming-outside-itself. This coming-outside-itself, the plurality of the ones, is the repulsion of the one from itself; hence not a determination external to the one, not distinct from repulsion as simple reference to itself. {{{ 109 }}} Considered more closely, the one refers to itself as to something immediate; but immediacy is being; repulsion, however, as the negation that refers itself to itself, is not immediacy or being. The one therefore refers to itself at the same time as to its absolute non-being; it is a repelling of itself away from itself; what has been repelled is on the one side indeed the one itself, but just as much ***its non-being***. This repelled thing, itself as one, is something immediate, and at the same time is determined as the non-being of what refers itself to itself; or as an absolutely ***other***. Plurality at first contained no otherness; the limit was only the void, or only that wherein the ones ***are not***. But they ***are*** in the limit as well; they are within the void, or their repulsion is their common reference.
+
+The repulsion of the one, then, in being a repelling of itself away from itself, is at the same time a ***repelling of the one as of an other away from itself***, and with that a ***mutual repelling*** of the many ones.
+
+The many in this way stand, as repelling one another, in reference to one another; they preserve themselves in repulsion as beings for themselves; their reference consists in ***negating their reference***.
+
+This mutual repulsion is what first makes up the ***existence*** of the many ones; for it is not their being-for-itself, which would be differentiated only within a third, but their own self-preserving differentiating. More closely determined, insofar as therein each preserves itself against the others, it is a mutual ***excluding***. Or this reference is a merely ***relative*** repulsion. They negate one another, that is, they posit one another as such as are only ***for-one***. But they ***negate*** {{{ 110 }}} at the same time, and just as much, this, ***to be only for-one***; they ***repel*** this ***ideality*** of theirs.
+
+2. In this existence of the many ones there thus come apart the moments that in ideality are united without qualification. In its being-for-itself the one is indeed also ***for-one***, so much so that this sublatedness of otherness is its reference to itself. But at the same time being-for-one, as it stands determined in relative repulsion, in excluding, is a being-for-other. Each is repelled by the other, sublated, and made into something that is not for itself but for-one. Its being-for-one accordingly falls not only within the one as such itself, but within another one as well, and is being-for-other.
+
+The being-for-itself of the many ones is hereby their repulsion against one another, whereby they so preserve themselves that they mutually sublate one another and posit the others as a mere being-for-other. But at the same time repulsion consists in repelling this ideality, and in positing itself as not being for-an-other. Yet the two are once more one and the same reference; mutual repulsion is mutual sublating, each preserves itself only in positing the others as a being-for-other, as a non-existence, and just as much only in sublating this, being for an other.
+
+3. Being-for-other is to that extent as much sublated as it is present. But it is posited and sublated in different respects. The ones are immediate; they refer themselves to one another repellingly, sublatingly; they thus mutually bring the being-for-itself of the others down to being-for-other; this moment therefore has its place in ***reference to others***. But {{{ 111 }}} the one sublates this its being-for-other; this moment is its ***reference to itself***. The one is being-for-other only within others; but this sublatedness of the one is no concern of the one; within it the others are not as existent, immediate others, but only as sublated, and through this it refers itself to itself.
+
+The one was repulsion in that it repels itself away from itself, and since what is repelled is accordingly only the one itself, it is thereby immediate return into itself. But this repelling has passed over into the repulsion of others and of being-for-other away from itself. The one preserves itself for itself only by referring itself negatively to others, and, this negation being mutual, by sublating the being-for-one that it therein receives. Repulsion, the repelling of the one away from itself, has thus passed over into a repelling of the others, into the positing of the others as being only for-one, and with that into the sublating of its being-for-other, into ***attraction***.
