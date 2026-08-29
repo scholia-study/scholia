@@ -29,6 +29,7 @@ import type {
 } from "../../../api/model";
 import { useListQuotations } from "../../../api/quotations/quotations";
 import { getGetTocQueryOptions, useGetTocSuspense } from "../../../api/toc/toc";
+import { accentFor, BAR_SHEEN, inkOn } from "../../../genre";
 import { useAuth } from "../../../hooks/useAuth";
 import { QuotationProvider } from "../context/Quotations";
 import {
@@ -273,6 +274,18 @@ export function TextPanel({
     const { data: bookData } = useGetBookSuspense(bookSlug);
     const bookDetail = bookData?.status === 200 ? bookData.data : undefined;
     const bookTitle = bookDetail?.title ?? bookSlug;
+
+    // The work keeps the colour it wears on the library shelf. Ink is derived
+    // from the tint rather than assumed white, so a pale accent would get dark
+    // lettering instead of quietly becoming unreadable.
+    const accent = bookDetail
+        ? accentFor(
+              bookDetail.author,
+              bookDetail.publication_year,
+              bookDetail.slug,
+          )
+        : undefined;
+    const ink = accent ? inkOn(accent) : undefined;
 
     // Determine translation relationships
     const isTranslation = !!bookDetail?.source_book_slug;
@@ -563,23 +576,45 @@ export function TextPanel({
                 {/* Main content area */}
                 <div className="flex-1 flex flex-col min-w-0 min-h-0">
                     {/* Toolbar */}
-                    <div className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 relative z-10">
+                    <div
+                        className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 relative z-10"
+                        style={
+                            accent
+                                ? {
+                                      backgroundColor: accent,
+                                      backgroundImage: BAR_SHEEN,
+                                      borderBottomColor: "rgba(0,0,0,0.25)",
+                                  }
+                                : undefined
+                        }
+                    >
                         <div className="flex items-center max-w-2xl mx-auto px-2">
                             <div className="flex items-center shrink-0">
                                 <IconButton
                                     size="small"
                                     onClick={onClose}
                                     title="Close panel"
+                                    sx={ink ? { color: ink.muted } : undefined}
                                 >
                                     <CloseOutlined fontSize="small" />
                                 </IconButton>
                             </div>
 
                             <div className="flex-1 min-w-0 text-center">
-                                <div className="text-sm text-stone-800 truncate">
+                                <div
+                                    className="text-sm text-stone-800 truncate"
+                                    style={
+                                        ink ? { color: ink.text } : undefined
+                                    }
+                                >
                                     {activeNodeLabel ?? bookTitle}
                                 </div>
-                                <div className="text-xs text-stone-400 truncate">
+                                <div
+                                    className="text-xs text-stone-400 truncate"
+                                    style={
+                                        ink ? { color: ink.muted } : undefined
+                                    }
+                                >
                                     {bookTitle}
                                 </div>
                             </div>
@@ -592,6 +627,7 @@ export function TextPanel({
                                         setMenuAnchor(e.currentTarget)
                                     }
                                     title="Text display options"
+                                    sx={ink ? { color: ink.muted } : undefined}
                                 >
                                     <TextFormatOutlined fontSize="small" />
                                 </IconButton>
@@ -1361,6 +1397,7 @@ export function TextPanel({
                         activeView={resourceView}
                         onViewChange={onResourceViewChange}
                         overlay={overlayResources}
+                        accent={accent}
                     />
                 )}
             </div>

@@ -41,6 +41,7 @@ import {
 } from "../../../api/quotations/quotations";
 import { useListResources } from "../../../api/resources/resources";
 import { useGetToc } from "../../../api/toc/toc";
+import { BAR_SHEEN, glassOver, inkOn } from "../../../genre";
 import { useAuth } from "../../../hooks/useAuth";
 import { useFeedback } from "../../feedback";
 import { AboutThisTextView } from "./AboutThisTextView";
@@ -83,6 +84,8 @@ interface ResourcesPanelProps {
      * default), so the reading text doesn't shift when there's room beside it.
      */
     overlay?: boolean;
+    /** The work's shelf colour, tinting the header alongside the toolbar. */
+    accent?: string;
 }
 
 /** Joined text of the current selection, used to seed a verbatim quote. */
@@ -110,7 +113,13 @@ export function ResourcesPanel({
     activeView,
     onViewChange,
     overlay = false,
+    accent,
 }: ResourcesPanelProps) {
+    // The header sits beside the reader toolbar and takes the same colour a
+    // shade lighter, as if lit through glass. Ink is measured against the
+    // composited surface, not the accent underneath it.
+    const headerTint = accent ? glassOver(accent) : undefined;
+    const headerInk = headerTint ? inkOn(headerTint) : undefined;
     const { user } = useAuth();
     const { startReaderTour } = useReaderTour();
     const { openModal: openFeedbackModal } = useFeedback();
@@ -502,21 +511,46 @@ export function ResourcesPanel({
             } ${isMenu ? "h-auto max-h-[70vh]" : "h-[45vh]"}`}
         >
             {/* Header - matches TextPanel toolbar height */}
-            <div className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 flex items-center px-3">
+            <div
+                className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 flex items-center px-3"
+                style={
+                    headerTint
+                        ? {
+                              backgroundColor: headerTint,
+                              backgroundImage: BAR_SHEEN,
+                              borderBottomColor: "rgba(0,0,0,0.25)",
+                          }
+                        : undefined
+                }
+            >
                 <IconButton
                     size="small"
                     onClick={() => onViewChange(undefined)}
                     title="Back to menu"
                     tabIndex={isMenu ? -1 : undefined}
-                    sx={{ visibility: isMenu ? "hidden" : "visible", mr: 0.5 }}
+                    sx={{
+                        visibility: isMenu ? "hidden" : "visible",
+                        mr: 0.5,
+                        ...(headerInk ? { color: headerInk.muted } : {}),
+                    }}
                 >
                     <ArrowBackOutlined fontSize="small" />
                 </IconButton>
                 <div className="flex-1 min-w-0">
-                    <div className="text-sm text-stone-800 truncate">
+                    <div
+                        className="text-sm text-stone-800 truncate"
+                        style={
+                            headerInk ? { color: headerInk.text } : undefined
+                        }
+                    >
                         Resources
                     </div>
-                    <div className="text-xs text-stone-400 truncate">
+                    <div
+                        className="text-xs text-stone-400 truncate"
+                        style={
+                            headerInk ? { color: headerInk.muted } : undefined
+                        }
+                    >
                         {viewKind === "about"
                             ? "About this text"
                             : viewKind === "toc"
@@ -538,7 +572,12 @@ export function ResourcesPanel({
                                             : "\u00A0"}
                     </div>
                 </div>
-                <IconButton size="small" onClick={onClose} title="Close">
+                <IconButton
+                    size="small"
+                    onClick={onClose}
+                    title="Close"
+                    sx={headerInk ? { color: headerInk.muted } : undefined}
+                >
                     <CloseOutlined fontSize="small" />
                 </IconButton>
             </div>

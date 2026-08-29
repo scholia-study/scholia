@@ -21,6 +21,7 @@ import type {
 } from "../api/model";
 import { DevServerNotice } from "../components/DevServerNotice";
 import { InfoLinks } from "../components/InfoLinks";
+import { accentFor, SCRIPTURE_ACCENT, SPINE_SHEEN } from "../genre";
 import {
     getLocalStorage,
     LOC_STORAGE_KEYS,
@@ -313,7 +314,7 @@ function buildSpines(
 ): Spine[] {
     const spines: Spine[] = [];
     for (const group of groups) {
-        const accent = accentColorFor(group.primary_label, group.id);
+        const accent = groupAccent(group);
         if (group.book_pills.length > 0) {
             // One volume for the whole compilation, opening the reader's
             // chosen translation and sized by that translation's bulk.
@@ -374,7 +375,9 @@ function buildSpines(
                     label: labels[i] ?? v.language.toUpperCase(),
                     target: targetOf(v),
                 })),
-                accent,
+                // Per work, not per author: two works by one hand can fall
+                // either side of an era boundary and should show it.
+                accent: accentFor(group.primary_label, work.publication_year),
                 length: edition?.text_length ?? 0,
                 height: spineHeight(work.work_id, work.title),
                 target: targetOf(edition),
@@ -446,9 +449,6 @@ const OAK_ROD = [
     OAK_FIGURE,
     "linear-gradient(180deg, #8a5a2b 0%, #c39152 32%, #966232 68%, #5f3a1a 100%)",
 ].join(",");
-
-const SPINE_SHEEN =
-    "linear-gradient(to right, rgba(0,0,0,0.18), rgba(255,255,255,0.14) 18%, rgba(0,0,0,0.05) 55%, rgba(0,0,0,0.26))";
 
 function SpineLink({
     spine,
@@ -629,7 +629,7 @@ function GroupSection({
     bible: BibleTranslations;
     onHover: (key: string | null) => void;
 }) {
-    const accent = accentColorFor(group.primary_label, group.id);
+    const accent = groupAccent(group);
     const isSelf = group.primary_kind === "self";
     const isSingleton = isSelf && group.books.length === 0;
     // Bible-shape: one compilation work in many translations. Book links
@@ -873,31 +873,20 @@ function CompilationShapeGroup({
     );
 }
 
-const ACCENT_PALETTE = [
-    "#b45309", // amber-700
-    "#047857", // emerald-700
-    "#1d4ed8", // blue-700
-    "#b91c1c", // red-700
-    "#6d28d9", // violet-700
-    "#0369a1", // sky-700
-    "#a16207", // yellow-700
-    "#be185d", // pink-700
-];
-
-/** Manual per-group accent overrides, keyed by exact display label. */
-const ACCENT_OVERRIDES: Record<string, string> = {
-    "Immanuel Kant": "#4169e1", // royal blue
-    "The Bible": "#4b0082", // royal purple (indigo)
-};
-
-function accentColorFor(label: string, id: string): string {
-    const override = ACCENT_OVERRIDES[label];
-    if (override) return override;
-    let hash = 0;
-    for (let i = 0; i < id.length; i++) {
-        hash = (hash * 31 + id.charCodeAt(i)) | 0;
-    }
-    return ACCENT_PALETTE[Math.abs(hash) % ACCENT_PALETTE.length];
+/**
+ * The rule under a catalogue sidehead stands for the whole group, so it takes
+ * the era of the earliest work listed — the point at which that hand enters
+ * the library — rather than any one volume's.
+ */
+function groupAccent(group: LibraryGroup): string {
+    if (group.book_pills.length > 0) return SCRIPTURE_ACCENT;
+    const years = group.books
+        .map((w) => w.publication_year)
+        .filter((y): y is number => !!y);
+    return accentFor(
+        group.primary_label,
+        years.length > 0 ? Math.min(...years) : null,
+    );
 }
 
 function VersionPill({
@@ -942,10 +931,14 @@ function AboutPanel({
     stats: LibraryStats | undefined;
     onTakeTour?: () => void;
 }) {
-    const pClasses = "text-sm text-stone-600 leading-relaxed";
+    // Sized against the same 1400px breakpoint that decides which of the two
+    // surfaces renders this: the boxed panel under the catalogue takes the
+    // smaller setting, the banner beside it keeps the larger one.
+    const pClasses =
+        "text-xs min-[1400px]:text-sm text-stone-600 leading-relaxed";
     return (
         <>
-            <h2 className="text-base font-semibold text-stone-600 mb-2 uppercase">
+            <h2 className="text-sm min-[1400px]:text-base font-semibold text-stone-600 mb-2 uppercase">
                 A living library for scholars
             </h2>
             <p className={pClasses}>
