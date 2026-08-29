@@ -76,6 +76,7 @@ pub struct LibraryVersion {
     pub node_slug: Option<String>,
     pub language: String,
     pub is_original: bool,
+    pub text_length: i64,
     pub translator_names: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,

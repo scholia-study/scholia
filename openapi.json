@@ -6990,6 +6990,7 @@
                     "book_slug",
                     "language",
                     "is_original",
+                    "text_length",
                     "translator_names"
                 ],
                 "properties": {
@@ -7012,6 +7013,10 @@
                     },
                     "publisher": {
                         "type": ["string", "null"]
+                    },
+                    "text_length": {
+                        "type": "integer",
+                        "format": "int64"
                     },
                     "translator_names": {
                         "type": "array",

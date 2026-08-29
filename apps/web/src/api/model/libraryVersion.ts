@@ -19,5 +19,6 @@ export interface LibraryVersion {
     publication_year?: number | null;
     /** @nullable */
     publisher?: string | null;
+    text_length: number;
     translator_names: string[];
 }
