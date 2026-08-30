@@ -5,7 +5,7 @@ depth: 1
 page_pub: "PSM 12:286"
 ---
 
-## How to Make Our Ideas Clear
+## {{{ PSM 12:286 }}} How to Make Our Ideas Clear
 
 ## I.
 
@@ -37,6 +37,7 @@ The essence of belief is the establishment of a habit, and different beliefs are
 
 <figure>
   <!-- plate not reproduced: PSM V12 D306 Logic of science test.jpg -->
+  <p>[Illustration not reproduced.]</p>
   <table>
     <tr><td>Fig. 1.</td><td>Fig. 2.</td></tr>
   </table>
@@ -72,6 +73,7 @@ A _path_ is a line whose beginning and end are distinguished. Two paths are cons
 
 <figure>
   <!-- plate not reproduced: PSM V12 D310 Logic of science demonstration 1.jpg -->
+  <p>[Illustration not reproduced.]</p>
   <table>
     <tr><td>Fig. 3.</td><td>Fig. 4.</td></tr>
   </table>
@@ -84,6 +86,7 @@ The so-called "parallelogram of forces" is simply a rule for compounding acceler
 
 <figure>
   <!-- plate not reproduced: PSM V12 D310 Logic of science demonstration 2.jpg -->
+  <p>[Illustration not reproduced.]</p>
   <figcaption>Fig. 5.</figcaption>
 </figure>
 

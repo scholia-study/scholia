@@ -13,7 +13,7 @@ curated layer and locks it 1:1 to a source book by sentence, threading
 alignments through `--source-book-slug`.
 
 Both assume the text needs one of those relationships. peirce1
-(*Pragmaticism*, Peirce's journal papers 1867–1908) needs neither. It is
+(*Essays in Pragmaticism*, Peirce's journal papers 1867–1908) needs neither. It is
 English, so there is nothing to translate from; and its orthography is
 already modern, so a reviewed layer would be a near-duplicate of the reading
 text, differing in perhaps 50–150 tokens across 400 pages. Manufacturing a

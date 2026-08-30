@@ -5,7 +5,7 @@ depth: 1
 page_pub: "Monist 1:161"
 ---
 
-## The Architecture of Theories
+## {{{ Monist 1:161 }}} The Architecture of Theories
 
 OF the fifty or hundred systems of philosophy that have been advanced at different times of the world's history, perhaps the larger number have been, not so much results of historical evolution, as happy thoughts which have accidently occurred to their authors. An idea which has been found interesting and fruitful has been adopted, developed, and forced to yield explanations of all sorts of phenomena. The English have been particularly given to this way of philosophising; witness, Hobbes, Hartley, Berkeley, James Mill. Nor has it been by any means useless labor; it shows us what the true nature and value of the ideas developed are, and in that way affords serviceable materials for philosophy. Just as if a man, being seized with the conviction that paper was a good material to make things of, were to go to work to build a _papier mache_ house, with roof of roofing-paper, foundations of pasteboard, windows of paraffined paper, chimneys, bath tubs, locks, etc., all of different forms of paper, his experiment would probably afford valuable lessons to builders, while it would certainly make a detestable house, so those one-idea'd philosophies are exceedingly interesting and instructive, and yet are quite unsound.
 
@@ -67,6 +67,7 @@ Modern mathematics is replete with ideas which may be applied {{{ Monist 1:171 }
 
 <figure>
   <!-- plate not reproduced: TheMonistVol1pg186GraphRecreation.jpg -->
+  <p>[Illustration not reproduced.]</p>
   <figcaption></figcaption>
 </figure>
 

@@ -5,7 +5,7 @@ depth: 1
 page_pub: "JSP 2:103"
 ---
 
-## Questions Concerning Certain Faculties Claimed for Man
+## {{{ JSP 2:103 }}} Questions Concerning Certain Faculties Claimed for Man
 
 Question 1. _Whether by the simple contemplation of a cognition, independently of any previous knowledge and without reasoning from signs, we are enabled rightly to judge whether that cognition has been determined by a previous cognition or whether it refers immediately to its object._
 

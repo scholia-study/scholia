@@ -5,7 +5,7 @@ depth: 1
 page_pub: "PSM 12:705"
 ---
 
-## The Probability of Induction
+## {{{ PSM 12:705 }}} The Probability of Induction
 
 ## I.
 

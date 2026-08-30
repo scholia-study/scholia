@@ -14,11 +14,15 @@ export const INFO_LINKS = [
         label: "Blog",
     },
     { to: "/contribute" as const, label: "Contribute" },
+    {
+        href: "https://github.com/orgs/scholia-study/projects/1",
+        label: "Roadmap",
+    },
     { to: "/membership" as const, label: "Membership" },
     { to: "/licence" as const, label: "Licence" },
     { to: "/terms" as const, label: "Terms" },
     { to: "/privacy" as const, label: "Privacy" },
-];
+] as const;
 
 type InfoLink = (typeof INFO_LINKS)[number];
 
@@ -26,6 +30,7 @@ type InfoLink = (typeof INFO_LINKS)[number];
  * the subnav to match the current location (route-pattern matching would
  * light up every series page, not just the blog's). */
 export function infoLinkPath(link: InfoLink): string {
+    if ("href" in link) return link.href;
     if (!("params" in link) || !link.params) return link.to;
     return Object.entries(link.params).reduce(
         (path, [key, value]) => path.replace(`$${key}`, value),
@@ -48,7 +53,17 @@ export function InfoLinks({
     return (
         <div className={className}>
             {INFO_LINKS.map((link) =>
-                "params" in link ? (
+                "href" in link ? (
+                    <a
+                        key={link.label}
+                        href={link.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={linkClassName}
+                    >
+                        {link.label}
+                    </a>
+                ) : "params" in link ? (
                     <Link
                         key={link.label}
                         to={link.to}

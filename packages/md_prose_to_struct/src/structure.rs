@@ -150,6 +150,9 @@ struct BlockCtx<'a> {
     /// English for translation).
     splitter: Splitter,
     figure_label: &'a str,
+    /// Splitter for heading blocks — the base splitter, without the prose
+    /// herald/enumerator rules that would carve a title apart.
+    heading_splitter: fn(&str, &str, &[usize]) -> Vec<(String, String)>,
     aa_system_slug: &'a str,
     edition_system_slug: &'a str,
     edition_sort_arabic_fallback: bool,
@@ -233,6 +236,20 @@ pub fn build_output(corpus: &Corpus, mode: Mode, parsed_files: &[ParsedFile]) ->
             split_sentences_forced
         },
         figure_label: corpus.figure_label,
+        // Same selection as `splitter`, minus the peirce prose rules.
+        heading_splitter: if corpus.strong_colon_splits {
+            split_sentences_en_strong_colon_forced
+        } else if corpus.paren_protected_splits {
+            if translation || corpus.source_splitter_en {
+                split_sentences_en_paren_protected_forced
+            } else {
+                split_sentences_paren_protected_forced
+            }
+        } else if translation || corpus.source_splitter_en {
+            split_sentences_en_forced
+        } else {
+            split_sentences_forced
+        },
         aa_system_slug: corpus.aa_system_slug,
         edition_system_slug: corpus.edition_system_slug,
         edition_sort_arabic_fallback: corpus.edition_sort_arabic_fallback,
@@ -403,7 +420,15 @@ fn build_block(
     let (block_plain_tok, forced_splits) = strip_forced_splits_keep_runs(&plain_no_markers);
     let (html_no_markers, _) = strip_markers(&md_to_html(&rewritten_text));
     let block_html_tok = strip_forced_split_markers(&html_no_markers);
-    let sentence_pairs = (ctx.splitter)(&block_plain_tok, &block_html_tok, &forced_splits);
+    // Headings are titles, not prose: the corpus's herald-colon and
+    // enumerator rules must not carve them up ("…Laws of Logic: Further
+    // Consequences…" is one heading).
+    let block_splitter = if block_type_str == "heading" {
+        ctx.heading_splitter
+    } else {
+        ctx.splitter
+    };
+    let sentence_pairs = block_splitter(&block_plain_tok, &block_html_tok, &forced_splits);
 
     // `strip_forced_splits_keep_runs` deleted each `|||` (3 chars) from the
     // plain text; shift any marker that sat after one back into block_plain_tok
@@ -782,6 +807,7 @@ mod tests {
         BlockCtx {
             splitter: split_sentences_forced,
             figure_label: "Abbildung",
+            heading_splitter: split_sentences_forced,
             aa_system_slug: "aa_iii",
             edition_system_slug: "b_edition",
             edition_sort_arabic_fallback: false,

@@ -676,7 +676,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                     // as "Undated" in the library); the About panel carries
                     // the full range.
                     imprint: Imprint {
-                        publisher: None,
+                        publisher: Some(meta::PUBLISHER),
                         place: None,
                         volume: None,
                         edition: None,

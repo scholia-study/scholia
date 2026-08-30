@@ -5,7 +5,7 @@ depth: 1
 page_pub: "PAAAS 7:287"
 ---
 
-## On a New List of Categories
+## {{{ PAAAS 7:287 }}} On a New List of Categories
 
 § 1. This paper is based upon the theory already established, that the function of conceptions is to reduce the manifold of sensuous impressions to unity, and that the validity of a conception consists in the impossibility of reducing the content of consciousness to unity without the introduction of it.
 

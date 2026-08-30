@@ -5,21 +5,19 @@ depth: 1
 page_pub: "Monist 2:533"
 ---
 
-## The Law of Mind
-
- THE LAW OF MIND.
+## {{{ Monist 2:533 }}} The Law of Mind
 
 In an article published in _The Monist_ for January 1891, I endeavored to show what ideas ought to form the warp of a system of philosophy, and particularly emphasised that of absolute chance. In the number of April 1892, I argued further in favor of that way of thinking, which it will be convenient to christen _tychism_ (from _τὑχη_, chance). A serious student of philosophy will be in no haste to accept or reject this doctrine; but he will see in it one of the chief attitudes which speculative thought may take, feeling that it is not for an individual, nor for an age, to pronounce upon a fundamental question of philosophy. That is a task for a whole era to work out. I have begun by showing that _tychism_ must give birth to an evolutionary cosmology, in which all the regularities of nature and of mind are regarded as products of growth, and to a Schelling-fashioned idealism which holds matter to be mere specialised and partially deadened mind. I may mention, for the benefit of those who are curious in studying mental biographies, that I was born and reared in the neighborhood of Concord,—I mean in Cambridge,—at the time when Emerson, Hedge, and their friends were disseminating the ideas that they had caught from Schelling, and Schelling from Plotinus, from Boehm, or from God knows what minds stricken with the monstrous mysticism of the East. But the atmosphere of Cambridge held many an antiseptic against Concord transcendentalism; and I am not conscious of having contracted any of that virus. Nevertheless, it is probable that some cultured bacilli, some benignant form of the disease was implanted in my soul, unawares, and that now, after long incubation, it comes to the surface, modified by {{{ Monist 2:534 }}} mathematical conceptions and by training in physical investigations.
 
 The next step in the study of cosmology must be to examine the general law of mental action. In doing this, I shall for the time drop my tychism out of view, in order to allow a free and independent expansion to another conception signalised in my first _Monist_-paper as one of the most indispensable to philosophy, though it was not there dwelt upon ; I mean the idea of continuity. The tendency to regard continuity, in the sense in which I shall define it, as an idea of prime importance in philosophy may conveniently be termed _synechism_. The present paper is intended chiefly to show what synechism is, and what it leads to. I attempted, a good many years ago, to develop this doctrine in the _Journal of Speculative Philosophy_ (Vol. III.); but I am able now to improve upon that exposition, in which I was a little blinded by nominalistic prepossessions. I refer to it, because students may possibly find that some points not sufficiently explained in the present paper are cleared up in those earlier ones.
 
-WHAT THE LAW IS.
+## WHAT THE LAW IS.
 
 Logical analysis applied to mental phenomena shows that there is but one law of mind, namely, that ideas tend to spread continuously and to affect certain others which stand to them in a peculiar relation of affectibility. In this spreading they lose intensity, and especially the power of affecting others, but gain generality and become welded with other ideas.
 
 I set down this formula at the beginning, for convenience; and now proceed to comment upon it.
 
-INDIVIDUALITY OF IDEAS.
+## INDIVIDUALITY OF IDEAS.
 
 We are accustomed to speak of ideas as reproduced, as passed from mind to mind, as similar or dissimilar to one another, and, in short, as if they were substantial things; nor can any reasonable objection be raised to such expressions. But taking the word "idea" in the sense of an event in an individual consciousness, it is clear that an idea once past is gone forever, and any supposed recurrence of it is another idea. These two ideas are not present in the same {{{ Monist 2:535 }}} state of consciousness, and therefore cannot possibly be compared. To say, therefore, that they are similar can only mean that an occult power from the depths of the soul forces us to connect them in our thoughts after they are both no more. We may note, here, in passing that of the two generally recognised principles of association, contiguity and similarity, the former is a connection due to a power without, the latter a connection due to a power within.
 
@@ -27,7 +25,7 @@ But what can it mean to say that ideas wholly past are thought of at all, any lo
 
 I will not dwell further upon this point, because it is a commonplace of philosophy.
 
-CONTINUITY OF IDEAS.
+## CONTINUITY OF IDEAS.
 
 We have here before us a question of difficulty, analogous to the question of nominalism and realism. But when once it has been clearly formulated, logic leaves room for one answer only. How can a past idea be present? Can it be present vicariously? To a certain extent, perhaps; but not merely so; for then the question would arise how the past idea can be related to its vicarious representation. The relation, being between ideas, can only exist in some consciousness: now that past idea was in no consciousness but that past consciousness that alone contained it; and that did not embrace the vicarious idea.
 
@@ -41,7 +39,7 @@ But yet consciousness must essentially cover an interval of time; for if it did 
 
 This is all that is requisite. For, in this infinitesimal interval, not only is consciousness continuous in a subjective sense, that is, considered as a subject or substance having the attribute of duration; but also, because it is immediate consciousness, its object is _ipso facto_ continuous. In fact, this infinitesimally spread out consciousness is a direct feeling of its contents as spread out. This will be further elucidated below. In an infinitesimal interval we directly perceive the temporal sequence of its beginning, middle, and end,—not, of course, in the way of recognition, for recognition is only of the past, but in the way of immediate feeling. Now upon this interval follows another, whose beginning is the middle of the former, and whose middle is the end of the former. Here, we have an immediate perception of the temporal sequence of its beginning, middle, and end, or say of the second, third, and fourth instants. From these two immediate perceptions, we gain a mediate, or inferential, perception of the relation of all four instants. This mediate perception is objectively, or as to the object represented, spread over the four instants ; but subjectively, or as itself the subject of duration, it is completely embraced in the second moment. [The reader will observe that I use the word instant to mean a point {{{ Monist 2:537 }}} of time, and moment to mean an infinitesimal duration.] If it is objected that, upon the theory proposed, we must have more than a mediate perception of the succession of the four instants, I grant it; for the sum of the two infinitesimal intervals is itself infinitesimal, so that it is immediately perceived. It is immediately perceived in the whole interval, but only mediately perceived in the last two thirds of the interval. Now, let there be an indefinite succession of these inferential acts of comparative perception; and it is plain that the last moment will contain objectively the whole series. Let there be, not merely an indefinite succession, but a continuous flow of inference through a finite time ; and the result will be a mediate objective consciousness of the whole time in the last moment. In this last moment, the whole series will be recognised, or known as known before, except only the last moment, which of course will be absolutely unrecognisable to itself. Indeed, even this last moment will be recognised like the rest, or, at least be just beginning to be so. There is a little _elenchus_, or appearance of contradiction, here, which the ordinary logic of reflection quite suffices to resolve.
 
-INFINITY AND CONTINUITY, IN GENERAL.
+## INFINITY AND CONTINUITY, IN GENERAL.
 
 Most of the mathematicians who during the last two generations have treated the differential calculus have been of the opinion that an infinitesimal quantity is an absurdity; although, with their habitual caution, they have often added "or, at any rate, the conception of an infinitesimal is so difficult, that we practically cannot reason about it with confidence and security." Accordingly, the doctrine of limits has been invented to evade the difficulty, or, as some say, to explain the signification of the word "infinitesimal." This doctrine, in one form or another, is taught in all the text-books, though in some of them only as an alternative view of the matter; it answers well enough the purposes of calculation, though even in that application it has its difficulties.
 
@@ -65,13 +63,19 @@ In truth, of infinite collections there are but two grades of magnitude, the _en
 
 As an example of this reasoning, Euler's demonstration of the binomial theorem for integral powers may be given. The theorem is that (_x_ + _y_)_ⁿ_ , where _n_ is a whole number, may be expanded into the sum of a series of terms of which the first is _xⁿ yᵒ_ and each of the others is derived from the next preceding by diminishing the exponent of _x_ by 1 and multiplying by that exponent and at the same time increasing the exponent of _y_ by 1 and dividing by that increased exponent. Now, suppose this proposition to be true for a certain exponent, _n_ = _M_, then it must also be true for _n_ = M + 1.
 
-{{{ Monist 2:540 }}} For let one of the terms in the expansion of (x+y)^M be written Ax^py^q Then, this term with the two following will be
+{{{ Monist 2:540 }}} For let one of the terms in the expansion of (x+y)^M be written Ax^py^q. Then, this term with the two following will be:
 
-A x^(p) y^(q) + A p/q+1 x^(p-1) y^(q+1) + A p/q+1 p-1/q+2 x^(p-2) y^(q+2)
+<figure>
+  <p>A x^(p) y^(q)<br>+ A p/(q+1) x^(p-1) y^(q+1)<br>+ A p/(q+1) (p-1)/(q+2) x^(p-2) y^(q+2)</p>
+  <figcaption></figcaption>
+</figure>
 
-Now, when (x+y)^M is multiplied by x+y to give (x+y)^(M+1), we multiply first by _x_ and then by _y_ instead of by _x_ and add the two results. When we multiply by _x_, the second of the above three terms will be the only one giving a term involving x^py^(q+1) and the third will be the only one giving a term inx^(p-1)y^(q+2); and when we multiply by _y_ the first will be the only term giving a term and the second will be the only term giving a term in Hence, adding like terms, we find that the coefficient of x^py^(q+1) in the expansion of (x+y)^(M+1) will be the sum of the coefficients of the first two of the above three terms, and that the coefficient of x^(p-1)y^(q+2) will be the sum of the coefficients of the last two terms. Hence, two successive terms in the expansion of (x+y)^(M+1) will be
+Now, when (x+y)^M is multiplied by x+y to give (x+y)^(M+1), we multiply first by _x_ and then by _y_ instead of by _x_ and add the two results. When we multiply by _x_, the second of the above three terms will be the only one giving a term involving x^py^(q+1) and the third will be the only one giving a term inx^(p-1)y^(q+2); and when we multiply by _y_ the first will be the only term giving a term and the second will be the only term giving a term in Hence, adding like terms, we find that the coefficient of x^py^(q+1) in the expansion of (x+y)^(M+1) will be the sum of the coefficients of the first two of the above three terms, and that the coefficient of x^(p-1)y^(q+2) will be the sum of the coefficients of the last two terms. Hence, two successive terms in the expansion of (x+y)^(M+1) will be:
 
-A left ( 1 + p/q+1 right ) x^p y^(q+1) + A p/q+1 left ( 1 + p-1/q+2 right ) = A p+q+1/q+1 x^p y^(q+1) + A p+q+1/q+1 p/q+2 x^(p-1) y^(q+2)
+<figure>
+  <p>A (1 + p/(q+1)) x^p y^(q+1) + A p/(q+1) (1 + (p-1)/(q+2))<br>=<br>A (p+q+1)/(q+1) x^p y^(q+1) + A (p+q+1)/(q+1) p/(q+2) x^(p-1) y^(q+2)</p>
+  <figcaption></figcaption>
+</figure>
 
 It is, thus, seen that the succession of terms follows the rule. Thus if any integral power follows the rule, so also does the next higher power. But the first power obviously follows the rule. Hence, all powers do so.
 
@@ -103,7 +107,7 @@ If A is a finite quantity and i an infinitesimal, then in a certain sense we may
 
 Let us now consider an aspect of the Aristotelical principle which is particularly important in philosophy. Suppose a surface to be part red and part blue; so that every point on it is either red or blue, and, of course, no part can be both red and blue. What, then, is the color of the boundary line between the red and the blue? The answer is that red or blue, to exist at all, must be spread over a surface; and the color of the surface is the color of the surface in the immediate neighborhood of the point. I purposely use a vague form of expression. Now, as the parts of the surface in the immediate neighborhood of any ordinary point upon a curved boundary are half of them red and half blue, it follows that the boundary is half red and half blue. In like manner, we find it necessary to hold that consciousness essentially occupies time; and what is {{{ Monist 2:546 }}} present to the mind at any ordinary instant, is what is present during a moment in which that instant occurs. Thus, the present is half past and half to come. Again, the color of the parts of a surface at any finite distance from a point, has nothing to do with its color just at that point ; and, in the parallel, the feeling at any finite Interval from the present has nothing to do with the present feeling, except vicariously. Take another case : the velocity of a particle at any instant of time is its mean velocity during an infinitesimal instant in which that time is contained. Just so my immediate feeling is my feeling through an infinitesimal duration containing the present instant.
 
-ANALYSIS OF TIME.
+## ANALYSIS OF TIME.
 
 One of the most marked features about the law of mind is that it makes time to have a definite direction of flow from past to future. The relation of past to future is, in reference to the law of mind, different from the relation of future to past. This makes one of the great contrasts between the law of mind and the law of physical force, where there is no more distinction between the two opposite directions in time than between moving northward and moving southward.
 
@@ -117,17 +121,17 @@ To say that a state is _between_ two states means that it affects one and is aff
 
 These propositions involve a definition of time and of its flow. Over and above this definition they involve a doctrine, namely, that every state of feeling is affectible by every earlier state.
 
-THAT FEELINGS HAVE INTENSIVE CONTINUITY.
+## THAT FEELINGS HAVE INTENSIVE CONTINUITY.
 
 Time with its continuity logically involves some other kind of continuity than its own. Time, as the universal form of change, cannot exist unless there is something to undergo change, and to undergo a change continuous in time, there must be a continuity of changeable qualities. Of the continuity of intrinsic qualities of feeling we can now form but a feeble conception. The development of the human mind has practically extinguished all feelings, except a few sporadic kinds, sound, colors, smells, warmth, etc., which now appear to be disconnected and disparate. In the case of colors, there is a tridimensional spread of feelings. Originally, all feelings may have been connected in the same way, and the presumption is that the number of dimensions was endless. For development essentially involves a limitation of possibilities. But given a number of dimensions of feeling, all possible varieties are obtainable by varying the intensities of the different elements. Accordingly, time logically supposes a continuous range of intensity in feeling. It follows, then, from the definition of continuity, that when any particular kind of feeling is present, an infinitesimal continuum of all feelings differing infinitesimally from that is present.
 
-THAT FEELINGS HAVE SPATIAL EXTENSION.
+## THAT FEELINGS HAVE SPATIAL EXTENSION.
 
 Consider a gob of protoplasm, say an amoeba or a slime-mould. It does not differ in any radical way from the contents of a nerve-cell, though its functions may be less specialised. There is no {{{ Monist 2:548 }}} doubt that this slime-mould, or this amoeba, or at any rate some similar mass of protoplasm feels. That is to say, it feels when it is in its excited condition. But note how it behaves. When the whole is quiescent and rigid, a place upon it is irritated. Just at this point, an active motion is set up, and this gradually spreads to other parts. In this action, no unity nor relation to a nucleus, or other unitary organ can be discerned. It is a mere amorphous continuum of protoplasm, with feeling passing from one part to another. Nor is there anything like a wave-motion. The activity does not advance to new parts, just as fast as it leaves old parts. Rather, in the beginning, it dies out at a slower rate than that at which it spreads. And while the process is going on, by exciting the mass at another point, a second quite independent state of excitation will be set up. In some places, neither excitation will exist, in others each separately, in still other places, both effects will be added together. Whatever there is in the whole phenomenon to make us think there is feeling in such a mass of protoplasm,—_feeling_, but plainly no _personality_,—goes logically to show that that feeling has a subjective, or substantial, spatial extension, as the excited state has. This is, no doubt, a difficult idea to seize, for the reason that it is a subjective, not an objective, extension. It is not that we have a feeling of bigness; though Professor James, perhaps rightly, teaches that we have. It is that the feeling, as a subject of inhesion, is big. Moreover, our own feelings are focused in attention to such a degree that we are not aware that ideas are not brought to an absolute unity; just as nobody not instructed by special experiment has any idea how very, very little of the field of vision is distinct. Still, we all know how the attention wanders about among our feelings; and this fact shows that those feelings that are not coordinated in attention have a reciprocal externality, although they are present at the same time. But we must not tax introspection to make a phenomenon manifest which essentially involves externality.
 
 Since space is continuous, it follows that there must be an immediate community of feeling between parts of mind infinitesimally near together. Without this, I believe it would have been {{{ Monist 2:549 }}} impossible for minds external to one another, ever to become coordinated, and equally impossible for any coordination to be established in the action of the nerve-matter of one brain.
 
-AFFECTIONS OF IDEAS.
+## AFFECTIONS OF IDEAS.
 
 But we are met by the question what is meant by saying that one idea affects another. The unravelment of this problem requires us to trace out phenomena a little further.
 
@@ -145,6 +149,7 @@ Third, consider the insistency of an idea. The insistency of a past idea with re
 
 <figure>
   <!-- plate not reproduced: TheMonistVol2pg562GraphRecreation.jpg -->
+  <p>[Illustration not reproduced.]</p>
   <figcaption></figcaption>
 </figure>
 
@@ -154,11 +159,11 @@ Third, consider the insistency of an idea. The insistency of a past idea with re
 
 We can now see what the affection of one idea by another consists in. It is that the affected idea is attached as a logical predicate to the affecting idea as subject. So when a feeling emerges into immediate consciousness, it always appears as a modification of a more or less general object already in the mind. The word suggestion is well adapted to expressing this relation. The future is suggested by, or rather is influenced by the suggestions of, the past.
 
-IDEAS CANNOT BE CONNECTED EXCEPT BY CONTINUITY.
+## IDEAS CANNOT BE CONNECTED EXCEPT BY CONTINUITY.
 
 That ideas can nowise be connected without continuity is sufficiently evident to one who reflects upon the matter. But still the opinion may be entertained that after continuity has once made the connection of ideas possible, then they may get to be connected in other modes than through continuity. Certainly, I cannot see how anyone can deny that the infinite diversity o the universe, which we call chance, may bring ideas into proximity which are not associated in one general idea. It may do this many times. But then the law of continuous spreading will produce a mental association; and this I suppose is an abridged statement of the way the universe has been evolved. But if I am asked whether a blind _ὰνάγχη_ cannot bring ideas together, first I point out that it would not remain blind. There being a continuous connection between the ideas, they would infallibly become associated in a living, feeling, and perceiving general idea. Next, I cannot see what the mustness or necessity of this _ὰνάγχη_ would consist in. In the absolute uniformity of the phenomenon, says the nominalist. Absolute is well put in ; for if it merely happened so three times in succession, or three million times in succession, in the absence of any reason, the coincidence could only be attributed to chance. But absolute uniformity must extend over the whole infinite future; and it is idle to {{{ Monist 2:552 }}} talk of that except as an idea. No; I think we can only hold that wherever ideas come together they tend to weld into general ideas; and wherever they are generally connected, general ideas govern the connection; and these general ideas are living feelings spread out.
 
-MENTAL LAW FOLLOWS THE FORMS OF LOGIC.
+## MENTAL LAW FOLLOWS THE FORMS OF LOGIC.
 
 The three main classes of logical inference are Deduction, Induction, and Hypothesis. These correspond to three chief modes of action of the human soul. In deduction the mind is under the dominion of a habit or association by virtue of which a general idea suggests in each case a corresponding reaction. But a certain sensation is seen to involve that idea. Consequently, that sensation is followed by that reaction. That is the way the hind legs of a frog, separated from the rest of the body, reason, when you pinch them. It is the lowest form of psychical manifestation.
 
@@ -170,7 +175,7 @@ Habit is that specialisation of the law of mind whereby a general idea gains the
 
 Thus, by induction, a number of sensations followed by one reaction become united under one general idea followed by the same reaction; while by the hypothetic process, a number of reactions called for by one occasion get united in a general idea which is called out by the same occasion. By deduction, the habit fulfils its function of calling out certain reactions on certain occasions.
 
-{{{ Monist 2:554 }}} UNCERTAINTY OF MENTAL ACTION.
+## {{{ Monist 2:554 }}} UNCERTAINTY OF MENTAL ACTION.
 
 The inductive and hypothetic forms of inference are essentially probable inferences, not necessary; while deduction may be either necessary or probable.
 
@@ -178,7 +183,7 @@ But no mental action seems to be necessary or invariable in its character. In wh
 
 Some psychologists think to reconcile the uncertainty of reactions with the principle of necessary causation by means of the law of fatigue. Truly for a _law_, this law of fatigue is a little lawless. I think it is merely a case of the general principle that an idea in spreading loses its insistency. Put me tarragon into my salad, when I have not tasted it for years, and I exclaim "What nectar is this!" But add it to every dish I taste for week after week, and a habit of expectation has been created; and in thus spreading into habit, the sensation makes hardly any more impression upon me; or, if it be noticed, it is on a new side from which it appears as rather a bore. The doctrine that fatigue is one of the primordial phenomena of mind I am much disposed to doubt. It seems a somewhat little thing to be allowed as an exception to the great principle of mental uniformisation. For this reason, I prefer to explain it in the manner here indicated, as a special case of that great principle. To consider it as something distinct in its nature, certainly somewhat strengthens the necessitarian position; but even if it be distinct, the hypothesis that all the variety and apparent arbitrariness of mental action ought {{{ Monist 2:555 }}} to be explained away in favor of absolute determinism does not seem to me to recommend itself to a sober and sound judgment, which seeks the guidance of observed facts and not that of prepossessions.
 
-RESTATEMENT OF THE LAW.
+## RESTATEMENT OF THE LAW.
 
 Let me now try to gather up all these odds and ends of commentary and restate the law of mind, in a unitary way.
 
@@ -192,7 +197,7 @@ Fourth, this supreme law, which is the celestial and living harmony, does not so
 
 Fifth, in what measure this unification acts, seems to be regulated only by special rules; or, at least, we cannot in our present {{{ Monist 2:556 }}} knowledge say how far it goes. But it may be said that, judging by appearances, the amount of arbitrariness in the phenomena of human minds is neither altogether trifling nor very prominent.
 
-PERSONALITY.
+## PERSONALITY.
 
 Having thus endeavored to state the law of mind, in general, I descend to the consideration of a particular phenomenon which is remarkably prominent in our own consciousnesses, that of personality. A strong light is thrown upon this subject by recent observations of double and multiple personality. The theory which at one time seemed plausible that two persons in one body corresponded to the two halves of the brain will, I take it, now be universally acknowledged to be insufficient. But that which these cases make quite manifest is that personality is some kind of coordination or connection of ideas. Not much to say, this, perhaps. Yet when we consider that, according to the principle which we are tracing out, a connection between ideas is itself a general idea, and that a general idea is a living feeling, it is plain that we have at least taken an appreciable step toward the understanding of personality. This personality, like any general idea, is not a thing to be apprehended in an instant. It has to be lived in time ; nor can any finite time embrace it in all its fulness. Yet in each infinitesimal interval it is present and living, though specially colored by the immediate feelings of that moment. Personality, so far as it is apprehended in a moment, is immediate self-consciousness.
 
@@ -200,7 +205,7 @@ But the word coordination implies somewhat more than this; it implies a teleolog
 
 This reference to the future is an essential element of personality. Were the ends of a person already explicit, there would be no room for development, for growth, for life; and consequently there would be no personality. The mere carrying out of predetermined {{{ Monist 2:557 }}} purposes is mechanical. This remark has an application to the philosophy of religion. It is that a genuine evolutionary philosophy, that is, one that makes the principle of growth a primordial element of the universe, is so far from being antagonistic to the idea of a personal creator, that it is really inseparable from that idea; while a necessitarian religion is in an altogether false position and is destined to become disintegrated. But a pseudo-evolutionism which enthrones mechanical law above the principle of growth, is at once scientifically unsatisfactory, as giving no possible hint of how the universe has come about, and hostile to all hopes of personal relations to God.
 
-COMMUNICATION.
+## COMMUNICATION.
 
 Consistently with the doctrine laid down in the beginning of this paper, I am bound to maintain that an idea can only be affected by an idea in continuous connection with it. By anything but an idea, it cannot be affected at all. This obliges me to say, as I do say, on other grounds, that what we call matter is not completely dead, but is merely mind hide-bound with habits. It still retains the element of diversification; and in that diversification there is life. When an idea is conveyed from one mind to another, it is by forms of combination of the diverse elements of nature, say by some curious symmetry, or by some union of a tender color with a refined odor. To such forms the law of mechanical energy has no application. If they are eternal, it is in the spirit they embody; and their origin cannot be accounted for by any mechanical necessity. They are embodied ideas; and so only can they convey ideas. Precisely how primary sensations, as colors and tones, are excited, we cannot tell, in the present state of psychology. But in our ignorance, I think that we are at liberty to suppose that they arise in essentially the same manner as the other feelings, called secondary. As far as sight and hearing are in question, we know that they are only excited by vibrations of inconceivable complexity; and the chemical senses are probably not more simple. Even the least psychical of peripheral sensations, that of pressure, has in its excitation conditions which, though apparently simple, are seen to be {{{ Monist 2:558 }}} complicated enough when we consider the molecules and their attractions. The principle with which I set out requires me to maintain that these feelings are communicated to the nerves by continuity, so that there must be something like them in the excitants themselves. If this seems extravagant, it is to be remembered that it is the sole possible way of reaching any explanation of sensation, which otherwise must be pronounced a general fact absolutely inexplicable and ultimate. Now absolute inexplicability is a hypothesis which sound logic refuses under any circumstances to justify.
 
@@ -212,10 +217,8 @@ The psychological phenomena of intercommunication between two minds have been un
 
 A difficulty which confronts the synechistic philosophy is this. In considering personality, that philosophy is forced to accept the doctrine of a personal God; but in considering communication, it cannot but admit that if there is a personal God, we must have a direct perception of that person and indeed be in personal communication with him. Now, if that be the case, the question arises how it is possible that the existence of this being should ever have been {{{ Monist 2:559 }}} doubted by anybody. The only answer that I can at present make is that facts that stand before our face and eyes and stare us in the face are far from being, in all cases, the ones most easily discerned. That has been remarked from time immemorial.
 
-CONCLUSION.
+## CONCLUSION.
 
 I have thus developed as well as I could in a little space the _synechistic_ philosophy, as applied to mind. I think that I have succeeded in making it clear that this doctrine gives room for explanations of many facts which without it are absolutely and hopelessly inexplicable; and further that it carries along with it the following doctrines: 1st, a logical realism of the most pronounced type; 2nd, objective idealism; 3rd, tychism, with its consequent thoroughgoing evolutionism. We also notice that the doctrine presents no hindrances to spiritual influences, such as some philosophies are felt to do.
-
-C. S. Peirce.
 
 [^*]: This proposition is substantially the same as a theorem of Cantor, though it is enunciated in a much more general form.

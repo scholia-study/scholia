@@ -1,6 +1,6 @@
 # peirce1 — curation notes
 
-*Pragmaticism*: sixteen papers Peirce published in the journals between 1867
+*Essays in Pragmaticism*: sixteen papers Peirce published in the journals between 1867
 and 1908, in order of publication. One curated layer (`md_reviewed`), because
 his English is already modern and a second layer would duplicate it — see
 ADR 0011.
@@ -129,11 +129,12 @@ printed labels ("Let A B (Fig. 5) be the path…"), so they must never be
 replaced. Numbering runs continuously through the book (a consequence of the
 shared pipeline and the DB's unique figure-number constraint), not per paper.
 
-**Plates are not reproduced.** Four papers reference engraved diagrams that the
-transcriptions carry as images. There is no image pipeline here, so each is a
-figure holding the printing's own caption, with the image filename in an HTML
-comment for a later pass. The referring text ("Let A B (Fig. 5) be the path…")
-is untouched.
+**Plates are not reproduced.** Several papers reference engraved diagrams
+that the transcriptions carry as images. There is no image pipeline here, so
+each is a figure with the visible editorial marker "[Illustration not
+reproduced.]", the printing's own labels where it has them ("Fig. 1."), and
+the image filename in an HTML comment for a later pass. The referring text
+("Let A B (Fig. 5) be the path…") is untouched.
 
 **Mathematics** is set as text: `{{over|81|100}}` → `81/100`, `\sqrt{…}` → `√(…)`,
 exponents as Unicode (`2⁵`). Exponents must **never** be written as `<sup>`:

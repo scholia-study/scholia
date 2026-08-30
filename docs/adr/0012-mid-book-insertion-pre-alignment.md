@@ -12,7 +12,7 @@ for everything after it. The pre-flight reads any such shift as structural
 drift and aborts to `just db-reload`, which re-mints sentence UUIDs and breaks
 anchored quotations.
 
-peirce1 (*Pragmaticism*) is a growing selection: its position numbers are
+peirce1 (*Essays in Pragmaticism*) is a growing selection: its position numbers are
 spaced a thousand apart precisely so papers can be inserted in date order.
 Spacing solves the *identity* half — `source_ref` and body-sentence natural
 keys (`{source_ref}/b{pos}/s{pos}`) never involve the global counters, so

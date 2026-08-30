@@ -5,7 +5,7 @@ depth: 1
 page_pub: "JSP 2:193"
 ---
 
-## Grounds of Validity of the Laws of Logic: Further Consequences of Four Incapacities
+## {{{ JSP 2:193 }}} Grounds of Validity of the Laws of Logic: Further Consequences of Four Incapacities
 
 If, as I maintained in an article in the last number of this Journal , every judgment results from inference, to doubt every inference is to doubt everything. It has often been argued that absolute scepticism is self-contradictory; but this is a mistake: and even if it were not so, it would be no argument against the absolute sceptic, inasmuch as he does not admit that no contradictory propositions are true. Indeed, it would be impossible to move such a man, for his scepticism consists in considering every argument and never deciding upon its validity; he would, therefore, act in this way in reference to the arguments brought against him.
 

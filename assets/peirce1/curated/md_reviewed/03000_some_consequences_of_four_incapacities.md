@@ -5,7 +5,7 @@ depth: 1
 page_pub: "JSP 2:140"
 ---
 
-## Some Consequences of Four Incapacities
+## {{{ JSP 2:140 }}} Some Consequences of Four Incapacities
 
 Descartes is the father of modern philosophy, and the spirit of Cartesianism—that which principally distinguishes it from the scholasticism, which it displaced— may be compendiously stated as follows:
 

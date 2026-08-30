@@ -5,7 +5,7 @@ depth: 1
 page_pub: "PSM 12:604"
 ---
 
-## The Doctrine of Chances
+## {{{ PSM 12:604 }}} The Doctrine of Chances
 
 
 ## I.

@@ -4,11 +4,18 @@
 // same colour from the shelf into the text.
 
 export type Genre = "philosophy" | "poetry" | "drama" | "unclassified";
-export type Era = "ancient" | "medieval" | "earlyModern" | "modern";
+export type Era =
+    | "ancient"
+    | "medieval"
+    | "earlyModern"
+    | "modern"
+    | "lateModern";
 
 /**
  * A work reads paler and more faded the older it is, deeper and more
- * saturated the nearer it stands to us.
+ * saturated the nearer it stands to us — ending in a late-modern step
+ * (1850 onward) so the nineteenth century's second half reads a shade
+ * deeper than its first.
  *
  * Each ramp is solved backwards from a contrast target rather than set to a
  * common lightness — green is perceptually far lighter than navy at the same
@@ -23,18 +30,21 @@ export const GENRE_RAMPS: Record<Genre, Record<Era, string>> = {
         medieval: "#3e5f89",
         earlyModern: "#2c4d78",
         modern: "#1d3c64",
+        lateModern: "#0f2c51",
     },
     poetry: {
         ancient: "#427a5e",
         medieval: "#2f674b",
         earlyModern: "#20563b",
         modern: "#14442c",
+        lateModern: "#0a331f",
     },
     drama: {
         ancient: "#a45963",
         medieval: "#95434e",
         earlyModern: "#83303b",
         modern: "#6d202a",
+        lateModern: "#58141b",
     },
     // Deliberately drab: an unmapped author should look unplaced rather than
     // quietly borrow a genre it may not belong to.
@@ -43,6 +53,7 @@ export const GENRE_RAMPS: Record<Genre, Record<Era, string>> = {
         medieval: "#736a61",
         earlyModern: "#5c544c",
         modern: "#454039",
+        lateModern: "#2e2d28",
     },
 };
 
@@ -74,6 +85,7 @@ const GENRE_BY_AUTHOR: Record<string, Genre> = {
     "Georg Wilhelm Friedrich Hegel": "philosophy",
     "Immanuel Kant": "philosophy",
     "Thomas Hobbes": "philosophy",
+    "Charles Sanders Peirce": "philosophy",
     "John Milton": "poetry",
     "William Shakespeare": "poetry",
     "Henrik Ibsen": "drama",
@@ -98,7 +110,8 @@ export function eraOf(year: number | null | undefined): Era {
     if (year < 500) return "ancient";
     if (year < 1450) return "medieval";
     if (year < 1800) return "earlyModern";
-    return "modern";
+    if (year < 1850) return "modern";
+    return "lateModern";
 }
 
 export function accentFor(

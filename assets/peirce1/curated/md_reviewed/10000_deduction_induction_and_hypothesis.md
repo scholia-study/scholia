@@ -5,7 +5,7 @@ depth: 1
 page_pub: "PSM 13:470"
 ---
 
-## Deduction, Induction, and Hypothesis
+## {{{ PSM 13:470 }}} Deduction, Induction, and Hypothesis
 
 ## I.
 
@@ -217,9 +217,12 @@ The rules which have thus far been laid down for induction and hypothesis are su
 
 Classifications in all cases perfectly satisfactory hardly exist. Even in regard to the great distinction between explicative and ampliative inferences, examples could be found which seem to lie upon the border between the two classes, and to partake in some respects of the characters of either. The same thing is true of the distinction between induction and hypothesis. In the main, it is broad and decided. By induction, we conclude that facts, similar to observed facts, are true in cases not examined. By hypothesis, we conclude the existence of a fact quite different from anything observed, from which, according to known laws, something observed would necessarily result. The former, is reasoning from particulars to the general law; the latter, from effect to cause. The former classifies, the latter explains. It is only in some special cases that there can be more than a momentary doubt to which category a given inference belongs. One exception is where we observe, not facts similar under similar circumstances, but facts different under different circumstances the difference of the former having, however, a definite relation to the difference of the latter. Such inferences, which are really inductions, sometimes present nevertheless some indubitable resemblances to hypotheses.
 
-Knowing that water expands by heat, we make a number of observations of the volume of a constant mass of water at different temperatures. The scrutiny of a few of these suggests a form of algebraical formula which will approximately express the relation of the volume to the temperature. It may be, for instance, that _v_ being the relative volume, and _t_ the temperature, the few observations examined indicate a relation of the form—
+Knowing that water expands by heat, we make a number of observations of the volume of a constant mass of water at different temperatures. The scrutiny of a few of these suggests a form of algebraical formula which will approximately express the relation of the volume to the temperature. It may be, for instance, that _v_ being the relative volume, and _t_ the temperature, the few observations examined indicate a relation of the form:
 
-_v_ = 1 + _a_t + _b_t² + _c_t³.
+<figure>
+  <p><i>v</i> = 1 + <i>a</i>t + <i>b</i>t² + <i>c</i>t³.</p>
+  <figcaption></figcaption>
+</figure>
 
 Upon examining observations at other temperatures taken at random, this idea is confirmed; and we draw the inductive conclusion that all {{{ PSM 13:478 }}} observations within the limits of temperature from which we have drawn our observations could equally be so satisfied. Having once ascertained that such a formula is possible, it is a mere affair of arithmetic to find the values of _a_, _b_, and _c_, which will make the formula satisfy the observations best. This is what physicists call an _empirical formula_, because it rests upon mere induction, and is not explained by any hypothesis.
 

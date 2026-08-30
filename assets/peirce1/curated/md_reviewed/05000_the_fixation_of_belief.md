@@ -5,7 +5,7 @@ depth: 1
 page_pub: "PSM 12:1"
 ---
 
-## The Fixation of Belief
+## {{{ PSM 12:1 }}} The Fixation of Belief
 
 ## I.
 

@@ -720,11 +720,15 @@ static INITIAL_CHAIN_BEFORE_RE: LazyLock<Regex> =
 /// The next token is itself an initial ("R. S. Ball" seen from R).
 static INITIAL_CHAIN_AFTER_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new("^[A-Z]\\.\\s").unwrap());
-/// The corpus's initialed names (Monsieur-abbreviations and bylines); a
-/// closed set, extended as curation meets new ones.
-static NAME_GUARD_RE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new("M\\.\\s+(Vacherot|Delboeuf|Renouvier)|S\\.\\s+Peirce|L\\.\\s+Le\\b").unwrap()
-});
+/// The corpus's initialed names (the Monsieur-abbreviations and one cited
+/// author); a closed set, extended as curation meets new ones.
+static NAME_GUARD_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("M\\.\\s+(Vacherot|Delboeuf|Renouvier)|L\\.\\s+Le\\b").unwrap());
+
+/// A paragraph-leading enumerator ("1º", "2d", "III") owning the colon: its
+/// item must not be split away from it.
+static ENUM_HERALD_GUARD_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("(^|\\s)(\\d{1,2}º?|[IVX]{1,4})$").unwrap());
 
 static COLON_QUOTE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(":—?\\s*[\"“][A-Z]").unwrap());
 
@@ -775,6 +779,17 @@ pub fn split_sentences_en_enum_forced(
             - s.chars().last().unwrap().len_utf8()
             - s.chars().rev().nth(1).unwrap().len_utf8();
         split_positions.push(quote_start);
+    }
+    // A colon heralding an unquoted independent statement ("such, in the
+    // latter class, as this: Darwinians, with truly surprising ingenuity,
+    // have…"). Capital-after-colon is the printings' signal that a new
+    // sentence begins. Leading enumerators ("1º: Symbols which…") stay whole.
+    for m in STRONG_COLON_RE.find_iter(text) {
+        let before = text[..m.start()].trim_end();
+        if before.len() < 4 || ENUM_HERALD_GUARD_RE.is_match(before) {
+            continue;
+        }
+        split_positions.push(m.end() - 1);
     }
     for pos in split_positions.iter_mut() {
         let preceding = &text[..*pos];
@@ -1746,11 +1761,10 @@ mod variable_end_and_quote_tests {
     }
 
     #[test]
-    fn monsieur_and_byline_names_stay_whole() {
+    fn monsieur_names_stay_whole() {
         for t in [
             "This is admitted by M. Vacherot. He continues further.",
             "So says M. Delboeuf. Likewise M. Renouvier. Both agree.",
-            "The paper is signed Charles S. Peirce. It appeared in 1893.",
         ] {
             let out = split_sentences_en_enum_forced(t, t, &[]);
             for (s, _) in &out {
@@ -1780,5 +1794,37 @@ mod variable_end_and_quote_tests {
         let out = split_sentences_en_enum_forced(t, t, &[]);
         assert!(out[0].0.ends_with("as follows:—"), "{out:?}");
         assert!(out[1].0.starts_with("\"A certain man"), "{out:?}");
+    }
+}
+
+#[cfg(test)]
+mod herald_colon_tests {
+    use super::*;
+
+    #[test]
+    fn colon_heralded_statements_split_at_the_capital() {
+        let t = "Some questions would get touched; such, in the latter class, as this: Darwinians, with truly surprising ingenuity, have concocted one explanation.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(out.len(), 2, "{out:?}");
+        assert!(out[0].0.ends_with("as this:"), "{out:?}");
+        assert!(out[1].0.starts_with("Darwinians"), "{out:?}");
+    }
+
+    #[test]
+    fn leading_enumerators_keep_their_colon_and_item() {
+        for t in [
+            "1º: Symbols which directly determine their objects.",
+            "III: The remaining case is different.",
+        ] {
+            let out = split_sentences_en_enum_forced(t, t, &[]);
+            assert_eq!(out.len(), 1, "{out:?}");
+        }
+    }
+
+    #[test]
+    fn lowercase_after_colon_never_splits() {
+        let t = "There is one rule: the colon points, it does not end sentences here.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(out.len(), 1, "{out:?}");
     }
 }

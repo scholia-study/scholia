@@ -5,7 +5,7 @@ depth: 1
 page_pub: "Monist 2:321"
 ---
 
-## The Doctrine of Necessity Examined
+## {{{ Monist 2:321 }}} The Doctrine of Necessity Examined
 
 IN _The Monist_ for January, 1891, I endeavored to show what elementary ideas ought to enter into our view of the universe. I may mention that on those considerations 1 had already grounded a cosmical theory, and from it had deduced a considerable number of consequences capable of being compared with experience. This comparison, is now in progress, but under existing circumstances must occupy many years.
 
@@ -94,7 +94,5 @@ Secondly the necessitarian may say there are, at any rate, no observed phenomena
 Thirdly, the necessitarian may say that chance is not a _vera causa_, that we cannot know positively there is any such element in the universe. But the doctrine of the _vera causa_ has nothing to do with elementary conceptions. Pushed to that extreme, it at once cuts off belief in the existence of a material universe; and without that necessitarianism could hardly maintain its ground. Besides, variety is a fact which must be admitted ; and the theory of chance merely consists in supposing this diversification does not antedate all time. Moreover, the avoidance of hypotheses involving causes nowhere positively known to act—is only a recommendation of logic, not a positive command. It cannot be formulated in any precise terms without at once betraying its untenable character,—I mean as rigid rule, for as a recommendation it is wholesome enough.
 
 I believe I have thus subjected to fair examination all the important reasons for adhering to the theory of universal necessity, and have shown their nullity. I earnestly beg that whoever may detect any flaw in my reasoning will point it out to me, either privately or publicly; for if I am wrong, it much concerns me to be set right speedily. If my argument remains unrefuted, it will be time, I think, to doubt the absolute truth of the principle of universal law; and when once such a doubt has obtained a living root in any man's mind, my cause with him, I am persuaded, is gained.
-
-C. S. Peirce
 
 [^*]: Continuous is not exactly the right word, but I let it go to avoid a long and irrelevant discussion.
