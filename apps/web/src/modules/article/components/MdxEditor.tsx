@@ -86,6 +86,8 @@ function QuotationDirectiveEditor({
             <QuotationCard
                 book={attrs.book ?? ""}
                 node={attrs.node ?? ""}
+                sid={attrs.sid ?? undefined}
+                sidEnd={attrs.sid_end ?? undefined}
                 start={Number(attrs.start) || 0}
                 end={attrs.end ? Number(attrs.end) : undefined}
                 kind={asSentenceKind(attrs.kind)}
@@ -481,10 +483,17 @@ export const ArticleEditor = forwardRef<
                 const parts = [
                     `book="${result.book}"`,
                     `node="${result.node}"`,
-                    `start="${result.start}"`,
                 ];
-                if (result.end != null) {
-                    parts.push(`end="${result.end}"`);
+                if (result.sid) {
+                    parts.push(`sid="${result.sid}"`);
+                    if (result.sidEnd) {
+                        parts.push(`sid_end="${result.sidEnd}"`);
+                    }
+                } else {
+                    parts.push(`start="${result.start}"`);
+                    if (result.end != null) {
+                        parts.push(`end="${result.end}"`);
+                    }
                 }
                 parts.push(
                     `kind="${result.kind}"`,

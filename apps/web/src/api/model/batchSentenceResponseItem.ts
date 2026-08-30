@@ -16,6 +16,21 @@ export interface BatchSentenceResponseItem {
      * default citation system; the card falls back to `s. N`.
      */
     citation: CitationPart[];
+    /**
+     * For a quotation anchored on a figure's caption: the figure block's
+     * verbatim `<figure>` markup, so the embed renders the whole figure
+     * exactly as the reader does.
+     * @nullable
+     */
+    figure_html?: string | null;
+    /**
+     * The figure's book-wide display number — the reader deep-link key is
+     * `fig{N}`.
+     * @nullable
+     */
+    figure_number?: number | null;
+    /** @nullable */
+    figure_original_html?: string | null;
     node_label: string;
     node_slug: string;
     /**

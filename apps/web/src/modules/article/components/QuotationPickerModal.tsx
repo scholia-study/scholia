@@ -26,6 +26,10 @@ export type QuotationPickerResult =
           node: string;
           start: number;
           end?: number;
+          /** Sentence-UUID addressing for anchors without a sentence
+           *  number (figure captions, headings); wins over start/end. */
+          sid?: string;
+          sidEnd?: string;
           kind: string;
           mode: "source" | "translation" | "source+translation";
           layout:
@@ -122,12 +126,19 @@ export function QuotationPickerModal({
             const effectiveMode: BookDisplayMode = selected.has_source_view
                 ? mode
                 : "translation";
+            const unnumbered =
+                selected.anchor_block_type === "figure" ||
+                selected.anchor_block_type === "heading";
             onSelect({
                 source_type: "book",
                 book: selected.book_slug,
                 node: selected.node_slug,
                 start: selected.anchor_sentence_start_number,
                 end: selected.anchor_sentence_end_number ?? undefined,
+                sid: unnumbered ? selected.anchor_sentence_start_id : undefined,
+                sidEnd: unnumbered
+                    ? (selected.anchor_sentence_end_id ?? undefined)
+                    : undefined,
                 kind: selected.sentence_kind,
                 mode: effectiveMode,
                 layout,
@@ -200,11 +211,15 @@ export function QuotationPickerModal({
                                 badge="Book"
                                 badgeColor="rgb(168 162 158)"
                                 header={`${q.book_title} · ${q.node_label} · ${
-                                    q.anchor_sentence_end_number &&
-                                    q.anchor_sentence_end_number !==
-                                        q.anchor_sentence_start_number
-                                        ? `Sentences ${q.anchor_sentence_start_number}\u2013${q.anchor_sentence_end_number}`
-                                        : `Sentence ${q.anchor_sentence_start_number}`
+                                    q.anchor_block_type === "figure"
+                                        ? `Figure ${q.anchor_sentence_start_number}`
+                                        : q.anchor_block_type === "heading"
+                                          ? "Heading"
+                                          : q.anchor_sentence_end_number &&
+                                              q.anchor_sentence_end_number !==
+                                                  q.anchor_sentence_start_number
+                                            ? `Sentences ${q.anchor_sentence_start_number}\u2013${q.anchor_sentence_end_number}`
+                                            : `Sentence ${q.anchor_sentence_start_number}`
                                 }`}
                                 snippet={q.start_text_snippet ?? ""}
                             />

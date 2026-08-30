@@ -5824,10 +5824,13 @@
             },
             "BatchSentenceRequest": {
                 "type": "object",
-                "required": ["book_slug", "node_slug", "start_number", "kind"],
+                "required": ["book_slug", "node_slug", "kind"],
                 "properties": {
                     "book_slug": {
                         "type": "string"
+                    },
+                    "end_id": {
+                        "type": ["string", "null"]
                     },
                     "end_number": {
                         "type": ["integer", "null"],
@@ -5839,9 +5842,13 @@
                     "node_slug": {
                         "type": "string"
                     },
+                    "start_id": {
+                        "type": ["string", "null"]
+                    },
                     "start_number": {
-                        "type": "integer",
-                        "format": "int32"
+                        "type": ["integer", "null"],
+                        "format": "int32",
+                        "description": "Body/footnote sentence-number addressing. Optional when `start_id`\naddresses the range by sentence UUID instead (quotations anchored\non unnumbered sentences: figure captions, headings)."
                     }
                 }
             },
@@ -5868,6 +5875,18 @@
                             "$ref": "#/components/schemas/CitationPart"
                         },
                         "description": "Resolved citation parts (ordered by `cite_priority`). Empty = no\ndefault citation system; the card falls back to `s. N`."
+                    },
+                    "figure_html": {
+                        "type": ["string", "null"],
+                        "description": "For a quotation anchored on a figure's caption: the figure block's\nverbatim `<figure>` markup, so the embed renders the whole figure\nexactly as the reader does."
+                    },
+                    "figure_number": {
+                        "type": ["integer", "null"],
+                        "format": "int32",
+                        "description": "The figure's book-wide display number — the reader deep-link key is\n`fig{N}`."
+                    },
+                    "figure_original_html": {
+                        "type": ["string", "null"]
                     },
                     "node_label": {
                         "type": "string"
@@ -7808,20 +7827,32 @@
                     "node_label",
                     "node_slug",
                     "anchor_sentence_start_number",
+                    "anchor_sentence_start_id",
                     "sentence_kind",
                     "has_source_view",
                     "note_count",
                     "created_at"
                 ],
                 "properties": {
+                    "anchor_block_type": {
+                        "type": ["string", "null"],
+                        "description": "Block type hosting the start anchor (\"paragraph\" | \"figure\" |\n\"heading\" | …). None for footnote/margin-note anchors."
+                    },
                     "anchor_main_sentence_number": {
                         "type": ["integer", "null"],
                         "format": "int32",
                         "description": "For footnote-kind anchors: the body sentence number the footnote is\nattached to. None for body-kind anchors."
                     },
+                    "anchor_sentence_end_id": {
+                        "type": ["string", "null"]
+                    },
                     "anchor_sentence_end_number": {
                         "type": ["integer", "null"],
                         "format": "int32"
+                    },
+                    "anchor_sentence_start_id": {
+                        "type": "string",
+                        "description": "Anchor sentence UUIDs — the stable address for sentences that carry\nno `sentence_number` (figure captions, headings). The article embed\ndirective uses these when `anchor_block_type` is figure/heading."
                     },
                     "anchor_sentence_start_number": {
                         "type": "integer",
@@ -9061,6 +9092,7 @@
                             "node_label",
                             "node_slug",
                             "anchor_sentence_start_number",
+                            "anchor_sentence_start_id",
                             "sentence_kind",
                             "has_source_view",
                             "note_count",
@@ -9068,14 +9100,25 @@
                             "source_type"
                         ],
                         "properties": {
+                            "anchor_block_type": {
+                                "type": ["string", "null"],
+                                "description": "See `QuotationWithContextResponse::anchor_block_type`."
+                            },
                             "anchor_main_sentence_number": {
                                 "type": ["integer", "null"],
                                 "format": "int32",
                                 "description": "For footnote-kind anchors: the body sentence number the footnote\nis attached to. None for body-kind anchors."
                             },
+                            "anchor_sentence_end_id": {
+                                "type": ["string", "null"]
+                            },
                             "anchor_sentence_end_number": {
                                 "type": ["integer", "null"],
                                 "format": "int32"
+                            },
+                            "anchor_sentence_start_id": {
+                                "type": "string",
+                                "description": "See `QuotationWithContextResponse::anchor_sentence_start_id`."
                             },
                             "anchor_sentence_start_number": {
                                 "type": "integer",

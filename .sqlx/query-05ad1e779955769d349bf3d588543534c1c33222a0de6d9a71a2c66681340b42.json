@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT tn.sort_order AS \"n_ord!\", cb.position::INT4 AS \"b_pos!\",\n                      s.position::INT4 AS \"s_pos!\"\n               FROM sentences s\n               JOIN books b ON b.id = s.book_id\n               JOIN content_blocks cb ON cb.id = s.block_id\n               JOIN toc_nodes tn ON tn.id = s.node_id\n               WHERE b.slug = $1 AND s.sentence_number = $2",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "n_ord!",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 1,
+                "name": "b_pos!",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 2,
+                "name": "s_pos!",
+                "type_info": "Int4"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Int4"]
+        },
+        "nullable": [false, null, null]
+    },
+    "hash": "05ad1e779955769d349bf3d588543534c1c33222a0de6d9a71a2c66681340b42"
+}

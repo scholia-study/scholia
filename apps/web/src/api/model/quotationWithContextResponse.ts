@@ -8,13 +8,27 @@ import type { SentenceKind } from "./sentenceKind.ts";
 
 export interface QuotationWithContextResponse {
     /**
+     * Block type hosting the start anchor ("paragraph" | "figure" |
+     * "heading" | …). None for footnote/margin-note anchors.
+     * @nullable
+     */
+    anchor_block_type?: string | null;
+    /**
      * For footnote-kind anchors: the body sentence number the footnote is
      * attached to. None for body-kind anchors.
      * @nullable
      */
     anchor_main_sentence_number?: number | null;
     /** @nullable */
+    anchor_sentence_end_id?: string | null;
+    /** @nullable */
     anchor_sentence_end_number?: number | null;
+    /**
+     * Anchor sentence UUIDs — the stable address for sentences that carry
+     * no `sentence_number` (figure captions, headings). The article embed
+     * directive uses these when `anchor_block_type` is figure/heading.
+     */
+    anchor_sentence_start_id: string;
     anchor_sentence_start_number: number;
     book_slug: string;
     /**

@@ -108,6 +108,8 @@ function replaceEmbed(domNode: Element) {
             <QuotationCard
                 book={attrs["data-quotation-book"] ?? ""}
                 node={attrs["data-quotation-node"] ?? ""}
+                sid={attrs["data-quotation-sid"]}
+                sidEnd={attrs["data-quotation-sid_end"]}
                 start={Number(attrs["data-quotation-start"]) || 0}
                 end={
                     attrs["data-quotation-end"]

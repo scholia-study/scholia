@@ -50,6 +50,13 @@ pub enum UnifiedQuotationResponse {
         anchor_sentence_start_number: i32,
         #[serde(skip_serializing_if = "Option::is_none")]
         anchor_sentence_end_number: Option<i32>,
+        /// See `QuotationWithContextResponse::anchor_sentence_start_id`.
+        anchor_sentence_start_id: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        anchor_sentence_end_id: Option<String>,
+        /// See `QuotationWithContextResponse::anchor_block_type`.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        anchor_block_type: Option<String>,
         sentence_kind: crate::modules::corpus::SentenceKind,
         /// For footnote-kind anchors: the body sentence number the footnote
         /// is attached to. None for body-kind anchors.

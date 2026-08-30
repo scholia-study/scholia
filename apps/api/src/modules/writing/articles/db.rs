@@ -1958,6 +1958,8 @@ pub async fn batch_get_sentences(
     node_slug: &str,
     start_number: i32,
     end_number: Option<i32>,
+    start_id: Option<Uuid>,
+    end_id: Option<Uuid>,
     kind: crate::modules::corpus::SentenceKind,
 ) -> Result<BatchSentenceResponseItem, AppError> {
     let end = end_number.unwrap_or(start_number);
@@ -1986,8 +1988,141 @@ pub async fn batch_get_sentences(
     .await
     .on_missing(|| AppError::NotFound("Book or node not found".into()))?;
 
-    let rows = if is_body {
-        sqlx::query_as!(
+    // Document position of a block-hosted sentence (node sort → block
+    // position → sentence position): the ordering key for id-addressed
+    // ranges and for page-marker resolution.
+    #[derive(Clone, Copy, PartialEq, PartialOrd)]
+    struct DocPos {
+        n_ord: i32,
+        b_pos: i32,
+        s_pos: i32,
+    }
+    async fn pos_by_id(
+        pool: &PgPool,
+        book_slug: &str,
+        id: Uuid,
+    ) -> Result<Option<DocPos>, AppError> {
+        Ok(sqlx::query_as!(
+            DocPos,
+            r#"SELECT tn.sort_order AS "n_ord!", cb.position::INT4 AS "b_pos!",
+                      s.position::INT4 AS "s_pos!"
+               FROM sentences s
+               JOIN books b ON b.id = s.book_id
+               JOIN content_blocks cb ON cb.id = s.block_id
+               JOIN toc_nodes tn ON tn.id = s.node_id
+               WHERE b.slug = $1 AND s.id = $2"#,
+            book_slug,
+            id,
+        )
+        .fetch_optional(pool)
+        .await?)
+    }
+    async fn pos_by_number(
+        pool: &PgPool,
+        book_slug: &str,
+        number: i32,
+    ) -> Result<Option<DocPos>, AppError> {
+        Ok(sqlx::query_as!(
+            DocPos,
+            r#"SELECT tn.sort_order AS "n_ord!", cb.position::INT4 AS "b_pos!",
+                      s.position::INT4 AS "s_pos!"
+               FROM sentences s
+               JOIN books b ON b.id = s.book_id
+               JOIN content_blocks cb ON cb.id = s.block_id
+               JOIN toc_nodes tn ON tn.id = s.node_id
+               WHERE b.slug = $1 AND s.sentence_number = $2"#,
+            book_slug,
+            number,
+        )
+        .fetch_optional(pool)
+        .await?)
+    }
+    fn ord_key(p: &DocPos) -> (i32, i32, i32) {
+        (p.n_ord, p.b_pos, p.s_pos)
+    }
+
+    let mut figure_html: Option<String> = None;
+    let mut figure_original_html: Option<String> = None;
+    let mut figure_number: Option<i32> = None;
+
+    // Three addressing modes: sentence-id ranges (quotations anchored on
+    // unnumbered sentences — figure captions, headings), body
+    // sentence-number ranges, footnote sentence-number ranges.
+    let (rows, start_pos, end_pos) = if let Some(sid) = start_id {
+        let spos = pos_by_id(pool, book_slug, sid)
+            .await?
+            .ok_or_else(|| AppError::NotFound("Quoted sentence not found".into()))?;
+        let (epos, eid) = match end_id.filter(|e| *e != sid) {
+            Some(eid) => (
+                pos_by_id(pool, book_slug, eid)
+                    .await?
+                    .ok_or_else(|| AppError::NotFound("Quoted sentence not found".into()))?,
+                eid,
+            ),
+            None => (spos, sid),
+        };
+        let (lo, hi, first_sid) = if ord_key(&epos) < ord_key(&spos) {
+            (epos, spos, eid)
+        } else {
+            (spos, epos, sid)
+        };
+        let rows = sqlx::query_as!(
+            SentenceRow,
+            r#"SELECT s.sentence_number AS "sentence_number?",
+                      s.html AS "html!",
+                      COALESCE(s.original_html, src.html) AS original_html
+               FROM sentences s
+               JOIN books b ON b.id = s.book_id
+               JOIN content_blocks cb ON cb.id = s.block_id
+               JOIN toc_nodes tn ON tn.id = s.node_id
+               LEFT JOIN sentences src ON src.id = s.source_sentence_start_id
+               WHERE b.slug = $1
+                 AND (tn.sort_order, cb.position::INT4, s.position::INT4)
+                     >= ($2::INT4, $3::INT4, $4::INT4)
+                 AND (tn.sort_order, cb.position::INT4, s.position::INT4)
+                     <= ($5::INT4, $6::INT4, $7::INT4)
+               ORDER BY tn.sort_order, cb.position, s.position"#,
+            book_slug,
+            lo.n_ord,
+            lo.b_pos,
+            lo.s_pos,
+            hi.n_ord,
+            hi.b_pos,
+            hi.s_pos,
+        )
+        .fetch_all(pool)
+        .await?;
+
+        // A quotation anchored on a figure's caption stands for the whole
+        // figure (the reader treats the figure as one quotable unit), so
+        // the embed gets the block's verbatim <figure> markup to render.
+        struct FigureRow {
+            block_type: String,
+            html: String,
+            original_html: Option<String>,
+            figure_number: Option<i32>,
+        }
+        let block = sqlx::query_as!(
+            FigureRow,
+            r#"SELECT cb.block_type::TEXT AS "block_type!", cb.html AS "html!", cb.original_html,
+                      cb.figure_number
+               FROM sentences s
+               JOIN content_blocks cb ON cb.id = s.block_id
+               WHERE s.id = $1"#,
+            first_sid,
+        )
+        .fetch_optional(pool)
+        .await?;
+        if let Some(b) = block
+            && b.block_type == "figure"
+        {
+            figure_html = Some(b.html);
+            figure_original_html = b.original_html;
+            figure_number = b.figure_number;
+        }
+        (rows, Some(lo), Some(hi))
+    } else if is_body {
+        let rows = sqlx::query_as!(
             SentenceRow,
             r#"SELECT s.sentence_number AS "sentence_number?",
                       s.html AS "html!",
@@ -2005,9 +2140,12 @@ pub async fn batch_get_sentences(
             end,
         )
         .fetch_all(pool)
-        .await?
+        .await?;
+        let sp = pos_by_number(pool, book_slug, start_number).await?;
+        let ep = pos_by_number(pool, book_slug, end).await?;
+        (rows, sp, ep)
     } else {
-        sqlx::query_as!(
+        let rows = sqlx::query_as!(
             SentenceRow,
             r#"SELECT s.sentence_number AS "sentence_number?",
                       s.html AS "html!",
@@ -2025,19 +2163,19 @@ pub async fn batch_get_sentences(
             end,
         )
         .fetch_all(pool)
-        .await?
+        .await?;
+        (rows, None, None)
     };
 
     // Citation parts: each default-citation system (cite_priority NOT NULL),
     // ordered by priority. Empty for books with no default system
     // (Kant EN/Shakespeare) → sentence fallback.
     let mut citation: Vec<CitationPart> = Vec::new();
-    if is_body {
+    if let (Some(sp), Some(ep)) = (start_pos, end_pos) {
         // A page marker marks where a page *begins*, so the page a sentence
-        // sits on is the last marker at-or-before it in document order
-        // (node sort → block position → sentence position) — not a marker
-        // inside the quoted range, which sparse-marker books (one marker
-        // per page of prose, sometimes on a heading with no
+        // sits on is the last marker at-or-before it in document order —
+        // not a marker inside the quoted range, which sparse-marker books
+        // (one marker per page of prose, sometimes on a heading with no
         // sentence_number) rarely contain. first_ref = page in force at
         // the range start, last_ref = at the range end.
         struct CitePartRow {
@@ -2047,25 +2185,10 @@ pub async fn batch_get_sentences(
         }
         let part_rows = sqlx::query_as!(
             CitePartRow,
-            r#"WITH start_pos AS (
-                   SELECT tn.sort_order AS n_ord, cb.position AS b_pos, s.position AS s_pos
-                   FROM sentences s
-                   JOIN books b ON b.id = s.book_id
-                   JOIN content_blocks cb ON cb.id = s.block_id
-                   JOIN toc_nodes tn ON tn.id = s.node_id
-                   WHERE b.slug = $1 AND s.sentence_number = $2
-               ),
-               end_pos AS (
-                   SELECT tn.sort_order AS n_ord, cb.position AS b_pos, s.position AS s_pos
-                   FROM sentences s
-                   JOIN books b ON b.id = s.book_id
-                   JOIN content_blocks cb ON cb.id = s.block_id
-                   JOIN toc_nodes tn ON tn.id = s.node_id
-                   WHERE b.slug = $1 AND s.sentence_number = $3
-               ),
-               marks AS (
+            r#"WITH marks AS (
                    SELECT pm.system_id, pm.ref_value, pm.sort_order AS m_ord,
-                          tn.sort_order AS n_ord, cb.position AS b_pos, s.position AS s_pos
+                          tn.sort_order AS n_ord, cb.position::INT4 AS b_pos,
+                          s.position::INT4 AS s_pos
                    FROM page_markers pm
                    JOIN sentences s ON s.id = pm.sentence_id
                    JOIN books b ON b.id = s.book_id
@@ -2078,16 +2201,16 @@ pub async fn batch_get_sentences(
                       l.ref_value AS "last_ref!"
                FROM reference_systems rs
                JOIN LATERAL (
-                   SELECT m.ref_value FROM marks m, start_pos sp
+                   SELECT m.ref_value FROM marks m
                    WHERE m.system_id = rs.id
-                     AND (m.n_ord, m.b_pos, m.s_pos) <= (sp.n_ord, sp.b_pos, sp.s_pos)
+                     AND (m.n_ord, m.b_pos, m.s_pos) <= ($2::INT4, $3::INT4, $4::INT4)
                    ORDER BY m.n_ord DESC, m.b_pos DESC, m.s_pos DESC, m.m_ord DESC
                    LIMIT 1
                ) f ON true
                JOIN LATERAL (
-                   SELECT m.ref_value FROM marks m, end_pos ep
+                   SELECT m.ref_value FROM marks m
                    WHERE m.system_id = rs.id
-                     AND (m.n_ord, m.b_pos, m.s_pos) <= (ep.n_ord, ep.b_pos, ep.s_pos)
+                     AND (m.n_ord, m.b_pos, m.s_pos) <= ($5::INT4, $6::INT4, $7::INT4)
                    ORDER BY m.n_ord DESC, m.b_pos DESC, m.s_pos DESC, m.m_ord DESC
                    LIMIT 1
                ) l ON true
@@ -2095,8 +2218,12 @@ pub async fn batch_get_sentences(
                  AND rs.cite_template IS NOT NULL
                ORDER BY rs.cite_priority"#,
             book_slug,
-            start_number,
-            end,
+            sp.n_ord,
+            sp.b_pos,
+            sp.s_pos,
+            ep.n_ord,
+            ep.b_pos,
+            ep.s_pos,
         )
         .fetch_all(pool)
         .await?;
@@ -2108,7 +2235,7 @@ pub async fn batch_get_sentences(
                 last_ref,
             });
         }
-    } else {
+    } else if !is_body {
         // Footnote quotations: footnote sentences have no block position, so
         // keep the in-range marker scan (markers inside long footnotes).
         struct CiteRow {
@@ -2165,32 +2292,56 @@ pub async fn batch_get_sentences(
         node_slug: String,
         node_label: String,
     }
-    let source_context = sqlx::query_as!(
-        SourceRow,
-        r#"SELECT b.slug AS "book_slug!", COALESCE(bs.title_display, bs.title) AS "book_title!",
-                  n.slug AS "node_slug!", n.label AS "node_label!"
-           FROM sentences s
-           JOIN books cur ON cur.id = s.book_id
-           JOIN sentences src ON src.id = s.source_sentence_start_id
-           JOIN books b ON b.id = src.book_id
-           JOIN sources bs ON bs.id = b.source_id
-           JOIN toc_nodes n ON n.id = src.node_id
-           WHERE cur.slug = $1
-             AND s.sentence_number >= $2
-             AND s.sentence_number <= $3
-           LIMIT 1"#,
-        book_slug,
-        start_number,
-        end,
-    )
-    .fetch_optional(pool)
-    .await?
-    .map(|r| SourceContext {
-        book_slug: r.book_slug,
-        book_title: r.book_title,
-        node_slug: r.node_slug,
-        node_label: r.node_label,
-    });
+    let source_context = if let Some(sid) = start_id {
+        sqlx::query_as!(
+            SourceRow,
+            r#"SELECT b.slug AS "book_slug!", COALESCE(bs.title_display, bs.title) AS "book_title!",
+                      n.slug AS "node_slug!", n.label AS "node_label!"
+               FROM sentences s
+               JOIN sentences src ON src.id = s.source_sentence_start_id
+               JOIN books b ON b.id = src.book_id
+               JOIN sources bs ON bs.id = b.source_id
+               JOIN toc_nodes n ON n.id = src.node_id
+               WHERE s.id = $1
+               LIMIT 1"#,
+            sid,
+        )
+        .fetch_optional(pool)
+        .await?
+        .map(|r| SourceContext {
+            book_slug: r.book_slug,
+            book_title: r.book_title,
+            node_slug: r.node_slug,
+            node_label: r.node_label,
+        })
+    } else {
+        sqlx::query_as!(
+            SourceRow,
+            r#"SELECT b.slug AS "book_slug!", COALESCE(bs.title_display, bs.title) AS "book_title!",
+                      n.slug AS "node_slug!", n.label AS "node_label!"
+               FROM sentences s
+               JOIN books cur ON cur.id = s.book_id
+               JOIN sentences src ON src.id = s.source_sentence_start_id
+               JOIN books b ON b.id = src.book_id
+               JOIN sources bs ON bs.id = b.source_id
+               JOIN toc_nodes n ON n.id = src.node_id
+               WHERE cur.slug = $1
+                 AND s.sentence_number >= $2
+                 AND s.sentence_number <= $3
+               LIMIT 1"#,
+            book_slug,
+            start_number,
+            end,
+        )
+        .fetch_optional(pool)
+        .await?
+        .map(|r| SourceContext {
+            book_slug: r.book_slug,
+            book_title: r.book_title,
+            node_slug: r.node_slug,
+            node_label: r.node_label,
+        })
+    };
 
     Ok(BatchSentenceResponseItem {
         book_slug: book_slug.to_string(),
@@ -2200,6 +2351,9 @@ pub async fn batch_get_sentences(
         parent_node_label: context.parent_node_label,
         source: source_context,
         citation,
+        figure_html,
+        figure_original_html,
+        figure_number,
         sentences: rows
             .into_iter()
             .map(|r| SentenceData {

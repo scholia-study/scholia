@@ -668,12 +668,27 @@ pub async fn batch_sentences(
     let mut items = Vec::with_capacity(body.items.len());
 
     for req in &body.items {
+        let parse_id = |v: &Option<String>| -> Result<Option<uuid::Uuid>, AppError> {
+            v.as_deref()
+                .map(uuid::Uuid::parse_str)
+                .transpose()
+                .map_err(|_| AppError::BadRequest("Invalid sentence id".into()))
+        };
+        let start_id = parse_id(&req.start_id)?;
+        let end_id = parse_id(&req.end_id)?;
+        if start_id.is_none() && req.start_number.is_none() {
+            return Err(AppError::BadRequest(
+                "Either start_number or start_id is required".into(),
+            ));
+        }
         let item = crate::modules::writing::articles::db::batch_get_sentences(
             &state.pool,
             &req.book_slug,
             &req.node_slug,
-            req.start_number,
+            req.start_number.unwrap_or(0),
             req.end_number,
+            start_id,
+            end_id,
             req.kind,
         )
         .await?;

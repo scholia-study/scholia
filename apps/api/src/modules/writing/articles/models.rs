@@ -190,9 +190,17 @@ pub struct ArticleLimitsResponse {
 pub struct BatchSentenceRequest {
     pub book_slug: String,
     pub node_slug: String,
-    pub start_number: i32,
+    /// Body/footnote sentence-number addressing. Optional when `start_id`
+    /// addresses the range by sentence UUID instead (quotations anchored
+    /// on unnumbered sentences: figure captions, headings).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub start_number: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub end_number: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub start_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub end_id: Option<String>,
     pub kind: crate::modules::corpus::SentenceKind,
 }
 
@@ -248,6 +256,17 @@ pub struct BatchSentenceResponseItem {
     /// Resolved citation parts (ordered by `cite_priority`). Empty = no
     /// default citation system; the card falls back to `s. N`.
     pub citation: Vec<CitationPart>,
+    /// For a quotation anchored on a figure's caption: the figure block's
+    /// verbatim `<figure>` markup, so the embed renders the whole figure
+    /// exactly as the reader does.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub figure_html: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub figure_original_html: Option<String>,
+    /// The figure's book-wide display number — the reader deep-link key is
+    /// `fig{N}`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub figure_number: Option<i32>,
     pub sentences: Vec<SentenceData>,
 }
 

@@ -757,6 +757,9 @@ struct QuotationWithContextRow {
     node_slug: String,
     start_number: Option<i32>,
     end_number: Option<i32>,
+    anchor_sentence_start_id: Uuid,
+    anchor_sentence_end_id: Option<Uuid>,
+    anchor_block_type: Option<String>,
     sentence_kind: SentenceKind,
     main_number: Option<i32>,
     start_text: Option<String>,
@@ -791,6 +794,9 @@ pub async fn list_all_quotations(
                   n.slug AS "node_slug!",
                   COALESCE(ss.sentence_number, cbs.figure_number) AS "start_number?",
                   se.sentence_number AS "end_number?",
+                  q.anchor_sentence_start_id,
+                  q.anchor_sentence_end_id AS "anchor_sentence_end_id?",
+                  cbs.block_type::TEXT AS "anchor_block_type?",
                   q.sentence_kind AS "sentence_kind: SentenceKind",
                   ms.sentence_number AS "main_number?",
                   ss.text AS "start_text?",
@@ -824,7 +830,7 @@ pub async fn list_all_quotations(
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.user_id = $1
              AND ($2::TEXT IS NULL OR b.slug = $2)
-           GROUP BY q.id, b.slug, b.language, bs.publisher, bs.translation_of_id, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, cbs.figure_number, se.sentence_number, ss.text, se.text, ms.sentence_number
+           GROUP BY q.id, b.slug, b.language, bs.publisher, bs.translation_of_id, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, cbs.figure_number, cbs.block_type, se.sentence_number, ss.text, se.text, ms.sentence_number
            ORDER BY q.created_at DESC"#,
         user_id,
         book_slug,
@@ -847,6 +853,9 @@ pub async fn list_all_quotations(
                 node_slug: r.node_slug,
                 anchor_sentence_start_number: r.start_number.unwrap_or(0),
                 anchor_sentence_end_number: r.end_number,
+                anchor_sentence_start_id: r.anchor_sentence_start_id.to_string(),
+                anchor_sentence_end_id: r.anchor_sentence_end_id.map(|id| id.to_string()),
+                anchor_block_type: r.anchor_block_type,
                 sentence_kind: r.sentence_kind,
                 anchor_main_sentence_number: r.main_number,
                 start_text_snippet: start_snippet,

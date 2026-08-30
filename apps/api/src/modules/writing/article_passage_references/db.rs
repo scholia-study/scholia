@@ -27,8 +27,13 @@ pub(crate) fn quotation_directive_regex() -> &'static Regex {
 #[derive(Debug, PartialEq)]
 pub(crate) struct PassageDirective {
     pub book_slug: String,
-    pub start: i32,
+    /// Sentence-number addressing; None when the directive addresses by
+    /// sentence UUID (`sid`) instead — quotations anchored on unnumbered
+    /// sentences (figure captions, headings).
+    pub start: Option<i32>,
     pub end: Option<i32>,
+    pub sid: Option<Uuid>,
+    pub sid_end: Option<Uuid>,
     pub kind: crate::modules::corpus::SentenceKind,
 }
 
@@ -65,13 +70,28 @@ pub(crate) fn parse_quotation_directives(markdown: &str) -> Vec<PassageDirective
         .filter_map(|caps| {
             let attrs = parse_directive_attrs(&caps[1]);
             let book_slug = attrs.get("book").filter(|s| !s.is_empty())?.clone();
-            let start: i32 = attrs.get("start")?.parse().ok()?;
-            let end: Option<i32> = attrs.get("end").and_then(|e| e.parse().ok());
             let kind_raw = attrs
                 .get("kind")
                 .cloned()
                 .unwrap_or_else(|| "body".to_string());
             let kind = crate::modules::corpus::SentenceKind::parse(&kind_raw)?;
+            let sid: Option<Uuid> = attrs.get("sid").and_then(|v| v.parse().ok());
+            if let Some(sid) = sid {
+                let sid_end: Option<Uuid> = attrs
+                    .get("sid_end")
+                    .and_then(|v| v.parse().ok())
+                    .filter(|e| *e != sid);
+                return Some(PassageDirective {
+                    book_slug,
+                    start: None,
+                    end: None,
+                    sid: Some(sid),
+                    sid_end,
+                    kind,
+                });
+            }
+            let start: i32 = attrs.get("start")?.parse().ok()?;
+            let end: Option<i32> = attrs.get("end").and_then(|e| e.parse().ok());
             let (start, end) = match end {
                 Some(e) if e < start => (e, Some(start)),
                 Some(e) if e == start => (start, None),
@@ -79,8 +99,10 @@ pub(crate) fn parse_quotation_directives(markdown: &str) -> Vec<PassageDirective
             };
             Some(PassageDirective {
                 book_slug,
-                start,
+                start: Some(start),
                 end,
+                sid: None,
+                sid_end: None,
                 kind,
             })
         })
@@ -152,8 +174,36 @@ pub async fn sync_article_passage_references(
             continue;
         };
 
+        // sid-addressed directives already carry the anchor UUIDs; just
+        // verify they exist in the book and pick up the node.
+        if let Some(sid) = d.sid {
+            let Some(node_id) = sqlx::query_scalar!(
+                r#"SELECT node_id AS "node_id!" FROM sentences
+                   WHERE id = $1 AND book_id = $2"#,
+                sid,
+                book_id,
+            )
+            .fetch_optional(pool)
+            .await?
+            else {
+                tracing::warn!(book = %d.book_slug, %sid,
+                    "article passage ref: sentence id not found, skipping directive");
+                continue;
+            };
+            anchors.push(ResolvedAnchor {
+                book_id,
+                node_id,
+                start_id: sid,
+                end_id: d.sid_end,
+                kind: d.kind,
+            });
+            continue;
+        }
+        let Some(start_number) = d.start else {
+            continue;
+        };
         let Some(start) =
-            resolve_directive_sentence(pool, &d.book_slug, book_id, d.start, d.kind).await?
+            resolve_directive_sentence(pool, &d.book_slug, book_id, start_number, d.kind).await?
         else {
             continue;
         };
@@ -436,8 +486,10 @@ Outro."#;
             parse_quotation_directives(md),
             vec![PassageDirective {
                 book_slug: "kjv-bible".into(),
-                start: 101,
+                start: Some(101),
                 end: Some(103),
+                sid: None,
+                sid_end: None,
                 kind: crate::modules::corpus::SentenceKind::Body,
             }]
         );
@@ -450,8 +502,10 @@ Outro."#;
             parse_quotation_directives(md),
             vec![PassageDirective {
                 book_slug: "milton".into(),
-                start: 7,
+                start: Some(7),
                 end: None,
+                sid: None,
+                sid_end: None,
                 kind: crate::modules::corpus::SentenceKind::Body,
             }]
         );
@@ -464,8 +518,26 @@ Outro."#;
             parse_quotation_directives(md),
             vec![PassageDirective {
                 book_slug: "milton".into(),
-                start: 4,
+                start: Some(4),
                 end: Some(9),
+                sid: None,
+                sid_end: None,
+                kind: crate::modules::corpus::SentenceKind::Body,
+            }]
+        );
+    }
+
+    #[test]
+    fn parses_sid_addressed_directive() {
+        let md = r#"::quotation{book="essays-in-pragmaticism" node="the-law-of-mind" sid="8b9c0d1e-2f30-4a4b-8c5d-6e7f80912345" kind="body"}"#;
+        assert_eq!(
+            parse_quotation_directives(md),
+            vec![PassageDirective {
+                book_slug: "essays-in-pragmaticism".into(),
+                start: None,
+                end: None,
+                sid: Some("8b9c0d1e-2f30-4a4b-8c5d-6e7f80912345".parse().unwrap()),
+                sid_end: None,
                 kind: crate::modules::corpus::SentenceKind::Body,
             }]
         );

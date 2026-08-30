@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT s.sentence_number AS \"sentence_number?\",\n                      s.html AS \"html!\",\n                      COALESCE(s.original_html, src.html) AS original_html\n               FROM sentences s\n               JOIN books b ON b.id = s.book_id\n               JOIN content_blocks cb ON cb.id = s.block_id\n               JOIN toc_nodes tn ON tn.id = s.node_id\n               LEFT JOIN sentences src ON src.id = s.source_sentence_start_id\n               WHERE b.slug = $1\n                 AND (tn.sort_order, cb.position::INT4, s.position::INT4)\n                     >= ($2::INT4, $3::INT4, $4::INT4)\n                 AND (tn.sort_order, cb.position::INT4, s.position::INT4)\n                     <= ($5::INT4, $6::INT4, $7::INT4)\n               ORDER BY tn.sort_order, cb.position, s.position",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "sentence_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 1,
+                "name": "html!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "original_html",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Int4", "Int4", "Int4", "Int4", "Int4", "Int4"]
+        },
+        "nullable": [true, false, null]
+    },
+    "hash": "cd9c6fa331f97b100899bea2eccecd3cab89e9fe929489707f3a8c867b2eafa3"
+}

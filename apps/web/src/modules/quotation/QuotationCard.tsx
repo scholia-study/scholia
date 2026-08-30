@@ -11,6 +11,10 @@ export interface QuotationCardProps {
     node: string;
     start: number;
     end?: number;
+    /** Sentence-UUID addressing for anchors without a sentence number
+     *  (figure captions, headings); wins over start/end. */
+    sid?: string;
+    sidEnd?: string;
     kind: SentenceKind;
     mode: "source" | "translation" | "source+translation";
     layout:
@@ -24,22 +28,32 @@ export function QuotationCard({
     node,
     start,
     end,
+    sid,
+    sidEnd,
     kind,
     mode,
     layout,
 }: QuotationCardProps) {
     const { data, isPending } = useQuery({
-        queryKey: ["quotation-card", book, node, start, end, kind],
+        queryKey: ["quotation-card", book, node, start, end, sid, sidEnd, kind],
         queryFn: () =>
             batchSentences({
                 items: [
-                    {
-                        book_slug: book,
-                        node_slug: node,
-                        start_number: start,
-                        end_number: end,
-                        kind,
-                    },
+                    sid
+                        ? {
+                              book_slug: book,
+                              node_slug: node,
+                              start_id: sid,
+                              end_id: sidEnd,
+                              kind,
+                          }
+                        : {
+                              book_slug: book,
+                              node_slug: node,
+                              start_number: start,
+                              end_number: end,
+                              kind,
+                          },
                 ],
             }),
         staleTime: 5 * 60 * 1000,
@@ -65,7 +79,7 @@ export function QuotationCard({
         );
     }
 
-    if (!item || item.sentences.length === 0) {
+    if (!item || (item.sentences.length === 0 && !item.figure_html)) {
         return (
             <Paper
                 variant="outlined"
@@ -83,23 +97,46 @@ export function QuotationCard({
         mode === "translation" || mode === "source+translation";
     const showSource = mode === "source" || mode === "source+translation";
 
-    // Build sentence HTML blocks
-    const translationHtml = item.sentences.map((s) => s.html).join(" ");
+    // Build sentence HTML blocks. A figure quotation renders the block's
+    // verbatim <figure> markup (caption included) instead of its anchor
+    // sentence — the same markup the reader shows. `not-prose` keeps the
+    // article's typography from re-adding list bullets, and the figcaption
+    // is pinned bottom-right and muted exactly like the reader's figure box.
+    const figureClasses = item.figure_html
+        ? " not-prose whitespace-normal [&_figure]:relative [&_figure]:pb-8 [&_figcaption]:absolute [&_figcaption]:right-2 [&_figcaption]:bottom-0 [&_figcaption]:text-right [&_figcaption]:text-sm [&_figcaption]:text-stone-400 [&_ul]:list-none [&_ul]:m-0 [&_ul]:p-0 [&_li]:m-0 [&_li]:p-0"
+        : "";
+    const translationHtml =
+        item.figure_html ?? item.sentences.map((s) => s.html).join(" ");
     const sourceHtml =
-        item.sentences
+        item.figure_original_html ??
+        (item.sentences
             .map((s) => s.original_html)
             .filter(Boolean)
-            .join(" ") || null;
+            .join(" ") ||
+            null);
 
-    const sentenceKey =
-        end && end !== start ? `${start}-${end}` : String(start);
+    // Reader deep-link key: figures use `fig{N}`, sid-addressed anchors
+    // fall back to the sentence UUID (the reader matches ids too), and
+    // numbered ranges use `start[-end]`.
+    const sentenceKey = sid
+        ? item.figure_number != null
+            ? `fig${item.figure_number}`
+            : sid
+        : end && end !== start
+          ? `${start}-${end}`
+          : String(start);
 
     const isFootnote = kind === "footnote";
     const prefix = isFootnote ? "fn. s." : "s.";
-    const sentenceLabel =
-        end && end !== start
-            ? `${prefix} ${start}\u2013${end}`
-            : `${prefix} ${start}`;
+    const sentenceLabel = sid
+        ? item.figure_number != null
+            ? `fig. ${item.figure_number}`
+            : item.figure_html
+              ? "figure"
+              : "heading"
+        : end && end !== start
+          ? `${prefix} ${start}\u2013${end}`
+          : `${prefix} ${start}`;
 
     // Passage locator (after the book title): the book's declared citation
     // systems drive it (e.g. "Romans 13:2", "Paradise Lost \u00b7 Book I \u00b7 42"),
@@ -173,7 +210,7 @@ export function QuotationCard({
                 >
                     <div className="flex flex-col" style={{ direction: "ltr" }}>
                         <div
-                            className="text-sm leading-relaxed text-stone-600"
+                            className={`text-sm leading-relaxed text-stone-600${figureClasses}`}
                             style={{
                                 fontFamily: "'Libre Baskerville', serif",
                             }}
@@ -184,7 +221,7 @@ export function QuotationCard({
                     </div>
                     <div className="flex flex-col" style={{ direction: "ltr" }}>
                         <div
-                            className="text-sm leading-relaxed text-stone-700"
+                            className={`text-sm leading-relaxed text-stone-700${figureClasses}`}
                             style={{
                                 fontFamily: "'Libre Baskerville', serif",
                             }}
@@ -203,7 +240,7 @@ export function QuotationCard({
                                     mode === "source+translation"
                                         ? "text-stone-600"
                                         : "text-stone-700"
-                                }`}
+                                }${figureClasses}`}
                                 style={{
                                     fontFamily: "'Libre Baskerville', serif",
                                 }}
@@ -219,7 +256,7 @@ export function QuotationCard({
                     {showTranslation && (
                         <>
                             <div
-                                className="text-sm leading-relaxed text-stone-700"
+                                className={`text-sm leading-relaxed text-stone-700${figureClasses}`}
                                 style={{
                                     fontFamily: "'Libre Baskerville', serif",
                                 }}

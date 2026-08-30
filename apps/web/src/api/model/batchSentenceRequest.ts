@@ -9,8 +9,18 @@ import type { SentenceKind } from "./sentenceKind.ts";
 export interface BatchSentenceRequest {
     book_slug: string;
     /** @nullable */
+    end_id?: string | null;
+    /** @nullable */
     end_number?: number | null;
     kind: SentenceKind;
     node_slug: string;
-    start_number: number;
+    /** @nullable */
+    start_id?: string | null;
+    /**
+     * Body/footnote sentence-number addressing. Optional when `start_id`
+     * addresses the range by sentence UUID instead (quotations anchored
+     * on unnumbered sentences: figure captions, headings).
+     * @nullable
+     */
+    start_number?: number | null;
 }

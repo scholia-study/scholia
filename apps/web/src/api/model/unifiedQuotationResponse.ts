@@ -9,13 +9,22 @@ import type { SentenceKind } from "./sentenceKind.ts";
 export type UnifiedQuotationResponse =
     | {
           /**
+           * See `QuotationWithContextResponse::anchor_block_type`.
+           * @nullable
+           */
+          anchor_block_type?: string | null;
+          /**
            * For footnote-kind anchors: the body sentence number the footnote
            * is attached to. None for body-kind anchors.
            * @nullable
            */
           anchor_main_sentence_number?: number | null;
           /** @nullable */
+          anchor_sentence_end_id?: string | null;
+          /** @nullable */
           anchor_sentence_end_number?: number | null;
+          /** See `QuotationWithContextResponse::anchor_sentence_start_id`. */
+          anchor_sentence_start_id: string;
           anchor_sentence_start_number: number;
           book_slug: string;
           book_title: string;

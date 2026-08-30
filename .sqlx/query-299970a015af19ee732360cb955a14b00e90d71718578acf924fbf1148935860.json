@@ -1,0 +1,33 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT cb.block_type::TEXT AS \"block_type!\", cb.html AS \"html!\", cb.original_html,\n                      cb.figure_number\n               FROM sentences s\n               JOIN content_blocks cb ON cb.id = s.block_id\n               WHERE s.id = $1",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "block_type!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 1,
+                "name": "html!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "original_html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "figure_number",
+                "type_info": "Int4"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [null, false, true, true]
+    },
+    "hash": "299970a015af19ee732360cb955a14b00e90d71718578acf924fbf1148935860"
+}

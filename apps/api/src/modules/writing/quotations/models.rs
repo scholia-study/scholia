@@ -132,6 +132,16 @@ pub struct QuotationWithContextResponse {
     pub anchor_sentence_start_number: i32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub anchor_sentence_end_number: Option<i32>,
+    /// Anchor sentence UUIDs — the stable address for sentences that carry
+    /// no `sentence_number` (figure captions, headings). The article embed
+    /// directive uses these when `anchor_block_type` is figure/heading.
+    pub anchor_sentence_start_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub anchor_sentence_end_id: Option<String>,
+    /// Block type hosting the start anchor ("paragraph" | "figure" |
+    /// "heading" | …). None for footnote/margin-note anchors.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub anchor_block_type: Option<String>,
     pub sentence_kind: crate::modules::corpus::SentenceKind,
     /// For footnote-kind anchors: the body sentence number the footnote is
     /// attached to. None for body-kind anchors.
