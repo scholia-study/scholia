@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-hegel3-bootstrap
+  name: ingest-hegel3-2cf9339eb2c4
   labels:
     ingest: hegel3
   annotations:
@@ -31,7 +31,7 @@ spec:
             - name: CORPUS
               value: hegel3
             - name: DERIVED_HASH
-              value: ""
+              value: "2cf9339eb2c4"
             - name: NTFY_URL
               valueFrom:
                 secretKeyRef:
