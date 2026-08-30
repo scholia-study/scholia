@@ -42,4 +42,7 @@ resources:
   - ingest-milton1.yaml
   - ingest-ibsen1.yaml
   - ingest-hegel1.yaml
+  - ingest-hegel2.yaml
+  - ingest-hegel3.yaml
   - ingest-hobbes1.yaml
+  - ingest-peirce1.yaml
