@@ -46,7 +46,13 @@ it. The OCR supplied only positions — not one word of it is in the text.
 
 Each boundary was matched on the tail of the preceding page (a page's foot is
 body text; its head is a running head the OCR mangles). All eleven matched at
-10/10 tokens, monotonically ordered and evenly spaced. Two constraints were
+10/10 tokens, monotonically ordered and evenly spaced.
+
+Further hand curation: the transcription's two in-text note anchors and its
+`==Notes==` section were converted to the footnote system; its two indented
+category ladders (BEING…SUBSTANCE; What is…It) are set as figures, like the
+classification tree in paper 10000; its bracketed editorial "[Ergo,]" stands
+for the printed therefore-sign and was restored to ∴, as in paper 04000. Two constraints were
 needed to get there: boundaries must run in order, and a match must fall near
 where the page proportionally belongs — Wikisource gathers footnote bodies at
 the end of the article, so a page-foot footnote otherwise aligns far past its
@@ -85,14 +91,43 @@ layouts across versos and rectos.
 
 ## Editorial decisions
 
-**Figure captions.** Nineteen tables and one classification diagram are set as
-`<figure>` blocks. The parser requires a non-empty `<figcaption>` — it becomes
-the figure's anchor sentence, so an empty one would create an empty sentence
-row. Where the printing labels the table ("Fig. 1.", "Table II.", "Deduction.")
-that label is the caption. Where it does not, the caption is the bare word
-**"Table"** (or "Diagram" for the classification tree). This is the only
-editorial wording in the corpus, chosen to describe the object's form without
-interpreting its content.
+**The curated files are the editorial surface.** `peirce1_wikisource_to_md`
+bootstrapped them once and is now frozen: re-running it would discard the
+hand-curation below. All further correction happens in the files.
+
+**Displayed inferences and formulae are figures.** Every centered display in
+the printings (syllogisms, enthymemes, series, quoted formulae) is set as a
+`<figure>` with caption "Display", line breaks per the original printing.
+Where a display interrupts its host sentence, the sentence is terminated
+early with a colon and the continuation opens a new sentence (capitalized);
+where the display is the grammatical subject or object of its sentence, it
+stays inline in quotation marks instead. A footnote mark printed on a display
+line moves to the introducing sentence, since figures cannot carry footnote
+references. The insolubilia resolution in paper 04000 is a two-column figure
+table, following the source's own layout.
+
+**Section headings.** The papers' internal "I.", "II." section heads are `##`
+headings (the only heading level the corpus grammar has; the paper title is
+the node label and also `##`).
+
+**The seven Questions in paper 02000 stay as printed** — italicized body
+paragraphs, not headings. Considered and decided 2026-08-30: they are the
+paper's most-quoted sentences, so they remain quotable text; the italics
+already set them apart.
+
+**Line-end hyphenation.** 45 words split by the transcriptions' line or page
+breaks were rejoined (`Carte- {{{ JSP 2:141 }}} sian` → `Cartesian {{{ JSP
+2:141 }}}`); period compounds keep their hyphen (text-books, pigeon-holes,
+public-spirit), ordinary words join solid.
+
+**Figure captions.** The pipeline numbers every figure book-globally and
+prepends "Figure N." to its caption. Most figures therefore carry an **empty**
+`<figcaption></figcaption>` — they are labelled by that number alone. Where
+the printing gives its own label ("Fig. 5.", "Table II.") the label stays as
+the caption content and renders after the number; the body text cites those
+printed labels ("Let A B (Fig. 5) be the path…"), so they must never be
+replaced. Numbering runs continuously through the book (a consequence of the
+shared pipeline and the DB's unique figure-number constraint), not per paper.
 
 **Plates are not reproduced.** Four papers reference engraved diagrams that the
 transcriptions carry as images. There is no image pipeline here, so each is a
@@ -116,26 +151,50 @@ parser reads them as one block and keeps only the first marker.
 title, byline, "FIRST PAPER.—…"), and volume signatures. The paper's own title
 is the node label.
 
+**Emendations.** Transcription slips corrected against the original issues'
+scan OCR (JSP 1868 nos. 2–3), with peirce.org as a second witness where it
+covers the text. Every item below is the printing's reading, not ours:
+
+- stray quotes with no printed counterpart removed: before "Whoever has
+  studied", "by the circumstance", "Now let any horizontal", 'line, 'below
+  (02000); the spurious "for → "For, in that case" (02000)
+- missing quotes restored: "quod quantum a vero…" opener (02000); "their
+  different degrees…", "The colors…", "are faint…", "All men are mortal,"
+  "the real", "Eadem natura…" (03000)
+- "Although it appear" → the printed "although it would appear" (02000)
+- "about Therefore. bleeding" → "about. Therefore, bleeding"; "provided.
+  that" → "provided that"; "held for true, But" → "true. But" (03000)
+- Latin: "confugere as eam" → "ad eam", "reliquat" → "reliquit" (02000);
+  "relationen" → "relationem", "est in. determinata" → "est indeterminata"
+  (03000)
+- "--" and a bare "-" set as the printed em dashes ("there are—if we
+  know…of it—this must") (03000)
+- a spurious mid-word hyphen ("by- experience", 12000); a stray stop in
+  "stated. thus:" (03000)
+- one authored forced split: "F and G.|||" — the initials rule cannot know
+  "G." ends a sentence of letter designations (03000)
+
+The suspected misprint "we dust" for "we must" (03000) is left as
+transcribed pending a call.
+
 **What is not normalised.** Spaced punctuation (`reaction ; as when`, `three
 kinds : induction`) and the spaced ellipsis (`. . . .`) are the printings' own
 typography and stand as transcribed. This is a diplomatic layer.
 
 ## Growth
 
-The edition is expected to gain papers. Two rules, and the second is not
-obvious:
+The edition is expected to gain papers, in any order:
 
 1. A paper's `position` number (see `common::peirce1::filenames`) is permanent.
    Numbers are spaced a thousand apart so papers can be inserted without
    renumbering — even many between one adjacent pair.
-2. **Curate in chronological order, so every import appends.**
-   `paragraph_number` and footnote numbers are book-global counters; inserting
-   a paper ahead of one already imported shifts them, which the reconciler
-   rejects outright. The only remedy is a full reload, which re-mints sentence
-   UUIDs and breaks anchored quotations. This constrains growth after the book
-   is live; the initial build imports everything at once.
+2. Mid-volume insertion is supported for this book (ADR 0012): its ingest runs
+   with `--allow-insertion`, and the reconciler renumbers the book-global
+   display sequences (paragraph/figure numbers, footnote numbers) in place
+   while body-sentence UUIDs and anchored quotations are carried untouched.
+   One limit: a single run may not combine a mid-book insertion with footnotes
+   added to *existing* papers — land those as two runs.
 
 Known future additions: the 1905–06 pragmaticism papers ("What Pragmatism Is",
 "Issues of Pragmaticism") between 15000 and 16000. Neither is transcribed
-anywhere, so both need OCR — and under rule 2 they cannot be inserted ahead of
-16000 once the book is live.
+anywhere, so both need OCR.

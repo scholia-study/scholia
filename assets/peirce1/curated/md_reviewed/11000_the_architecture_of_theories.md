@@ -5,466 +5,94 @@ depth: 1
 page_pub: "Monist 1:161"
 ---
 
-# The Architecture of Theories
+## The Architecture of Theories
 
+OF the fifty or hundred systems of philosophy that have been advanced at different times of the world's history, perhaps the larger number have been, not so much results of historical evolution, as happy thoughts which have accidently occurred to their authors. An idea which has been found interesting and fruitful has been adopted, developed, and forced to yield explanations of all sorts of phenomena. The English have been particularly given to this way of philosophising; witness, Hobbes, Hartley, Berkeley, James Mill. Nor has it been by any means useless labor; it shows us what the true nature and value of the ideas developed are, and in that way affords serviceable materials for philosophy. Just as if a man, being seized with the conviction that paper was a good material to make things of, were to go to work to build a _papier mache_ house, with roof of roofing-paper, foundations of pasteboard, windows of paraffined paper, chimneys, bath tubs, locks, etc., all of different forms of paper, his experiment would probably afford valuable lessons to builders, while it would certainly make a detestable house, so those one-idea'd philosophies are exceedingly interesting and instructive, and yet are quite unsound.
 
-THE ARCHITECTURE OF THEORIES
+The remaining systems of philosophy have been of the nature of reforms, sometimes amounting to radical revolutions, suggested by certain difficulties which have been found to beset systems previously in vogue; and such ought certainly to be in large part the motive of any new theory. This is like partially rebuilding a house.
 
-OF the fifty or hundred systems of philosophy that have been 
-advanced at different times of the world's history, perhaps 
-the larger number have been, not so much results of historical 
-evolution, as happy thoughts which have accidently occurred to 
-their authors. An idea which has been found interesting and fruitful has been adopted, developed, and forced to yield explanations 
-of all sorts of phenomena. The English have been particularly 
-given to this way of philosophising; witness, Hobbes, Hartley, 
-Berkeley, James Mill. Nor has it been by any means useless labor; 
-it shows us what the true nature and value of the ideas developed 
-are, and in that way affords serviceable materials for philosophy. 
-Just as if a man, being seized with the conviction that paper was a 
-good material to make things of, were to go to work to build a _ house, with roof of roofing-paper, foundations of pasteboard, windows of paraffined paper, chimneys, bath tubs, locks, 
-etc., all of different forms of paper, his experiment would probably 
-afford valuable lessons to builders, while it would certainly make a 
-detestable house, so those one-idea'd philosophies are exceedingly 
-interesting and instructive, and yet are quite unsound.
+{{{ Monist 1:162 }}} The faults that have been committed are, first, that the dilapidations have generally not been sufficiently thoroughgoing, and second, that not sufficient pains has been taken to bring the additions into deep harmony with the really sound parts of the old structure.
 
-The remaining systems of philosophy have been of the nature 
-of reforms, sometimes amounting to radical revolutions, suggested 
-by certain difficulties which have been found to beset systems previously in vogue; and such ought certainly to be in large part the 
-motive of any new theory. This is like partially rebuilding a house.
+When a man is about to build a house, what a power of thinking he has to do, before he can safely break ground! With what pains he has to excogitate the precise wants that are to be supplied! What a study to ascertain the most available and suitable materials, to determine the mode of construction to which those materials are best adapted, and to answer a hundred such questions ! Now without riding the metaphor too far, I think we may safely say that the studies preliminary to the construction of a great theory should be at least as deliberate and thorough as those that are preliminary to the building of a dwelling-house.
 
-{{{ Monist 1:162 }}} The faults that have been committed are, first, that the dilapidations have generally not been sufficiently thoroughgoing, and second, that not sufficient pains has been taken to bring the additions 
-into deep harmony with the really sound parts of the old structure.
+That systems ought to be constructed architectonically has been preached since Kant, but I do not think the full import of the maxim has by any means been apprehended. What I would recommend is that every person who wishes to form an opinion concerning fundamental problems, should first of all make a complete survey of human knowledge, should take note of all the valuable ideas in each branch of science, should observe in just what respect each has been successful and where it has failed, in order that in the light of the thorough acquaintance so attained of the available materials for a philosophical theory and of the nature and strength of each, he may proceed to the study of what the problem of philosophy consists in, and of the proper way of solving it. I must not be understood as endeavoring to state fully all that these preparatory studies should embrace; on the contrary, I purposely slur over many points, in order to give emphasis to one special recommendation, namely, to make a systematic study of the conceptions out of which a philosophical theory may be built, in order to ascertain what place each conception may fitly occupy in such a theory, and to what uses it is adapted.
 
-When a man is about to build a house, what a power of thinking he has to do, before he can safely break ground! With what 
-pains he has to excogitate the precise wants that are to be supplied! 
-What a study to ascertain the most available and suitable materials, 
-to determine the mode of construction to which those materials are 
-best adapted, and to answer a hundred such questions ! Now without riding the metaphor too far, I think we may safely say that the 
-studies preliminary to the construction of a great theory should be 
-at least as deliberate and thorough as those that are preliminary to 
-the building of a dwelling-house.
+The adequate treatment of this single point would fill a volume, but I shall endeavor to illustrate my meaning by glancing at several sciences and indicating conceptions in them serviceable for philosophy {{{ Monist 1:163 }}}. As to the results to which long studies thus commenced have led me, I shall just give a hint at their nature.
 
-That systems ought to be constructed architectonically has 
-been preached since Kant, but I do not think the full import of the 
-maxim has by any means been apprehended. What I would recommend is that every person who wishes to form an opinion concerning fundamental problems, should first of all make a complete survey of human knowledge, should take note of all the valuable ideas 
-in each branch of science, should observe in just what respect each 
-has been successful and where it has failed, in order that in the 
-light of the thorough acquaintance so attained of the available materials for a philosophical theory and of the nature and strength of 
-each, he may proceed to the study of what the problem of philosophy consists in, and of the proper way of solving it. I must not be 
-understood as endeavoring to state fully all that these preparatory 
-studies should embrace; on the contrary, I purposely slur over 
-many points, in order to give emphasis to one special recommendation, namely, to make a systematic study of the conceptions out 
-of which a philosophical theory may be built, in order to ascertain 
-what place each conception may fitly occupy in such a theory, and 
-to what uses it is adapted.
+We may begin with dynamics,—field in our day of perhaps the grandest conquest human science has ever made,—I mean the law of the conservation of energy. But let us revert to the first step taken by modern scientific thought,—and a great stride it was,—the inauguration of dynamics by Galileo. A modern physicist on examining Galileo's works is surprised to find how little experiment had to do with the establishment of the foundations of mechanics. His principal appeal is to common sense and _il lume naturale_. He always assumes that the true theory will be found to be a simple and natural one. And we can see why it should indeed be so in dynamics. For instance, a body left to its own inertia, moves in a straight line, and a straight line appears to us the simplest of curves. In _itself_, no curve is simpler than another. A system of straight lines has intersections precisely corresponding to those of a system of like parabolas similarly placed, or to those of any one of an infinity of systems of curves. But the straight line appears to us simple, because, as Euclid says, it lies evenly between its extremities; that is, because viewed endwise it appears as a point. That is, again, because light moves in straight lines. Now, light moves in straight lines because of the part which the straight line plays in the laws of dynamics. Thus it is that our minds having been formed under the influence of phenomena governed by the laws of mechanics, certain conceptions entering into those laws become implanted in our minds, so that we readily guess at what the laws are. Without such a natural prompting, having to search blindfold for a law which would suit the phenomena, our chance of finding it would be as one to infinity. The further physical studies depart from phenomena which have directly influenced the growth of the mind, the less we can expect to find the laws which govern them "simple," that is, composed of a few conceptions natural to our minds.
 
-The adequate treatment of this single point would fill a volume, 
-but I shall endeavor to illustrate my meaning by glancing at several 
-sciences and indicating conceptions in them serviceable for philos- {{{ Monist 1:163 }}} ophy. As to the results to which long studies thus commenced 
-have led me, I shall just give a hint at their nature.
+The researches of Galileo, followed up by Huygens and others, led to those modern conceptions of _Force_ and _Law_, which have revolutionised the intellectual world. The great attention given to {{{ Monist 1:164 }}} mechanics in the seventeenth century soon so emphasised these conceptions as to give rise to the Mechanical Philosophy, or doctrine that all the phenomena of the physical universe are to be explained upon mechanical principles. Newton's great discovery imparted a new impetus to this tendency. The old notion that heat consists in an agitation of corpuscles was now applied to the explanation of the chief properties of gases. The first suggestion in this direction was that the pressure of gases is explained by the battering of the particles against the walls of the containing vessel, which explained Boyle's law of the compressibility of air. Later, the expansion of gases, Avogadro's chemical law, the diffusion and viscosity of gases, and the action of Crookes's radiometer were shown to be consequences of the same kinetical theory; but other phenomena, such as the ratio of the specific heat at constant volume to that at constant pressure require additional hypotheses, which we have little reason to suppose are simple, so that we find ourselves quite afloat. In like mariner with regard to light, that it consists of vibrations was almost proved by the phenomena of diffraction, while those of polarisation showed the excursions of the particles to be perpendicular to the line of propagation; but the phenomena of dispersion, etc., require additional hypotheses which maybe very complicated. Thus, the further progress of molecular speculation appears quite uncertain. If hypotheses are to be tried haphazard, or simply because they will suit certain phenomena, it will occupy the mathematical physicists of the world say half a century on the average to bring each theory to the test, and since the number of possible theories may go up into the trillions, only one of which can be true, we have little prospect of making further solid additions to the subject in our time. When we come to atoms, the presumption in favor of a simple law seems very slender. There is room for serious doubt whether the fundamental laws of mechanics hold good for single atoms, and it seems quite likely that they are capable of motion in more than three dimensions.
 
-We may begin with dynamics,—field in our day of perhaps 
-the grandest conquest human science has ever made,—I mean the 
-law of the conservation of energy. But let us revert to the first 
-step taken by modern scientific thought,—and a great stride it 
-was,—the inauguration of dynamics by Galileo. A modern physicist on examining Galileo's works is surprised to find how little experiment had to do with the establishment of the foundations of 
-mechanics. His principal appeal is to common sense and _. He always assumes that the true theory will be found to 
-be a simple and natural one. And we can see why it should indeed 
-be so in dynamics. For instance, a body left to its own inertia, 
-moves in a straight line, and a straight line appears to us the simplest of curves. In _, no curve is simpler than another. A system of straight lines has intersections precisely corresponding to 
-those of a system of like parabolas similarly placed, or to those of 
-any one of an infinity of systems of curves. But the straight line 
-appears to us simple, because, as Euclid says, it lies evenly between 
-its extremities; that is, because viewed endwise it appears as a point. 
-That is, again, because light moves in straight lines. Now, light 
-moves in straight lines because of the part which the straight line 
-plays in the laws of dynamics. Thus it is that our minds having 
-been formed under the influence of phenomena governed by the laws 
-of mechanics, certain conceptions entering into those laws become 
-implanted in our minds, so that we readily guess at what the laws 
-are. Without such a natural prompting, having to search blindfold 
-for a law which would suit the phenomena, our chance of finding it 
-would be as one to infinity. The further physical studies depart 
-from phenomena which have directly influenced the growth of the 
-mind, the less we can expect to find the laws which govern them 
-"simple," that is, composed of a few conceptions natural to our 
-minds.
+To find out much more about molecules and atoms, we must search out a natural history of laws of nature, which may fulfil that function which the presumption in favor of simple laws fulfilled in {{{ Monist 1:165 }}} the early days of dynamics, by showing us what kind of laws we have to expect and by answering such questions as this: Can we with reasonable prospect of not wasting time, try the supposition that atoms attract one another inversely as the seventh power of their distances, or can we not? To suppose universal laws of nature capable of being apprehended by the mind and yet having no reason for their special forms, but standing inexplicable and irrational, is hardly a justifiable position. Uniformities are precisely the sort of facts that need to be accounted for. That a pitched coin should sometimes turn up heads and sometimes tails calls for no particular explanation; but if it shows heads every time, we wish to know how this result has been brought about. Law is _par excellence_ the thing that wants a reason.
 
-The researches of Galileo, followed up by Huygens and others, 
-led to those modern conceptions of _ and _, which have 
-revolutionised the intellectual world. The great attention given to {{{ Monist 1:164 }}} mechanics in the seventeenth century soon so emphasised these 
-conceptions as to give rise to the Mechanical Philosophy, or doctrine that all the phenomena of the physical universe are to be explained upon mechanical principles. Newton's great discovery imparted a new impetus to this tendency. The old notion that heat 
-consists in an agitation of corpuscles was now applied to the explanation of the chief properties of gases. The first suggestion in this 
-direction was that the pressure of gases is explained by the battering of the particles against the walls of the containing vessel, which 
-explained Boyle's law of the compressibility of air. Later, the expansion of gases, Avogadro's chemical law, the diffusion and viscosity of gases, and the action of Crookes's radiometer were shown 
-to be consequences of the same kinetical theory; but other phenomena, such as the ratio of the specific heat at constant volume to 
-that at constant pressure require additional hypotheses, which we 
-have little reason to suppose are simple, so that we find ourselves 
-quite afloat. In like mariner with regard to light, that it consists of 
-vibrations was almost proved by the phenomena of diffraction, while 
-those of polarisation showed the excursions of the particles to be 
-perpendicular to the line of propagation; but the phenomena of dispersion, etc., require additional hypotheses which maybe very complicated. Thus, the further progress of molecular speculation appears quite uncertain. If hypotheses are to be tried haphazard, or 
-simply because they will suit certain phenomena, it will occupy the 
-mathematical physicists of the world say half a century on the average to bring each theory to the test, and since the number of possible theories may go up into the trillions, only one of which can be 
-true, we have little prospect of making further solid additions to 
-the subject in our time. When we come to atoms, the presumption 
-in favor of a simple law seems very slender. There is room for serious doubt whether the fundamental laws of mechanics hold good 
-for single atoms, and it seems quite likely that they are capable of 
-motion in more than three dimensions.
+Now the only possible way of accounting for the laws of nature and for uniformity in general is to suppose them results of evolution. This supposes them not to be absolute, not to be obeyed precisely. It makes an element of indeterminacy, spontaneity, or absolute chance in nature. Just as, when we attempt to verify any physical law, we find our observations cannot be precisely satisfied by it, and rightly attribute the discrepancy to errors of observation, so we must suppose far more minute discrepancies to exist owing to the imperfect cogency of the law itself, to a certain swerving of the facts from any definite formula.
 
-To find out much more about molecules and atoms, we must 
-search out a natural history of laws of nature, which may fulfil that 
-function which the presumption in favor of simple laws fulfilled in {{{ Monist 1:165 }}} the early days of dynamics, by showing us what kind of laws we 
-have to expect and by answering such questions as this: Can we 
-with reasonable prospect of not wasting time, try the supposition 
-that atoms attract one another inversely as the seventh power of 
-their distances, or can we not? To suppose universal laws of nature 
-capable of being apprehended by the mind and yet having no reason 
-for their special forms, but standing inexplicable and irrational, is 
-hardly a justifiable position. Uniformities are precisely the sort of 
-facts that need to be accounted for. That a pitched coin should 
-sometimes turn up heads and sometimes tails calls for no particular 
-explanation; but if it shows heads every time, we wish to know 
-how this result has been brought about. Law is _ the 
-thing that wants a reason.
+Mr. Herbert Spencer wishes to explain evolution upon mechanical principles. This is illogical, for four reasons. First, because the principle of evolution requires no extraneous cause; since the tendency to growth can be supposed itself to have grown from an infinitesimal germ accidentally started. Second, because law ought more than anything else to be supposed a result of evolution. Third, because exact law obviously never can produce heterogeneity out of homogeneity; and arbitrary heterogeneity is the feature of the universe the most manifest and characteristic. Fourth, because the law of the conservation of energy is equivalent to the proposition that all operations governed by mechanical laws are reversible; so that an immediate corollary from it is that growth is not explicable by those laws, even if they be not violated in the process of growth.
 
-Now the only possible way of accounting for the laws of nature 
-and for uniformity in general is to suppose them results of evolution. This supposes them not to be absolute, not to be obeyed 
-precisely. It makes an element of indeterminacy, spontaneity, or 
-absolute chance in nature. Just as, when we attempt to verify any 
-physical law, we find our observations cannot be precisely satisfied 
-by it, and rightly attribute the discrepancy to errors of observation, 
-so we must suppose far more minute discrepancies to exist owing to 
-the imperfect cogency of the law itself, to a certain swerving of the 
-facts from any definite formula.
+{{{ Monist 1:166 }}} In short, Spencer is not a philosophical evolutionist, but only a half-evolutionist,—or, if you will, only a semi-Spencerian. Now philosophy requires thoroughgoing evolutionism or none.
 
-Mr. Herbert Spencer wishes to explain evolution upon mechanical principles. This is illogical, for four reasons. First, because 
-the principle of evolution requires no extraneous cause; since the 
-tendency to growth can be supposed itself to have grown from an 
-infinitesimal germ accidentally started. Second, because law ought 
-more than anything else to be supposed a result of evolution. Third, 
-because exact law obviously never can produce heterogeneity out 
-of homogeneity; and arbitrary heterogeneity is the feature of the 
-universe the most manifest and characteristic. Fourth, because the 
-law of the conservation of energy is equivalent to the proposition 
-that all operations governed by mechanical laws are reversible; so 
-that an immediate corollary from it is that growth is not explicable 
-by those laws, even if they be not violated in the process of growth.
+The theory of Darwin was that evolution had been brought about by the action of two factors: first, heredity, as a principle making offspring nearly resemble their parents, while yet giving room for "sporting," or accidental variations,—for very slight variations often, for wider ones rarely; and, second, the destruction of breeds or races that are unable to keep the birth rate up to the death rate. This Darwinian principle is plainly capable of great generalisation. Wherever there are large numbers of objects, having a tendency to retain certain characters unaltered, this tendency, however, not being absolute but giving room for chance variations, then, if the amount of variation is absolutely limited in certain directions by the destruction of everything which reaches those limits, there will be a gradual tendency to change in directions of departure from them. Thus, if a million players sit down to bet at an even game, since one after another will get ruined, the average wealth of those who remain will perpetually increase. Here is indubitably a genuine formula of possible evolution, whether its operation accounts for much or little in the development of animal and vegetable species.
 
-{{{ Monist 1:166 }}} In short, Spencer is not a philosophical evolutionist, but only a 
-half-evolutionist,—or, if you will, only a semi-Spencerian. Now 
-philosophy requires thoroughgoing evolutionism or none.
+The Lamarckian theory also supposes that the development of species has taken place by a long series of insensible changes, but it supposes that those changes have taken place during the lives of the individuals, in consequence of effort and exercise, and that reproduction plays no part in the process except in preserving these modifications. Thus, the Lamarckian theory only explains the development of characters for which individuals strive, while the Darwinian theory only explains the production of characters really beneficial to the race, though these may be fatal to individuals.[^*] But more broadly and philosophically conceived, Darwinian evolution is evolution by the operation of chance, and the destruction of {{{ Monist 1:167 }}} bad results, while Lamarckian evolution is evolution by the effect of habit and effort.
 
-The theory of Darwin was that evolution had been brought 
-about by the action of two factors: first, heredity, as a principle 
-making offspring nearly resemble their parents, while yet giving 
-room for "sporting," or accidental variations,—for very slight variations often, for wider ones rarely; and, second, the destruction of 
-breeds or races that are unable to keep the birth rate up to the 
-death rate. This Darwinian principle is plainly capable of great 
-generalisation. Wherever there are large numbers of objects, having a tendency to retain certain characters unaltered, this tendency, 
-however, not being absolute but giving room for chance variations, 
-then, if the amount of variation is absolutely limited in certain directions by the destruction of everything which reaches those limits, 
-there will be a gradual tendency to change in directions of departure from them. Thus, if a million players sit down to bet at an 
-even game, since one after another will get ruined, the average 
-wealth of those who remain will perpetually increase. Here is indubitably a genuine formula of possible evolution, whether its operation accounts for much or little in the development of animal and 
-vegetable species.
+A third theory of evolution is that of Mr. Clarence King. The testimony of monuments and of rocks is that species are unmodified or scarcely modified, under ordinary circumstances, but are rapidly altered after cataclysms or rapid geological changes. Under novel circumstances, we often see animals and plants sporting excessively in reproduction, and sometimes even undergoing transformations during individual life, phenomena no doubt due partly to the enfeeblement of vitality from the breaking up of habitual modes of life, partly to changed food, partly to direct specific influence of the element in which the organism is immersed. If evolution has been brought about in this way, not only have its single steps not been insensible, as both Darwinians and Lamarckians suppose, but they are furthermore neither haphazard on the one hand, nor yet determined by an inward striving on the other, but on the contrary are effects of the changed environment, and have a positive general tendency to adapt the organism to that environment, since variation will particularly affect organs at once enfeebled and stimulated. This mode of evolution, by external forces and the breaking up of habits, seems to be called for by some of the broadest and most important facts of biology and paleontology; while it certainly has been the chief factor in the historical evolution of institutions as in that of ideas; and cannot possibly be refused a very prominent place in the process of evolution of the universe in general.
 
-The Lamarckian theory also supposes that the development of 
-species has taken place by a long series of insensible changes, but 
-it supposes that those changes have taken place during the lives of 
-the individuals, in consequence of effort and exercise, and that 
-reproduction plays no part in the process except in preserving these 
-modifications. Thus, the Lamarckian theory only explains the 
-development of characters for which individuals strive, while the 
-Darwinian theory only explains the production of characters really 
-beneficial to the race, though these may be fatal to individuals.[^*]
-But more broadly and philosophically conceived, Darwinian evolution is evolution by the operation of chance, and the destruction of {{{ Monist 1:167 }}} bad results, while Lamarckian evolution is evolution by the effect 
-of habit and effort.
+Passing to psychology, we find the elementary phenomena of mind fall into three categories. First, we have Feelings, comprising all that is immediately present, such as pain, blue, cheerfulness, the feeling that arises when we contemplate a consistent theory, etc. A feeling is a state of mind having its own living quality, independent of any other state of mind. Or, a feeling is an element of consciousness which might conceivably override every other state until it monopolised the mind, although such a rudimentary state cannot actually be realised, and would not properly be consciousness. Still, it is conceivable, or supposable, that the quality of {{{ Monist 1:168 }}} blue should usurp the whole mind, to the exclusion of the ideas of shape, extension, contrast, commencement and cessation, and all other ideas, whatsoever. A feeling is necessarily perfectly simple, _in itself_, for if it had parts these would also be in the mind, whenever the whole was present, and thus the whole could not monopolise the mind.[^**]
 
-A third theory of evolution is that of Mr. Clarence King. The 
-testimony of monuments and of rocks is that species are unmodified or scarcely modified, under ordinary circumstances, but are 
-rapidly altered after cataclysms or rapid geological changes. Under 
-novel circumstances, we often see animals and plants sporting excessively in reproduction, and sometimes even undergoing transformations during individual life, phenomena no doubt due partly 
-to the enfeeblement of vitality from the breaking up of habitual 
-modes of life, partly to changed food, partly to direct specific influence of the element in which the organism is immersed. If evolution has been brought about in this way, not only have its single 
-steps not been insensible, as both Darwinians and Lamarckians 
-suppose, but they are furthermore neither haphazard on the one 
-hand, nor yet determined by an inward striving on the other, but 
-on the contrary are effects of the changed environment, and have a 
-positive general tendency to adapt the organism to that environment, since variation will particularly affect organs at once enfeebled 
-and stimulated. This mode of evolution, by external forces and 
-the breaking up of habits, seems to be called for by some of the 
-broadest and most important facts of biology and paleontology; 
-while it certainly has been the chief factor in the historical evolution of institutions as in that of ideas; and cannot possibly be refused a very prominent place in the process of evolution of the universe in general.
+Besides Feelings, we have Sensations of reaction ; as when a person blindfold suddenly runs against a post, when we make a muscular effort, or when any feeling gives way to a new feeling. Suppose I had nothing in my mind but a feeling of blue, which were suddenly to give place to a feeling of red ; then, at the instant of transition there would be a shock, a sense of reaction, my blue life being transmuted into red life. If I were further endowed with a memory, that sense would continue for some time, and there would also be a peculiar feeling or sentiment connected with it. This last feeling might endure (conceivably I mean) after the memory of the occurrence and the feelings of blue and red had passed away. But the sensation of reaction cannot exist except in the actual presence of the two feelings blue and red. to which it relates. Wherever we have two feelings and pay attention to a relation between them of whatever kind, there is the sensation of which I am speaking. But the sense of action and reaction has two types: it may either be a perception of relation between two ideas, or it may be a sense of action and reaction between feeling and something out of feeling. And this sense of external reaction again has two forms; for it is either a sense of something happening to us, by no act of ours, we being passive in the matter, or it is a sense of resistance, that is, of our expending feeling upon something without. The sense of reaction is thus a sense of connection or comparison between feelings, either, _A_, between one feeling and another, or _B_, between feeling and its absence or lower degree; and under _B_ we have, First, the sense of the access of feeling, and Second, the sense of remission of feeling.
 
-Passing to psychology, we find the elementary phenomena of 
-mind fall into three categories. First, we have Feelings, comprising all that is immediately present, such as pain, blue, cheerfulness, 
-the feeling that arises when we contemplate a consistent theory, etc. 
-A feeling is a state of mind having its own living quality, independent of any other state of mind. Or, a feeling is an element of 
-consciousness which might conceivably override every other state 
-until it monopolised the mind, although such a rudimentary state 
-cannot actually be realised, and would not properly be consciousness. Still, it is conceivable, or supposable, that the quality of {{{ Monist 1:168 }}} blue should usurp the whole mind, to the exclusion of the ideas 
-of shape, extension, contrast, commencement and cessation, and 
-all other ideas, whatsoever. A feeling is necessarily perfectly 
-simple, _, for if it had parts these would also be in the mind, 
-whenever the whole was present, and thus the whole could not 
-monopolise the mind.[^**]
+{{{ Monist 1:169 }}} Very different both from feelings and from reaction-sensations or disturbances of feeling are general conceptions. When we think, we are conscious that a connection between feelings is determined by a general rule, we are aware of being governed by a habit. Intellectual power is nothing but facility in taking habits and in following them in cases essentially analogous to, but in non-essentials widely remote from, the normal cases of connections of feelings under which those habits were formed.
 
-Besides Feelings, we have Sensations of reaction ; as when a 
-person blindfold suddenly runs against a post, when we make a 
-muscular effort, or when any feeling gives way to a new feeling. 
-Suppose I had nothing in my mind but a feeling of blue, which were 
-suddenly to give place to a feeling of red ; then, at the instant of transition there would be a shock, a sense of reaction, my blue life being 
-transmuted into red life. If I were further endowed with a memory, 
-that sense would continue for some time, and there would also be a 
-peculiar feeling or sentiment connected with it. This last feeling 
-might endure (conceivably I mean) after the memory of the occurrence and the feelings of blue and red had passed away. But 
-the sensation of reaction cannot exist except in the actual presence 
-of the two feelings blue and red. to which it relates. Wherever we 
-have two feelings and pay attention to a relation between them 
-of whatever kind, there is the sensation of which I am speaking. 
-But the sense of action and reaction has two types: it may either 
-be a perception of relation between two ideas, or it may be a sense 
-of action and reaction between feeling and something out of feeling. 
-And this sense of external reaction again has two forms; for it is 
-either a sense of something happening to us, by no act of ours, we 
-being passive in the matter, or it is a sense of resistance, that is, of 
-our expending feeling upon something without. The sense of reaction is thus a sense of connection or comparison between feelings, 
-either, _, between one feeling and another, or _, between feeling 
-and its absence or lower degree; and under _ we have, First, the 
-sense of the access of feeling, and Second, the sense of remission of 
-feeling.
+The one primary and fundamental law of mental action consists in a tendency to generalisation. Feeling tends to spread; connections between feelings awaken feelings; neighboring feelings become assimilated; ideas are apt to reproduce themselves. These are so many formulations of the one law of the growth of mind. When a disturbance of feeling takes place, we have a consciousness of gain, the gain of experience; and a new disturbance will be apt to assimilate itself to the one that preceded it. Feelings, by being excited, become more easily excited, especially in the ways in which they have previously been excited. The consciousness of such a habit constitutes a general conception.
 
-{{{ Monist 1:169 }}} Very different both from feelings and from reaction-sensations 
-or disturbances of feeling are general conceptions. When we think, 
-we are conscious that a connection between feelings is determined 
-by a general rule, we are aware of being governed by a habit. Intellectual power is nothing but facility in taking habits and in following them in cases essentially analogous to, but in non-essentials 
-widely remote from, the normal cases of connections of feelings under which those habits were formed.
+The cloudiness of psychological notions may be corrected by connecting them with physiological conceptions. Feeling may be supposed to exist, wherever a nerve-cell is in an excited condition. The disturbance of feeling, or sense of reaction, accompanies the transmission of disturbance between nerve-cells or from a nerve-cell to a muscle-cell or the external stimulation of a nerve-cell. General conceptions arise upon the formation of habits in the nerve-matter, which are molecular changes consequent upon its activity and probably connected with its nutrition.
 
-The one primary and fundamental law of mental action consists in a tendency to generalisation. Feeling tends to spread; connections between feelings awaken feelings; neighboring feelings 
-become assimilated; ideas are apt to reproduce themselves. These 
-are so many formulations of the one law of the growth of mind. 
-When a disturbance of feeling takes place, we have a consciousness 
-of gain, the gain of experience; and a new disturbance will be apt 
-to assimilate itself to the one that preceded it. Feelings, by being 
-excited, become more easily excited, especially in the ways in which 
-they have previously been excited. The consciousness of such a 
-habit constitutes a general conception.
+The law of habit exhibits a striking contrast to all physical laws in the character of its commands. A physical law is absolute. What it requires is an exact relation. Thus, a physical force introduces into a motion a component motion to be combined with the rest by the parallelogram of forces; but the component motion must actually take place exactly as required by the law of force. On the other hand, no exact conformity is required by the mental law. Nay, exact conformity would be in downright conflict with the law; since {{{ Monist 1:170 }}} it would instantly crystallise thought and prevent all further formation of habit. The law of mind only makes a given feeling _more likely_ to arise. It thus resembles the "non-conservative" forces of physics, such as viscosity and the like, which are due to statistical uniformities in the chance encounters of trillions of molecules.
 
-The cloudiness of psychological notions may be corrected by 
-connecting them with physiological conceptions. Feeling may be 
-supposed to exist, wherever a nerve-cell is in an excited condition. 
-The disturbance of feeling, or sense of reaction, accompanies the 
-transmission of disturbance between nerve-cells or from a nerve-cell 
-to a muscle-cell or the external stimulation of a nerve-cell. General 
-conceptions arise upon the formation of habits in the nerve-matter, 
-which are molecular changes consequent upon its activity and probably connected with its nutrition.
+The old dualistic notion of mind and matter, so prominent in Cartesianism, as two radically different kinds of substance, will hardly find defenders to-day. Rejecting this, we are driven to some form of hylopathy, otherwise called monism. Then the question arises whether physical laws on the one hand, and the psychical law on the other are to be taken—
 
-The law of habit exhibits a striking contrast to all physical laws 
-in the character of its commands. A physical law is absolute. What 
-it requires is an exact relation. Thus, a physical force introduces 
-into a motion a component motion to be combined with the rest by 
-the parallelogram of forces; but the component motion must actually 
-take place exactly as required by the law of force. On the other 
-hand, no exact conformity is required by the mental law. Nay, exact conformity would be in downright conflict with the law; since {{{ Monist 1:170 }}} it would instantly crystallise thought and prevent all further formation of habit. The law of mind only makes a given feeling _ to arise. It thus resembles the "non-conservative" forces of 
-physics, such as viscosity and the like, which are due to statistical 
-uniformities in the chance encounters of trillions of molecules.
+(_A_) as independent, a doctrine often called _monism_, but which I would name _neutralism_; or,
 
-The old dualistic notion of mind and matter, so prominent in 
-Cartesianism, as two radically different kinds of substance, will 
-hardly find defenders to-day. Rejecting this, we are driven to some 
-form of hylopathy, otherwise called monism. Then the question 
-arises whether physical laws on the one hand, and the psychical law 
-on the other are to be taken—
+(_B_) the psychical law as derived and special, the physical law alone as primordial, which is _materialism_; or,
 
-(_) as independent, a doctrine often called _, but which 
-I would name _; or,
+(_C_) the physical law as derived and special, the psychical law alone as primordial, which is _idealism_.
 
-(_) the psychical law as derived and special, the physical law 
-alone as primordial, which is _; or,
+The materialistic doctrine seems to me quite as repugnant to scientific logic as to common sense; since it requires us to suppose that a certain kind of mechanism will feel, which would be a hypothesis absolutely irreducible to reason,—an ultimate, inexplicable regularity; while the only possible justification of any theory is that it should make things clear and reasonable.
 
-(_) the physical law as derived and special, the psychical law 
-alone as primordial, which is _.
+Neutralism is sufficiently condemned by the logical maxim known as Ockham's razor, i. e., that not more independent elements are to be supposed than necessary. By placing the inward and outward aspects of substance on a par, it seems to render both primordial.
 
-The materialistic doctrine seems to me quite as repugnant to 
-scientific logic as to common sense; since it requires us to suppose 
-that a certain kind of mechanism will feel, which would be a hypothesis absolutely irreducible to reason,—an ultimate, inexplicable 
-regularity; while the only possible justification of any theory is that 
-it should make things clear and reasonable.
+The one intelligible theory of the universe is that of objective idealism, that matter is effete mind, inveterate habits becoming physical laws. But before this can be accepted it must show itself capable of explaining the tridimensionality of space, the laws of motion, and the general characteristics of the universe, with mathematical clearness and precision; for no less should be demanded of every Philosophy.
 
-Neutralism is sufficiently condemned by the logical maxim 
-known as Ockham's razor, i. e., that not more independent elements 
-are to be supposed than necessary. By placing the inward and 
-outward aspects of substance on a par, it seems to render both primordial.
+Modern mathematics is replete with ideas which may be applied {{{ Monist 1:171 }}} to philosophy. I can only notice one or two. The manner in which mathematicians generalise is very instructive. Thus, painters are accustomed to think of a picture as consisting geometrically of the intersections of its plane by rays of light from the natural objects to the eye. But geometers use a generalised perspective. For instance, in the figure let _O_ be the eye, let _A B C D E_ be the edgewise view of any plane, and let _a f e D c_ be the edgewise view of another plane.
 
-The one intelligible theory of the universe is that of objective 
-idealism, that matter is effete mind, inveterate habits becoming 
-physical laws. But before this can be accepted it must show itself 
-capable of explaining the tridimensionality of space, the laws of 
-motion, and the general characteristics of the universe, with mathematical clearness and precision; for no less should be demanded of 
-every Philosophy.
+<figure>
+  <!-- plate not reproduced: TheMonistVol1pg186GraphRecreation.jpg -->
+  <figcaption></figcaption>
+</figure>
 
-Modern mathematics is replete with ideas which may be ap- {{{ Monist 1:171 }}} plied to philosophy. I can only notice one or two. The manner in 
-which mathematicians generalise is very instructive. Thus, painters 
-are accustomed to think of a picture as consisting geometrically of 
-the intersections of its plane by rays of light from the natural objects to the eye. But geometers use a generalised perspective. 
-For instance, in the figure let _ be the eye, let _ be the 
-edgewise view of any plane, and let _ be the edgewise view 
-of another plane.
+The geometers draw rays through _O_ cutting both these planes, and treat the points of intersection of each ray with one plane as representing the point of intersection of the same ray with the other plane. Thus, _e_ represents _E_, in the painter's way. _D_ represents itself. _C_ is represented by _c_, which is further from the eye; and _A_ is represented by _a_ which is on the other side of the eye. Such generalisation is not bound down to sensuous images. Further, according to this mode of representation every point on one plane represents a point on the other, and every point on the latter is represented by a point on the former. But how about the point which is in a direction from _O_ parallel to the represented plane, and how about the point _B_ which is in a direction parallel to the representing plane? Some will say that these are exceptions; but modern mathematics does not allow exceptions which can be annulled by generalisation. As a point moves from _C_ to _D_ and thence to _E_ and off toward infinity, the corresponding point on the other plane moves from _c_ to _D_ and thence to _e_ and toward _f_. But this second point can pass through _f_ to _a_; and when it is there the first point has arrived at _A_. We therefore say that the first point has passed _through infinity_, and that every line joins in to itself somewhat like an oval. Geometers {{{ Monist 1:172 }}} talk of the parts of lines at an infinite distance as points. This is a kind of generalisation very efficient in mathematics.
 
-File:TheMonistVol1pg186GraphRecreation.jpg
+Modern views of measurement have a philosophical aspect. There is an indefinite number of systems of measuring along a line; thus, a perspective representation of a scale on one line may be taken to measure another, although of course such measurements will not agree with what we call the distances of points on the latter line. To establish a system of measurement on a line we must assign a distinct number to each point of it, and for this purpose we shall plainly have to suppose the numbers carried out into an infinite number of places of decimals. These numbers must be ranged along the line in unbroken sequence. Further, in order that such a scale of numbers should be of any use, it must be capable of being shifted into new positions, each number continuing to be attached to a single distinct point. Now it is found that if this is true for " imaginary " as well as for real points (an expression which I cannot stop to elucidate), any such shifting will necessarily leave two numbers attached to the same points as before. So that when the scale is moved over the line by any continuous series of shiftings of one kind, there are two points which no numbers on the scale can ever reach, except the numbers fixed there. This pair of points, thus unattainable in measurement, is called the Absolute. These two points may be distinct and real, or they may coincide, or they may be both imaginary. As an example of a linear quantity with a double absolute we may take probability, which ranges from an unattainable absolute certainty _against_ a proposition to an equally unattainable absolute certainty _for_ it. A line, according to ordinary notions, we have seen is a linear quantity where the two points at infinity coincide. A velocity is another example. A train going with infinite velocity from Chicago to New York would be at all the points on the line at the very same instant, and if the time of transit were reduced to less than nothing it would be moving in the other direction. An angle is a familiar example of a mode of magnitude with no real immeasurable values. One of the questions philosophy has to consider is whether the development of the universe is like the increase of an angle, so that it proceeds forever {{{ Monist 1:173 }}} without tending toward anything unattained, which I take to be the Epicurean view, or whether the universe sprang from a chaos in the infinitely distant past to tend toward something different in the infinitely distant future, or whether the universe sprang from nothing in the past to go on indefinitely toward a point in the infinitely distant future, which, were it attained, would be the mere nothing from which it set out.
 
-The geometers draw rays through _ cutting both 
-these planes, and treat the points of intersection of each ray with 
-one plane as representing the point of intersection of the same ray 
-with the other plane. Thus, _ represents _, in the painter's way. 
-_ represents itself. _ is represented by _, which is further from the eye; and _ is represented by _ which 
-is on the other side of the eye. Such 
-generalisation is not 
-bound down to sensuous images. Further, according to 
-this mode of representation every point 
-on one plane represents a point on the
-other, and every point on the latter is represented by a point on 
-the former. But how about the point which is in a direction from 
-_ parallel to the represented plane, and how about the point _ 
-which is in a direction parallel to the representing plane? Some 
-will say that these are exceptions; but modern mathematics does 
-not allow exceptions which can be annulled by generalisation. As 
-a point moves from _ to _ and thence to _ and off toward infinity, 
-the corresponding point on the other plane moves from _ to _ and 
-thence to _ and toward _. But this second point can pass through 
-_ to _; and when it is there the first point has arrived at _. We 
-therefore say that the first point has passed _, and 
-that every line joins in to itself somewhat like an oval. Geometers {{{ Monist 1:172 }}} talk of the parts of lines at an infinite distance as points. This is 
-a kind of generalisation very efficient in mathematics.
+The doctrine of the absolute applied to space come to this, that either—
 
-Modern views of measurement have a philosophical aspect. 
-There is an indefinite number of systems of measuring along a line; 
-thus, a perspective representation of a scale on one line may be 
-taken to measure another, although of course such measurements 
-will not agree with what we call the distances of points on the latter 
-line. To establish a system of measurement on a line we must assign a distinct number to each point of it, and for this purpose we 
-shall plainly have to suppose the numbers carried out into an infinite number of places of decimals. These numbers must be 
-ranged along the line in unbroken sequence. Further, in order that 
-such a scale of numbers should be of any use, it must be capable of 
-being shifted into new positions, each number continuing to be attached to a single distinct point. Now it is found that if this is 
-true for " imaginary " as well as for real points (an expression which 
-I cannot stop to elucidate), any such shifting will necessarily leave 
-two numbers attached to the same points as before. So that when 
-the scale is moved over the line by any continuous series of shiftings of one kind, there are two points which no numbers on the 
-scale can ever reach, except the numbers fixed there. This pair 
-of points, thus unattainable in measurement, is called the Absolute. These two points may be distinct and real, or they may coincide, or they may be both imaginary. As an example of a linear 
-quantity with a double absolute we may take probability, which 
-ranges from an unattainable absolute certainty _ a proposition 
-to an equally unattainable absolute certainty _ it. A line, according 
-to ordinary notions, we have seen is a linear quantity where the two 
-points at infinity coincide. A velocity is another example. A train 
-going with infinite velocity from Chicago to New York would be at 
-all the points on the line at the very same instant, and if the time 
-of transit were reduced to less than nothing it would be moving in 
-the other direction. An angle is a familiar example of a mode of 
-magnitude with no real immeasurable values. One of the questions 
-philosophy has to consider is whether the development of the universe is like the increase of an angle, so that it proceeds forever {{{ Monist 1:173 }}} without tending toward anything unattained, which I take to be the 
-Epicurean view, or whether the universe sprang from a chaos in the 
-infinitely distant past to tend toward something different in the 
-infinitely distant future, or whether the universe sprang from 
-nothing in the past to go on indefinitely toward a point in the infinitely distant future, which, were it attained, would be the mere 
-nothing from which it set out.
+First, space is, as Euclid teaches, both _unlimited_ and _immeasurable_, so that the infinitely distant parts of any plane seen in perspective appear as a straight line, in which case the sum of the three angles of a triangle amounts to 180°; or,
 
-The doctrine of the absolute applied to space come to this, 
-that either—
+Second, space is _immeasurable_ but _limited_, so that the infinitely distant parts of any plane seen in perspective appear as a circle, beyond which all is blackness, and in this case the sum of the three angles of a triangle is less than 180° by an amount proportional to the area of the triangle; or,
 
-First, space is, as Euclid teaches, both _ and _, so that the infinitely distant parts of any plane seen in perspective appear as a straight line, in which case the sum of the three 
-angles of a triangle amounts to 180°; or,
+Third, space is _unlimited_ but _finite_, (like the surface of a sphere,) so that it has no infinitely distant parts; but a finite journey along any straight line would bring one back to his original position, and looking off with an unobstructed view one would see the back of his own head enormously magnified, in which case the sum of the three angles of a triangle exceeds 180° by an amount proportional to the area.
 
-Second, space is _ but _, so that the infinitely 
-distant parts of any plane seen in perspective appear as a circle, 
-beyond which all is blackness, and in this case the sum of the three 
-angles of a triangle is less than 180° by an amount proportional to 
-the area of the triangle; or,
+Which of these three hypotheses is true we know not. The largest triangles we can measure are such as have the earth's orbit for base, and the distance of a fixed star for altitude. The angular magnitude resulting from subtracting the sum of the two angles at the base of such a triangle from 180° is called the star's _parallax_. The parallaxes of only about forty stars have been measured as yet. Two of them come out negative, that of Arided (_a_ Cycni), a star of magnitude 1½, which is —0.″082, according to C. A. F. Peters, and that of a star of magnitude 7¾, known as Piazzi III 422, which is —0.″045 according to R. S. Ball. But these negative parallaxes are undoubtedly to be attributed to errors of observation; for the {{{ Monist 1:174 }}} probable error of such a determination is about ±0.″075, and it would be strange indeed if we were to be able to see, as it were, more than half way round space, without being able to see stars with larger negative parallaxes. Indeed, the very fact that of all the parallaxes measured only two come out negative would be a strong argument that the smallest parallaxes really amount to +0.″1, were it not for the reflexion that the publication of other negative parallaxes may have been suppressed. I think we may feel confident that the parallax of the furthest star lies somewhere between —0.″05 and +0.″15, and within another century our grand-children will surely know whether the three angles of a triangle are greater or less than 180°,—that they are _exactly_ that amount is what nobody ever can be justified in concluding. It is true that according to the axioms of geometry the sum of the three sides of a triangle are precisely 180°; but these axioms are now exploded, and geometers confess that they, as geometers, know not the slightest reason for supposing them to be precisely true. They are expressions of our inborn conception of space, and as such are entitled to credit, so far as their truth could have influenced the formation of the mind. But that affords not the slightest reason for supposing them exact.
 
-Third, space is _ but _, (like the surface of a sphere,) 
-so that it has no infinitely distant parts; but a finite journey along 
-any straight line would bring one back to his original position, and 
-looking off with an unobstructed view one would see the back of 
-his own head enormously magnified, in which case the sum of the 
-three angles of a triangle exceeds 180° by an amount proportional 
-to the area.
+Now, metaphysics has always been the ape of mathematics. Geometry suggested the idea of a demonstrative system of absolutely certain philosophical principles; and the ideas of the metaphysicians have at all times been in large part drawn from mathematics. The metaphysical axioms are imitations of the geometrical axioms; and now that the latter have been thrown overboard, without doubt the former will be sent after them. It is evident, for instance, that we can have no reason to think that every phenomenon in all its minutest details is precisely determined by law. That there is an arbitrary element in the universe we see,—namely, its variety. This variety must be attributed to spontaneity in some form.
 
-Which of these three hypotheses is true we know not. The 
-largest triangles we can measure are such as have the earth's orbit 
-for base, and the distance of a fixed star for altitude. The angular 
-magnitude resulting from subtracting the sum of the two angles at 
-the base of such a triangle from 180° is called the star's _. 
-The parallaxes of only about forty stars have been measured as yet. 
-Two of them come out negative, that of Arided (_ Cycni), a star of 
-magnitude 1½, which is —0.<nowiki>_</nowiki>045 according to R. S. Ball. But these negative parallaxes 
-are undoubtedly to be attributed to errors of observation; for the {{{ Monist 1:174 }}} probable error of such a determination is about ±0.<nowiki>_</nowiki>1, were it not for the reflexion that the publication of other 
-negative parallaxes may have been suppressed. I think we may 
-feel confident that the parallax of the furthest star lies somewhere 
-between —0.<nowiki>_</nowiki>15, and within another century our grand-children will surely know whether the three angles of a triangle are 
-greater or less than 180°,—that they are _ that amount is 
-what nobody ever can be justified in concluding. It is true that 
-according to the axioms of geometry the sum of the three sides of 
-a triangle are precisely 180°; but these axioms are now exploded, 
-and geometers confess that they, as geometers, know not the 
-slightest reason for supposing them to be precisely true. They are 
-expressions of our inborn conception of space, and as such are entitled to credit, so far as their truth could have influenced the formation of the mind. But that affords not the slightest reason for 
-supposing them exact.
+Had I more space, I now ought to show how important for philosophy is the mathematical conception of continuity. Most of what is true in Hegel is a darkling glimmer of a conception {{{ Monist 1:175 }}} which the mathematicians had long before made pretty clear, and which recent researches have still further illustrated.
 
-Now, metaphysics has always been the ape of mathematics. 
-Geometry suggested the idea of a demonstrative system of absolutely certain philosophical principles; and the ideas of the metaphysicians have at all times been in large part drawn from mathematics. The metaphysical axioms are imitations of the geometrical 
-axioms; and now that the latter have been thrown overboard, without doubt the former will be sent after them. It is evident, for instance, that we can have no reason to think that every phenomenon in all its minutest details is precisely determined by law. 
-That there is an arbitrary element in the universe we see,—namely, its variety. This variety must be attributed to spontaneity in some form.
+Among the many principles of Logic which find their application  in Philosophy, I can here only mention one. Three conceptions  are perpetually turning up at every point in every theory of logic, and in the most rounded systems they occur in connection with one another. They are conceptions so very broad and consequently indefinite that they are hard to seize and may be easily overlooked.   I call them the conceptions of First, Second, Third. First is the conception of being or existing independent of anything else. Second is the conception of being relative to, the conception of reaction with, something else. Third is the conception of mediation, whereby a first and second are brought into relation. To illustrate these ideas, I will show how they enter into those we have been considering. The origin of things, considered not as leading to anything, but in itself, contains the idea of First, the end of things that of Second, the process mediating between them that of Third. A philosophy which emphasises the idea of the One, is generally a dualistic philosophy in which the conception of Second receives exaggerated attention; for this One (though of course involving the idea of First) is always the other of a manifold which is not one. The idea of the Many, because variety is arbitrariness and arbitrariness is repudiation of any Secondness, has for its principal component the conception of First. In psychology Feeling is First, Sense of reaction Second, General conception Third, or mediation. In biology, the idea of arbitrary sporting is First, heredity is Second, the process whereby the accidental characters become fixed is Third. Chance is First, Law is Second, the tendency to take habits is Third. Mind is First, Matter is Second, Evolution is Third.
 
-Had I more space, I now ought to show how important for 
-philosophy is the mathematical conception of continuity. Most 
-of what is true in Hegel is a darkling glimmer of a conception {{{ Monist 1:175 }}} which the mathematicians had long before made pretty clear, and 
-which recent researches have still further illustrated.
+Such are the materials out of which chiefly a philosophical theory ought to be built, in order to represent the state of knowledge to which the nineteenth century has brought us. Without going into other important questions of philosophical architectonic, we can readily foresee what sort of a metaphysics would appropriately be constructed from those conceptions. Like some of the most ancient and some of the most recent speculations it would be a Cosmogonic {{{ Monist 1:176 }}} Philosophy. It would suppose that in the beginning,—infinitely remote,—there was a chaos of impersonated feeling, which being without connection or regularity would properly be without existence. This feeling, sporting here and there in pure arbitrariness, would have started the germ of a generalising tendency. Its other sportings would be evanescent, but this would have a growing virtue. Thus, the tendency to habit would be started; and from this with the other principles of evolution all the regularities of the universe would be evolved. At any time, however, an element of pure chance survives and will remain until the world becomes an absolutely perfect, rational, and symmetrical system, in which mind is at last crystallised in the infinitely-distant future.
 
-Among the many principles of Logic which find their application  in Philosophy, I can here only mention one. Three conceptions  are perpetually turning up at every point in every theory of 
-logic, and in the most rounded systems they occur in connection 
-with one another. They are conceptions so very broad and consequently indefinite that they are hard to seize and may be easily overlooked.   I call them the conceptions of First, Second, Third. First 
-is the conception of being or existing independent of anything else. 
-Second is the conception of being relative to, the conception of reaction with, something else. Third is the conception of mediation, 
-whereby a first and second are brought into relation. To illustrate 
-these ideas, I will show how they enter into those we have been 
-considering. The origin of things, considered not as leading to 
-anything, but in itself, contains the idea of First, the end of things 
-that of Second, the process mediating between them that of Third. 
-A philosophy which emphasises the idea of the One, is generally a 
-dualistic philosophy in which the conception of Second receives exaggerated attention; for this One (though of course involving the 
-idea of First) is always the other of a manifold which is not one. 
-The idea of the Many, because variety is arbitrariness and arbitrariness is repudiation of any Secondness, has for its principal component the conception of First. In psychology Feeling is First, Sense 
-of reaction Second, General conception Third, or mediation. In 
-biology, the idea of arbitrary sporting is First, heredity is Second, 
-the process whereby the accidental characters become fixed is 
-Third. Chance is First, Law is Second, the tendency to take habits is Third. Mind is First, Matter is Second, Evolution is Third.
-
-Such are the materials out of which chiefly a philosophical theory 
-ought to be built, in order to represent the state of knowledge to which 
-the nineteenth century has brought us. Without going into other 
-important questions of philosophical architectonic, we can readily 
-foresee what sort of a metaphysics would appropriately be constructed from those conceptions. Like some of the most ancient 
-and some of the most recent speculations it would be a Cosmogonic {{{ Monist 1:176 }}} Philosophy. It would suppose that in the beginning,—infinitely 
-remote,—there was a chaos of impersonated feeling, which being 
-without connection or regularity would properly be without existence. This feeling, sporting here and there in pure arbitrariness, 
-would have started the germ of a generalising tendency. Its other 
-sportings would be evanescent, but this would have a growing virtue. 
-Thus, the tendency to habit would be started; and from this with 
-the other principles of evolution all the regularities of the universe 
-would be evolved. At any time, however, an element of pure chance 
-survives and will remain until the world becomes an absolutely perfect, rational, and symmetrical system, in which mind is at last 
-crystallised in the infinitely-distant future.
-
-That idea has been worked out by me with elaboration. It 
-accounts for the main features of the universe as we know it,—the 
-characters of time, space, matter, force, gravitation, electricity, etc. 
-It predicts many more things which new observations can alone 
-bring to the test. May some future student go over this ground 
-again, and have the leisure to give his results to the world.
-
-CHARLES S. PEIRCE.
+That idea has been worked out by me with elaboration. It accounts for the main features of the universe as we know it,—the characters of time, space, matter, force, gravitation, electricity, etc. It predicts many more things which new observations can alone bring to the test. May some future student go over this ground again, and have the leisure to give his results to the world.
 
 [^*]: The neo-Darwinian, Weismann, has shown that mortality would almost necessarily result from the action of the Darwinian principle.
 

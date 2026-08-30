@@ -1,7 +1,7 @@
 //! Shared reconciling-re-import toolkit, used by every importer that updates an
 //! already-imported book in place (`struct_to_db`, `bible_to_db`).
 //!
-//! Five book-agnostic pieces live here:
+//! Six book-agnostic pieces live here:
 //! - [`align`]: the text-based aligner that classifies a unit's before/after
 //!   sentence lists into update / split / merge / insert / delete (or aborts on
 //!   ambiguity). It has no notion of paragraphs, verses, or footnotes — callers
@@ -12,6 +12,9 @@
 //!   is data-integrity-critical, so it lives in exactly one place.
 //! - [`hash`]: the per-node + root content hashing that drives the incremental
 //!   reconcile (callers build the hash-input from their model).
+//! - [`insertion`]: the opt-in mid-book insertion pre-alignment for books that
+//!   grow (`--allow-insertion`) — renumbers existing book-global sequences to
+//!   the desired values so the strictly-additive pre-flight then passes.
 //! - [`keys`]: the sentence `natural_key` formats, so fresh-insert and reconcile
 //!   build the same per-sentence identity strings.
 //! - [`orchestrate`]: the full in-place reconcile, reading from the owned
@@ -21,6 +24,7 @@
 pub mod align;
 pub mod deps;
 pub mod hash;
+pub mod insertion;
 pub mod keys;
 pub mod orchestrate;
 

@@ -99,7 +99,14 @@ fn main() {
         // not reach the parser, which would read it as a secondary page marker
         // — a corpus with no secondary system, so the junk lands in a nameless
         // reference system instead of failing.
-        let residue = md.replace("{{{", "").matches("{{").count();
+        let stripped = md.replace("{{{", "");
+        let residue = stripped.matches("{{").count()
+            // Unconverted wiki emphasis, links, section headings, and
+            // definition-list indents are residue too — each has surfaced in
+            // the reader as literal markup once already.
+            + stripped.matches("''").count()
+            + stripped.matches("[[").count()
+            + md.lines().filter(|l| l.starts_with("==") || l.starts_with("::")).count();
         total_residue += residue;
         eprintln!(
             "{:>3}  {:<52} {:>2} scan pages → {:>2} markers, {:>2} footnotes{}",

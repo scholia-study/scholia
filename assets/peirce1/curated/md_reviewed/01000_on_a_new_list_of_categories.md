@@ -5,8 +5,7 @@ depth: 1
 page_pub: "PAAAS 7:287"
 ---
 
-# On a New List of Categories
-
+## On a New List of Categories
 
 § 1. This paper is based upon the theory already established, that the function of conceptions is to reduce the manifold of sensuous impressions to unity, and that the validity of a conception consists in the impossibility of reducing the content of consciousness to unity without the introduction of it.
 
@@ -32,7 +31,7 @@ It may be noticed that, throughout this process, _introspection_ is not resorted
 
 § 7. The conception of _being_ arises upon the formation of a proposition. A proposition always has, besides a term to express the substance, another to express the quality of that substance; and the function of the conception of being is to unite the quality to the substance. Quality, therefore, in its very widest sense, is the first conception in order in passing from being to substance.
 
-Quality seems at first sight to be given in the impression. Such results of introspection are untrustworthy. A proposition asserts the applicability of a mediate conception to a more immediate one. Since this is _asserted_, the more mediate conception is clearly regarded independently of this circumstance, for otherwise the two conceptions would not be distinguished, but one would be thought through the other, without this latter being an object of thought, at all. The mediate conception, then, in order to be asserted to be applicable to the other, must first be considered without regard to this circumstance, and taken immediately. But, taken immediately, it transcends what is given (the more immediate {{{ PAAAS 7:291 }}} conception), and its applicability to the latter is hypothetical. Take, for example, the proposition, “This stove is black.” Here the conception of _this stove_ is the more immediate, that of _black_ the more mediate, which latter, to be predicated of the former, must be discriminated from it and considered in _itself_, not as applied to an object, but simply as embodying a quality, _blackness_. Now this _blackness_ is a pure species or abstraction, and its application to this stove is entirely hypothetical. The same thing is meant by “the stove is black,” as by “there is blackness in the stove.” _Embodying blackness_ is the equivalent of _black_.<span id=r1>**[[#1|¹]]**</span> The proof is this. These conceptions are applied indifferently to precisely the same facts. If, therefore, they were different, the one which was first applied would fulfil every function of the other; so that one of them would be superfluous. Now a superfluous conception is an arbitrary fiction, whereas elementary conceptions arise only upon the requirement of experience; so that a superfluous elementary conception is impossible. Moreover, the conception of a pure abstraction is indispensable, because we cannot comprehend an agreement of two things, except as an agreement in some _respect_, and this respect is such a pure abstraction as blackness. Such a pure abstraction, reference to which constitutes a _quality_ or general attribute, may be termed a _ground_.
+Quality seems at first sight to be given in the impression. Such results of introspection are untrustworthy. A proposition asserts the applicability of a mediate conception to a more immediate one. Since this is _asserted_, the more mediate conception is clearly regarded independently of this circumstance, for otherwise the two conceptions would not be distinguished, but one would be thought through the other, without this latter being an object of thought, at all. The mediate conception, then, in order to be asserted to be applicable to the other, must first be considered without regard to this circumstance, and taken immediately. But, taken immediately, it transcends what is given (the more immediate {{{ PAAAS 7:291 }}} conception), and its applicability to the latter is hypothetical. Take, for example, the proposition, “This stove is black.” Here the conception of _this stove_ is the more immediate, that of _black_ the more mediate, which latter, to be predicated of the former, must be discriminated from it and considered in _itself_, not as applied to an object, but simply as embodying a quality, _blackness_. Now this _blackness_ is a pure species or abstraction, and its application to this stove is entirely hypothetical. The same thing is meant by “the stove is black,” as by “there is blackness in the stove.” _Embodying blackness_ is the equivalent of _black_.[^*] The proof is this. These conceptions are applied indifferently to precisely the same facts. If, therefore, they were different, the one which was first applied would fulfil every function of the other; so that one of them would be superfluous. Now a superfluous conception is an arbitrary fiction, whereas elementary conceptions arise only upon the requirement of experience; so that a superfluous elementary conception is impossible. Moreover, the conception of a pure abstraction is indispensable, because we cannot comprehend an agreement of two things, except as an agreement in some _respect_, and this respect is such a pure abstraction as blackness. Such a pure abstraction, reference to which constitutes a _quality_ or general attribute, may be termed a _ground_.
 
 Reference to a ground cannot be prescinded from being, but being can be prescinded from it.
 
@@ -40,7 +39,7 @@ Reference to a ground cannot be prescinded from being, but being can be prescind
 
 Reference to a correlate cannot be prescinded from reference to a ground; but reference to a ground may be prescinded from reference to a correlate.
 
-§ 9. The occasion of reference to a correlate is obviously by comparison. This act has not been sufficiently studied by the psychologists, and it will, therefore, be necessary to adduce some examples to show in what it consists. Suppose we wish to compare the letters p and b. We may imagine one of them to be turned over on the {{{ PAAAS 7:292 }}} line of writing as an axis, then laid upon the other, and finally to become transparent so that the other can be seen through it. In this way we shall form a new image which mediates between the images of the two letters, inasmuch as it represents one of them to be (when turned over) the likeness of the other. Again, suppose we think of a murderer as being in relation to a murdered person; in this case we conceive the act of the murder, and in this conception it is represented that corresponding to every murderer (as well as to every murder) there is a murdered person; and thus we resort again to a mediating representation which represents the relate as standing for a correlate with which the mediating representation is itself in relation. Again, suppose we look up the word _<span lang=fr>homme</span>_ in a French dictionary; we shall find opposite to it the word _man_, which, so placed, represents _<span lang=fr>homme</span>_ as representing the same two-legged creature which _man_ itself represents. By a further accumulation of instances, it would be found that every comparison requires, besides the related thing, the ground, and the correlate, also a _mediating representation which represents the relate to be a representation of the same correlate which this mediating representation itself represents_. Such a mediating representation may be termed an _interpretant_, because it fulfils the office of an interpreter, who says that a foreigner says the same thing which he himself says. The term “representation” is here to be understood in a very extended sense, which can be explained by instances better than by a definition. In this sense, a word represents a thing to the conception in the mind of the hearer, a portrait represents the person for whom it is intended to the conception of recognition, a weathercock represents the direction of the wind to the conception of him who understands it, a barrister represents his client to the judge and jury whom he influences.
+§ 9. The occasion of reference to a correlate is obviously by comparison. This act has not been sufficiently studied by the psychologists, and it will, therefore, be necessary to adduce some examples to show in what it consists. Suppose we wish to compare the letters p and b. We may imagine one of them to be turned over on the {{{ PAAAS 7:292 }}} line of writing as an axis, then laid upon the other, and finally to become transparent so that the other can be seen through it. In this way we shall form a new image which mediates between the images of the two letters, inasmuch as it represents one of them to be (when turned over) the likeness of the other. Again, suppose we think of a murderer as being in relation to a murdered person; in this case we conceive the act of the murder, and in this conception it is represented that corresponding to every murderer (as well as to every murder) there is a murdered person; and thus we resort again to a mediating representation which represents the relate as standing for a correlate with which the mediating representation is itself in relation. Again, suppose we look up the word _homme_ in a French dictionary; we shall find opposite to it the word _man_, which, so placed, represents _homme_ as representing the same two-legged creature which _man_ itself represents. By a further accumulation of instances, it would be found that every comparison requires, besides the related thing, the ground, and the correlate, also a _mediating representation which represents the relate to be a representation of the same correlate which this mediating representation itself represents_. Such a mediating representation may be termed an _interpretant_, because it fulfils the office of an interpreter, who says that a foreigner says the same thing which he himself says. The term “representation” is here to be understood in a very extended sense, which can be explained by instances better than by a definition. In this sense, a word represents a thing to the conception in the mind of the hearer, a portrait represents the person for whom it is intended to the conception of recognition, a weathercock represents the direction of the wind to the conception of him who understands it, a barrister represents his client to the judge and jury whom he influences.
 
 Every reference to a correlate, then, conjoins to the substance the conception of a reference to an interpretant; and this is, therefore, the next conception in order in passing from being to substance.
 
@@ -50,11 +49,19 @@ Reference to an interpretant cannot be prescinded from reference to a correlate;
 
 § 11. The five conceptions thus obtained, for reasons which will be sufficiently obvious, may be termed _categories_. That is,
 
-::BEING, 
-:::Quality (Reference to a Ground), 
-:::Relation (Reference to a Correlate), 
-:::Representation (Reference to an Interpretant), 
-::SUBSTANCE.
+<figure>
+  <ul>
+    <li>BEING,
+      <ul>
+        <li>Quality (Reference to a Ground),</li>
+        <li>Relation (Reference to a Correlate),</li>
+        <li>Representation (Reference to an Interpretant),</li>
+      </ul>
+    </li>
+    <li>SUBSTANCE.</li>
+  </ul>
+  <figcaption></figcaption>
+</figure>
 
 The three intermediate conceptions may be termed accidents.
 
@@ -62,12 +69,19 @@ The three intermediate conceptions may be termed accidents.
 
 § 13. Since no one of the categories can be prescinded from those above it, the list of supposable objects which they afford is,
 
-::What is.
-
-:::Quale — that which refers to a ground, 
-:::Relate — that which refers to ground and correlate,  
-:::Representamen — that which refers to ground, correlate, and interpretant. 
-::It.
+<figure>
+  <ul>
+    <li>What is.
+      <ul>
+        <li>Quale — that which refers to a ground,</li>
+        <li>Relate — that which refers to ground and correlate,</li>
+        <li>Representamen — that which refers to ground, correlate, and interpretant.</li>
+      </ul>
+    </li>
+    <li>It.</li>
+  </ul>
+  <figcaption></figcaption>
+</figure>
 
 § 14. A quality may have a special determination which {{{ PAAAS 7:294 }}} prevents its being prescinded from reference to a correlate. Hence there are two kinds of relation.
 
@@ -87,7 +101,7 @@ A reference to a ground may also be such that it cannot be prescinded from a ref
 
 3d. Those the ground of whose relation to their objects is an imputed character, which are the same as _general signs_, and these may be termed _Symbols_.
 
-§ 15. I shall now show how the three conceptions of reference to a ground, reference to an object, and reference to an interpretant are the fundamental ones of at least one universal science, that of logic. Logic is said to treat of second intentions as applied to first. It would lead me too far away from the matter in hand to discuss the truth of this statement; I shall simply adopt it as one which seems to me to afford a good definition of the subject-genus of this science. Now, second intentions are the objects of the understanding considered as representations, and the first intentions to which they apply are the objects of those representations. The objects of the understanding, {{{ PAAAS 7:295 }}} considered as representations, are symbols, that is, signs which are at least potentially general. But the rules of logic hold good of any symbols, of those which are written or spoken as well as of those which are thought. They have no immediate application to likenesses or indices, because no arguments can be constructed of these alone, but do apply to all symbols. All symbols, indeed, are in one sense relative to the understanding, but only in the sense in which also all things are relative to the understanding. On this account, therefore, the relation to the understanding need not be expressed in the definition of the sphere of logic, since it determines no limitation of that sphere. But a distinction can be made between concepts which are supposed to have no existence except so far as they are actually present to the understanding, and external symbols which still retain their character of symbols so long as they are only _capable_ of being understood. And as the rules of logic apply to these latter as much as to the former (and though only through the former, yet this character, since it belongs to all things, is no limitation), it follows that logic has for its subject-genus all symbols and not merely concepts.<span id=r2>**[[#2|²]]**</span> We come, therefore, to this, that logic treats of the reference of symbols in general to their objects. In this view it is one of a trivium of conceivable sciences. The first would treat of the formal conditions of symbols having meaning, that is of the reference of symbols in general to their grounds or imputed characters, and this might be called formal grammar; the second, logic, would treat of the formal conditions of the truth of symbols; and the third would treat of the formal conditions of the force of symbols, or their power of appealing to a mind, that is, of their reference in general to interpretants, and this might be called formal rhetoric.
+§ 15. I shall now show how the three conceptions of reference to a ground, reference to an object, and reference to an interpretant are the fundamental ones of at least one universal science, that of logic. Logic is said to treat of second intentions as applied to first. It would lead me too far away from the matter in hand to discuss the truth of this statement; I shall simply adopt it as one which seems to me to afford a good definition of the subject-genus of this science. Now, second intentions are the objects of the understanding considered as representations, and the first intentions to which they apply are the objects of those representations. The objects of the understanding, {{{ PAAAS 7:295 }}} considered as representations, are symbols, that is, signs which are at least potentially general. But the rules of logic hold good of any symbols, of those which are written or spoken as well as of those which are thought. They have no immediate application to likenesses or indices, because no arguments can be constructed of these alone, but do apply to all symbols. All symbols, indeed, are in one sense relative to the understanding, but only in the sense in which also all things are relative to the understanding. On this account, therefore, the relation to the understanding need not be expressed in the definition of the sphere of logic, since it determines no limitation of that sphere. But a distinction can be made between concepts which are supposed to have no existence except so far as they are actually present to the understanding, and external symbols which still retain their character of symbols so long as they are only _capable_ of being understood. And as the rules of logic apply to these latter as much as to the former (and though only through the former, yet this character, since it belongs to all things, is no limitation), it follows that logic has for its subject-genus all symbols and not merely concepts.[^**] We come, therefore, to this, that logic treats of the reference of symbols in general to their objects. In this view it is one of a trivium of conceivable sciences. The first would treat of the formal conditions of symbols having meaning, that is of the reference of symbols in general to their grounds or imputed characters, and this might be called formal grammar; the second, logic, would treat of the formal conditions of the truth of symbols; and the third would treat of the formal conditions of the force of symbols, or their power of appealing to a mind, that is, of their reference in general to interpretants, and this might be called formal rhetoric.
 
 There would be a general division of symbols, common to all these sciences; namely, into,
 
@@ -97,32 +111,32 @@ There would be a general division of symbols, common to all these sciences; name
 
 3º: Symbols which also independently determine their _interpretants_, and thus the minds to which they appeal, by premissing a proposition or propositions which such a mind is to admit. These are _arguments_.
 
-And it is remarkable that, among all the definitions of the proposition, for example, as the _<{{{ PAAAS 7:296 }}} span lang=la>oratio indicativa</span>_, as the subsumption of an object under a concept, as the expression of the relation of two concepts, and as the indication of the mutable ground of appearance, there is, perhaps, not one in which the conception of reference to an object or correlate is not the important one. In the same way, the conception of reference to an interpretant or third, is always prominent in the definitions of argument.
+And it is remarkable that, among all the definitions of the proposition, for example, as the {{{ PAAAS 7:296 }}} _oratio indicativa_, as the subsumption of an object under a concept, as the expression of the relation of two concepts, and as the indication of the mutable ground of appearance, there is, perhaps, not one in which the conception of reference to an object or correlate is not the important one. In the same way, the conception of reference to an interpretant or third, is always prominent in the definitions of argument.
 
 In a proposition, the term which separately indicates the object of the symbol is termed the subject, and that which indicates the ground is termed the predicate. The objects indicated by the subject (which are always potentially a plurality — at least, of phases or appearances) are therefore stated by the proposition to be related to one another on the ground of the character indicated by the predicate. Now this relation may be either a concurrence or an opposition. Propositions of concurrence are those which are usually considered in logic; but I have shown in a paper upon the classification of arguments that it is also necessary to consider separately propositions of opposition, if we are to take account of such arguments as the following: —
 
 Whatever is the half of anything is less than that of which it is the half:
 
-_A_ is half of _B**_:**<BR>
-_A_ is less than _B_.
+<figure>
+  <p><i>A</i> is half of <i>B</i>:<br><i>A</i> is less than <i>B</i>.</p>
+  <figcaption></figcaption>
+</figure>
 
 The subject of such a proposition is separated into two terms, a “subject nominative” and an “object accusative.”
 
 In an argument, the premisses form a representation of the conclusion, because they indicate the interpretant of the argument, or representation representing it to represent its object. The premisses may afford a likeness, index, or symbol of the conclusion. In deductive argument, the conclusion is represented by the premisses as by a general sign under which it is contained. In hypotheses, something _{{{ PAAAS 7:297 }}} like_ the conclusion is proved, that is, the premisses form a likeness of the conclusion. Take, for example, the following argument:
 
-_M_ is, for instance, _P′_, _P′′_, _P′′′_, and _P_^(iv)**;**
-
-S is _P′_, _P′′_, _P′′′_, and _P_^(iv)**:**
-
-[Ergo,] _S_ is _M_.
+<figure>
+  <p><i>M</i> is, for instance, <i>P</i>′, <i>P</i>′′, <i>P</i>′′′, and <i>P</i><sup>iv</sup>;<br><i>S</i> is <i>P</i>′, <i>P</i>′′, <i>P</i>′′′, and <i>P</i><sup>iv</sup>:<br>∴ <i>S</i> is <i>M</i>.</p>
+  <figcaption></figcaption>
+</figure>
 
 Here the first premiss amounts to this, that “_P′_, _P′′_, _P′′′_, and _P_^(iv) ” is a likeness of _M_, and thus the premisses are or represent a likeness of the conclusion. That it is different with induction another example will show.
 
-_S′_, _S′′_, _S′′′_, and _S_^(iv) are taken as samples of the collection M**;**
-
-_S′_, _S′′_, _S′′′_, and _S_^(iv) are _P**_:**
-
-[Ergo,] All _M_ is _P_.
+<figure>
+  <p><i>S</i>′, <i>S</i>′′, <i>S</i>′′′, and <i>S</i><sup>iv</sup> are taken as samples of the collection <i>M</i>;<br><i>S</i>′, <i>S</i>′′, <i>S</i>′′′, and <i>S</i><sup>iv</sup> are <i>P</i>:<br>∴ All <i>M</i> is <i>P</i>.</p>
+  <figcaption></figcaption>
+</figure>
 
 Hence the first premiss amounts to saying that “_S′_, _S′′_, _S′′′_, and _S_^(iv) ” is an index of _M_. Hence the premisses are an index of the conclusion.
 
@@ -130,8 +144,6 @@ The other divisions of terms, propositions, and arguments arise from the distinc
 
 This is an imperfect view of the application which the conceptions which, according {{{ PAAAS 7:298 }}} to our analysis, are the most fundamental ones find in the sphere of logic. It is believed, however, that it is sufficient to show that at least something may be usefully suggested by considering this science in this light.
 
-==Notes==
+[^*]: This agrees with the author of _De Generibus et Speciebus, Ouvrages Inédits d'Abélard_, p. 528.
 
-<span id=1>[[#r1|1]]</span>. This agrees with the author of _<span lang=la>De Generibus et Speciebus</span>, <span lang=fr>Ouvrages Inédits d'Abélard</span>_, p. 528.
-
-<span id=2>[[#r2|2]]</span>. Herbart says: “<span lang=de>Unsre sämmtlichen Gedanken lassen sich von zwei Seiten betrachten; theils als Thätigkeiten unseres Geistes, theils in Hinsicht dessen, _was_ durch sie gedacht wird. In letzterer Beziehung heissen sie _Begriffe_, welches Wort, indem es das _Begriffene_ bezeichnet, zu abstrahiren gebietet von der Art und Weise, wie wir den Gedanken empfangen, produciren, oder reproduciren mögen.</span>” But the whole difference between a concept and an external sign lies in these respects which logic ought, according to Herbart, to abstract from.
+[^**]: Herbart says: “Unsre sämmtlichen Gedanken lassen sich von zwei Seiten betrachten; theils als Thätigkeiten unseres Geistes, theils in Hinsicht dessen, _was_ durch sie gedacht wird. In letzterer Beziehung heissen sie _Begriffe_, welches Wort, indem es das _Begriffene_ bezeichnet, zu abstrahiren gebietet von der Art und Weise, wie wir den Gedanken empfangen, produciren, oder reproduciren mögen.” But the whole difference between a concept and an external sign lies in these respects which logic ought, according to Herbart, to abstract from.

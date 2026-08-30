@@ -66,6 +66,11 @@ pub struct Corpus {
     /// apparatus stays inside its host sentence instead of shedding
     /// abbreviation-period fragments (hegel2, both editions).
     pub paren_protected_splits: bool,
+    /// The copy-text enumerates inline with bare "1. … 2. …" numerals
+    /// (peirce1): a split lands BEFORE such an enumerator, so the numeral
+    /// leads the item it introduces instead of dangling off the previous
+    /// sentence. Citation numbers ("cap. 25.") are guarded and unaffected.
+    pub enum_label_splits: bool,
 }
 
 struct SystemSpec {
@@ -219,6 +224,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: false,
                 strong_colon_splits: false,
                 paren_protected_splits: false,
+                enum_label_splits: false,
             })
         }
         "kant3" => {
@@ -311,6 +317,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: false,
                 strong_colon_splits: false,
                 paren_protected_splits: false,
+                enum_label_splits: false,
             })
         }
         "hegel1" => {
@@ -413,6 +420,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: false,
                 strong_colon_splits: false,
                 paren_protected_splits: false,
+                enum_label_splits: false,
             })
         }
         "hegel2" => {
@@ -500,6 +508,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: false,
                 strong_colon_splits: false,
                 paren_protected_splits: true,
+                enum_label_splits: false,
             })
         }
         "hegel3" => {
@@ -588,6 +597,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: false,
                 strong_colon_splits: false,
                 paren_protected_splits: true,
+                enum_label_splits: false,
             })
         }
         "hobbes1" => {
@@ -643,6 +653,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: true,
                 strong_colon_splits: true,
                 paren_protected_splits: false,
+                enum_label_splits: false,
             })
         }
         "peirce1" => {
@@ -660,12 +671,16 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                     about: meta::ABOUT,
                     // A selection spanning five periodicals has no single
                     // imprint; each paper's is carried by its page markers.
+                    // The identity year is the earliest paper's (the span
+                    // "1867–1908" cannot parse as a year, and would surface
+                    // as "Undated" in the library); the About panel carries
+                    // the full range.
                     imprint: Imprint {
                         publisher: None,
                         place: None,
                         volume: None,
                         edition: None,
-                        original_year: None,
+                        original_year: Some(1867),
                     },
                 }),
                 // One system: the original printing's venue-qualified
@@ -702,6 +717,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 // Modern: colons point, they do not end sentences.
                 strong_colon_splits: false,
                 paren_protected_splits: false,
+                enum_label_splits: true,
             })
         }
         _ => None,

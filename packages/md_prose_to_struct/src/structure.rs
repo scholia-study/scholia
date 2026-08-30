@@ -14,10 +14,10 @@
 //! and resolved to the sentence they fall in.
 
 use common::sentences::{
-    RUN_BREAK, split_sentences_en_forced, split_sentences_en_paren_protected_forced,
-    split_sentences_en_strong_colon_forced, split_sentences_forced,
-    split_sentences_paren_protected_forced, strip_forced_split_markers, strip_forced_splits,
-    strip_forced_splits_keep_runs, take_run_marker,
+    RUN_BREAK, split_sentences_en_enum_forced, split_sentences_en_forced,
+    split_sentences_en_paren_protected_forced, split_sentences_en_strong_colon_forced,
+    split_sentences_forced, split_sentences_paren_protected_forced, strip_forced_split_markers,
+    strip_forced_splits, strip_forced_splits_keep_runs, take_run_marker,
 };
 use regex::Regex;
 use std::collections::HashMap;
@@ -225,6 +225,8 @@ pub fn build_output(corpus: &Corpus, mode: Mode, parsed_files: &[ParsedFile]) ->
             } else {
                 split_sentences_paren_protected_forced
             }
+        } else if corpus.enum_label_splits {
+            split_sentences_en_enum_forced
         } else if translation || corpus.source_splitter_en {
             split_sentences_en_forced
         } else {
@@ -357,6 +359,8 @@ fn build_block(
             flat_index,
             n,
             ctx.figure_label,
+            ctx.aa_system_slug,
+            ctx.edition_system_slug,
         );
     }
 

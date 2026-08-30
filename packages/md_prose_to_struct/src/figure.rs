@@ -19,12 +19,18 @@ use crate::parse::{
 use crate::roman::{block_sort_order, roman_to_int};
 
 /// Map a raw page marker to its DB-ready form, resolving the reference-system
-/// slug and a numeric sort order.
-pub fn marker_to_page_marker(marker: &RawMarker) -> PageMarkerData {
+/// slug and a numeric sort order. The slugs are the corpus's own — hardcoding
+/// kant1's here once sent a peirce figure marker into a phantom "aa_iii"
+/// system.
+pub fn marker_to_page_marker(
+    marker: &RawMarker,
+    aa_slug: &str,
+    edition_slug: &str,
+) -> PageMarkerData {
     let (system, sort_order) = match marker.kind {
-        MarkerKind::Aa => ("aa_iii", block_sort_order(&marker.value)),
+        MarkerKind::Aa => (aa_slug, block_sort_order(&marker.value)),
         MarkerKind::BEdition => (
-            "b_edition",
+            edition_slug,
             roman_to_int(&marker.value).map(|v| v as i32).unwrap_or(0),
         ),
         // strip_markers panics on any `$m` token in figure text before a
@@ -57,6 +63,8 @@ pub fn build_figure_block(
     flat_index: usize,
     figure_number: i32,
     label_word: &str,
+    aa_slug: &str,
+    edition_slug: &str,
 ) -> ContentBlockData {
     let caption = figure_caption(&primary.text).unwrap_or_else(|| {
         panic!(
@@ -80,17 +88,30 @@ pub fn build_figure_block(
     let html = prepend_figcaption_label(&primary.text, &prefix);
     let original_html = reviewed.map(|r| prepend_figcaption_label(&r.text, &prefix));
 
-    let page_markers = primary.markers.iter().map(marker_to_page_marker).collect();
+    let page_markers = primary
+        .markers
+        .iter()
+        .map(|m| marker_to_page_marker(m, aa_slug, edition_slug))
+        .collect();
+
+    // An empty caption means the figure is labelled by its number alone, so
+    // the anchor sentence carries the catalogue prefix rather than nothing.
+    let anchor_caption = if caption.is_empty() {
+        prefix.clone()
+    } else {
+        caption
+    };
+    let orig_anchor = orig_caption.map(|c| if c.is_empty() { prefix.clone() } else { c });
 
     let anchor = SentenceData {
         position: 0,
         sentence_number: None,
         segment: None,
         indent: None,
-        text: caption.clone(),
-        html: caption,
-        original_text: orig_caption.clone(),
-        original_html: orig_caption,
+        text: anchor_caption.clone(),
+        html: anchor_caption,
+        original_text: orig_anchor.clone(),
+        original_html: orig_anchor,
         page_markers,
         footnotes: Vec::new(),
         margin_notes: Vec::new(),
@@ -128,7 +149,16 @@ mod tests {
             figure("<figure><figcaption>Table of Judgments</figcaption><table></table></figure>");
         let reviewed =
             figure("<figure><figcaption>Tafel der Urtheile</figcaption><table></table></figure>");
-        let block = build_figure_block(&primary, Some(&reviewed), 2, 28, 3, "Figure");
+        let block = build_figure_block(
+            &primary,
+            Some(&reviewed),
+            2,
+            28,
+            3,
+            "Figure",
+            "aa_iii",
+            "b_edition",
+        );
 
         assert_eq!(block.block_type, "figure");
         assert_eq!(block.position, 2);
@@ -152,9 +182,20 @@ mod tests {
     }
 
     #[test]
+    fn empty_caption_anchors_on_the_catalogue_number() {
+        // peirce1 authors most figures with an empty figcaption: the figure is
+        // labelled "Figure N." alone, and that prefix must be the anchor
+        // sentence rather than an empty string.
+        let primary = figure("<figure><table></table><figcaption></figcaption></figure>");
+        let block = build_figure_block(&primary, None, 0, 0, 6, "Figure", "orig-pub", "");
+        assert_eq!(block.sentences[0].text, "Figure 6.");
+        assert!(block.html.contains("<b>Figure 6.</b>"));
+    }
+
+    #[test]
     fn single_layer_figure_has_no_original() {
         let primary = figure("<figure><figcaption>Table of Judgments</figcaption></figure>");
-        let block = build_figure_block(&primary, None, 0, 0, 1, "Figure");
+        let block = build_figure_block(&primary, None, 0, 0, 1, "Figure", "aa_iii", "b_edition");
         assert_eq!(block.figure_number, Some(1));
         assert_eq!(block.original_html, None);
         assert_eq!(block.sentences[0].original_text, None);

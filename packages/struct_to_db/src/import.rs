@@ -113,6 +113,7 @@ pub async fn run(
     dry_run: bool,
     force: bool,
     full_rewrite: bool,
+    allow_insertion: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
@@ -308,6 +309,7 @@ pub async fn run(
                 &source_fn_sentence_map,
                 force,
                 full_rewrite,
+                allow_insertion,
             )
             .await?;
             let cp = crate::canonical::seed_sentence_basis(&mut tx, id, source_book_id).await?;

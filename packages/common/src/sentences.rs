@@ -203,7 +203,10 @@ static INITIAL_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b[A-ZÄÖÜ]
 /// Numbered label pattern: detects "1." "2." "12." at the start of text or after whitespace.
 /// These are paragraph numbering markers, not sentence endings.
 static NUMBERED_LABEL_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^\d{1,2}\.\s*$").unwrap());
+    // Plain "1." and ordinal-suffixed "1st." / "2d." / "3d." (the
+    // 19th-century short forms Peirce's enumerations use) — the label is the
+    // whole preceding text, so mid-sentence ordinals still split normally.
+    LazyLock::new(|| Regex::new(r"^\d{1,2}(st|nd|r?d|th)?\.\s*$").unwrap());
 
 /// Roman-numeral label pattern: detects "II." "III." "IV." at the start of the
 /// preceding text — the section labels Kant uses in his Anmerkung headings
@@ -689,6 +692,105 @@ pub fn split_sentences_en(text: &str, html: &str) -> Vec<(String, String)> {
 /// continuations stay joined.
 static STRONG_COLON_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r":\s+[A-Z]").unwrap());
 
+/// Inline enumerator ahead of a split: sentence punctuation (or a colon), then
+/// a short bare numeral with its period, as the very end of the preceding
+/// text — "…of physio-psychology: 1." / "…of the displacement. 2." The numeral
+/// belongs to the sentence it INTRODUCES, so the split relocates to its start.
+static ENUM_LABEL_BEFORE_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"[.!?:;]\s+(\d{1,2})\.\s*$").unwrap());
+
+/// Citation abbreviations whose trailing number is part of the reference, not
+/// an enumerator: "Sophistici Elenchi, cap. 25. The principal objection…"
+/// keeps "cap. 25." intact with the split after it.
+static ENUM_GUARD_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)\b(cap|chap|p|pp|no|vol|art|lib|sect|§)\.\s+\d{1,2}\.\s*$").unwrap()
+});
+
+/// A colon heralding a quotation ("these might turn round and say: \"You…"),
+/// with or without an interposed em dash ("as follows:—\"A certain man…").
+/// The quotation opens a new sentence at its quote mark.
+/// A sentence ending on a bare single-capital variable, followed by a new
+/// sentence: `(start|space|quote) X. Capital`.
+static VARIABLE_END_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("(?:^|[\\s(\"“])[A-Z]\\.\\s+[A-Z]").unwrap());
+/// The candidate letter is preceded by another initial — a name chain
+/// ("C. A. F. Peters") stays whole.
+static INITIAL_CHAIN_BEFORE_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("[A-Z]\\.\\s+$").unwrap());
+/// The next token is itself an initial ("R. S. Ball" seen from R).
+static INITIAL_CHAIN_AFTER_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^[A-Z]\\.\\s").unwrap());
+/// The corpus's initialed names (Monsieur-abbreviations and bylines); a
+/// closed set, extended as curation meets new ones.
+static NAME_GUARD_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new("M\\.\\s+(Vacherot|Delboeuf|Renouvier)|S\\.\\s+Peirce|L\\.\\s+Le\\b").unwrap()
+});
+
+static COLON_QUOTE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(":—?\\s*[\"“][A-Z]").unwrap());
+
+/// [`split_sentences_en_forced`] plus enumerator-label relocation and
+/// colon-heralded quotation splits, for corpora whose printings use both
+/// conventions (peirce1).
+pub fn split_sentences_en_enum_forced(
+    text: &str,
+    html: &str,
+    forced: &[usize],
+) -> Vec<(String, String)> {
+    if text.is_empty() {
+        return vec![];
+    }
+    let mut split_positions =
+        find_text_split_positions_with(text, &SINGLE_ABBREVS_EN, &MULTI_ABBREV_RE_EN);
+    // Variable-letter sentence ends: the shared finder suppresses every
+    // "single capital + period" as a name initial ("C. S. Peirce"), but the
+    // logic papers end sentences on variables constantly ("…that S is P. The
+    // premise that…"). Re-add those candidates unless the letter sits in an
+    // initial CHAIN (either neighbour is another initial) or belongs to one of
+    // the corpus's known initialed names.
+    for m in VARIABLE_END_RE.find_iter(text) {
+        let letter_start = m.start() + m.as_str().find(|c: char| c.is_ascii_uppercase()).unwrap();
+        let preceding = &text[..letter_start];
+        if INITIAL_CHAIN_BEFORE_RE.is_match(preceding) {
+            continue;
+        }
+        let split_pos = m.end() - 1; // the capital opening the next sentence
+        let following = &text[split_pos..];
+        if INITIAL_CHAIN_AFTER_RE.is_match(following) {
+            continue;
+        }
+        if NAME_GUARD_RE.is_match(
+            &text[preceding
+                .rfind(' ')
+                .map(|i| i.saturating_sub(20))
+                .unwrap_or(0)..(split_pos + 30).min(text.len())],
+        ) {
+            continue;
+        }
+        split_positions.push(split_pos);
+    }
+    for m in COLON_QUOTE_RE.find_iter(text) {
+        // Position of the quote mark: one char + the capital back from the end.
+        let s = m.as_str();
+        let quote_start = m.end()
+            - s.chars().last().unwrap().len_utf8()
+            - s.chars().rev().nth(1).unwrap().len_utf8();
+        split_positions.push(quote_start);
+    }
+    for pos in split_positions.iter_mut() {
+        let preceding = &text[..*pos];
+        if ENUM_GUARD_RE.is_match(preceding.trim_end()) {
+            continue;
+        }
+        if let Some(c) = ENUM_LABEL_BEFORE_RE.captures(preceding) {
+            *pos = c.get(1).unwrap().start();
+        }
+    }
+    split_positions.extend_from_slice(forced);
+    split_positions.sort_unstable();
+    split_positions.dedup();
+    finish_split(text, html, split_positions)
+}
+
 /// [`split_sentences_en_forced`] plus Early Modern strong-colon splitting.
 pub fn split_sentences_en_strong_colon_forced(
     text: &str,
@@ -717,7 +819,12 @@ pub fn split_sentences_en_forced(
     split_positions.extend_from_slice(forced);
     split_positions.sort_unstable();
     split_positions.dedup();
+    finish_split(text, html, split_positions)
+}
 
+/// Apply resolved split positions: cut the plain text, map the cuts into the
+/// HTML, and pair the parts up.
+fn finish_split(text: &str, html: &str, split_positions: Vec<usize>) -> Vec<(String, String)> {
     if split_positions.is_empty() {
         return vec![(text.to_string(), html.to_string())];
     }
@@ -756,11 +863,18 @@ fn find_text_split_positions_with(
 
         let preceding = &text[..match_start + ws_start];
 
-        // Check single-word abbreviations
+        // Check single-word abbreviations. `ends_with` alone matches word
+        // TAILS — "intellect." is not "lect." — so an abbreviation that opens
+        // with a letter must also start at a word boundary. Entries that
+        // encode their own boundary (" v.", "(s.") are unaffected.
         let trimmed = preceding.trim_end();
-        let is_single = single_abbrevs
-            .iter()
-            .any(|abbrev| trimmed.ends_with(abbrev));
+        let is_single = single_abbrevs.iter().any(|abbrev| {
+            trimmed.ends_with(abbrev) && {
+                let head = &trimmed[..trimmed.len() - abbrev.len()];
+                !abbrev.starts_with(|c: char| c.is_alphabetic())
+                    || !head.ends_with(|c: char| c.is_alphabetic())
+            }
+        });
         if is_single {
             continue;
         }
@@ -1413,5 +1527,258 @@ mod tests {
             7,
             "EN should have 7 sentences (currently produces 6 — which boundary is missed?)"
         );
+    }
+}
+
+#[cfg(test)]
+mod enum_label_tests {
+    use super::*;
+
+    fn texts(pairs: &[(String, String)]) -> Vec<&str> {
+        pairs.iter().map(|(t, _)| t.as_str()).collect()
+    }
+
+    #[test]
+    fn inline_enumerators_lead_their_own_items() {
+        let t = "We must bear in mind the following facts of physio-psychology: 1. The excitation of a nerve does not of itself inform us. 2. A single sensation does not inform us.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(
+            texts(&out),
+            vec![
+                "We must bear in mind the following facts of physio-psychology:",
+                "1. The excitation of a nerve does not of itself inform us.",
+                "2. A single sensation does not inform us.",
+            ]
+        );
+    }
+
+    #[test]
+    fn citation_numbers_stay_with_their_reference() {
+        let t = "This mode of solution is given in Sophistici Elenchi, cap. 25. The principal objection was this.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(
+            texts(&out),
+            vec![
+                "This mode of solution is given in Sophistici Elenchi, cap. 25.",
+                "The principal objection was this.",
+            ]
+        );
+    }
+
+    #[test]
+    fn paragraph_leading_labels_are_unaffected() {
+        let t = "1. Every English writing has this property.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(texts(&out), vec![t]);
+    }
+}
+
+#[cfg(test)]
+mod abbrev_boundary_tests {
+    use super::*;
+
+    #[test]
+    fn an_abbreviation_must_not_match_a_word_tail() {
+        // "intellect." is not the citation abbreviation "lect."
+        let t = "The filling up must be the work of the intellect. What more striking example could be desired?";
+        let out = split_sentences_en(t, t);
+        assert_eq!(out.len(), 2, "{out:?}");
+        assert!(out[1].0.starts_with("What more striking"));
+    }
+
+    #[test]
+    fn a_real_abbreviation_still_suppresses() {
+        let t = "See Vol. III for the argument. It continues there.";
+        let out = split_sentences_en(t, t);
+        assert_eq!(out.len(), 2, "{out:?}");
+        assert!(out[0].0.ends_with("argument."));
+    }
+}
+
+#[cfg(test)]
+mod enum_semicolon_tests {
+    use super::*;
+
+    #[test]
+    fn semicolon_separated_enumerations_relocate_too() {
+        let t = "These belong to four classes, viz.: 1. Those whose premises are false; 2. Those which have some little force; 3. Those which result from confusion.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        let texts: Vec<&str> = out.iter().map(|(x, _)| x.as_str()).collect();
+        assert_eq!(
+            texts,
+            vec![
+                "These belong to four classes, viz.:",
+                "1. Those whose premises are false;",
+                "2. Those which have some little force;",
+                "3. Those which result from confusion.",
+            ]
+        );
+    }
+}
+
+#[cfg(test)]
+mod splitter_robustness_tests {
+    use super::*;
+
+    fn texts(pairs: &[(String, String)]) -> Vec<&str> {
+        pairs.iter().map(|(t, _)| t.as_str()).collect()
+    }
+
+    // ── ordinal paragraph labels (the "2d. That of relates" bug) ──────────
+    #[test]
+    fn ordinal_paragraph_labels_do_not_split() {
+        for label in ["1st.", "2d.", "3d.", "2nd.", "3rd.", "4th."] {
+            let t = format!("{label} That of relates whose reference is relative.");
+            let out = split_sentences_en(&t, &t);
+            assert_eq!(out.len(), 1, "{label}: {out:?}");
+        }
+    }
+
+    #[test]
+    fn a_midsentence_ordinal_still_splits_normally() {
+        let t = "He finished 2d. The crowd cheered loudly.";
+        let out = split_sentences_en(t, t);
+        assert_eq!(out.len(), 2, "{out:?}");
+    }
+
+    // ── enumerator relocation guards ──────────────────────────────────────
+    #[test]
+    fn an_ordinary_number_at_sentence_end_does_not_relocate() {
+        // "7." is a value, not an enumerator: no punctuation precedes it.
+        let t = "The answer was 7. The result was then clear.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(
+            texts(&out),
+            vec!["The answer was 7.", "The result was then clear."]
+        );
+    }
+
+    #[test]
+    fn every_citation_guard_form_holds() {
+        for cite in ["cap. 25.", "p. 12.", "Vol. 3.", "chap. 19.", "no. 4."] {
+            let t = format!("It is given in {cite} The objection follows.");
+            let out = split_sentences_en_enum_forced(&t, &t, &[]);
+            assert_eq!(out.len(), 2, "{cite}: {out:?}");
+            assert!(out[0].0.ends_with(&cite), "{cite}: {out:?}");
+        }
+    }
+
+    #[test]
+    fn relocation_composes_with_forced_splits() {
+        // The G.||| authoring escape for letter designations must survive the
+        // enum splitter path.
+        let raw = "besides A, B, C, D, E, F and G.||| For if we know it, all is well.";
+        let (clean, forced) = strip_forced_splits(raw);
+        let out = split_sentences_en_enum_forced(&clean, &clean, &forced);
+        assert_eq!(
+            texts(&out),
+            vec![
+                "besides A, B, C, D, E, F and G.",
+                "For if we know it, all is well.",
+            ]
+        );
+    }
+
+    // ── abbreviation word-boundary (the "intellect." bug) ─────────────────
+    #[test]
+    fn every_en_abbreviation_refuses_word_tails() {
+        // Real words ending in list entries: each must still split.
+        for (word, _abbrev) in [
+            ("intellect.", "lect."),
+            ("catalog.", "log."),
+            ("dialog.", "log."),
+            ("triumph.", "ph."),
+        ] {
+            let t = format!("It is the work of the {word} What more could be desired?");
+            let out = split_sentences_en(&t, &t);
+            assert_eq!(out.len(), 2, "{word}: {out:?}");
+        }
+    }
+
+    #[test]
+    fn boundary_guard_spares_entries_with_their_own_boundary() {
+        // " s." encodes a leading space; the guard must not break it.
+        let t = "Das steht s. oben geschrieben. Es gilt.";
+        let out = split_sentences(t, t);
+        assert!(out.len() <= 2, "{out:?}");
+    }
+}
+
+#[cfg(test)]
+mod variable_end_and_quote_tests {
+    use super::*;
+
+    fn texts(pairs: &[(String, String)]) -> Vec<&str> {
+        pairs.iter().map(|(t, _)| t.as_str()).collect()
+    }
+
+    #[test]
+    fn variable_sentence_ends_split() {
+        let t = "Thus, if S is M, that S is P. The premise may be denied. He who does not deny that S is M. He is deceived.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(out.len(), 4, "{out:?}");
+        assert!(out[1].0.starts_with("The premise"));
+        assert!(out[3].0.starts_with("He is deceived"));
+    }
+
+    #[test]
+    fn letter_designation_lists_split_without_authored_markers() {
+        let t =
+            "It holds for A, B, C, D, E, F and G. For if we know it in respect to H, all changes.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(out.len(), 2, "{out:?}");
+        assert!(out[1].0.starts_with("For if we know"));
+    }
+
+    #[test]
+    fn initial_chains_stay_whole() {
+        for name in [
+            "according to C. A. F. Peters, and that",
+            "according to R. S. Ball. But these",
+        ] {
+            let t = format!("The parallax is small {name} negatives mean little.");
+            let out = split_sentences_en_enum_forced(&t, &t, &[]);
+            for (s, _) in &out {
+                assert!(!s.ends_with(" C."), "{out:?}");
+                assert!(!s.ends_with(" S."), "{out:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn monsieur_and_byline_names_stay_whole() {
+        for t in [
+            "This is admitted by M. Vacherot. He continues further.",
+            "So says M. Delboeuf. Likewise M. Renouvier. Both agree.",
+            "The paper is signed Charles S. Peirce. It appeared in 1893.",
+        ] {
+            let out = split_sentences_en_enum_forced(t, t, &[]);
+            for (s, _) in &out {
+                assert!(!s.trim_end().ends_with(" M."), "{out:?}");
+                assert!(!s.trim_end().ends_with(" S."), "{out:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn colon_heralded_quotations_open_a_new_sentence() {
+        let t = "These might turn round and say: \"You mean nothing which we have not taught you.\" In fact, they educate each other.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(
+            texts(&out),
+            vec![
+                "These might turn round and say:",
+                "\"You mean nothing which we have not taught you.\"",
+                "In fact, they educate each other.",
+            ]
+        );
+    }
+
+    #[test]
+    fn colon_dash_heralds_split_too() {
+        let t = "Suppose that we reason as follows:—\"A certain man had the cholera. He was bled copiously.\"";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert!(out[0].0.ends_with("as follows:—"), "{out:?}");
+        assert!(out[1].0.starts_with("\"A certain man"), "{out:?}");
     }
 }

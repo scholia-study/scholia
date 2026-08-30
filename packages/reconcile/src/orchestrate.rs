@@ -151,6 +151,11 @@ pub struct ReconcileReport {
     pub footnote_sentences_updated: u32,
     pub margin_note_sentences_updated: u32,
     pub renumbered: bool,
+    /// Existing blocks whose paragraph/figure number moved to make room for a
+    /// mid-book insertion (`--allow-insertion` pre-alignment).
+    pub inserted_blocks_renumbered: u64,
+    /// Existing footnotes + margin notes renumbered by the same pre-alignment.
+    pub inserted_notes_renumbered: u64,
 }
 
 impl ReconcileReport {
@@ -189,6 +194,12 @@ impl ReconcileReport {
             "  global renumber:     {}",
             if self.renumbered { "yes" } else { "skipped" }
         );
+        if self.inserted_blocks_renumbered > 0 || self.inserted_notes_renumbered > 0 {
+            eprintln!(
+                "  insertion pre-align: {} blocks, {} notes renumbered",
+                self.inserted_blocks_renumbered, self.inserted_notes_renumbered
+            );
+        }
     }
 }
 
@@ -246,6 +257,7 @@ pub async fn reconcile_book(
     source_fn_sentence_map: &SourceFnSentenceMap,
     force: bool,
     full_rewrite: bool,
+    allow_insertion: bool,
 ) -> Result<ReconcileReport, Box<dyn std::error::Error>> {
     let mut report = ReconcileReport::default();
     let nodes = &input.nodes;
@@ -264,6 +276,20 @@ pub async fn reconcile_book(
     if !full_rewrite && stored_root.as_deref() == Some(desired_root) {
         report.unchanged = true;
         return Ok(report);
+    }
+
+    // Opt-in mid-book insertion: rewrite existing rows' book-global numbering
+    // (paragraph/figure numbers, footnote/margin-note numbers + their natural
+    // keys) to the desired values BEFORE the loads below, so the strictly-
+    // additive pre-flight then sees a book whose numbering already agrees.
+    // Everything runs in this transaction; an abort later rolls it all back.
+    if allow_insertion
+        && let Some(aligned) =
+            crate::insertion::pre_align(tx, book_id, input, is_translation).await?
+    {
+        report.inserted_blocks_renumbered = aligned.blocks_renumbered;
+        report.inserted_notes_renumbered =
+            aligned.footnotes_renumbered + aligned.margin_notes_renumbered;
     }
 
     // --- Load existing structure (cheap: no sentence text) -----------------

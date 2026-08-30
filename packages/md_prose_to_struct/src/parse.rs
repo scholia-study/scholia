@@ -113,10 +113,12 @@ pub fn strip_html_tags(html: &str) -> String {
 /// Extract the plain-text label from a `<figure>`'s `<figcaption>`.
 /// Returns `None` when the figure has no caption — callers treat that as a
 /// hard error, since every figure needs a label for quotation/search/anchoring.
+/// `None` means the figure has no `<figcaption>` tag at all. An empty caption
+/// (`Some("")`) is legitimate authoring: the figure is labelled by its
+/// catalogue number alone ("Figure 6.") with no caption text after it.
 pub fn figure_caption(figure_html: &str) -> Option<String> {
     let caps = FIGCAPTION_RE.captures(figure_html)?;
-    let plain = strip_html_tags(&caps[1]);
-    if plain.is_empty() { None } else { Some(plain) }
+    Some(strip_html_tags(&caps[1]))
 }
 
 /// Inject a bold catalogue prefix at the start of a figure's `<figcaption>`

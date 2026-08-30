@@ -35,6 +35,15 @@ struct Cli {
     #[arg(long)]
     force: bool,
 
+    /// Permit inserting nodes mid-book (a growing selection like peirce1).
+    /// Existing book-global numbering (paragraph/figure numbers, footnote and
+    /// margin-note numbers) is renumbered to make room; body-sentence identity
+    /// and anchored quotations are untouched. Off by default: for fixed corpora
+    /// a mid-book structural addition is always a mistake, and the strict abort
+    /// is the corruption detector. Reconcile path only.
+    #[arg(long)]
+    allow_insertion: bool,
+
     /// Bypass content-hash checks: treat every node as changed, force-rewrite
     /// every sentence (bumping updated_at), always renumber, and rewrite all
     /// stored hashes. The escape hatch when hashes may be stale or after a
@@ -55,6 +64,7 @@ fn main() {
             cli.dry_run,
             cli.force,
             cli.full_rewrite,
+            cli.allow_insertion,
         )
         .await
         {

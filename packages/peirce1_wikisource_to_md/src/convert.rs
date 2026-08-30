@@ -262,7 +262,7 @@ fn familytree_to_figure(src: &str) -> String {
     let mut levels: Vec<Vec<(usize, String)>> = Vec::new();
     for row in FT_ROW.captures_iter(src) {
         let raw = &row[1];
-        let (grid, defs) = match raw.find(|c: char| c == '=') {
+        let (grid, defs) = match raw.find('=') {
             Some(_) => {
                 let mut parts = raw.split('|').collect::<Vec<_>>();
                 let split = parts
@@ -344,26 +344,21 @@ fn nearest_above(levels: &[Vec<(usize, String)>], depth: usize, col: usize) -> O
 /// `<math>` is used here only for ordinary algebra, which reads perfectly well
 /// as text. There is no formula renderer in the reader, so a LaTeX blob would
 /// otherwise surface raw.
+static TEX_SQRT: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\\sqrt\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}").unwrap());
+static TEX_FRAC: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}").unwrap());
+static TEX_SUP: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\^\{([^{}]*)\}").unwrap());
+static TEX_SUB: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"_\{([^{}]*)\}").unwrap());
+
 fn math_to_text(src: &str) -> String {
-    let mut s = src.trim().to_string();
-    s = Regex::new(r"\\sqrt\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}")
-        .unwrap()
-        .replace_all(&s, "√($1)")
-        .into_owned();
+    let mut s = TEX_SQRT.replace_all(src.trim(), "√($1)").into_owned();
+    // Fractions nest one level in these papers; three passes unwind them.
     for _ in 0..3 {
-        s = Regex::new(r"\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}")
-            .unwrap()
-            .replace_all(&s, "$1/$2")
-            .into_owned();
+        s = TEX_FRAC.replace_all(&s, "$1/$2").into_owned();
     }
-    s = Regex::new(r"\^\{([^{}]*)\}")
-        .unwrap()
-        .replace_all(&s, "^($1)")
-        .into_owned();
-    s = Regex::new(r"_\{([^{}]*)\}")
-        .unwrap()
-        .replace_all(&s, "_($1)")
-        .into_owned();
+    s = TEX_SUP.replace_all(&s, "^($1)").into_owned();
+    s = TEX_SUB.replace_all(&s, "_($1)").into_owned();
     s.replace('\\', "")
         .split_whitespace()
         .collect::<Vec<_>>()
@@ -477,6 +472,8 @@ static ORNAMENT: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(&pattern).unwrap()
 });
 static EMDASH: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\{\{--\}\}").unwrap());
+// Ligature templates: {{ae}} → æ etc.
+static LIGATURE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\{\{(ae|AE|oe|OE)\}\}").unwrap());
 
 fn unwrap_templates(text: &str) -> String {
     let mut t = text.to_string();
@@ -488,7 +485,7 @@ fn unwrap_templates(text: &str) -> String {
         // an inner {{gap}} still puts braces inside its content.
         t = ORNAMENT.replace_all(&t, "").into_owned();
         t = FRACTION.replace_all(&t, "$1/$2").into_owned();
-        t = OVERLINE.replace_all(&t, "$1\u{0305}").into_owned();
+        t = OVERLINE.replace_all(&t, "${1}\u{0305}").into_owned();
         t = SUBSUP
             .replace_all(&t, |c: &regex::Captures| super_subscript(&c[1], &c[2]))
             .into_owned();
@@ -504,6 +501,17 @@ fn unwrap_templates(text: &str) -> String {
         }
     }
     t = EMDASH.replace_all(&t, "\u{2014}").into_owned();
+    t = LIGATURE
+        .replace_all(&t, |c: &regex::Captures| {
+            match &c[1] {
+                "ae" => "æ",
+                "AE" => "Æ",
+                "oe" => "œ",
+                _ => "Œ",
+            }
+            .to_string()
+        })
+        .into_owned();
     t = ELLIPSIS.replace_all(&t, "\u{2026}").into_owned();
     t = ORNAMENT.replace_all(&t, "").into_owned();
     CHROME.replace_all(&t, "").into_owned()
@@ -511,7 +519,7 @@ fn unwrap_templates(text: &str) -> String {
 
 fn to_markdown(text: &str) -> String {
     let t = BOLD.replace_all(text, "**$1**").into_owned();
-    let t = ITALIC.replace_all(&t, "_$1_").into_owned();
+    let t = ITALIC.replace_all(&t, "_${1}_").into_owned();
     let t = PIPED_LINK.replace_all(&t, "$1").into_owned();
     let t = PLAIN_LINK.replace_all(&t, "$1").into_owned();
     TAGS.replace_all(&t, "").into_owned()
@@ -691,6 +699,13 @@ pub fn convert(paper: &Paper, raw_pages: &[(u32, String)]) -> String {
 
     let (joined, notes) = extract_footnotes(&joined);
     let joined = to_markdown(&joined);
+    // Note bodies were lifted out before the markup pass, so their wiki
+    // emphasis (''…'') must be converted separately or it reaches the reader
+    // as literal quote marks.
+    let notes: Vec<(String, String)> = notes
+        .into_iter()
+        .map(|(mark, text)| (mark, to_markdown(&text)))
+        .collect();
     let joined = BLANKS.replace_all(&joined, "\n\n").into_owned();
     let joined = join_mid_sentence_breaks(&joined);
 
@@ -702,7 +717,7 @@ pub fn convert(paper: &Paper, raw_pages: &[(u32, String)]) -> String {
         .join("\n\n");
 
     let mut out = format!(
-        "---\nposition: {}\nlabel: \"{}\"\ndepth: 1\npage_pub: \"{} {}:{}\"\n---\n\n# {}\n\n\n{}\n",
+        "---\nposition: {}\nlabel: \"{}\"\ndepth: 1\npage_pub: \"{} {}:{}\"\n---\n\n## {}\n\n\n{}\n",
         paper.position, paper.label, paper.venue, paper.volume, paper.first_page, paper.label, body,
     );
     // Each definition is its own block, so they are separated by blank lines —
@@ -832,5 +847,27 @@ mod tests {
     fn a_page_break_at_a_real_paragraph_end_keeps_the_break() {
         let joined = join_mid_sentence_breaks("ends here.\n\n{{{ PSM 12:2 }}} A new paragraph");
         assert_eq!(joined, "ends here.\n\n{{{ PSM 12:2 }}} A new paragraph");
+    }
+}
+
+#[cfg(test)]
+mod emphasis_tests {
+    use super::*;
+
+    // Regression: the replacement "_$1_" parses as capture group `1_` in the
+    // regex crate — nonexistent, so it expanded EMPTY and every italicised
+    // word in the corpus was silently eaten. `${1}` is unambiguous.
+    #[test]
+    fn italics_keep_their_words() {
+        let note = "''Logique''. The same is true.";
+        assert_eq!(to_markdown(note), "_Logique_. The same is true.");
+    }
+
+    #[test]
+    fn note_bodies_get_the_markup_pass_too() {
+        let body = "a miracle.<ref>''Logique''. The same is true.</ref> I respect this.";
+        let (out, notes) = extract_footnotes(body);
+        assert_eq!(out, "a miracle.[^*] I respect this.");
+        assert_eq!(to_markdown(&notes[0].1), "_Logique_. The same is true.");
     }
 }

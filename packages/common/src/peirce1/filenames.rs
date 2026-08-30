@@ -14,16 +14,15 @@
 //! Rules for adding a paper: give it an unused number in its date position,
 //! and never renumber or reuse an existing one.
 //!
-//! Stable numbering is necessary but NOT sufficient, so there is a second rule:
-//! **curate in chronological order, so every import appends.** `paragraph_number`
-//! and footnote numbers are book-global counters, and inserting a paper ahead of
-//! one already imported shifts them, which the reconciler rejects outright
-//! (`reconcile::orchestrate::classify_added_block_positions`) — the only remedy
-//! being a full reload, which re-mints sentence UUIDs and breaks anchored
-//! quotations. Appending is verified safe; inserting is not currently possible.
-//! Lifting that restriction means teaching the reconciler to accept renumbering
-//! explained by an inserted node, which is a change to shared code and has not
-//! been made.
+//! Stable numbering alone is not sufficient for insertion: `paragraph_number`
+//! and footnote numbers are book-global counters that shift when a paper lands
+//! ahead of imported ones. That shift is handled by the reconciler's opt-in
+//! insertion pre-alignment (ADR 0012), enabled for this corpus via
+//! `--allow-insertion` in its `scripts/ingest.sh` arm — existing rows are
+//! renumbered in place while body-sentence UUIDs and anchored quotations are
+//! carried untouched. One operational limit remains: a run may not combine a
+//! mid-book insertion with footnotes added to existing papers; land those as
+//! two runs.
 
 pub const FILENAMES: &[&str] = &[
     "01000_on_a_new_list_of_categories.md",

@@ -88,7 +88,10 @@ case "$corpus" in
         "$BIN" --input-file assets/hobbes1/derived/output.json "$@"
         ;;
     peirce1)
-        "$BIN" --input-file assets/peirce1/derived/output.json "$@"
+        # A growing selection: papers may be inserted mid-volume (see the
+        # spaced position numbers in common::peirce1::filenames), so the
+        # reconciler's insertion pre-alignment is enabled for this book only.
+        "$BIN" --input-file assets/peirce1/derived/output.json --allow-insertion "$@"
         ;;
     *)
         # Unreachable: membership in SCHOLIA_CORPORA is checked above. Hitting
