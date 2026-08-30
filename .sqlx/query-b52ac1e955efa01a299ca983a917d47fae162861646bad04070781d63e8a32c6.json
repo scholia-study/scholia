@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT rs.slug AS \"slug!\",\n                      rs.cite_template AS \"template!\",\n                      pm.ref_value AS \"ref_value!\"\n               FROM sentences s\n               JOIN books b ON b.id = s.book_id\n               JOIN page_markers pm ON pm.sentence_id = s.id\n               JOIN reference_systems rs ON rs.id = pm.system_id\n               WHERE b.slug = $1\n                 AND s.sentence_number >= $2\n                 AND s.sentence_number <= $3\n                 AND s.footnote_id IS NOT NULL\n                 AND rs.cite_priority IS NOT NULL\n                 AND rs.cite_template IS NOT NULL\n               ORDER BY rs.cite_priority, s.sentence_number, pm.sort_order",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "slug!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 1,
+                "name": "template!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "ref_value!",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Int4", "Int4"]
+        },
+        "nullable": [false, true, false]
+    },
+    "hash": "b52ac1e955efa01a299ca983a917d47fae162861646bad04070781d63e8a32c6"
+}

@@ -171,6 +171,8 @@ fn node_input(
         NodeAnchor::WorkSource {
             title: src.title.clone(),
             publication_year: src.publication_year,
+            journal_name: src.journal_name.clone(),
+            volume: src.volume.clone(),
             parent_source_id: bib_source_id,
             author_person_id,
             created_by,

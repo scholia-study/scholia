@@ -316,7 +316,7 @@ pub fn build_output(corpus: &Corpus, mode: Mode, parsed_files: &[ParsedFile]) ->
                 label: plain_label,
                 label_html: html_label,
                 parent_source_ref,
-                source: None,
+                source: corpus.node_source.and_then(|f| f(pf.flat_index)),
                 content_blocks,
             }
         })

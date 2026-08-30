@@ -215,17 +215,22 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
         crate::modules::writing::article_passage_references::db::quotation_directive_regex();
 
     let mut placeholder_map: Vec<String> = Vec::new();
-    let mut quotation_book_slugs: Vec<String> = Vec::new();
+    let mut quotation_refs: Vec<(String, Option<String>)> = Vec::new();
     let processed = directive_re.replace_all(markdown, |caps: &regex::Captures| {
         let attrs_str = &caps[1];
         let idx = placeholder_map.len();
 
-        // Extract book slug for bibliography
+        // Extract book + node slugs for bibliography. The node lets essay
+        // collections resolve the quotation to the exact sub-work cited.
         let book_re = Regex::new(r#"book="([^"]*)""#).expect("Invalid book regex");
+        let node_re = Regex::new(r#"node="([^"]*)""#).expect("Invalid node regex");
         if let Some(book_cap) = book_re.captures(attrs_str) {
-            let slug = book_cap[1].to_string();
-            if !quotation_book_slugs.contains(&slug) {
-                quotation_book_slugs.push(slug);
+            let pair = (
+                book_cap[1].to_string(),
+                node_re.captures(attrs_str).map(|c| c[1].to_string()),
+            );
+            if !quotation_refs.contains(&pair) {
+                quotation_refs.push(pair);
             }
         }
 
@@ -329,8 +334,57 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
         format!("<!--CITATION_PLACEHOLDER_{idx}-->")
     });
 
-    // Look up source IDs for quotation book slugs
-    if !quotation_book_slugs.is_empty() {
+    // Resolve each quoted passage to its enclosing sub-work source — the
+    // deepest toc_node ancestor whose 'chapter' source carries its own
+    // periodical imprint (essay collections, e.g. a Peirce paper). Same
+    // ltree ancestor walk as `corpus::core::resolve_effective_source`, but
+    // gated on the imprint: imprint-less chapter anchors (the per-Bible-book
+    // sources) don't qualify, so Bible quotations keep citing the whole
+    // translation. Unresolved quotations fall back to the book's
+    // bibliographic source below.
+    let mut resolved: std::collections::HashMap<usize, Uuid> = HashMap::new();
+    let noded: Vec<(usize, &str, &str)> = quotation_refs
+        .iter()
+        .enumerate()
+        .filter_map(|(i, (b, n))| n.as_deref().map(|n| (i, b.as_str(), n)))
+        .collect();
+    if !noded.is_empty() {
+        let book_slugs: Vec<&str> = noded.iter().map(|(_, b, _)| *b).collect();
+        let node_slugs: Vec<&str> = noded.iter().map(|(_, _, n)| *n).collect();
+        let rows: Vec<(i64, Uuid)> = sqlx::query_as(
+            "SELECT DISTINCT ON (p.ord) p.ord, s.id
+             FROM UNNEST($1::text[], $2::text[])
+                 WITH ORDINALITY AS p(book_slug, node_slug, ord)
+             JOIN books b ON b.slug = p.book_slug
+             JOIN toc_nodes target ON target.book_id = b.id AND target.slug = p.node_slug
+             JOIN toc_nodes anc ON anc.book_id = b.id AND anc.path @> target.path
+             JOIN sources s ON s.id = anc.source_id
+             WHERE s.source_type = 'chapter' AND s.journal_name IS NOT NULL
+             ORDER BY p.ord, anc.depth DESC",
+        )
+        .bind(&book_slugs)
+        .bind(&node_slugs)
+        .fetch_all(pool)
+        .await
+        .unwrap_or_default();
+        for (ord, source_id) in rows {
+            let pair_idx = noded[(ord - 1) as usize].0;
+            resolved.insert(pair_idx, source_id);
+            if !all_source_ids.contains(&source_id) {
+                all_source_ids.push(source_id);
+            }
+        }
+    }
+
+    let fallback_book_slugs: Vec<String> = quotation_refs
+        .iter()
+        .enumerate()
+        .filter(|(i, _)| !resolved.contains_key(i))
+        .map(|(_, (b, _))| b.clone())
+        .collect::<std::collections::HashSet<_>>()
+        .into_iter()
+        .collect();
+    if !fallback_book_slugs.is_empty() {
         // Get source IDs for quoted books, plus their originals (for translations)
         let rows: Vec<(Uuid, Option<Uuid>)> = sqlx::query_as(
             "SELECT s.id, s.translation_of_id
@@ -338,7 +392,7 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
              JOIN sources s ON s.id = b.source_id
              WHERE b.slug = ANY($1)",
         )
-        .bind(&quotation_book_slugs)
+        .bind(&fallback_book_slugs)
         .fetch_all(pool)
         .await
         .unwrap_or_default();
@@ -466,6 +520,10 @@ struct CitationSourceData {
     publisher: Option<String>,
     publication_place: Option<String>,
     edition: Option<String>,
+    /// Set on periodical sub-works (essay-collection chapters): the entry
+    /// renders in Chicago's journal-article form instead of the book form.
+    journal_name: Option<String>,
+    volume: Option<String>,
     /// The persons occupying Chicago's author slot, sorted by position:
     /// the authors, or (per Chicago's author-less rule) the editors, then
     /// the translators. Empty only when the source has none of the three.
@@ -547,11 +605,13 @@ async fn fetch_citation_data(
         publisher: Option<String>,
         publication_place: Option<String>,
         edition: Option<String>,
+        journal_name: Option<String>,
+        volume: Option<String>,
     }
 
     let sources: Vec<SourceRow> = sqlx::query_as!(
         SourceRow,
-        r#"SELECT id, title, publication_year, original_year, publisher, publication_place, edition
+        r#"SELECT id, title, publication_year, original_year, publisher, publication_place, edition, journal_name, volume
            FROM sources WHERE id = ANY($1)"#,
         source_ids,
     )
@@ -569,6 +629,8 @@ async fn fetch_citation_data(
                 publisher: s.publisher.clone(),
                 publication_place: s.publication_place.clone(),
                 edition: s.edition.clone(),
+                journal_name: s.journal_name.clone(),
+                volume: s.volume.clone(),
                 authors: Vec::new(),
                 author_sort_names: Vec::new(),
                 author_slot_suffix: None,
@@ -745,8 +807,27 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
         (true, true) => String::new(),
     };
 
+    // Chicago's journal-article form: quoted title, italicized journal,
+    // volume — no publisher/place/edition apparatus.
+    let journal_part = data
+        .journal_name
+        .as_deref()
+        .map(str::trim)
+        .filter(|j| !j.is_empty())
+        .map(|journal| {
+            let volume = data.volume.as_deref().unwrap_or("").trim();
+            if volume.is_empty() {
+                format!("<em>{journal}</em>.")
+            } else {
+                format!("<em>{journal}</em> {volume}.")
+            }
+        });
+
     if data.author_sort_names.is_empty() {
         // Anonymous: lead with the title.
+        if let Some(journal_part) = &journal_part {
+            return format!("\u{201c}{title}.\u{201d} {year_terminated} {journal_part}");
+        }
         return format!("<em>{title}</em>. {year_terminated}{edition_suffix}{publication_suffix}");
     }
 
@@ -765,6 +846,17 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
             )
         }
     };
+
+    if let Some(journal_part) = &journal_part {
+        return match data.author_slot_suffix.as_deref() {
+            Some(suffix) => format!(
+                "{author_part}, {suffix} {year_terminated} \u{201c}{title}.\u{201d} {journal_part}"
+            ),
+            None => {
+                format!("{author_part}. {year_terminated} \u{201c}{title}.\u{201d} {journal_part}")
+            }
+        };
+    }
 
     match data.author_slot_suffix.as_deref() {
         Some(suffix) => format!(
@@ -1937,54 +2029,132 @@ pub async fn batch_get_sentences(
     };
 
     // Citation parts: each default-citation system (cite_priority NOT NULL),
-    // resolved over the range to first/last marker, ordered by priority. Empty
-    // for books with no default system (Kant/Shakespeare) → sentence fallback.
-    struct CiteRow {
-        slug: String,
-        template: String,
-        ref_value: String,
-    }
-    let cite_rows = sqlx::query_as!(
-        CiteRow,
-        r#"SELECT rs.slug AS "slug!",
-                  rs.cite_template AS "template!",
-                  pm.ref_value AS "ref_value!"
-           FROM sentences s
-           JOIN books b ON b.id = s.book_id
-           JOIN page_markers pm ON pm.sentence_id = s.id
-           JOIN reference_systems rs ON rs.id = pm.system_id
-           WHERE b.slug = $1
-             AND s.sentence_number >= $2
-             AND s.sentence_number <= $3
-             AND ($4 AND s.block_id IS NOT NULL OR NOT $4 AND s.footnote_id IS NOT NULL)
-             AND rs.cite_priority IS NOT NULL
-             AND rs.cite_template IS NOT NULL
-           ORDER BY rs.cite_priority, s.sentence_number, pm.sort_order"#,
-        book_slug,
-        start_number,
-        end,
-        is_body,
-    )
-    .fetch_all(pool)
-    .await?;
-
-    // Fold per system (rows already grouped by priority then sentence order):
-    // the first row of a system gives first_ref, the last gives last_ref.
+    // ordered by priority. Empty for books with no default system
+    // (Kant EN/Shakespeare) → sentence fallback.
     let mut citation: Vec<CitationPart> = Vec::new();
-    let mut current_slug: Option<String> = None;
-    for r in cite_rows {
-        if current_slug.as_deref() == Some(r.slug.as_str()) {
-            let part = citation.last_mut().expect("part exists for current slug");
-            if r.ref_value != part.first_ref {
-                part.last_ref = Some(r.ref_value);
-            }
-        } else {
-            current_slug = Some(r.slug);
+    if is_body {
+        // A page marker marks where a page *begins*, so the page a sentence
+        // sits on is the last marker at-or-before it in document order
+        // (node sort → block position → sentence position) — not a marker
+        // inside the quoted range, which sparse-marker books (one marker
+        // per page of prose, sometimes on a heading with no
+        // sentence_number) rarely contain. first_ref = page in force at
+        // the range start, last_ref = at the range end.
+        struct CitePartRow {
+            template: String,
+            first_ref: String,
+            last_ref: String,
+        }
+        let part_rows = sqlx::query_as!(
+            CitePartRow,
+            r#"WITH start_pos AS (
+                   SELECT tn.sort_order AS n_ord, cb.position AS b_pos, s.position AS s_pos
+                   FROM sentences s
+                   JOIN books b ON b.id = s.book_id
+                   JOIN content_blocks cb ON cb.id = s.block_id
+                   JOIN toc_nodes tn ON tn.id = s.node_id
+                   WHERE b.slug = $1 AND s.sentence_number = $2
+               ),
+               end_pos AS (
+                   SELECT tn.sort_order AS n_ord, cb.position AS b_pos, s.position AS s_pos
+                   FROM sentences s
+                   JOIN books b ON b.id = s.book_id
+                   JOIN content_blocks cb ON cb.id = s.block_id
+                   JOIN toc_nodes tn ON tn.id = s.node_id
+                   WHERE b.slug = $1 AND s.sentence_number = $3
+               ),
+               marks AS (
+                   SELECT pm.system_id, pm.ref_value, pm.sort_order AS m_ord,
+                          tn.sort_order AS n_ord, cb.position AS b_pos, s.position AS s_pos
+                   FROM page_markers pm
+                   JOIN sentences s ON s.id = pm.sentence_id
+                   JOIN books b ON b.id = s.book_id
+                   JOIN content_blocks cb ON cb.id = s.block_id
+                   JOIN toc_nodes tn ON tn.id = s.node_id
+                   WHERE b.slug = $1
+               )
+               SELECT rs.cite_template AS "template!",
+                      f.ref_value AS "first_ref!",
+                      l.ref_value AS "last_ref!"
+               FROM reference_systems rs
+               JOIN LATERAL (
+                   SELECT m.ref_value FROM marks m, start_pos sp
+                   WHERE m.system_id = rs.id
+                     AND (m.n_ord, m.b_pos, m.s_pos) <= (sp.n_ord, sp.b_pos, sp.s_pos)
+                   ORDER BY m.n_ord DESC, m.b_pos DESC, m.s_pos DESC, m.m_ord DESC
+                   LIMIT 1
+               ) f ON true
+               JOIN LATERAL (
+                   SELECT m.ref_value FROM marks m, end_pos ep
+                   WHERE m.system_id = rs.id
+                     AND (m.n_ord, m.b_pos, m.s_pos) <= (ep.n_ord, ep.b_pos, ep.s_pos)
+                   ORDER BY m.n_ord DESC, m.b_pos DESC, m.s_pos DESC, m.m_ord DESC
+                   LIMIT 1
+               ) l ON true
+               WHERE rs.cite_priority IS NOT NULL
+                 AND rs.cite_template IS NOT NULL
+               ORDER BY rs.cite_priority"#,
+            book_slug,
+            start_number,
+            end,
+        )
+        .fetch_all(pool)
+        .await?;
+        for r in part_rows {
+            let last_ref = (r.last_ref != r.first_ref).then_some(r.last_ref);
             citation.push(CitationPart {
                 template: r.template,
-                first_ref: r.ref_value,
-                last_ref: None,
+                first_ref: r.first_ref,
+                last_ref,
             });
+        }
+    } else {
+        // Footnote quotations: footnote sentences have no block position, so
+        // keep the in-range marker scan (markers inside long footnotes).
+        struct CiteRow {
+            slug: String,
+            template: String,
+            ref_value: String,
+        }
+        let cite_rows = sqlx::query_as!(
+            CiteRow,
+            r#"SELECT rs.slug AS "slug!",
+                      rs.cite_template AS "template!",
+                      pm.ref_value AS "ref_value!"
+               FROM sentences s
+               JOIN books b ON b.id = s.book_id
+               JOIN page_markers pm ON pm.sentence_id = s.id
+               JOIN reference_systems rs ON rs.id = pm.system_id
+               WHERE b.slug = $1
+                 AND s.sentence_number >= $2
+                 AND s.sentence_number <= $3
+                 AND s.footnote_id IS NOT NULL
+                 AND rs.cite_priority IS NOT NULL
+                 AND rs.cite_template IS NOT NULL
+               ORDER BY rs.cite_priority, s.sentence_number, pm.sort_order"#,
+            book_slug,
+            start_number,
+            end,
+        )
+        .fetch_all(pool)
+        .await?;
+        // Fold per system (rows grouped by priority then sentence order):
+        // the first row of a system gives first_ref, the last gives last_ref.
+        let mut current_slug: Option<String> = None;
+        for r in cite_rows {
+            if current_slug.as_deref() == Some(r.slug.as_str()) {
+                let part = citation.last_mut().expect("part exists for current slug");
+                if r.ref_value != part.first_ref {
+                    part.last_ref = Some(r.ref_value);
+                }
+            } else {
+                current_slug = Some(r.slug);
+                citation.push(CitationPart {
+                    template: r.template,
+                    first_ref: r.ref_value,
+                    last_ref: None,
+                });
+            }
         }
     }
 
@@ -2057,6 +2227,8 @@ mod bibliography_tests {
             publisher: publisher.map(String::from),
             publication_place: place.map(String::from),
             edition: None,
+            journal_name: None,
+            volume: None,
             authors: vec!["Immanuel Kant".to_string()],
             author_sort_names: sort_names.into_iter().map(String::from).collect(),
             author_slot_suffix: None,
@@ -2129,6 +2301,73 @@ mod bibliography_tests {
         );
     }
 
+    fn journal_entry() -> CitationSourceData {
+        CitationSourceData {
+            title: "The Fixation of Belief".to_string(),
+            publication_year: Some(1877),
+            original_year: None,
+            publisher: None,
+            publication_place: None,
+            edition: None,
+            journal_name: Some("Popular Science Monthly".to_string()),
+            volume: Some("12".to_string()),
+            authors: vec!["Charles Sanders Peirce".to_string()],
+            author_sort_names: vec!["Peirce, Charles Sanders".to_string()],
+            author_slot_suffix: None,
+        }
+    }
+
+    #[test]
+    fn journal_article_form() {
+        assert_eq!(
+            format_bibliography_entry(&journal_entry()),
+            "Peirce, Charles Sanders. 1877. \u{201c}The Fixation of Belief.\u{201d} <em>Popular Science Monthly</em> 12."
+        );
+    }
+
+    #[test]
+    fn journal_article_without_volume() {
+        let mut e = journal_entry();
+        e.volume = None;
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Peirce, Charles Sanders. 1877. \u{201c}The Fixation of Belief.\u{201d} <em>Popular Science Monthly</em>."
+        );
+    }
+
+    #[test]
+    fn anonymous_journal_article_leads_with_title() {
+        let mut e = journal_entry();
+        e.authors.clear();
+        e.author_sort_names.clear();
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "\u{201c}The Fixation of Belief.\u{201d} 1877. <em>Popular Science Monthly</em> 12."
+        );
+    }
+
+    #[test]
+    fn journal_article_omits_publisher_apparatus() {
+        let mut e = journal_entry();
+        e.publisher = Some("Scholia Sodalitas".to_string());
+        e.publication_place = Some("Oslo".to_string());
+        e.edition = Some("2nd ed.".to_string());
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Peirce, Charles Sanders. 1877. \u{201c}The Fixation of Belief.\u{201d} <em>Popular Science Monthly</em> 12."
+        );
+    }
+
+    #[test]
+    fn blank_journal_name_falls_back_to_book_form() {
+        let mut e = journal_entry();
+        e.journal_name = Some("  ".to_string());
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Peirce, Charles Sanders. 1877. <em>The Fixation of Belief</em>."
+        );
+    }
+
     #[test]
     fn inline_citation_reprint_form() {
         let id = Uuid::nil();
@@ -2162,6 +2401,8 @@ mod bibliography_tests {
             publisher: Some("Cambridge University Press".to_string()),
             publication_place: Some("Cambridge".to_string()),
             edition: None,
+            journal_name: None,
+            volume: None,
             authors: names.iter().map(|(n, _)| n.to_string()).collect(),
             author_sort_names: names.iter().map(|(_, s)| s.to_string()).collect(),
             author_slot_suffix: suffix.map(String::from),
@@ -2227,6 +2468,8 @@ mod bibliography_tests {
             publisher: Some("Scholia Sodalitas".to_string()),
             publication_place: None,
             edition: None,
+            journal_name: None,
+            volume: None,
             authors: vec!["Immanuel Kant".to_string()],
             author_sort_names: vec!["Kant, Immanuel".to_string()],
             author_slot_suffix: None,

@@ -244,6 +244,14 @@ pub async fn run(
                 .execute(&mut *tx)
                 .await?;
             if let Some(sid) = old_source_id {
+                // Chapter sub-works go first: deleting the parent would fire
+                // the FK's SET NULL, which chk_chapter_has_parent rejects.
+                sqlx::query(
+                    "DELETE FROM sources WHERE parent_source_id = $1 AND source_type = 'chapter'",
+                )
+                .bind(sid)
+                .execute(&mut *tx)
+                .await?;
                 sqlx::query("DELETE FROM sources WHERE id = $1")
                     .bind(sid)
                     .execute(&mut *tx)
@@ -287,6 +295,56 @@ pub async fn run(
             .bind(system_user_id)
             .fetch_one(&mut *tx)
             .await?;
+
+            // Sync per-work source anchors onto nodes already in the DB.
+            // Node sources are not part of the content hash, so newly added
+            // (or corrected) imprints must land independently of the
+            // reconcile: upsert each sub-work source and link its node.
+            // Added nodes are untouched here (the UPDATE matches nothing);
+            // they get the same source via their WorkSource anchor, which
+            // reclaims the row just created. Translation editions carry
+            // SourceNode anchors instead and never reach this loop.
+            if source_book_id.is_none() {
+                for node in &output.toc_nodes {
+                    let Some(src) = &node.source else { continue };
+                    let sid: Uuid = sqlx::query_scalar(
+                        "INSERT INTO sources (source_type, title, publication_year, parent_source_id, journal_name, volume, protected, created_by)
+                         VALUES ('chapter', $1, $2, $3, $4, $5, true, $6)
+                         ON CONFLICT (title, source_type, publication_year) DO UPDATE
+                             SET parent_source_id = EXCLUDED.parent_source_id,
+                                 journal_name = EXCLUDED.journal_name,
+                                 volume = EXCLUDED.volume
+                         RETURNING id",
+                    )
+                    .bind(&src.title)
+                    .bind(src.publication_year)
+                    .bind(bib_source_id)
+                    .bind(&src.journal_name)
+                    .bind(&src.volume)
+                    .bind(system_user_id)
+                    .fetch_one(&mut *tx)
+                    .await?;
+                    sqlx::query(
+                        "INSERT INTO source_persons (source_id, person_id, role, position)
+                         VALUES ($1, $2, 'author', 0)
+                         ON CONFLICT DO NOTHING",
+                    )
+                    .bind(sid)
+                    .bind(person_id)
+                    .execute(&mut *tx)
+                    .await?;
+                    sqlx::query(
+                        "UPDATE toc_nodes SET source_id = $3
+                         WHERE book_id = $1 AND source_ref = $2
+                           AND source_id IS DISTINCT FROM $3",
+                    )
+                    .bind(id)
+                    .bind(&node.source_ref)
+                    .bind(sid)
+                    .execute(&mut *tx)
+                    .await?;
+                }
+            }
 
             let (desired_node_hashes, desired_root) =
                 crate::reconcile_input::compute_hashes(&output);
@@ -464,14 +522,24 @@ pub async fn run(
         // point the node's source_id at it — the Bible-shape work anchor.
         let node_source_id: Option<Uuid> = if let Some(src) = &node.source {
             source_count += 1;
+            // `--replace` deletes the book and its bibliographic source but
+            // leaves chapter rows orphaned (parent_source_id SET NULL), so a
+            // re-import reclaims the orphan instead of colliding on the
+            // (title, source_type, publication_year) unique.
             let sid: Uuid = sqlx::query_scalar(
-                "INSERT INTO sources (source_type, title, publication_year, parent_source_id, protected, created_by)
-                 VALUES ('chapter', $1, $2, $3, true, $4)
+                "INSERT INTO sources (source_type, title, publication_year, parent_source_id, journal_name, volume, protected, created_by)
+                 VALUES ('chapter', $1, $2, $3, $4, $5, true, $6)
+                 ON CONFLICT (title, source_type, publication_year) DO UPDATE
+                     SET parent_source_id = EXCLUDED.parent_source_id,
+                         journal_name = EXCLUDED.journal_name,
+                         volume = EXCLUDED.volume
                  RETURNING id",
             )
             .bind(&src.title)
             .bind(src.publication_year)
             .bind(bib_source_id)
+            .bind(&src.journal_name)
+            .bind(&src.volume)
             .bind(system_user_id)
             .fetch_one(&mut *tx)
             .await?;

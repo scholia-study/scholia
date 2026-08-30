@@ -80,9 +80,13 @@ function BookPage() {
     const initialAnchor = hash ? hash.replace(/^#/, "") : undefined;
 
     // Same Bible-shape detection as the sidebar PanelToc — top-level
-    // nodes are bibliographic anchors (Genesis, John).
+    // nodes are bibliographic anchors (Genesis, John) with chapter
+    // children to pick. Essay collections (Peirce) anchor sources on
+    // leaf nodes and keep the default TOC.
     const isBibleShape =
-        !!toc && toc.length > 0 && toc.every((n) => n.source_id);
+        !!toc &&
+        toc.length > 0 &&
+        toc.every((n) => n.source_id && n.children.length > 0);
 
     return (
         <div className="flex h-full bg-stone-50">

@@ -4,7 +4,7 @@
 //! new prose corpus (e.g. hegel1) = a new `common::<corpus>` module + a builder
 //! arm here — never a new parser.
 
-use text_struct::model::{BookData, ReferenceSystemData};
+use text_struct::model::{BookData, NodeSource, ReferenceSystemData};
 
 /// One flattened TOC row: (flat_index, page, depth, label, slug_override).
 /// The page is the corpus page key's value as a string — kant's numeric AA
@@ -71,6 +71,25 @@ pub struct Corpus {
     /// leads the item it introduces instead of dangling off the previous
     /// sentence. Citation numbers ("cap. 25.") are guarded and unaffected.
     pub enum_label_splits: bool,
+    /// Per-node sub-work source (essay collections): flat index → the paper's
+    /// original imprint, which the importer turns into a 'chapter' source row
+    /// so quotations cite the essay in its original venue. `None` for works
+    /// that are one bibliographic unit (every corpus but peirce1).
+    pub node_source: Option<fn(usize) -> Option<NodeSource>>,
+}
+
+/// peirce1's per-paper sub-work source: title from the canonical TOC, imprint
+/// from the parallel table.
+fn peirce1_node_source(flat_index: usize) -> Option<NodeSource> {
+    use common::peirce1::{meta, toc};
+    let (year, journal, volume) = *meta::PAPER_IMPRINTS.get(flat_index)?;
+    let (_, _, _, label, _) = toc::flat_toc_entries().into_iter().nth(flat_index)?;
+    Some(NodeSource {
+        title: label.to_string(),
+        publication_year: Some(year),
+        journal_name: Some(journal.to_string()),
+        volume: Some(volume.to_string()),
+    })
 }
 
 struct SystemSpec {
@@ -225,6 +244,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: false,
                 enum_label_splits: false,
+                node_source: None,
             })
         }
         "kant3" => {
@@ -318,6 +338,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: false,
                 enum_label_splits: false,
+                node_source: None,
             })
         }
         "hegel1" => {
@@ -421,6 +442,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: false,
                 enum_label_splits: false,
+                node_source: None,
             })
         }
         "hegel2" => {
@@ -509,6 +531,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: true,
                 enum_label_splits: false,
+                node_source: None,
             })
         }
         "hegel3" => {
@@ -598,6 +621,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: true,
                 enum_label_splits: false,
+                node_source: None,
             })
         }
         "hobbes1" => {
@@ -654,6 +678,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: true,
                 paren_protected_splits: false,
                 enum_label_splits: false,
+                node_source: None,
             })
         }
         "peirce1" => {
@@ -718,6 +743,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: false,
                 enum_label_splits: true,
+                node_source: Some(peirce1_node_source),
             })
         }
         _ => None,

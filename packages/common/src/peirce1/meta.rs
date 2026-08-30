@@ -39,3 +39,30 @@ pub const PAGE_SYSTEM_LABEL: &str = "Original publication";
 pub const PAGE_SYSTEM_REF_TYPE: &str = "block";
 pub const PAGE_CITE_PRIORITY: i16 = 0;
 pub const PAGE_CITE_TEMPLATE: &str = "{self} · {ref}";
+
+/// Each paper's original printing, parallel to `filenames::FILENAMES`:
+/// (publication year, periodical, volume). These become per-paper sub-work
+/// sources, so a quotation cites the essay in its original venue rather than
+/// the collection.
+pub const PAPER_IMPRINTS: &[(i16, &str, &str)] = &[
+    (
+        1868,
+        "Proceedings of the American Academy of Arts and Sciences",
+        "7",
+    ),
+    (1868, "The Journal of Speculative Philosophy", "2"),
+    (1868, "The Journal of Speculative Philosophy", "2"),
+    (1869, "The Journal of Speculative Philosophy", "2"),
+    (1877, "Popular Science Monthly", "12"),
+    (1878, "Popular Science Monthly", "12"),
+    (1878, "Popular Science Monthly", "12"),
+    (1878, "Popular Science Monthly", "12"),
+    (1878, "Popular Science Monthly", "13"),
+    (1878, "Popular Science Monthly", "13"),
+    (1891, "The Monist", "1"),
+    (1892, "The Monist", "2"),
+    (1892, "The Monist", "2"),
+    (1892, "The Monist", "3"),
+    (1893, "The Monist", "3"),
+    (1908, "The Hibbert Journal", "7"),
+];

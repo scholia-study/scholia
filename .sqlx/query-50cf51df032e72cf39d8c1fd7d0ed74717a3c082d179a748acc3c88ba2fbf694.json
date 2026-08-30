@@ -1,0 +1,28 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "WITH start_pos AS (\n                   SELECT tn.sort_order AS n_ord, cb.position AS b_pos, s.position AS s_pos\n                   FROM sentences s\n                   JOIN books b ON b.id = s.book_id\n                   JOIN content_blocks cb ON cb.id = s.block_id\n                   JOIN toc_nodes tn ON tn.id = s.node_id\n                   WHERE b.slug = $1 AND s.sentence_number = $2\n               ),\n               end_pos AS (\n                   SELECT tn.sort_order AS n_ord, cb.position AS b_pos, s.position AS s_pos\n                   FROM sentences s\n                   JOIN books b ON b.id = s.book_id\n                   JOIN content_blocks cb ON cb.id = s.block_id\n                   JOIN toc_nodes tn ON tn.id = s.node_id\n                   WHERE b.slug = $1 AND s.sentence_number = $3\n               ),\n               marks AS (\n                   SELECT pm.system_id, pm.ref_value, pm.sort_order AS m_ord,\n                          tn.sort_order AS n_ord, cb.position AS b_pos, s.position AS s_pos\n                   FROM page_markers pm\n                   JOIN sentences s ON s.id = pm.sentence_id\n                   JOIN books b ON b.id = s.book_id\n                   JOIN content_blocks cb ON cb.id = s.block_id\n                   JOIN toc_nodes tn ON tn.id = s.node_id\n                   WHERE b.slug = $1\n               )\n               SELECT rs.cite_template AS \"template!\",\n                      f.ref_value AS \"first_ref!\",\n                      l.ref_value AS \"last_ref!\"\n               FROM reference_systems rs\n               JOIN LATERAL (\n                   SELECT m.ref_value FROM marks m, start_pos sp\n                   WHERE m.system_id = rs.id\n                     AND (m.n_ord, m.b_pos, m.s_pos) <= (sp.n_ord, sp.b_pos, sp.s_pos)\n                   ORDER BY m.n_ord DESC, m.b_pos DESC, m.s_pos DESC, m.m_ord DESC\n                   LIMIT 1\n               ) f ON true\n               JOIN LATERAL (\n                   SELECT m.ref_value FROM marks m, end_pos ep\n                   WHERE m.system_id = rs.id\n                     AND (m.n_ord, m.b_pos, m.s_pos) <= (ep.n_ord, ep.b_pos, ep.s_pos)\n                   ORDER BY m.n_ord DESC, m.b_pos DESC, m.s_pos DESC, m.m_ord DESC\n                   LIMIT 1\n               ) l ON true\n               WHERE rs.cite_priority IS NOT NULL\n                 AND rs.cite_template IS NOT NULL\n               ORDER BY rs.cite_priority",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "template!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 1,
+                "name": "first_ref!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "last_ref!",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Int4", "Int4"]
+        },
+        "nullable": [true, false, false]
+    },
+    "hash": "50cf51df032e72cf39d8c1fd7d0ed74717a3c082d179a748acc3c88ba2fbf694"
+}

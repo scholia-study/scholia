@@ -69,11 +69,14 @@ export function PanelToc({
     scrollable = true,
 }: PanelTocProps) {
     // Bible-shape: top-level nodes are bibliographic anchors (source_id
-    // set on each — e.g. Genesis, John inside a Bible). Switch to the
-    // 2-level pill UI. Heuristic stays scoped
-    // to the obvious indicator so future compilations behave the same
-    // automatically.
-    const isBibleShape = toc.length > 0 && toc.every((n) => n.source_id);
+    // set on each — e.g. Genesis, John inside a Bible) with chapter
+    // children to pick. Switch to the 2-level pill UI. Both conditions
+    // matter: essay collections (Peirce) anchor a source on each essay
+    // too, but their essays are leaf nodes — nothing to pill-pick, so
+    // they keep the default TOC.
+    const isBibleShape =
+        toc.length > 0 &&
+        toc.every((n) => n.source_id && n.children.length > 0);
     if (isBibleShape) {
         return (
             <BibleShapeToc

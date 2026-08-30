@@ -61,6 +61,8 @@ pub enum NodeAnchor {
     WorkSource {
         title: String,
         publication_year: Option<i16>,
+        journal_name: Option<String>,
+        volume: Option<String>,
         parent_source_id: Uuid,
         author_person_id: Uuid,
         created_by: Uuid,
@@ -507,18 +509,28 @@ pub async fn reconcile_book(
             NodeAnchor::WorkSource {
                 title,
                 publication_year,
+                journal_name,
+                volume,
                 parent_source_id,
                 author_person_id,
                 created_by,
             } => {
+                // Reclaims a `--replace`-orphaned chapter row (parent SET
+                // NULL) instead of colliding on the title/type/year unique.
                 let sid: Uuid = sqlx::query_scalar(
-                    "INSERT INTO sources (source_type, title, publication_year, parent_source_id, protected, created_by)
-                     VALUES ('chapter', $1, $2, $3, true, $4)
+                    "INSERT INTO sources (source_type, title, publication_year, parent_source_id, journal_name, volume, protected, created_by)
+                     VALUES ('chapter', $1, $2, $3, $4, $5, true, $6)
+                     ON CONFLICT (title, source_type, publication_year) DO UPDATE
+                         SET parent_source_id = EXCLUDED.parent_source_id,
+                             journal_name = EXCLUDED.journal_name,
+                             volume = EXCLUDED.volume
                      RETURNING id",
                 )
                 .bind(title)
                 .bind(publication_year)
                 .bind(parent_source_id)
+                .bind(journal_name)
+                .bind(volume)
                 .bind(created_by)
                 .fetch_one(&mut **tx)
                 .await?;

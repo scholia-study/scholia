@@ -98,6 +98,11 @@ pub struct NodeSource {
     pub title: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub publication_year: Option<i16>,
+    /// Original periodical the sub-work appeared in (essay collections).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub journal_name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub volume: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
