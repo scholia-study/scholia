@@ -174,9 +174,8 @@ covers the text. Every item below is the printing's reading, not ours:
   "stated. thus:" (03000)
 - one authored forced split: "F and G.|||" — the initials rule cannot know
   "G." ends a sentence of letter designations (03000)
-
-The suspected misprint "we dust" for "we must" (03000) is left as
-transcribed pending a call.
+- "we dust" → the printed "we must" ("we must, no less before our eyes are
+  trained than afterwards, see each color…"; JSP 2:153) (03000)
 
 **What is not normalised.** Spaced punctuation (`reaction ; as when`, `three
 kinds : induction`) and the spaced ellipsis (`. . . .`) are the printings' own
