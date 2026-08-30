@@ -24,6 +24,7 @@ pub mod milton1;
 pub mod model;
 pub mod ncx;
 pub mod opf;
+pub mod peirce1;
 pub mod sentences;
 pub mod shakespeare1;
 pub mod textmatch;

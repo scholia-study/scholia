@@ -46,6 +46,11 @@ case "$corpus" in
         # English single-edition prose (two layers, no translation build).
         cargo run -p md_prose_to_struct -- --corpus "$corpus"
         ;;
+    peirce1)
+        # One curated layer: Peirce's English is already modern, so there is no
+        # original-orthography layer to pair against.
+        cargo run -p md_prose_to_struct -- --corpus "$corpus" --single
+        ;;
     *)
         # Unreachable: membership in SCHOLIA_CORPORA is checked above. Hitting
         # this means the array and the case arms drifted apart.

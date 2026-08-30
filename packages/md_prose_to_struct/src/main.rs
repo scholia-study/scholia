@@ -1,6 +1,7 @@
 //! Curated annotated-prose markdown → struct JSON. `--corpus kant1|kant3`
 //! selects the config; `--translation` builds the single-layer English edition
-//! instead of the two-layer German source. Output is consumed by
+//! instead of the two-layer source, and `--single` builds a corpus that has
+//! only ever had one curated layer (peirce1). Output is consumed by
 //! `struct_to_db`.
 
 use std::fs;
@@ -16,7 +17,7 @@ use common::sentences::{
 use md_prose_to_struct::corpus::{self, Corpus, FlatEntry};
 use md_prose_to_struct::html::{md_to_html, md_to_plain};
 use md_prose_to_struct::parse::{self, ParsedBlockType, parse_blocks};
-use md_prose_to_struct::structure::{ParsedFile, build_output};
+use md_prose_to_struct::structure::{Mode, ParsedFile, build_output};
 use text_struct::parse::{FrontMatter, parse_front_matter, scan_md_files};
 
 #[derive(Parser)]
@@ -29,6 +30,10 @@ struct Cli {
     /// instead of the two-layer source.
     #[arg(long)]
     translation: bool,
+    /// Build a single-layer source edition: one curated layer, no original
+    /// orthography, no translation lock.
+    #[arg(long, conflicts_with = "translation")]
+    single: bool,
     /// Override the modernized layer dir (defaults per corpus).
     #[arg(long)]
     modernized_dir: Option<String>,
@@ -64,13 +69,19 @@ fn main() {
         corpus.output_file = f;
     }
 
-    let parsed_files = if cli.translation {
-        collect_translation_files(&corpus)
-    } else {
-        collect_source_files(&corpus)
+    let mode = match (cli.single, cli.translation) {
+        (true, _) => Mode::Single,
+        (false, true) => Mode::Translation,
+        (false, false) => Mode::Source,
     };
 
-    let output = build_output(&corpus, cli.translation, &parsed_files);
+    let parsed_files = match mode {
+        Mode::Source => collect_source_files(&corpus),
+        Mode::Single => collect_single_files(&corpus),
+        Mode::Translation => collect_translation_files(&corpus),
+    };
+
+    let output = build_output(&corpus, mode, &parsed_files);
     print_summary(&corpus, &output);
     write_output(&corpus.output_file, &output);
 }
@@ -236,6 +247,51 @@ fn collect_source_files(corpus: &Corpus) -> Vec<ParsedFile> {
 
     eprintln!(
         "Parsed {} files with {} total blocks",
+        parsed_files.len(),
+        parsed_files.iter().map(|f| f.blocks.len()).sum::<usize>()
+    );
+
+    parsed_files
+}
+
+// --- Single mode: one curated layer, no original ---------------------------
+
+/// The corpus has exactly one curated layer, held in `modernized_dir`. There is
+/// no reviewed layer to pair against and nothing to validate parity with, so
+/// this is `collect_source_files` minus the pairing.
+fn collect_single_files(corpus: &Corpus) -> Vec<ParsedFile> {
+    let dir = Path::new(&corpus.modernized_dir);
+    let entries = scan_dir(dir);
+
+    let mut parsed_files: Vec<ParsedFile> = Vec::new();
+
+    for &(flat_index, ref expected_name) in &corpus.filenames {
+        if !entries.contains(expected_name) {
+            eprintln!("info: skipping {} (file not found)", expected_name);
+            continue;
+        }
+
+        let (blocks, _) = parse_file(
+            dir,
+            expected_name,
+            flat_index,
+            &corpus.toc_modernized[flat_index],
+            corpus.position_number,
+            true,
+        );
+
+        parsed_files.push(ParsedFile {
+            flat_index,
+            blocks,
+            original_blocks: None,
+            english_label: None,
+        });
+    }
+
+    check_unexpected(&entries, &corpus.filenames, "curated");
+
+    eprintln!(
+        "Parsed {} files with {} total blocks (single layer)",
         parsed_files.len(),
         parsed_files.iter().map(|f| f.blocks.len()).sum::<usize>()
     );

@@ -8,6 +8,15 @@ import type { BookSummary } from "./bookSummary.ts";
 
 export interface BookDetail {
     author: string;
+    /**
+     * Whether this book carries a second, original-orthography layer
+     * (`content_blocks.original_html`). False for editions curated as a
+     * single layer — a text already in modern spelling, where a reviewed
+     * layer would duplicate the reading text (peirce1). The reader hides
+     * its orthography toggle when this is false, rather than offering a
+     * switch that changes nothing.
+     */
+    has_original_layer: boolean;
     id: string;
     language: string;
     /**

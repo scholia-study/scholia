@@ -1,0 +1,515 @@
+---
+position: 12000
+label: "The Doctrine of Necessity Examined"
+depth: 1
+page_pub: "Monist 2:321"
+---
+
+# The Doctrine of Necessity Examined
+
+
+THE DOCTRINE OF NECESSITY EXAMINED.
+
+IN _ for January, 1891, I endeavored to show what elementary ideas ought to enter into our view of the universe. I 
+may mention that on those considerations 1 had already grounded a 
+cosmical theory, and from it had deduced a considerable number of 
+consequences capable of being compared with experience. This 
+comparison, is now in progress, but under existing circumstances 
+must occupy many years.
+
+I propose here to examine the common belief that every single 
+act in the universe is precisely determined by law. It must not be 
+supposed that this is a doctrine accepted everywhere and at all 
+times by all rational men. Its first advocate appears to have been 
+Democritus the atomist, who was led to it, as we are informed, by 
+reflecting upon the "impenetrability, translation, and impact of 
+matter (_)" That is to 
+say, having restricted his attention to a field where no influence 
+other than mechanical constraint could possibly come before his notice, he straightway jumped to the conclusion that throughout the 
+universe that was the sole principle of action, a style of reasoning 
+so usual in our day with men not unreflecting as to be more than 
+excusable in the infancy of thought. But Epicurus, in revising the 
+atomic doctrine and repairing its defences, found himself obliged to 
+suppose that atoms swerve from their courses by spontaneous 
+chance; and thereby he conferred upon the theory life and entelechy.
+
+{{{ Monist 2:322 }}} For we now see clearly that the peculiar function of the molecular
+hypothesis in physics is to open an entry for the calculus of probabilities. Already, the prince of philosophers had repeatedly and
+emphatically condemned the dictum of Democritus (especially in
+the "Physics," Book II, chapters iv, v, vi), holding that events
+come to pass in three ways, namely, (1) by external compulsion, or
+the action of efficient causes, (2) by virtue of an inward nature, or
+the influence of final causes, and (3) irregularly without definite
+cause, but just by absolute chance; and this doctrine is of the inmost essence of Aristotelianism.
+It affords, at any rate, a valuable
+enumeration of the possible ways in which anything can be supposed to have come about.
+The freedom of the will, too, was admitted both by Aristotle and by Epicurus. But the Stoa, which in
+every department seized upon the most tangible, hard, and lifeless
+element, and blindly denied the existence of every other, which, for
+example, impugned the validity of the inductive method and wished
+to fill its place with the _, very naturally became
+the one school of ancient philosophy to stand by a strict necessitarianism, thus returning to the single principle of Democritus that Epicurus had been unable to swallow. Necessitarianism and materialism
+with the Stoics went hand in hand, as by affinity they should.
+At the revival of learning, Stoicism met with considerable favor, partly
+because it departed just enough from Aristotle to give it the spice
+of novelty, and partly because its superficialities well adapted it for
+acceptance by students of literature and art who wanted their philosophy drawn mild. Afterwards, the great discoveries in mechanics
+inspired the hope that mechanical principles might suffice to explain
+the universe; and though without logical justification, this hope has
+since been continually stimulated by subsequent advances in physics.
+Nevertheless, the doctrine was in too evident conflict with the freedom of the will and with miracles to be generally acceptable, at
+first. But meantime there arose that most widely spread of philosophical blunders, the notion that associationalism belongs intrinsically to the materialistic family of doctrines; and thus was evolved
+the theory of motives; and libertarianism became weakened.
+At present, historical criticism has almost exploded the miracles, great {{{ Monist 2:323 }}} and small; so that the doctrine of necessity has never been in so 
+great vogue as now.
+
+The proposition in question is that the state of things existing 
+at any time, together with certain immutable laws, completely determine the state of things at every other time (for a limitation to 
+_ time is indefensible). Thus, given the state of the universe 
+in the original nebula, and given the laws of mechanics, a sufficiently 
+powerful mind could deduce from these data the precise form of 
+every curlicue of every letter I am now writing.
+
+Whoever holds that every act of the will as well as every idea 
+of the mind is under the rigid governance of a necessity co-ordinated 
+with that of the physical world, will logically be carried to the proposition that minds are part of the physical world in such a sense that 
+the laws of mechanics determine everything that happens according 
+to immutable attractions and repulsions. In that case, that instantaneous state of things from which every other state of things is calculable consists in the positions and velocities of all the particles at 
+any instant. This, the usual and most logical form of necessitarianism, is. called the mechanical philosophy.
+
+When I have asked thinking men what reason they had to believe that every fact in the universe is precisely determined by law, 
+the first answer has usually been that the proposition is a "presupposition" or postulate of scientific reasoning. Well, if that is 
+the best that can be said for it, the belief is doomed. Suppose it 
+be "postulated": that does not make it true, nor so much as afford 
+the slightest rational motive for yielding it any credence. It is as  
+if a man should come to borrow money, and when asked for his security, should reply he "postulated" the loan. To "postulate" a 
+proposition is no more than to hope it is true. There are, indeed, 
+practical emergencies in which we act upon assumptions of certain 
+propositions as true, because if they are not so, it can make no difference how we act. But all such propositions I take to be hypotheses of individual facts. For it is manifest that no universal, principle can in its universality be compromised in a special case or can 
+be requisite for the validity of any ordinary inference. To say, for 
+instance, that the demonstration by Archimedes of the property of {{{ Monist 2:324 }}} the lever would fall to the ground if men were endowed with free will, is extravagant; yet this is implied by those who make a proposition incompatible with the freedom of the will the postulate of all 
+inference. Considering, too, that the conclusions of science make 
+no pretence to being more than probable, and considering that a 
+probable inference can at most only suppose something to be most 
+frequently, or otherwise approximately, true, but never that anything is precisely true without exception throughout the universe, 
+we see how far this proposition in truth is from being so postulated.
+
+But the whole notion of a postulate being involved in reasoning 
+appertains to a by-gone and false conception of logic. Non-deductive, or ampliative inference is of three kinds : induction, hypothesis, and analogy. If there be any other modes, they must be extremely unusual arid highly complicated, and may be assumed with 
+little doubt to be of the same nature as those enumerated. For induction, hypothesis, and analogy, as far as their ampliative character 
+goes, that is, so far as they conclude something not implied in the 
+premises, depend upon one principle and involve the same procedure. All are essentially inferences from sampling. Suppose a 
+ship arrives in Liverpool laden with wheat in bulk. Suppose that 
+by some machinery the whole cargo be stirred up with great thoroughness. Suppose that twenty-seven thimblefuls be taken equally from 
+the forward, midships, and aft parts, from the starboard, centre, 
+and larboard parts, and from the top, half depth, and lower parts 
+of her hold, and that these being mixed and the grains counted, four 
+fifths of the latter are found to be of quality _. Then we infer, experientially and provisionally, that approximately four fifths of all 
+the grain in the cargo is of the same quality. I say we infer this 
+_. By saying that we infer it _, I mean that our conclusion makes no pretension to knowledge 
+of wheat-in-itself, our _, as the derivation of that word implies, has nothing to do with _ wheat. We are dealing only 
+with the matter of possible experience,—experience in the full acceptation of the term as something not merely affecting the senses 
+but also as the subject of thought. If there be any wheat hidden 
+on the ship, so that it can neither turn up in the sample nor be heard {{{ Monist 2:325 }}} of subsequently from purchasers,—or if it be half-hidden, so that it 
+may, indeed, turn up, but is less likely to do so than the rest,—or 
+if it can affect our senses and our pockets, but from some strange 
+cause or causelessness cannot be reasoned about,—all such wheat 
+is to be excluded (or have only its proportional weight) in calculating that true proportion of quality _, to which our inference seeks 
+to approximate. By saying that we draw the inference _, 
+I mean that we do not hold that we have reached any assigned degree of approximation as yet, but only hold that if our experience 
+be indefinitely extended, and if every fact of whatever nature, as 
+fast as it presents itself, be duly applied, according to the inductive 
+method, in correcting the inferred ratio, then our approximation 
+will become indefinitely close in the long run; that is to say, close 
+to the experience _ (not merely close by the exhaustion of a 
+finite collection) so that if experience in general is to fluctuate irregularly to and fro, in a manner to deprive the ratio sought of all 
+definite value, we shall be able to find out approximately within 
+what limits it fluctuates, and if, after having one definite value, it 
+changes and assumes another, we shall be able to find that out, and 
+in short, whatever may be the variations of. this ratio in experience, 
+experience indefinitely extended will enable us to detect them, so as 
+to predict rightly, at last, what its ultimate value may be, if it have 
+any ultimate value, or what the ultimate law of succession of values 
+may be, if there be any such ultimate law, or that it ultimately fluctuates irregularly within certain limits, if it do so ultimately fluctuate. Now our inference, claiming to be no more than thus experiential and provisional, manifestly involves no postulate whatever.
+
+For what is a postulate? It is the formulation of a material fact 
+which we are not entitled to assume as a premise, but the truth of 
+which is requisite to the validity of an inference. Any fact, then, 
+which might be supposed postulated, must either be such that it 
+would ultimately present itself in experience, or not. If it will present itself, we need not postulate it now in our' provisional inference, 
+since we shall ultimately be entitled to use it as a premise. But if it 
+never would present itself in experience, our conclusion is valid but 
+for the possibility of this fact being otherwise than assumed, that is, {{{ Monist 2:326 }}} it is valid as far as possible experience goes, and that is all that we 
+claim. Thus, every postulate is cut off, either by the provisionality or 
+by the experientiality of our inference. For instance, it has been said 
+that induction postulates that, if an indefinite succession of samples be drawn, examined, and thrown back each before the next is 
+drawn, then in the long run every grain will be drawn as often as 
+any other, that is to say postulates that the ratio of the numbers of 
+times in which any two are drawn will indefinitely approximate to 
+unity. But no such postulate is made; for if, on the one hand, we 
+are to have no other experience of the wheat than from such drawings, it is the ratio that presents itself in those drawings and not the 
+ratio which belongs to the wheat in its latent existence that we are 
+endeavoring to determine ; while if, on the other hand, there is 
+some other mode by which the wheat is to come under our knowledge, equivalent to another kind of sampling, so that after all our 
+care in stirring up the wheat, some experiential grains will present 
+themselves in the first sampling operation more often than others in 
+the long run, this very .singular fact will be sure to get discovered 
+by the inductive method, which must avail itself of every sort of 
+experience; and our inference, which was only provisional, corrects 
+itself at last. Again, it has been said, that induction postulates that 
+under like circumstances like events will happen, and that this postulate is at bottom the same as the principle of universal causation. 
+But this is a blunder, or _, due to thinking exclusively of inductions where the concluded ratio is either 1 or 0. If any such proposition were postulated, it would be that under like circumstances (the 
+circumstances of drawing the different samples) different events occur 
+in the same proportions in all the different sets,—a proposition which 
+is false and even absurd. But in truth no such thing is postulated, 
+the experiential character of the inference reducing the condition of validity to this, that if a certain result does riot occur, the opposite 
+result will be manifested, a condition assured by the provisionality 
+of the inference. But it may be asked whether it is not conceivable 
+that every instance of a certain class destined to be ever employed 
+as a datum of induction should have one character, while every in- 
+stance destined not to be so employed should have the opposite {{{ Monist 2:327 }}} character. The answer is that in that case, the instances excluded 
+from being subjects of reasoning would not be experienced in the 
+full sense of the word, but would be among these _ individuals 
+of which our conclusion does not pretend to speak.
+
+To this account of the rationale of induction I know of but one 
+objection worth mention: it is that I thus fail to deduce the full degree of force which this mode of inference in fact possesses; that 
+according to my view, no matter how thorough and elaborate the 
+stirring and mixing process had been, the examination of a single 
+handful of grain would not give me any assurance, sufficient to risk 
+money upon, that the next handful would not greatly modify the 
+concluded value of the ratio under inquiry, while, in fact, the assurance would be very high that this ratio was not greatly in error. If 
+the true ratio of grains of quality _ were 0-80 and the handful contained a thousand grains, nine such handfuls out of every ten would 
+contain from 780 to 820 grains of quality _. The answer to this is 
+that the calculation given is correct when we know that the units of 
+this handful and the quality inquired into have the normal independence of one another, if for instance the stirring has been complete and the character sampled for has been settled upon in advance of the examination of the sample. But in so far as these conditions are not known to be complied with, the above figures cease 
+to be applicable. Random sampling and predesignation of the 
+character sampled for should always be striven after in inductive 
+reasoning, but when they cannot be attained, so long as it is conducted honestly, the inference retains some value. When we cannot ascertain how the sampling has been done or the sample-character selected, induction still has the essential validity which my 
+present account of it shows it to have.
+
+I do not think a man who combines a willingness to be convinced with a power of appreciating an argument upon a difficult 
+subject can resist the reasons which have been given to show that 
+the principle of universal necessity cannot be defended as being a 
+postulate of reasoning. But then the question immediately arises 
+whether it is not proved to be true, or at least rendered highly probable, by observation of nature.
+
+{{{ Monist 2:328 }}} Still, this question ought not long to arrest a person accustomed to reflect upon the force of scientific reasoning. For the 
+essence of the necessitarian position is that certain continuous quantities have certain exact values. Now, how can observation determine the value of such a quantity with a probable error absolutely 
+_ To one who is behind the scenes, and knows that the most 
+refined comparisons of masses, lengths, and angles, far surpassing 
+in precision all other measurements, yet fall behind the accuracy of 
+bank-accounts, and that the ordinary determinations of physical 
+constants, such as appear from month to month in the journals, are 
+about on a par with an upholsterer's measurements of carpets and 
+curtains, the idea of mathematical exactitude being demonstrated 
+in the laboratory will appear simply ridiculous. There is a recognised method of estimating the probable magnitudes of errors in 
+physics, the method of least squares. It is universally admitted 
+that this method makes the errors smaller than they really are; yet 
+even according to that theory an error indefinitely small is indefinitely improbable; so that any statement to the effect that a certain 
+continuous quantity has a certain exact value, if well-founded at all, 
+must be founded on something other than observation.
+
+Still, I am obliged to admit that this rule is subject to a certain 
+qualification. Namely, it only applies to continuous[^*] quantity. Now, 
+certain kinds of continuous quantity are discontinuous at one or at 
+two limits, and for such limits the rule must be modified. Thus, 
+the length of a line cannot be less than zero. Suppose, then, the 
+.question arises how long a line a certain person had drawn from a 
+marked point on a piece of paper. If no line at all can be seen, the 
+observed length is zero; and the only conclusion this observation 
+warrants is that the length of the line is less than the smallest length 
+visible with the optical power employed. But indirect observations,—for example, that the person supposed to have drawn the 
+line was never within fifty feet of the paper,—may make it probable 
+that no line at all was made, so that the concluded length will be {{{ Monist 2:329 }}} strictly zero. In like manner, experience no doubt would warrant 
+the conclusion that there is absolutely _ indigo in a given ear of 
+wheat, and absolutely no attar in a given lichen. But such inferences can only be rendered valid by positive experiential evidence, 
+direct or remote, and cannot rest upon a mere inability to detect the 
+quantity in question. We have reason to think there is no indigo 
+in the wheat, because we have remarked that wherever indigo is 
+produced it is produced in considerable quantities, to mention only 
+one argument. We have reason to think there is no attar in the 
+lichen, because essential oils seem to be in general peculiar to single species. If the question had been whether there was iron in the 
+wheat or the lichen, though chemical analysis should fail to detect 
+its presence, we should think some of it probably was there, since iron 
+is almost everywhere. Without any such information, one way or 
+the other, we could only abstain from any opinion as to the presence 
+of the substance in question. It cannot, I conceive, be maintained 
+that we are in any _ position than this in regard to the presence of 
+the element of chance or spontaneous departures from law in nature.
+
+Those observations which are generally adduced in favor of 
+mechanical causation simply prove that there is an element of regularity in nature, and have no bearing whatever upon the question 
+of whether such regularity is exact and universal, or not. Nay, in 
+regard to this _, all observation is directly _ to it; and 
+the most that can be said is that a good deal of this observation can 
+be explained away. Try to verify any law of nature, and you will 
+find that the more precise your observations, the more certain they 
+will be to show irregular departures from the law. We are accustomed to ascribe these, and I do not say wrongly, to errors of observation; yet we cannot usually account for such errors in any antecedently probable way. Trace their causes back far enough, and 
+you will be forced to admit they are always due to arbitrary determination, or chance.
+
+But it may be asked whether if there were an element of real 
+chance in the universe it must not occasionally be productive of signal effects such as could not pass unobserved. In answer to this 
+question, without stopping to point out that there is an abundance {{{ Monist 2:330 }}} of great events which one might be tempted to suppose were of that 
+nature, it will be simplest to remark that physicists hold that the 
+particles of gases are moving about irregularly, substantially as if 
+by real chance, and that by the principles of probabilities there must 
+occasionally happen to be concentrations of heat in the gases contrary to the second law of thermodynamics, and these concentrations, occurring in explosive mixtures, must sometimes have tremendous effects. Here, then, is in substance the very situation 
+supposed ; yet no phenomena ever have resulted which we are forced 
+to attribute to such chance concentration of heat, or which anybody, 
+wise or foolish, has ever dreamed of accounting for in that manner.
+
+In view of all these considerations, I do not believe that anybody, not in a state of casehardened ignorance respecting the logic 
+of science, can maintain that the precise and universal conformity 
+of facts to law is clearly proved, or even rendered particularly probable, by any observations hitherto made. In this way, the determined advocate of exact regularity will soon find himself driven to 
+_ reasons to support his thesis. These received such a socdolager from Stuart Mill in his Examination of Hamilton, that holding to them now seems to me to denote a high degree of imperviousness to reason; so that I shall pass them by with little notice.
+
+To say that we cannot help believing a given proposition is no 
+argument, but it is a conclusive fact if it be true; and with the substitution of "I" for "we," it is true in the mouths of several classes 
+of minds, the blindly passionate, the unreflecting and ignorant, and 
+the person who has overwhelming evidence before his eyes. But 
+that which has been inconceivable to-day has often turned out indisputable on the morrow. Inability to conceive is only a stage 
+through which every man must pass in regard to a number of beliefs,—unless endowed with extraordinary obstinacy and obtuseness. 
+His understanding is enslaved to some blind compulsion which a 
+vigorous mind is pretty sure soon to cast off.
+
+Some seek to back up the _ position with empirical arguments. They say that the exact regularity of the world is a natural 
+belief, and that natural beliefs have generally been confirmed by- 
+experience. There is some reason in this. Natural beliefs, how- {{{ Monist 2:331 }}} ever, if they generally have a foundation of truth, also require correction and purification from natural illusions. The principles of 
+mechanics are undoubtedly natural beliefs; but, for all that, the 
+early formulations of them were exceedingly erroneous. The general approximation to truth in natural beliefs is, in fact, a case of 
+the general adaptation of genetic products to recognisable utilities 
+or ends. Now, the adaptations of nature, beautiful and often marvellous as they verily are, are never found to be quite perfect; so 
+that the argument is quite _ the absolute exactitude of any 
+natural belief, including that of the principle of causation.
+
+Another argument, or convenient commonplace, is that absolute chance is _. This word has eight current significations. The Century Dictionary enumerates six. Those who talk 
+like this will hardly be persuaded to say in what sense they mean 
+that chance is inconceivable. Should they do so, it would easily be 
+shown either that they have no sufficient reason for the statement or 
+that the inconceivability is of a kind which does not prove that 
+chance is non-existent.
+
+Another _ argument is that chance is unintelligible; that 
+is to say, while it may perhaps be conceivable, it does not disclose 
+to the eye of reason the how or why of things; and since a hypothesis can only be justified so far as it renders some phenomenon 
+intelligible, we never can have any right to suppose absolute chance 
+to enter into the production of anything in nature. This argument 
+may be considered in connection with two others. Namely, instead 
+of going so far as to say that the supposition of chance can never 
+properly be used to explain any observed fact, it may be alleged 
+merely that no facts are known which such a supposition could in 
+any way help in explaining. Or again, the allegation being still 
+further weakened, it may be said that since departures from law are 
+not unmistakably observed, chance is not a _, and ought 
+not unnecessarily to be introduced into a hypothesis.
+
+These are no mean arguments, and require us to examine the 
+matter a little more closely. Come, my superior opponent, let me 
+learn from your wisdom. It seems to me that every throw of sixes 
+with a pair of dice is a manifest instance of chance.
+
+{{{ Monist 2:332 }}} "While you would hold a throw of deuce-ace to be brought 
+about by necessity?" [The opponent's supposed remarks are placed 
+in quotation marks.]
+
+Clearly one throw is as much chance as another.
+
+"Do you think throws of dice are of a different nature from 
+other events?"
+
+I see that I must say that _ the diversity and specificalness of 
+events is attributable to chance.
+
+"Would you, then, deny that there is any regularity in the 
+world?"
+
+That is clearly undeniable. I must acknowledge there is an 
+approximate regularity, and that every event is influenced by it. 
+But the diversification, specificalness, and irregularity of things I 
+suppose is chance. A throw of sixes appears to me a case in which 
+this element is particularly obtrusive.
+
+"If you reflect more deeply, you will come to see that _ 
+is only a name for a cause that is unknown to us."
+
+Do you mean that we have no idea whatever what kind of causes 
+could bring about a throw of sixes?
+
+"On the contrary, each die moves under the influence of precise mechanical laws."
+
+But it appears to me that it is not these _ which made the 
+die turn up sixes; for these laws act just the same when other 
+throws come up. The chance lies in the diversity of throws; and 
+this diversity cannot be due to laws which are immutable.
+
+"The diversity is due to the diverse circumstances under which 
+the laws act. The dice lie differently in the box, and the motion 
+given to the box is different. These are the unknown causes which 
+produce the throws, and to which we give the name of chance; not 
+the mechanical law which regulates the operation of these causes. 
+You see you are already beginning to think more clearly about this 
+subject."
+
+Does the operation of mechanical law not increase the diversity?
+
+"Properly not. You must know that the instantaneous state 
+of a system of particles is defined by six times as many numbers as 
+there are particles, three for the co-ordinates of each particle's posi- {{{ Monist 2:333 }}} tion, and three more for the components of its velocity. This number of numbers, which expresses the amount of diversity in the system, remains the same at all times. There may be, to be sure, some 
+kind of relation between the co-ordinates and component velocities 
+of the different particles, by means of which the state of the system 
+might be expressed by a smaller number of numbers. But, if this 
+is the case, a precisely corresponding relationship must exist be- 
+tween the co-ordinates and component velocities at any other time, 
+though it may doubtless be a relation less obvious to us. Thus, the 
+intrinsic complexity of the system is the same at all times."
+
+Very well, my obliging opponent, we have now reached an issue. You think all the arbitrary specifications of the universe were 
+introduced in one dose, in the beginning, if there was a beginning, 
+and that the variety and complication of nature has always been 
+just as much as it is now. But I, for my part, think that the diversification, the specification, has been continually taking place. Should 
+you condescend to ask me why I so think, I should give my reasons 
+as follows:
+
+1) Question any science which deals with the course of time. 
+Consider the life of an individual animal or plant, or of a mind. 
+Glance at the history of states, of institutions, of language, of ideas. 
+Examine the successions of forms shown by paleontology, the history of the globe as set forth in geology, of what the astronomer is 
+able to make out concerning the changes of stellar systems. Everywhere the main fact is growth and increasing complexity. Death 
+and corruption are mere accidents or secondary phenomena. Among 
+some of the lower organisms, it is a moot point with biologists 
+whether there be anything which ought to be called death. Races, 
+at any rate, do not die out except under unfavorable circumstances. 
+From these broad and ubiquitous facts we may fairly infer, by the 
+most unexceptionable logic, that there is probably in nature some 
+agency by which the complexity and diversity of things can be increased; and that consequently the rule of mechanical necessity 
+meets in some way with interference.
+
+2) By thus admitting pure spontaneity or life as a character 
+of the universe, acting always and everywhere though restrained {{{ Monist 2:334 }}} within narrow bounds by law, producing infinitesimal departures 
+from law continually, and great ones with infinite infrequency, I account for all the variety and diversity of the universe, in the only 
+sense in which the really _ and new can be said to be accounted for. The ordinary view has to admit the inexhaustible 
+mulitudinous variety of the world, has to admit that its mechanical 
+law cannot account for this in the least, that variety can spring only 
+from spontaneity, and yet denies without any evidence or reason 
+the existence of this spontaneity, or else shoves it back to the beginning of time and supposes it dead ever since. The superior logic 
+of my view appears to me not easily controverted.
+
+3) When I ask the necessitarian how he would explain the diversity and irregularity of the universe, he replies to me out of the 
+treasury of his wisdom that irregularity is something which from the 
+nature of things we must not seek to explain. Abashed at this, I 
+seek to cover my confusion by asking how he would explain the 
+uniformity and regularity of the universe, whereupon he tells me 
+that the laws of nature are immutable and ultimate facts, and no 
+account is to be given of them. But my hypothesis of spontaneity 
+does explain irregularity, in a certain sense; that is, it explains the 
+general fact of irregularity, though not, of course, what each lawless 
+event is to be. At the same time, by thus loosening the bond of 
+necessity, it gives room for the influence of another kind of causation, such as seems to be operative in the mind in the formation of 
+associations, and enables us to understand how the uniformity of 
+nature could have been brought about. That single events should 
+be hard and unintelligible, logic will permit without difficulty: we 
+do not expect to make the shock of a personally experienced earthquake appear natural and reasonable by any amount of cogitation. 
+But logic does expect things _ to be understandable. To say 
+that there is a universal law, and that it is a hard, ultimate, unintelligible fact, the why and wherefore of which can never be inquired 
+into, at this a sound logic will revolt; and will pass over at once to 
+a method of philosophising which does not thus barricade the road 
+of discovery.
+
+4) Necessitarianism cannot logically stop short of making the {{{ Monist 2:335 }}} whole action of the mind a part of the physical universe. Our notion 
+that we decide what we are going to do, if as the necessitarian says, 
+it has been calculable since the earliest times, is reduced to illusion. 
+Indeed, consciousness in general thus becomes a mere illusory aspect 
+of a material system. What we call red, green, and violet are in 
+reality only different rates of vibration. The sole reality is the distribution of qualities of matter in space and time. Brain-matter is 
+protoplasm in a certain degree and kind of complication,—a certain 
+arrangement of mechanical particles. Its feeling is but an inward 
+aspect, a phantom. For, from the positions and velocities of the 
+particles at any one instant, and the knowledge of the immutable 
+forces, the positions at all other times are calculable; so that the 
+universe of space, time, and matter is a rounded system uninterfered 
+with from elsewhere. But from the state of feeling at any instant, 
+there is no reason to suppose the states of feeling at all other instants are thus exactly calculable; so that feeling is, as I said, a 
+mere fragmentary and illusive aspect of the universe. This is the 
+way, then, that necessitarianism has to make up its, accounts. It 
+enters consciousness under the head of sundries, as a forgotten trifle; 
+its scheme of the universe would be more satisfactory if this little 
+fact could be dropped out of sight. On the other hand, by supposing the rigid exactitude of causation to yield, I care not how little,—be it but by a strictly infinitesimal amount,—we gain room to insert mind into our scheme, and to put it into the place where it is 
+needed, into the position which, as the sole self-intelligible thing, it 
+is entitled to occupy, that of the fountain of existence; and in so 
+doing we resolve the problem of the connection of soul and body.
+
+5) But I must leave undeveloped the chief of my reasons, and 
+can only adumbrate it. The hypothesis of chance-spotaneity is one 
+whose inevitable consequences are capable of being traced out with 
+mathematical precision into considerable detail. Much of this I 
+have done and find the consequences to agree with observed facts to 
+an extent which seems to me remarkable. But the matter and 
+methods of reasoning are novel, and I have no right to promise that 
+other mathematicians shall find my deductions as satisfactory as I 
+myself do, so that the strongest reason for my belief must for the {{{ Monist 2:336 }}} present remain a private reason of my own, and cannot influence 
+others. I mention it to explain my own position; and partly to indicate to future mathematical speculators a veritable goldmine, 
+should time and circumstances and the abridger of all joys prevent 
+my opening it to the world.
+
+If now I, in my turn, inquire of the necessitarian why he prefers to suppose that all specification goes back to the beginning of 
+things, he will answer me with one of those last three arguments 
+which I left unanswered.
+
+First, he may say that chance is a thing absolutely unintelligible, and therefore that we never can be entitled to make such a 
+supposition. But does not this objection smack of naive impudence? It is not mine, it is his own conception of the universe 
+which leads abruptly up to hard, ultimate, inexplicable, immutable 
+law, on the one hand, and to inexplicable specification and diversification of circumstances on the other. My view, on the contrary, 
+hypothetises nothing at all, unless it be hypothesis to say that all 
+specification came about in some sense, and is not to be accepted 
+as unaccountable. To undertake to account for anything by saying 
+boldly that it is due to chance would, indeed, be futile. But this I 
+do not do. I make use of chance chiefly to make room for a principle of generalisation, or tendency to form habits, which I hold has 
+produced all regularities. The mechanical philosopher leaves the 
+whole specification of the world utterly unaccounted for, which is 
+pretty nearly as bad as to boldly attribute it to chance. I attribute 
+it altogether to chance, it is true, but to chance in the form of a 
+spontaneity which is to some degree regular. It seems to me clear 
+at any rate that one of these two positions must be taken, or else 
+specification must be supposed due to a spontaneity which develops 
+itself in a certain and not in a chance way, by an objective logic 
+like that of Hegel. This last way I leave as an open possibility, 
+for the present; for it is as much opposed to the necessitarian scheme 
+of existence as my own theory is.
+
+Secondly the necessitarian may say there are, at any rate, no 
+observed phenomena which the hypothesis of chance could aid in 
+explaining. In reply, I point first to the phenomenon of growth and {{{ Monist 2:337 }}} developing complexity, which appears to be universal, and which 
+though it may possibly be an affair of mechanism perhaps, certainly 
+presents all the appearance of increasing diversification. Then, 
+there is variety itself, beyond comparison the most obtrusive character of the universe : no mechanism can account for this. Then, 
+there is the very fact the necessitarian most insists upon, the regularity of the universe which for him serves only to block the road of 
+inquiry. Then, there are the regular relationships between the laws 
+of nature,—similarities and comparative characters, which appeal to 
+our intelligence as its cousins, and call upon us for a reason. Finally, there is consciousness, feeling, a patent fact enough, but a 
+very inconvenient one to the mechanical philosopher.
+
+Thirdly, the necessitarian may say that chance is not a _, that we cannot know positively there is any such element in 
+the universe. But the doctrine of the _ has nothing to do 
+with elementary conceptions. Pushed to that extreme, it at once 
+cuts off belief in the existence of a material universe; and without 
+that necessitarianism could hardly maintain its ground. Besides, 
+variety is a fact which must be admitted ; and the theory of chance 
+merely consists in supposing this diversification does not antedate 
+all time. Moreover, the avoidance of hypotheses involving causes 
+nowhere positively known to act—is only a recommendation of 
+logic, not a positive command. It cannot be formulated in any precise terms without at once betraying its untenable character,—I 
+mean as rigid rule, for as a recommendation it is wholesome enough.
+
+I believe I have thus subjected to fair examination all the important reasons for adhering to the theory of universal necessity, and 
+have shown their nullity. I earnestly beg that whoever may detect 
+any flaw in my reasoning will point it out to me, either privately or 
+publicly; for if I am wrong, it much concerns me to be set right 
+speedily. If my argument remains unrefuted, it will be time, I 
+think, to doubt the absolute truth of the principle of universal law; 
+and when once such a doubt has obtained a living root in any man's 
+mind, my cause with him, I am persuaded, is gained.
+
+C. S. Peirce
+
+[^*]: Continuous is not exactly the right word, but I let it go to avoid a long and irrelevant discussion.

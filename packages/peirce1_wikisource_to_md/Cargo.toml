@@ -1,0 +1,10 @@
+[package]
+name = "peirce1_wikisource_to_md"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Wikitext is a flat token soup, not a tree — unlike the TEI converters there
+# is no DOM to walk, so this is regex-shaped work throughout.
+regex = "1"
+clap = { version = "4", features = ["derive"] }

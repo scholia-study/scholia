@@ -5931,11 +5931,16 @@
                     "language",
                     "source_id",
                     "translations",
-                    "sibling_translations"
+                    "sibling_translations",
+                    "has_original_layer"
                 ],
                 "properties": {
                     "author": {
                         "type": "string"
+                    },
+                    "has_original_layer": {
+                        "type": "boolean",
+                        "description": "Whether this book carries a second, original-orthography layer\n(`content_blocks.original_html`). False for editions curated as a\nsingle layer — a text already in modern spelling, where a reviewed\nlayer would duplicate the reading text (peirce1). The reader hides\nits orthography toggle when this is false, rather than offering a\nswitch that changes nothing."
                     },
                     "id": {
                         "type": "string"

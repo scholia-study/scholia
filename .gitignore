@@ -40,6 +40,9 @@ assets/hegel2/*
 !assets/hegel3/
 assets/hegel3/*
 !assets/hegel3/curated/
+!assets/peirce1/
+assets/peirce1/*
+!assets/peirce1/curated/
 
 .env
 .env.master

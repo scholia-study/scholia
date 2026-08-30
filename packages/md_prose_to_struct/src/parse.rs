@@ -7,9 +7,14 @@ use std::sync::LazyLock;
 // An Arabic value may carry a letter suffix — the twice-printed 1651
 // Leviathan pages are disambiguated as 247b etc. A dotted volume.page form
 // spans multiple volumes of one edition in a single system (hegel2's GW
-// pages: 21.68, 11.241, 12.5).
+// pages: 21.68, 11.241, 12.5). A venue-qualified `VENUE vol:page` form spans
+// several distinct periodicals in one system, where volume numbers alone
+// would collide (peirce1: PSM 12:1, Monist 2:533, JSP 2:103).
 static AA_MARKER_RE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"\{\{\{\s*([0-9]+\.[0-9]+|[0-9]+[a-z]?|[IVXLCDM]+)\s*\}\}\}").unwrap()
+    Regex::new(
+        r"\{\{\{\s*([A-Za-z]+ [0-9]+:[0-9]+|[0-9]+\.[0-9]+|[0-9]+[a-z]?|[IVXLCDM]+)\s*\}\}\}",
+    )
+    .unwrap()
 });
 
 // {{ VALUE }} — B-edition page marker

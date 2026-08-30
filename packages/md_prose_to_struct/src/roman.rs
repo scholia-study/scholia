@@ -49,9 +49,21 @@ pub fn block_sort_order(value: &str) -> i32 {
         .parse::<i32>()
         .ok()
         .or_else(|| dotted_volume_page(value))
+        .or_else(|| venue_volume_page(value))
         .or_else(|| suffixed_arabic(value))
         .or_else(|| roman_to_int(value).map(|n| ROMAN_SORT_FLOOR + n as i32))
         .unwrap_or(0)
+}
+
+/// "PSM 12:1" → 12_001: like the dotted form, blocked by volume. The venue is
+/// dropped rather than ranked — sort is only consulted among the markers of a
+/// single sentence, and no sentence spans two periodicals.
+fn venue_volume_page(value: &str) -> Option<i32> {
+    let (_venue, vol_page) = value.split_once(' ')?;
+    let (vol, page) = vol_page.split_once(':')?;
+    let vol: i32 = vol.parse().ok()?;
+    let page: i32 = page.parse().ok()?;
+    (page < 1000).then_some(vol * 1000 + page)
 }
 
 /// "21.68" → 21_068: volume-blocked so pages stay monotonic per volume.
@@ -94,6 +106,23 @@ mod tests {
     #[test]
     fn an_unparseable_value_sorts_first_without_panicking() {
         assert_eq!(block_sort_order("?"), 0);
+    }
+
+    #[test]
+    fn venue_qualified_pages_sort_by_page_within_volume() {
+        assert_eq!(block_sort_order("PSM 12:1"), 12_001);
+        assert!(block_sort_order("PSM 12:1") < block_sort_order("PSM 12:15"));
+        assert!(block_sort_order("Monist 2:533") < block_sort_order("Monist 3:1"));
+    }
+
+    #[test]
+    fn venue_qualified_pages_ignore_the_venue() {
+        // Sort is only consulted within one sentence, which never spans two
+        // periodicals — so colliding volume numbers across venues are fine.
+        assert_eq!(
+            block_sort_order("JSP 2:103"),
+            block_sort_order("Monist 2:103")
+        );
     }
 
     #[test]

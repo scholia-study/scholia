@@ -645,6 +645,65 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 paren_protected_splits: false,
             })
         }
+        "peirce1" => {
+            use common::peirce1::{filenames, meta, toc};
+            let toc_entries = toc::flat_toc_entries();
+            Some(Corpus {
+                name: "peirce1",
+                book: book_data(BookSpec {
+                    slug: meta::BOOK_SLUG,
+                    title: meta::BOOK_TITLE,
+                    author: meta::AUTHOR,
+                    language: meta::LANGUAGE,
+                    source: meta::SOURCE,
+                    year: meta::YEAR,
+                    about: meta::ABOUT,
+                    // A selection spanning five periodicals has no single
+                    // imprint; each paper's is carried by its page markers.
+                    imprint: Imprint {
+                        publisher: None,
+                        place: None,
+                        volume: None,
+                        edition: None,
+                        original_year: None,
+                    },
+                }),
+                // One system: the original printing's venue-qualified
+                // volume:page, the citation standard for the journal papers.
+                reference_systems: vec![ReferenceSystemData {
+                    slug: meta::PAGE_SYSTEM_SLUG.to_string(),
+                    label: meta::PAGE_SYSTEM_LABEL.to_string(),
+                    ref_type: meta::PAGE_SYSTEM_REF_TYPE.to_string(),
+                    cite_priority: Some(meta::PAGE_CITE_PRIORITY),
+                    cite_template: Some(meta::PAGE_CITE_TEMPLATE.to_string()),
+                    margin_prefix: None,
+                }],
+                // Single mode has one curated layer, so both TOCs are the same
+                // table and `reviewed_dir` is never read.
+                toc_reviewed: toc_entries.clone(),
+                toc_modernized: toc_entries,
+                toc_en: None,
+                filenames: filenames::all_filenames(),
+                position_number: filenames::position_number,
+                slugify: filenames::slugify,
+                modernized_dir: meta::CURATED_DIR.to_string(),
+                reviewed_dir: String::new(),
+                translated_dir: String::new(),
+                output_file: meta::OUTPUT_FILE.to_string(),
+                figure_label: "Figure",
+                aa_system_slug: meta::PAGE_SYSTEM_SLUG,
+                // No `{{ }}` system in this corpus; the empty slug fails
+                // loudly at import if such a marker ever appears.
+                edition_system_slug: "",
+                edition_sort_arabic_fallback: false,
+                marker_labels: ("orig-pub", "(none)"),
+                source_splitter_en: true,
+                // Peirce is late-19th-century American prose, not Early
+                // Modern: colons point, they do not end sentences.
+                strong_colon_splits: false,
+                paren_protected_splits: false,
+            })
+        }
         _ => None,
     }
 }

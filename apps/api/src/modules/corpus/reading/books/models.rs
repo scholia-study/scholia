@@ -42,6 +42,13 @@ pub struct BookDetail {
     /// `source_book_slug` and `translations` already express the
     /// relationship.
     pub sibling_translations: Vec<BookSummary>,
+    /// Whether this book carries a second, original-orthography layer
+    /// (`content_blocks.original_html`). False for editions curated as a
+    /// single layer — a text already in modern spelling, where a reviewed
+    /// layer would duplicate the reading text (peirce1). The reader hides
+    /// its orthography toggle when this is false, rather than offering a
+    /// switch that changes nothing.
+    pub has_original_layer: bool,
 }
 
 /// Resolved bibliographic info for the "About this text" panel.

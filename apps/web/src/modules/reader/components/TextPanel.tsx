@@ -288,6 +288,9 @@ export function TextPanel({
     const ink = accent ? inkOn(accent) : undefined;
 
     // Determine translation relationships
+    // Single-layer editions (peirce1) have no original orthography to show,
+    // so the toggle is omitted rather than offered as a no-op.
+    const hasOriginalLayer = bookDetail?.has_original_layer ?? false;
     const isTranslation = !!bookDetail?.source_book_slug;
     const hasTranslations = (bookDetail?.translations?.length ?? 0) > 0;
     const hasRelationship = isTranslation || hasTranslations;
@@ -1224,25 +1227,28 @@ export function TextPanel({
                                             : []),
                                         <Divider key="bs-bottom-divider" />,
                                     ]}
-                                    <MenuItem
-                                        disableRipple
-                                        onClick={onToggleOriginal}
-                                        sx={{
-                                            py: 0.5,
-                                            px: 2,
-                                            gap: 1,
-                                            "&:hover": {
-                                                backgroundColor: "transparent",
-                                            },
-                                        }}
-                                    >
-                                        <Switch
-                                            size="small"
-                                            checked={showOriginal}
-                                            tabIndex={-1}
-                                        />
-                                        <ListItemText primary="Original orthography" />
-                                    </MenuItem>
+                                    {hasOriginalLayer && (
+                                        <MenuItem
+                                            disableRipple
+                                            onClick={onToggleOriginal}
+                                            sx={{
+                                                py: 0.5,
+                                                px: 2,
+                                                gap: 1,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        "transparent",
+                                                },
+                                            }}
+                                        >
+                                            <Switch
+                                                size="small"
+                                                checked={showOriginal}
+                                                tabIndex={-1}
+                                            />
+                                            <ListItemText primary="Original orthography" />
+                                        </MenuItem>
+                                    )}
                                     {availableSystems.length > 0 && [
                                         <Divider key="margin-divider" />,
                                         <Typography

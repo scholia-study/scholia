@@ -91,8 +91,9 @@ const TOC: &[TocEntry] = &[
         position: 10,
         depth: 4,
         page: Some("22"),
-        slug: "a",
-        // Body head prints bare "A."; label follows the Inhaltsanzeige.
+        slug: "a_seyn",
+        // Body head prints bare "A."; label follows the Inhaltsanzeige, and the
+        // slug follows the label — as it does for B and C.
         label: "A. Seyn",
     },
     TocEntry {

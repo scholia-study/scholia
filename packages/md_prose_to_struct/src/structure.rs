@@ -43,13 +43,26 @@ static SUP_NUMBER_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<sup>(\d+)
 pub type Entry = (usize, Option<String>, u16, String, Option<&'static str>);
 
 /// Intermediate per-file parsed data.
+/// Which edition shape a build produces.
+///
+/// `Source` pairs two curated layers (modernized + reviewed). `Single` has one
+/// curated layer and no original at all — a text already in modern orthography,
+/// where a second layer would be a near-duplicate (peirce1). `Translation` is
+/// one layer locked 1:1 to a source edition.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Mode {
+    Source,
+    Single,
+    Translation,
+}
+
 pub struct ParsedFile {
     pub flat_index: usize,
     /// Primary-layer blocks (modernized for a source edition, translated for a
     /// translation edition) → text/html.
     pub blocks: Vec<ParsedBlock>,
     /// Reviewed-layer blocks → original_text/original_html; `None` for a
-    /// translation edition (single-layer).
+    /// translation or single edition (both single-layer).
     pub original_blocks: Option<Vec<ParsedBlock>>,
     /// English label captured from the file's front matter — only used by a
     /// translation edition without an English TOC (kant3).
@@ -143,7 +156,12 @@ struct BlockCtx<'a> {
 }
 
 /// Build the complete nested output from parsed files.
-pub fn build_output(corpus: &Corpus, translation: bool, parsed_files: &[ParsedFile]) -> Output {
+pub fn build_output(corpus: &Corpus, mode: Mode, parsed_files: &[ParsedFile]) -> Output {
+    // Single mode reads its labels and splits its sentences exactly like a
+    // source edition; only the absent second layer distinguishes it, and that
+    // is already carried by `ParsedFile::original_blocks`.
+    let translation = mode == Mode::Translation;
+
     // === Pass 1: Collect footnotes, assign global numbers ===
     let mut footnote_counter: i32 = 0;
     let mut marker_map: HashMap<(usize, String), i32> = HashMap::new();

@@ -64,7 +64,18 @@ pub async fn get_book_by_slug(pool: &PgPool, slug: &str) -> Result<BookDetail, A
     .ok_or_else(|| AppError::NotFound(format!("Book not found: {slug}")))?;
 
     let source_id: Uuid = row.source_id;
+    let book_id: Uuid = row.id;
     let mut detail = row.into_detail();
+
+    detail.has_original_layer = sqlx::query_scalar!(
+        r#"SELECT EXISTS (
+               SELECT 1 FROM content_blocks
+               WHERE book_id = $1 AND original_html IS NOT NULL
+           ) AS "exists!""#,
+        book_id,
+    )
+    .fetch_one(pool)
+    .await?;
 
     // Fetch translations: books whose source has translation_of_id = this book's source
     let translation_rows = sqlx::query_as!(
@@ -274,6 +285,7 @@ impl BookRow {
             source_book_slug: self.source_book_slug,
             translations: vec![],
             sibling_translations: vec![],
+            has_original_layer: false,
         }
     }
 }
