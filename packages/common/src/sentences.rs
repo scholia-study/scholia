@@ -732,6 +732,20 @@ static ENUM_HERALD_GUARD_RE: LazyLock<Regex> =
 
 static COLON_QUOTE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(":—?\\s*[\"“][A-Z]").unwrap());
 
+fn previous_char_boundary(text: &str, mut pos: usize) -> usize {
+    while pos > 0 && !text.is_char_boundary(pos) {
+        pos -= 1;
+    }
+    pos
+}
+
+fn next_char_boundary(text: &str, mut pos: usize) -> usize {
+    while pos < text.len() && !text.is_char_boundary(pos) {
+        pos += 1;
+    }
+    pos
+}
+
 /// [`split_sentences_en_forced`] plus enumerator-label relocation and
 /// colon-heralded quotation splits, for corpora whose printings use both
 /// conventions (peirce1).
@@ -762,12 +776,15 @@ pub fn split_sentences_en_enum_forced(
         if INITIAL_CHAIN_AFTER_RE.is_match(following) {
             continue;
         }
-        if NAME_GUARD_RE.is_match(
-            &text[preceding
+        let window_start = previous_char_boundary(
+            text,
+            preceding
                 .rfind(' ')
                 .map(|i| i.saturating_sub(20))
-                .unwrap_or(0)..(split_pos + 30).min(text.len())],
-        ) {
+                .unwrap_or(0),
+        );
+        let window_end = next_char_boundary(text, (split_pos + 30).min(text.len()));
+        if NAME_GUARD_RE.is_match(&text[window_start..window_end]) {
             continue;
         }
         split_positions.push(split_pos);
@@ -1734,6 +1751,15 @@ mod variable_end_and_quote_tests {
         assert_eq!(out.len(), 4, "{out:?}");
         assert!(out[1].0.starts_with("The premise"));
         assert!(out[3].0.starts_with("He is deceived"));
+    }
+
+    #[test]
+    fn variable_sentence_end_context_handles_multibyte_text() {
+        let t = "The value is Pⁱᵛ before S. The exponent is Pⁱᵛ and more text follows.";
+        let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(out.len(), 2, "{out:?}");
+        assert_eq!(out[0].0, "The value is Pⁱᵛ before S.");
+        assert_eq!(out[1].0, "The exponent is Pⁱᵛ and more text follows.");
     }
 
     #[test]
