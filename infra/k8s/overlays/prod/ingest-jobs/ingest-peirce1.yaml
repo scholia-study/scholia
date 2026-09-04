@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-peirce1-2f7f2df4719f
+  name: ingest-peirce1-b43e752892f2
   labels:
     ingest: peirce1
   annotations:
@@ -31,7 +31,7 @@ spec:
             - name: CORPUS
               value: peirce1
             - name: DERIVED_HASH
-              value: "2f7f2df4719f"
+              value: "b43e752892f2"
             - name: NTFY_URL
               valueFrom:
                 secretKeyRef:
