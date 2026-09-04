@@ -127,18 +127,18 @@ The subject of such a proposition is separated into two terms, a “subject nomi
 In an argument, the premisses form a representation of the conclusion, because they indicate the interpretant of the argument, or representation representing it to represent its object. The premisses may afford a likeness, index, or symbol of the conclusion. In deductive argument, the conclusion is represented by the premisses as by a general sign under which it is contained. In hypotheses, something _{{{ PAAAS 7:297 }}} like_ the conclusion is proved, that is, the premisses form a likeness of the conclusion. Take, for example, the following argument:
 
 <figure>
-  <p><i>M</i> is, for instance, <i>P</i>′, <i>P</i>′′, <i>P</i>′′′, and <i>P</i><sup>iv</sup>;<br><i>S</i> is <i>P</i>′, <i>P</i>′′, <i>P</i>′′′, and <i>P</i><sup>iv</sup>:<br>∴ <i>S</i> is <i>M</i>.</p>
+  <p><i>M</i> is, for instance, <i>P</i>′, <i>P</i>′′, <i>P</i>′′′, and <i>P</i>ⁱᵛ;<br><i>S</i> is <i>P</i>′, <i>P</i>′′, <i>P</i>′′′, and <i>P</i>ⁱᵛ:<br>∴ <i>S</i> is <i>M</i>.</p>
   <figcaption></figcaption>
 </figure>
 
-Here the first premiss amounts to this, that “_P′_, _P′′_, _P′′′_, and _P_^(iv) ” is a likeness of _M_, and thus the premisses are or represent a likeness of the conclusion. That it is different with induction another example will show.
+Here the first premiss amounts to this, that “_P′_, _P′′_, _P′′′_, and _P_ⁱᵛ” is a likeness of _M_, and thus the premisses are or represent a likeness of the conclusion. That it is different with induction another example will show.
 
 <figure>
-  <p><i>S</i>′, <i>S</i>′′, <i>S</i>′′′, and <i>S</i><sup>iv</sup> are taken as samples of the collection <i>M</i>;<br><i>S</i>′, <i>S</i>′′, <i>S</i>′′′, and <i>S</i><sup>iv</sup> are <i>P</i>:<br>∴ All <i>M</i> is <i>P</i>.</p>
+  <p><i>S</i>′, <i>S</i>′′, <i>S</i>′′′, and <i>S</i>ⁱᵛ are taken as samples of the collection <i>M</i>;<br><i>S</i>′, <i>S</i>′′, <i>S</i>′′′, and <i>S</i>ⁱᵛ are <i>P</i>:<br>∴ All <i>M</i> is <i>P</i>.</p>
   <figcaption></figcaption>
 </figure>
 
-Hence the first premiss amounts to saying that “_S′_, _S′′_, _S′′′_, and _S_^(iv) ” is an index of _M_. Hence the premisses are an index of the conclusion.
+Hence the first premiss amounts to saying that “_S′_, _S′′_, _S′′′_, and _S_ⁱᵛ” is an index of _M_. Hence the premisses are an index of the conclusion.
 
 The other divisions of terms, propositions, and arguments arise from the distinction of extension and comprehension. I propose to treat this subject in a subsequent paper. But I will so far anticipate that as to say that there is, first, the direct reference of a symbol to its objects, or its denotation; second, the reference of the symbol to its ground, through its object, that is, its reference to the common characters of its objects, or its connotation; and third, its reference to its interpretants through its object, that is, its reference to all the synthetical propositions in which its objects in common are subject or predicate, and this I term the information it embodies. And as every addition to what it denotes, or to what it connotes, is effected by means of a distinct proposition of this kind, it follows that the extension and comprehension of a term are in an inverse relation, as long as the information remains the same, and that every increase of information is accompanied by an increase of one or other of these two quantities. It may be observed that extension and comprehension are very often taken in other senses in which this last proposition is not true.
 
