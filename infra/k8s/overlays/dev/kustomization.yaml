@@ -41,7 +41,7 @@ images:
   - name: ghcr.io/scholia-study/scholia-web
     newTag: main-fa2ede6
   - name: ghcr.io/scholia-study/scholia-proxy
-    newTag: main-fa2ede6
+    newTag: main-b5006e5
 
 configMapGenerator:
   - name: proxy-security
