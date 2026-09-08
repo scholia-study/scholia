@@ -181,17 +181,26 @@ impl FromRequestParts<AppState> for AuthUser {
             .await
             .map_err(|_| StatusCode::UNAUTHORIZED)?;
 
-        let val: Option<String> = session.get(USER_ID_KEY).await.ok().flatten();
+        // A session-store failure is an outage, not a logged-out user: it
+        // must surface as a 500 (which clients retry) rather than a 401
+        // (which they treat as a terminal "please log in again").
+        let val: Option<String> = session.get(USER_ID_KEY).await.map_err(|e| {
+            tracing::error!("auth: failed to load session from store: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
 
         let user_id = val
             .and_then(|s| Uuid::parse_str(&s).ok())
             .ok_or(StatusCode::UNAUTHORIZED)?;
 
         let session_created_at: Option<i64> =
-            session.get(SESSION_CREATED_AT_KEY).await.ok().flatten();
+            session.get(SESSION_CREATED_AT_KEY).await.map_err(|e| {
+                tracing::error!("auth: failed to load session from store: {e}");
+                StatusCode::INTERNAL_SERVER_ERROR
+            })?;
 
         let user = load_auth_user(&state.pool, user_id, session_created_at)
-            .await
+            .await?
             .ok_or(StatusCode::UNAUTHORIZED)?;
 
         Ok(user)
@@ -217,11 +226,15 @@ impl OptionalFromRequestParts<AppState> for AuthUser {
     }
 }
 
+/// `Ok(None)` means the session is genuinely invalid (deleted user,
+/// unverified email, invalidated session) → 401. A DB failure is an outage,
+/// not a logout, and surfaces as `Err(500)` so clients retry instead of
+/// re-authenticating.
 async fn load_auth_user(
     pool: &PgPool,
     user_id: Uuid,
     session_created_at: Option<i64>,
-) -> Option<AuthUser> {
+) -> Result<Option<AuthUser>, StatusCode> {
     let row = match sqlx::query(
         "SELECT id, email, display_name, avatar_url, email_verified_at, sessions_invalidated_at FROM users WHERE id = $1",
     )
@@ -230,17 +243,17 @@ async fn load_auth_user(
     .await
     {
         Ok(Some(row)) => row,
-        Ok(None) => return None,
+        Ok(None) => return Ok(None),
         Err(e) => {
-            // A DB failure here must not silently look like "logged out";
-            // log it so an outage is visible rather than mass-401s.
             tracing::error!("auth: failed to load user {user_id}: {e}");
-            return None;
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
         }
     };
 
     let email_verified_at: Option<OffsetDateTime> = row.get("email_verified_at");
-    email_verified_at?;
+    if email_verified_at.is_none() {
+        return Ok(None);
+    }
 
     // Reject any session that predates the last invalidation (e.g. a password
     // reset). Fail closed when the session carries no creation time — an
@@ -249,7 +262,7 @@ async fn load_auth_user(
     if let Some(changed) = sessions_invalidated_at
         && session_created_at.is_none_or(|created| created < changed.unix_timestamp())
     {
-        return None;
+        return Ok(None);
     }
 
     let role_names: Vec<String> = sqlx::query_scalar(
@@ -258,16 +271,19 @@ async fn load_auth_user(
     .bind(user_id)
     .fetch_all(pool)
     .await
-    .ok()?;
+    .map_err(|e| {
+        tracing::error!("auth: failed to load roles for user {user_id}: {e}");
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
 
     let permissions = resolve_permissions(&role_names);
 
-    Some(AuthUser {
+    Ok(Some(AuthUser {
         id: row.get("id"),
         email: row.get("email"),
         display_name: row.get("display_name"),
         avatar_url: row.get("avatar_url"),
         roles: role_names,
         permissions,
-    })
+    }))
 }

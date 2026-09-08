@@ -11,7 +11,7 @@ import {
 import posthog from "posthog-js";
 import { Toaster } from "react-hot-toast";
 import { getMeQueryKey, getMeQueryOptions } from "../api/auth/auth";
-import { AuthProvider } from "../hooks/useAuth";
+import { AuthProvider, isUnauthorized, meRetry } from "../hooks/useAuth";
 import { Footer } from "../layout/Footer";
 import { InfoSubnav } from "../layout/InfoSubnav";
 import { Navbar } from "../layout/Navbar";
@@ -35,13 +35,18 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         // Root loaders re-run on every navigation (defaultStaleTime 0). A
         // logged-out /api/auth/me is a 401 → React Query error state, which is
         // always "stale", so an unconditional prefetch re-fires it on each
-        // navigation (e.g. every tour step). Skip when a logged-out result is
-        // already cached; the AuthProvider observer and login/logout
-        // invalidation keep auth current after the first fetch.
+        // navigation (e.g. every tour step). Skip only when a definitive
+        // logged-out answer (401) is cached — a transient error (network,
+        // API restarting mid-deploy) must keep retrying on later navigations,
+        // or a single blip would render the tab logged-out for its lifetime.
+        // The AuthProvider observer and login/logout invalidation keep auth
+        // current after the first fetch.
         const cached = queryClient.getQueryState(getMeQueryKey());
-        if (cached?.status !== "error") {
+        const loggedOut =
+            cached?.status === "error" && isUnauthorized(cached.error);
+        if (!loggedOut) {
             return queryClient.prefetchQuery(
-                getMeQueryOptions({ query: { retry: false } }), // Speed up auth
+                getMeQueryOptions({ query: { retry: meRetry } }), // Speed up auth
             );
         }
     },

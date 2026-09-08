@@ -80,6 +80,7 @@ async fn run() {
         .with_secure(config.cookie_secure)
         .with_same_site(SameSite::Lax)
         .with_http_only(true)
+        .with_always_save(true)
         .with_expiry(tower_sessions::Expiry::OnInactivity(Duration::days(30)));
 
     let cors = CorsLayer::new()
