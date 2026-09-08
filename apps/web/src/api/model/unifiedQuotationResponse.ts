@@ -53,6 +53,14 @@ export type UnifiedQuotationResponse =
           article_title: string;
           author_display_name: string;
           created_at: string;
+          /** @nullable */
+          figure_alt?: string | null;
+          /**
+           * Present for figure quotations: the quoted image, for a list
+           * thumbnail.
+           * @nullable
+           */
+          figure_src?: string | null;
           id: string;
           note_count: number;
           source_type: "article";

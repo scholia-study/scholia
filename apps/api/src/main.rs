@@ -110,6 +110,7 @@ async fn run() {
         config,
         stripe: stripe_client,
         purge_client: api::system::cache::build_client(),
+        media: api::system::media::MediaStore::from_env(),
     };
 
     // The full documented surface is assembled in `api::api_router`
@@ -129,6 +130,9 @@ async fn run() {
         // Sitemaps: undocumented GET-only XML routes at the site root,
         // proxied+cached by nginx. Session/CORS layers are irrelevant.
         .merge(api::modules::seo::routes())
+        // Media serving for local dev; in cluster nginx serves /media/*
+        // from the bucket and this route is never reached.
+        .merge(api::system::media::routes())
         .with_state(app_state)
         // Outermost: turn any handler panic into a 500 instead of a dropped
         // connection. Wraps every route, including the merged Stripe webhook.

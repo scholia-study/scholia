@@ -109,6 +109,8 @@ spec:
                   name: turnstile
                   key: TURNSTILE_SECRET_KEY
                   optional: true
+            - name: MEDIA_BUCKET
+              value: scholia-media
           envFrom:
             # Pulls every other env var the API needs:
             # RESEND_API_KEY, FROM_EMAIL, BACKEND_URL, FRONTEND_URL,
@@ -117,6 +119,8 @@ spec:
             # Authored as a SOPS-encrypted manifest in the overlay.
             - secretRef:
                 name: api
+            - secretRef:
+                name: assets-bucket
           resources:
             requests:
               cpu: 100m

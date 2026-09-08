@@ -334,6 +334,24 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
         format!("<!--CITATION_PLACEHOLDER_{idx}-->")
     });
 
+    // Pre-process: extract ::figure{...} directives. A directive whose src
+    // is not an uploaded article image under /media/ is dropped outright —
+    // the directive is the only sanctioned image path.
+    let figure_re = Regex::new(r#"::figure\{([^}]*)\}"#).expect("Invalid figure regex");
+    let mut figure_placeholder_map: Vec<String> = Vec::new();
+    let processed =
+        figure_re.replace_all(
+            &processed,
+            |caps: &regex::Captures| match figure_directive_data_attrs(&caps[1]) {
+                Some(data_attrs) => {
+                    let idx = figure_placeholder_map.len();
+                    figure_placeholder_map.push(data_attrs);
+                    format!("\n<!--FIGURE_PLACEHOLDER_{idx}-->\n")
+                }
+                None => String::new(),
+            },
+        );
+
     // Resolve each quoted passage to its enclosing sub-work source — the
     // deepest toc_node ancestor whose 'chapter' source carries its own
     // periodical imprint (essay collections, e.g. a Peirce paper). Same
@@ -443,6 +461,13 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
         html_output = html_output.replace(&placeholder, &replacement);
     }
 
+    // Post-process: replace figure placeholder comments with actual divs
+    for (idx, data_attrs) in figure_placeholder_map.iter().enumerate() {
+        let placeholder = format!("<!--FIGURE_PLACEHOLDER_{idx}-->");
+        let replacement = format!(r#"<div class="figure-embed"{data_attrs}></div>"#);
+        html_output = html_output.replace(&placeholder, &replacement);
+    }
+
     // Post-process: replace citation placeholders with inline spans
     // Seed bibliography with all collected source IDs (quotations + citations)
     let mut bibliography_sources: Vec<Uuid> = all_source_ids
@@ -510,6 +535,53 @@ pub async fn render_article_markdown(pool: &PgPool, frontend_url: &str, markdown
     // the embed/citation/bibliography markup built above. The frontend
     // renders this with a non-sanitizing parser, so it must be safe here.
     crate::system::sanitize::clean_article_html(&html_output)
+}
+
+/// Whether `src` is exactly an uploaded article-image key under `/media/`
+/// (the form the upload endpoint mints). Shared by the figure directive
+/// renderer and figure-quotation validation.
+pub fn is_uploaded_figure_src(src: &str) -> bool {
+    static RE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
+    RE.get_or_init(|| {
+        Regex::new(r"^/media/articles/[A-Za-z0-9-]+/[a-f0-9]{16}\.webp$")
+            .expect("Invalid figure src regex")
+    })
+    .is_match(src)
+}
+
+/// Turn a `::figure{…}` attribute string into the `data-figure-*` attribute
+/// list for the embed div. Returns `None` — drop the directive — unless `src`
+/// is exactly an uploaded article image key under `/media/`. Only the known
+/// attribute keys are carried through; values can't escape their attribute
+/// because the directive regexes capture within `"…"`.
+fn figure_directive_data_attrs(attrs_str: &str) -> Option<String> {
+    let src_attr_re = Regex::new(r#"src="([^"]*)""#).expect("Invalid src attr regex");
+    let src = src_attr_re.captures(attrs_str)?;
+    if !is_uploaded_figure_src(&src[1]) {
+        return None;
+    }
+
+    const KEYS: [&str; 5] = ["src", "alt", "caption", "width", "height"];
+    let attr_re = Regex::new(r#"(\w+)="([^"]*)""#).expect("Invalid attr regex");
+    let num_re = Regex::new(r#"(\w+)=(\d+)"#).expect("Invalid num regex");
+
+    let mut data_attrs = String::new();
+    for cap in attr_re.captures_iter(attrs_str) {
+        let key = &cap[1];
+        let val = &cap[2];
+        if KEYS.contains(&key) {
+            data_attrs.push_str(&format!(r#" data-figure-{key}="{val}""#));
+        }
+    }
+    // mdast-util-directive may serialize numeric attributes unquoted.
+    for cap in num_re.captures_iter(attrs_str) {
+        let key = &cap[1];
+        let val = &cap[2];
+        if KEYS.contains(&key) && !data_attrs.contains(&format!("data-figure-{key}=")) {
+            data_attrs.push_str(&format!(r#" data-figure-{key}="{val}""#));
+        }
+    }
+    Some(data_attrs)
 }
 
 #[derive(Clone)]
@@ -1952,18 +2024,26 @@ struct SentenceRow {
     original_html: Option<String>,
 }
 
+/// The sentence span a batch request addresses. Numbers and ids are two ways
+/// of naming the same range: `start_id` takes precedence, and carries
+/// quotations anchored on unnumbered sentences (figure captions, headings).
+pub struct SentenceRange {
+    pub start_number: i32,
+    pub end_number: Option<i32>,
+    pub start_id: Option<Uuid>,
+    pub end_id: Option<Uuid>,
+    pub kind: crate::modules::corpus::SentenceKind,
+}
+
 pub async fn batch_get_sentences(
     pool: &PgPool,
     book_slug: &str,
     node_slug: &str,
-    start_number: i32,
-    end_number: Option<i32>,
-    start_id: Option<Uuid>,
-    end_id: Option<Uuid>,
-    kind: crate::modules::corpus::SentenceKind,
+    range: &SentenceRange,
 ) -> Result<BatchSentenceResponseItem, AppError> {
-    let end = end_number.unwrap_or(start_number);
-    let is_body = kind == crate::modules::corpus::SentenceKind::Body;
+    let start_number = range.start_number;
+    let end = range.end_number.unwrap_or(start_number);
+    let is_body = range.kind == crate::modules::corpus::SentenceKind::Body;
 
     struct BookNodeRow {
         book_title: String,
@@ -2048,11 +2128,11 @@ pub async fn batch_get_sentences(
     // Three addressing modes: sentence-id ranges (quotations anchored on
     // unnumbered sentences — figure captions, headings), body
     // sentence-number ranges, footnote sentence-number ranges.
-    let (rows, start_pos, end_pos) = if let Some(sid) = start_id {
+    let (rows, start_pos, end_pos) = if let Some(sid) = range.start_id {
         let spos = pos_by_id(pool, book_slug, sid)
             .await?
             .ok_or_else(|| AppError::NotFound("Quoted sentence not found".into()))?;
-        let (epos, eid) = match end_id.filter(|e| *e != sid) {
+        let (epos, eid) = match range.end_id.filter(|e| *e != sid) {
             Some(eid) => (
                 pos_by_id(pool, book_slug, eid)
                     .await?
@@ -2292,7 +2372,7 @@ pub async fn batch_get_sentences(
         node_slug: String,
         node_label: String,
     }
-    let source_context = if let Some(sid) = start_id {
+    let source_context = if let Some(sid) = range.start_id {
         sqlx::query_as!(
             SourceRow,
             r#"SELECT b.slug AS "book_slug!", COALESCE(bs.title_display, bs.title) AS "book_title!",
@@ -2653,5 +2733,66 @@ mod bibliography_tests {
             format_inline_citation(&entries, &map),
             "(Di Giovanni 2010, 94)"
         );
+    }
+}
+
+#[cfg(test)]
+mod figure_directive_tests {
+    use super::figure_directive_data_attrs;
+
+    const VALID_SRC: &str =
+        "/media/articles/0a1b2c3d-4e5f-6071-8293-a4b5c6d7e8f9/0123456789abcdef.webp";
+
+    #[test]
+    fn valid_directive_yields_data_attrs() {
+        let attrs = format!(
+            r#"src="{VALID_SRC}" alt="A diagram" caption="Fig. 1" width="800" height="600""#
+        );
+        let out = figure_directive_data_attrs(&attrs).expect("valid src accepted");
+        assert!(out.contains(&format!(r#"data-figure-src="{VALID_SRC}""#)));
+        assert!(out.contains(r#"data-figure-alt="A diagram""#));
+        assert!(out.contains(r#"data-figure-caption="Fig. 1""#));
+        assert!(out.contains(r#"data-figure-width="800""#));
+        assert!(out.contains(r#"data-figure-height="600""#));
+    }
+
+    #[test]
+    fn unquoted_numeric_attrs_accepted() {
+        let attrs = format!(r#"src="{VALID_SRC}" width=800 height=600"#);
+        let out = figure_directive_data_attrs(&attrs).expect("valid src accepted");
+        assert!(out.contains(r#"data-figure-width="800""#));
+        assert!(out.contains(r#"data-figure-height="600""#));
+    }
+
+    #[test]
+    fn external_src_dropped() {
+        assert!(figure_directive_data_attrs(r#"src="https://evil.example/x.webp""#).is_none());
+    }
+
+    #[test]
+    fn traversal_src_dropped() {
+        assert!(
+            figure_directive_data_attrs(
+                r#"src="/media/articles/../secrets/0123456789abcdef.webp""#
+            )
+            .is_none()
+        );
+        assert!(
+            figure_directive_data_attrs(r#"src="/media/articles/u/0123456789abcdef.webp.svg""#)
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn missing_src_dropped() {
+        assert!(figure_directive_data_attrs(r#"alt="x" caption="y""#).is_none());
+    }
+
+    #[test]
+    fn unknown_keys_ignored() {
+        let attrs = format!(r#"src="{VALID_SRC}" onclick="alert(1)""#);
+        let out = figure_directive_data_attrs(&attrs).expect("valid src accepted");
+        assert!(!out.contains("onclick"));
+        assert!(!out.contains("alert"));
     }
 }

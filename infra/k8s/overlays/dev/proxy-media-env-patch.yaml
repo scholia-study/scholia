@@ -1,0 +1,14 @@
+# Strategic-merge patch: env entries merge by name into the base's
+# proxy container. Dev serves /media/ from the dev media bucket.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: scholia-proxy
+spec:
+    template:
+        spec:
+            containers:
+                - name: proxy
+                  env:
+                      - name: MEDIA_ORIGIN
+                        value: https://fsn1.your-objectstorage.com/scholia-media-dev

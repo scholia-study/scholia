@@ -429,6 +429,8 @@ pub async fn list_all_quotations(
                 text_snippet: crate::modules::writing::quotations::db::truncate_snippet(
                     &q.text, 80,
                 ),
+                figure_src: q.figure_src,
+                figure_alt: q.figure_alt,
                 note_count: q.note_count.unwrap_or(0),
                 created_at: q
                     .created_at

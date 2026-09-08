@@ -7,6 +7,7 @@ import parse, {
 import {
     ArticleQuotationCard,
     asSentenceKind,
+    figureEmbedFromAttribs,
     QuotationCard,
 } from "../../quotation";
 
@@ -87,6 +88,9 @@ export function SnapshotView({
         const el = domNode as Element;
         const attrs = el.attribs ?? {};
 
+        if (attrs.class?.includes("figure-embed")) {
+            return wrapEmbed(el, figureEmbedFromAttribs(attrs));
+        }
         if (attrs.class?.includes("article-quotation-embed")) {
             const id = attrs["data-article-quotation-id"];
             const wrapped = id ? <ArticleQuotationCard id={id} /> : null;

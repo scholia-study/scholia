@@ -25,7 +25,7 @@ use std::sync::LazyLock;
 use text_struct::parse::resolve_marker_to_sentence;
 
 use crate::corpus::Corpus;
-use crate::figure::build_figure_block;
+use crate::figure::{SystemSlugs, build_figure_block};
 use crate::html::{FOOTNOTE_REF_RE, md_to_html, md_to_plain};
 use crate::model::*;
 use crate::parse::{
@@ -152,7 +152,7 @@ struct BlockCtx<'a> {
     figure_label: &'a str,
     /// Splitter for heading blocks — the base splitter, without the prose
     /// herald/enumerator rules that would carve a title apart.
-    heading_splitter: fn(&str, &str, &[usize]) -> Vec<(String, String)>,
+    heading_splitter: Splitter,
     aa_system_slug: &'a str,
     edition_system_slug: &'a str,
     edition_sort_arabic_fallback: bool,
@@ -376,8 +376,10 @@ fn build_block(
             flat_index,
             n,
             ctx.figure_label,
-            ctx.aa_system_slug,
-            ctx.edition_system_slug,
+            &SystemSlugs {
+                aa: ctx.aa_system_slug,
+                edition: ctx.edition_system_slug,
+            },
         );
     }
 

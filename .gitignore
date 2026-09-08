@@ -73,3 +73,6 @@ docs/db/schema.sql
 # they're public). Guards against a keygen'd file in the repo root.
 *age-key*.txt
 *.age
+
+# Local media storage for the dev API (uploaded article images)
+.local/

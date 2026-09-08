@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT id FROM article_quotations\n                   WHERE user_id = $1 AND article_id = $2\n                     AND kind = 'text' AND text = $3",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid", "Uuid", "Text"]
+        },
+        "nullable": [false]
+    },
+    "hash": "fd036abf4fe490d541f7e0f8abdd9d7783e79930655f2098e8789ed76e81dc90"
+}

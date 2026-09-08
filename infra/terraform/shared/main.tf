@@ -99,6 +99,21 @@ resource "aws_s3_bucket" "backups_tau" {
   bucket   = "scholia-backups-tau"
 }
 
+# User-uploaded media (article figure images), written by the API,
+# served publicly through the proxy's /media/ location. Separate from
+# scholia-assets because `just assets-sync` mirrors that bucket with
+# delete semantics and would wipe uploads. The anonymous-read bucket
+# policy is NOT managed here (aws provider can't converge Hetzner
+# bucket sub-resources — see assets_auto's note); it's applied by
+# scripts/media_bucket_policy.sh.
+resource "aws_s3_bucket" "media" {
+  bucket = "scholia-media"
+}
+
+resource "aws_s3_bucket" "media_dev" {
+  bucket = "scholia-media-dev"
+}
+
 output "assets_bucket_name" {
   description = "Asset bucket name. Wire into rclone configs and Job manifests."
   value       = aws_s3_bucket.assets.id
@@ -115,6 +130,14 @@ output "backups_bucket_names" {
     fsn1 = aws_s3_bucket.backups.id
     hel1 = aws_s3_bucket.backups_sigma.id
     nbg1 = aws_s3_bucket.backups_tau.id
+  }
+}
+
+output "media_bucket_names" {
+  description = "User-media bucket names. Wire into the API + proxy Deployments (MEDIA_BUCKET) and scripts/media_bucket_policy.sh."
+  value = {
+    prod = aws_s3_bucket.media.id
+    dev  = aws_s3_bucket.media_dev.id
   }
 }
 

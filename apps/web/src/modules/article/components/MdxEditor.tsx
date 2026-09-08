@@ -23,15 +23,17 @@ import {
     thematicBreakPlugin,
     toolbarPlugin,
 } from "@mdxeditor/editor";
-import { Popover } from "@mui/material";
+import { Popover, TextField } from "@mui/material";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useGetBook } from "../../../api/books/books";
 import {
     ArticleQuotationCard,
     asSentenceKind,
+    FigureEmbed,
     QuotationCard,
 } from "../../quotation";
 import { type CitationEntry, CitationPopover } from "./CitationPopover";
+import { imageFileFrom } from "./imageFile";
 import type { QuotationPickerResult } from "./QuotationPickerModal";
 
 type QuotationMode = "source" | "translation" | "source+translation";
@@ -307,6 +309,137 @@ const articleQuotationDirectiveDescriptor: DirectiveDescriptor = {
     Editor: ArticleQuotationDirectiveEditor,
 };
 
+/** Directive attribute values ride inside `key="…"`; strip the characters
+ *  that would terminate the attribute or the directive itself. */
+export function cleanDirectiveValue(value: string) {
+    return value.replace(/["}\n]/g, "").trim();
+}
+
+function FigureDirectiveEditor({
+    mdastNode,
+    parentEditor,
+    lexicalNode,
+}: DirectiveEditorProps) {
+    const attrs = mdastNode.attributes ?? {};
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+    const updateAttr = (key: string, value: string) => {
+        parentEditor.update(() => {
+            lexicalNode.setMdastNode({
+                ...mdastNode,
+                attributes: { ...attrs, [key]: cleanDirectiveValue(value) },
+            });
+        });
+    };
+
+    const handleDelete = () => {
+        setAnchorEl(null);
+        parentEditor.update(() => {
+            lexicalNode.remove();
+        });
+    };
+
+    return (
+        <div contentEditable={false} className="group relative">
+            <FigureEmbed
+                src={attrs.src ?? ""}
+                alt={attrs.alt ?? undefined}
+                caption={attrs.caption ?? undefined}
+                width={Number(attrs.width) || undefined}
+                height={Number(attrs.height) || undefined}
+            />
+            <div className="absolute -top-3 -right-3 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                    type="button"
+                    onClick={(e) => setAnchorEl(e.currentTarget)}
+                    title="Edit figure"
+                    className="bg-white rounded-full p-1.5 text-stone-400 hover:text-stone-600 shadow-sm border border-stone-200"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <title>Edit figure</title>
+                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                        <path d="m15 5 4 4" />
+                    </svg>
+                </button>
+                <button
+                    type="button"
+                    onClick={handleDelete}
+                    title="Remove figure"
+                    className="bg-white rounded-full p-1.5 text-stone-400 hover:text-red-500 shadow-sm border border-stone-200"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <title>Remove figure</title>
+                        <path d="M3 6h18" />
+                        <path d="M8 6V4h8v2" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                    </svg>
+                </button>
+            </div>
+            <Popover
+                open={!!anchorEl}
+                anchorEl={anchorEl}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                transformOrigin={{ vertical: "bottom", horizontal: "center" }}
+                slotProps={{
+                    paper: {
+                        sx: { p: 2, mb: 1, width: 360 },
+                    },
+                }}
+            >
+                <div className="space-y-3">
+                    <TextField
+                        label="Alt text"
+                        size="small"
+                        fullWidth
+                        defaultValue={attrs.alt ?? ""}
+                        onBlur={(e) => updateAttr("alt", e.target.value)}
+                        helperText="Describes the image for screen readers"
+                    />
+                    <TextField
+                        label="Caption"
+                        size="small"
+                        fullWidth
+                        defaultValue={attrs.caption ?? ""}
+                        onBlur={(e) => updateAttr("caption", e.target.value)}
+                    />
+                </div>
+            </Popover>
+        </div>
+    );
+}
+
+const figureDirectiveDescriptor: DirectiveDescriptor = {
+    name: "figure",
+    testNode: (node) => node.name === "figure",
+    attributes: ["src", "alt", "caption", "width", "height"],
+    hasChildren: false,
+    type: "leafDirective",
+    Editor: FigureDirectiveEditor,
+};
+
 /** Parse the sources attribute: "uuid1:pages,uuid2:pages" */
 function parseCiteSources(sourcesStr: string) {
     return sourcesStr
@@ -434,6 +567,19 @@ function InsertQuotationButton({ onClick }: { onClick: () => void }) {
     );
 }
 
+function InsertFigureButton({ onClick }: { onClick: () => void }) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className="px-2 py-1 text-xs rounded hover:bg-stone-100 text-stone-600"
+            title="Insert Figure"
+        >
+            Figure
+        </button>
+    );
+}
+
 function InsertCitationButton({
     onClick,
 }: {
@@ -451,147 +597,225 @@ function InsertCitationButton({
     );
 }
 
+export interface FigureInsert {
+    src: string;
+    alt?: string;
+    caption?: string;
+    width?: number;
+    height?: number;
+}
+
 export interface ArticleEditorHandle {
     insertQuotation: (result: QuotationPickerResult) => void;
     insertCitation: (entries: { sourceId: string; pages: string }[]) => void;
+    insertFigure: (figure: FigureInsert) => void;
 }
 
 interface ArticleEditorProps {
     markdown: string;
     onChange: (markdown: string) => void;
     onInsertQuotationClick: () => void;
+    onInsertFigureClick: () => void;
+    /** An image was dropped or pasted onto the editing surface. */
+    onImageFile: (file: File) => void;
     readOnly?: boolean;
 }
 
 export const ArticleEditor = forwardRef<
     ArticleEditorHandle,
     ArticleEditorProps
->(({ markdown, onChange, onInsertQuotationClick, readOnly }, ref) => {
-    const editorRef = useRef<MDXEditorMethods>(null);
-    const [citeAnchorEl, setCiteAnchorEl] = useState<HTMLElement | null>(null);
-
-    useImperativeHandle(
+>(
+    (
+        {
+            markdown,
+            onChange,
+            onInsertQuotationClick,
+            onInsertFigureClick,
+            onImageFile,
+            readOnly,
+        },
         ref,
-        () => ({
-            insertQuotation: (result) => {
-                if (!editorRef.current) return;
-                if (result.source_type === "article") {
-                    const directive = `\n::article-quotation{id="${result.id}"}\n`;
+    ) => {
+        const editorRef = useRef<MDXEditorMethods>(null);
+        const [citeAnchorEl, setCiteAnchorEl] = useState<HTMLElement | null>(
+            null,
+        );
+
+        // Capture-phase handlers so an image drop/paste is claimed before
+        // Lexical's own listeners on the contentEditable see the event.
+        // Text drops and pastes fall through untouched.
+        const handleDropCapture = (e: React.DragEvent) => {
+            if (readOnly) return;
+            const file = imageFileFrom(e.dataTransfer);
+            if (file) {
+                e.preventDefault();
+                e.stopPropagation();
+                onImageFile(file);
+            }
+        };
+        const handleDragOverCapture = (e: React.DragEvent) => {
+            if (!readOnly && e.dataTransfer.types.includes("Files")) {
+                e.preventDefault();
+            }
+        };
+        const handlePasteCapture = (e: React.ClipboardEvent) => {
+            if (readOnly) return;
+            const file = imageFileFrom(e.clipboardData);
+            if (file) {
+                e.preventDefault();
+                e.stopPropagation();
+                onImageFile(file);
+            }
+        };
+
+        useImperativeHandle(
+            ref,
+            () => ({
+                insertQuotation: (result) => {
+                    if (!editorRef.current) return;
+                    if (result.source_type === "article") {
+                        const directive = `\n::article-quotation{id="${result.id}"}\n`;
+                        editorRef.current.insertMarkdown(directive);
+                        return;
+                    }
+                    const parts = [
+                        `book="${result.book}"`,
+                        `node="${result.node}"`,
+                    ];
+                    if (result.sid) {
+                        parts.push(`sid="${result.sid}"`);
+                        if (result.sidEnd) {
+                            parts.push(`sid_end="${result.sidEnd}"`);
+                        }
+                    } else {
+                        parts.push(`start="${result.start}"`);
+                        if (result.end != null) {
+                            parts.push(`end="${result.end}"`);
+                        }
+                    }
+                    parts.push(
+                        `kind="${result.kind}"`,
+                        `mode="${result.mode}"`,
+                        `layout="${result.layout}"`,
+                    );
+                    const directive = `\n::quotation{${parts.join(" ")}}\n`;
                     editorRef.current.insertMarkdown(directive);
-                    return;
-                }
-                const parts = [
-                    `book="${result.book}"`,
-                    `node="${result.node}"`,
-                ];
-                if (result.sid) {
-                    parts.push(`sid="${result.sid}"`);
-                    if (result.sidEnd) {
-                        parts.push(`sid_end="${result.sidEnd}"`);
+                },
+                insertCitation: (entries) => {
+                    if (!editorRef.current) return;
+                    const sourcesValue = entries
+                        .map((e) =>
+                            e.pages ? `${e.sourceId}:${e.pages}` : e.sourceId,
+                        )
+                        .join(",");
+                    const directive = `:cite{sources="${sourcesValue}"}`;
+                    editorRef.current.insertMarkdown(directive);
+                },
+                insertFigure: (figure) => {
+                    if (!editorRef.current) return;
+                    const parts = [`src="${figure.src}"`];
+                    if (figure.alt) {
+                        parts.push(`alt="${cleanDirectiveValue(figure.alt)}"`);
                     }
-                } else {
-                    parts.push(`start="${result.start}"`);
-                    if (result.end != null) {
-                        parts.push(`end="${result.end}"`);
+                    if (figure.caption) {
+                        parts.push(
+                            `caption="${cleanDirectiveValue(figure.caption)}"`,
+                        );
                     }
-                }
-                parts.push(
-                    `kind="${result.kind}"`,
-                    `mode="${result.mode}"`,
-                    `layout="${result.layout}"`,
-                );
-                const directive = `\n::quotation{${parts.join(" ")}}\n`;
-                editorRef.current.insertMarkdown(directive);
-            },
-            insertCitation: (entries) => {
-                if (!editorRef.current) return;
-                const sourcesValue = entries
-                    .map((e) =>
-                        e.pages ? `${e.sourceId}:${e.pages}` : e.sourceId,
-                    )
-                    .join(",");
-                const directive = `:cite{sources="${sourcesValue}"}`;
-                editorRef.current.insertMarkdown(directive);
-            },
-        }),
-        [],
-    );
+                    if (figure.width) parts.push(`width="${figure.width}"`);
+                    if (figure.height) parts.push(`height="${figure.height}"`);
+                    const directive = `\n::figure{${parts.join(" ")}}\n`;
+                    editorRef.current.insertMarkdown(directive);
+                },
+            }),
+            [],
+        );
 
-    const handleCiteConfirm = (entries: CitationEntry[]) => {
-        setCiteAnchorEl(null);
-        if (!editorRef.current) return;
-        const sourcesValue = entries
-            .map((e) => (e.pages ? `${e.sourceId}:${e.pages}` : e.sourceId))
-            .join(",");
-        const label = buildCitationLabel(entries);
-        const names = entries.map((e) => e.sourceLabel).join("|");
-        const directive = `:cite{sources="${sourcesValue}" label="${label}" sourceNames="${names}"}`;
-        editorRef.current.insertMarkdown(directive);
-    };
+        const handleCiteConfirm = (entries: CitationEntry[]) => {
+            setCiteAnchorEl(null);
+            if (!editorRef.current) return;
+            const sourcesValue = entries
+                .map((e) => (e.pages ? `${e.sourceId}:${e.pages}` : e.sourceId))
+                .join(",");
+            const label = buildCitationLabel(entries);
+            const names = entries.map((e) => e.sourceLabel).join("|");
+            const directive = `:cite{sources="${sourcesValue}" label="${label}" sourceNames="${names}"}`;
+            editorRef.current.insertMarkdown(directive);
+        };
 
-    return (
-        <>
-            <MDXEditor
-                ref={editorRef}
-                markdown={markdown}
-                onChange={onChange}
-                readOnly={readOnly}
-                contentEditableClassName="!prose !prose-stone max-w-none min-h-[400px] font-serif"
-                plugins={[
-                    headingsPlugin(),
-                    listsPlugin(),
-                    quotePlugin(),
-                    thematicBreakPlugin(),
-                    linkPlugin(),
-                    linkDialogPlugin(),
-                    markdownShortcutPlugin(),
-                    directivesPlugin({
-                        directiveDescriptors: [
-                            quotationDirectiveDescriptor,
-                            articleQuotationDirectiveDescriptor,
-                            citationDirectiveDescriptor,
-                        ],
-                    }),
-                    diffSourcePlugin({
-                        diffMarkdown:
-                            markdown ?? "No differences to show. Ignore this.",
-                        readOnlyDiff: true,
-                        viewMode: "rich-text",
-                    }),
-                    toolbarPlugin({
-                        toolbarContents: () => (
-                            <DiffSourceToggleWrapper>
-                                <BoldItalicUnderlineToggles />
-                                <CodeToggle />
-                                <CreateLink />
-                                <Separator />
-                                <BlockTypeSelect />
-                                <Separator />
-                                <ListsToggle />
-                                <InsertThematicBreak />
-                                <Separator />
-                                <InsertQuotationButton
-                                    onClick={onInsertQuotationClick}
-                                />
-                                <InsertCitationButton
-                                    onClick={(e) =>
-                                        setCiteAnchorEl(
-                                            e.currentTarget as HTMLElement,
-                                        )
-                                    }
-                                />
-                            </DiffSourceToggleWrapper>
-                        ),
-                    }),
-                ]}
-            />
-            <CitationPopover
-                anchorEl={citeAnchorEl}
-                onClose={() => setCiteAnchorEl(null)}
-                onConfirm={handleCiteConfirm}
-            />
-        </>
-    );
-});
+        return (
+            <div
+                onDropCapture={handleDropCapture}
+                onDragOverCapture={handleDragOverCapture}
+                onPasteCapture={handlePasteCapture}
+            >
+                <MDXEditor
+                    ref={editorRef}
+                    markdown={markdown}
+                    onChange={onChange}
+                    readOnly={readOnly}
+                    contentEditableClassName="!prose !prose-stone max-w-none min-h-[400px] font-serif"
+                    plugins={[
+                        headingsPlugin(),
+                        listsPlugin(),
+                        quotePlugin(),
+                        thematicBreakPlugin(),
+                        linkPlugin(),
+                        linkDialogPlugin(),
+                        markdownShortcutPlugin(),
+                        directivesPlugin({
+                            directiveDescriptors: [
+                                quotationDirectiveDescriptor,
+                                articleQuotationDirectiveDescriptor,
+                                citationDirectiveDescriptor,
+                                figureDirectiveDescriptor,
+                            ],
+                        }),
+                        diffSourcePlugin({
+                            diffMarkdown:
+                                markdown ??
+                                "No differences to show. Ignore this.",
+                            readOnlyDiff: true,
+                            viewMode: "rich-text",
+                        }),
+                        toolbarPlugin({
+                            toolbarContents: () => (
+                                <DiffSourceToggleWrapper>
+                                    <BoldItalicUnderlineToggles />
+                                    <CodeToggle />
+                                    <CreateLink />
+                                    <Separator />
+                                    <BlockTypeSelect />
+                                    <Separator />
+                                    <ListsToggle />
+                                    <InsertThematicBreak />
+                                    <Separator />
+                                    <InsertQuotationButton
+                                        onClick={onInsertQuotationClick}
+                                    />
+                                    <InsertFigureButton
+                                        onClick={onInsertFigureClick}
+                                    />
+                                    <InsertCitationButton
+                                        onClick={(e) =>
+                                            setCiteAnchorEl(
+                                                e.currentTarget as HTMLElement,
+                                            )
+                                        }
+                                    />
+                                </DiffSourceToggleWrapper>
+                            ),
+                        }),
+                    ]}
+                />
+                <CitationPopover
+                    anchorEl={citeAnchorEl}
+                    onClose={() => setCiteAnchorEl(null)}
+                    onConfirm={handleCiteConfirm}
+                />
+            </div>
+        );
+    },
+);
 
 ArticleEditor.displayName = "ArticleEditor";

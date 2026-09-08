@@ -4,6 +4,8 @@
  * Scholia API
  * OpenAPI spec version: 0.1.0
  */
+import type { ArticleQuotationFigure } from "./articleQuotationFigure.ts";
+import type { ArticleQuotationKind } from "./articleQuotationKind.ts";
 
 export interface ArticleQuotationResponse {
     /** @nullable */
@@ -11,8 +13,10 @@ export interface ArticleQuotationResponse {
     article_title: string;
     author_display_name: string;
     created_at: string;
+    figure?: null | ArticleQuotationFigure;
     html: string;
     id: string;
+    kind: ArticleQuotationKind;
     note_count: number;
     text: string;
 }

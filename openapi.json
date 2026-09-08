@@ -4617,6 +4617,45 @@
                 }
             }
         },
+        "/api/user/article-images": {
+            "post": {
+                "tags": ["article-images"],
+                "summary": "Upload an image for embedding in an article figure",
+                "description": "Accepts JPEG, PNG, or WebP up to 5 MB. The image is re-encoded\nserver-side (downscaled to at most 2000px on the longest side, lossy\nWebP, metadata stripped) and stored under a content-addressed key.",
+                "operationId": "upload_article_image",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UploadImageForm"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Image stored",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UploadedImageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing, oversized, or invalid image"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "403": {
+                        "description": "Insufficient permissions"
+                    }
+                }
+            }
+        },
         "/api/user/articles": {
             "get": {
                 "tags": ["articles"],
@@ -5298,6 +5337,34 @@
                     }
                 }
             },
+            "ArticleQuotationFigure": {
+                "type": "object",
+                "description": "Snapshot of a quoted figure, extracted server-side from the quoted\narticle's rendered HTML at save time.",
+                "required": ["src"],
+                "properties": {
+                    "alt": {
+                        "type": ["string", "null"]
+                    },
+                    "caption": {
+                        "type": ["string", "null"]
+                    },
+                    "height": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    },
+                    "src": {
+                        "type": "string"
+                    },
+                    "width": {
+                        "type": ["integer", "null"],
+                        "format": "int32"
+                    }
+                }
+            },
+            "ArticleQuotationKind": {
+                "type": "string",
+                "enum": ["text", "figure"]
+            },
             "ArticleQuotationListResponse": {
                 "type": "object",
                 "required": ["article_quotations"],
@@ -5316,6 +5383,7 @@
                     "id",
                     "article_title",
                     "author_display_name",
+                    "kind",
                     "text",
                     "html",
                     "note_count",
@@ -5334,11 +5402,24 @@
                     "created_at": {
                         "type": "string"
                     },
+                    "figure": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ArticleQuotationFigure"
+                            }
+                        ]
+                    },
                     "html": {
                         "type": "string"
                     },
                     "id": {
                         "type": "string"
+                    },
+                    "kind": {
+                        "$ref": "#/components/schemas/ArticleQuotationKind"
                     },
                     "note_count": {
                         "type": "integer",
@@ -6253,16 +6334,22 @@
             },
             "CreateArticleQuotationRequest": {
                 "type": "object",
-                "required": ["article_id", "text", "html"],
+                "required": ["article_id"],
                 "properties": {
                     "article_id": {
                         "type": "string"
                     },
+                    "figure_src": {
+                        "type": ["string", "null"],
+                        "description": "Present = save a figure quotation of the uploaded image at this\n`/media/` src. The alt/caption/dimension snapshot is extracted from\nthe article's own rendered HTML, never from the client."
+                    },
                     "html": {
-                        "type": "string"
+                        "type": ["string", "null"],
+                        "description": "Required for text quotations; ignored for figure quotations."
                     },
                     "text": {
-                        "type": "string"
+                        "type": ["string", "null"],
+                        "description": "Required for text quotations; ignored for figure quotations."
                     }
                 }
             },
@@ -9193,6 +9280,13 @@
                             "created_at": {
                                 "type": "string"
                             },
+                            "figure_alt": {
+                                "type": ["string", "null"]
+                            },
+                            "figure_src": {
+                                "type": ["string", "null"],
+                                "description": "Present for figure quotations: the quoted image, for a list\nthumbnail."
+                            },
                             "id": {
                                 "type": "string"
                             },
@@ -9530,6 +9624,49 @@
                 "properties": {
                     "name": {
                         "type": "string"
+                    }
+                }
+            },
+            "UploadImageForm": {
+                "type": "object",
+                "description": "Documentation-only shape of the multipart upload body; the handler\nreads the `file` part via `axum::extract::Multipart`.",
+                "required": ["file"],
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary"
+                    }
+                }
+            },
+            "UploadedImageResponse": {
+                "type": "object",
+                "required": [
+                    "url",
+                    "storage_key",
+                    "width",
+                    "height",
+                    "byte_size"
+                ],
+                "properties": {
+                    "byte_size": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Stored (re-encoded) size in bytes."
+                    },
+                    "height": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "storage_key": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "First-party URL to embed in the `::figure{}` directive."
+                    },
+                    "width": {
+                        "type": "integer",
+                        "format": "int32"
                     }
                 }
             },

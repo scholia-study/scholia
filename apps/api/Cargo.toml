@@ -7,7 +7,7 @@ default-run = "api"
 [dependencies]
 dataduct = { path = "../../packages/dataduct" }
 common = { path = "../../packages/common" }
-axum = "0.8"
+axum = { version = "0.8", features = ["multipart"] }
 tokio = { version = "1", features = ["full"] }
 tower = "0.5"
 tower-http = { version = "0.6", features = ["cors", "catch-panic"] }
@@ -50,3 +50,10 @@ async-stripe-core = { version = "=1.0.0-rc.6", features = ["customer"] }
 async-stripe-billing = { version = "=1.0.0-rc.6", features = ["subscription", "billing_portal_session"] }
 async-stripe-checkout = { version = "=1.0.0-rc.6", features = ["checkout_session"] }
 async-stripe-webhook = { version = "=1.0.0-rc.6", features = ["async-stripe-billing"] }
+# Image upload pipeline: decode/resize via `image` (decode-only formats we
+# accept), lossy WebP encode via libwebp (`image`'s own WebP encoder is
+# lossless-only), object storage via `object_store` (S3-compatible Hetzner
+# endpoint in cluster, local filesystem in dev).
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
+webp = "0.3.1"
+object_store = { version = "0.14.1", features = ["aws"] }

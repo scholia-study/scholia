@@ -18,6 +18,8 @@ interface ArticleEditorLazyProps {
     markdown: string;
     onChange: (markdown: string) => void;
     onInsertQuotationClick: () => void;
+    onInsertFigureClick: () => void;
+    onImageFile: (file: File) => void;
     readOnly?: boolean;
 }
 
@@ -40,4 +42,4 @@ export const ArticleEditorLazy = forwardRef<
 
 ArticleEditorLazy.displayName = "ArticleEditorLazy";
 
-export type { ArticleEditorHandle } from "./MdxEditor";
+export type { ArticleEditorHandle, FigureInsert } from "./MdxEditor";

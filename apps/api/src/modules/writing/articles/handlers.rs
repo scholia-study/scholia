@@ -685,11 +685,13 @@ pub async fn batch_sentences(
             &state.pool,
             &req.book_slug,
             &req.node_slug,
-            req.start_number.unwrap_or(0),
-            req.end_number,
-            start_id,
-            end_id,
-            req.kind,
+            &crate::modules::writing::articles::db::SentenceRange {
+                start_number: req.start_number.unwrap_or(0),
+                end_number: req.end_number,
+                start_id,
+                end_id,
+                kind: req.kind,
+            },
         )
         .await?;
         items.push(item);

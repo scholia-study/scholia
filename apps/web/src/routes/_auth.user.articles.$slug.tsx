@@ -30,6 +30,8 @@ import {
     ArticleEditorLazy as ArticleEditor,
     type ArticleEditorHandle,
     ArticleQuotingToggle,
+    type FigureInsert,
+    FigureUploadModal,
     QuotationPickerModal,
     type QuotationPickerResult,
     useArchiveArticleDialog,
@@ -42,12 +44,16 @@ const MemoizedEditor = memo(
         markdown,
         onChange,
         onInsertQuotationClick,
+        onInsertFigureClick,
+        onImageFile,
         readOnly,
         ref,
     }: {
         markdown: string;
         onChange: (markdown: string) => void;
         onInsertQuotationClick: () => void;
+        onInsertFigureClick: () => void;
+        onImageFile: (file: File) => void;
         readOnly?: boolean;
         ref: React.Ref<ArticleEditorHandle>;
     }) => (
@@ -57,6 +63,8 @@ const MemoizedEditor = memo(
                 markdown={markdown}
                 onChange={onChange}
                 onInsertQuotationClick={onInsertQuotationClick}
+                onInsertFigureClick={onInsertFigureClick}
+                onImageFile={onImageFile}
                 readOnly={readOnly}
             />
         </div>
@@ -132,10 +140,20 @@ function ArticleEditorPage() {
         "saved" | "saving" | "unsaved"
     >("saved");
     const [pickerOpen, setPickerOpen] = useState(false);
+    const [figureModalOpen, setFigureModalOpen] = useState(false);
+    const [figureFile, setFigureFile] = useState<File | null>(null);
 
     const editorRef = useRef<ArticleEditorHandle>(null);
     const initialized = useRef(false);
     const openPicker = useCallback(() => setPickerOpen(true), []);
+    const openFigureModal = useCallback(() => {
+        setFigureFile(null);
+        setFigureModalOpen(true);
+    }, []);
+    const openFigureModalWithFile = useCallback((file: File) => {
+        setFigureFile(file);
+        setFigureModalOpen(true);
+    }, []);
 
     // Initialize from article data
     useEffect(() => {
@@ -237,6 +255,10 @@ function ArticleEditorPage() {
 
     const handleInsertQuotation = (result: QuotationPickerResult) => {
         editorRef.current?.insertQuotation(result);
+    };
+
+    const handleInsertFigure = (figure: FigureInsert) => {
+        editorRef.current?.insertFigure(figure);
     };
 
     const publishDialog = usePublishArticleDialog({
@@ -538,6 +560,8 @@ function ArticleEditorPage() {
                     markdown={article.markdown}
                     onChange={handleMarkdownChange}
                     onInsertQuotationClick={openPicker}
+                    onInsertFigureClick={openFigureModal}
+                    onImageFile={openFigureModalWithFile}
                     readOnly={isReadOnly}
                 />
 
@@ -545,6 +569,13 @@ function ArticleEditorPage() {
                     open={pickerOpen}
                     onClose={() => setPickerOpen(false)}
                     onSelect={handleInsertQuotation}
+                />
+
+                <FigureUploadModal
+                    open={figureModalOpen}
+                    onClose={() => setFigureModalOpen(false)}
+                    onInsert={handleInsertFigure}
+                    initialFile={figureFile}
                 />
 
                 {publishDialog.dialog}

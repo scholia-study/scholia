@@ -18,19 +18,21 @@ use crate::parse::{
 };
 use crate::roman::{block_sort_order, roman_to_int};
 
+/// The corpus's own reference-system slugs. They travel together because a
+/// marker is routed to one or the other; hardcoding kant1's here once sent a
+/// peirce figure marker into a phantom "aa_iii" system.
+pub struct SystemSlugs<'a> {
+    pub aa: &'a str,
+    pub edition: &'a str,
+}
+
 /// Map a raw page marker to its DB-ready form, resolving the reference-system
-/// slug and a numeric sort order. The slugs are the corpus's own — hardcoding
-/// kant1's here once sent a peirce figure marker into a phantom "aa_iii"
-/// system.
-pub fn marker_to_page_marker(
-    marker: &RawMarker,
-    aa_slug: &str,
-    edition_slug: &str,
-) -> PageMarkerData {
+/// slug and a numeric sort order.
+pub fn marker_to_page_marker(marker: &RawMarker, slugs: &SystemSlugs<'_>) -> PageMarkerData {
     let (system, sort_order) = match marker.kind {
-        MarkerKind::Aa => (aa_slug, block_sort_order(&marker.value)),
+        MarkerKind::Aa => (slugs.aa, block_sort_order(&marker.value)),
         MarkerKind::BEdition => (
-            edition_slug,
+            slugs.edition,
             roman_to_int(&marker.value).map(|v| v as i32).unwrap_or(0),
         ),
         // strip_markers panics on any `$m` token in figure text before a
@@ -63,8 +65,7 @@ pub fn build_figure_block(
     flat_index: usize,
     figure_number: i32,
     label_word: &str,
-    aa_slug: &str,
-    edition_slug: &str,
+    slugs: &SystemSlugs<'_>,
 ) -> ContentBlockData {
     let caption = figure_caption(&primary.text).unwrap_or_else(|| {
         panic!(
@@ -91,7 +92,7 @@ pub fn build_figure_block(
     let page_markers = primary
         .markers
         .iter()
-        .map(|m| marker_to_page_marker(m, aa_slug, edition_slug))
+        .map(|m| marker_to_page_marker(m, slugs))
         .collect();
 
     // An empty caption means the figure is labelled by its number alone, so
@@ -156,8 +157,10 @@ mod tests {
             28,
             3,
             "Figure",
-            "aa_iii",
-            "b_edition",
+            &SystemSlugs {
+                aa: "aa_iii",
+                edition: "b_edition",
+            },
         );
 
         assert_eq!(block.block_type, "figure");
@@ -187,7 +190,18 @@ mod tests {
         // labelled "Figure N." alone, and that prefix must be the anchor
         // sentence rather than an empty string.
         let primary = figure("<figure><table></table><figcaption></figcaption></figure>");
-        let block = build_figure_block(&primary, None, 0, 0, 6, "Figure", "orig-pub", "");
+        let block = build_figure_block(
+            &primary,
+            None,
+            0,
+            0,
+            6,
+            "Figure",
+            &SystemSlugs {
+                aa: "orig-pub",
+                edition: "",
+            },
+        );
         assert_eq!(block.sentences[0].text, "Figure 6.");
         assert!(block.html.contains("<b>Figure 6.</b>"));
     }
@@ -195,7 +209,18 @@ mod tests {
     #[test]
     fn single_layer_figure_has_no_original() {
         let primary = figure("<figure><figcaption>Table of Judgments</figcaption></figure>");
-        let block = build_figure_block(&primary, None, 0, 0, 1, "Figure", "aa_iii", "b_edition");
+        let block = build_figure_block(
+            &primary,
+            None,
+            0,
+            0,
+            1,
+            "Figure",
+            &SystemSlugs {
+                aa: "aa_iii",
+                edition: "b_edition",
+            },
+        );
         assert_eq!(block.figure_number, Some(1));
         assert_eq!(block.original_html, None);
         assert_eq!(block.sentences[0].original_text, None);

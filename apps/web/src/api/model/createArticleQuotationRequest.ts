@@ -7,6 +7,21 @@
 
 export interface CreateArticleQuotationRequest {
     article_id: string;
-    html: string;
-    text: string;
+    /**
+     * Present = save a figure quotation of the uploaded image at this
+     * `/media/` src. The alt/caption/dimension snapshot is extracted from
+     * the article's own rendered HTML, never from the client.
+     * @nullable
+     */
+    figure_src?: string | null;
+    /**
+     * Required for text quotations; ignored for figure quotations.
+     * @nullable
+     */
+    html?: string | null;
+    /**
+     * Required for text quotations; ignored for figure quotations.
+     * @nullable
+     */
+    text?: string | null;
 }

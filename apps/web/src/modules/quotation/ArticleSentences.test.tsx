@@ -118,4 +118,36 @@ describe("ArticleSentences", () => {
             "Tail paragraph.",
         ]);
     });
+
+    it("renders figure embeds without shifting sentence keys", () => {
+        const figureDiv =
+            '<div class="figure-embed" data-figure-src="/media/articles/u/0123456789abcdef.webp" data-figure-caption="Fig. 1"></div>';
+        const withFigure = [
+            "<p>First point. Second point.</p>",
+            figureDiv,
+            "<p>After the figure.</p>",
+        ].join("\n");
+        const withoutFigure = [
+            "<p>First point. Second point.</p>",
+            "<p>After the figure.</p>",
+        ].join("\n");
+
+        expect(buildSentenceList(withFigure).map((s) => s.key)).toEqual(
+            buildSentenceList(withoutFigure).map((s) => s.key),
+        );
+
+        const { container } = renderComponent(withFigure);
+        const spanKeys = Array.from(
+            container.querySelectorAll("[data-article-sentence]"),
+        ).map((el) => el.getAttribute("data-article-sentence"));
+        expect(spanKeys).toEqual(
+            buildSentenceList(withFigure).map((s) => s.key),
+        );
+        // Rendered inline (not delegated) as real figure markup, wrapped in
+        // the click-to-quote target.
+        expect(container.querySelectorAll("figure img").length).toBe(1);
+        expect(container.querySelectorAll("[data-figure-quote]").length).toBe(
+            1,
+        );
+    });
 });

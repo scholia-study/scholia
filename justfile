@@ -43,6 +43,11 @@ assets-lifecycle:
 backups-lifecycle:
     bash scripts/backups_lifecycle.sh
 
+# (re)apply the anonymous-read policy on the user-media buckets
+[group("assets")]
+media-bucket-policy:
+    bash scripts/media_bucket_policy.sh
+
 # kant1 OCR pre-curation stages (raw → lines → elements)
 [group("assets")]
 elem-kant1:

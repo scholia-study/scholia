@@ -9,6 +9,15 @@ const config = defineConfig({
     resolve: {
         tsconfigPaths: true,
     },
+    server: {
+        proxy: {
+            // Uploaded article images. Relative /media/ URLs in article HTML
+            // resolve against the vite origin; forward them to the local API,
+            // which serves its filesystem media store. In cluster, nginx
+            // serves /media/ straight from the bucket instead.
+            "/media": "http://localhost:4000",
+        },
+    },
     plugins: [
         devtools(),
         tailwindcss(),

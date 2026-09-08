@@ -298,6 +298,18 @@ mod tests {
     }
 
     #[test]
+    fn figure_embeds_get_block_index_only() {
+        let html = r#"<p>Intro.</p><div class="figure-embed" data-figure-src="/media/x.webp" data-figure-caption="Fig."></div><p>After.</p>"#;
+        let out = annotate_snapshot_html(html);
+        assert!(out.contains(
+            r#"data-figure-src="/media/x.webp" data-figure-caption="Fig." data-block="1">"#
+        ));
+        assert!(!out.contains(r#"data-block="1"><span"#));
+        // The following paragraph still gets the next block index.
+        assert!(out.contains(r#"<p data-block="2"><span data-s="0">After.</span></p>"#));
+    }
+
+    #[test]
     fn blockquote_paragraphs_share_one_counter() {
         let out = annotate_snapshot_html("<blockquote><p>One.</p><p>Two.</p></blockquote>");
         assert!(out.contains("<blockquote data-block=\"0\">"));

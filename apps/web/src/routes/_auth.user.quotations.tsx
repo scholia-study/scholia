@@ -18,7 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import parse from "html-react-parser";
 import { useMemo, useState } from "react";
-import { useUnsaveQuotation } from "#/modules/quotation";
+import { FigureEmbed, useUnsaveQuotation } from "#/modules/quotation";
 import { TranslationBadge } from "#/modules/reader";
 import {
     getListArticleQuotationsQueryKey,
@@ -333,6 +333,14 @@ function ArticleQuotationRow({
                 "&:hover .action-btns": { opacity: 1 },
             }}
         >
+            {q.figure_src?.startsWith("/media/") && (
+                <img
+                    src={q.figure_src}
+                    alt={q.figure_alt ?? ""}
+                    loading="lazy"
+                    className="h-12 w-12 shrink-0 rounded border border-stone-200 object-cover"
+                />
+            )}
             <div className="flex-1 min-w-0">
                 <div className="text-xs text-amber-700 mb-1">
                     {q.article_title} &middot; {q.author_display_name}
@@ -344,7 +352,11 @@ function ArticleQuotationRow({
                     )}
                 </div>
                 <p className="text-sm text-stone-700 truncate">
-                    &ldquo;{q.text_snippet}&rdquo;
+                    {q.figure_src ? (
+                        q.text_snippet
+                    ) : (
+                        <>&ldquo;{q.text_snippet}&rdquo;</>
+                    )}
                 </p>
             </div>
             <div className="relative shrink-0 self-center">
@@ -463,7 +475,21 @@ function ArticleQuotationDetailModal({
                                 fontFamily: "'Libre Baskerville', serif",
                             }}
                         >
-                            {parse(quotation.html) || null}
+                            {quotation.figure ? (
+                                <FigureEmbed
+                                    src={quotation.figure.src}
+                                    alt={quotation.figure.alt ?? undefined}
+                                    caption={
+                                        quotation.figure.caption ?? undefined
+                                    }
+                                    width={quotation.figure.width ?? undefined}
+                                    height={
+                                        quotation.figure.height ?? undefined
+                                    }
+                                />
+                            ) : (
+                                parse(quotation.html) || null
+                            )}
                         </div>
                     </Paper>
                     {quotation.article_id && (

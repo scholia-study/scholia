@@ -91,6 +91,9 @@ export const Route = createFileRoute("/articles/$slug")({
 });
 
 function replaceEmbed(domNode: Element) {
+    // Figure embeds never reach this callback — ArticleSentences renders
+    // them itself so they participate in click-to-quote.
+
     // Article quotation embed (check first — "article-quotation-embed"
     // also matches "quotation-embed" via substring)
     if (domNode.attribs?.class?.includes("article-quotation-embed")) {

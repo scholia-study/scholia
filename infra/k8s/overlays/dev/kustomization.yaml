@@ -57,3 +57,11 @@ patches:
     target:
       kind: Deployment
       name: scholia-proxy
+  - path: proxy-media-env-patch.yaml
+    target:
+      kind: Deployment
+      name: scholia-proxy
+  - path: api-media-env-patch.yaml
+    target:
+      kind: Deployment
+      name: scholia-api

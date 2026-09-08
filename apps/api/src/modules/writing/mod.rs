@@ -5,6 +5,7 @@
 //! `quotations` and `article_quotations` are mutually coupled. Other
 //! domains reach writing only through the re-exports below.
 
+mod article_images;
 mod article_passage_references;
 mod article_quotations;
 mod article_reviews;
@@ -61,6 +62,18 @@ pub fn user_router() -> OpenApiRouter<AppState> {
         ))
         .routes(utoipa_axum::routes!(articles::handlers::publish_article))
         .routes(utoipa_axum::routes!(articles::handlers::archive_article))
+        // Figure-image upload. Merged as its own sub-router so the raised
+        // body limit (5 MB + multipart overhead) applies to this route
+        // only; everything else keeps axum's 2 MB default.
+        .merge(
+            OpenApiRouter::new()
+                .routes(utoipa_axum::routes!(
+                    article_images::handlers::upload_article_image
+                ))
+                .layer(axum::extract::DefaultBodyLimit::max(
+                    article_images::handlers::MAX_UPLOAD_BYTES + 64 * 1024,
+                )),
+        )
         // Article-quotation embeds.
         .routes(utoipa_axum::routes!(
             article_quotations::handlers::create_article_quotation,

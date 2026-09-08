@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT id FROM article_quotations\n           WHERE user_id = $1 AND article_id = $2 AND text = $3",
+    "query": "SELECT id FROM article_quotations\n                   WHERE user_id = $1 AND article_id = $2 AND figure_src = $3",
     "describe": {
         "columns": [
             {
@@ -14,5 +14,5 @@
         },
         "nullable": [false]
     },
-    "hash": "73d357b56b133032aad7ebded0ce8ea0bc0cf9839590d802cdfa47d419b22097"
+    "hash": "1025a465466d75b99208cac561ce0c655ec7c9ca487c08d8becb295aacde3004"
 }

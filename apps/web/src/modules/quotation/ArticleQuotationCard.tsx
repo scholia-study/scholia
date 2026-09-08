@@ -1,6 +1,7 @@
 import { Paper, Skeleton } from "@mui/material";
 import parse from "html-react-parser";
 import { useGetArticleQuotation } from "../../api/article-quotations/article-quotations";
+import { FigureEmbed } from "./FigureEmbed";
 
 export interface ArticleQuotationCardProps {
     id: string;
@@ -55,7 +56,17 @@ export function ArticleQuotationCard({ id }: ArticleQuotationCardProps) {
                 className="text-sm leading-relaxed text-stone-700"
                 style={{ fontFamily: "'Libre Baskerville', serif" }}
             >
-                {parse(quotation.html)}
+                {quotation.figure ? (
+                    <FigureEmbed
+                        src={quotation.figure.src}
+                        alt={quotation.figure.alt ?? undefined}
+                        caption={quotation.figure.caption ?? undefined}
+                        width={quotation.figure.width ?? undefined}
+                        height={quotation.figure.height ?? undefined}
+                    />
+                ) : (
+                    parse(quotation.html)
+                )}
             </div>
             <div className="flex justify-end mt-1">
                 {quotation.article_id ? (

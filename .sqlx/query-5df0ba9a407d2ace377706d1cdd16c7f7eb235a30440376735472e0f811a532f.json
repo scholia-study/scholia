@@ -1,0 +1,31 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "INSERT INTO article_quotations (\n                       user_id, article_id, article_title,\n                       author_display_name, author_sort_name,\n                       source_published_at, text, html, kind,\n                       figure_src, figure_alt, figure_caption,\n                       figure_width, figure_height\n                   )\n                   VALUES ($1, $2, $3, $4, $5, $6, $7, '', 'figure',\n                           $8, $9, $10, $11, $12)\n                   RETURNING id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            }
+        ],
+        "parameters": {
+            "Left": [
+                "Uuid",
+                "Uuid",
+                "Text",
+                "Text",
+                "Text",
+                "Timestamptz",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Int4",
+                "Int4"
+            ]
+        },
+        "nullable": [false]
+    },
+    "hash": "5df0ba9a407d2ace377706d1cdd16c7f7eb235a30440376735472e0f811a532f"
+}

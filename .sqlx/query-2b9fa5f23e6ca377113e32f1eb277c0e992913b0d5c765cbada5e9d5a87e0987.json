@@ -1,0 +1,105 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT aq.id, aq.article_id, aq.article_title,\n                  aq.author_display_name,\n                  aq.kind AS \"kind: ArticleQuotationKind\",\n                  aq.text, aq.html,\n                  aq.figure_src, aq.figure_alt, aq.figure_caption,\n                  aq.figure_width, aq.figure_height,\n                  COUNT(qn.id) AS \"note_count?\",\n                  aq.created_at\n           FROM article_quotations aq\n           LEFT JOIN quotation_notes qn ON qn.article_quotation_id = aq.id\n           WHERE aq.id = $1\n           GROUP BY aq.id",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 1,
+                "name": "article_id",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 2,
+                "name": "article_title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "author_display_name",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 4,
+                "name": "kind: ArticleQuotationKind",
+                "type_info": {
+                    "Custom": {
+                        "name": "article_quotation_kind",
+                        "kind": {
+                            "Enum": ["text", "figure"]
+                        }
+                    }
+                }
+            },
+            {
+                "ordinal": 5,
+                "name": "text",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 6,
+                "name": "html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "figure_src",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "figure_alt",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 9,
+                "name": "figure_caption",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 10,
+                "name": "figure_width",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 11,
+                "name": "figure_height",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 12,
+                "name": "note_count?",
+                "type_info": "Int8"
+            },
+            {
+                "ordinal": 13,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": ["Uuid"]
+        },
+        "nullable": [
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            null,
+            false
+        ]
+    },
+    "hash": "2b9fa5f23e6ca377113e32f1eb277c0e992913b0d5c765cbada5e9d5a87e0987"
+}

@@ -14,18 +14,23 @@ use ammonia::Builder;
 
 /// Cleaner for rendered article bodies. Starts from ammonia's default
 /// allowlist (which already drops `<script>`, event-handler attributes,
-/// `<iframe>`, `style`, and unsafe URL schemes) and widens it for the three
-/// constructs the renderer injects: quotation embeds
-/// (`div.quotation-embed` / `div.article-quotation-embed` plus their inert
-/// `data-*` attributes), inline citations (`span.citation`), and the generated
-/// bibliography (`section.bibliography`).
+/// `<iframe>`, `style`, and unsafe URL schemes) and widens it for the
+/// constructs the renderer injects: quotation and figure embeds
+/// (`div.quotation-embed` / `div.article-quotation-embed` /
+/// `div.figure-embed` plus their inert `data-*` attributes), inline citations
+/// (`span.citation`), and the generated bibliography (`section.bibliography`).
+///
+/// `img`/`figure`/`figcaption` are removed from the default allowlist: the
+/// `::figure{}` directive (rendered as `div.figure-embed`, hydrated
+/// client-side) is the only sanctioned image path, so raw or markdown images
+/// die here.
 fn article_cleaner() -> &'static Builder<'static> {
     static CLEANER: OnceLock<Builder<'static>> = OnceLock::new();
     CLEANER.get_or_init(|| {
         let classes: HashMap<&str, HashSet<&str>> = HashMap::from([
             (
                 "div",
-                HashSet::from(["quotation-embed", "article-quotation-embed"]),
+                HashSet::from(["quotation-embed", "article-quotation-embed", "figure-embed"]),
             ),
             ("span", HashSet::from(["citation"])),
             ("section", HashSet::from(["bibliography"])),
@@ -33,6 +38,7 @@ fn article_cleaner() -> &'static Builder<'static> {
 
         let mut b = Builder::default();
         b.add_tags(["section"]);
+        b.rm_tags(["img", "figure", "figcaption"]);
         b.add_generic_attribute_prefixes(["data-"]);
         b.url_schemes(["http", "https", "mailto"].into_iter().collect());
         b.allowed_classes(classes);
@@ -48,11 +54,19 @@ pub fn clean_article_html(html: &str) -> String {
     article_cleaner().clean(html).to_string()
 }
 
-/// Sanitize an inline HTML snippet (the article-quotation `html` field). Uses
-/// ammonia's default allowlist — quotations need only basic inline formatting,
-/// and the defaults already drop scripts, event handlers, and `<iframe>`.
+/// Sanitize an inline HTML snippet (the article-quotation `html` field).
+/// Ammonia's default allowlist minus images — quotations need only basic
+/// inline formatting, and figure quotations carry structured fields instead
+/// of markup, so `<img>` here could only be a hot-link smuggled through the
+/// client-supplied field.
 pub fn clean_inline_html(html: &str) -> String {
-    ammonia::clean(html)
+    static CLEANER: OnceLock<Builder<'static>> = OnceLock::new();
+    let cleaner = CLEANER.get_or_init(|| {
+        let mut b = Builder::default();
+        b.rm_tags(["img", "figure", "figcaption"]);
+        b
+    });
+    cleaner.clean(html).to_string()
 }
 
 #[cfg(test)]
@@ -69,9 +83,49 @@ mod tests {
 
     #[test]
     fn strips_event_handler_attributes() {
-        let out = clean_article_html(r#"<img src="x" onerror="alert(1)">"#);
-        assert!(out.contains("<img"));
-        assert!(!out.contains("onerror"));
+        let out = clean_article_html(r#"<a href="/x" onmouseover="alert(1)">x</a>"#);
+        assert!(out.contains("<a"));
+        assert!(!out.contains("onmouseover"));
+        assert!(!out.contains("alert"));
+    }
+
+    #[test]
+    fn strips_bare_images() {
+        // Markdown `![alt](url)` renders to a bare <img>; only the
+        // figure-embed div is a sanctioned image path.
+        let out = clean_article_html(r#"<p><img src="https://evil.example/x.png" alt="x"></p>"#);
+        assert!(!out.contains("<img"));
+        assert!(!out.contains("evil.example"));
+    }
+
+    #[test]
+    fn strips_raw_figure_markup() {
+        let out = clean_article_html(
+            r#"<figure><img src="/media/x.webp"><figcaption>cap</figcaption></figure>"#,
+        );
+        assert!(!out.contains("<figure"));
+        assert!(!out.contains("<img"));
+        assert!(!out.contains("<figcaption"));
+        // Caption text survives as bare text, tags do not.
+        assert!(out.contains("cap"));
+    }
+
+    #[test]
+    fn preserves_figure_embed() {
+        let input = r#"<div class="figure-embed" data-figure-src="/media/articles/u/abc123.webp" data-figure-alt="A diagram" data-figure-caption="Fig." data-figure-width="800" data-figure-height="600"></div>"#;
+        let out = clean_article_html(input);
+        assert!(out.contains(r#"class="figure-embed""#));
+        assert!(out.contains(r#"data-figure-src="/media/articles/u/abc123.webp""#));
+        assert!(out.contains(r#"data-figure-alt="A diagram""#));
+        assert!(out.contains(r#"data-figure-caption="Fig.""#));
+    }
+
+    #[test]
+    fn strips_injected_handler_on_figure_embed() {
+        let input = r#"<div class="figure-embed" data-figure-src="/media/x.webp" onclick="alert(1)"></div>"#;
+        let out = clean_article_html(input);
+        assert!(out.contains(r#"data-figure-src="/media/x.webp""#));
+        assert!(!out.contains("onclick"));
         assert!(!out.contains("alert"));
     }
 
@@ -138,5 +192,13 @@ mod tests {
         let out = clean_inline_html("<b>quote</b><script>steal()</script>");
         assert!(out.contains("<b>quote</b>"));
         assert!(!out.contains("steal"));
+    }
+
+    #[test]
+    fn inline_cleaner_strips_images() {
+        let out = clean_inline_html(r#"<em>text</em><img src="https://evil.example/pixel.png">"#);
+        assert!(out.contains("<em>text</em>"));
+        assert!(!out.contains("<img"));
+        assert!(!out.contains("evil.example"));
     }
 }

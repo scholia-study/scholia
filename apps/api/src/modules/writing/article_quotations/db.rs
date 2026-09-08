@@ -4,7 +4,9 @@ use regex::Regex;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::modules::writing::article_quotations::models::ArticleQuotationResponse;
+use crate::modules::writing::article_quotations::models::{
+    ArticleQuotationFigure, ArticleQuotationKind, ArticleQuotationResponse,
+};
 use crate::system::error::{AppError, SqlxResultExt};
 
 /// Normalize text for lenient quote-containment matching: drop HTML tags and
@@ -39,13 +41,72 @@ fn quote_text_occurs_in_html(article_html: &str, quote_text: &str) -> bool {
     haystack.contains(&needle)
 }
 
+/// Figure snapshot fields as they appear in a rendered `figure-embed` div.
+struct ExtractedFigure {
+    alt: Option<String>,
+    caption: Option<String>,
+    width: Option<i32>,
+    height: Option<i32>,
+}
+
+/// Undo ammonia's attribute-value entity escaping. `&amp;` must be last so
+/// double-escaped sequences don't collapse twice.
+fn unescape_attr(s: &str) -> String {
+    s.replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace("&apos;", "'")
+        .replace("&amp;", "&")
+}
+
+/// Locate the `figure-embed` div with this exact `data-figure-src` in the
+/// cited article's rendered HTML and read its snapshot fields. `None` means
+/// the article shows no such figure — the figure-quotation analogue of the
+/// fabricated-text guard: everything in the snapshot comes from the
+/// article's own markup, never from the client.
+fn extract_figure_from_html(article_html: &str, src: &str) -> Option<ExtractedFigure> {
+    static TAG_RE: OnceLock<Regex> = OnceLock::new();
+    let tag_re =
+        TAG_RE.get_or_init(|| Regex::new(r#"<div[^>]*class="figure-embed"[^>]*>"#).unwrap());
+    for tag in tag_re.find_iter(article_html) {
+        let tag = tag.as_str();
+        let attr = |key: &str| -> Option<String> {
+            Regex::new(&format!(r#"data-figure-{key}="([^"]*)""#))
+                .ok()?
+                .captures(tag)
+                .map(|c| unescape_attr(&c[1]))
+        };
+        if attr("src").as_deref() == Some(src) {
+            return Some(ExtractedFigure {
+                alt: attr("alt").filter(|s| !s.is_empty()),
+                caption: attr("caption").filter(|s| !s.is_empty()),
+                width: attr("width").and_then(|v| v.parse().ok()),
+                height: attr("height").and_then(|v| v.parse().ok()),
+            });
+        }
+    }
+    None
+}
+
+pub enum NewArticleQuotation<'a> {
+    Text { text: &'a str, html: &'a str },
+    Figure { src: &'a str },
+}
+
 struct ArticleQuotationRow {
     id: Uuid,
     article_id: Option<Uuid>,
     article_title: String,
     author_display_name: String,
+    kind: ArticleQuotationKind,
     text: String,
     html: String,
+    figure_src: Option<String>,
+    figure_alt: Option<String>,
+    figure_caption: Option<String>,
+    figure_width: Option<i32>,
+    figure_height: Option<i32>,
     note_count: Option<i64>,
     created_at: time::OffsetDateTime,
 }
@@ -61,8 +122,16 @@ fn article_quotation_from_row(r: ArticleQuotationRow) -> ArticleQuotationRespons
         article_id: r.article_id.map(|id| id.to_string()),
         article_title: r.article_title,
         author_display_name: r.author_display_name,
+        kind: r.kind,
         text: r.text,
         html: r.html,
+        figure: r.figure_src.map(|src| ArticleQuotationFigure {
+            src,
+            alt: r.figure_alt,
+            caption: r.figure_caption,
+            width: r.figure_width,
+            height: r.figure_height,
+        }),
         note_count: r.note_count.unwrap_or(0),
         created_at: fmt_time(r.created_at),
     }
@@ -72,19 +141,35 @@ pub async fn create_article_quotation(
     pool: &PgPool,
     user_id: Uuid,
     article_id: Uuid,
-    text: &str,
-    html: &str,
+    entry: NewArticleQuotation<'_>,
 ) -> Result<(ArticleQuotationResponse, bool), AppError> {
-    // App-level dedup: check if same user already saved same text from same article
-    let existing = sqlx::query_scalar!(
-        r#"SELECT id FROM article_quotations
-           WHERE user_id = $1 AND article_id = $2 AND text = $3"#,
-        user_id,
-        article_id,
-        text,
-    )
-    .fetch_optional(pool)
-    .await?;
+    // App-level dedup: same user, same article, same content — text
+    // quotations match on text, figure quotations on the figure src.
+    let existing = match &entry {
+        NewArticleQuotation::Text { text, .. } => {
+            sqlx::query_scalar!(
+                r#"SELECT id FROM article_quotations
+                   WHERE user_id = $1 AND article_id = $2
+                     AND kind = 'text' AND text = $3"#,
+                user_id,
+                article_id,
+                *text,
+            )
+            .fetch_optional(pool)
+            .await?
+        }
+        NewArticleQuotation::Figure { src } => {
+            sqlx::query_scalar!(
+                r#"SELECT id FROM article_quotations
+                   WHERE user_id = $1 AND article_id = $2 AND figure_src = $3"#,
+                user_id,
+                article_id,
+                *src,
+            )
+            .fetch_optional(pool)
+            .await?
+        }
+    };
 
     if let Some(existing_id) = existing {
         let row = fetch_article_quotation_row(pool, existing_id).await?;
@@ -118,35 +203,79 @@ pub async fn create_article_quotation(
     .await
     .on_missing(|| AppError::NotFound("Article not found or not published".into()))?;
 
-    // Reject fabricated quotes: the text must actually occur in the cited
-    // article. Without this a user could attribute arbitrary text to another
-    // author (the snapshot freezes that author's name) and, once embedded in
-    // a published article, serve it publicly.
-    if !quote_text_occurs_in_html(&meta.html, text) {
-        return Err(AppError::BadRequest(
-            "Quotation text was not found in the cited article.".into(),
-        ));
-    }
+    let new_id = match entry {
+        NewArticleQuotation::Text { text, html } => {
+            // Reject fabricated quotes: the text must actually occur in the
+            // cited article. Without this a user could attribute arbitrary
+            // text to another author (the snapshot freezes that author's
+            // name) and, once embedded in a published article, serve it
+            // publicly.
+            if !quote_text_occurs_in_html(&meta.html, text) {
+                return Err(AppError::BadRequest(
+                    "Quotation text was not found in the cited article.".into(),
+                ));
+            }
 
-    let new_id = sqlx::query_scalar!(
-        r#"INSERT INTO article_quotations (
-               user_id, article_id, article_title,
-               author_display_name, author_sort_name,
-               source_published_at, text, html
-           )
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-           RETURNING id"#,
-        user_id,
-        article_id,
-        meta.title,
-        meta.author_display_name,
-        meta.author_sort_name,
-        meta.published_at,
-        text,
-        html,
-    )
-    .fetch_one(pool)
-    .await?;
+            sqlx::query_scalar!(
+                r#"INSERT INTO article_quotations (
+                       user_id, article_id, article_title,
+                       author_display_name, author_sort_name,
+                       source_published_at, text, html
+                   )
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                   RETURNING id"#,
+                user_id,
+                article_id,
+                meta.title,
+                meta.author_display_name,
+                meta.author_sort_name,
+                meta.published_at,
+                text,
+                html,
+            )
+            .fetch_one(pool)
+            .await?
+        }
+        NewArticleQuotation::Figure { src } => {
+            // The fabrication guard for figures: every snapshot field is
+            // read out of the article's own rendered figure-embed div.
+            let figure = extract_figure_from_html(&meta.html, src).ok_or_else(|| {
+                AppError::BadRequest("Figure was not found in the cited article.".into())
+            })?;
+            let text = figure
+                .caption
+                .clone()
+                .or_else(|| figure.alt.clone())
+                .unwrap_or_else(|| "Figure".to_string());
+
+            sqlx::query_scalar!(
+                r#"INSERT INTO article_quotations (
+                       user_id, article_id, article_title,
+                       author_display_name, author_sort_name,
+                       source_published_at, text, html, kind,
+                       figure_src, figure_alt, figure_caption,
+                       figure_width, figure_height
+                   )
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, '', 'figure',
+                           $8, $9, $10, $11, $12)
+                   RETURNING id"#,
+                user_id,
+                article_id,
+                meta.title,
+                meta.author_display_name,
+                meta.author_sort_name,
+                meta.published_at,
+                text,
+                src,
+                figure.alt,
+                figure.caption,
+                figure.width,
+                figure.height,
+            )
+            .fetch_one(pool)
+            .await?
+        }
+    };
 
     let row = fetch_article_quotation_row(pool, new_id).await?;
     Ok((article_quotation_from_row(row), true))
@@ -159,7 +288,11 @@ pub async fn list_article_quotations(
     let rows = sqlx::query_as!(
         ArticleQuotationRow,
         r#"SELECT aq.id, aq.article_id, aq.article_title,
-                  aq.author_display_name, aq.text, aq.html,
+                  aq.author_display_name,
+                  aq.kind AS "kind: ArticleQuotationKind",
+                  aq.text, aq.html,
+                  aq.figure_src, aq.figure_alt, aq.figure_caption,
+                  aq.figure_width, aq.figure_height,
                   COUNT(qn.id) AS "note_count?",
                   aq.created_at
            FROM article_quotations aq
@@ -208,6 +341,8 @@ pub struct UnifiedArticleQuotationRow {
     pub article_title: String,
     pub author_display_name: String,
     pub text: String,
+    pub figure_src: Option<String>,
+    pub figure_alt: Option<String>,
     pub note_count: Option<i64>,
     pub created_at: time::OffsetDateTime,
 }
@@ -220,6 +355,7 @@ pub async fn list_article_quotations_for_unified(
         UnifiedArticleQuotationRow,
         r#"SELECT aq.id, aq.article_id, aq.article_title,
                   aq.author_display_name, aq.text,
+                  aq.figure_src, aq.figure_alt,
                   COUNT(qn.id) AS "note_count?",
                   aq.created_at
            FROM article_quotations aq
@@ -242,7 +378,11 @@ async fn fetch_article_quotation_row(
     sqlx::query_as!(
         ArticleQuotationRow,
         r#"SELECT aq.id, aq.article_id, aq.article_title,
-                  aq.author_display_name, aq.text, aq.html,
+                  aq.author_display_name,
+                  aq.kind AS "kind: ArticleQuotationKind",
+                  aq.text, aq.html,
+                  aq.figure_src, aq.figure_alt, aq.figure_caption,
+                  aq.figure_width, aq.figure_height,
                   COUNT(qn.id) AS "note_count?",
                   aq.created_at
            FROM article_quotations aq
@@ -254,6 +394,47 @@ async fn fetch_article_quotation_row(
     .fetch_one(pool)
     .await
     .on_missing(|| AppError::NotFound("Article quotation not found".into()))
+}
+
+#[cfg(test)]
+mod figure_extraction_tests {
+    use super::extract_figure_from_html;
+
+    const SRC: &str = "/media/articles/u1/0123456789abcdef.webp";
+    const HTML: &str = r#"<p>Intro.</p><div class="figure-embed" data-figure-src="/media/articles/u1/0123456789abcdef.webp" data-figure-alt="Kant &amp; Hume" data-figure-caption="Fig. 1" data-figure-width="800" data-figure-height="600"></div><div class="figure-embed" data-figure-src="/media/articles/u1/fedcba9876543210.webp"></div>"#;
+
+    #[test]
+    fn extracts_matching_figure_fields() {
+        let f = extract_figure_from_html(HTML, SRC).expect("figure found");
+        assert_eq!(f.alt.as_deref(), Some("Kant & Hume"));
+        assert_eq!(f.caption.as_deref(), Some("Fig. 1"));
+        assert_eq!(f.width, Some(800));
+        assert_eq!(f.height, Some(600));
+    }
+
+    #[test]
+    fn matches_figure_without_optional_fields() {
+        let f = extract_figure_from_html(HTML, "/media/articles/u1/fedcba9876543210.webp")
+            .expect("figure found");
+        assert!(f.alt.is_none());
+        assert!(f.caption.is_none());
+        assert!(f.width.is_none());
+    }
+
+    #[test]
+    fn rejects_src_absent_from_article() {
+        assert!(
+            extract_figure_from_html(HTML, "/media/articles/u2/aaaabbbbccccdddd.webp").is_none()
+        );
+    }
+
+    #[test]
+    fn rejects_src_only_present_in_prose() {
+        // The src string appearing in body text (not a figure-embed div)
+        // must not count.
+        let html = r#"<p>See /media/articles/u1/0123456789abcdef.webp for details.</p>"#;
+        assert!(extract_figure_from_html(html, SRC).is_none());
+    }
 }
 
 #[cfg(test)]

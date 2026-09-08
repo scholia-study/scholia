@@ -1,6 +1,7 @@
 use axum::Json;
 use axum::extract::{Path, State};
 
+use crate::modules::writing::article_quotations::db::NewArticleQuotation;
 use crate::modules::writing::article_quotations::models::{
     ArticleQuotationListResponse, ArticleQuotationResponse, CreateArticleQuotationRequest,
     CreateArticleQuotationResponse,
@@ -47,20 +48,38 @@ pub async fn create_article_quotation(
     let article_id = uuid::Uuid::parse_str(&body.article_id)
         .map_err(|_| AppError::BadRequest("Invalid article_id".into()))?;
 
-    check_max_len("Quotation text", &body.text, MAX_ARTICLE_QUOTATION_TEXT)?;
-    check_max_len("Quotation html", &body.html, MAX_ARTICLE_QUOTATION_HTML)?;
-
-    let html = crate::system::sanitize::clean_inline_html(&body.html);
-
-    let (article_quotation, created) =
+    let (article_quotation, created) = if let Some(figure_src) = body.figure_src.as_deref() {
+        if !crate::modules::writing::articles::db::is_uploaded_figure_src(figure_src) {
+            return Err(AppError::BadRequest("Invalid figure src".into()));
+        }
         crate::modules::writing::article_quotations::db::create_article_quotation(
             &state.pool,
             user.id,
             article_id,
-            &body.text,
-            &html,
+            NewArticleQuotation::Figure { src: figure_src },
         )
-        .await?;
+        .await?
+    } else {
+        let text = body
+            .text
+            .as_deref()
+            .filter(|t| !t.trim().is_empty())
+            .ok_or_else(|| AppError::BadRequest("Quotation text is required".into()))?;
+        let html_raw = body.html.as_deref().unwrap_or_default();
+
+        check_max_len("Quotation text", text, MAX_ARTICLE_QUOTATION_TEXT)?;
+        check_max_len("Quotation html", html_raw, MAX_ARTICLE_QUOTATION_HTML)?;
+
+        let html = crate::system::sanitize::clean_inline_html(html_raw);
+
+        crate::modules::writing::article_quotations::db::create_article_quotation(
+            &state.pool,
+            user.id,
+            article_id,
+            NewArticleQuotation::Text { text, html: &html },
+        )
+        .await?
+    };
 
     Ok(Json(CreateArticleQuotationResponse {
         article_quotation,

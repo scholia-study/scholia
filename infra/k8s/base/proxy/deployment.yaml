@@ -46,6 +46,8 @@ spec:
               value: scholia-web:3000
             - name: UPSTREAM_API
               value: scholia-api:4000
+            - name: MEDIA_ORIGIN
+              value: https://fsn1.your-objectstorage.com/scholia-media
           volumeMounts:
             - name: cache
               mountPath: /var/cache/nginx

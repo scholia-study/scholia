@@ -3,6 +3,29 @@ use utoipa::{IntoParams, ToSchema};
 
 use crate::modules::writing::quotations::models::QuotationLimitsResponse;
 
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, sqlx::Type, ToSchema)]
+#[sqlx(type_name = "article_quotation_kind", rename_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
+pub enum ArticleQuotationKind {
+    Text,
+    Figure,
+}
+
+/// Snapshot of a quoted figure, extracted server-side from the quoted
+/// article's rendered HTML at save time.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ArticleQuotationFigure {
+    pub src: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub alt: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub caption: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub width: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub height: Option<i32>,
+}
+
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ArticleQuotationResponse {
     pub id: String,
@@ -10,8 +33,11 @@ pub struct ArticleQuotationResponse {
     pub article_id: Option<String>,
     pub article_title: String,
     pub author_display_name: String,
+    pub kind: ArticleQuotationKind,
     pub text: String,
     pub html: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub figure: Option<ArticleQuotationFigure>,
     pub note_count: i64,
     pub created_at: String,
 }
@@ -30,8 +56,17 @@ pub struct CreateArticleQuotationResponse {
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateArticleQuotationRequest {
     pub article_id: String,
-    pub text: String,
-    pub html: String,
+    /// Required for text quotations; ignored for figure quotations.
+    #[serde(default)]
+    pub text: Option<String>,
+    /// Required for text quotations; ignored for figure quotations.
+    #[serde(default)]
+    pub html: Option<String>,
+    /// Present = save a figure quotation of the uploaded image at this
+    /// `/media/` src. The alt/caption/dimension snapshot is extracted from
+    /// the article's own rendered HTML, never from the client.
+    #[serde(default)]
+    pub figure_src: Option<String>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -79,6 +114,12 @@ pub enum UnifiedQuotationResponse {
         article_title: String,
         author_display_name: String,
         text_snippet: String,
+        /// Present for figure quotations: the quoted image, for a list
+        /// thumbnail.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        figure_src: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        figure_alt: Option<String>,
         note_count: i64,
         created_at: String,
     },

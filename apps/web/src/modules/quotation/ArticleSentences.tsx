@@ -23,6 +23,7 @@ import toast from "react-hot-toast";
 import { useCreateArticleQuotation } from "../../api/article-quotations/article-quotations";
 import { FetchError } from "../../api/fetcher";
 import { useAuth } from "../../hooks/useAuth";
+import { figureEmbedFromAttribs } from "./FigureEmbed";
 
 interface SegmentedSentence {
     key: string;
@@ -309,6 +310,10 @@ export function ArticleSentences({
         start: string;
         end: string | null;
     } | null>(null);
+    const [selectedFigure, setSelectedFigure] = useState<{
+        src: string;
+        label: string;
+    } | null>(null);
     const anchorRef = useRef<string | null>(null);
     const [popoverAnchor, setPopoverAnchor] = useState<HTMLElement | null>(
         null,
@@ -339,9 +344,20 @@ export function ArticleSentences({
         [selectedRange, sentenceKeys],
     );
 
+    const handleFigureClick = useCallback(
+        (src: string, label: string, e: MouseEvent) => {
+            setSaveStatus("idle");
+            setSelectedRange(null);
+            setSelectedFigure({ src, label });
+            setPopoverAnchor(e.currentTarget as HTMLElement);
+        },
+        [],
+    );
+
     const handleSentenceClick = useCallback(
         (key: string, e: MouseEvent) => {
             setSaveStatus("idle");
+            setSelectedFigure(null);
 
             if (e.shiftKey && anchorRef.current) {
                 const anchorIdx = sentenceKeys.indexOf(anchorRef.current);
@@ -390,16 +406,21 @@ export function ArticleSentences({
 
     const handleSave = useCallback(async () => {
         const { text, html: selectedHtml } = getSelectedText();
-        if (!text) return;
+        if (!selectedFigure && !text) return;
 
         setSaveStatus("saving");
         try {
             const result = await createMutation.mutateAsync({
-                data: {
-                    article_id: articleId,
-                    text,
-                    html: selectedHtml,
-                },
+                data: selectedFigure
+                    ? {
+                          article_id: articleId,
+                          figure_src: selectedFigure.src,
+                      }
+                    : {
+                          article_id: articleId,
+                          text,
+                          html: selectedHtml,
+                      },
             });
             if (
                 result.data &&
@@ -418,11 +439,12 @@ export function ArticleSentences({
                     : "Failed to save quotation";
             toast.error(message);
         }
-    }, [getSelectedText, createMutation, articleId]);
+    }, [getSelectedText, createMutation, articleId, selectedFigure]);
 
     const handleClosePopover = useCallback(() => {
         setPopoverAnchor(null);
         setSelectedRange(null);
+        setSelectedFigure(null);
         setSaveStatus("idle");
     }, []);
 
@@ -431,6 +453,7 @@ export function ArticleSentences({
         const handler = (e: globalThis.MouseEvent) => {
             const target = e.target as HTMLElement;
             if (target.closest("[data-article-sentence]")) return;
+            if (target.closest("[data-figure-quote]")) return;
             if (target.closest(".MuiPopover-root")) return;
             handleClosePopover();
         };
@@ -445,7 +468,37 @@ export function ArticleSentences({
             if (!(domNode instanceof Element)) return undefined;
             const tag = domNode.name;
 
-            // Delegate quotation embeds to the parent's replaceEmbed callback
+            // Figure embeds are rendered (and made quotable) here rather
+            // than delegated: the click-to-quote popover lives in this
+            // component.
+            if (domNode.attribs?.class?.includes("figure-embed")) {
+                const fig = figureEmbedFromAttribs(domNode.attribs);
+                if (!fig) return undefined;
+                if (disabled) return fig;
+                const src = domNode.attribs["data-figure-src"];
+                const label =
+                    domNode.attribs["data-figure-caption"] ||
+                    domNode.attribs["data-figure-alt"] ||
+                    "Figure";
+                const selected = selectedFigure?.src === src;
+                return (
+                    // biome-ignore lint/a11y/useKeyWithClickEvents: parity with sentence spans
+                    <div
+                        data-figure-quote={src}
+                        onClick={(e) => handleFigureClick(src, label, e)}
+                        className={`cursor-pointer transition-shadow rounded ${
+                            selected
+                                ? "ring-2 ring-amber-300"
+                                : "hover:ring-2 hover:ring-stone-200"
+                        }`}
+                    >
+                        {fig}
+                    </div>
+                );
+            }
+
+            // Delegate quotation embeds to the parent's replaceEmbed
+            // callback
             if (
                 domNode.attribs?.class?.includes("quotation-embed") ||
                 domNode.attribs?.class?.includes("article-quotation-embed")
@@ -526,6 +579,7 @@ export function ArticleSentences({
     });
 
     const { text: selectedText } = getSelectedText();
+    const previewText = selectedFigure ? selectedFigure.label : selectedText;
 
     return (
         <>
@@ -544,7 +598,7 @@ export function ArticleSentences({
             >
                 <div className="p-3">
                     <p className="text-xs text-stone-500 mb-2 line-clamp-3">
-                        {selectedText}
+                        {previewText}
                     </p>
                     {isAuthenticated ? (
                         <>
