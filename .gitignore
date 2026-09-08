@@ -76,3 +76,6 @@ docs/db/schema.sql
 
 # Local media storage for the dev API (uploaded article images)
 .local/
+
+# Local working files, scoped to a branch — never committed.
+.localdev/
