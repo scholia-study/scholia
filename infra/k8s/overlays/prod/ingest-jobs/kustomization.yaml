@@ -46,3 +46,4 @@ resources:
   - ingest-hegel3.yaml
   - ingest-hobbes1.yaml
   - ingest-peirce1.yaml
+  - ingest-plato1.yaml
