@@ -1,7 +1,7 @@
 {
     "name": "scholia",
     "private": true,
-    "packageManager": "pnpm@11.22.0",
+    "packageManager": "pnpm@12.3.4",
     "scripts": {
         "h": "jq '.scripts' package.json",
         "validate": "pnpm exec turbo lint ct test check:modules",
