@@ -54,10 +54,13 @@ thin Job manifests (manual, dev, prod). Zero new crates, Dockerfiles, or CI filt
       value `""`, keep the `NTFY_URL` env and BOTH annotations:
       sync-wave "1" and `Force=true,Replace=true`)
 - [ ] Add it to `infra/k8s/overlays/dev/ingest-jobs/kustomization.yaml`
-      resources
+      resources (roster order)
 
-The prod overlay manifest is NOT created here — it lands at promotion
-time (step 6) with the dev-validated hash.
+The prod overlay (both the `ingest-<corpus>.yaml` manifest AND its
+`kustomization.yaml` resources entry) is NOT touched here — `just promote`
+mirrors both from dev at promotion time (step 6) with the dev-validated
+hash. Dev's `ingest-jobs/kustomization.yaml` is the source of truth for
+what prod gets.
 
 **CI trap**: the `structs` job builds every corpus from
 `struct.sh --list`, and `bump` then patches
@@ -85,16 +88,19 @@ needed; that's the point.)
       (+ a low-priority ntfy ping)
 - [ ] Book renders in the dev reader; cache purge fired
 - [ ] Promote to prod once dev content is validated: `just promote`
-      copies the image pins AND the dev ingest manifests into the prod
-      overlay — but NOT the prod `ingest-jobs/kustomization.yaml`
-      resource list, which is curated by hand. Add the new manifest
-      there and check `kubectl kustomize infra/k8s/overlays/prod/ingest-jobs`
-      renders. MIGRATION TRAP: the ingest Job must land with (or after)
-      an api pin that contains any migrations the corpus needs — wave 1
-      only orders the sync, it doesn't check the api image is new
-      enough. A Job that failed for this reason won't re-run on its
-      own (`backoffLimit` 0, name unchanged): after the api rolls out,
-      `kubectl delete job` it and Argo selfHeal recreates it.
+      copies the image pins, the dev ingest manifests, AND the dev
+      `ingest-jobs/kustomization.yaml` resources list into the prod
+      overlay (prod keeps its own header). Confirm the promote commit
+      shows `ingest-<corpus>.yaml` added to
+      `infra/k8s/overlays/prod/ingest-jobs/kustomization.yaml` — if it
+      doesn't, the corpus is promoted-but-unwired (Argo reports Synced
+      but the Job never runs). MIGRATION TRAP: the ingest Job must land
+      with (or after) an api pin that contains any migrations the corpus
+      needs — wave 1 only orders the sync, it doesn't check the api
+      image is new enough. A Job that failed for this reason won't
+      re-run on its own (`backoffLimit` 0, name unchanged): after the
+      api rolls out, `kubectl delete job` it and Argo selfHeal
+      recreates it.
 
 ## 7. Docs
 

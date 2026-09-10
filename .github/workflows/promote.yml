@@ -39,10 +39,21 @@ jobs:
                   # Job files are env-agnostic (secrets/services resolve
                   # in-cluster), so a verbatim copy IS the promotion of
                   # both the hash-named Job identity and DERIVED_HASH.
-                  # ingest-jobs/kustomization.yaml is NOT copied — prod
-                  # keeps its own (promotion-flavored) header.
                   cp infra/k8s/overlays/dev/ingest-jobs/ingest-*.yaml \
                      infra/k8s/overlays/prod/ingest-jobs/
+
+                  # Mirror dev's `resources:` list into prod's kustomization,
+                  # keeping prod's own (promotion-flavored) header. Copying
+                  # only the files but not the list silently leaves a
+                  # promoted corpus unwired — Argo can't see an unreferenced
+                  # manifest, so it reports Synced while the Job never runs.
+                  DEV_K=infra/k8s/overlays/dev/ingest-jobs/kustomization.yaml
+                  PROD_K=infra/k8s/overlays/prod/ingest-jobs/kustomization.yaml
+                  {
+                      sed '/^resources:/,$d' "$PROD_K"
+                      sed -n '/^resources:/,$p' "$DEV_K"
+                  } > "$PROD_K.tmp"
+                  mv "$PROD_K.tmp" "$PROD_K"
 
             - name: Commit + push if changed
               run: |
