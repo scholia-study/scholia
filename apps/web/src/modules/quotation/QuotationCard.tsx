@@ -6,6 +6,15 @@ import type { SentenceKind } from "../../api/model";
 import { batchSentences } from "../../api/sentences/sentences";
 import { formatPassageCitation } from "./citation";
 
+// Quotation text renders in the serif reading face regardless of the
+// surrounding article typography. Polytonic Greek has no coverage in
+// Libre Baskerville, so it needs Gentium Plus ahead of it — the inline
+// style would otherwise beat the global `[lang="grc"]` rule.
+const fontFor = (lang: string) =>
+    lang === "grc"
+        ? "'Gentium Plus', 'Libre Baskerville', serif"
+        : "'Libre Baskerville', serif";
+
 export interface QuotationCardProps {
     book: string;
     node: string;
@@ -213,10 +222,10 @@ export function QuotationCard({
                 >
                     <div className="flex flex-col" style={{ direction: "ltr" }}>
                         <div
-                            lang={item.language}
+                            lang={srcBook.language}
                             className={`text-sm leading-relaxed text-stone-600${figureClasses}`}
                             style={{
-                                fontFamily: "'Libre Baskerville', serif",
+                                fontFamily: fontFor(srcBook.language),
                             }}
                         >
                             {parse(sourceHtml)}
@@ -228,7 +237,7 @@ export function QuotationCard({
                             lang={item.language}
                             className={`text-sm leading-relaxed text-stone-700${figureClasses}`}
                             style={{
-                                fontFamily: "'Libre Baskerville', serif",
+                                fontFamily: fontFor(item.language),
                             }}
                         >
                             {parse(translationHtml)}
@@ -241,14 +250,14 @@ export function QuotationCard({
                     {showSource && sourceHtml && (
                         <>
                             <div
-                                lang={item.language}
+                                lang={srcBook.language}
                                 className={`text-sm leading-relaxed ${
                                     mode === "source+translation"
                                         ? "text-stone-600"
                                         : "text-stone-700"
                                 }${figureClasses}`}
                                 style={{
-                                    fontFamily: "'Libre Baskerville', serif",
+                                    fontFamily: fontFor(srcBook.language),
                                 }}
                             >
                                 {parse(sourceHtml)}
@@ -265,7 +274,7 @@ export function QuotationCard({
                                 lang={item.language}
                                 className={`text-sm leading-relaxed text-stone-700${figureClasses}`}
                                 style={{
-                                    fontFamily: "'Libre Baskerville', serif",
+                                    fontFamily: fontFor(item.language),
                                 }}
                             >
                                 {parse(translationHtml)}
