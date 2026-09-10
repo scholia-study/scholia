@@ -391,8 +391,8 @@ mod tests {
                 "{filename} (depth 0) contains a marker"
             );
             let body_after_heading = content
-                .splitn(2, &format!("## {}\n", entry.label))
-                .nth(1)
+                .split_once(&format!("## {}\n", entry.label))
+                .map(|x| x.1)
                 .unwrap_or("");
             assert!(
                 body_after_heading.trim().is_empty(),

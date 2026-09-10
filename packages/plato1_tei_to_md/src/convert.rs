@@ -185,7 +185,7 @@ pub fn render_inline(nodes: &[Node], ctx: &mut Ctx) -> String {
 
 fn record_quote_report(node: &Node, ctx: &mut Ctx, kind: QuoteKind) {
     let stephanus = ctx.current_stephanus.clone().unwrap_or_default();
-    let greek_text = truncate80(&collapse_ws(&plain_text(node)).trim().to_string());
+    let greek_text = truncate80(collapse_ws(&plain_text(node)).trim());
     ctx.report.push(ReportRow {
         stephanus,
         kind,
@@ -495,8 +495,10 @@ mod tests {
 
     #[test]
     fn quote_and_bibl_produce_one_report_row() {
-        let mut ctx = Ctx::default();
-        ctx.current_stephanus = Some("331e".to_string());
+        let mut ctx = Ctx {
+            current_stephanus: Some("331e".to_string()),
+            ..Default::default()
+        };
         let pieces = render_block(
             &nodes(
                 r#"<cit><quote type="verse"><l>a</l></quote> <bibl>Pindar Frag. 214</bibl></cit>"#,
