@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-plato1-bootstrap
+  name: ingest-plato1-d5cdcd06eaad
   labels:
     ingest: plato1
   annotations:
@@ -31,7 +31,7 @@ spec:
             - name: CORPUS
               value: plato1
             - name: DERIVED_HASH
-              value: ""
+              value: "d5cdcd06eaad"
             - name: NTFY_URL
               valueFrom:
                 secretKeyRef:
