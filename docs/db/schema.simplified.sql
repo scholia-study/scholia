@@ -9,6 +9,20 @@ CREATE TABLE article_editorial_labels (
   FOREIGN KEY (label_id) REFERENCES editorial_labels(id) ON DELETE CASCADE
 );
 
+CREATE TABLE article_images (
+  id uuid NOT NULL,
+  user_id uuid NOT NULL,
+  storage_key text NOT NULL,
+  original_filename text,
+  content_type text NOT NULL,
+  byte_size integer NOT NULL,
+  width integer NOT NULL,
+  height integer NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE article_passage_references (
   id uuid NOT NULL,
   article_id uuid NOT NULL,
@@ -37,6 +51,12 @@ CREATE TABLE article_quotations (
   text text NOT NULL,
   html text NOT NULL,
   created_at timestamp with time zone NOT NULL,
+  kind article_quotation_kind NOT NULL,
+  figure_src text,
+  figure_alt text,
+  figure_caption text,
+  figure_width integer,
+  figure_height integer,
   PRIMARY KEY (id),
   FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE SET NULL,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -132,6 +152,7 @@ CREATE TABLE books (
   updated_at timestamp with time zone NOT NULL,
   content_hash text,
   nodes_per_page smallint,
+  licence text NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (source_id) REFERENCES sources(id)
 );
@@ -569,6 +590,7 @@ CREATE TABLE sources (
   updated_at timestamp with time zone NOT NULL,
   publication_place text,
   original_year smallint,
+  original_year_circa boolean NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (created_by) REFERENCES users(id),
   FOREIGN KEY (parent_source_id) REFERENCES sources(id) ON DELETE SET NULL,
