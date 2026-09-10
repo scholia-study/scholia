@@ -31,6 +31,12 @@ export interface BatchSentenceResponseItem {
     figure_number?: number | null;
     /** @nullable */
     figure_original_html?: string | null;
+    /**
+     * ISO code of the book the quoted sentences come from (e.g. "grc",
+     * "de", "en"). Used to set the `lang` attribute so non-Latin scripts
+     * render in the right face.
+     */
+    language: string;
     node_label: string;
     node_slug: string;
     /**

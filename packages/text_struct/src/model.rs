@@ -36,6 +36,10 @@ pub struct BookData {
     /// the Kritik printed in the 1911 Akademie-Ausgabe).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub original_year: Option<i16>,
+    /// `original_year` is an estimate rather than an imprint date (ancient
+    /// works are dated by scholarly consensus) → `sources.original_year_circa`.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub original_year_circa: bool,
     /// Edition statement of the record → `sources.edition`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edition: Option<String>,

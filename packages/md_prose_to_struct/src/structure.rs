@@ -16,8 +16,9 @@
 use common::sentences::{
     RUN_BREAK, split_sentences_en_enum_forced, split_sentences_en_forced,
     split_sentences_en_paren_protected_forced, split_sentences_en_strong_colon_forced,
-    split_sentences_forced, split_sentences_paren_protected_forced, strip_forced_split_markers,
-    strip_forced_splits, strip_forced_splits_keep_runs, take_run_marker,
+    split_sentences_forced, split_sentences_grc_forced, split_sentences_paren_protected_forced,
+    strip_forced_split_markers, strip_forced_splits, strip_forced_splits_keep_runs,
+    take_run_marker,
 };
 use regex::Regex;
 use std::collections::HashMap;
@@ -31,7 +32,7 @@ use crate::model::*;
 use crate::parse::{
     MARGIN_SENTINEL_RE, MARGIN_TOKEN_RE, MarkerKind, ParsedBlock, ParsedBlockType, strip_markers,
 };
-use crate::roman::{block_sort_order, roman_to_int};
+use crate::roman::{block_sort_order, block_sort_order_subpage, roman_to_int};
 use crate::separator::build_separator_block;
 
 /// Regex to find `<sup>NUMBER</sup>` in rendered HTML (only footnote refs produce these).
@@ -156,6 +157,7 @@ struct BlockCtx<'a> {
     aa_system_slug: &'a str,
     edition_system_slug: &'a str,
     edition_sort_arabic_fallback: bool,
+    subpage_letter_sort: bool,
 }
 
 /// Build the complete nested output from parsed files.
@@ -220,7 +222,9 @@ pub fn build_output(corpus: &Corpus, mode: Mode, parsed_files: &[ParsedFile]) ->
     };
 
     let ctx = BlockCtx {
-        splitter: if corpus.strong_colon_splits {
+        splitter: if corpus.greek_splitter && !translation {
+            split_sentences_grc_forced
+        } else if corpus.strong_colon_splits {
             split_sentences_en_strong_colon_forced
         } else if corpus.paren_protected_splits {
             if translation || corpus.source_splitter_en {
@@ -236,7 +240,10 @@ pub fn build_output(corpus: &Corpus, mode: Mode, parsed_files: &[ParsedFile]) ->
             split_sentences_forced
         },
         figure_label: corpus.figure_label,
-        // Same selection as `splitter`, minus the peirce prose rules.
+        // Same selection as `splitter`, minus the peirce prose rules. No Greek
+        // arm here: this corpus's division headings are English editorial
+        // titles present in both editions, so they must split identically on
+        // both sides and therefore always use the English splitter.
         heading_splitter: if corpus.strong_colon_splits {
             split_sentences_en_strong_colon_forced
         } else if corpus.paren_protected_splits {
@@ -253,6 +260,7 @@ pub fn build_output(corpus: &Corpus, mode: Mode, parsed_files: &[ParsedFile]) ->
         aa_system_slug: corpus.aa_system_slug,
         edition_system_slug: corpus.edition_system_slug,
         edition_sort_arabic_fallback: corpus.edition_sort_arabic_fallback,
+        subpage_letter_sort: corpus.subpage_letter_sort,
     };
     let mut counters = Counters {
         paragraph: 1,
@@ -636,7 +644,14 @@ fn build_block(
         }
 
         let (system_slug, sort_order) = match marker.kind {
-            MarkerKind::Aa => (ctx.aa_system_slug, block_sort_order(&marker.value)),
+            MarkerKind::Aa => {
+                let order = if ctx.subpage_letter_sort {
+                    block_sort_order_subpage(&marker.value)
+                } else {
+                    block_sort_order(&marker.value)
+                };
+                (ctx.aa_system_slug, order)
+            }
             MarkerKind::BEdition => {
                 let sort = roman_to_int(&marker.value)
                     .map(|v| v as i32)
@@ -741,7 +756,9 @@ fn find_parent_source_ref(
     current_depth: u16,
     position_number: fn(usize) -> usize,
 ) -> Option<String> {
-    if current_depth <= 1 {
+    // Only a root has no parent, and which depth counts as the root varies by
+    // corpus: plato1's books sit at depth 0, everyone else's top level at 1.
+    if current_depth == 0 {
         return None;
     }
     let target_depth = current_depth - 1;
@@ -766,6 +783,12 @@ fn entry_slug(entry: &Entry, slugify: fn(&str) -> String) -> String {
 }
 
 /// Build an ltree path from slugs of ancestors.
+///
+/// Corpora differ in the depth their top level sits at: most root their tree
+/// at depth 1, but a corpus whose books are themselves nodes (plato1) roots it
+/// at 0. The walk therefore climbs while a shallower ancestor can still exist,
+/// not while depth exceeds 1 — the latter left every depth-1 node of a
+/// depth-0-rooted corpus stranded at the tree's root.
 fn build_path(
     entries: &[Entry],
     current_idx: usize,
@@ -776,7 +799,7 @@ fn build_path(
     let mut depth = current_depth;
     let mut idx = current_idx;
 
-    while depth > 1 {
+    while depth > 0 {
         let target = depth - 1;
         let mut found = false;
         for i in (0..idx).rev() {
@@ -813,6 +836,7 @@ mod tests {
             aa_system_slug: "aa_iii",
             edition_system_slug: "b_edition",
             edition_sort_arabic_fallback: false,
+            subpage_letter_sort: false,
         }
     }
 
@@ -1211,6 +1235,47 @@ Weil die Kategorien fortgehen.
         let entries = to_owned_entries(&common::kant1::toc_mod::flat_toc_entries());
         let path = build_path(&entries, 0, 1, common::kant1::filenames::slugify);
         assert_eq!(path, "motto");
+    }
+
+    #[test]
+    fn test_parent_source_ref_depth0_root() {
+        // A depth-1 division must point at its depth-0 book; the book itself
+        // has no parent.
+        let entries: Vec<Entry> = vec![
+            (0, Some("327a".into()), 0, "Book I".into(), None),
+            (
+                1,
+                Some("327a".into()),
+                1,
+                "The Descent to the Piraeus".into(),
+                None,
+            ),
+        ];
+        let pos = common::plato1::filenames::position_number;
+        assert_eq!(find_parent_source_ref(&entries, 0, 0, pos), None);
+        assert!(find_parent_source_ref(&entries, 1, 1, pos).is_some());
+    }
+
+    #[test]
+    fn test_build_path_depth0_root_nests_children() {
+        // plato1 roots its tree at depth 0 (the ten books), with divisions at
+        // depth 1. Those divisions must hang under their book, not beside it.
+        let entries: Vec<Entry> = vec![
+            (0, Some("327a".into()), 0, "Book I".into(), None),
+            (
+                1,
+                Some("327a".into()),
+                1,
+                "The Descent to the Piraeus".into(),
+                None,
+            ),
+        ];
+        let slugify = common::plato1::filenames::slugify;
+        assert_eq!(build_path(&entries, 0, 0, slugify), "book_i");
+        assert_eq!(
+            build_path(&entries, 1, 1, slugify),
+            "book_i.the_descent_to_the_piraeus"
+        );
     }
 
     #[test]

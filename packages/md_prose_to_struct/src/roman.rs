@@ -44,6 +44,25 @@ const ROMAN_SORT_FLOOR: i32 = -10_000;
 /// while staying monotonic within its own series. A dotted volume.page
 /// (hegel2's GW system) blocks by volume — sort is only consulted within a
 /// sentence, where volumes never mix.
+/// [`block_sort_order`] with the letter suffix treated as a SUB-PAGE address
+/// rather than a duplicate-page disambiguator: `327a` → 3270, `327e` → 3274,
+/// so Stephanus sections stay strictly ordered within their page. Opt-in per
+/// corpus — hobbes1's `247b` is the second printing of page 247 and must keep
+/// sorting as 247, next to it.
+pub fn block_sort_order_subpage(value: &str) -> i32 {
+    let digits = value.trim_end_matches(|c: char| c.is_ascii_lowercase());
+    let letters = &value[digits.len()..];
+    if !digits.is_empty()
+        && letters.len() == 1
+        && let Ok(page) = digits.parse::<i32>()
+        && let Some(ch) = letters.chars().next()
+    {
+        return page * 10 + (ch as i32 - 'a' as i32);
+    }
+    // No single-letter suffix: keep the page's own value on the same scale.
+    block_sort_order(value) * 10
+}
+
 pub fn block_sort_order(value: &str) -> i32 {
     value
         .parse::<i32>()
@@ -139,5 +158,39 @@ mod tests {
     fn test_invalid() {
         assert_eq!(roman_to_int(""), None);
         assert_eq!(roman_to_int("ABC"), None);
+    }
+}
+
+#[cfg(test)]
+mod subpage_tests {
+    use super::*;
+
+    #[test]
+    fn stephanus_sections_stay_ordered_within_a_page() {
+        let refs = ["327a", "327b", "327c", "327d", "327e", "328a"];
+        let orders: Vec<i32> = refs.iter().map(|r| block_sort_order_subpage(r)).collect();
+        assert_eq!(orders, vec![3270, 3271, 3272, 3273, 3274, 3280]);
+        assert!(orders.windows(2).all(|w| w[0] < w[1]), "not monotonic");
+    }
+
+    #[test]
+    fn whole_republic_range_is_monotonic() {
+        let mut prev = i32::MIN;
+        for page in 327..=621 {
+            for letter in ["a", "b", "c", "d", "e"] {
+                let o = block_sort_order_subpage(&format!("{page}{letter}"));
+                assert!(o > prev, "{page}{letter} broke monotonicity");
+                prev = o;
+            }
+        }
+    }
+
+    /// hobbes1's duplicate-page suffix must NOT move: it is the same printed
+    /// page, and the opt-in flag is what keeps the two readings apart.
+    #[test]
+    fn duplicate_page_suffix_is_unaffected_by_the_default() {
+        assert_eq!(block_sort_order("247b"), 247);
+        assert_eq!(block_sort_order("247"), 247);
+        assert_eq!(block_sort_order("248"), 248);
     }
 }

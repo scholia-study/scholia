@@ -143,6 +143,7 @@ function MarginNoteGutter({
     showOriginal,
     compact,
     markers,
+    language,
 }: {
     notes: MarginNoteResponse[];
     side: "left" | "right";
@@ -150,6 +151,7 @@ function MarginNoteGutter({
     compact?: boolean;
     /** Same-side page markers, folded in above the note text. */
     markers?: PageMarkerResponse[];
+    language: string;
 }) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -185,9 +187,9 @@ function MarginNoteGutter({
                 {notes.map((note) => (
                     <span key={note.id} className="block mb-1">
                         {note.sentences.map((s) => (
-                            <Fragment key={s.id}>
+                            <span key={s.id} lang={language}>
                                 {parse(noteHtml(s))}{" "}
-                            </Fragment>
+                            </span>
                         ))}
                     </span>
                 ))}
@@ -249,9 +251,9 @@ function MarginNoteGutter({
                             {notes.map((note) => (
                                 <span key={note.id} className="block mb-1">
                                     {note.sentences.map((s) => (
-                                        <Fragment key={s.id}>
+                                        <span key={s.id} lang={language}>
                                             {parse(noteHtml(s))}{" "}
-                                        </Fragment>
+                                        </span>
                                     ))}
                                 </span>
                             ))}
@@ -368,6 +370,7 @@ export function Sentence({
     nodeSourceRef,
     displayPageMarkers,
     markerVAlign = "top",
+    language,
 }: {
     sentence: SentenceResponse;
     isSelected: boolean;
@@ -393,6 +396,8 @@ export function Sentence({
     displayPageMarkers?: PageMarkerResponse[];
     /** Vertical alignment of margin notes; "center" for verse lines. */
     markerVAlign?: "top" | "center";
+    /** The book's language, for the `lang` attribute on rendered text. */
+    language: string;
 }) {
     const { isCorrespondent } = useSentenceSelection(sentence);
     const isFootnoteAnchor = useFootnoteAnchor(sentence.footnotes);
@@ -529,10 +534,12 @@ export function Sentence({
                     markers={
                         marginNotesSide === "left" ? leftMarkers : rightMarkers
                     }
+                    language={language}
                 />
             )}
             <span
                 data-sentence-key={sentenceKey(sentence)}
+                lang={language}
                 onMouseDown={(e) => {
                     if (e.shiftKey) e.preventDefault();
                 }}
@@ -558,10 +565,12 @@ function HeadingSentence({
     sentence,
     showOriginal,
     marginSettings,
+    language,
 }: {
     sentence: SentenceResponse;
     showOriginal?: boolean;
     marginSettings?: MarginSettings;
+    language: string;
 }) {
     let leftMarkers: PageMarkerResponse[] | undefined;
     let rightMarkers: PageMarkerResponse[] | undefined;
@@ -617,9 +626,10 @@ function HeadingSentence({
                     markers={
                         marginNotesSide === "left" ? leftMarkers : rightMarkers
                     }
+                    language={language}
                 />
             )}
-            <span>
+            <span lang={language}>
                 {parse(
                     showOriginal && sentence.original_html
                         ? sentence.original_html
@@ -673,6 +683,7 @@ export function Block({
     marginSettings,
     nodeSourceRef,
     inDrama,
+    language,
 }: {
     block: ContentBlockResponse;
     selectedSentenceId: string | null;
@@ -683,6 +694,8 @@ export function Block({
     nodeSourceRef?: string;
     /** In a play node: indent dialogue under its flush-left speaker label. */
     inDrama?: boolean;
+    /** The book's language, for the `lang` attribute on rendered text. */
+    language: string;
 }) {
     const blockHtml =
         showOriginal && block.original_html ? block.original_html : block.html;
@@ -717,7 +730,10 @@ export function Block({
     switch (block.block_type) {
         case "heading":
             return (
-                <h2 className="relative text-[1.5em] font-bold pt-8 pb-6 text-stone-900">
+                <h2
+                    lang={language}
+                    className="relative text-[1.5em] font-bold pt-8 pb-6 text-stone-900"
+                >
                     {block.sentences.length > 0
                         ? block.sentences.map((s) => (
                               <HeadingSentence
@@ -725,6 +741,7 @@ export function Block({
                                   sentence={s}
                                   showOriginal={showOriginal}
                                   marginSettings={marginSettings}
+                                  language={language}
                               />
                           ))
                         : parse(blockHtml)}
@@ -746,6 +763,7 @@ export function Block({
                     marginSettings={marginSettings}
                     nodeSourceRef={nodeSourceRef}
                     displayPageMarkers={sentenceDisplayMarkers[i]}
+                    language={language}
                 />
             );
             return (
@@ -808,6 +826,7 @@ export function Block({
                                 nodeSourceRef={nodeSourceRef}
                                 displayPageMarkers={sentenceDisplayMarkers[i]}
                                 markerVAlign="center"
+                                language={language}
                             />
                         </span>
                     ))}
@@ -830,6 +849,7 @@ export function Block({
                             marginSettings={marginSettings}
                             nodeSourceRef={nodeSourceRef}
                             displayPageMarkers={sentenceDisplayMarkers[i]}
+                            language={language}
                         />
                     ))}
                 </div>
@@ -898,6 +918,7 @@ export function Block({
                         data-sentence-key={
                             anchor ? sentenceKey(anchor) : undefined
                         }
+                        lang={language}
                         onMouseDown={(e) => {
                             if (e.shiftKey) e.preventDefault();
                         }}
@@ -933,6 +954,7 @@ export function Block({
                             sentence={s}
                             showOriginal={showOriginal}
                             marginSettings={marginSettings}
+                            language={language}
                         />
                     ))}
                 </p>
@@ -976,7 +998,10 @@ export function Block({
                 }
             }
             return (
-                <div className="relative pb-3 italic text-stone-500 leading-[var(--reader-line-height)] [&_ul]:list-none [&_ul]:pl-0 [&_ul]:not-italic">
+                <div
+                    lang={language}
+                    className="relative pb-3 italic text-stone-500 leading-[var(--reader-line-height)] [&_ul]:list-none [&_ul]:pl-0 [&_ul]:not-italic"
+                >
                     {leftMarkers && (
                         <MarginNotes markers={leftMarkers} side="left" />
                     )}
@@ -993,6 +1018,7 @@ export function Block({
                             showOriginal={showOriginal}
                             onSelect={onSelectSentence}
                             nodeSourceRef={nodeSourceRef}
+                            language={language}
                         />
                     ) : (
                         parse(blockHtml)
@@ -1003,6 +1029,10 @@ export function Block({
         case "separator":
             return <Separator block={block} />;
         default:
-            return <div className="pb-4">{parse(blockHtml)}</div>;
+            return (
+                <div lang={language} className="pb-4">
+                    {parse(blockHtml)}
+                </div>
+            );
     }
 }

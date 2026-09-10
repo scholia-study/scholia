@@ -133,6 +133,9 @@ function DetailContent({
     const [originalYear, setOriginalYear] = useState(
         source.original_year != null ? String(source.original_year) : "",
     );
+    const [originalYearCirca, setOriginalYearCirca] = useState(
+        source.original_year_circa ?? false,
+    );
     const [publisher, setPublisher] = useState(source.publisher ?? "");
     const [publicationPlace, setPublicationPlace] = useState(
         source.publication_place ?? "",
@@ -162,6 +165,7 @@ function DetailContent({
         setOriginalYear(
             source.original_year != null ? String(source.original_year) : "",
         );
+        setOriginalYearCirca(source.original_year_circa ?? false);
         setPublisher(source.publisher ?? "");
         setPublicationPlace(source.publication_place ?? "");
         setIsbn((source.isbn ?? []).join(", "));
@@ -212,6 +216,7 @@ function DetailContent({
                         !Number.isNaN(originalYearNum)
                             ? originalYearNum
                             : null,
+                    original_year_circa: originalYearCirca,
                     publisher: publisher.trim() || null,
                     publication_place: publicationPlace.trim() || null,
                     isbn: isbnArr,
@@ -397,9 +402,22 @@ function DetailContent({
                         type="number"
                         disabled={!canEdit}
                         sx={{ flex: 1 }}
-                        helperText="Edition year, if it differs from this printing"
+                        helperText="Edition year, if it differs from this printing. Negative for BCE (-375 = 375 BCE)."
                     />
                 </div>
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={originalYearCirca}
+                            onChange={(e) =>
+                                setOriginalYearCirca(e.target.checked)
+                            }
+                            size="small"
+                            disabled={!canEdit}
+                        />
+                    }
+                    label="Original year is approximate (cites as “ca.”)"
+                />
                 <div className="flex gap-2">
                     <TextField
                         label="Edition"

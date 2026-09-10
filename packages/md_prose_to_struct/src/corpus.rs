@@ -71,6 +71,22 @@ pub struct Corpus {
     /// leads the item it introduces instead of dangling off the previous
     /// sentence. Citation numbers ("cap. 25.") are guarded and unaffected.
     pub enum_label_splits: bool,
+    /// Selects the Greek sentence splitter (`split_sentences_grc_forced`):
+    /// `.` and `;` (the Greek question mark) terminate a sentence, with no
+    /// capital-letter requirement after the terminator. The ano teleia (`·`)
+    /// is deliberately NOT a terminator — it is a colon-strength mark within
+    /// a Greek sentence, not a boundary.
+    pub greek_splitter: bool,
+    /// The source edition has ONE curated layer (`modernized_dir`) and no
+    /// original-orthography companion, yet still carries a parity-locked
+    /// translation — a shape `--single` cannot express, since that flag
+    /// forbids a translation build. Source mode reads one layer for such a
+    /// corpus; translation mode is unaffected.
+    pub single_layer_source: bool,
+    /// The marker value's letter suffix is part of the address, not a
+    /// duplicate-page disambiguator: Stephanus `327a`…`327e` are five distinct
+    /// places within page 327 and must sort in that order (plato1).
+    pub subpage_letter_sort: bool,
     /// Per-node sub-work source (essay collections): flat index → the paper's
     /// original imprint, which the importer turns into a 'chapter' source row
     /// so quotations cite the essay in its original venue. `None` for works
@@ -135,6 +151,8 @@ struct Imprint {
     volume: Option<&'static str>,
     edition: Option<&'static str>,
     original_year: Option<i16>,
+    /// The year is a scholarly estimate, not an imprint date.
+    original_year_circa: bool,
 }
 
 struct BookSpec {
@@ -168,6 +186,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                             volume: None,
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
                         },
                     }),
                     "Figure",
@@ -189,6 +208,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                             volume: Some(meta::VOLUME),
                             edition: Some(meta::EDITION),
                             original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
                         },
                     }),
                     "Abbildung",
@@ -244,6 +264,9 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: false,
                 enum_label_splits: false,
+                greek_splitter: false,
+                single_layer_source: false,
+                subpage_letter_sort: false,
                 node_source: None,
             })
         }
@@ -265,6 +288,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                             volume: None,
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
                         },
                     }),
                     "Figure",
@@ -286,6 +310,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                             volume: Some(meta::VOLUME),
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
                         },
                     }),
                     "Abbildung",
@@ -338,6 +363,9 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: false,
                 enum_label_splits: false,
+                greek_splitter: false,
+                single_layer_source: false,
+                subpage_letter_sort: false,
                 node_source: None,
             })
         }
@@ -359,6 +387,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                             volume: None,
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
                         },
                     }),
                     "Figure",
@@ -380,6 +409,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                             volume: None,
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
                         },
                     }),
                     "Abbildung",
@@ -442,6 +472,9 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: false,
                 enum_label_splits: false,
+                greek_splitter: false,
+                single_layer_source: false,
+                subpage_letter_sort: false,
                 node_source: None,
             })
         }
@@ -463,6 +496,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                             volume: None,
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
                         },
                     }),
                     "Figure",
@@ -484,6 +518,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                             volume: None,
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
                         },
                     }),
                     "Abbildung",
@@ -531,6 +566,9 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: true,
                 enum_label_splits: false,
+                greek_splitter: false,
+                single_layer_source: false,
+                subpage_letter_sort: false,
                 node_source: None,
             })
         }
@@ -552,6 +590,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                             volume: None,
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
                         },
                     }),
                     "Figure",
@@ -573,6 +612,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                             volume: None,
                             edition: None,
                             original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
                         },
                     }),
                     "Abbildung",
@@ -621,6 +661,9 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: true,
                 enum_label_splits: false,
+                greek_splitter: false,
+                single_layer_source: false,
+                subpage_letter_sort: false,
                 node_source: None,
             })
         }
@@ -645,6 +688,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         volume: None,
                         edition: None,
                         original_year: None,
+                        original_year_circa: false,
                     },
                 }),
                 // One system: the printed 1651 folio numbers, the scholarly
@@ -678,6 +722,9 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: true,
                 paren_protected_splits: false,
                 enum_label_splits: false,
+                greek_splitter: false,
+                single_layer_source: false,
+                subpage_letter_sort: false,
                 node_source: None,
             })
         }
@@ -706,6 +753,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         volume: None,
                         edition: None,
                         original_year: Some(1867),
+                        original_year_circa: false,
                     },
                 }),
                 // One system: the original printing's venue-qualified
@@ -743,7 +791,100 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 strong_colon_splits: false,
                 paren_protected_splits: false,
                 enum_label_splits: true,
+                greek_splitter: false,
+                single_layer_source: false,
+                subpage_letter_sort: false,
                 node_source: Some(peirce1_node_source),
+            })
+        }
+        "plato1" => {
+            use common::plato1::{filenames, meta, toc};
+            let toc_entries = toc::flat_toc_entries();
+            Some(Corpus {
+                name: "plato1",
+                book: book_data(if translation {
+                    BookSpec {
+                        slug: meta::BOOK_SLUG_EN,
+                        title: meta::BOOK_TITLE_EN,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE_EN,
+                        source: meta::SOURCE_EN,
+                        year: meta::YEAR_EN,
+                        about: meta::ABOUT_EN,
+                        imprint: Imprint {
+                            publisher: Some(meta::PUBLISHER_EN),
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: meta::ORIGINAL_YEAR_CIRCA,
+                        },
+                    }
+                } else {
+                    BookSpec {
+                        slug: meta::BOOK_SLUG,
+                        title: meta::BOOK_TITLE,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE,
+                        source: meta::SOURCE,
+                        year: meta::YEAR,
+                        about: meta::ABOUT,
+                        imprint: Imprint {
+                            publisher: Some(meta::PUBLISHER),
+                            place: Some(meta::PUBLICATION_PLACE),
+                            volume: Some(meta::VOLUME),
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: meta::ORIGINAL_YEAR_CIRCA,
+                        },
+                    }
+                }),
+                // One system: Stephanus page+section (`327a`), the citation
+                // standard for Plato. The book title supplies the work, so the
+                // template is the bare reference.
+                reference_systems: vec![ReferenceSystemData {
+                    slug: meta::PAGE_SYSTEM_SLUG.to_string(),
+                    label: meta::PAGE_SYSTEM_LABEL.to_string(),
+                    ref_type: meta::PAGE_SYSTEM_REF_TYPE.to_string(),
+                    cite_priority: Some(meta::PAGE_CITE_PRIORITY),
+                    cite_template: Some(meta::PAGE_CITE_TEMPLATE.to_string()),
+                    margin_prefix: None,
+                }],
+                // Single-layer source: both TOCs are the same table and
+                // `reviewed_dir` is never read.
+                toc_reviewed: toc_entries.clone(),
+                toc_modernized: toc_entries,
+                toc_en: None,
+                filenames: filenames::all_filenames(),
+                position_number: filenames::position_number,
+                slugify: filenames::slugify,
+                modernized_dir: meta::MODERNIZED_DIR.to_string(),
+                reviewed_dir: String::new(),
+                translated_dir: meta::TRANSLATED_DIR.to_string(),
+                output_file: if translation {
+                    meta::TRANSLATION_OUTPUT_FILE.to_string()
+                } else {
+                    meta::OUTPUT_FILE.to_string()
+                },
+                figure_label: "Figure",
+                aa_system_slug: meta::PAGE_SYSTEM_SLUG,
+                // No `{{ }}` system in this corpus; the empty slug fails
+                // loudly at import if such a marker ever appears.
+                edition_system_slug: "",
+                edition_sort_arabic_fallback: false,
+                marker_labels: ("Stephanus", "(none)"),
+                // Division headings are English editorial titles in BOTH
+                // editions, so headings always split with the English
+                // splitter; the Greek splitter applies to the body of the
+                // source edition only.
+                source_splitter_en: true,
+                strong_colon_splits: false,
+                paren_protected_splits: false,
+                enum_label_splits: false,
+                greek_splitter: true,
+                single_layer_source: true,
+                subpage_letter_sort: true,
+                node_source: None,
             })
         }
         _ => None,
@@ -759,6 +900,7 @@ fn book_data(spec: BookSpec) -> BookData {
         publisher: spec.imprint.publisher.map(str::to_string),
         publication_place: spec.imprint.place.map(str::to_string),
         original_year: spec.imprint.original_year,
+        original_year_circa: spec.imprint.original_year_circa,
         edition: spec.imprint.edition.map(str::to_string),
         volume: spec.imprint.volume.map(str::to_string),
         url: None,
@@ -766,5 +908,79 @@ fn book_data(spec: BookSpec) -> BookData {
         source_date: spec.year.to_string(),
         about_text: spec.about.to_string(),
         nodes_per_page: None,
+    }
+}
+
+#[cfg(test)]
+mod plato1_tests {
+    use super::*;
+
+    #[test]
+    fn greek_edition_is_single_layer_and_greek_split() {
+        let c = by_name("plato1", false).expect("plato1 arm missing");
+        assert_eq!(c.book.slug, "politeia");
+        assert_eq!(c.book.title, "Πολιτεία");
+        assert_eq!(c.book.language, "grc");
+        assert!(c.single_layer_source, "Greek edition must be single-layer");
+        assert!(c.greek_splitter, "Greek body must use the Greek splitter");
+        assert!(
+            c.reviewed_dir.is_empty(),
+            "plato1 has no md_reviewed layer to read"
+        );
+        assert!(c.output_file.ends_with("output.json"));
+    }
+
+    #[test]
+    fn translation_edition_is_english() {
+        let c = by_name("plato1", true).expect("plato1 translation arm missing");
+        assert_eq!(c.book.slug, "republic");
+        assert_eq!(c.book.language, "en");
+        assert!(c.output_file.ends_with("translation_output.json"));
+        // The flag stays set; the dispatch guard (`greek_splitter && !translation`)
+        // is what keeps the Greek splitter off the English text.
+        assert!(c.greek_splitter);
+    }
+
+    /// Both editions share one Stephanus system citing as a bare `327a`; the
+    /// book title supplies the work.
+    #[test]
+    fn stephanus_is_the_only_system() {
+        for translation in [false, true] {
+            let c = by_name("plato1", translation).unwrap();
+            assert_eq!(c.reference_systems.len(), 1);
+            let rs = &c.reference_systems[0];
+            assert_eq!(rs.slug, "stephanus");
+            assert_eq!(rs.cite_template.as_deref(), Some("{ref}"));
+            assert_eq!(rs.cite_priority, Some(0));
+            assert!(rs.margin_prefix.is_none());
+            assert_eq!(c.edition_system_slug, "", "no secondary marker system");
+        }
+    }
+
+    #[test]
+    fn toc_and_filenames_cover_ten_books_and_their_divisions() {
+        let c = by_name("plato1", false).unwrap();
+        // 10 book nodes + 106 divisions. Book X carries two fewer than the
+        // original design: `The Spindle of Necessity` held no text and `The
+        // River of Forgetfulness` a single short paragraph, so both were
+        // collapsed into their neighbours.
+        assert_eq!(c.toc_modernized.len(), 116);
+        assert_eq!(c.filenames.len(), 116);
+        assert_eq!(c.toc_modernized.len(), c.toc_reviewed.len());
+        let books = c.toc_modernized.iter().filter(|e| e.2 == 0).count();
+        assert_eq!(books, 10);
+    }
+
+    /// Every other corpus must stay two-layer and non-Greek — this flag pair
+    /// is what keeps plato1's behaviour from leaking.
+    #[test]
+    fn no_other_corpus_is_single_layer_or_greek() {
+        for name in [
+            "kant1", "kant3", "hegel1", "hegel2", "hegel3", "hobbes1", "peirce1",
+        ] {
+            let c = by_name(name, false).unwrap_or_else(|| panic!("{name} missing"));
+            assert!(!c.single_layer_source, "{name} must not be single-layer");
+            assert!(!c.greek_splitter, "{name} must not use the Greek splitter");
+        }
     }
 }

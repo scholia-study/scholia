@@ -1032,6 +1032,60 @@ pub fn split_sentences_structural(text: &str, html: &str) -> Vec<(String, String
         .collect()
 }
 
+/// A terminal-punctuation run followed by whitespace, for polytonic Greek.
+/// `.` and `;` end a sentence — `;` is the Greek question mark (U+003B), not
+/// a semicolon. `·` (ano teleia, U+00B7) is deliberately excluded: it is a
+/// colon-strength mark within a sentence, not a boundary. `…` is also
+/// excluded (unlike [`STRUCTURAL_SPLIT_RE`]): a leading ellipsis in this
+/// corpus marks a truncated verse quotation, and splitting there would tear
+/// the quotation. No capital-letter requirement follows the terminator —
+/// Burnet's Greek Republic keeps lower-case after a full stop in the vast
+/// majority of cases (3,647 of 3,722), so `SPLIT_RE`'s capital-after-period
+/// rule would find only ~2% of the real boundaries.
+static GRC_SPLIT_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[.;]+\s+").unwrap());
+
+fn find_grc_split_positions(text: &str) -> Vec<usize> {
+    GRC_SPLIT_RE
+        .find_iter(text)
+        .map(|m| m.end())
+        .filter(|&pos| pos < text.len())
+        // A sentence has to contain a letter. Burnet suspends a construction
+        // across an interlocutor's reply by leaving a bare dash after the
+        // question mark; splitting there yielded a letterless "sentence" that
+        // would reach the reader as an empty numbered, quotable unit.
+        .filter(|&pos| text[pos..].chars().any(char::is_alphabetic))
+        .collect()
+}
+
+/// Split Greek text into sentences with additional forced split positions.
+/// Same shape as [`split_sentences_forced`]; boundary detection is
+/// [`GRC_SPLIT_RE`] instead of the Latin-anchored, capital-requiring
+/// `SPLIT_RE`. No abbreviation, initial, numbered-label, roman-label,
+/// section-label or ordinal filtering is applied: Burnet's Greek has no
+/// abbreviation periods, and those filters are Latin-anchored anyway. Also
+/// unlike [`split_sentences_paren_protected_forced`], candidates are not
+/// filtered by parenthesis nesting — Burnet's Greek Republic contains no
+/// parentheses at all, so that filter would be dead code here.
+pub fn split_sentences_grc_forced(
+    text: &str,
+    html: &str,
+    forced: &[usize],
+) -> Vec<(String, String)> {
+    if text.is_empty() {
+        return vec![];
+    }
+    let mut split_positions = find_grc_split_positions(text);
+    split_positions.extend_from_slice(forced);
+    split_positions.sort_unstable();
+    split_positions.dedup();
+    assemble_splits(text, html, &split_positions)
+}
+
+/// [`split_sentences_grc_forced`] with no forced positions.
+pub fn split_sentences_grc(text: &str, html: &str) -> Vec<(String, String)> {
+    split_sentences_grc_forced(text, html, &[])
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1851,6 +1905,82 @@ mod herald_colon_tests {
     fn lowercase_after_colon_never_splits() {
         let t = "There is one rule: the colon points, it does not end sentences here.";
         let out = split_sentences_en_enum_forced(t, t, &[]);
+        assert_eq!(out.len(), 1, "{out:?}");
+    }
+}
+
+#[cfg(test)]
+mod greek_tests {
+    #[test]
+    fn trailing_dash_after_terminator_is_not_a_sentence() {
+        // Burnet suspends a construction across the interlocutor's reply by
+        // leaving a bare dash after the question mark. That dash belongs to
+        // the sentence before it; split off on its own it becomes a letterless
+        // "sentence" that would reach the reader as an empty quotable unit.
+        let text = "τοῦτο δ᾽ ἦν πλοῦτος· ἦ γάρ; —";
+        let out = split_sentences_grc(text, text);
+        assert_eq!(out.len(), 1, "got {out:?}");
+        assert!(out[0].0.ends_with('—'));
+    }
+
+    use super::*;
+
+    #[test]
+    fn greek_full_stop_splits_before_lowercase() {
+        let t = "…ἄγοντες. καλὴ μὲν οὖν…";
+        let out = split_sentences_grc(t, t);
+        assert_eq!(out.len(), 2, "{out:?}");
+    }
+
+    #[test]
+    fn greek_question_mark_splits() {
+        let t = "ὁρᾷς οὖν ἡμᾶς, ἔφη, ὅσοι ἐσμέν; πῶς γὰρ οὔ;";
+        let out = split_sentences_grc(t, t);
+        assert_eq!(out.len(), 2, "{out:?}");
+    }
+
+    #[test]
+    fn ano_teleia_does_not_split() {
+        let t = "οὗτος, ἔφη, ὄπισθεν προσέρχεται· ἀλλὰ περιμένετε.";
+        let out = split_sentences_grc(t, t);
+        assert_eq!(out.len(), 1, "{out:?}");
+    }
+
+    #[test]
+    fn ellipsis_gap_does_not_split() {
+        let t = "… οἱ θεῶν ἀγχίσποροι, οἱ Ζηνὸς ἐγγύς";
+        let out = split_sentences_grc(t, t);
+        assert_eq!(out.len(), 1, "{out:?}");
+    }
+
+    #[test]
+    fn elision_apostrophe_does_not_split() {
+        let t = "ἀλλὰ περιμενοῦμεν, ἦ δ\u{2019} ὃς ὁ Γλαύκων.";
+        let out = split_sentences_grc(t, t);
+        assert_eq!(out.len(), 1, "{out:?}");
+    }
+
+    #[test]
+    fn greek_split_rebalances_italics() {
+        let text = "ἄγοντες. καλὴ μὲν οὖν.";
+        let html = "<i>ἄγοντες. καλὴ μὲν οὖν.</i>";
+        let parts = split_sentences_grc(text, html);
+        assert_eq!(parts.len(), 2, "{parts:?}");
+        assert_eq!(parts[0].1, "<i>ἄγοντες.</i>");
+        assert_eq!(parts[1].1, "<i>καλὴ μὲν οὖν.</i>");
+    }
+
+    #[test]
+    fn republic_327_splits_to_eighteen() {
+        let t = "κατέβην χθὲς εἰς Πειραιᾶ μετὰ Γλαύκωνος τοῦ Ἀρίστωνος προσευξόμενός τε τῇ θεῷ καὶ ἅμα τὴν ἑορτὴν βουλόμενος θεάσασθαι τίνα τρόπον ποιήσουσιν ἅτε νῦν πρῶτον ἄγοντες. καλὴ μὲν οὖν μοι καὶ ἡ τῶν ἐπιχωρίων πομπὴ ἔδοξεν εἶναι, οὐ μέντοι ἧττον ἐφαίνετο πρέπειν ἣν οἱ Θρᾷκες ἔπεμπον. προσευξάμενοι δὲ καὶ θεωρήσαντες ἀπῇμεν πρὸς τὸ ἄστυ. κατιδὼν οὖν πόρρωθεν ἡμᾶς οἴκαδε ὡρμημένους Πολέμαρχος ὁ Κεφάλου ἐκέλευσε δραμόντα τὸν παῖδα περιμεῖναί ἑ κελεῦσαι. καί μου ὄπισθεν ὁ παῖς λαβόμενος τοῦ ἱματίου, κελεύει ὑμᾶς, ἔφη, Πολέμαρχος περιμεῖναι. καὶ ἐγὼ μετεστράφην τε καὶ ἠρόμην ὅπου αὐτὸς εἴη. οὗτος, ἔφη, ὄπισθεν προσέρχεται· ἀλλὰ περιμένετε. ἀλλὰ περιμενοῦμεν, ἦ δʼ ὃς ὁ Γλαύκων. καὶ ὀλίγῳ ὕστερον ὅ τε Πολέμαρχος ἧκε καὶ Ἀδείμαντος ὁ τοῦ Γλαύκωνος ἀδελφὸς καὶ Νικήρατος ὁ Νικίου καὶ ἄλλοι τινὲς ὡς ἀπὸ τῆς πομπῆς. ὁ οὖν Πολέμαρχος ἔφη· ὦ Σώκρατες, δοκεῖτέ μοι πρὸς ἄστυ ὡρμῆσθαι ὡς ἀπιόντες. οὐ γὰρ κακῶς δοξάζεις, ἦν δʼ ἐγώ. ὁρᾷς οὖν ἡμᾶς, ἔφη, ὅσοι ἐσμέν; πῶς γὰρ οὔ; ἢ τοίνυν τούτων, ἔφη, κρείττους γένεσθε ἢ μένετʼ αὐτοῦ. οὐκοῦν, ἦν δʼ ἐγώ, ἔτι ἓν λείπεται, τὸ ἢν πείσωμεν ὑμᾶς ὡς χρὴ ἡμᾶς ἀφεῖναι; ἦ καὶ δύναισθʼ ἄν, ἦ δʼ ὅς, πεῖσαι μὴ ἀκούοντας; οὐδαμῶς, ἔφη ὁ Γλαύκων. ὡς τοίνυν μὴ ἀκουσομένων, οὕτω διανοεῖσθε.";
+        let out = split_sentences_grc(t, t);
+        assert_eq!(out.len(), 18, "{out:?}");
+    }
+
+    #[test]
+    fn latin_splitters_undersplit_greek() {
+        let t = "κατέβην χθὲς εἰς Πειραιᾶ μετὰ Γλαύκωνος τοῦ Ἀρίστωνος προσευξόμενός τε τῇ θεῷ καὶ ἅμα τὴν ἑορτὴν βουλόμενος θεάσασθαι τίνα τρόπον ποιήσουσιν ἅτε νῦν πρῶτον ἄγοντες. καλὴ μὲν οὖν μοι καὶ ἡ τῶν ἐπιχωρίων πομπὴ ἔδοξεν εἶναι, οὐ μέντοι ἧττον ἐφαίνετο πρέπειν ἣν οἱ Θρᾷκες ἔπεμπον. προσευξάμενοι δὲ καὶ θεωρήσαντες ἀπῇμεν πρὸς τὸ ἄστυ. κατιδὼν οὖν πόρρωθεν ἡμᾶς οἴκαδε ὡρμημένους Πολέμαρχος ὁ Κεφάλου ἐκέλευσε δραμόντα τὸν παῖδα περιμεῖναί ἑ κελεῦσαι. καί μου ὄπισθεν ὁ παῖς λαβόμενος τοῦ ἱματίου, κελεύει ὑμᾶς, ἔφη, Πολέμαρχος περιμεῖναι. καὶ ἐγὼ μετεστράφην τε καὶ ἠρόμην ὅπου αὐτὸς εἴη. οὗτος, ἔφη, ὄπισθεν προσέρχεται· ἀλλὰ περιμένετε. ἀλλὰ περιμενοῦμεν, ἦ δʼ ὃς ὁ Γλαύκων. καὶ ὀλίγῳ ὕστερον ὅ τε Πολέμαρχος ἧκε καὶ Ἀδείμαντος ὁ τοῦ Γλαύκωνος ἀδελφὸς καὶ Νικήρατος ὁ Νικίου καὶ ἄλλοι τινὲς ὡς ἀπὸ τῆς πομπῆς. ὁ οὖν Πολέμαρχος ἔφη· ὦ Σώκρατες, δοκεῖτέ μοι πρὸς ἄστυ ὡρμῆσθαι ὡς ἀπιόντες. οὐ γὰρ κακῶς δοξάζεις, ἦν δʼ ἐγώ. ὁρᾷς οὖν ἡμᾶς, ἔφη, ὅσοι ἐσμέν; πῶς γὰρ οὔ; ἢ τοίνυν τούτων, ἔφη, κρείττους γένεσθε ἢ μένετʼ αὐτοῦ. οὐκοῦν, ἦν δʼ ἐγώ, ἔτι ἓν λείπεται, τὸ ἢν πείσωμεν ὑμᾶς ὡς χρὴ ἡμᾶς ἀφεῖναι; ἦ καὶ δύναισθʼ ἄν, ἦ δʼ ὅς, πεῖσαι μὴ ἀκούοντας; οὐδαμῶς, ἔφη ὁ Γλαύκων. ὡς τοίνυν μὴ ἀκουσομένων, οὕτω διανοεῖσθε.";
+        let out = split_sentences_en(t, t);
         assert_eq!(out.len(), 1, "{out:?}");
     }
 }

@@ -93,6 +93,11 @@ case "$corpus" in
         # reconciler's insertion pre-alignment is enabled for this book only.
         "$BIN" --input-file assets/peirce1/derived/output.json --allow-insertion "$@"
         ;;
+    plato1)
+        "$BIN" --input-file assets/plato1/derived/output.json "$@"
+        "$BIN" --input-file assets/plato1/derived/translation_output.json \
+               --source-book-slug politeia "$@"
+        ;;
     *)
         # Unreachable: membership in SCHOLIA_CORPORA is checked above. Hitting
         # this means the array and the case arms drifted apart.

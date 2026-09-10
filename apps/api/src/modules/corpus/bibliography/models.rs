@@ -221,6 +221,10 @@ pub struct SourceResponse {
     /// `publication_year`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub original_year: Option<i16>,
+    /// `original_year` is a scholarly estimate rather than an imprint date,
+    /// as for ancient works. Cites with Chicago's "ca." prefix.
+    #[serde(default)]
+    pub original_year_circa: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -390,6 +394,8 @@ pub struct CreateSourceRequest {
     pub title_display: Option<String>,
     pub publication_year: Option<i16>,
     pub original_year: Option<i16>,
+    #[serde(default)]
+    pub original_year_circa: bool,
     pub publisher: Option<String>,
     pub publication_place: Option<String>,
     pub isbn: Option<Vec<String>>,
@@ -418,6 +424,9 @@ pub struct UpdateSourceRequest {
     pub publication_year: Option<Option<i16>>,
     #[serde(default, deserialize_with = "double_option")]
     pub original_year: Option<Option<i16>>,
+    /// NOT NULL in the schema, so a plain `Option`: present means set it.
+    #[serde(default)]
+    pub original_year_circa: Option<bool>,
     #[serde(default, deserialize_with = "double_option")]
     pub publisher: Option<Option<String>>,
     #[serde(default, deserialize_with = "double_option")]

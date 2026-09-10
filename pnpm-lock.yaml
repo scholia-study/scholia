@@ -43,6 +43,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8)
+      '@fontsource/gentium-plus':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@fontsource/libre-baskerville':
         specifier: ^5.3.0
         version: 5.3.0
@@ -742,6 +745,9 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@fontsource/gentium-plus@5.3.0':
+    resolution: {integrity: sha512-b66LAeYwBdHu0NL9ESFiq9NBIn4vIbl+L1kFKbSv5rjg2fRqzPFMtzAaQnqvgfdIK12LbMJHvDtybMk9N5lsJw==}
 
   '@fontsource/libre-baskerville@5.3.0':
     resolution: {integrity: sha512-IA6OLq36/JWMX70Fha15sri2qWsijFh7hgdDXCRZHjKUHtWarLQoiGilvm7iMqm7HiYFEv9acF3+IuRHO9kUiA==}
@@ -5343,6 +5349,8 @@ snapshots:
       tabbable: 6.5.0
 
   '@floating-ui/utils@0.2.12': {}
+
+  '@fontsource/gentium-plus@5.3.0': {}
 
   '@fontsource/libre-baskerville@5.3.0': {}
 

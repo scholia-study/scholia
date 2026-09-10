@@ -84,6 +84,7 @@ export const BAR_SHEEN = sheen("to bottom");
 const GENRE_BY_AUTHOR: Record<string, Genre> = {
     "Georg Wilhelm Friedrich Hegel": "philosophy",
     "Immanuel Kant": "philosophy",
+    Plato: "philosophy",
     "Thomas Hobbes": "philosophy",
     "Charles Sanders Peirce": "philosophy",
     "John Milton": "poetry",

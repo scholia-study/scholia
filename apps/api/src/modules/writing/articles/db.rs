@@ -589,6 +589,9 @@ struct CitationSourceData {
     title: String,
     publication_year: Option<i16>,
     original_year: Option<i16>,
+    /// `original_year` is an estimate, not an imprint date — ancient works
+    /// are dated by scholarly consensus. Renders Chicago's "ca." prefix.
+    original_year_circa: bool,
     publisher: Option<String>,
     publication_place: Option<String>,
     edition: Option<String>,
@@ -604,6 +607,24 @@ struct CitationSourceData {
     /// Bibliography-only role marker when non-authors fill the slot:
     /// "ed." / "eds." / "trans.". Text citations never carry it.
     author_slot_suffix: Option<String>,
+}
+
+/// Render an `original_year` for a citation. Negative values are BCE —
+/// the column stays a sortable integer so library ordering works, and the
+/// era is applied only at the point of display. An estimated date takes
+/// Chicago's "ca." prefix.
+///
+/// Positive years render bare, as they always have (`1787`), so no era is
+/// asserted for works whose imprint year speaks for itself. A first-century
+/// CE text would therefore print ambiguously; nothing in the corpus has one.
+fn format_original_year(year: i16, circa: bool) -> String {
+    // `unsigned_abs` rather than `abs`: i16::MIN has no positive counterpart.
+    let dated = if year < 0 {
+        format!("{} BCE", year.unsigned_abs())
+    } else {
+        year.to_string()
+    };
+    if circa { format!("ca. {dated}") } else { dated }
 }
 
 impl CitationSourceData {
@@ -674,6 +695,7 @@ async fn fetch_citation_data(
         title: String,
         publication_year: Option<i16>,
         original_year: Option<i16>,
+        original_year_circa: bool,
         publisher: Option<String>,
         publication_place: Option<String>,
         edition: Option<String>,
@@ -683,7 +705,7 @@ async fn fetch_citation_data(
 
     let sources: Vec<SourceRow> = sqlx::query_as!(
         SourceRow,
-        r#"SELECT id, title, publication_year, original_year, publisher, publication_place, edition, journal_name, volume
+        r#"SELECT id, title, publication_year, original_year, original_year_circa, publisher, publication_place, edition, journal_name, volume
            FROM sources WHERE id = ANY($1)"#,
         source_ids,
     )
@@ -698,6 +720,7 @@ async fn fetch_citation_data(
                 title: s.title.clone(),
                 publication_year: s.publication_year,
                 original_year: s.original_year,
+                original_year_circa: s.original_year_circa,
                 publisher: s.publisher.clone(),
                 publication_place: s.publication_place.clone(),
                 edition: s.edition.clone(),
@@ -801,7 +824,7 @@ fn format_inline_citation(
             let year = match data {
                 Some(d) if d.is_reprint() => format!(
                     "[{}] {}",
-                    d.original_year.unwrap(),
+                    format_original_year(d.original_year.unwrap(), d.original_year_circa),
                     d.publication_year.unwrap()
                 ),
                 _ => data
@@ -847,7 +870,7 @@ fn format_bibliography_entry(data: &CitationSourceData) -> String {
     let year_token = if data.is_reprint() {
         format!(
             "({}) {}",
-            data.original_year.unwrap(),
+            format_original_year(data.original_year.unwrap(), data.original_year_circa),
             data.publication_year.unwrap()
         )
     } else {
@@ -2047,6 +2070,7 @@ pub async fn batch_get_sentences(
 
     struct BookNodeRow {
         book_title: String,
+        language: String,
         node_label: String,
         parent_node_label: Option<String>,
     }
@@ -2054,6 +2078,7 @@ pub async fn batch_get_sentences(
     let context = sqlx::query_as!(
         BookNodeRow,
         r#"SELECT COALESCE(s.title_display, s.title) AS "book_title!",
+                  b.language AS "language!",
                   n.label AS "node_label!",
                   pn.label AS "parent_node_label?"
            FROM books b
@@ -2371,12 +2396,14 @@ pub async fn batch_get_sentences(
         book_title: String,
         node_slug: String,
         node_label: String,
+        language: String,
     }
     let source_context = if let Some(sid) = range.start_id {
         sqlx::query_as!(
             SourceRow,
             r#"SELECT b.slug AS "book_slug!", COALESCE(bs.title_display, bs.title) AS "book_title!",
-                      n.slug AS "node_slug!", n.label AS "node_label!"
+                      n.slug AS "node_slug!", n.label AS "node_label!",
+                      b.language AS "language!"
                FROM sentences s
                JOIN sentences src ON src.id = s.source_sentence_start_id
                JOIN books b ON b.id = src.book_id
@@ -2393,12 +2420,14 @@ pub async fn batch_get_sentences(
             book_title: r.book_title,
             node_slug: r.node_slug,
             node_label: r.node_label,
+            language: r.language,
         })
     } else {
         sqlx::query_as!(
             SourceRow,
             r#"SELECT b.slug AS "book_slug!", COALESCE(bs.title_display, bs.title) AS "book_title!",
-                      n.slug AS "node_slug!", n.label AS "node_label!"
+                      n.slug AS "node_slug!", n.label AS "node_label!",
+                      b.language AS "language!"
                FROM sentences s
                JOIN books cur ON cur.id = s.book_id
                JOIN sentences src ON src.id = s.source_sentence_start_id
@@ -2420,12 +2449,14 @@ pub async fn batch_get_sentences(
             book_title: r.book_title,
             node_slug: r.node_slug,
             node_label: r.node_label,
+            language: r.language,
         })
     };
 
     Ok(BatchSentenceResponseItem {
         book_slug: book_slug.to_string(),
         book_title: context.book_title,
+        language: context.language,
         node_slug: node_slug.to_string(),
         node_label: context.node_label,
         parent_node_label: context.parent_node_label,
@@ -2458,6 +2489,7 @@ mod bibliography_tests {
             title: "Kritik der reinen Vernunft".to_string(),
             publication_year: Some(1911),
             original_year: None,
+            original_year_circa: false,
             publisher: publisher.map(String::from),
             publication_place: place.map(String::from),
             edition: None,
@@ -2526,6 +2558,27 @@ mod bibliography_tests {
     }
 
     #[test]
+    fn bce_original_year_renders_era_not_a_negative() {
+        // The column is a sortable integer, so the era exists only at the
+        // point of display. Printing the raw i16 would give "(-375) 1905".
+        let mut e = entry(Some("Oxford"), Some("Clarendon Press"), vec!["Plato"]);
+        e.original_year = Some(-375);
+        e.original_year_circa = true;
+        assert_eq!(
+            format_bibliography_entry(&e),
+            "Plato. (ca. 375 BCE) 1911. <em>Kritik der reinen Vernunft</em>. Oxford: Clarendon Press."
+        );
+    }
+
+    #[test]
+    fn circa_is_independent_of_era() {
+        assert_eq!(format_original_year(-375, true), "ca. 375 BCE");
+        assert_eq!(format_original_year(-375, false), "375 BCE");
+        assert_eq!(format_original_year(1787, true), "ca. 1787");
+        assert_eq!(format_original_year(1787, false), "1787");
+    }
+
+    #[test]
     fn equal_original_year_uses_plain_form() {
         let mut e = entry(Some("Berlin"), Some("Georg Reimer"), vec!["Kant, Immanuel"]);
         e.original_year = Some(1911);
@@ -2540,6 +2593,7 @@ mod bibliography_tests {
             title: "The Fixation of Belief".to_string(),
             publication_year: Some(1877),
             original_year: None,
+            original_year_circa: false,
             publisher: None,
             publication_place: None,
             edition: None,
@@ -2632,6 +2686,7 @@ mod bibliography_tests {
             title: "The Science of Logic".to_string(),
             publication_year: Some(2010),
             original_year: None,
+            original_year_circa: false,
             publisher: Some("Cambridge University Press".to_string()),
             publication_place: Some("Cambridge".to_string()),
             edition: None,
@@ -2699,6 +2754,7 @@ mod bibliography_tests {
             title: "Critique of Pure Reason".to_string(),
             publication_year: Some(2026),
             original_year: Some(1787),
+            original_year_circa: false,
             publisher: Some("Scholia Sodalitas".to_string()),
             publication_place: None,
             edition: None,

@@ -11,8 +11,9 @@ use std::path::Path;
 use clap::Parser;
 
 use common::sentences::{
-    split_sentences, split_sentences_en, split_sentences_en_paren_protected_forced,
-    split_sentences_paren_protected_forced,
+    split_sentences_en_forced, split_sentences_en_paren_protected_forced, split_sentences_forced,
+    split_sentences_grc_forced, split_sentences_paren_protected_forced, strip_forced_split_markers,
+    strip_forced_splits_keep_runs,
 };
 use md_prose_to_struct::corpus::{self, Corpus, FlatEntry};
 use md_prose_to_struct::html::{md_to_html, md_to_plain};
@@ -69,9 +70,12 @@ fn main() {
         corpus.output_file = f;
     }
 
+    // A single-layer source corpus (plato1) reaches Single mode without the
+    // flag: `--single` forbids a translation build, and plato1 has one.
     let mode = match (cli.single, cli.translation) {
         (true, _) => Mode::Single,
         (false, true) => Mode::Translation,
+        (false, false) if corpus.single_layer_source => Mode::Single,
         (false, false) => Mode::Source,
     };
 
@@ -418,19 +422,47 @@ fn collect_translation_files(corpus: &Corpus) -> Vec<ParsedFile> {
             let en_text = parse::strip_margin_tokens(&en_block.text);
             let (en_plain, _) = parse::strip_markers(&md_to_plain(&en_text));
             let (en_html, _) = parse::strip_markers(&md_to_html(&en_text));
+            // `+ ` run prefixes become RUN_BREAK sentinels, which the build
+            // passes to the splitter as FORCED boundaries (structure.rs). The
+            // check must do the same or it does not replicate the build: a
+            // sentinel sitting between a terminator and its capital hides the
+            // boundary from the English splitter, which needs the capital,
+            // while the Greek splitter — needing only whitespace — still sees
+            // it. Verse quotations with an internal period hit exactly that.
+            let (en_plain_tok, en_forced) = strip_forced_splits_keep_runs(&en_plain);
+            let en_html_tok = strip_forced_split_markers(&en_html);
             let en_sentences = if corpus.paren_protected_splits {
-                split_sentences_en_paren_protected_forced(&en_plain, &en_html, &[])
+                split_sentences_en_paren_protected_forced(&en_plain_tok, &en_html_tok, &en_forced)
             } else {
-                split_sentences_en(&en_plain, &en_html)
+                split_sentences_en_forced(&en_plain_tok, &en_html_tok, &en_forced)
             };
 
             let de_text = parse::strip_margin_tokens(&de_block.text);
             let (de_plain, _) = parse::strip_markers(&md_to_plain(&de_text));
             let (de_html, _) = parse::strip_markers(&md_to_html(&de_text));
-            let de_sentences = if corpus.paren_protected_splits {
-                split_sentences_paren_protected_forced(&de_plain, &de_html, &[])
+            // The source side keeps its OWN splitter even in a translation
+            // build: Greek takes no capital after a full stop, so the German
+            // splitter finds almost none of its boundaries and every block
+            // would read as one sentence.
+            let (de_plain_tok, de_forced) = strip_forced_splits_keep_runs(&de_plain);
+            let de_html_tok = strip_forced_split_markers(&de_html);
+            // A heading is the SAME text in both editions for a corpus whose
+            // division titles are editorial (plato1: they carry verbatim). It
+            // must therefore be split by the same splitter on both sides, as
+            // `structure.rs` does via `heading_splitter` — otherwise a title
+            // with a mid-string `?` counts 1 on the Greek side (which has no
+            // `?` terminator) and 2 on the English, and an identical string
+            // fails parity against itself.
+            let is_heading = matches!(de_block.block_type, ParsedBlockType::Heading)
+                || matches!(en_block.block_type, ParsedBlockType::Heading);
+            let de_sentences = if is_heading {
+                split_sentences_en_forced(&de_plain_tok, &de_html_tok, &de_forced)
+            } else if corpus.greek_splitter {
+                split_sentences_grc_forced(&de_plain_tok, &de_html_tok, &de_forced)
+            } else if corpus.paren_protected_splits {
+                split_sentences_paren_protected_forced(&de_plain_tok, &de_html_tok, &de_forced)
             } else {
-                split_sentences(&de_plain, &de_html)
+                split_sentences_forced(&de_plain_tok, &de_html_tok, &de_forced)
             };
 
             if en_sentences.len() != de_sentences.len() {

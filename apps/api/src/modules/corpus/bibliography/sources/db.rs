@@ -16,6 +16,7 @@ struct SourceRow {
     title_display: Option<String>,
     publication_year: Option<i16>,
     original_year: Option<i16>,
+    original_year_circa: bool,
     publisher: Option<String>,
     publication_place: Option<String>,
     isbn: Option<Vec<String>>,
@@ -52,7 +53,7 @@ pub async fn search_sources(
     let rows = sqlx::query_as!(
         SourceRow,
         r#"SELECT DISTINCT s.id, s.source_type AS "source_type: SourceType", s.title, s.title_display,
-                  s.publication_year, s.original_year, s.publisher, s.publication_place,
+                  s.publication_year, s.original_year, s.original_year_circa, s.publisher, s.publication_place,
                   s.isbn, s.doi, s.edition, s.volume,
                   s.journal_name, s.url, s.page_start, s.page_end,
                   s.parent_source_id, s.translation_of_id,
@@ -92,7 +93,7 @@ pub async fn get_source(pool: &PgPool, source_id: Uuid) -> Result<SourceResponse
     let row = sqlx::query_as!(
         SourceRow,
         r#"SELECT id, source_type AS "source_type: SourceType", title, title_display, publication_year,
-                  original_year, publisher, publication_place, isbn, doi, edition, volume,
+                  original_year, original_year_circa, publisher, publication_place, isbn, doi, edition, volume,
                   journal_name, url,
                   page_start, page_end, parent_source_id, translation_of_id,
                   created_by AS "created_by!", protected
@@ -121,6 +122,7 @@ pub struct SourceCreate<'a> {
     pub title_display: Option<&'a str>,
     pub publication_year: Option<i16>,
     pub original_year: Option<i16>,
+    pub original_year_circa: bool,
     pub publisher: Option<&'a str>,
     pub publication_place: Option<&'a str>,
     pub isbn: Option<&'a [String]>,
@@ -142,17 +144,18 @@ pub async fn create_source(
 ) -> Result<SourceResponse, AppError> {
     let id = sqlx::query_scalar!(
         r#"INSERT INTO sources (source_type, title, title_display, publication_year, original_year,
-                                publisher, publication_place, isbn, doi,
+                                original_year_circa, publisher, publication_place, isbn, doi,
                                 edition, volume, journal_name, url, page_start, page_end,
                                 parent_source_id, translation_of_id, created_by)
            VALUES ($1::source_type, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
-                   $16, $17, $18)
+                   $16, $17, $18, $19)
            RETURNING id"#,
         entry.source_type as _,
         entry.title,
         entry.title_display,
         entry.publication_year,
         entry.original_year,
+        entry.original_year_circa,
         entry.publisher,
         entry.publication_place,
         entry.isbn,
@@ -178,6 +181,7 @@ pub struct SourceUpdate<'a> {
     pub title_display: Option<Option<&'a str>>,
     pub publication_year: Option<Option<i16>>,
     pub original_year: Option<Option<i16>>,
+    pub original_year_circa: Option<bool>,
     pub publisher: Option<Option<&'a str>>,
     pub publication_place: Option<Option<&'a str>>,
     pub isbn: Option<Option<&'a [String]>>,
@@ -256,6 +260,9 @@ pub async fn update_source(
     }
     if let Some(v) = patch.original_year {
         qb.push(", original_year = ").push_bind(v);
+    }
+    if let Some(v) = patch.original_year_circa {
+        qb.push(", original_year_circa = ").push_bind(v);
     }
     if let Some(v) = patch.publisher {
         qb.push(", publisher = ").push_bind(v);
@@ -501,7 +508,7 @@ pub async fn browse_sources(
     let rows = sqlx::query_as!(
         SourceRow,
         r#"SELECT s.id, s.source_type AS "source_type: SourceType", s.title, s.title_display,
-                  s.publication_year, s.original_year, s.publisher, s.publication_place,
+                  s.publication_year, s.original_year, s.original_year_circa, s.publisher, s.publication_place,
                   s.isbn, s.doi, s.edition, s.volume,
                   s.journal_name, s.url, s.page_start, s.page_end,
                   s.parent_source_id, s.translation_of_id,
@@ -664,6 +671,7 @@ fn build_source_response(
         source_type: row.source_type,
         title: row.title,
         title_display: row.title_display,
+        original_year_circa: row.original_year_circa,
         publication_year: row.publication_year,
         original_year: row.original_year,
         publisher: row.publisher,

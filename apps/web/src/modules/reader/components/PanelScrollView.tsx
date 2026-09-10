@@ -38,6 +38,7 @@ interface PanelScrollViewProps {
     onVisibleNodeChange?: (nodeSlug: string) => void;
     onSystemsDiscovered?: (systems: string[]) => void;
     marginSettings?: MarginSettings;
+    language: string;
 }
 
 export const PanelScrollView = forwardRef<
@@ -58,6 +59,7 @@ export const PanelScrollView = forwardRef<
         onVisibleNodeChange,
         onSystemsDiscovered,
         marginSettings,
+        language,
     },
     ref,
 ) {
@@ -561,6 +563,7 @@ export const PanelScrollView = forwardRef<
                                         companionLabel={
                                             companionLabel ?? "Translation"
                                         }
+                                        language={language}
                                     />
                                 ) : (
                                     node.blocks.map((block) => (
@@ -575,6 +578,7 @@ export const PanelScrollView = forwardRef<
                                             marginSettings={marginSettings}
                                             nodeSourceRef={node.source_ref}
                                             inDrama={nodeIsDrama}
+                                            language={language}
                                         />
                                     ))
                                 )}

@@ -237,12 +237,21 @@ pub struct SourceContext {
     pub book_title: String,
     pub node_slug: String,
     pub node_label: String,
+    /// ISO code of the *source* book, which differs from the quoted book's
+    /// own `language` whenever a translation edition is quoted (a Greek
+    /// source under an English translation). Sets the `lang` attribute on the
+    /// source pane so a non-Latin script renders in its own face.
+    pub language: String,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct BatchSentenceResponseItem {
     pub book_slug: String,
     pub book_title: String,
+    /// ISO code of the book the quoted sentences come from (e.g. "grc",
+    /// "de", "en"). Used to set the `lang` attribute so non-Latin scripts
+    /// render in the right face.
+    pub language: String,
     pub node_slug: String,
     pub node_label: String,
     /// Label of the cited node's parent in the toc tree, when one

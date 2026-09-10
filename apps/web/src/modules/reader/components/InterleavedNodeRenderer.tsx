@@ -19,6 +19,7 @@ interface InterleavedNodeRendererProps {
     marginSettings?: MarginSettings;
     primaryLabel: string;
     companionLabel: string;
+    language: string;
 }
 
 // --- Alignment utilities ---
@@ -337,6 +338,7 @@ function StackedParagraphs({
     marginSettings,
     primaryLabel,
     companionLabel,
+    language,
 }: {
     aligned: AlignedBlock[];
     selectedSentenceId: string | null;
@@ -345,6 +347,7 @@ function StackedParagraphs({
     marginSettings?: MarginSettings;
     primaryLabel: string;
     companionLabel: string;
+    language: string;
 }) {
     return (
         <>
@@ -372,6 +375,7 @@ function StackedParagraphs({
                                     showOriginal={showOriginal}
                                     onSelectSentence={onSelectSentence}
                                     marginSettings={marginSettings}
+                                    language={language}
                                 />
                             </div>
                         )}
@@ -387,6 +391,7 @@ function StackedParagraphs({
                                     showOriginal={showOriginal}
                                     onSelectSentence={onSelectSentence}
                                     marginSettings={marginSettings}
+                                    language={language}
                                 />
                             </div>
                         )}
@@ -405,6 +410,7 @@ function StackedSentences({
     marginSettings,
     primaryLabel,
     companionLabel,
+    language,
 }: {
     aligned: AlignedBlock[];
     selectedSentenceId: string | null;
@@ -413,6 +419,7 @@ function StackedSentences({
     marginSettings?: MarginSettings;
     primaryLabel: string;
     companionLabel: string;
+    language: string;
 }) {
     return (
         <>
@@ -438,6 +445,7 @@ function StackedSentences({
                                         showOriginal={showOriginal}
                                         onSelectSentence={onSelectSentence}
                                         marginSettings={marginSettings}
+                                        language={language}
                                     />
                                 </div>
                             )}
@@ -449,6 +457,7 @@ function StackedSentences({
                                         showOriginal={showOriginal}
                                         onSelectSentence={onSelectSentence}
                                         marginSettings={marginSettings}
+                                        language={language}
                                     />
                                 </div>
                             )}
@@ -485,6 +494,7 @@ function StackedSentences({
                                                 showOriginal={showOriginal}
                                                 onSelect={onSelectSentence}
                                                 marginSettings={marginSettings}
+                                                language={language}
                                             />
                                         ))}
                                     </p>
@@ -508,6 +518,7 @@ function StackedSentences({
                                                 showOriginal={showOriginal}
                                                 onSelect={onSelectSentence}
                                                 marginSettings={marginSettings}
+                                                language={language}
                                             />
                                         ))}
                                     </p>
@@ -549,6 +560,7 @@ function SideBySideParagraphs({
     primaryLabel,
     companionLabel,
     primaryLeft,
+    language,
 }: {
     aligned: AlignedBlock[];
     selectedSentenceId: string | null;
@@ -558,6 +570,7 @@ function SideBySideParagraphs({
     primaryLabel: string;
     companionLabel: string;
     primaryLeft: boolean;
+    language: string;
 }) {
     const leftLabel = primaryLeft ? primaryLabel : companionLabel;
     const rightLabel = primaryLeft ? companionLabel : primaryLabel;
@@ -606,6 +619,7 @@ function SideBySideParagraphs({
                                     showOriginal={showOriginal}
                                     onSelectSentence={onSelectSentence}
                                     marginSettings={leftMargins}
+                                    language={language}
                                 />
                             )}
                         </div>
@@ -617,6 +631,7 @@ function SideBySideParagraphs({
                                     showOriginal={showOriginal}
                                     onSelectSentence={onSelectSentence}
                                     marginSettings={rightMargins}
+                                    language={language}
                                 />
                             )}
                         </div>
@@ -636,6 +651,7 @@ function SideBySideSentences({
     primaryLabel,
     companionLabel,
     primaryLeft,
+    language,
 }: {
     aligned: AlignedBlock[];
     selectedSentenceId: string | null;
@@ -645,6 +661,7 @@ function SideBySideSentences({
     primaryLabel: string;
     companionLabel: string;
     primaryLeft: boolean;
+    language: string;
 }) {
     const leftLabel = primaryLeft ? primaryLabel : companionLabel;
     const rightLabel = primaryLeft ? companionLabel : primaryLabel;
@@ -689,6 +706,7 @@ function SideBySideSentences({
                                         selectedSentenceId={selectedSentenceId}
                                         showOriginal={showOriginal}
                                         onSelectSentence={onSelectSentence}
+                                        language={language}
                                     />
                                 )}
                             </div>
@@ -699,6 +717,7 @@ function SideBySideSentences({
                                         selectedSentenceId={selectedSentenceId}
                                         showOriginal={showOriginal}
                                         onSelectSentence={onSelectSentence}
+                                        language={language}
                                     />
                                 )}
                             </div>
@@ -744,6 +763,7 @@ function SideBySideSentences({
                                                 showOriginal={showOriginal}
                                                 onSelect={onSelectSentence}
                                                 marginSettings={leftMargins}
+                                                language={language}
                                             />
                                         ))}
                                     </p>
@@ -759,6 +779,7 @@ function SideBySideSentences({
                                                 showOriginal={showOriginal}
                                                 onSelect={onSelectSentence}
                                                 marginSettings={rightMargins}
+                                                language={language}
                                             />
                                         ))}
                                     </p>
@@ -784,6 +805,7 @@ export function InterleavedNodeRenderer({
     marginSettings,
     primaryLabel,
     companionLabel,
+    language,
 }: InterleavedNodeRendererProps) {
     const aligned = alignBlocks(
         primaryNode.blocks,
@@ -806,6 +828,7 @@ export function InterleavedNodeRenderer({
                     marginSettings={marginSettings}
                     primaryLabel={primaryLabel}
                     companionLabel={companionLabel}
+                    language={language}
                 />
             );
         }
@@ -818,6 +841,7 @@ export function InterleavedNodeRenderer({
                 marginSettings={marginSettings}
                 primaryLabel={primaryLabel}
                 companionLabel={companionLabel}
+                language={language}
             />
         );
     }
@@ -833,6 +857,7 @@ export function InterleavedNodeRenderer({
                 primaryLabel={primaryLabel}
                 companionLabel={companionLabel}
                 primaryLeft={primaryLeft}
+                language={language}
             />
         );
     }
@@ -847,6 +872,7 @@ export function InterleavedNodeRenderer({
             primaryLabel={primaryLabel}
             companionLabel={companionLabel}
             primaryLeft={primaryLeft}
+            language={language}
         />
     );
 }

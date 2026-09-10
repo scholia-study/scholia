@@ -8,6 +8,13 @@
 export interface SourceContext {
     book_slug: string;
     book_title: string;
+    /**
+     * ISO code of the *source* book, which differs from the quoted book's
+     * own `language` whenever a translation edition is quoted (a Greek
+     * source under an English translation). Sets the `lang` attribute on the
+     * source pane so a non-Latin script renders in its own face.
+     */
+    language: string;
     node_label: string;
     node_slug: string;
 }

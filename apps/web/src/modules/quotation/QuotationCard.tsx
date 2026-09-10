@@ -153,6 +153,7 @@ export function QuotationCard({
         book_title: item.book_title,
         node_slug: node,
         node_label: item.node_label,
+        language: item.language,
     };
     const sourceAttribution = showSource && (
         <div className="flex justify-end mt-1">
@@ -164,6 +165,7 @@ export function QuotationCard({
                 }}
                 search={{ s: sentenceKey }}
                 target="_blank"
+                lang={srcBook.language}
                 className="!text-xs !text-stone-400 !no-underline hover:!underline !transition-colors"
             >
                 {srcBook.book_title} &middot; {srcBook.node_label} &middot;{" "}
@@ -179,6 +181,7 @@ export function QuotationCard({
                 params={{ bookSlug: book, nodeSlug: node }}
                 search={{ s: sentenceKey }}
                 target="_blank"
+                lang={item.language}
                 className="!text-xs !text-stone-400 !no-underline hover:!underline !transition-colors"
             >
                 {item.book_title} &middot; {passageLocation}
@@ -210,6 +213,7 @@ export function QuotationCard({
                 >
                     <div className="flex flex-col" style={{ direction: "ltr" }}>
                         <div
+                            lang={item.language}
                             className={`text-sm leading-relaxed text-stone-600${figureClasses}`}
                             style={{
                                 fontFamily: "'Libre Baskerville', serif",
@@ -221,6 +225,7 @@ export function QuotationCard({
                     </div>
                     <div className="flex flex-col" style={{ direction: "ltr" }}>
                         <div
+                            lang={item.language}
                             className={`text-sm leading-relaxed text-stone-700${figureClasses}`}
                             style={{
                                 fontFamily: "'Libre Baskerville', serif",
@@ -236,6 +241,7 @@ export function QuotationCard({
                     {showSource && sourceHtml && (
                         <>
                             <div
+                                lang={item.language}
                                 className={`text-sm leading-relaxed ${
                                     mode === "source+translation"
                                         ? "text-stone-600"
@@ -256,6 +262,7 @@ export function QuotationCard({
                     {showTranslation && (
                         <>
                             <div
+                                lang={item.language}
                                 className={`text-sm leading-relaxed text-stone-700${figureClasses}`}
                                 style={{
                                     fontFamily: "'Libre Baskerville', serif",

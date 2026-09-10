@@ -17,6 +17,7 @@ export interface CreateSourceRequest {
     journal_name?: string | null;
     /** @nullable */
     original_year?: number | null;
+    original_year_circa?: boolean;
     /** @nullable */
     page_end?: number | null;
     /** @nullable */

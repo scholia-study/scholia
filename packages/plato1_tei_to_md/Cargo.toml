@@ -1,0 +1,11 @@
+[package]
+name = "plato1_tei_to_md"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Perseus's EpiDoc TEI has a tiny, well-formed element set (see src/xml.rs);
+# a hand-rolled regex tokenizer is simpler than a full DOM crate for it.
+common = { path = "../common" }
+regex = "1"
+clap = { version = "4", features = ["derive"] }

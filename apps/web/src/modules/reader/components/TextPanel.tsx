@@ -1384,6 +1384,7 @@ export function TextPanel({
                             onVisibleNodeChange={handleVisibleNodeChange}
                             onSystemsDiscovered={handleSystemsDiscovered}
                             marginSettings={effectiveMarginSettings}
+                            language={bookDetail!.language}
                         />
                     </QuotationProvider>
                 </div>

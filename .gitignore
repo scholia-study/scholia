@@ -43,6 +43,10 @@ assets/hegel3/*
 !assets/peirce1/
 assets/peirce1/*
 !assets/peirce1/curated/
+!assets/plato1/
+assets/plato1/*
+!assets/plato1/curated/
+!assets/plato1/*.md
 
 .env
 .env.master

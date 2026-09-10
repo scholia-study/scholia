@@ -1,10 +1,12 @@
 import {
     Button,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
     FormControl,
+    FormControlLabel,
     InputLabel,
     MenuItem,
     Select,
@@ -60,6 +62,7 @@ export function SourceFormModal({
     const [title, setTitle] = useState("");
     const [publicationYear, setPublicationYear] = useState("");
     const [originalYear, setOriginalYear] = useState("");
+    const [originalYearCirca, setOriginalYearCirca] = useState(false);
     const [publisher, setPublisher] = useState("");
     const [publicationPlace, setPublicationPlace] = useState("");
     const [isbn, setIsbn] = useState("");
@@ -162,6 +165,7 @@ export function SourceFormModal({
         setTitle("");
         setPublicationYear("");
         setOriginalYear("");
+        setOriginalYearCirca(false);
         setPublisher("");
         setPublicationPlace("");
         setIsbn("");
@@ -235,6 +239,7 @@ export function SourceFormModal({
                 original_year: originalYear
                     ? Number.parseInt(originalYear, 10)
                     : undefined,
+                original_year_circa: originalYearCirca,
                 publisher: publisher.trim() || undefined,
                 publication_place: publicationPlace.trim() || undefined,
                 isbn: isbnArr,
@@ -358,9 +363,22 @@ export function SourceFormModal({
                             size="small"
                             type="number"
                             sx={{ flex: 1 }}
-                            helperText="Edition year, if it differs from this printing"
+                            helperText="Edition year, if it differs from this printing. Negative for BCE (-375 = 375 BCE)."
                         />
                     </div>
+
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={originalYearCirca}
+                                onChange={(e) =>
+                                    setOriginalYearCirca(e.target.checked)
+                                }
+                                size="small"
+                            />
+                        }
+                        label="Original year is approximate (cites as “ca.”)"
+                    />
 
                     <div className="flex gap-2">
                         <TextField

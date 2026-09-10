@@ -51,6 +51,14 @@ case "$corpus" in
         # original-orthography layer to pair against.
         cargo run -p md_prose_to_struct -- --corpus "$corpus" --single
         ;;
+    plato1)
+        # Single-layer Greek source (Burnet's constituted text has no
+        # original-orthography companion) plus a parity-locked English
+        # translation. The corpus flag puts the source build in single mode,
+        # so no --single here — that flag would forbid the translation build.
+        cargo run -p md_prose_to_struct -- --corpus "$corpus"
+        cargo run -p md_prose_to_struct -- --corpus "$corpus" --translation
+        ;;
     *)
         # Unreachable: membership in SCHOLIA_CORPORA is checked above. Hitting
         # this means the array and the case arms drifted apart.

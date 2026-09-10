@@ -5938,6 +5938,7 @@
                 "required": [
                     "book_slug",
                     "book_title",
+                    "language",
                     "node_slug",
                     "node_label",
                     "citation",
@@ -5968,6 +5969,10 @@
                     },
                     "figure_original_html": {
                         "type": ["string", "null"]
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "ISO code of the book the quoted sentences come from (e.g. \"grc\",\n\"de\", \"en\"). Used to set the `lang` attribute so non-Latin scripts\nrender in the right face."
                     },
                     "node_label": {
                         "type": "string"
@@ -6669,6 +6674,9 @@
                     "original_year": {
                         "type": ["integer", "null"],
                         "format": "int32"
+                    },
+                    "original_year_circa": {
+                        "type": "boolean"
                     },
                     "page_end": {
                         "type": ["integer", "null"],
@@ -8825,7 +8833,8 @@
                     "book_slug",
                     "book_title",
                     "node_slug",
-                    "node_label"
+                    "node_label",
+                    "language"
                 ],
                 "properties": {
                     "book_slug": {
@@ -8833,6 +8842,10 @@
                     },
                     "book_title": {
                         "type": "string"
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "ISO code of the *source* book, which differs from the quoted book's\nown `language` whenever a translation edition is quoted (a Greek\nsource under an English translation). Sets the `lang` attribute on the\nsource pane so a non-Latin script renders in its own face."
                     },
                     "node_label": {
                         "type": "string"
@@ -8918,6 +8931,10 @@
                         "type": ["integer", "null"],
                         "format": "int32",
                         "description": "Year of the edition this text presents, when it differs from the\nprinting transcribed (CSL \"original-date\"). NULL = same as\n`publication_year`."
+                    },
+                    "original_year_circa": {
+                        "type": "boolean",
+                        "description": "`original_year` is a scholarly estimate rather than an imprint date,\nas for ancient works. Cites with Chicago's \"ca.\" prefix."
                     },
                     "page_end": {
                         "type": ["integer", "null"],
@@ -9565,6 +9582,10 @@
                     "original_year": {
                         "type": ["integer", "null"],
                         "format": "int32"
+                    },
+                    "original_year_circa": {
+                        "type": ["boolean", "null"],
+                        "description": "NOT NULL in the schema, so a plain `Option`: present means set it."
                     },
                     "page_end": {
                         "type": ["integer", "null"],

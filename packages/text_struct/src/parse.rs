@@ -53,6 +53,7 @@ pub fn parse_front_matter(content: &str) -> Option<(FrontMatter, &str)> {
             .or_else(|| line.strip_prefix("page_gw:"))
             .or_else(|| line.strip_prefix("page_1812:"))
             .or_else(|| line.strip_prefix("page_pub:"))
+            .or_else(|| line.strip_prefix("page_stephanus:"))
         {
             page = Some(v.trim().trim_matches('"').to_string());
         }

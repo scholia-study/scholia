@@ -26,6 +26,11 @@ export interface SourceResponse {
      * @nullable
      */
     original_year?: number | null;
+    /**
+     * `original_year` is a scholarly estimate rather than an imprint date,
+     * as for ancient works. Cites with Chicago's "ca." prefix.
+     */
+    original_year_circa?: boolean;
     /** @nullable */
     page_end?: number | null;
     /** @nullable */

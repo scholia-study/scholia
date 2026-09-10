@@ -23,6 +23,11 @@ export interface UpdateSourceRequest {
     journal_name?: string | null;
     /** @nullable */
     original_year?: number | null;
+    /**
+     * NOT NULL in the schema, so a plain `Option`: present means set it.
+     * @nullable
+     */
+    original_year_circa?: boolean | null;
     /** @nullable */
     page_end?: number | null;
     /** @nullable */
