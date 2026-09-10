@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT DISTINCT s.id, s.source_type AS \"source_type: SourceType\", s.title, s.title_display,\n                  s.publication_year, s.original_year, s.publisher, s.publication_place,\n                  s.isbn, s.doi, s.edition, s.volume,\n                  s.journal_name, s.url, s.page_start, s.page_end,\n                  s.parent_source_id, s.translation_of_id,\n                  s.created_by AS \"created_by!\", s.protected\n           FROM sources s\n           LEFT JOIN source_persons sp ON sp.source_id = s.id\n           LEFT JOIN persons p ON p.id = sp.person_id\n           WHERE s.title ILIKE $1 OR p.name ILIKE $1\n           ORDER BY s.title\n           LIMIT 20",
+    "query": "SELECT id, source_type AS \"source_type: SourceType\", title, title_display, publication_year,\n                  original_year, original_year_circa, publisher, publication_place, isbn, doi, edition, volume,\n                  journal_name, url,\n                  page_start, page_end, parent_source_id, translation_of_id,\n                  created_by AS \"created_by!\", protected\n           FROM sources\n           WHERE id = $1",
     "describe": {
         "columns": [
             {
@@ -48,77 +48,82 @@
             },
             {
                 "ordinal": 6,
+                "name": "original_year_circa",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 7,
                 "name": "publisher",
                 "type_info": "Text"
             },
             {
-                "ordinal": 7,
+                "ordinal": 8,
                 "name": "publication_place",
                 "type_info": "Text"
             },
             {
-                "ordinal": 8,
+                "ordinal": 9,
                 "name": "isbn",
                 "type_info": "TextArray"
             },
             {
-                "ordinal": 9,
+                "ordinal": 10,
                 "name": "doi",
                 "type_info": "Text"
             },
             {
-                "ordinal": 10,
+                "ordinal": 11,
                 "name": "edition",
                 "type_info": "Text"
             },
             {
-                "ordinal": 11,
+                "ordinal": 12,
                 "name": "volume",
                 "type_info": "Text"
             },
             {
-                "ordinal": 12,
+                "ordinal": 13,
                 "name": "journal_name",
                 "type_info": "Text"
             },
             {
-                "ordinal": 13,
+                "ordinal": 14,
                 "name": "url",
                 "type_info": "Text"
             },
             {
-                "ordinal": 14,
+                "ordinal": 15,
                 "name": "page_start",
                 "type_info": "Int4"
             },
             {
-                "ordinal": 15,
+                "ordinal": 16,
                 "name": "page_end",
                 "type_info": "Int4"
             },
             {
-                "ordinal": 16,
+                "ordinal": 17,
                 "name": "parent_source_id",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 17,
+                "ordinal": 18,
                 "name": "translation_of_id",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 18,
+                "ordinal": 19,
                 "name": "created_by!",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 19,
+                "ordinal": 20,
                 "name": "protected",
                 "type_info": "Bool"
             }
         ],
         "parameters": {
-            "Left": ["Text"]
+            "Left": ["Uuid"]
         },
         "nullable": [
             false,
@@ -127,6 +132,7 @@
             true,
             true,
             true,
+            false,
             true,
             true,
             true,
@@ -143,5 +149,5 @@
             false
         ]
     },
-    "hash": "734018e18b33ecd3fdc22026e5ec655022d471ca96c6e6e56ed8fa93fcf9876d"
+    "hash": "28b9c799742484435e47e6aa3306faa315a140a8fc1752f3536cac8f1ecf3213"
 }

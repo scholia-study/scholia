@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT id, title, publication_year, original_year, publisher, publication_place, edition, journal_name, volume\n           FROM sources WHERE id = ANY($1)",
+    "query": "SELECT id, title, publication_year, original_year, original_year_circa, publisher, publication_place, edition, journal_name, volume\n           FROM sources WHERE id = ANY($1)",
     "describe": {
         "columns": [
             {
@@ -25,26 +25,31 @@
             },
             {
                 "ordinal": 4,
+                "name": "original_year_circa",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 5,
                 "name": "publisher",
                 "type_info": "Text"
             },
             {
-                "ordinal": 5,
+                "ordinal": 6,
                 "name": "publication_place",
                 "type_info": "Text"
             },
             {
-                "ordinal": 6,
+                "ordinal": 7,
                 "name": "edition",
                 "type_info": "Text"
             },
             {
-                "ordinal": 7,
+                "ordinal": 8,
                 "name": "journal_name",
                 "type_info": "Text"
             },
             {
-                "ordinal": 8,
+                "ordinal": 9,
                 "name": "volume",
                 "type_info": "Text"
             }
@@ -52,7 +57,18 @@
         "parameters": {
             "Left": ["UuidArray"]
         },
-        "nullable": [false, false, true, true, true, true, true, true, true]
+        "nullable": [
+            false,
+            false,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true
+        ]
     },
-    "hash": "fee8a7d6d9f95ffa7aa0a92baca49cdefcefd153d382eac2a938c675e101a254"
+    "hash": "42e6ef82de0d3051d6cc691d9b4b49f0188a7dbdcabaf989731acaf6c11f90fe"
 }

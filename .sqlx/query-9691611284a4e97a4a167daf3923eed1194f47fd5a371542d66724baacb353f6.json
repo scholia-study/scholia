@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT s.id, s.source_type AS \"source_type: SourceType\", s.title, s.title_display,\n                  s.publication_year, s.original_year, s.publisher, s.publication_place,\n                  s.isbn, s.doi, s.edition, s.volume,\n                  s.journal_name, s.url, s.page_start, s.page_end,\n                  s.parent_source_id, s.translation_of_id,\n                  s.created_by AS \"created_by!\", s.protected\n           FROM sources s\n           WHERE ($1::TEXT IS NULL OR s.title ILIKE $1)\n             AND ($2::source_type IS NULL OR s.source_type = $2::source_type)\n             AND ($3::UUID IS NULL OR s.created_by = $3)\n             AND ($4::BOOLEAN IS NULL OR s.protected = $4)\n           ORDER BY s.created_at DESC\n           LIMIT $5 OFFSET $6",
+    "query": "SELECT s.id, s.source_type AS \"source_type: SourceType\", s.title, s.title_display,\n                  s.publication_year, s.original_year, s.original_year_circa, s.publisher, s.publication_place,\n                  s.isbn, s.doi, s.edition, s.volume,\n                  s.journal_name, s.url, s.page_start, s.page_end,\n                  s.parent_source_id, s.translation_of_id,\n                  s.created_by AS \"created_by!\", s.protected\n           FROM sources s\n           WHERE ($1::TEXT IS NULL OR s.title ILIKE $1)\n             AND ($2::source_type IS NULL OR s.source_type = $2::source_type)\n             AND ($3::UUID IS NULL OR s.created_by = $3)\n             AND ($4::BOOLEAN IS NULL OR s.protected = $4)\n           ORDER BY s.created_at DESC\n           LIMIT $5 OFFSET $6",
     "describe": {
         "columns": [
             {
@@ -48,71 +48,76 @@
             },
             {
                 "ordinal": 6,
+                "name": "original_year_circa",
+                "type_info": "Bool"
+            },
+            {
+                "ordinal": 7,
                 "name": "publisher",
                 "type_info": "Text"
             },
             {
-                "ordinal": 7,
+                "ordinal": 8,
                 "name": "publication_place",
                 "type_info": "Text"
             },
             {
-                "ordinal": 8,
+                "ordinal": 9,
                 "name": "isbn",
                 "type_info": "TextArray"
             },
             {
-                "ordinal": 9,
+                "ordinal": 10,
                 "name": "doi",
                 "type_info": "Text"
             },
             {
-                "ordinal": 10,
+                "ordinal": 11,
                 "name": "edition",
                 "type_info": "Text"
             },
             {
-                "ordinal": 11,
+                "ordinal": 12,
                 "name": "volume",
                 "type_info": "Text"
             },
             {
-                "ordinal": 12,
+                "ordinal": 13,
                 "name": "journal_name",
                 "type_info": "Text"
             },
             {
-                "ordinal": 13,
+                "ordinal": 14,
                 "name": "url",
                 "type_info": "Text"
             },
             {
-                "ordinal": 14,
+                "ordinal": 15,
                 "name": "page_start",
                 "type_info": "Int4"
             },
             {
-                "ordinal": 15,
+                "ordinal": 16,
                 "name": "page_end",
                 "type_info": "Int4"
             },
             {
-                "ordinal": 16,
+                "ordinal": 17,
                 "name": "parent_source_id",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 17,
+                "ordinal": 18,
                 "name": "translation_of_id",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 18,
+                "ordinal": 19,
                 "name": "created_by!",
                 "type_info": "Uuid"
             },
             {
-                "ordinal": 19,
+                "ordinal": 20,
                 "name": "protected",
                 "type_info": "Bool"
             }
@@ -147,6 +152,7 @@
             true,
             true,
             true,
+            false,
             true,
             true,
             true,
@@ -163,5 +169,5 @@
             false
         ]
     },
-    "hash": "773a516638db715dccfd860a4998e4525d43e844f0ca4e7e896326c326745f09"
+    "hash": "9691611284a4e97a4a167daf3923eed1194f47fd5a371542d66724baacb353f6"
 }
