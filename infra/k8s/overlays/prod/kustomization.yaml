@@ -14,11 +14,11 @@ generators:
 
 images:
   - name: ghcr.io/scholia-study/scholia-api
-    newTag: main-96ad419
+    newTag: main-3b88799
   - name: ghcr.io/scholia-study/scholia-web
-    newTag: main-96ad419
+    newTag: main-3b88799
   - name: ghcr.io/scholia-study/scholia-proxy
-    newTag: main-b5006e5
+    newTag: main-3b88799
 
 patches:
   - path: ingress-patch.yaml
