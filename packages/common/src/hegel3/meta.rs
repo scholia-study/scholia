@@ -27,6 +27,8 @@ markers refer to its pagination. The text itself is in the public domain. The di
 on Scholia, including its modernized reading text, is prepared by Scholia Sodalitas, a \
 community-driven project. The German text layers follow the DTA transcription's CC BY-SA 4.0 \
 terms; Scholia asserts no further rights in them. Corrections and refinements are welcome.";
+pub const LICENCE: &str =
+    "Public Domain. German text layers from the Deutsches Textarchiv (CC BY-SA 4.0).";
 
 pub const PAGE_SYSTEM_SLUG: &str = "orig1812";
 pub const PAGE_SYSTEM_LABEL: &str = "Ausgabe 1812";
@@ -51,3 +53,4 @@ Page markers refer to the first edition's pagination. \
 The digital edition is prepared by Scholia Sodalitas, a community-driven project. The translation \
 is Scholia's own work under the regular Scholia assets licence. Corrections and refinements are \
 welcome.";
+pub const LICENCE_EN: &str = "CC BY-NC-ND 4.0";

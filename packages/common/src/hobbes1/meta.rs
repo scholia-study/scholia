@@ -25,6 +25,7 @@ pub const ABOUT: &str = "Hobbes's Leviathan (1651), the founding work of modern 
     table of contents and errata leaf are omitted (the errata's corrections are \
     applied in the modernized text), as is a later owner's bookplate found in the \
     source copy.";
+pub const LICENCE: &str = "Public Domain (source text); CC BY-NC-ND 4.0 (modernized reading text)";
 
 /// The `{{{ }}}` system: the printed 1651 folio numbers (with `b` suffixes on
 /// the five twice-printed pages). The scholarly citation standard for the

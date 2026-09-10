@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT id, source_id, about_text FROM books WHERE slug = $1",
+    "query": "SELECT id, source_id, about_text, licence FROM books WHERE slug = $1",
     "describe": {
         "columns": [
             {
@@ -17,12 +17,17 @@
                 "ordinal": 2,
                 "name": "about_text",
                 "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "licence",
+                "type_info": "Text"
             }
         ],
         "parameters": {
             "Left": ["Text"]
         },
-        "nullable": [false, false, true]
+        "nullable": [false, false, true, false]
     },
-    "hash": "fb556146f2a4103a9d1315936a17bd80a146db4e01302b599ba29ef44717c458"
+    "hash": "25ac614ee411b4ff942cacdac3275628da57ee1e5c5756d37845e2f0205dbd31"
 }

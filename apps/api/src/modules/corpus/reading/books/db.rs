@@ -162,7 +162,7 @@ pub async fn get_about_this_text(
     node_slug: Option<&str>,
 ) -> Result<AboutThisTextResponse, AppError> {
     let book = sqlx::query!(
-        r#"SELECT id, source_id, about_text FROM books WHERE slug = $1"#,
+        r#"SELECT id, source_id, about_text, licence FROM books WHERE slug = $1"#,
         book_slug,
     )
     .fetch_optional(pool)
@@ -229,6 +229,7 @@ pub async fn get_about_this_text(
         resolved_from: resolved_from.to_string(),
         source_book,
         about_text: book.about_text,
+        licence: book.licence,
     })
 }
 

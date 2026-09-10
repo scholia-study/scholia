@@ -53,6 +53,12 @@ pub struct BookData {
     /// Editorial "about this book" copy → `books.about_text`.
     #[serde(default)]
     pub about_text: String,
+    /// Rights summary surfaced prominently in the "About this text" panel
+    /// → `books.licence`. A short label ("Public Domain", "CC BY-NC-ND 4.0")
+    /// or a one-line source/layer split; the nuance lives in `about_text`.
+    /// Required — the importer rejects an empty value.
+    #[serde(default)]
+    pub licence: String,
     /// Reader page size (nodes per next/prev fetch) → `books.nodes_per_page`.
     /// `None` = default (20); set small for texts with few but huge nodes.
     #[serde(default, skip_serializing_if = "Option::is_none")]

@@ -120,6 +120,14 @@ pub async fn run(
     let data = fs::read_to_string(input_file)?;
     let output: Output = serde_json::from_str(&data)?;
 
+    if output.book.licence.trim().is_empty() {
+        return Err(format!(
+            "book {:?} has no licence — set it in the corpus meta (LICENCE / LICENCE_EN)",
+            output.book.slug
+        )
+        .into());
+    }
+
     let pool = PgPool::connect_with(dataduct::db::pg_connect_options(database_url)?).await?;
     let mut tx = pool.begin().await?;
 
@@ -263,6 +271,16 @@ pub async fn run(
             // book's, for a translation edition — it owns none of its own), then
             // update the book in place.
             eprintln!("Reconciling existing book {:?} ({})", output.book.slug, id);
+
+            // Editorial metadata isn't part of the content hash, so an edited
+            // `about_text` or `licence` in the corpus meta lands here directly.
+            sqlx::query("UPDATE books SET about_text = $2, licence = $3 WHERE id = $1")
+                .bind(id)
+                .bind(&output.book.about_text)
+                .bind(&output.book.licence)
+                .execute(&mut *tx)
+                .await?;
+
             let systems_book_id = source_book_id.unwrap_or(id);
             let mut system_ids: HashMap<String, Uuid> = HashMap::new();
             let rows: Vec<(Uuid, String)> =
@@ -439,14 +457,15 @@ pub async fn run(
     .await?;
 
     let book_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO books (slug, source_id, language, about_text, nodes_per_page)
-         VALUES ($1, $2, $3, $4, $5)
+        "INSERT INTO books (slug, source_id, language, about_text, licence, nodes_per_page)
+         VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING id",
     )
     .bind(&output.book.slug)
     .bind(bib_source_id)
     .bind(&output.book.language)
     .bind(&output.book.about_text)
+    .bind(&output.book.licence)
     .bind(output.book.nodes_per_page)
     .fetch_one(&mut *tx)
     .await?;

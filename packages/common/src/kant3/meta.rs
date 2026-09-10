@@ -30,6 +30,7 @@ pub const ABOUT: &str = "This German edition reproduces the text of Kant's Kriti
          first-edition pagination is preserved inline. The text itself is in the public domain. \
          The digital edition on Scholia — including its modernized reading text — is prepared by \
          Scholia Sodalitas, a community-driven project. Corrections and refinements are welcome.";
+pub const LICENCE: &str = "Public Domain (source text); CC BY-NC-ND 4.0 (modernized reading text)";
 
 // English translation edition.
 pub const BOOK_SLUG_EN: &str = "critique-of-the-power-of-judgment";
@@ -44,6 +45,7 @@ pub const ABOUT_EN: &str = "This English translation of Kant's Kritik der Urteil
          Judgment) is a community project, published by Scholia Sodalitas — the fellowship of \
          contributors behind Scholia's own editions. It is prepared from the Akademie-Ausgabe (Band V) \
          German text, which serves as the underlying source on Scholia.";
+pub const LICENCE_EN: &str = "CC BY-NC-ND 4.0";
 
 // Reference systems: the AA (block) system + the edition (inline) page system.
 pub const AA_SYSTEM_SLUG: &str = "aa_v";

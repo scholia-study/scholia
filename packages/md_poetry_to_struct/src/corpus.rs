@@ -52,6 +52,8 @@ const SHAKESPEARE_ABOUT: &str = "Shakespeare's Sonnets. The modern-spelling \
 reading text is drawn from public-domain sources; the original-spelling layer \
 reproduces the 1609 Quarto via EEBO-TCP (released CC0). The digital edition on \
 Scholia is a community-driven project; corrections are welcome.";
+const SHAKESPEARE_LICENCE: &str =
+    "Public Domain (source text); CC BY-NC-ND 4.0 (modernized reading text)";
 
 const MILTON_SOURCE: &str = "Modern-spelling reading text from public-domain sources; the original-spelling \
 layer reproduces the 1674 second edition via EEBO-TCP A50924 (CC0).";
@@ -60,6 +62,8 @@ reading text is prepared by Scholia Sodalitas from public-domain sources; the \
 original-spelling layer reproduces the 1674 second edition — printed by \
 S. Simmons, London — via EEBO-TCP (released CC0). The digital edition on \
 Scholia is a community-driven project; corrections are welcome.";
+const MILTON_LICENCE: &str =
+    "Public Domain (source text); CC BY-NC-ND 4.0 (modernized reading text)";
 
 /// The `line` reference system. `cite_priority` decides whether lines are the
 /// *default* citation (Milton: `Some(0)`; the Sonnets stay sentence-cited:
@@ -119,6 +123,7 @@ pub fn shakespeare() -> Corpus {
             source: SHAKESPEARE_SOURCE.into(),
             source_date: sonnets::YEAR.to_string(),
             about_text: SHAKESPEARE_ABOUT.into(),
+            licence: SHAKESPEARE_LICENCE.into(),
             nodes_per_page: None,
         },
         reference_systems: line_system(Some(0), "{self} · {ref}"),
@@ -178,6 +183,7 @@ pub fn milton() -> Corpus {
             source: MILTON_SOURCE.into(),
             source_date: milton1::YEAR.to_string(),
             about_text: MILTON_ABOUT.into(),
+            licence: MILTON_LICENCE.into(),
             // Few but enormous nodes (a whole Book each) — load a couple per
             // page so a Book-boundary is prefetched before it's reached.
             nodes_per_page: Some(2),

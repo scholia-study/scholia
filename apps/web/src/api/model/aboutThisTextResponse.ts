@@ -25,6 +25,13 @@ export interface AboutThisTextResponse {
      */
     about_text?: string | null;
     /**
+     * Rights summary for this hosted edition — `books.licence`, a short
+     * standout label ("Public Domain", "CC BY-NC-ND 4.0"). Like
+     * `about_text`, taken from the hosted book, not walked across toc
+     * ancestors.
+     */
+    licence: string;
+    /**
      * `"node"` when an ancestor toc_node supplied a source_id (Bible
      * books-within-books); `"book"` when the resolver fell back to
      * the hosted book's root source.

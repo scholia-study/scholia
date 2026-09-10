@@ -163,6 +163,7 @@ struct BookSpec {
     source: &'static str,
     year: &'static str,
     about: &'static str,
+    licence: &'static str,
     imprint: Imprint,
 }
 
@@ -180,6 +181,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE_EN,
                         year: meta::YEAR_EN,
                         about: meta::ABOUT_EN,
+                        licence: meta::LICENCE_EN,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER_EN),
                             place: None,
@@ -202,6 +204,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE,
                         year: meta::YEAR,
                         about: meta::ABOUT,
+                        licence: meta::LICENCE,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER),
                             place: Some(meta::PUBLICATION_PLACE),
@@ -282,6 +285,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE_EN,
                         year: meta::YEAR_EN,
                         about: meta::ABOUT_EN,
+                        licence: meta::LICENCE_EN,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER_EN),
                             place: None,
@@ -304,6 +308,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE,
                         year: meta::YEAR,
                         about: meta::ABOUT,
+                        licence: meta::LICENCE,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER),
                             place: Some(meta::PUBLICATION_PLACE),
@@ -381,6 +386,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE_EN,
                         year: meta::YEAR_EN,
                         about: meta::ABOUT_EN,
+                        licence: meta::LICENCE_EN,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER_EN),
                             place: None,
@@ -403,6 +409,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE,
                         year: meta::YEAR,
                         about: meta::ABOUT,
+                        licence: meta::LICENCE,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER),
                             place: None,
@@ -490,6 +497,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE_EN,
                         year: meta::YEAR_EN,
                         about: meta::ABOUT_EN,
+                        licence: meta::LICENCE_EN,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER_EN),
                             place: None,
@@ -512,6 +520,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE,
                         year: meta::YEAR,
                         about: meta::ABOUT,
+                        licence: meta::LICENCE,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER),
                             place: None,
@@ -584,6 +593,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE_EN,
                         year: meta::YEAR_EN,
                         about: meta::ABOUT_EN,
+                        licence: meta::LICENCE_EN,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER_EN),
                             place: None,
@@ -606,6 +616,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE,
                         year: meta::YEAR,
                         about: meta::ABOUT,
+                        licence: meta::LICENCE,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER),
                             place: None,
@@ -682,6 +693,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                     source: meta::SOURCE,
                     year: meta::YEAR,
                     about: meta::ABOUT,
+                    licence: meta::LICENCE,
                     imprint: Imprint {
                         publisher: Some(meta::PUBLISHER),
                         place: Some(meta::PUBLICATION_PLACE),
@@ -741,6 +753,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                     source: meta::SOURCE,
                     year: meta::YEAR,
                     about: meta::ABOUT,
+                    licence: meta::LICENCE,
                     // A selection spanning five periodicals has no single
                     // imprint; each paper's is carried by its page markers.
                     // The identity year is the earliest paper's (the span
@@ -811,6 +824,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE_EN,
                         year: meta::YEAR_EN,
                         about: meta::ABOUT_EN,
+                        licence: meta::LICENCE_EN,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER_EN),
                             place: None,
@@ -829,6 +843,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                         source: meta::SOURCE,
                         year: meta::YEAR,
                         about: meta::ABOUT,
+                        licence: meta::LICENCE,
                         imprint: Imprint {
                             publisher: Some(meta::PUBLISHER),
                             place: Some(meta::PUBLICATION_PLACE),
@@ -907,6 +922,7 @@ fn book_data(spec: BookSpec) -> BookData {
         source: spec.source.to_string(),
         source_date: spec.year.to_string(),
         about_text: spec.about.to_string(),
+        licence: spec.licence.to_string(),
         nodes_per_page: None,
     }
 }

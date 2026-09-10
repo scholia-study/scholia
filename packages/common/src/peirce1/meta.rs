@@ -28,6 +28,7 @@ pub const ABOUT: &str = "Sixteen papers Peirce published in the philosophical an
     of God. The text is set from the original printings, with their pagination. The title \
     takes the name Peirce coined in 1905 for his own version of pragmatism, to mark it \
     off from what others had made of the word; these essays are its foundations.";
+pub const LICENCE: &str = "Public Domain";
 
 /// The `{{{ }}}` system: the original printing's volume and page, qualified by
 /// periodical because the selection spans five of them and the volume numbers

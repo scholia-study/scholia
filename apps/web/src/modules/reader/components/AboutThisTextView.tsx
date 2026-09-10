@@ -31,7 +31,7 @@ export function AboutThisTextView({
         );
     }
 
-    const { source, source_book, about_text } = data.data;
+    const { source, source_book, about_text, licence } = data.data;
     const title = source.title_display ?? source.title;
     const byRole = groupByRole(source.persons);
 
@@ -60,6 +60,7 @@ export function AboutThisTextView({
             )}
 
             <dl className="space-y-2">
+                {licence && <Field label="Licence" value={licence} />}
                 {source.publication_year != null && (
                     <Field
                         label="Year"

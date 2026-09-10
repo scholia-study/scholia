@@ -184,6 +184,15 @@ pub async fn reconcile_translation(
 ) -> Result<ReconcileReport, Box<dyn std::error::Error>> {
     let mut report = ReconcileReport::default();
 
+    // Book-level editorial metadata isn't part of the content hash, so a
+    // change to the `TranslationMeta` blurb or licence lands here directly.
+    sqlx::query("UPDATE books SET about_text = $2, licence = $3 WHERE id = $1")
+        .bind(book_id)
+        .bind(translation.about_text)
+        .bind(translation.licence)
+        .execute(&mut **tx)
+        .await?;
+
     // --- Load existing chapter structure (with stored hashes) --------------
     let node_rows: Vec<(String, Uuid, Option<String>)> = sqlx::query_as(
         "SELECT source_ref, id, content_hash FROM toc_nodes WHERE book_id = $1 AND depth = 1",

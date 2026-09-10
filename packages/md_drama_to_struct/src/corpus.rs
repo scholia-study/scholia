@@ -86,6 +86,7 @@ pub fn ibsen1() -> Corpus {
             source: ibsen1::SOURCE.into(),
             source_date: ibsen1::YEAR.to_string(),
             about_text: ibsen1::ABOUT.into(),
+            licence: ibsen1::LICENCE.into(),
             // Acts are few but very large nodes (like Milton's Books) — load a
             // couple per page so an act boundary is prefetched before reached.
             nodes_per_page: Some(2),
@@ -118,6 +119,7 @@ pub fn ibsen1_translation() -> Corpus {
             source: ibsen1::SOURCE_EN.into(),
             source_date: ibsen1::YEAR_EN.to_string(),
             about_text: ibsen1::ABOUT_EN.into(),
+            licence: ibsen1::LICENCE_EN.into(),
             nodes_per_page: Some(2),
         },
         reference_systems: page_system(),

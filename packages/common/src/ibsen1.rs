@@ -58,6 +58,7 @@ text; the underlying source is Ibsen's 1873 first edition (Henrik Ibsens Skrifte
 pub const ABOUT_EN: &str = "An English reading translation of Henrik Ibsen's Emperor and Galilean \
 (Kejser og Galilæer, 1873), prepared from the modern Norwegian Bokmål edition that serves as the \
 underlying text on Scholia. A community project published by Scholia Sodalitas; corrections are welcome.";
+pub const LICENCE_EN: &str = "CC BY-NC-ND 4.0";
 
 /// The `1873` page reference system — the printed-page markers (`{{{ N }}}`) of
 /// the first edition, and drama's **default** citation (`p. N`).
@@ -71,6 +72,7 @@ two-part world-historical drama. The reading text is a modern Norwegian Bokmål 
 prepared by Scholia Sodalitas; the original layer reproduces the 1873 first edition — Den \
 Gyldendalske Boghandel (F. Hegel), København. The digital edition on Scholia is a \
 community-driven project; corrections are welcome.";
+pub const LICENCE: &str = "Public Domain (source text); CC BY-NC-ND 4.0 (modernized reading text)";
 
 /// One reading node — its structure only; the display label comes from the
 /// file's front matter at parse time.

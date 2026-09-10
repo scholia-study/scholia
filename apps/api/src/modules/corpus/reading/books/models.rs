@@ -75,4 +75,9 @@ pub struct AboutThisTextResponse {
     /// (NOT walked across toc ancestors).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub about_text: Option<String>,
+    /// Rights summary for this hosted edition — `books.licence`, a short
+    /// standout label ("Public Domain", "CC BY-NC-ND 4.0"). Like
+    /// `about_text`, taken from the hosted book, not walked across toc
+    /// ancestors.
+    pub licence: String,
 }

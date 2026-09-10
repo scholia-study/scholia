@@ -48,6 +48,7 @@ the work. Footnotes identifying the poets Plato quotes are likewise Scholia's.\n
 in the public domain. Only the divisions, their titles and the footnotes are licensed \
 CC BY-NC-ND 4.0. Transcription credit to the Perseus Digital Library, Tufts University.\n\n\
 The digital edition on Scholia is a community-driven project; corrections are welcome.";
+pub const LICENCE: &str = "Public Domain";
 
 pub const SOURCE_EN: &str = "An English reading translation prepared from Burnet's Greek text \
 by Scholia Sodalitas.";
@@ -58,3 +59,4 @@ the Greek text of Burnet's Platonis Opera, Tomus IV (Oxford, 1905). \
 them, and their titles, are Scholia's, as are the footnotes identifying the poets Plato \
 quotes.\n\nThis translation is Scholia's own work, licensed CC BY-NC-ND 4.0. A community \
 project published by Scholia Sodalitas; corrections are welcome.";
+pub const LICENCE_EN: &str = "CC BY-NC-ND 4.0";

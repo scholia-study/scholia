@@ -32,6 +32,8 @@ equally. The text itself is in the public domain. The digital edition on Scholia
 modernized reading text — is prepared by Scholia Sodalitas, a community-driven project; the \
 German text layers follow their sources' terms (CC BY 4.0 and CC BY-SA 4.0) and Scholia asserts \
 no further rights in them. Corrections and refinements are welcome.";
+pub const LICENCE: &str = "Public Domain. German text layers from hegeledition.com (CC BY 4.0) \
+and the Deutsches Textarchiv (CC BY-SA 4.0).";
 
 /// The one reference system: GW volume.page ("21.68"), the scholarly
 /// citation standard and therefore the citation default.
@@ -57,3 +59,4 @@ markers refer to the GW pagination. The digital edition is prepared by Scholia S
 community-driven project. Unlike the German text layers (which follow their sources' terms), the \
 translation is Scholia's own work under the regular Scholia assets licence. Corrections and \
 refinements are welcome.";
+pub const LICENCE_EN: &str = "CC BY-NC-ND 4.0";

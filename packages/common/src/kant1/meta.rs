@@ -33,6 +33,7 @@ pub const ABOUT: &str = "This German edition reproduces the text of Kant's Kriti
          The text itself is in public domain. The digital edition on Scholia — including its \
          modernized reading text — is prepared by Scholia Sodalitas, a community-driven project. \
          Corrections and refinements are welcome.";
+pub const LICENCE: &str = "Public Domain (source text); CC BY-NC-ND 4.0 (modernized reading text)";
 
 // English translation edition.
 pub const BOOK_SLUG_EN: &str = "critique-of-pure-reason-b";
@@ -47,6 +48,7 @@ pub const ABOUT_EN: &str = "This English translation of Kant's Kritik der reinen
          published by Scholia Sodalitas — the fellowship of contributors behind Scholia's own editions. \
          It is prepared from the 1911 Akademie-Ausgabe (Band III) facsimile of the second edition (B), \
          which serves as the underlying German text on Scholia.";
+pub const LICENCE_EN: &str = "CC BY-NC-ND 4.0";
 
 // Reference systems: the AA (block) system + the edition (inline) page system.
 // Labels are per-edition-language; slugs/templates are shared.

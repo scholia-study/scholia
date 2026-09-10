@@ -58,6 +58,7 @@ struct TranslationMeta {
     book_slug: &'static str,
     publisher: &'static str,
     about_text: &'static str,
+    licence: &'static str,
 }
 
 const TRANSLATIONS: &[TranslationMeta] = &[
@@ -74,6 +75,7 @@ const TRANSLATIONS: &[TranslationMeta] = &[
                      has shaped four centuries of English-language literature and worship. \
                      The translation is in public domain. The digital edition on Scholia is \
                      a community-driven project. Corrections and refinements are welcome.",
+        licence: "Public Domain",
     },
     TranslationMeta {
         slug: "web",
@@ -86,6 +88,7 @@ const TRANSLATIONS: &[TranslationMeta] = &[
                      Version with revisions for contemporary readability. The digital edition \
                      on Scholia is a community-driven project. Corrections and refinements \
                      are welcome.",
+        licence: "Public Domain",
     },
     TranslationMeta {
         slug: "asv",
@@ -98,6 +101,7 @@ const TRANSLATIONS: &[TranslationMeta] = &[
                      for its literal fidelity to the underlying Hebrew and Greek. The \
                      translation is in public domain. The digital edition on Scholia is a \
                      community-driven project. Corrections and refinements are welcome.",
+        licence: "Public Domain",
     },
     TranslationMeta {
         slug: "bbe",
@@ -110,6 +114,7 @@ const TRANSLATIONS: &[TranslationMeta] = &[
                      produce a simplified rendering accessible to non-native readers. The \
                      translation is in public domain. The digital edition on Scholia is a \
                      community-driven project. Corrections and refinements are welcome.",
+        licence: "Public Domain",
     },
     TranslationMeta {
         slug: "darby",
@@ -122,6 +127,7 @@ const TRANSLATIONS: &[TranslationMeta] = &[
                      reproduction of the underlying Hebrew and Greek texts. The translation \
                      is in public domain. The digital edition on Scholia is a community-driven \
                      project. Corrections and refinements are welcome.",
+        licence: "Public Domain",
     },
 ];
 
@@ -602,13 +608,14 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         .collect();
 
     let book_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO books (slug, source_id, language, about_text)
-         VALUES ($1, $2, 'en', $3)
+        "INSERT INTO books (slug, source_id, language, about_text, licence)
+         VALUES ($1, $2, 'en', $3, $4)
          RETURNING id",
     )
     .bind(translation.book_slug)
     .bind(bible_source_id)
     .bind(translation.about_text)
+    .bind(translation.licence)
     .fetch_one(&mut *tx)
     .await?;
 

@@ -27,6 +27,8 @@ domain. The digital edition on Scholia — including its modernized reading text
 Scholia Sodalitas, a community-driven project. The German text layers follow the DTA \
 transcription's CC BY-SA 4.0 terms; Scholia asserts no further rights in them. Corrections and \
 refinements are welcome.";
+pub const LICENCE: &str =
+    "Public Domain. German text layers from the Deutsches Textarchiv (CC BY-SA 4.0).";
 
 pub const PAGE_SYSTEM_SLUG: &str = "orig1807";
 pub const PAGE_SYSTEM_LABEL: &str = "Ausgabe 1807";
@@ -55,3 +57,4 @@ and to the Gesammelte Werke (vol. 9) concordance. The digital edition is prepare
 Sodalitas, a community-driven project. Unlike the German text layers (CC BY-SA 4.0, following \
 the DTA transcription), the translation is Scholia's own work under the regular Scholia assets \
 licence. Corrections and refinements are welcome.";
+pub const LICENCE_EN: &str = "CC BY-NC-ND 4.0";

@@ -5083,11 +5083,15 @@
             "AboutThisTextResponse": {
                 "type": "object",
                 "description": "Resolved bibliographic info for the \"About this text\" panel.\n\nWalks ancestors of the active toc node looking for the deepest\n`toc_nodes.source_id` and falls back to `books.source_id`. For\nBible-shape works this lets the panel show info about the\nconstituent book the reader is in (Genesis, Romans); for plain\nworks (Kant) it always falls back to the hosted book's source.",
-                "required": ["source", "resolved_from"],
+                "required": ["source", "resolved_from", "licence"],
                 "properties": {
                     "about_text": {
                         "type": ["string", "null"],
                         "description": "Editor's note for this hosted edition (free-form plain text).\nMirrors `books.about_text` of the hosted book the reader is in\n(NOT walked across toc ancestors)."
+                    },
+                    "licence": {
+                        "type": "string",
+                        "description": "Rights summary for this hosted edition — `books.licence`, a short\nstandout label (\"Public Domain\", \"CC BY-NC-ND 4.0\"). Like\n`about_text`, taken from the hosted book, not walked across toc\nancestors."
                     },
                     "resolved_from": {
                         "type": "string",
