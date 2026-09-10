@@ -41,7 +41,7 @@ export default defineConfig({
         },
         hooks: {
             afterAllFilesWrite:
-                "pnpx biome check --write --config-path=./biome.json ./src/api",
+                "pnpm exec biome check --write --config-path=./biome.json ./src/api",
         },
     },
 });

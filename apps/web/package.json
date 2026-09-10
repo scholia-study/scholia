@@ -17,7 +17,7 @@
         "check": "biome check",
         "check:modules": "node scripts/check-module-imports.mjs",
         "generate-api": "orval",
-        "codegen": "orval && pnpx @biomejs/biome check --write ./src/api"
+        "codegen": "orval && pnpm exec biome check --write ./src/api"
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
