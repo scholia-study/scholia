@@ -41,7 +41,7 @@ See ADR 0006.
   ─────────────────────────────────────────────────────────────────────────
   md_prose_to_struct    --corpus kant1|kant3|      annotated prose: footnotes,
                           hegel1|hegel2|hegel3|     margin notes, figures, dual
-                          hobbes1|peirce1           page systems. --translation
+                          hobbes1|peirce1|plato1    page systems. --translation
                           [--translation|--single]  = 1:1 locked edition;
                                                     --single = one curated
                                                     layer, no orthography pair
@@ -78,8 +78,8 @@ See ADR 0006.
   ─────────────────────────────────────────────────────────────────────────
   common                sentence splitters (de/en/structural) · per-corpus
                         data modules (kant1, kant3, hegel1..3, hobbes1,
-                        peirce1, shakespeare1, milton1, ibsen1) · textmatch ·
-                        epub tooling
+                        peirce1, plato1, shakespeare1, milton1, ibsen1) ·
+                        textmatch · epub tooling
   reconcile             align / deps / hash / keys / orchestrate — the
                         in-place re-import toolkit (struct_to_db + bible_to_db)
   dataduct              pg connect options · cache purge · system user
@@ -100,7 +100,7 @@ flowchart TB
 
     subgraph parsers ["genre parsers (corpus = config)"]
         direction LR
-        prose["md_prose_to_struct<br/>--corpus kant1|kant3|hegel1|hegel2|hegel3|hobbes1|peirce1"]
+        prose["md_prose_to_struct<br/>--corpus kant1|kant3|hegel1|hegel2|hegel3|hobbes1|peirce1|plato1"]
         poetry["md_poetry_to_struct<br/>--corpus shakespeare1|milton1"]
         drama["md_drama_to_struct<br/>--corpus ibsen1"]
     end
