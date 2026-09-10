@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingest-shakespeare1-8f5b6f487162
+  name: ingest-shakespeare1-541dc22088e3
   labels:
     ingest: shakespeare1
   annotations:
@@ -31,7 +31,7 @@ spec:
             - name: CORPUS
               value: shakespeare1
             - name: DERIVED_HASH
-              value: "8f5b6f487162"
+              value: "541dc22088e3"
             - name: NTFY_URL
               valueFrom:
                 secretKeyRef:
