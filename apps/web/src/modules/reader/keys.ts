@@ -31,6 +31,14 @@ export function parseRangeKey(key: string): [number, number] | null {
     return [start, end];
 }
 
+/** The `data-sentence-key` a deep link should scroll to. Every sentence
+ *  carries its own key, so a range key ("345-348") matches no element —
+ *  the range's first sentence is what the reader should land on. */
+export function deepLinkScrollKey(key: string): string {
+    const range = parseRangeKey(key);
+    return range ? String(range[0]) : key;
+}
+
 /** Check if a sentence matches a URL key (`fig{N}`, sentence_number, ID, or range like "12-21"). */
 export function sentenceMatchesKey(
     s: SentenceResponse,

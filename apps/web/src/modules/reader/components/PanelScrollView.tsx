@@ -15,6 +15,7 @@ import {
 } from "react";
 import type { NodeDetail, SentenceResponse } from "../../../api/model";
 import { getNodePage } from "../../../api/nodes/nodes";
+import { deepLinkScrollKey, parseRangeKey } from "../keys";
 import { getNodePageSuspenseQueryOptions } from "../nodePageQuery";
 import type { MarginSettings } from "./BlockRenderer";
 import { Block, MARGIN_NOTES_SLUG } from "./BlockRenderer";
@@ -274,23 +275,29 @@ export const PanelScrollView = forwardRef<
         if (pendingScrollTarget) return;
         if (!pendingSentenceScroll.current) return;
         const key = pendingSentenceScroll.current;
+        const range = parseRangeKey(key);
         const el = document.querySelector(
-            `[data-sentence-key="${CSS.escape(key)}"]`,
+            `[data-sentence-key="${CSS.escape(deepLinkScrollKey(key))}"]`,
         );
         if (!el) return;
         pendingSentenceScroll.current = null;
-        for (const node of nodes) {
-            for (const block of node.blocks) {
-                for (const sentence of block.sentences) {
-                    if (
-                        sentence.id === key ||
-                        (sentence.sentence_number != null &&
-                            String(sentence.sentence_number) === key) ||
-                        (sentence.figure_number != null &&
-                            `fig${sentence.figure_number}` === key)
-                    ) {
-                        onSelectSentence(sentence, false);
-                        break;
+        // Only an unambiguous single-sentence link seeds the anchor. A range
+        // is already highlighted off the URL key, and re-selecting its first
+        // sentence here would emit an anchor-mode key and collapse it.
+        if (!range) {
+            for (const node of nodes) {
+                for (const block of node.blocks) {
+                    for (const sentence of block.sentences) {
+                        if (
+                            sentence.id === key ||
+                            (sentence.sentence_number != null &&
+                                String(sentence.sentence_number) === key) ||
+                            (sentence.figure_number != null &&
+                                `fig${sentence.figure_number}` === key)
+                        ) {
+                            onSelectSentence(sentence, false);
+                            break;
+                        }
                     }
                 }
             }
