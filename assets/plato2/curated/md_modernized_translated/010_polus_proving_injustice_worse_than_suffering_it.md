@@ -181,7 +181,7 @@ And surely fine things in the realm of laws and practices are no exception eithe
 
 @ Polus
 
-{{{ 475a }}} No, I don't think so.
+{{{ 475a }}} No, they aren't.
 
 @ Socrates
 

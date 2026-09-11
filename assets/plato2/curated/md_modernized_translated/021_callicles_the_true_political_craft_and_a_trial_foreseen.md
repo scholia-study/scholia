@@ -33,7 +33,7 @@ Then why would you talk about those men who claim to lead the city and take care
 
 @ Socrates
 
-And surely, then, giving that benefit for free, as one would expect, was possible only for these men, if they were telling the truth. For with any other benefit, someone who's received it — say, made fast by a trainer — might perhaps cheat him of his due gratitude, if the trainer let him go without first striking a bargain for pay and taking the {{{ 520d }}} money at the very moment he passed on the speed — since it's not slowness, I imagine, that makes men do wrong, but injustice — isn't that so?
+And surely, then, giving that benefit for free, as one would expect, was possible only for these men, if they were telling the truth. For with any other benefit, someone who's received it — say, made swift by a trainer — might perhaps cheat him of his due gratitude, if the trainer let him go without first striking a bargain for pay and taking the {{{ 520d }}} money at the very moment he passed on the speed — since it's not slowness, I imagine, that makes men do wrong, but injustice — isn't that so?
 
 @ Callicles
 

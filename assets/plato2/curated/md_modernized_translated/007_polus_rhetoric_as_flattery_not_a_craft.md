@@ -9,7 +9,7 @@ page_stephanus: "461b"
 
 @ Polus
 
-What's this, Socrates? Do you actually believe about rhetoric what you're saying just now? Or do you think — because Gorgias was ashamed not to agree with you that the rhetorical man also knows what is just and fine and good, and that if someone came to him without knowing these things he would teach him himself, and then perhaps some contradiction turned up in the discussion {{{ 461c }}} out of that admission — this very thing ⟨which⟩ you're so pleased with, having led him into such questions yourself, since who do you think would deny knowing justice himself and being able to teach it to others? But it's real boorishness to drag arguments into that kind of place.
+What's this, Socrates? Do you actually believe about rhetoric what you're saying just now? Or do you think — because Gorgias was ashamed not to agree with you that the orator also knows what is just and fine and good, and that if someone came to him without knowing these things he would teach him himself, and then perhaps some contradiction turned up in the discussion {{{ 461c }}} out of that admission — this very thing ⟨which⟩ you're so pleased with, having led him into such questions yourself, since who do you think would deny knowing justice himself and being able to teach it to others? But it's real boorishness to drag arguments into that kind of place.
 
 @ Socrates
 

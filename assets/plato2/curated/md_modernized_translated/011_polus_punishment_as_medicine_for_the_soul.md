@@ -57,7 +57,7 @@ How could it not?
 
 @ Socrates
 
-And if it burns hard or painfully, must the thing burned be burned just as the burner burns it?
+And if someone burns it intensely or painfully, must the thing burned be burned just as the burner burns it?
 
 @ Polus
 
@@ -433,7 +433,7 @@ Yes, it was.
 
 @ Socrates
 
-Because it chastens them, and makes them more just, and justice becomes a kind of medicine for badness.
+Because it chastens them, and makes them more just, and judicial correction becomes a kind of medicine for badness.
 
 @ Polus
 

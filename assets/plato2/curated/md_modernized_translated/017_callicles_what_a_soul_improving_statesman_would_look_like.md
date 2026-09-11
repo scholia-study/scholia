@@ -133,7 +133,7 @@ What about this? Among the men of old, can you name one on whose account the Ath
 
 @ Callicles
 
-{{{ 503c }}} What about this? Haven't you heard that Themistocles became a good man, and Cimon, and Miltiades, and this Pericles here who died recently, whom you yourself have heard speak?
+{{{ 503c }}} What about this? Haven't you heard that Themistocles was a good man, and Cimon, and Miltiades, and this Pericles here who died recently, whom you yourself have heard speak?
 
 @ Socrates
 
@@ -209,7 +209,7 @@ It is.
 
 @ Socrates
 
-{{{ 504d }}} And for the soul's arrangements and orderings, the name is "lawful" and "law" — the source from which people become law-abiding and orderly; and these are justice and moderation. Do you say so, or not?
+{{{ 504d }}} And for the soul's arrangements and orderings, the names are "lawful order" and "law" — the source from which people become law-abiding and orderly; and these are justice and moderation. Do you say so, or not?
 
 @ Callicles
 

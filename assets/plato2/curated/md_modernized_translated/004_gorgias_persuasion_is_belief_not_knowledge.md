@@ -57,7 +57,7 @@ Come now, tell me about rhetoric too: do you think persuasion is produced by rhe
 
 @ Gorgias
 
-Not that, Socrates — but it certainly does persuade, more than anything.
+Certainly it does, Socrates — more than anything.
 
 @ Socrates
 
@@ -205,7 +205,7 @@ Yes.
 
 @ Socrates
 
-So the orator isn't a teacher of courtrooms and the other crowds about what's just and unjust, only a producer of belief — since surely he couldn't teach a crowd that large such important matters in so short a time.
+So the orator isn't a teacher of juries and the other crowds about what's just and unjust, only a producer of belief — since surely he couldn't teach a crowd that large such important matters in so short a time.
 
 @ Gorgias
 
@@ -213,7 +213,7 @@ Not at all.
 
 @ Socrates
 
-Come, then, let's look at what we're actually saying about {{{ 455b }}} rhetoric — I myself still can't quite work out what I mean by it. When the city holds an assembly to choose doctors, or shipbuilders, or some other body of craftsmen, surely the rhetorical man won't be the one giving advice then? For clearly, in each such choice, it's the most skilled person who ought to be chosen. Nor when it's a matter of building walls, or constructing harbours or dockyards — there it's the engineers; nor again when the advice concerns choosing generals, or how to deploy against an enemy, or {{{ 455c }}} seizing ground — there it's the generals who will give the advice, and not the rhetoricians; or how do you account for such cases, Gorgias? Since you say yourself that you're an orator and that you make other men into orators, it's only right to find out the facts of your craft from you. And believe that right now I'm working for your interest as well as my own; because it may well be that one of the people here wants to become your student — I sense quite a few of them do, in fact — and they might well be too embarrassed to question you themselves. So when I question you, {{{ 455d }}} take it that they're questioning you too — Gorgias, what will we get out of it, if we study with you? On what matters will we be able to advise the city? Only about the just and the unjust, or about the other things Socrates just mentioned too? Try, then, to answer for their sake.
+Come, then, let's look at what we're actually saying about {{{ 455b }}} rhetoric — I myself still can't quite work out what I mean by it. When the city holds an assembly to choose doctors, or shipbuilders, or some other body of craftsmen, surely the orator won't be the one giving advice then? For clearly, in each such choice, it's the most skilled person who ought to be chosen. Nor when it's a matter of building walls, or constructing harbours or dockyards — there it's the engineers; nor again when the advice concerns choosing generals, or how to deploy against an enemy, or {{{ 455c }}} seizing ground — there it's the generals who will give the advice, and not the orators; or how do you account for such cases, Gorgias? Since you say yourself that you're an orator and that you make other men into orators, it's only right to find out the facts of your craft from you. And believe that right now I'm working for your interest as well as my own; because it may well be that one of the people here wants to become your student — I sense quite a few of them do, in fact — and they might well be too embarrassed to question you themselves. So when I question you, {{{ 455d }}} take it that they're questioning you too — Gorgias, what will we get out of it, if we study with you? On what matters will we be able to advise the city? Only about the just and the unjust, or about the other things Socrates just mentioned too? Try, then, to answer for their sake.
 
 @ Gorgias
 

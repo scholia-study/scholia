@@ -13,7 +13,7 @@ page_stephanus: "497c"
 
 @ Socrates
 
-You're a lucky man, Callicles, to have been initiated into the great mysteries before the small ones — I didn't think that was allowed. So answer from where you left off: doesn't each of us stop being thirsty and feeling pleasure at the same time?
+You're a happy man, Callicles, to have been initiated into the great mysteries before the small ones — I didn't think that was allowed. So answer from where you left off: doesn't each of us stop being thirsty and feeling pleasure at the same time?
 
 @ Callicles
 
