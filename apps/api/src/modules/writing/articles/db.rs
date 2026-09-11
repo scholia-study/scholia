@@ -2045,6 +2045,9 @@ struct SentenceRow {
     sentence_number: Option<i32>,
     html: String,
     original_html: Option<String>,
+    speech_id: Option<Uuid>,
+    speaker_html: Option<String>,
+    speaker_original_html: Option<String>,
 }
 
 /// The sentence span a batch request addresses. Numbers and ids are two ways
@@ -2175,12 +2178,28 @@ pub async fn batch_get_sentences(
             SentenceRow,
             r#"SELECT s.sentence_number AS "sentence_number?",
                       s.html AS "html!",
-                      COALESCE(s.original_html, src.html) AS original_html
+                      COALESCE(s.original_html, src.html) AS original_html,
+                      spk.speech_id AS "speech_id?",
+                      spk.speaker_html AS "speaker_html?",
+                      spk.speaker_original_html AS "speaker_original_html?"
                FROM sentences s
                JOIN books b ON b.id = s.book_id
                JOIN content_blocks cb ON cb.id = s.block_id
                JOIN toc_nodes tn ON tn.id = s.node_id
                LEFT JOIN sentences src ON src.id = s.source_sentence_start_id
+               LEFT JOIN LATERAL (
+                   SELECT sb.id AS speech_id, sb.block_type,
+                          ss.html AS speaker_html,
+                          COALESCE(ss.original_html, ssrc.html) AS speaker_original_html
+                   FROM content_blocks sb
+                   JOIN sentences ss ON ss.block_id = sb.id AND ss.position = 0
+                   LEFT JOIN sentences ssrc ON ssrc.id = ss.source_sentence_start_id
+                   WHERE sb.node_id = cb.node_id
+                     AND sb.position <= cb.position
+                     AND sb.block_type IN ('speaker', 'heading')
+                   ORDER BY sb.position DESC
+                   LIMIT 1
+               ) spk ON spk.block_type = 'speaker'
                WHERE b.slug = $1
                  AND (tn.sort_order, cb.position::INT4, s.position::INT4)
                      >= ($2::INT4, $3::INT4, $4::INT4)
@@ -2231,14 +2250,30 @@ pub async fn batch_get_sentences(
             SentenceRow,
             r#"SELECT s.sentence_number AS "sentence_number?",
                       s.html AS "html!",
-                      COALESCE(s.original_html, src.html) AS original_html
+                      COALESCE(s.original_html, src.html) AS original_html,
+                      spk.speech_id AS "speech_id?",
+                      spk.speaker_html AS "speaker_html?",
+                      spk.speaker_original_html AS "speaker_original_html?"
                FROM sentences s
                JOIN books b ON b.id = s.book_id
+               JOIN content_blocks cb ON cb.id = s.block_id
                LEFT JOIN sentences src ON src.id = s.source_sentence_start_id
+               LEFT JOIN LATERAL (
+                   SELECT sb.id AS speech_id, sb.block_type,
+                          ss.html AS speaker_html,
+                          COALESCE(ss.original_html, ssrc.html) AS speaker_original_html
+                   FROM content_blocks sb
+                   JOIN sentences ss ON ss.block_id = sb.id AND ss.position = 0
+                   LEFT JOIN sentences ssrc ON ssrc.id = ss.source_sentence_start_id
+                   WHERE sb.node_id = cb.node_id
+                     AND sb.position <= cb.position
+                     AND sb.block_type IN ('speaker', 'heading')
+                   ORDER BY sb.position DESC
+                   LIMIT 1
+               ) spk ON spk.block_type = 'speaker'
                WHERE b.slug = $1
                  AND s.sentence_number >= $2
                  AND s.sentence_number <= $3
-                 AND s.block_id IS NOT NULL
                ORDER BY s.sentence_number"#,
             book_slug,
             start_number,
@@ -2254,7 +2289,10 @@ pub async fn batch_get_sentences(
             SentenceRow,
             r#"SELECT s.sentence_number AS "sentence_number?",
                       s.html AS "html!",
-                      COALESCE(s.original_html, src.html) AS original_html
+                      COALESCE(s.original_html, src.html) AS original_html,
+                      NULL::UUID AS "speech_id?",
+                      NULL::TEXT AS "speaker_html?",
+                      NULL::TEXT AS "speaker_original_html?"
                FROM sentences s
                JOIN books b ON b.id = s.book_id
                LEFT JOIN sentences src ON src.id = s.source_sentence_start_id
@@ -2471,6 +2509,9 @@ pub async fn batch_get_sentences(
                 sentence_number: r.sentence_number.unwrap_or(0),
                 html: r.html,
                 original_html: r.original_html,
+                speech_id: r.speech_id.map(|id| id.to_string()),
+                speaker_html: r.speaker_html,
+                speaker_original_html: r.speaker_original_html,
             })
             .collect(),
     })

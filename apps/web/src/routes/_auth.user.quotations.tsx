@@ -215,6 +215,14 @@ function QuotationsPage() {
     );
 }
 
+/** Drama attribution: which character speaks the quoted line. Verbatim, so
+ *  it keeps any stage parenthetical the curated speaker line carries — and
+ *  stays un-uppercased, since that parenthetical is prose. */
+function Speaker({ name }: { name?: string | null }) {
+    if (!name) return null;
+    return <span className="font-semibold text-stone-500">{name} </span>;
+}
+
 function BookQuotationRow({
     q,
     requestUnsave,
@@ -262,11 +270,13 @@ function BookQuotationRow({
                 </div>
                 {q.start_text_snippet && (
                     <p className="text-sm text-stone-700 truncate">
+                        <Speaker name={q.start_speaker} />
                         &ldquo;{q.start_text_snippet}&rdquo;
                         {q.end_text_snippet && (
                             <span className="text-stone-400">
                                 {" "}
-                                &hellip; &ldquo;{q.end_text_snippet}&rdquo;
+                                &hellip; <Speaker name={q.end_speaker} />
+                                &ldquo;{q.end_text_snippet}&rdquo;
                             </span>
                         )}
                     </p>

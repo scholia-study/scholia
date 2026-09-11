@@ -2,9 +2,76 @@ import { Paper, Skeleton } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import parse from "html-react-parser";
-import type { SentenceKind } from "../../api/model";
+import { Fragment } from "react";
+import type { SentenceData, SentenceKind } from "../../api/model";
 import { batchSentences } from "../../api/sentences/sentences";
 import { formatPassageCitation } from "./citation";
+
+/** A run of consecutive quoted sentences belonging to one drama speech.
+ *  Outside drama every sentence carries a null `speech_id`, so the whole
+ *  passage collapses into a single unlabelled run. */
+interface SpeechRun {
+    key: string;
+    speakerHtml: string | null;
+    html: string;
+}
+
+function speechRuns(
+    sentences: SentenceData[],
+    layer: "translation" | "source",
+): SpeechRun[] {
+    const runs: SpeechRun[] = [];
+    let lastSpeechId: string | null = null;
+    for (const s of sentences) {
+        const html = layer === "source" ? s.original_html : s.html;
+        if (!html) continue;
+        const speechId = s.speech_id ?? null;
+        const previous = runs.at(-1);
+        if (previous && speechId === lastSpeechId) {
+            previous.html += ` ${html}`;
+            continue;
+        }
+        lastSpeechId = speechId;
+        runs.push({
+            key: speechId ?? `run-${runs.length}`,
+            speakerHtml:
+                (layer === "source"
+                    ? (s.speaker_original_html ?? s.speaker_html)
+                    : s.speaker_html) ?? null,
+            html,
+        });
+    }
+    return runs;
+}
+
+/** The quoted passage for one layer: a figure's verbatim markup, or the
+ *  speech runs with the curated speaker line heading each one — so a range
+ *  crossing several speeches reads as a play excerpt, not run-on prose. */
+function PassageBody({
+    figureHtml,
+    runs,
+}: {
+    figureHtml?: string | null;
+    runs: SpeechRun[];
+}) {
+    if (figureHtml) return <>{parse(figureHtml)}</>;
+    return (
+        <>
+            {runs.map((run, i) =>
+                run.speakerHtml ? (
+                    <div key={run.key} className={i > 0 ? "mt-3" : ""}>
+                        <p className="mb-0.5 font-bold uppercase tracking-wide text-stone-500 leading-snug [&_i]:font-normal [&_i]:normal-case">
+                            {parse(run.speakerHtml)}
+                        </p>
+                        {parse(run.html)}
+                    </div>
+                ) : (
+                    <Fragment key={run.key}>{parse(run.html)}</Fragment>
+                ),
+            )}
+        </>
+    );
+}
 
 // Quotation text renders in the serif reading face regardless of the
 // surrounding article typography. Polytonic Greek has no coverage in
@@ -114,15 +181,10 @@ export function QuotationCard({
     const figureClasses = item.figure_html
         ? " not-prose whitespace-normal [&_figure]:relative [&_figure]:pb-8 [&_figcaption]:absolute [&_figcaption]:right-2 [&_figcaption]:bottom-0 [&_figcaption]:text-right [&_figcaption]:text-sm [&_figcaption]:text-stone-400 [&_ul]:list-none [&_ul]:m-0 [&_ul]:p-0 [&_li]:m-0 [&_li]:p-0"
         : "";
-    const translationHtml =
-        item.figure_html ?? item.sentences.map((s) => s.html).join(" ");
-    const sourceHtml =
-        item.figure_original_html ??
-        (item.sentences
-            .map((s) => s.original_html)
-            .filter(Boolean)
-            .join(" ") ||
-            null);
+    const translationRuns = speechRuns(item.sentences, "translation");
+    const sourceRuns = speechRuns(item.sentences, "source");
+    const hasSource =
+        item.figure_original_html != null || sourceRuns.length > 0;
 
     // Reader deep-link key: figures use `fig{N}`, sid-addressed anchors
     // fall back to the sentence UUID (the reader matches ids too), and
@@ -210,7 +272,7 @@ export function QuotationCard({
         >
             {mode === "source+translation" &&
             layout !== "stacked" &&
-            sourceHtml ? (
+            hasSource ? (
                 <div
                     className="grid grid-cols-2 gap-4"
                     style={{
@@ -228,7 +290,10 @@ export function QuotationCard({
                                 fontFamily: fontFor(srcBook.language),
                             }}
                         >
-                            {parse(sourceHtml)}
+                            <PassageBody
+                                figureHtml={item.figure_original_html}
+                                runs={sourceRuns}
+                            />
                         </div>
                         <div className="mt-auto">{sourceAttribution}</div>
                     </div>
@@ -240,14 +305,17 @@ export function QuotationCard({
                                 fontFamily: fontFor(item.language),
                             }}
                         >
-                            {parse(translationHtml)}
+                            <PassageBody
+                                figureHtml={item.figure_html}
+                                runs={translationRuns}
+                            />
                         </div>
                         <div className="mt-auto">{translationAttribution}</div>
                     </div>
                 </div>
             ) : (
                 <div>
-                    {showSource && sourceHtml && (
+                    {showSource && hasSource && (
                         <>
                             <div
                                 lang={srcBook.language}
@@ -260,14 +328,17 @@ export function QuotationCard({
                                     fontFamily: fontFor(srcBook.language),
                                 }}
                             >
-                                {parse(sourceHtml)}
+                                <PassageBody
+                                    figureHtml={item.figure_original_html}
+                                    runs={sourceRuns}
+                                />
                             </div>
                             {sourceAttribution}
                         </>
                     )}
                     {showTranslation &&
                         mode === "source+translation" &&
-                        sourceHtml && <hr className="my-2 border-stone-200" />}
+                        hasSource && <hr className="my-2 border-stone-200" />}
                     {showTranslation && (
                         <>
                             <div
@@ -277,7 +348,10 @@ export function QuotationCard({
                                     fontFamily: fontFor(item.language),
                                 }}
                             >
-                                {parse(translationHtml)}
+                                <PassageBody
+                                    figureHtml={item.figure_html}
+                                    runs={translationRuns}
+                                />
                             </div>
                             {translationAttribution}
                         </>

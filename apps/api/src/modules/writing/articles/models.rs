@@ -215,6 +215,22 @@ pub struct SentenceData {
     pub html: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub original_html: Option<String>,
+    /// Id of the `speaker` block owning the speech this sentence belongs
+    /// to, in a drama node. Consecutive sentences sharing it are one
+    /// speech, so a quoted range crossing several speeches renders with a
+    /// speaker label at each boundary. `None` outside drama, and for a
+    /// stage direction standing before the node's first speaker.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speech_id: Option<String>,
+    /// The speech's curated speaker line, verbatim — the character name
+    /// plus any italic stage parenthetical, exactly as the reader shows it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speaker_html: Option<String>,
+    /// The same line in the source layer, resolved like `original_html`:
+    /// the book's own reviewed layer, else the linked source book's
+    /// speaker (an English translation resolves the Norwegian name).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speaker_original_html: Option<String>,
 }
 
 /// One system's contribution to a quotation's citation, resolved over the cited

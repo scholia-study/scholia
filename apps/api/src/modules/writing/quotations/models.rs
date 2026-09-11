@@ -151,6 +151,15 @@ pub struct QuotationWithContextResponse {
     pub start_text_snippet: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub end_text_snippet: Option<String>,
+    /// Drama only: the curated speaker line of the speech the start anchor
+    /// falls in, verbatim. Lets a quotation list attribute a line that is
+    /// meaningless out of its speech.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub start_speaker: Option<String>,
+    /// The end anchor's speaker, present only when the range crosses into a
+    /// different speech — so a within-speech range attributes once.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub end_speaker: Option<String>,
     /// `true` when the cited book is a translation AND the original work
     /// is also a hosted text (i.e. there's a `books` row for the
     /// `translation_of_id` source). Used by the quotation embed picker

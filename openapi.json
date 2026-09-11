@@ -7967,6 +7967,10 @@
                     "created_at": {
                         "type": "string"
                     },
+                    "end_speaker": {
+                        "type": ["string", "null"],
+                        "description": "The end anchor's speaker, present only when the range crosses into a\ndifferent speech — so a within-speech range attributes once."
+                    },
                     "end_text_snippet": {
                         "type": ["string", "null"]
                     },
@@ -7993,6 +7997,10 @@
                     },
                     "sentence_kind": {
                         "$ref": "#/components/schemas/SentenceKind"
+                    },
+                    "start_speaker": {
+                        "type": ["string", "null"],
+                        "description": "Drama only: the curated speaker line of the speech the start anchor\nfalls in, verbatim. Lets a quotation list attribute a line that is\nmeaningless out of its speech."
                     },
                     "start_text_snippet": {
                         "type": ["string", "null"]
@@ -8533,6 +8541,18 @@
                     "sentence_number": {
                         "type": "integer",
                         "format": "int32"
+                    },
+                    "speaker_html": {
+                        "type": ["string", "null"],
+                        "description": "The speech's curated speaker line, verbatim — the character name\nplus any italic stage parenthetical, exactly as the reader shows it."
+                    },
+                    "speaker_original_html": {
+                        "type": ["string", "null"],
+                        "description": "The same line in the source layer, resolved like `original_html`:\nthe book's own reviewed layer, else the linked source book's\nspeaker (an English translation resolves the Norwegian name)."
+                    },
+                    "speech_id": {
+                        "type": ["string", "null"],
+                        "description": "Id of the `speaker` block owning the speech this sentence belongs\nto, in a drama node. Consecutive sentences sharing it are one\nspeech, so a quoted range crossing several speeches renders with a\nspeaker label at each boundary. `None` outside drama, and for a\nstage direction standing before the node's first speaker."
                     }
                 }
             },
@@ -9241,6 +9261,10 @@
                             "created_at": {
                                 "type": "string"
                             },
+                            "end_speaker": {
+                                "type": ["string", "null"],
+                                "description": "See `QuotationWithContextResponse::end_speaker`."
+                            },
                             "end_text_snippet": {
                                 "type": ["string", "null"]
                             },
@@ -9267,6 +9291,10 @@
                             "source_type": {
                                 "type": "string",
                                 "enum": ["book"]
+                            },
+                            "start_speaker": {
+                                "type": ["string", "null"],
+                                "description": "See `QuotationWithContextResponse::start_speaker`."
                             },
                             "start_text_snippet": {
                                 "type": ["string", "null"]

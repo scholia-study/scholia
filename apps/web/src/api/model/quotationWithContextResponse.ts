@@ -40,6 +40,12 @@ export interface QuotationWithContextResponse {
      */
     book_title: string;
     created_at: string;
+    /**
+     * The end anchor's speaker, present only when the range crosses into a
+     * different speech — so a within-speech range attributes once.
+     * @nullable
+     */
+    end_speaker?: string | null;
     /** @nullable */
     end_text_snippet?: string | null;
     /**
@@ -63,6 +69,13 @@ export interface QuotationWithContextResponse {
      */
     parent_compilation_title?: string | null;
     sentence_kind: SentenceKind;
+    /**
+     * Drama only: the curated speaker line of the speech the start anchor
+     * falls in, verbatim. Lets a quotation list attribute a line that is
+     * meaningless out of its speech.
+     * @nullable
+     */
+    start_speaker?: string | null;
     /** @nullable */
     start_text_snippet?: string | null;
     /**

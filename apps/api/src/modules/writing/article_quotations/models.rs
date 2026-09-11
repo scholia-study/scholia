@@ -101,6 +101,12 @@ pub enum UnifiedQuotationResponse {
         start_text_snippet: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
         end_text_snippet: Option<String>,
+        /// See `QuotationWithContextResponse::start_speaker`.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start_speaker: Option<String>,
+        /// See `QuotationWithContextResponse::end_speaker`.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        end_speaker: Option<String>,
         /// See `QuotationWithContextResponse::has_source_view`.
         has_source_view: bool,
         note_count: i64,

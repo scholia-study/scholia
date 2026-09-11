@@ -29,6 +29,11 @@ export type UnifiedQuotationResponse =
           book_slug: string;
           book_title: string;
           created_at: string;
+          /**
+           * See `QuotationWithContextResponse::end_speaker`.
+           * @nullable
+           */
+          end_speaker?: string | null;
           /** @nullable */
           end_text_snippet?: string | null;
           /** See `QuotationWithContextResponse::has_source_view`. */
@@ -39,6 +44,11 @@ export type UnifiedQuotationResponse =
           note_count: number;
           sentence_kind: SentenceKind;
           source_type: "book";
+          /**
+           * See `QuotationWithContextResponse::start_speaker`.
+           * @nullable
+           */
+          start_speaker?: string | null;
           /** @nullable */
           start_text_snippet?: string | null;
           /**

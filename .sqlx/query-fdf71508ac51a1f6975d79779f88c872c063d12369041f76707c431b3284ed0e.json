@@ -1,0 +1,43 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT s.sentence_number AS \"sentence_number?\",\n                      s.html AS \"html!\",\n                      COALESCE(s.original_html, src.html) AS original_html,\n                      NULL::UUID AS \"speech_id?\",\n                      NULL::TEXT AS \"speaker_html?\",\n                      NULL::TEXT AS \"speaker_original_html?\"\n               FROM sentences s\n               JOIN books b ON b.id = s.book_id\n               LEFT JOIN sentences src ON src.id = s.source_sentence_start_id\n               WHERE b.slug = $1\n                 AND s.sentence_number >= $2\n                 AND s.sentence_number <= $3\n                 AND s.footnote_id IS NOT NULL\n               ORDER BY s.sentence_number",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "sentence_number?",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 1,
+                "name": "html!",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "original_html",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "speech_id?",
+                "type_info": "Uuid"
+            },
+            {
+                "ordinal": 4,
+                "name": "speaker_html?",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "speaker_original_html?",
+                "type_info": "Text"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text", "Int4", "Int4"]
+        },
+        "nullable": [true, false, null, null, null, null]
+    },
+    "hash": "fdf71508ac51a1f6975d79779f88c872c063d12369041f76707c431b3284ed0e"
+}

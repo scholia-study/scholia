@@ -764,6 +764,8 @@ struct QuotationWithContextRow {
     main_number: Option<i32>,
     start_text: Option<String>,
     end_text: Option<String>,
+    start_speaker: Option<String>,
+    end_speaker: Option<String>,
     has_source_view: Option<bool>,
     note_count: Option<i64>,
     created_at: time::OffsetDateTime,
@@ -801,6 +803,8 @@ pub async fn list_all_quotations(
                   ms.sentence_number AS "main_number?",
                   ss.text AS "start_text?",
                   se.text AS "end_text?",
+                  spk_s.speaker_text AS "start_speaker?",
+                  spk_e.speaker_text AS "end_speaker?",
                   -- True iff this book is a translation AND the original
                   -- work is itself a hosted text (has a `books` row).
                   -- Bible translations point at the canonical "The Bible"
@@ -825,12 +829,36 @@ pub async fn list_all_quotations(
            JOIN sentences ss ON ss.id = q.anchor_sentence_start_id
            LEFT JOIN content_blocks cbs ON cbs.id = ss.block_id
            LEFT JOIN sentences se ON se.id = q.anchor_sentence_end_id
+           LEFT JOIN content_blocks cbe ON cbe.id = se.block_id
+           -- Drama attribution: the speech each anchor falls in, i.e. the
+           -- nearest `speaker` block at-or-before the anchor's own block in
+           -- the node, unless a `heading` stands closer. NULL outside drama.
+           LEFT JOIN LATERAL (
+               SELECT sb.block_type, sbs.text AS speaker_text
+               FROM content_blocks sb
+               JOIN sentences sbs ON sbs.block_id = sb.id AND sbs.position = 0
+               WHERE sb.node_id = cbs.node_id
+                 AND sb.position <= cbs.position
+                 AND sb.block_type IN ('speaker', 'heading')
+               ORDER BY sb.position DESC
+               LIMIT 1
+           ) spk_s ON spk_s.block_type = 'speaker'
+           LEFT JOIN LATERAL (
+               SELECT sb.block_type, sbs.text AS speaker_text
+               FROM content_blocks sb
+               JOIN sentences sbs ON sbs.block_id = sb.id AND sbs.position = 0
+               WHERE sb.node_id = cbe.node_id
+                 AND sb.position <= cbe.position
+                 AND sb.block_type IN ('speaker', 'heading')
+               ORDER BY sb.position DESC
+               LIMIT 1
+           ) spk_e ON spk_e.block_type = 'speaker'
            LEFT JOIN footnotes fn ON fn.id = ss.footnote_id
            LEFT JOIN sentences ms ON ms.id = fn.anchor_sentence_id
            LEFT JOIN quotation_notes qn ON qn.quotation_id = q.id
            WHERE q.user_id = $1
              AND ($2::TEXT IS NULL OR b.slug = $2)
-           GROUP BY q.id, b.slug, b.language, bs.publisher, bs.translation_of_id, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, cbs.figure_number, cbs.block_type, se.sentence_number, ss.text, se.text, ms.sentence_number
+           GROUP BY q.id, b.slug, b.language, bs.publisher, bs.translation_of_id, s.title_display, s.title, parent.title_display, parent.title, n.label, n.slug, ss.sentence_number, cbs.figure_number, cbs.block_type, se.sentence_number, ss.text, se.text, spk_s.speaker_text, spk_e.speaker_text, ms.sentence_number
            ORDER BY q.created_at DESC"#,
         user_id,
         book_slug,
@@ -843,6 +871,9 @@ pub async fn list_all_quotations(
         .map(|r| {
             let start_snippet = r.start_text.map(|t| truncate_snippet(&t, 80));
             let end_snippet = r.end_text.map(|t| truncate_snippet(&t, 60));
+            let end_speaker = r
+                .end_speaker
+                .filter(|e| Some(e) != r.start_speaker.as_ref());
             QuotationWithContextResponse {
                 id: r.id.to_string(),
                 book_slug: r.book_slug,
@@ -860,6 +891,8 @@ pub async fn list_all_quotations(
                 anchor_main_sentence_number: r.main_number,
                 start_text_snippet: start_snippet,
                 end_text_snippet: end_snippet,
+                start_speaker: r.start_speaker,
+                end_speaker,
                 has_source_view: r.has_source_view.unwrap_or(false),
                 note_count: r.note_count.unwrap_or(0),
                 created_at: fmt_time(r.created_at),

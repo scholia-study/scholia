@@ -10,4 +10,26 @@ export interface SentenceData {
     /** @nullable */
     original_html?: string | null;
     sentence_number: number;
+    /**
+     * The speech's curated speaker line, verbatim — the character name
+     * plus any italic stage parenthetical, exactly as the reader shows it.
+     * @nullable
+     */
+    speaker_html?: string | null;
+    /**
+     * The same line in the source layer, resolved like `original_html`:
+     * the book's own reviewed layer, else the linked source book's
+     * speaker (an English translation resolves the Norwegian name).
+     * @nullable
+     */
+    speaker_original_html?: string | null;
+    /**
+     * Id of the `speaker` block owning the speech this sentence belongs
+     * to, in a drama node. Consecutive sentences sharing it are one
+     * speech, so a quoted range crossing several speeches renders with a
+     * speaker label at each boundary. `None` outside drama, and for a
+     * stage direction standing before the node's first speaker.
+     * @nullable
+     */
+    speech_id?: string | null;
 }

@@ -100,6 +100,8 @@ export function QuotationPickerModal({
                     item.node_label,
                     item.start_text_snippet ?? "",
                     item.end_text_snippet ?? "",
+                    item.start_speaker ?? "",
+                    item.end_speaker ?? "",
                 ]
                     .join(" ")
                     .toLowerCase();
@@ -222,6 +224,7 @@ export function QuotationPickerModal({
                                             : `Sentence ${q.anchor_sentence_start_number}`
                                 }`}
                                 snippet={q.start_text_snippet ?? ""}
+                                speaker={q.start_speaker}
                             />
                         ) : (
                             <QuotationRow
@@ -360,6 +363,8 @@ interface QuotationRowProps {
     badgeColor: string;
     header: string;
     snippet: string;
+    /** Drama attribution — the curated speaker line, verbatim. */
+    speaker?: string | null;
 }
 
 function QuotationRow({
@@ -369,6 +374,7 @@ function QuotationRow({
     badgeColor,
     header,
     snippet,
+    speaker,
 }: QuotationRowProps) {
     return (
         <Paper
@@ -399,6 +405,11 @@ function QuotationRow({
             </div>
             {snippet && (
                 <p className="text-sm text-stone-600 truncate">
+                    {speaker && (
+                        <span className="font-semibold text-stone-500">
+                            {speaker}{" "}
+                        </span>
+                    )}
                     &ldquo;{snippet}&rdquo;
                 </p>
             )}
