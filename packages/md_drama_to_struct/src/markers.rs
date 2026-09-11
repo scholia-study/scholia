@@ -2,13 +2,17 @@
 //! each one's char offset. Mirrors the kant1 approach, narrowed to the single
 //! drama marker form; offset → sentence resolution is the shared
 //! `text_struct::parse::resolve_marker_to_sentence`.
+//!
+//! The value is either a plain printed page (`{{{ 12 }}}`, ibsen1) or a
+//! Stephanus page+section (`{{{ 447a }}}`, plato-family): digits with an
+//! optional single lowercase section letter `a`–`e`.
 
 use std::sync::LazyLock;
 
 use regex::Regex;
 
 static MARKER_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"\{\{\{\s*(\d+)\s*\}\}\}").unwrap());
+    LazyLock::new(|| Regex::new(r"\{\{\{\s*(\d+[a-e]?)\s*\}\}\}").unwrap());
 
 /// A page marker lifted out of the text.
 #[derive(Debug, Clone)]
@@ -68,5 +72,20 @@ mod tests {
         assert_eq!(markers.len(), 1);
         assert_eq!(markers[0].value, "23");
         assert_eq!(markers[0].char_offset, 11); // "sought you " = 11 chars
+    }
+
+    #[test]
+    fn strips_stephanus_marker_with_section_letter() {
+        let (text, markers) = strip_markers("{{{ 447a }}} Socrates: What do you mean?");
+        assert_eq!(text, "Socrates: What do you mean?");
+        assert_eq!(markers.len(), 1);
+        assert_eq!(markers[0].value, "447a");
+    }
+
+    #[test]
+    fn strips_stephanus_marker_without_section_letter() {
+        let (_, markers) = strip_markers("{{{ 448 }}} Callicles: I mean this.");
+        assert_eq!(markers.len(), 1);
+        assert_eq!(markers[0].value, "448");
     }
 }

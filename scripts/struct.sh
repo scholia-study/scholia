@@ -59,6 +59,14 @@ case "$corpus" in
         cargo run -p md_prose_to_struct -- --corpus "$corpus"
         cargo run -p md_prose_to_struct -- --corpus "$corpus" --translation
         ;;
+    plato2)
+        # The Gorgias is staged dialogue, so it goes through the drama parser
+        # while plato1's narrated Republic goes through the prose one. Same
+        # shape otherwise: single-layer Greek source plus a parity-locked
+        # English translation.
+        cargo run -p md_drama_to_struct -- --corpus "$corpus"
+        cargo run -p md_drama_to_struct -- --corpus "$corpus" --translation
+        ;;
     *)
         # Unreachable: membership in SCHOLIA_CORPORA is checked above. Hitting
         # this means the array and the case arms drifted apart.

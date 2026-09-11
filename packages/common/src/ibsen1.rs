@@ -17,6 +17,8 @@
 //! slug, ltree path, depth, parent, filename, position).
 
 /// The Norwegian (modernized-Bokmål) source edition.
+use crate::drama::Node;
+
 pub const BOOK_SLUG: &str = "keiser-og-galileer";
 pub const BOOK_TITLE: &str = "Keiser og Galileer";
 pub const AUTHOR: &str = "Henrik Ibsen";
@@ -74,147 +76,135 @@ Gyldendalske Boghandel (F. Hegel), København. The digital edition on Scholia is
 community-driven project; corrections are welcome.";
 pub const LICENCE: &str = "Public Domain (source text); CC BY-NC-ND 4.0 (modernized reading text)";
 
-/// One reading node — its structure only; the display label comes from the
-/// file's front matter at parse time.
-pub struct DramaNode {
-    pub source_ref: &'static str,
-    pub slug: &'static str,
-    pub path: &'static str,
-    pub depth: i16,
-    pub parent_source_ref: Option<&'static str>,
-    pub filename: &'static str,
-    pub position: u32,
-}
-
 /// The part title-pages (depth 0), each parenting a cast list + acts
 /// (depth 1). The canonical file set the parser validates the two curated
 /// layers against — a missing, extra, or misnamed file is an error.
-pub fn nodes() -> Vec<DramaNode> {
+pub fn nodes() -> Vec<Node> {
     vec![
-        DramaNode {
-            source_ref: "cf",
-            slug: "caesars-frafall",
-            path: "caesars-frafall",
+        Node {
+            source_ref: "cf".into(),
+            slug: "caesars-frafall".into(),
+            path: "caesars-frafall".into(),
             depth: 0,
             parent_source_ref: None,
-            filename: "001_cf_titelblad.md",
+            filename: "001_cf_titelblad.md".into(),
             position: 1,
         },
-        DramaNode {
-            source_ref: "cf-de-opptredende",
-            slug: "de-opptredende",
-            path: "caesars-frafall.de-opptredende",
+        Node {
+            source_ref: "cf-de-opptredende".into(),
+            slug: "de-opptredende".into(),
+            path: "caesars-frafall.de-opptredende".into(),
             depth: 1,
-            parent_source_ref: Some("cf"),
-            filename: "002_cf_de_optraedende.md",
+            parent_source_ref: Some("cf".into()),
+            filename: "002_cf_de_optraedende.md".into(),
             position: 2,
         },
-        DramaNode {
-            source_ref: "cf-foerste-handling",
-            slug: "foerste-handling",
-            path: "caesars-frafall.foerste-handling",
+        Node {
+            source_ref: "cf-foerste-handling".into(),
+            slug: "foerste-handling".into(),
+            path: "caesars-frafall.foerste-handling".into(),
             depth: 1,
-            parent_source_ref: Some("cf"),
-            filename: "003_cf_foerste_handling.md",
+            parent_source_ref: Some("cf".into()),
+            filename: "003_cf_foerste_handling.md".into(),
             position: 3,
         },
-        DramaNode {
-            source_ref: "cf-annen-handling",
-            slug: "annen-handling",
-            path: "caesars-frafall.annen-handling",
+        Node {
+            source_ref: "cf-annen-handling".into(),
+            slug: "annen-handling".into(),
+            path: "caesars-frafall.annen-handling".into(),
             depth: 1,
-            parent_source_ref: Some("cf"),
-            filename: "004_cf_anden_handling.md",
+            parent_source_ref: Some("cf".into()),
+            filename: "004_cf_anden_handling.md".into(),
             position: 4,
         },
-        DramaNode {
-            source_ref: "cf-tredje-handling",
-            slug: "tredje-handling",
-            path: "caesars-frafall.tredje-handling",
+        Node {
+            source_ref: "cf-tredje-handling".into(),
+            slug: "tredje-handling".into(),
+            path: "caesars-frafall.tredje-handling".into(),
             depth: 1,
-            parent_source_ref: Some("cf"),
-            filename: "005_cf_tredje_handling.md",
+            parent_source_ref: Some("cf".into()),
+            filename: "005_cf_tredje_handling.md".into(),
             position: 5,
         },
-        DramaNode {
-            source_ref: "cf-fjerde-handling",
-            slug: "fjerde-handling",
-            path: "caesars-frafall.fjerde-handling",
+        Node {
+            source_ref: "cf-fjerde-handling".into(),
+            slug: "fjerde-handling".into(),
+            path: "caesars-frafall.fjerde-handling".into(),
             depth: 1,
-            parent_source_ref: Some("cf"),
-            filename: "006_cf_fjerde_handling.md",
+            parent_source_ref: Some("cf".into()),
+            filename: "006_cf_fjerde_handling.md".into(),
             position: 6,
         },
-        DramaNode {
-            source_ref: "cf-femte-handling",
-            slug: "femte-handling",
-            path: "caesars-frafall.femte-handling",
+        Node {
+            source_ref: "cf-femte-handling".into(),
+            slug: "femte-handling".into(),
+            path: "caesars-frafall.femte-handling".into(),
             depth: 1,
-            parent_source_ref: Some("cf"),
-            filename: "007_cf_femte_handling.md",
+            parent_source_ref: Some("cf".into()),
+            filename: "007_cf_femte_handling.md".into(),
             position: 7,
         },
-        DramaNode {
-            source_ref: "kj",
-            slug: "keiser-julian",
-            path: "keiser-julian",
+        Node {
+            source_ref: "kj".into(),
+            slug: "keiser-julian".into(),
+            path: "keiser-julian".into(),
             depth: 0,
             parent_source_ref: None,
-            filename: "008_kj_titelblad.md",
+            filename: "008_kj_titelblad.md".into(),
             position: 8,
         },
-        DramaNode {
-            source_ref: "kj-de-opptredende",
-            slug: "kj-de-opptredende",
-            path: "keiser-julian.de-opptredende",
+        Node {
+            source_ref: "kj-de-opptredende".into(),
+            slug: "kj-de-opptredende".into(),
+            path: "keiser-julian.de-opptredende".into(),
             depth: 1,
-            parent_source_ref: Some("kj"),
-            filename: "009_kj_de_optraedende.md",
+            parent_source_ref: Some("kj".into()),
+            filename: "009_kj_de_optraedende.md".into(),
             position: 9,
         },
-        DramaNode {
-            source_ref: "kj-foerste-handling",
-            slug: "kj-foerste-handling",
-            path: "keiser-julian.foerste-handling",
+        Node {
+            source_ref: "kj-foerste-handling".into(),
+            slug: "kj-foerste-handling".into(),
+            path: "keiser-julian.foerste-handling".into(),
             depth: 1,
-            parent_source_ref: Some("kj"),
-            filename: "010_kj_foerste_handling.md",
+            parent_source_ref: Some("kj".into()),
+            filename: "010_kj_foerste_handling.md".into(),
             position: 10,
         },
-        DramaNode {
-            source_ref: "kj-annen-handling",
-            slug: "kj-annen-handling",
-            path: "keiser-julian.annen-handling",
+        Node {
+            source_ref: "kj-annen-handling".into(),
+            slug: "kj-annen-handling".into(),
+            path: "keiser-julian.annen-handling".into(),
             depth: 1,
-            parent_source_ref: Some("kj"),
-            filename: "011_kj_anden_handling.md",
+            parent_source_ref: Some("kj".into()),
+            filename: "011_kj_anden_handling.md".into(),
             position: 11,
         },
-        DramaNode {
-            source_ref: "kj-tredje-handling",
-            slug: "kj-tredje-handling",
-            path: "keiser-julian.tredje-handling",
+        Node {
+            source_ref: "kj-tredje-handling".into(),
+            slug: "kj-tredje-handling".into(),
+            path: "keiser-julian.tredje-handling".into(),
             depth: 1,
-            parent_source_ref: Some("kj"),
-            filename: "012_kj_tredje_handling.md",
+            parent_source_ref: Some("kj".into()),
+            filename: "012_kj_tredje_handling.md".into(),
             position: 12,
         },
-        DramaNode {
-            source_ref: "kj-fjerde-handling",
-            slug: "kj-fjerde-handling",
-            path: "keiser-julian.fjerde-handling",
+        Node {
+            source_ref: "kj-fjerde-handling".into(),
+            slug: "kj-fjerde-handling".into(),
+            path: "keiser-julian.fjerde-handling".into(),
             depth: 1,
-            parent_source_ref: Some("kj"),
-            filename: "013_kj_fjerde_handling.md",
+            parent_source_ref: Some("kj".into()),
+            filename: "013_kj_fjerde_handling.md".into(),
             position: 13,
         },
-        DramaNode {
-            source_ref: "kj-femte-handling",
-            slug: "kj-femte-handling",
-            path: "keiser-julian.femte-handling",
+        Node {
+            source_ref: "kj-femte-handling".into(),
+            slug: "kj-femte-handling".into(),
+            path: "keiser-julian.femte-handling".into(),
             depth: 1,
-            parent_source_ref: Some("kj"),
-            filename: "014_kj_femte_handling.md",
+            parent_source_ref: Some("kj".into()),
+            filename: "014_kj_femte_handling.md".into(),
             position: 14,
         },
     ]

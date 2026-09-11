@@ -47,6 +47,10 @@ assets/peirce1/*
 assets/plato1/*
 !assets/plato1/curated/
 !assets/plato1/*.md
+!assets/plato2/
+assets/plato2/*
+!assets/plato2/curated/
+!assets/plato2/*.md
 
 .env
 .env.master

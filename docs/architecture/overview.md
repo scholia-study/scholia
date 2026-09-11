@@ -34,6 +34,7 @@ See ADR 0006.
   kant1_ocr_to_lines → kant1_lines_to_elements → kant1_elements_to_md   (Kant OCR)
   ibsen1_xml_to_md                                                      (HIS TEI)
   hobbes1_tei_to_md                                                     (EEBO-TCP TEI)
+  plato1_tei_to_md · plato2_tei_to_md                                   (Perseus EpiDoc TEI)
 
                     assets/<corpus>/curated/  (tracked, human-edited MD)
                                  │
@@ -47,8 +48,10 @@ See ADR 0006.
                                                     layer, no orthography pair
   md_poetry_to_struct   --corpus shakespeare1|milton1  verse: line-per-sentence,
                                                     indent levels
-  md_drama_to_struct    --corpus ibsen1             drama: @ speaker / @stage /
-                        [--translation]             | verse / {{{ N }}} pages
+  md_drama_to_struct    --corpus ibsen1|plato2      drama: @ speaker / @stage /
+                        [--translation]             | verse / {{{ N }}} pages.
+                                                    plato2 adds the Greek
+                                                    splitter + Stephanus markers
                                  │
                                  ▼
   THE WAIST ────────── text_struct ──────────────────────────────────────────
@@ -76,9 +79,10 @@ See ADR 0006.
 
   SHARED INFRA (both sides of the waist)
   ─────────────────────────────────────────────────────────────────────────
-  common                sentence splitters (de/en/structural) · per-corpus
+  common                sentence splitters (de/en/grc/structural) · per-corpus
                         data modules (kant1, kant3, hegel1..3, hobbes1,
-                        peirce1, plato1, shakespeare1, milton1, ibsen1) ·
+                        peirce1, plato1, plato2, shakespeare1, milton1,
+                        ibsen1) · drama (the shared drama node shape) ·
                         textmatch · epub tooling
   reconcile             align / deps / hash / keys / orchestrate — the
                         in-place re-import toolkit (struct_to_db + bible_to_db)
@@ -93,6 +97,7 @@ flowchart TB
         direction LR
         ocr["kant1_ocr_to_lines"] --> lines["kant1_lines_to_elements"] --> elem["kant1_elements_to_md"]
         tei["ibsen1_xml_to_md"]
+        greek["plato1_tei_to_md<br/>plato2_tei_to_md"]
     end
 
     curated[("assets/&lt;corpus&gt;/curated/<br/>human-reviewed MD — tracked")]
@@ -102,7 +107,7 @@ flowchart TB
         direction LR
         prose["md_prose_to_struct<br/>--corpus kant1|kant3|hegel1|hegel2|hegel3|hobbes1|peirce1|plato1"]
         poetry["md_poetry_to_struct<br/>--corpus shakespeare1|milton1"]
-        drama["md_drama_to_struct<br/>--corpus ibsen1"]
+        drama["md_drama_to_struct<br/>--corpus ibsen1|plato2"]
     end
 
     curated --> parsers

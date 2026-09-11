@@ -98,6 +98,11 @@ case "$corpus" in
         "$BIN" --input-file assets/plato1/derived/translation_output.json \
                --source-book-slug politeia "$@"
         ;;
+    plato2)
+        "$BIN" --input-file assets/plato2/derived/output.json "$@"
+        "$BIN" --input-file assets/plato2/derived/translation_output.json \
+               --source-book-slug gorgias-grc "$@"
+        ;;
     *)
         # Unreachable: membership in SCHOLIA_CORPORA is checked above. Hitting
         # this means the array and the case arms drifted apart.
