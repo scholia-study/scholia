@@ -423,12 +423,24 @@ export function TextPanel({
         },
         [onSelectSentence, selectedSentenceId],
     );
-    const { select: handleSelectSentence } =
-        useRangeSelection<SentenceResponse>({
-            keyOf: sentenceKey,
-            sentenceNumberOf: getSentenceNumber,
-            onSelect: onMainSelect,
-        });
+    const { select: selectSentence } = useRangeSelection<SentenceResponse>({
+        keyOf: sentenceKey,
+        sentenceNumberOf: getSentenceNumber,
+        onSelect: onMainSelect,
+    });
+    // Touch devices have no shift key, so range selection is also reachable as
+    // an armed mode: while it is on, every tap extends from the anchor. It
+    // stays on after a range lands so the end can be adjusted by tapping again.
+    const [extendArmed, setExtendArmed] = useState(false);
+    const handleSelectSentence = useCallback(
+        (sentence: SentenceResponse, shiftKey: boolean) =>
+            selectSentence(sentence, shiftKey || extendArmed),
+        [selectSentence, extendArmed],
+    );
+    const toggleExtendArmed = useCallback(
+        () => setExtendArmed((armed) => !armed),
+        [],
+    );
 
     // Collect sentences for range display in ResourcesPanel
     const [selectedSentences, setSelectedSentences] = useState<
@@ -455,12 +467,21 @@ export function TextPanel({
         (key: string) => onSelectFootnoteSentence(key),
         [onSelectFootnoteSentence],
     );
-    const { select: handleSelectFootnoteSentence, clear: clearFootnoteAnchor } =
+    const { select: selectFootnoteSentence, clear: clearFootnoteAnchor } =
         useRangeSelection<FootnoteSentenceResponse>({
             keyOf: footnoteSentenceKey,
             sentenceNumberOf: getSentenceNumber,
             onSelect: onFnSelect,
         });
+    const handleSelectFootnoteSentence = useCallback(
+        (sentence: FootnoteSentenceResponse, shiftKey: boolean) =>
+            selectFootnoteSentence(sentence, shiftKey || extendArmed),
+        [selectFootnoteSentence, extendArmed],
+    );
+
+    useEffect(() => {
+        if (!selectedSentenceId && !footnoteSentenceId) setExtendArmed(false);
+    }, [selectedSentenceId, footnoteSentenceId]);
 
     const handleClearFootnoteSentence = useCallback(() => {
         clearFootnoteAnchor();
@@ -1405,6 +1426,8 @@ export function TextPanel({
                         onViewChange={onResourceViewChange}
                         overlay={overlayResources}
                         accent={accent}
+                        extendArmed={extendArmed}
+                        onToggleExtend={toggleExtendArmed}
                     />
                 )}
             </div>

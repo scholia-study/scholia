@@ -11,6 +11,7 @@ import FeedbackOutlined from "@mui/icons-material/FeedbackOutlined";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import ListOutlined from "@mui/icons-material/ListOutlined";
 import MenuBookOutlined from "@mui/icons-material/MenuBookOutlined";
+import UnfoldMoreOutlined from "@mui/icons-material/UnfoldMoreOutlined";
 import { IconButton } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -63,6 +64,18 @@ type ViewKind =
     | "sentence"
     | "notes";
 
+const VIEW_TITLES: Record<ViewKind, string> = {
+    about: "About this text",
+    toc: "Table of Contents",
+    compare: "Compare Text",
+    verbatim: "Verbatim Quotations",
+    paraphrase: "Paraphrases",
+    allusion: "Allusions",
+    articles: "Articles",
+    sentence: "Sentence Details",
+    notes: "Notes",
+};
+
 interface ResourcesPanelProps {
     toc: TocNodeResponse[] | undefined;
     bookSlug: string;
@@ -86,6 +99,9 @@ interface ResourcesPanelProps {
     overlay?: boolean;
     /** The work's shelf colour, tinting the header alongside the toolbar. */
     accent?: string;
+    /** Whether the next sentence tap extends the selection (shift-click on touch). */
+    extendArmed: boolean;
+    onToggleExtend: () => void;
 }
 
 /** Joined text of the current selection, used to seed a verbatim quote. */
@@ -114,6 +130,8 @@ export function ResourcesPanel({
     onViewChange,
     overlay = false,
     accent,
+    extendArmed,
+    onToggleExtend,
 }: ResourcesPanelProps) {
     // The header sits beside the reader toolbar and takes the same colour a
     // shade lighter, as if lit through glass. Ink is measured against the
@@ -134,6 +152,17 @@ export function ResourcesPanel({
         () => getSentenceRange(selectedSentence),
         [selectedSentence],
     );
+    const selectionLabel = useMemo(() => {
+        if (!sentenceRange) return null;
+        const { start, end, kind } = sentenceRange;
+        if (kind === "figure") return `Figure ${start}`;
+        const span = start === end ? `${start}` : `${start}\u2013${end}`;
+        const noun = start === end ? "sentence" : "sentences";
+        return kind === "footnote"
+            ? `Footnote ${noun} ${span}`
+            : `${noun.charAt(0).toUpperCase()}${noun.slice(1)} ${span}`;
+    }, [sentenceRange]);
+
     const { data: resourcesData } = useListResources(
         bookSlug,
         {
@@ -551,25 +580,7 @@ export function ResourcesPanel({
                             headerInk ? { color: headerInk.muted } : undefined
                         }
                     >
-                        {viewKind === "about"
-                            ? "About this text"
-                            : viewKind === "toc"
-                              ? "Table of Contents"
-                              : viewKind === "sentence"
-                                ? "Sentence Details"
-                                : viewKind === "compare"
-                                  ? "Compare Text"
-                                  : viewKind === "verbatim"
-                                    ? "Verbatim Quotations"
-                                    : viewKind === "paraphrase"
-                                      ? "Paraphrases"
-                                      : viewKind === "allusion"
-                                        ? "Allusions"
-                                        : viewKind === "articles"
-                                          ? "Articles"
-                                          : viewKind === "notes"
-                                            ? "Notes"
-                                            : "\u00A0"}
+                        {(viewKind && VIEW_TITLES[viewKind]) ?? "\u00A0"}
                     </div>
                 </div>
                 <IconButton
@@ -581,6 +592,34 @@ export function ResourcesPanel({
                     <CloseOutlined fontSize="small" />
                 </IconButton>
             </div>
+
+            {selectionLabel && (
+                <div className="flex shrink-0 items-center gap-2 border-b border-stone-200 px-3 py-1.5">
+                    <span className="min-w-0 flex-1 truncate text-xs text-stone-500">
+                        {selectionLabel}
+                    </span>
+                    {sentenceRange?.kind !== "figure" && (
+                        <button
+                            type="button"
+                            onClick={onToggleExtend}
+                            aria-pressed={extendArmed}
+                            title={
+                                extendArmed
+                                    ? "Tap another sentence to extend the selection"
+                                    : "Extend the selection to another sentence"
+                            }
+                            className={`inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                                extendArmed
+                                    ? "border-stone-700 bg-stone-700 text-white"
+                                    : "border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100"
+                            }`}
+                        >
+                            <UnfoldMoreOutlined sx={{ fontSize: 14 }} />
+                            {extendArmed ? "Tap a sentence" : "Extend"}
+                        </button>
+                    )}
+                </div>
+            )}
 
             {/* Menu */}
             {isMenu && (
