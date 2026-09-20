@@ -1,8 +1,7 @@
 import { Link, useMatches } from "@tanstack/react-router";
 
 const USER_ROUTES = [
-    { to: "/user/quotations" as const, label: "My Quotations" },
-    { to: "/user/notes" as const, label: "My Notes" },
+    { to: "/user/quotations" as const, label: "Quotations & Notes" },
     { to: "/user/articles" as const, label: "My Articles" },
     { to: "/user/sources" as const, label: "Sources" },
     { to: "/user/collegia" as const, label: "Collegia" },

@@ -1,136 +1,270 @@
-import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
-import FormatQuoteOutlined from "@mui/icons-material/FormatQuoteOutlined";
 import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
+    Chip,
     FormControl,
-    IconButton,
+    FormControlLabel,
     InputLabel,
     MenuItem,
-    Paper,
     Select,
-    Tooltip,
+    Switch,
+    TextField,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import parse from "html-react-parser";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { FigureEmbed, useUnsaveQuotation } from "#/modules/quotation";
+import toast from "react-hot-toast";
+import {
+    ArticleQuotationDetailModal,
+    type BookQuotation,
+    NoteFormModal,
+    SavedArticleQuotation,
+    SavedBookQuotation,
+    sentenceLabel,
+    useUnsaveQuotation,
+} from "#/modules/quotation";
 import { TranslationBadge } from "#/modules/reader";
 import {
     getListArticleQuotationsQueryKey,
     useDeleteArticleQuotation,
-    useGetArticleQuotation,
 } from "../api/article-quotations/article-quotations";
-import type { UnifiedQuotationResponse } from "../api/model";
+import type {
+    NoteWithContextResponse,
+    UnifiedQuotationResponse,
+} from "../api/model";
 import {
+    getListAllNotesQueryKey,
     getListAllQuotationsQueryKey,
+    useDeleteNote,
+    useListAllNotes,
     useListAllQuotations,
 } from "../api/quotations/quotations";
 
+/** The left rail's key for the article-quotation group. Book slugs can
+ *  never collide with it: slugs come from imported books, and no corpus
+ *  is named with a leading underscore. */
+const ARTICLES_SOURCE = "__articles__";
+
+type SortKey = "quoted" | "annotated";
+
+type QuotationsSearch = {
+    source?: string;
+    tags?: string[];
+    q?: string;
+    notes?: boolean;
+    sort?: SortKey;
+};
+
 export const Route = createFileRoute("/_auth/user/quotations")({
     component: QuotationsPage,
+    validateSearch: (search: Record<string, unknown>): QuotationsSearch => {
+        const tags = Array.isArray(search.tags)
+            ? search.tags.filter((t): t is string => typeof t === "string")
+            : typeof search.tags === "string"
+              ? [search.tags]
+              : undefined;
+        return {
+            source:
+                typeof search.source === "string" ? search.source : undefined,
+            tags: tags?.length ? tags : undefined,
+            q: typeof search.q === "string" && search.q ? search.q : undefined,
+            notes: search.notes === true ? true : undefined,
+            sort: search.sort === "annotated" ? "annotated" : undefined,
+        };
+    },
 });
 
-type BookQuotation = Extract<UnifiedQuotationResponse, { source_type: "book" }>;
-type ArticleQuotation = Extract<
-    UnifiedQuotationResponse,
-    { source_type: "article" }
->;
-
-function sentenceLabel(q: BookQuotation): string {
-    const start = q.anchor_sentence_start_number;
-    const end = q.anchor_sentence_end_number;
-    if (q.sentence_kind === "figure") return `Figure ${start}`;
-    const isFootnote = q.sentence_kind === "footnote";
-    const single = isFootnote ? "Footnote sentence" : "Sentence";
-    const plural = isFootnote ? "Footnote sentences" : "Sentences";
-    if (end == null || end === start) return `${single} ${start}`;
-    return `${plural} ${start}\u2013${end}`;
-}
-
-function quotationLinkSearch(q: BookQuotation): {
-    s: string;
-    fs?: string;
-    r: string;
-    rv: string;
-} {
-    const startStr = String(q.anchor_sentence_start_number);
-    const rangeStr =
-        q.anchor_sentence_end_number &&
-        q.anchor_sentence_end_number !== q.anchor_sentence_start_number
-            ? `${q.anchor_sentence_start_number}-${q.anchor_sentence_end_number}`
-            : startStr;
-    if (q.sentence_kind === "figure") {
-        return {
-            s: `fig${q.anchor_sentence_start_number}`,
-            r: "1",
-            rv: "notes",
-        };
-    }
-    if (q.sentence_kind === "footnote" && q.anchor_main_sentence_number) {
-        return {
-            s: String(q.anchor_main_sentence_number),
-            fs: rangeStr,
-            r: "1",
-            rv: "notes",
-        };
-    }
-    return { s: rangeStr, r: "1", rv: "notes" };
+interface SourceEntry {
+    key: string;
+    title: string;
+    translationLabel?: string | null;
+    count: number;
 }
 
 function QuotationsPage() {
-    const [sourceFilter, setSourceFilter] = useState<string>("");
+    const queryClient = useQueryClient();
+    const {
+        source,
+        tags,
+        q: searchQuery,
+        notes: notesOnly,
+        sort,
+    } = Route.useSearch();
+    const navigate = Route.useNavigate();
+
+    const selectedTags = useMemo(() => new Set(tags ?? []), [tags]);
+
+    const [editingNote, setEditingNote] =
+        useState<NoteWithContextResponse | null>(null);
+    const [addingNoteTo, setAddingNoteTo] = useState<BookQuotation | null>(
+        null,
+    );
     const [selectedArticleQuotation, setSelectedArticleQuotation] = useState<
         string | null
     >(null);
 
-    const { data: allQuotationsData, isLoading } = useListAllQuotations({});
-    const allQuotations = allQuotationsData?.data?.quotations ?? [];
-    const limits = allQuotationsData?.data?.limits;
-    const showUsage = limits ? limits.max <= 50 : false;
+    const { data: quotationsData, isLoading: quotationsLoading } =
+        useListAllQuotations({});
+    const { data: notesData, isLoading: notesLoading } = useListAllNotes({});
 
-    const bookQuotations = useMemo(
-        () =>
-            allQuotations.filter(
-                (q): q is BookQuotation => q.source_type === "book",
-            ),
-        [allQuotations],
-    );
+    const allQuotations = quotationsData?.data?.quotations ?? [];
+    const allNotes = useMemo(() => notesData?.data?.notes ?? [], [notesData]);
+    const quotationLimits = quotationsData?.data?.limits;
+    const noteLimits = notesData?.data?.limits;
 
-    const articleQuotations = useMemo(
-        () =>
-            allQuotations.filter(
-                (q): q is ArticleQuotation => q.source_type === "article",
-            ),
-        [allQuotations],
-    );
+    const notesByQuotation = useMemo(() => {
+        const map = new Map<string, NoteWithContextResponse[]>();
+        for (const n of allNotes) {
+            const list = map.get(n.quotation_id);
+            if (list) list.push(n);
+            else map.set(n.quotation_id, [n]);
+        }
+        // Oldest first within a quotation: annotation reads as a thread.
+        for (const list of map.values()) {
+            list.sort((a, b) => a.created_at.localeCompare(b.created_at));
+        }
+        return map;
+    }, [allNotes]);
 
-    const availableBooks = useMemo(() => {
-        const map = new Map<string, string>();
-        for (const q of bookQuotations) {
-            if (!map.has(q.book_slug)) {
-                map.set(q.book_slug, q.book_title);
+    const sources = useMemo(() => {
+        const books = new Map<string, SourceEntry>();
+        let articleCount = 0;
+        for (const quotation of allQuotations) {
+            if (quotation.source_type === "article") {
+                articleCount += 1;
+                continue;
+            }
+            const existing = books.get(quotation.book_slug);
+            if (existing) {
+                existing.count += 1;
+            } else {
+                books.set(quotation.book_slug, {
+                    key: quotation.book_slug,
+                    title: quotation.book_title,
+                    translationLabel: quotation.translation_label,
+                    count: 1,
+                });
             }
         }
-        return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]));
-    }, [bookQuotations]);
+        const entries = [...books.values()].sort((a, b) =>
+            a.title.localeCompare(b.title),
+        );
+        if (articleCount > 0) {
+            entries.push({
+                key: ARTICLES_SOURCE,
+                title: "Articles",
+                count: articleCount,
+            });
+        }
+        return entries;
+    }, [allQuotations]);
 
-    const filtered = useMemo(() => {
-        if (!sourceFilter) return allQuotations;
-        if (sourceFilter === "__articles__")
-            return articleQuotations as UnifiedQuotationResponse[];
-        return bookQuotations.filter(
-            (q) => q.book_slug === sourceFilter,
-        ) as UnifiedQuotationResponse[];
-    }, [allQuotations, sourceFilter, bookQuotations, articleQuotations]);
+    const sourceFiltered = useMemo(() => {
+        if (!source) return allQuotations;
+        if (source === ARTICLES_SOURCE) {
+            return allQuotations.filter((q) => q.source_type === "article");
+        }
+        return allQuotations.filter(
+            (q) => q.source_type === "book" && q.book_slug === source,
+        );
+    }, [allQuotations, source]);
+
+    const availableTags = useMemo(() => {
+        const visible = new Set(sourceFiltered.map((q) => q.id));
+        const counts = new Map<string, number>();
+        for (const note of allNotes) {
+            if (!visible.has(note.quotation_id)) continue;
+            for (const tag of note.tags) {
+                counts.set(tag.name, (counts.get(tag.name) ?? 0) + 1);
+            }
+        }
+        return [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    }, [sourceFiltered, allNotes]);
+
+    const visibleQuotations = useMemo(() => {
+        const matchesTags = (quotationId: string) =>
+            selectedTags.size === 0 ||
+            (notesByQuotation.get(quotationId) ?? []).some((n) =>
+                n.tags.some((t) => selectedTags.has(t.name)),
+            );
+
+        const needle = searchQuery?.trim().toLowerCase();
+        const matchesSearch = (quotation: UnifiedQuotationResponse) => {
+            if (!needle) return true;
+            const haystack: string[] =
+                quotation.source_type === "book"
+                    ? [
+                          quotation.book_title,
+                          quotation.node_label,
+                          quotation.start_text_snippet ?? "",
+                          quotation.end_text_snippet ?? "",
+                      ]
+                    : [
+                          quotation.article_title,
+                          quotation.author_display_name,
+                          quotation.text_snippet,
+                      ];
+            for (const note of notesByQuotation.get(quotation.id) ?? []) {
+                haystack.push(note.body, ...note.tags.map((t) => t.name));
+            }
+            return haystack.some((h) => h.toLowerCase().includes(needle));
+        };
+
+        const filtered = sourceFiltered.filter(
+            (quotation) =>
+                (!notesOnly ||
+                    (notesByQuotation.get(quotation.id) ?? []).length > 0) &&
+                matchesTags(quotation.id) &&
+                matchesSearch(quotation),
+        );
+
+        if (sort !== "annotated") return filtered;
+
+        // Most recently annotated first; an un-annotated quotation falls
+        // back to when it was saved, so it never floats above live work.
+        const activity = (quotation: UnifiedQuotationResponse) => {
+            const quotationNotes = notesByQuotation.get(quotation.id) ?? [];
+            return quotationNotes.reduce(
+                (latest, n) => (n.updated_at > latest ? n.updated_at : latest),
+                quotation.created_at,
+            );
+        };
+        return [...filtered].sort((a, b) =>
+            activity(b).localeCompare(activity(a)),
+        );
+    }, [
+        sourceFiltered,
+        notesByQuotation,
+        selectedTags,
+        searchQuery,
+        notesOnly,
+        sort,
+    ]);
+
+    const updateSearch = (
+        patch: Partial<QuotationsSearch>,
+        replace = false,
+    ) => {
+        navigate({
+            search: (prev) => ({ ...prev, ...patch }),
+            startTransition: true,
+            replace,
+        });
+    };
+
+    const selectSource = (key: string | undefined) => {
+        // Tags are derived per source, so a tag selection cannot survive
+        // the switch — it would silently filter everything away.
+        updateSearch({ source: key, tags: undefined });
+    };
+
+    const toggleTag = (name: string) => {
+        const next = new Set(selectedTags);
+        if (next.has(name)) next.delete(name);
+        else next.add(name);
+        updateSearch({ tags: next.size ? [...next] : undefined });
+    };
 
     const { requestUnsave, UnsaveDialog } = useUnsaveQuotation({});
 
-    const queryClient = useQueryClient();
     const deleteArticleQuotation = useDeleteArticleQuotation();
     const handleDeleteArticleQuotation = async (id: string) => {
         await deleteArticleQuotation.mutateAsync({ id });
@@ -142,68 +276,241 @@ function QuotationsPage() {
         });
     };
 
+    const deleteNoteMutation = useDeleteNote({
+        mutation: {
+            onSuccess: () => {
+                toast.success("Note deleted");
+                queryClient.invalidateQueries({
+                    queryKey: getListAllNotesQueryKey(),
+                });
+                queryClient.invalidateQueries({
+                    queryKey: getListAllQuotationsQueryKey(),
+                });
+            },
+            onError: () => toast.error("Failed to delete note"),
+        },
+    });
+
+    const handleDeleteNote = (note: NoteWithContextResponse) => {
+        if (window.confirm("Delete this note?")) {
+            deleteNoteMutation.mutate({
+                slug: note.book_slug,
+                id: note.quotation_id,
+                noteId: note.id,
+            });
+        }
+    };
+
+    const isLoading = quotationsLoading || notesLoading;
+    const isFiltered = Boolean(
+        source || selectedTags.size || searchQuery || notesOnly,
+    );
+
     return (
-        <div className="w-full max-w-3xl mx-auto px-8 py-16">
-            <div className="flex items-center justify-between mb-2">
-                <h1 className="text-2xl font-bold text-stone-900">
-                    My Quotations
-                </h1>
-                <FormControl size="small" sx={{ minWidth: 200 }}>
-                    <InputLabel>Filter by source</InputLabel>
-                    <Select
-                        value={sourceFilter}
-                        label="Filter by source"
-                        onChange={(e) => setSourceFilter(e.target.value)}
-                    >
-                        <MenuItem value="">All sources</MenuItem>
-                        {articleQuotations.length > 0 && (
-                            <MenuItem value="__articles__">
-                                From articles
-                            </MenuItem>
+        // w-full matters: this sits in a flex column, where mx-auto
+        // cancels the default stretch and the box would otherwise
+        // shrink-to-fit its content — the grid must hold its width
+        // whether the list is full, loading, or empty.
+        <div className="w-full max-w-3xl lg:max-w-7xl mx-auto px-8 py-16">
+            <h1 className="text-2xl font-bold text-stone-900 mb-6">
+                Quotations &amp; Notes
+            </h1>
+
+            <div className="lg:grid lg:grid-cols-[17rem_minmax(0,1fr)_14rem] lg:gap-10">
+                <aside className="hidden lg:block">
+                    <div className="sticky top-8 max-h-[calc(100vh-6rem)] overflow-y-auto">
+                        <SourceSidebar
+                            sources={sources}
+                            selected={source}
+                            onSelect={selectSource}
+                        />
+                    </div>
+                </aside>
+
+                <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-3 mb-4">
+                        <TextField
+                            size="small"
+                            placeholder="Search quotations, notes and tags..."
+                            value={searchQuery ?? ""}
+                            onChange={(e) =>
+                                // Replace, not push: a pushed entry per
+                                // keystroke would bury the page in history.
+                                updateSearch(
+                                    { q: e.target.value || undefined },
+                                    true,
+                                )
+                            }
+                            sx={{ flex: "1 1 240px" }}
+                        />
+                        <FormControl size="small" sx={{ minWidth: 170 }}>
+                            <InputLabel>Sort</InputLabel>
+                            <Select
+                                value={sort ?? "quoted"}
+                                label="Sort"
+                                onChange={(e) =>
+                                    updateSearch({
+                                        sort:
+                                            e.target.value === "annotated"
+                                                ? "annotated"
+                                                : undefined,
+                                    })
+                                }
+                            >
+                                <MenuItem value="quoted">
+                                    Recently quoted
+                                </MenuItem>
+                                <MenuItem value="annotated">
+                                    Recently annotated
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    size="small"
+                                    checked={Boolean(notesOnly)}
+                                    onChange={(e) =>
+                                        updateSearch({
+                                            notes: e.target.checked
+                                                ? true
+                                                : undefined,
+                                        })
+                                    }
+                                />
+                            }
+                            label={
+                                <span className="text-sm text-stone-500">
+                                    With notes
+                                </span>
+                            }
+                        />
+                    </div>
+
+                    {/* Small screens: the rails collapse above the list */}
+                    <div className="lg:hidden">
+                        <SourceChips
+                            sources={sources}
+                            selected={source}
+                            onSelect={selectSource}
+                        />
+                        <TagChips
+                            tags={availableTags}
+                            selected={selectedTags}
+                            onToggle={toggleTag}
+                        />
+                    </div>
+
+                    {isLoading && (
+                        <p className="text-sm text-stone-400">Loading...</p>
+                    )}
+
+                    {!isLoading && visibleQuotations.length === 0 && (
+                        <p className="text-sm text-stone-400">
+                            {isFiltered ? (
+                                <>
+                                    Nothing matches this filter.{" "}
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            navigate({ search: () => ({}) })
+                                        }
+                                        className="text-stone-600 underline hover:text-stone-900 cursor-pointer"
+                                    >
+                                        Clear filters
+                                    </button>
+                                </>
+                            ) : (
+                                "No saved quotations yet."
+                            )}
+                        </p>
+                    )}
+
+                    <div className="space-y-4">
+                        {visibleQuotations.map((quotation) =>
+                            quotation.source_type === "book" ? (
+                                <SavedBookQuotation
+                                    key={quotation.id}
+                                    quotation={quotation}
+                                    notes={
+                                        notesByQuotation.get(quotation.id) ?? []
+                                    }
+                                    onUnsave={() => requestUnsave(quotation)}
+                                    onAddNote={() => setAddingNoteTo(quotation)}
+                                    onEditNote={setEditingNote}
+                                    onDeleteNote={handleDeleteNote}
+                                />
+                            ) : (
+                                <SavedArticleQuotation
+                                    key={quotation.id}
+                                    quotation={quotation}
+                                    onViewFull={() =>
+                                        setSelectedArticleQuotation(
+                                            quotation.id,
+                                        )
+                                    }
+                                    onDelete={() =>
+                                        handleDeleteArticleQuotation(
+                                            quotation.id,
+                                        )
+                                    }
+                                />
+                            ),
                         )}
-                        {availableBooks.map(([slug, title]) => (
-                            <MenuItem key={slug} value={slug}>
-                                {title}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </div>
-            {showUsage && limits && (
-                <div className="text-xs text-stone-400 text-right mb-6">
-                    {limits.current}/{limits.max} saved
+                    </div>
                 </div>
-            )}
-            {!showUsage && <div className="mb-6" />}
 
-            {isLoading && <p className="text-sm text-stone-400">Loading...</p>}
-
-            {!isLoading && filtered.length === 0 && (
-                <p className="text-sm text-stone-400">
-                    No saved quotations yet.
-                </p>
-            )}
-
-            <div className="space-y-2">
-                {filtered.map((q) =>
-                    q.source_type === "book" ? (
-                        <BookQuotationRow
-                            key={q.id}
-                            q={q}
-                            requestUnsave={requestUnsave}
+                <aside className="hidden lg:block">
+                    <div className="sticky top-8 max-h-[calc(100vh-6rem)] overflow-y-auto">
+                        <TagSidebar
+                            tags={availableTags}
+                            selected={selectedTags}
+                            onToggle={toggleTag}
                         />
-                    ) : (
-                        <ArticleQuotationRow
-                            key={q.id}
-                            q={q}
-                            onViewFull={() => setSelectedArticleQuotation(q.id)}
-                            onDelete={() => handleDeleteArticleQuotation(q.id)}
+                        <Usage
+                            quotationLimits={quotationLimits}
+                            noteLimits={noteLimits}
                         />
-                    ),
-                )}
+                    </div>
+                </aside>
             </div>
 
             {UnsaveDialog}
+
+            {addingNoteTo && (
+                <NoteFormModal
+                    open
+                    onClose={() => setAddingNoteTo(null)}
+                    bookSlug={addingNoteTo.book_slug}
+                    quotationId={addingNoteTo.id}
+                    mode="create"
+                    sentenceContext={`${addingNoteTo.node_label} · ${sentenceLabel(addingNoteTo)}`}
+                />
+            )}
+
+            {editingNote && (
+                <NoteFormModal
+                    key={editingNote.id}
+                    open
+                    onClose={() => {
+                        setEditingNote(null);
+                        queryClient.invalidateQueries({
+                            queryKey: getListAllNotesQueryKey(),
+                        });
+                    }}
+                    bookSlug={editingNote.book_slug}
+                    quotationId={editingNote.quotation_id}
+                    mode="edit"
+                    initialData={{
+                        id: editingNote.id,
+                        body: editingNote.body,
+                        tags: editingNote.tags,
+                        created_at: editingNote.created_at,
+                        updated_at: editingNote.updated_at,
+                    }}
+                    sentenceContext={`${editingNote.node_label} · ${sentenceLabel(editingNote)}`}
+                />
+            )}
 
             {selectedArticleQuotation && (
                 <ArticleQuotationDetailModal
@@ -215,320 +522,197 @@ function QuotationsPage() {
     );
 }
 
-/** Drama attribution: which character speaks the quoted line. Verbatim, so
- *  it keeps any stage parenthetical the curated speaker line carries — and
- *  stays un-uppercased, since that parenthetical is prose. */
-function Speaker({ name }: { name?: string | null }) {
-    if (!name) return null;
-    return <span className="font-semibold text-stone-500">{name} </span>;
-}
+const railItemClass = (active: boolean) =>
+    `block w-full text-left px-2 py-1 rounded text-sm cursor-pointer ${
+        active
+            ? "text-stone-900 bg-stone-200 font-medium"
+            : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
+    }`;
 
-function BookQuotationRow({
-    q,
-    requestUnsave,
+function SourceSidebar({
+    sources,
+    selected,
+    onSelect,
 }: {
-    q: BookQuotation;
-    requestUnsave: (q: {
-        id: string;
-        book_slug: string;
-        note_count: number;
-    }) => void;
+    sources: SourceEntry[];
+    selected?: string;
+    onSelect: (key: string | undefined) => void;
 }) {
     return (
-        <Paper
-            elevation={0}
-            sx={{
-                border: "1px solid rgb(214 211 209)",
-                borderLeft: "3px solid rgb(168 162 158)",
-                p: 1.5,
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 1,
-                transition: "box-shadow 0.15s",
-                "&:hover": { boxShadow: 3 },
-                "&:hover .action-btns": { opacity: 1 },
-            }}
-        >
-            <Link
-                to="/books/$bookSlug/$nodeSlug"
-                params={{
-                    bookSlug: q.book_slug,
-                    nodeSlug: q.node_slug,
-                }}
-                search={quotationLinkSearch(q)}
-                className="flex-1 min-w-0"
-            >
-                <div className="text-xs text-stone-400 mb-1 flex items-center gap-1.5 flex-wrap">
-                    <TranslationBadge
-                        label={q.translation_label}
-                        title={q.book_title}
-                    />
-                    <span>
-                        {q.book_title} &middot; {q.node_label} &middot;{" "}
-                        {sentenceLabel(q)}
-                    </span>
-                </div>
-                {q.start_text_snippet && (
-                    <p className="text-sm text-stone-700 truncate">
-                        <Speaker name={q.start_speaker} />
-                        &ldquo;{q.start_text_snippet}&rdquo;
-                        {q.end_text_snippet && (
-                            <span className="text-stone-400">
-                                {" "}
-                                &hellip; <Speaker name={q.end_speaker} />
-                                &ldquo;{q.end_text_snippet}&rdquo;
-                            </span>
-                        )}
-                    </p>
-                )}
-            </Link>
-            <div className="relative shrink-0 self-center">
-                <div className="text-right">
-                    {q.note_count > 0 && (
-                        <span className="text-xs text-stone-400">
-                            {q.note_count} note{q.note_count > 1 ? "s" : ""}
-                        </span>
-                    )}
-                    <div className="text-[10px] text-stone-300 mt-0.5">
-                        {new Date(q.created_at).toLocaleDateString(undefined, {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                        })}
-                    </div>
-                </div>
-                <div className="action-btns absolute inset-0 flex items-center justify-center gap-0.5 bg-white opacity-0 transition-opacity">
-                    <IconButton
-                        size="small"
-                        onClick={() => requestUnsave(q)}
-                        title="Remove quotation"
-                        sx={{ color: "rgb(168 162 158)" }}
+        <div>
+            <h2 className="text-xs uppercase tracking-wide text-stone-400 mb-2">
+                Sources
+            </h2>
+            <ul className="space-y-0.5">
+                <li>
+                    <button
+                        type="button"
+                        className={railItemClass(!selected)}
+                        onClick={() => onSelect(undefined)}
                     >
-                        <DeleteOutlined fontSize="small" />
-                    </IconButton>
-                </div>
-            </div>
-        </Paper>
+                        All
+                    </button>
+                </li>
+                {sources.map((s) => (
+                    <li key={s.key}>
+                        <button
+                            type="button"
+                            className={railItemClass(selected === s.key)}
+                            onClick={() =>
+                                onSelect(selected === s.key ? undefined : s.key)
+                            }
+                        >
+                            <span className="flex items-center gap-1.5">
+                                {s.key !== ARTICLES_SOURCE && (
+                                    <TranslationBadge
+                                        label={s.translationLabel}
+                                        title={s.title}
+                                    />
+                                )}
+                                <span className="flex-1 min-w-0 truncate">
+                                    {s.title}
+                                </span>
+                                <span className="text-xs text-stone-400">
+                                    {s.count}
+                                </span>
+                            </span>
+                        </button>
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }
 
-function ArticleQuotationRow({
-    q,
-    onViewFull,
-    onDelete,
+function TagSidebar({
+    tags,
+    selected,
+    onToggle,
 }: {
-    q: ArticleQuotation;
-    onViewFull: () => void;
-    onDelete: () => void;
+    tags: [string, number][];
+    selected: Set<string>;
+    onToggle: (name: string) => void;
 }) {
+    if (tags.length === 0) return null;
+
     return (
-        <Paper
-            elevation={0}
-            component={q.article_id ? "a" : "div"}
-            {...(q.article_id
-                ? { href: `/articles/by-id/${q.article_id}` }
-                : {})}
-            sx={{
-                border: "1px solid rgb(214 211 209)",
-                borderLeft: "3px solid rgb(180 83 9)",
-                p: 1.5,
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 1,
-                cursor: q.article_id ? "pointer" : "default",
-                textDecoration: "none",
-                color: "inherit",
-                transition: "box-shadow 0.15s",
-                "&:hover": { boxShadow: 3 },
-                "&:hover .action-btns": { opacity: 1 },
-            }}
-        >
-            {q.figure_src?.startsWith("/media/") && (
-                <img
-                    src={q.figure_src}
-                    alt={q.figure_alt ?? ""}
-                    loading="lazy"
-                    className="h-12 w-12 shrink-0 rounded border border-stone-200 object-cover"
-                />
-            )}
-            <div className="flex-1 min-w-0">
-                <div className="text-xs text-amber-700 mb-1">
-                    {q.article_title} &middot; {q.author_display_name}
-                    {!q.article_id && (
-                        <span className="text-stone-400 italic">
-                            {" "}
-                            &middot; Article no longer available
-                        </span>
-                    )}
-                </div>
-                <p className="text-sm text-stone-700 truncate">
-                    {q.figure_src ? (
-                        q.text_snippet
-                    ) : (
-                        <>&ldquo;{q.text_snippet}&rdquo;</>
-                    )}
-                </p>
-            </div>
-            <div className="relative shrink-0 self-center">
-                <div className="text-right">
-                    {q.note_count > 0 && (
-                        <span className="text-xs text-stone-400">
-                            {q.note_count} note{q.note_count > 1 ? "s" : ""}
-                        </span>
-                    )}
-                    <div className="text-[10px] text-stone-300 mt-0.5">
-                        {new Date(q.created_at).toLocaleDateString(undefined, {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                        })}
-                    </div>
-                </div>
-                <div className="action-btns absolute inset-0 flex items-center justify-center gap-0.5 bg-white opacity-0 transition-opacity">
-                    <Tooltip title="View full quote">
-                        <IconButton
-                            size="small"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onViewFull();
-                            }}
-                            sx={{ color: "rgb(180 83 9)" }}
+        <div className="mb-6">
+            <h2 className="text-xs uppercase tracking-wide text-stone-400 mb-2">
+                Tags
+            </h2>
+            <ul className="space-y-0.5">
+                {tags.map(([name, count]) => (
+                    <li key={name}>
+                        <button
+                            type="button"
+                            className={railItemClass(selected.has(name))}
+                            onClick={() => onToggle(name)}
                         >
-                            <FormatQuoteOutlined fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete quotation">
-                        <IconButton
-                            size="small"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onDelete();
-                            }}
-                            sx={{ color: "rgb(168 162 158)" }}
-                        >
-                            <DeleteOutlined fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                </div>
-            </div>
-        </Paper>
+                            <span className="flex items-center gap-1.5">
+                                <span className="flex-1 min-w-0 truncate">
+                                    {name}
+                                </span>
+                                <span className="text-xs text-stone-400">
+                                    {count}
+                                </span>
+                            </span>
+                        </button>
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }
 
-function ArticleQuotationDetailModal({
-    id,
-    onClose,
+function SourceChips({
+    sources,
+    selected,
+    onSelect,
 }: {
-    id: string;
-    onClose: () => void;
+    sources: SourceEntry[];
+    selected?: string;
+    onSelect: (key: string | undefined) => void;
 }) {
-    const queryClient = useQueryClient();
-    const { data, isPending } = useGetArticleQuotation(id);
-    const quotation = data?.data ?? null;
-
-    const deleteMutation = useDeleteArticleQuotation();
-
-    const handleDelete = async () => {
-        await deleteMutation.mutateAsync({ id });
-        queryClient.invalidateQueries({
-            queryKey: getListAllQuotationsQueryKey(),
-        });
-        queryClient.invalidateQueries({
-            queryKey: getListArticleQuotationsQueryKey(),
-        });
-        onClose();
-    };
+    if (sources.length === 0) return null;
 
     return (
-        <Dialog open onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle sx={{ pb: 1 }}>
-                {isPending
-                    ? "Loading..."
-                    : quotation
-                      ? quotation.article_title
-                      : "Quotation not found"}
-            </DialogTitle>
-            {quotation && (
-                <DialogContent>
-                    <div className="text-xs text-stone-400 mb-3">
-                        {quotation.author_display_name}
-                        {!quotation.article_id && (
-                            <span className="italic">
-                                {" "}
-                                &middot; Article no longer available
-                            </span>
-                        )}
-                        {" \u00B7 "}
-                        Saved{" "}
-                        {new Date(quotation.created_at).toLocaleDateString(
-                            undefined,
-                            {
-                                month: "long",
-                                day: "numeric",
-                                year: "numeric",
-                            },
-                        )}
-                    </div>
-                    <Paper
-                        variant="outlined"
-                        sx={{
-                            p: 2,
-                            borderLeft: "3px solid rgb(180 83 9)",
-                            backgroundColor: "rgb(255 255 255)",
-                        }}
-                    >
-                        <div
-                            className="text-sm leading-relaxed text-stone-700"
-                            style={{
-                                fontFamily: "'Libre Baskerville', serif",
-                            }}
-                        >
-                            {quotation.figure ? (
-                                <FigureEmbed
-                                    src={quotation.figure.src}
-                                    alt={quotation.figure.alt ?? undefined}
-                                    caption={
-                                        quotation.figure.caption ?? undefined
-                                    }
-                                    width={quotation.figure.width ?? undefined}
-                                    height={
-                                        quotation.figure.height ?? undefined
-                                    }
-                                />
-                            ) : (
-                                parse(quotation.html) || null
-                            )}
-                        </div>
-                    </Paper>
-                    {quotation.article_id && (
-                        <div className="mt-3">
-                            <a
-                                href={`/articles/by-id/${quotation.article_id}`}
-                                className="text-xs text-amber-700 hover:underline"
-                            >
-                                View source article
-                            </a>
-                        </div>
-                    )}
-                </DialogContent>
-            )}
-            <DialogActions sx={{ px: 3, pb: 2 }}>
-                <Button
-                    onClick={handleDelete}
+        <div className="flex flex-wrap gap-1.5 mb-3">
+            <Chip
+                label="All"
+                size="small"
+                variant={!selected ? "filled" : "outlined"}
+                onClick={() => onSelect(undefined)}
+                sx={{ fontSize: "0.75rem" }}
+            />
+            {sources.map((s) => (
+                <Chip
+                    key={s.key}
+                    label={`${s.title} (${s.count})`}
                     size="small"
-                    color="error"
-                    startIcon={<DeleteOutlined />}
-                    disabled={deleteMutation.isPending}
-                >
-                    Delete
-                </Button>
-                <div className="flex-1" />
-                <Button onClick={onClose} size="small">
-                    Close
-                </Button>
-            </DialogActions>
-        </Dialog>
+                    color={selected === s.key ? "primary" : "default"}
+                    variant={selected === s.key ? "filled" : "outlined"}
+                    onClick={() =>
+                        onSelect(selected === s.key ? undefined : s.key)
+                    }
+                    sx={{ fontSize: "0.75rem" }}
+                />
+            ))}
+        </div>
+    );
+}
+
+function TagChips({
+    tags,
+    selected,
+    onToggle,
+}: {
+    tags: [string, number][];
+    selected: Set<string>;
+    onToggle: (name: string) => void;
+}) {
+    if (tags.length === 0) return null;
+
+    return (
+        <div className="flex flex-wrap gap-1.5 mb-6">
+            {tags.map(([name, count]) => (
+                <Chip
+                    key={name}
+                    label={`${name} (${count})`}
+                    size="small"
+                    color={selected.has(name) ? "primary" : "default"}
+                    variant={selected.has(name) ? "filled" : "outlined"}
+                    onClick={() => onToggle(name)}
+                    sx={{ fontSize: "0.75rem" }}
+                />
+            ))}
+        </div>
+    );
+}
+
+function Usage({
+    quotationLimits,
+    noteLimits,
+}: {
+    quotationLimits?: { current: number; max: number };
+    noteLimits?: { current: number; max: number };
+}) {
+    // Only metered plans see a counter; on an unmetered one it is noise.
+    const showQuotations = quotationLimits ? quotationLimits.max <= 50 : false;
+    const showNotes = noteLimits ? noteLimits.max <= 50 : false;
+    if (!showQuotations && !showNotes) return null;
+
+    return (
+        <div className="text-xs text-stone-400 space-y-0.5">
+            {showQuotations && quotationLimits && (
+                <div>
+                    {quotationLimits.current}/{quotationLimits.max} quotations
+                </div>
+            )}
+            {showNotes && noteLimits && (
+                <div>
+                    {noteLimits.current}/{noteLimits.max} notes
+                </div>
+            )}
+        </div>
     );
 }

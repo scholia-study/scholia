@@ -159,17 +159,7 @@ export function Navbar() {
                                         }}
                                     >
                                         <Typography variant="body2">
-                                            My Quotations
-                                        </Typography>
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={() => {
-                                            setAnchorEl(null);
-                                            navigate({ to: "/user/notes" });
-                                        }}
-                                    >
-                                        <Typography variant="body2">
-                                            My Notes
+                                            Quotations &amp; Notes
                                         </Typography>
                                     </MenuItem>
                                     <MenuItem

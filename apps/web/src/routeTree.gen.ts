@@ -28,7 +28,6 @@ import { Route as MembershipIndexRouteImport } from './routes/membership.index'
 import { Route as MembershipCheckoutRouteImport } from './routes/membership.checkout'
 import { Route as MembershipWelcomeRouteImport } from './routes/membership.welcome'
 import { Route as UsersHandleRouteImport } from './routes/users.$handle'
-import { Route as AuthUserNotesRouteImport } from './routes/_auth.user.notes'
 import { Route as AuthUserProfileRouteImport } from './routes/_auth.user.profile'
 import { Route as AuthUserQuotationsRouteImport } from './routes/_auth.user.quotations'
 import { Route as ArticlesByIdIdRouteImport } from './routes/articles.by-id.$id'
@@ -145,11 +144,6 @@ const UsersHandleRoute = UsersHandleRouteImport.update({
   id: '/users/$handle',
   path: '/users/$handle',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthUserNotesRoute = AuthUserNotesRouteImport.update({
-  id: '/user/notes',
-  path: '/user/notes',
-  getParentRoute: () => AuthRoute,
 } as any)
 const AuthUserProfileRoute = AuthUserProfileRouteImport.update({
   id: '/user/profile',
@@ -294,7 +288,6 @@ export interface FileRoutesByFullPath {
   '/users/$handle': typeof UsersHandleRoute
   '/articles/': typeof ArticlesIndexRoute
   '/membership/': typeof MembershipIndexRoute
-  '/user/notes': typeof AuthUserNotesRoute
   '/user/profile': typeof AuthUserProfileRoute
   '/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
@@ -337,7 +330,6 @@ export interface FileRoutesByTo {
   '/users/$handle': typeof UsersHandleRoute
   '/articles': typeof ArticlesIndexRoute
   '/membership': typeof MembershipIndexRoute
-  '/user/notes': typeof AuthUserNotesRoute
   '/user/profile': typeof AuthUserProfileRoute
   '/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
@@ -383,7 +375,6 @@ export interface FileRoutesById {
   '/users/$handle': typeof UsersHandleRoute
   '/articles/': typeof ArticlesIndexRoute
   '/membership/': typeof MembershipIndexRoute
-  '/_auth/user/notes': typeof AuthUserNotesRoute
   '/_auth/user/profile': typeof AuthUserProfileRoute
   '/_auth/user/quotations': typeof AuthUserQuotationsRoute
   '/articles/by-id/$id': typeof ArticlesByIdIdRoute
@@ -428,7 +419,6 @@ export interface FileRouteTypes {
     | '/users/$handle'
     | '/articles/'
     | '/membership/'
-    | '/user/notes'
     | '/user/profile'
     | '/user/quotations'
     | '/articles/by-id/$id'
@@ -471,7 +461,6 @@ export interface FileRouteTypes {
     | '/users/$handle'
     | '/articles'
     | '/membership'
-    | '/user/notes'
     | '/user/profile'
     | '/user/quotations'
     | '/articles/by-id/$id'
@@ -516,7 +505,6 @@ export interface FileRouteTypes {
     | '/users/$handle'
     | '/articles/'
     | '/membership/'
-    | '/_auth/user/notes'
     | '/_auth/user/profile'
     | '/_auth/user/quotations'
     | '/articles/by-id/$id'
@@ -702,13 +690,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/users/$handle'
       preLoaderRoute: typeof UsersHandleRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_auth/user/notes': {
-      id: '/_auth/user/notes'
-      path: '/user/notes'
-      fullPath: '/user/notes'
-      preLoaderRoute: typeof AuthUserNotesRouteImport
-      parentRoute: typeof AuthRoute
     }
     '/_auth/user/profile': {
       id: '/_auth/user/profile'
@@ -904,7 +885,6 @@ const AuthManageRouteWithChildren = AuthManageRoute._addFileChildren(
 
 interface AuthRouteChildren {
   AuthManageRoute: typeof AuthManageRouteWithChildren
-  AuthUserNotesRoute: typeof AuthUserNotesRoute
   AuthUserProfileRoute: typeof AuthUserProfileRoute
   AuthUserQuotationsRoute: typeof AuthUserQuotationsRoute
   AuthArticlesReviewRequestIdRoute: typeof AuthArticlesReviewRequestIdRoute
@@ -919,7 +899,6 @@ interface AuthRouteChildren {
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthManageRoute: AuthManageRouteWithChildren,
-  AuthUserNotesRoute: AuthUserNotesRoute,
   AuthUserProfileRoute: AuthUserProfileRoute,
   AuthUserQuotationsRoute: AuthUserQuotationsRoute,
   AuthArticlesReviewRequestIdRoute: AuthArticlesReviewRequestIdRoute,
