@@ -1,0 +1,9 @@
+# Biome is this repo's formatter (see biome.json and .vscode/settings.json).
+# Editors that auto-attach prettier — Neovim's none-ls registers every
+# prettier install it finds — would otherwise reformat files on save with
+# prettier's defaults, fighting biome.json (4-space indent) and reflowing
+# prose in Markdown that is meant to stay as written.
+#
+# Ignoring everything makes prettier a no-op here: it echoes input unchanged
+# rather than erroring, so editor format-on-save falls through to biome.
+**
