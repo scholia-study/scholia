@@ -92,9 +92,7 @@ db-restore *flags:
 prod-forward:
     KUBECONFIG=~/.kube/scholia-prod.yaml kubectl port-forward -n scholia svc/postgres 54322:5432
 
-# promote dev pins → prod overlay (dispatches the GitHub workflow, then watches it)
+# promote dev pins → prod overlay (dispatches the GitHub workflow)
 [group("prod-cluster")]
 promote:
     gh workflow run promote.yml
-    sleep 5
-    gh run watch $(gh run list --workflow=promote.yml --limit 1 --json databaseId -q '.[0].databaseId') --exit-status
