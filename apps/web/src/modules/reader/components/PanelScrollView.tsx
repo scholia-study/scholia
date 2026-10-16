@@ -21,6 +21,9 @@ import type { MarginSettings } from "./BlockRenderer";
 import { Block, MARGIN_NOTES_SLUG } from "./BlockRenderer";
 import { InterleavedNodeRenderer } from "./InterleavedNodeRenderer";
 
+const PLACEHOLDER_HEIGHT = 90;
+const FETCH_PREVIOUS_THRESHOLD = PLACEHOLDER_HEIGHT - 15;
+
 export interface PanelScrollViewHandle {
     getSentencesInRange: (start: number, end: number) => SentenceResponse[];
 }
@@ -205,35 +208,39 @@ export const PanelScrollView = forwardRef<
 
     const scrollerRef = useRef<HTMLDivElement | null>(null);
 
-    // Preserve scroll position when previous-page items prepend. We
-    // measure the scroller's height before and after the node list grows
-    // upward and add the delta to scrollTop — keeping the user's visible
-    // content fixed instead of letting the viewport snap back to the new
-    // first item.
-    const prevFirstNodeIdRef = useRef<string | null>(null);
-    const prevScrollHeightRef = useRef<number>(0);
+    // Preserve scroll position when previous-page items prepend: track the
+    // old first node's offset within the scroll content and shift scrollTop by
+    // how far it moved. Unlike a scrollHeight delta this stays correct when
+    // the placeholder above the list disappears in the same commit.
+    const prevFirstSlugRef = useRef<string | null>(null);
+    const prevFirstOffsetRef = useRef(0);
     useLayoutEffect(() => {
-        const el = scrollerRef.current;
-        if (!el || nodes.length === 0) {
-            prevFirstNodeIdRef.current = null;
-            prevScrollHeightRef.current = 0;
-            return;
-        }
-        const newFirstId = nodes[0].id;
-        if (
-            prevFirstNodeIdRef.current &&
-            prevFirstNodeIdRef.current !== newFirstId
-        ) {
-            const prevFirstIdx = nodes.findIndex(
-                (n) => n.id === prevFirstNodeIdRef.current,
+        const scroller = scrollerRef.current;
+        const offsetOf = (slug: string) => {
+            const el = scroller?.querySelector(
+                `[data-node-slug="${CSS.escape(slug)}"]`,
             );
-            if (prevFirstIdx > 0) {
-                const delta = el.scrollHeight - prevScrollHeightRef.current;
-                el.scrollTop += delta;
+            if (!scroller || !el) return null;
+            return (
+                el.getBoundingClientRect().top -
+                scroller.getBoundingClientRect().top +
+                scroller.scrollTop
+            );
+        };
+        const prevFirstSlug = prevFirstSlugRef.current;
+        if (
+            scroller &&
+            prevFirstSlug &&
+            nodes.findIndex((n) => n.slug === prevFirstSlug) > 0
+        ) {
+            const offset = offsetOf(prevFirstSlug);
+            if (offset != null) {
+                scroller.scrollTop += offset - prevFirstOffsetRef.current;
             }
         }
-        prevFirstNodeIdRef.current = newFirstId;
-        prevScrollHeightRef.current = el.scrollHeight;
+        const firstSlug = nodes[0]?.slug ?? null;
+        prevFirstSlugRef.current = firstSlug;
+        prevFirstOffsetRef.current = firstSlug ? (offsetOf(firstSlug) ?? 0) : 0;
     }, [nodes]);
 
     // Initial / requested scroll-to-node. Once the target's <section>
@@ -311,12 +318,15 @@ export const PanelScrollView = forwardRef<
                 el.getBoundingClientRect().top -
                 scroller.getBoundingClientRect().top -
                 scroller.clientHeight * 0.2;
-            scroller.scrollTop += delta;
+            const target = scroller.scrollTop + delta;
+            scroller.scrollTop = hasPreviousPage
+                ? Math.max(target, PLACEHOLDER_HEIGHT)
+                : target;
         } else {
             el.scrollIntoView({ block: "start" });
         }
         setInitialScrollPending(false);
-    }, [pendingScrollTarget, nodes, onSelectSentence]);
+    }, [pendingScrollTarget, nodes, onSelectSentence, hasPreviousPage]);
 
     useImperativeHandle(
         ref,
@@ -418,31 +428,39 @@ export const PanelScrollView = forwardRef<
         };
     }, []);
 
-    // Edge-fetch sentinels: when the first/last node enters the viewport,
-    // page in the adjacent window. Replaces Virtuoso's start/endReached.
-    const topSentinelRef = useRef<HTMLDivElement | null>(null);
     const bottomSentinelRef = useRef<HTMLDivElement | null>(null);
 
-    const hasPrev = hasPreviousPage;
-    const fetchingPrev = isFetchingPreviousPage;
-    const fetchPrev = fetchPreviousPage;
     useEffect(() => {
-        const el = topSentinelRef.current;
         const scroller = scrollerRef.current;
-        if (!el || !scroller) return;
-        const observer = new IntersectionObserver(
-            (entries) => {
-                for (const entry of entries) {
-                    if (entry.isIntersecting && hasPrev && !fetchingPrev) {
-                        fetchPrev();
-                    }
-                }
-            },
-            { root: scroller, rootMargin: "2000px 0px 0px 0px" },
-        );
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, [hasPrev, fetchingPrev, fetchPrev]);
+        if (!scroller || nodes.length === 0) return;
+        if (!hasPreviousPage || isFetchingPreviousPage) return;
+        if (
+            pendingScrollTarget != null ||
+            initialScrollPending ||
+            pendingSentenceScroll.current
+        ) {
+            return;
+        }
+        const fetchIfPlaceholderVisible = () => {
+            if (scroller.scrollTop < FETCH_PREVIOUS_THRESHOLD) {
+                fetchPreviousPage();
+            }
+        };
+        fetchIfPlaceholderVisible();
+        scroller.addEventListener("scroll", fetchIfPlaceholderVisible, {
+            passive: true,
+        });
+        return () => {
+            scroller.removeEventListener("scroll", fetchIfPlaceholderVisible);
+        };
+    }, [
+        hasPreviousPage,
+        isFetchingPreviousPage,
+        fetchPreviousPage,
+        pendingScrollTarget,
+        initialScrollPending,
+        nodes,
+    ]);
 
     const hasNext = hasNextPage;
     const fetchingNext = isFetchingNextPage;
@@ -520,13 +538,15 @@ export const PanelScrollView = forwardRef<
                     opacity: initialScrollPending ? 0 : 1,
                 }}
             >
-                <div ref={topSentinelRef} aria-hidden="true">
-                    {isFetchingPreviousPage && (
-                        <div className="flex justify-center py-4 text-stone-400">
-                            <p>Loading earlier…</p>
-                        </div>
-                    )}
-                </div>
+                {hasPreviousPage && (
+                    <div
+                        aria-hidden="true"
+                        className="flex items-center justify-center text-stone-400"
+                        style={{ height: PLACEHOLDER_HEIGHT }}
+                    >
+                        <p>Loading earlier…</p>
+                    </div>
+                )}
                 {nodes.map((node) => {
                     const companion = companionNodeMap?.get(node.id);
                     // A play node — detected by the presence of speaker labels —

@@ -14,6 +14,9 @@
   produce a Node SSR server. We've never actually run it through the proxy. Worth a smoke test before assuming k3s will
   Just Work — particularly because the start script references ./dist/server/server.js and ../client, and I haven't
   verified those paths match what the current TanStack Start build actually emits.
+- Remove `books.nodes_per_page` (no longer read since the byte-budgeted page window, migration 0032) once 0032 is
+  live on prod: drop migration, the `nodes_per_page` field in `text_struct` model + the three `md_*_to_struct`
+  corpus configs + `struct_to_db` import, and regenerate `docs/db/schema.simplified.sql`
 
 ## 🏗️ INFRA / EXTERNAL SETUP
 - Auth callback       <domain>/api/auth/github/callback

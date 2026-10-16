@@ -32,8 +32,8 @@ export type GetNodePageParams = {
      */
     node_ids?: string | null;
     /**
-     * Anchor node slug — return a window around this node: the anchor and
-     * what follows, plus some of the nodes before it
+     * Anchor node slug — return the anchor and what follows, with no nodes
+     * before it
      * @nullable
      */
     at?: string | null;

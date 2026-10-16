@@ -80,10 +80,6 @@ struct FootnoteSentenceRow {
 /// originals are requested).
 const PAGE_BUDGET_BYTES: i64 = 650_000;
 
-/// Share of an anchored window's budget spent above the anchor, so the reader
-/// has somewhere to scroll up before the reverse fetch fires.
-const BACK_BUDGET_BYTES: i64 = PAGE_BUDGET_BYTES / 4;
-
 /// Node-count cap, which is what sizes pages of short-node books (Bible
 /// chapters, sonnets): the 20-node window the reader's TOC navigation was tuned
 /// on. A higher cap let those books fill the byte budget at ~2x the old payload.
@@ -94,8 +90,8 @@ pub enum PageWindow<'a> {
     After(i32),
     /// Nodes before this sort_order cursor.
     Before(i32),
-    /// A window around the node with this slug: the anchor and what follows,
-    /// plus up to `BACK_BUDGET_BYTES` of the nodes above it.
+    /// The node with this slug and what follows; nothing above it, which the
+    /// reader pages in lazily once the user scrolls up.
     At(&'a str),
 }
 
@@ -110,20 +106,20 @@ impl NodeRow {
     }
 }
 
-/// How many leading `sizes` fit in `budget`, at most `max_nodes`, and the bytes
-/// they use. With `take_first` the first one is taken even if it alone exceeds
-/// the budget, so a page never comes back empty while nodes remain.
-fn fit_within(sizes: &[i64], budget: i64, max_nodes: usize, take_first: bool) -> (usize, i64) {
+/// How many leading `sizes` fit in `budget`, at most `max_nodes`. The first is
+/// always taken, even if it alone exceeds the budget, so a page never comes
+/// back empty while nodes remain.
+fn fit_within(sizes: &[i64], budget: i64, max_nodes: usize) -> usize {
     let mut used = 0;
     let mut count = 0;
     for &size in sizes.iter().take(max_nodes) {
-        if used + size > budget && !(take_first && count == 0) {
+        if used + size > budget && count > 0 {
             break;
         }
         used += size;
         count += 1;
     }
-    (count, used)
+    count
 }
 
 pub async fn get_node_page(
@@ -138,7 +134,7 @@ pub async fn get_node_page(
     let (nodes, has_more, has_previous) = match window {
         PageWindow::After(after) => {
             let mut rows = nodes_after(pool, slug, after).await?;
-            let (n, _) = fit_within(&sizes(&rows), PAGE_BUDGET_BYTES, MAX_PAGE_NODES, true);
+            let n = fit_within(&sizes(&rows), PAGE_BUDGET_BYTES, MAX_PAGE_NODES);
             let has_more = n < rows.len();
             rows.truncate(n);
             let has_previous = match rows.first() {
@@ -149,7 +145,7 @@ pub async fn get_node_page(
         }
         PageWindow::Before(before) => {
             let mut rows = nodes_before(pool, slug, before).await?;
-            let (n, _) = fit_within(&sizes(&rows), PAGE_BUDGET_BYTES, MAX_PAGE_NODES, true);
+            let n = fit_within(&sizes(&rows), PAGE_BUDGET_BYTES, MAX_PAGE_NODES);
             let has_previous = n < rows.len();
             rows.truncate(n);
             rows.reverse();
@@ -178,25 +174,12 @@ pub async fn get_node_page(
                 });
             };
 
-            let mut above = nodes_before(pool, slug, anchor).await?;
-            let (n_above, above_used) =
-                fit_within(&sizes(&above), BACK_BUDGET_BYTES, MAX_PAGE_NODES - 1, false);
-            let has_previous = n_above < above.len();
-            above.truncate(n_above);
-            above.reverse();
-
-            let mut from_anchor = nodes_after(pool, slug, anchor - 1).await?;
-            let (n_from, _) = fit_within(
-                &sizes(&from_anchor),
-                PAGE_BUDGET_BYTES - above_used,
-                MAX_PAGE_NODES - n_above,
-                true,
-            );
-            let has_more = n_from < from_anchor.len();
-            from_anchor.truncate(n_from);
-
-            above.extend(from_anchor);
-            (above, has_more, has_previous)
+            let mut rows = nodes_after(pool, slug, anchor - 1).await?;
+            let n = fit_within(&sizes(&rows), PAGE_BUDGET_BYTES, MAX_PAGE_NODES);
+            let has_more = n < rows.len();
+            rows.truncate(n);
+            let has_previous = node_exists_before(pool, slug, anchor).await?;
+            (rows, has_more, has_previous)
         }
     };
 
@@ -558,26 +541,21 @@ mod tests {
 
     #[test]
     fn fills_until_budget() {
-        assert_eq!(fit_within(&[40, 40, 40], 100, 50, true), (2, 80));
+        assert_eq!(fit_within(&[40, 40, 40], 100, 50), 2);
     }
 
     #[test]
     fn stops_at_node_cap() {
-        assert_eq!(fit_within(&[1; 10], 100, 3, true), (3, 3));
+        assert_eq!(fit_within(&[1; 10], 100, 3), 3);
     }
 
     #[test]
     fn oversized_first_node_still_taken() {
-        assert_eq!(fit_within(&[500, 10], 100, 50, true), (1, 500));
-    }
-
-    #[test]
-    fn oversized_first_node_skipped_when_optional() {
-        assert_eq!(fit_within(&[500, 10], 100, 50, false), (0, 0));
+        assert_eq!(fit_within(&[500, 10], 100, 50), 1);
     }
 
     #[test]
     fn empty_input() {
-        assert_eq!(fit_within(&[], 100, 50, true), (0, 0));
+        assert_eq!(fit_within(&[], 100, 50), 0);
     }
 }

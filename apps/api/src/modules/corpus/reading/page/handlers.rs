@@ -34,8 +34,8 @@ pub struct PageParams {
     /// Comma-separated node UUIDs — fetch nodes by their own ID
     #[serde(default)]
     node_ids: Option<String>,
-    /// Anchor node slug — return a window around this node: the anchor and
-    /// what follows, plus some of the nodes before it
+    /// Anchor node slug — return the anchor and what follows, with no nodes
+    /// before it
     #[serde(default)]
     at: Option<String>,
 }

@@ -9,8 +9,8 @@ import {
 } from "../../api/nodes/nodes";
 
 /** Pages are sized server-side by a byte budget, not a node count: an `at`
- *  window holds the target, what follows, and a buffer of nodes above it so
- *  the user has somewhere to scroll up to before the reverse fetch fires. */
+ *  window holds the target and what follows; nodes above it load only when
+ *  the user scrolls up into the reader's "Loading earlier…" placeholder. */
 export type PageCursor =
     | { after: number }
     | { before: number }

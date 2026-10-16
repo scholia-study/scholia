@@ -2162,7 +2162,7 @@
                     {
                         "name": "at",
                         "in": "query",
-                        "description": "Anchor node slug — return a window around this node: the anchor and\nwhat follows, plus some of the nodes before it",
+                        "description": "Anchor node slug — return the anchor and what follows, with no nodes\nbefore it",
                         "required": false,
                         "schema": {
                             "type": ["string", "null"]
