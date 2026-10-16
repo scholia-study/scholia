@@ -3,6 +3,7 @@ import ArticleOutlined from "@mui/icons-material/ArticleOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import CommitOutlined from "@mui/icons-material/CommitOutlined";
 import CompareOutlined from "@mui/icons-material/CompareOutlined";
+import ContentCopyOutlined from "@mui/icons-material/ContentCopyOutlined";
 import EditNoteOutlined from "@mui/icons-material/EditNoteOutlined";
 import ExploreOutlined from "@mui/icons-material/ExploreOutlined";
 import FavoriteBorderOutlined from "@mui/icons-material/FavoriteBorderOutlined";
@@ -102,6 +103,9 @@ interface ResourcesPanelProps {
     /** Whether the next sentence tap extends the selection (shift-click on touch). */
     extendArmed: boolean;
     onToggleExtend: () => void;
+    /** Clipboard text for a range selection, when it differs from the joined
+     *  sentence text (a play's speaker labels). */
+    copyText?: string;
 }
 
 /** Joined text of the current selection, used to seed a verbatim quote. */
@@ -132,6 +136,7 @@ export function ResourcesPanel({
     accent,
     extendArmed,
     onToggleExtend,
+    copyText,
 }: ResourcesPanelProps) {
     // The header sits beside the reader toolbar and takes the same colour a
     // shade lighter, as if lit through glass. Ink is measured against the
@@ -194,6 +199,14 @@ export function ResourcesPanel({
         { query: { enabled: !!sentenceRange } },
     );
     const articleRefCount = articleRefsData?.data?.total ?? 0;
+
+    const selectionText = copyText || selectedSentenceText(selectedSentence);
+    const copySelection = () => {
+        navigator.clipboard.writeText(selectionText).then(
+            () => toast.success("Copied to clipboard"),
+            () => toast.error("Couldn't copy to clipboard"),
+        );
+    };
 
     // Modal state for resource create/edit (used by ResourceFormModal)
     const [resourceModalOpen, setResourceModalOpen] = useState(false);
@@ -616,6 +629,17 @@ export function ResourcesPanel({
                         >
                             <UnfoldMoreOutlined sx={{ fontSize: 14 }} />
                             {extendArmed ? "Tap a sentence" : "Extend"}
+                        </button>
+                    )}
+                    {selectionText && (
+                        <button
+                            type="button"
+                            onClick={copySelection}
+                            title="Copy the selected text"
+                            className="inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs text-stone-600 transition-colors hover:bg-stone-100"
+                        >
+                            <ContentCopyOutlined sx={{ fontSize: 14 }} />
+                            Copy
                         </button>
                     )}
                 </div>

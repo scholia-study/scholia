@@ -15,6 +15,7 @@ import {
 } from "react";
 import type { NodeDetail, SentenceResponse } from "../../../api/model";
 import { getNodePage } from "../../../api/nodes/nodes";
+import { rangeCopyText } from "../copyText";
 import { deepLinkScrollKey, parseRangeKey } from "../keys";
 import { getNodePageSuspenseQueryOptions } from "../nodePageQuery";
 import type { MarginSettings } from "./BlockRenderer";
@@ -26,6 +27,7 @@ const FETCH_PREVIOUS_THRESHOLD = PLACEHOLDER_HEIGHT - 15;
 
 export interface PanelScrollViewHandle {
     getSentencesInRange: (start: number, end: number) => SentenceResponse[];
+    getRangeCopyText: (start: number, end: number) => string;
 }
 
 interface PanelScrollViewProps {
@@ -349,6 +351,9 @@ export const PanelScrollView = forwardRef<
                 return result.sort(
                     (a, b) => a.sentence_number! - b.sentence_number!,
                 );
+            },
+            getRangeCopyText(start: number, end: number) {
+                return rangeCopyText(nodes, start, end);
             },
         }),
         [nodes],

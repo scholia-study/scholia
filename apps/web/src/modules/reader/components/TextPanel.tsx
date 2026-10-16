@@ -450,6 +450,7 @@ export function TextPanel({
         ? parseRangeKey(selectedSentenceId)
         : null;
 
+    const [rangeCopyText, setRangeCopyText] = useState<string>();
     useEffect(() => {
         if (rangeKey && scrollViewRef.current) {
             setSelectedSentences(
@@ -458,8 +459,15 @@ export function TextPanel({
                     rangeKey[1],
                 ),
             );
+            setRangeCopyText(
+                scrollViewRef.current.getRangeCopyText(
+                    rangeKey[0],
+                    rangeKey[1],
+                ),
+            );
         } else {
             setSelectedSentences([]);
+            setRangeCopyText(undefined);
         }
     }, [rangeKey?.[0], rangeKey?.[1]]);
 
@@ -1428,6 +1436,11 @@ export function TextPanel({
                         accent={accent}
                         extendArmed={extendArmed}
                         onToggleExtend={toggleExtendArmed}
+                        copyText={
+                            selectedFootnoteSentences.length > 0
+                                ? undefined
+                                : rangeCopyText
+                        }
                     />
                 )}
             </div>
