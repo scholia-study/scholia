@@ -1,11 +1,17 @@
 import { createContext, useContext, useMemo } from "react";
 import type { PageMarkerResponse, QuotationResponse } from "../../../api/model";
 
+/** A sentence's standing among the reader's own quotations: highlighted when
+ *  saved, and additionally marked in the margin when a quotation covering it
+ *  carries notes. */
+export type SavedState = "none" | "saved" | "noted";
+
 interface QuotationContextValue {
     quotations: QuotationResponse[];
     showBookmarks: boolean;
+    showHighlights: boolean;
     /**
-     * Whether a sentence carries a saved-quotation marker. Two paths:
+     * Whether a sentence is covered by a saved quotation. Two paths:
      *
      * 1. Verse-key projection (Bible) — saved verses land in a Set
      *    keyed by `${projected_source_ref}::${verse_ref_value}`. The
@@ -18,23 +24,34 @@ interface QuotationContextValue {
      *    keys fall back to the existing within-book sentence_number
      *    range match.
      */
-    isSentenceSaved: (
+    sentenceSavedState: (
         sentenceNumber: number | null | undefined,
         nodeSourceRef: string | null | undefined,
         pageMarkers: PageMarkerResponse[] | null | undefined,
-    ) => boolean;
-    /** Whether a figure block carries a saved-quotation marker. Figures are
-     *  addressed by figure_number (kind 'figure'), a numbering space separate
-     *  from body sentences. */
-    isFigureSaved: (figureNumber: number | null | undefined) => boolean;
+    ) => SavedState;
+    /** The same for a figure block. Figures are addressed by figure_number
+     *  (kind 'figure'), a numbering space separate from body sentences. */
+    figureSavedState: (figureNumber: number | null | undefined) => SavedState;
 }
 
 const QuotationContext = createContext<QuotationContextValue>({
     quotations: [],
     showBookmarks: true,
-    isSentenceSaved: () => false,
-    isFigureSaved: () => false,
+    showHighlights: true,
+    sentenceSavedState: () => "none",
+    figureSavedState: () => "none",
 });
+
+function savedStateOf(matches: QuotationResponse[]): SavedState {
+    if (matches.length === 0) return "none";
+    return matches.some((q) => q.note_count > 0) ? "noted" : "saved";
+}
+
+function mergeSavedState(a: SavedState, b: SavedState): SavedState {
+    if (a === "noted" || b === "noted") return "noted";
+    if (a === "saved" || b === "saved") return "saved";
+    return "none";
+}
 
 /** Parse a verse `ref_value` like "5:10" into [chapter, verse]. */
 function parseVerseRef(ref: string): [number, number] | null {
@@ -63,10 +80,12 @@ function expandVerseRange(start: string, end: string | null): string[] {
 export function QuotationProvider({
     quotations,
     showBookmarks,
+    showHighlights,
     children,
 }: {
     quotations: QuotationResponse[];
     showBookmarks: boolean;
+    showHighlights: boolean;
     children: React.ReactNode;
 }) {
     const value = useMemo(() => {
@@ -75,7 +94,7 @@ export function QuotationProvider({
         // through cross_translation_alignments). For older clients or
         // endpoints that haven't been wired yet, anchor_* is the
         // fallback — they coincide for non-drifting chapters.
-        const savedVerseKeys = new Set<string>();
+        const savedVerseKeys = new Map<string, SavedState>();
         for (const q of quotations) {
             const sourceRef = q.projected_source_ref ?? q.anchor_source_ref;
             const verseStart = q.projected_verse_start ?? q.anchor_verse_start;
@@ -83,28 +102,37 @@ export function QuotationProvider({
             if (!sourceRef || !verseStart) continue;
             const verses = expandVerseRange(verseStart, verseEnd ?? null);
             for (const v of verses) {
-                savedVerseKeys.add(`${sourceRef}::${v}`);
+                const key = `${sourceRef}::${v}`;
+                savedVerseKeys.set(
+                    key,
+                    mergeSavedState(
+                        savedVerseKeys.get(key) ?? "none",
+                        savedStateOf([q]),
+                    ),
+                );
             }
         }
-        const isSentenceSaved = (
+        const sentenceSavedState = (
             sentenceNumber: number | null | undefined,
             nodeSourceRef: string | null | undefined,
             pageMarkers: PageMarkerResponse[] | null | undefined,
-        ) => {
+        ): SavedState => {
+            let state: SavedState = "none";
             // 1. Verse-key match — Bible visual projection.
             if (nodeSourceRef && pageMarkers && pageMarkers.length > 0) {
                 for (const m of pageMarkers) {
                     if (m.system_slug !== "verse") continue;
-                    if (
-                        savedVerseKeys.has(`${nodeSourceRef}::${m.ref_value}`)
-                    ) {
-                        return true;
-                    }
+                    state = mergeSavedState(
+                        state,
+                        savedVerseKeys.get(
+                            `${nodeSourceRef}::${m.ref_value}`,
+                        ) ?? "none",
+                    );
                 }
             }
             // 2. sentence_number range match — Kant within-book.
-            if (sentenceNumber == null) return false;
-            return quotations.some((q) => {
+            if (sentenceNumber == null) return state;
+            const matches = quotations.filter((q) => {
                 // Anchor-verse covers the verse-key path; skip those here.
                 if (q.projected_verse_start ?? q.anchor_verse_start) {
                     return false;
@@ -116,17 +144,28 @@ export function QuotationProvider({
                 const end = q.anchor_sentence_end_number ?? start;
                 return sentenceNumber >= start && sentenceNumber <= end;
             });
+            return mergeSavedState(state, savedStateOf(matches));
         };
-        const isFigureSaved = (figureNumber: number | null | undefined) => {
-            if (figureNumber == null) return false;
-            return quotations.some(
-                (q) =>
-                    q.sentence_kind === "figure" &&
-                    q.anchor_sentence_start_number === figureNumber,
+        const figureSavedState = (
+            figureNumber: number | null | undefined,
+        ): SavedState => {
+            if (figureNumber == null) return "none";
+            return savedStateOf(
+                quotations.filter(
+                    (q) =>
+                        q.sentence_kind === "figure" &&
+                        q.anchor_sentence_start_number === figureNumber,
+                ),
             );
         };
-        return { quotations, showBookmarks, isSentenceSaved, isFigureSaved };
-    }, [quotations, showBookmarks]);
+        return {
+            quotations,
+            showBookmarks,
+            showHighlights,
+            sentenceSavedState,
+            figureSavedState,
+        };
+    }, [quotations, showBookmarks, showHighlights]);
 
     return (
         <QuotationContext.Provider value={value}>

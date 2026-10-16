@@ -5,6 +5,8 @@ export const LOC_STORAGE_KEYS = {
     readerLineHeight: "scholia:reader-line-height",
     readerWidth: "scholia:reader-width",
     readerLineNumberInterval: "scholia:reader-line-number-interval",
+    readerShowHighlights: "scholia:reader-show-highlights",
+    readerShowNoteIcons: "scholia:reader-show-note-icons",
     readerTourSeen: "scholia:reader-tour:seen:v1",
     /** Per Bible-shape group; legacy un-namespaced key (kept verbatim). */
     bibleTranslation: (groupId: string) => `bible-translation:${groupId}`,

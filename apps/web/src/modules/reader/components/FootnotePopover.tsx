@@ -89,7 +89,7 @@ function FootnoteSentenceSpan({
                     onSelect(sentence, e.shiftKey);
                 }}
                 className={`cursor-pointer transition-colors rounded-sm ${
-                    isSelected ? "bg-amber-200" : "hover:bg-stone-200"
+                    isSelected ? "bg-sky-200" : "hover:bg-stone-200"
                 }`}
             >
                 {parse(html)}

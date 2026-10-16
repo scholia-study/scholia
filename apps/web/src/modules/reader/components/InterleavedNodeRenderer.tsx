@@ -1,8 +1,10 @@
+import { useMemo } from "react";
 import type {
     ContentBlockResponse,
     NodeDetail,
     SentenceResponse,
 } from "../../../api/model";
+import { CompanionSentencesProvider } from "../context/companion";
 import { sentenceMatchesKey } from "../keys";
 import type { MarginSettings } from "./BlockRenderer";
 import { Block, Sentence, Separator } from "./BlockRenderer";
@@ -380,10 +382,10 @@ function StackedParagraphs({
                             </div>
                         )}
                         {item.companion && (
-                            <div className="border-l-2 border-amber-300 pl-3 mb-4">
+                            <div className="border-l-2 border-violet-300 pl-3 mb-4">
                                 <TextLabel
                                     label={companionLabel}
-                                    color="#fcd34d"
+                                    color="#c4b5fd"
                                 />
                                 <Block
                                     block={item.companion}
@@ -450,7 +452,7 @@ function StackedSentences({
                                 </div>
                             )}
                             {item.companion && (
-                                <div className="border-l-2 border-amber-300 pl-3">
+                                <div className="border-l-2 border-violet-300 pl-3">
                                     <Block
                                         block={item.companion}
                                         selectedSentenceId={selectedSentenceId}
@@ -500,11 +502,11 @@ function StackedSentences({
                                     </p>
                                 )}
                                 {group.companion.length > 0 && (
-                                    <p className="relative border-l-2 border-amber-300 pl-3 leading-[var(--reader-line-height)] text-stone-700">
+                                    <p className="relative border-l-2 border-violet-300 pl-3 leading-[var(--reader-line-height)] text-stone-700">
                                         {gi === 0 && (
                                             <TextLabel
                                                 label={companionLabel}
-                                                color="#fcd34d"
+                                                color="#c4b5fd"
                                             />
                                         )}{" "}
                                         {group.companion.map((s) => (
@@ -795,7 +797,25 @@ function SideBySideSentences({
 
 // --- Main component ---
 
-export function InterleavedNodeRenderer({
+export function InterleavedNodeRenderer(props: InterleavedNodeRendererProps) {
+    const { companionNode } = props;
+    const companionSentenceIds = useMemo(
+        () =>
+            new Set(
+                companionNode?.blocks.flatMap((b) =>
+                    b.sentences.map((s) => s.id),
+                ) ?? [],
+            ),
+        [companionNode],
+    );
+    return (
+        <CompanionSentencesProvider value={companionSentenceIds}>
+            <InterleavedLayout {...props} />
+        </CompanionSentencesProvider>
+    );
+}
+
+function InterleavedLayout({
     primaryNode,
     companionNode,
     viewLayout,

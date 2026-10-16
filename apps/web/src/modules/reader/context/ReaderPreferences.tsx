@@ -121,7 +121,13 @@ interface ReaderPreferences {
     /** Show line-number markers every Nth line (1 = every line). */
     lineNumberInterval: number;
     setLineNumberInterval: (value: number) => void;
-    /** Clear all stored display prefs (size, spacing, width, line nums) to defaults. */
+    /** Tint the reader's own saved passages yellow. */
+    showHighlights: boolean;
+    setShowHighlights: (value: boolean) => void;
+    /** Mark passages the reader has written notes on in the margin. */
+    showNoteIcons: boolean;
+    setShowNoteIcons: (value: boolean) => void;
+    /** Clear all stored display prefs to their defaults. */
     resetDisplayPreferences: () => void;
     /** True when any display pref differs from its default. */
     hasDisplayOverrides: boolean;
@@ -166,6 +172,21 @@ export function ReaderPreferencesProvider({
     const setLineNumberInterval = useCallback(
         (value: number) => setLineNumberIntervalRaw(String(value)),
         [setLineNumberIntervalRaw],
+    );
+
+    const [showHighlightsRaw, setShowHighlightsRaw, resetShowHighlights] =
+        useLocalStorageState(LOC_STORAGE_KEYS.readerShowHighlights, "true");
+    const showHighlights = showHighlightsRaw !== "false";
+    const setShowHighlights = useCallback(
+        (value: boolean) => setShowHighlightsRaw(String(value)),
+        [setShowHighlightsRaw],
+    );
+    const [showNoteIconsRaw, setShowNoteIconsRaw, resetShowNoteIcons] =
+        useLocalStorageState(LOC_STORAGE_KEYS.readerShowNoteIcons, "true");
+    const showNoteIcons = showNoteIconsRaw !== "false";
+    const setShowNoteIcons = useCallback(
+        (value: boolean) => setShowNoteIconsRaw(String(value)),
+        [setShowNoteIconsRaw],
     );
 
     const responsiveDefault = isDesktop ? DEFAULT_DESKTOP : DEFAULT_MOBILE;
@@ -231,18 +252,24 @@ export function ReaderPreferencesProvider({
         resetLineHeight();
         resetReadingWidth();
         resetLineNumberInterval();
+        resetShowHighlights();
+        resetShowNoteIcons();
     }, [
         resetFontSize,
         resetLineHeight,
         resetReadingWidth,
         resetLineNumberInterval,
+        resetShowHighlights,
+        resetShowNoteIcons,
     ]);
 
     const hasDisplayOverrides =
         override != null ||
         lineHeight !== DEFAULT_LINE_HEIGHT ||
         readingWidth !== DEFAULT_READING_WIDTH ||
-        lineNumberInterval !== DEFAULT_LINE_NUMBER_INTERVAL;
+        lineNumberInterval !== DEFAULT_LINE_NUMBER_INTERVAL ||
+        !showHighlights ||
+        !showNoteIcons;
 
     const value = useMemo<ReaderPreferences>(
         () => ({
@@ -259,6 +286,10 @@ export function ReaderPreferencesProvider({
             setReadingWidth,
             lineNumberInterval,
             setLineNumberInterval,
+            showHighlights,
+            setShowHighlights,
+            showNoteIcons,
+            setShowNoteIcons,
             resetDisplayPreferences,
             hasDisplayOverrides,
         }),
@@ -274,6 +305,10 @@ export function ReaderPreferencesProvider({
             setReadingWidth,
             lineNumberInterval,
             setLineNumberInterval,
+            showHighlights,
+            setShowHighlights,
+            showNoteIcons,
+            setShowNoteIcons,
             resetDisplayPreferences,
             hasDisplayOverrides,
         ],

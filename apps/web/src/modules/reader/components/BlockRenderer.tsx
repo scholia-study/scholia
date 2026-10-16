@@ -16,6 +16,7 @@ import type {
     PageMarkerResponse,
     SentenceResponse,
 } from "../../../api/model";
+import { useIsCompanionSentence } from "../context/companion";
 import { useQuotationContext } from "../context/Quotations";
 import {
     useFootnoteActions,
@@ -265,6 +266,19 @@ function MarginNoteGutter({
     );
 }
 
+/** Gutter mark for a passage the reader has written notes on. */
+function NoteMarker() {
+    return (
+        <span
+            className="absolute right-full mr-1 text-amber-600 select-none pointer-events-none"
+            style={{ lineHeight: "inherit" }}
+            title="Has notes"
+        >
+            <EditNoteOutlined sx={{ fontSize: 16 }} />
+        </span>
+    );
+}
+
 function FootnoteSup({
     footnoteNumber,
     sentence,
@@ -401,7 +415,9 @@ export function Sentence({
 }) {
     const { isCorrespondent } = useSentenceSelection(sentence);
     const isFootnoteAnchor = useFootnoteAnchor(sentence.footnotes);
-    const { showBookmarks, isSentenceSaved } = useQuotationContext();
+    const { showBookmarks, showHighlights, sentenceSavedState } =
+        useQuotationContext();
+    const isCompanion = useIsCompanionSentence(sentence.id);
 
     let leftMarkers: PageMarkerResponse[] | undefined;
     let rightMarkers: PageMarkerResponse[] | undefined;
@@ -450,15 +466,25 @@ export function Sentence({
     const marginNotesSide =
         marginSettings?.systemSides[MARGIN_NOTES_SLUG] ?? "right";
 
+    const savedState = sentenceSavedState(
+        sentence.sentence_number,
+        nodeSourceRef,
+        sentence.page_markers,
+    );
+    const savedClass =
+        showHighlights && savedState !== "none"
+            ? isCompanion
+                ? "bg-amber-50"
+                : "bg-amber-100"
+            : "";
+
     const highlightClass = isSelected
-        ? isCorrespondent
-            ? "bg-amber-100"
-            : isFootnoteAnchor
-              ? "bg-amber-100"
-              : "bg-amber-200"
+        ? isCorrespondent || isFootnoteAnchor
+            ? "bg-sky-100"
+            : "bg-sky-200"
         : isFootnoteAnchor
-          ? "bg-amber-100"
-          : "hover:bg-stone-200";
+          ? "bg-sky-100"
+          : `${savedClass} hover:bg-stone-200`;
 
     const parsedHtml = useMemo(() => {
         const html =
@@ -490,24 +516,10 @@ export function Sentence({
         });
     }, [showOriginal, sentence, onSelect]);
 
-    const isSaved =
-        showBookmarks &&
-        isSentenceSaved(
-            sentence.sentence_number,
-            nodeSourceRef,
-            sentence.page_markers,
-        );
-
     return (
         <>
-            {isSaved && (
-                <span
-                    className="absolute right-full mr-1 text-stone-300 select-none pointer-events-none"
-                    style={{ lineHeight: "inherit" }}
-                    title="Saved quotation"
-                >
-                    <EditNoteOutlined sx={{ fontSize: 14 }} />
-                </span>
+            {showBookmarks && savedState === "noted" && !isCompanion && (
+                <NoteMarker />
             )}
             {leftMarkers &&
                 !(showMarginNotes && marginNotesSide === "left") && (
@@ -700,7 +712,8 @@ export function Block({
     const blockHtml =
         showOriginal && block.original_html ? block.original_html : block.html;
 
-    const { showBookmarks, isFigureSaved } = useQuotationContext();
+    const { showBookmarks, showHighlights, figureSavedState } =
+        useQuotationContext();
 
     // Per-sentence display-marker lists: drop a page_marker whose
     // ref_value matches the previous sentence's for the same system.
@@ -897,17 +910,11 @@ export function Block({
             const isSelected = anchor
                 ? sentenceMatchesKey(anchor, selectedSentenceId)
                 : false;
+            const figureSaved = figureSavedState(block.figure_number);
 
             return (
                 <div className="relative py-4">
-                    {showBookmarks && isFigureSaved(block.figure_number) && (
-                        <span
-                            className="absolute right-full mr-1 text-stone-300 select-none pointer-events-none"
-                            title="Saved quotation"
-                        >
-                            <EditNoteOutlined sx={{ fontSize: 14 }} />
-                        </span>
-                    )}
+                    {showBookmarks && figureSaved === "noted" && <NoteMarker />}
                     {leftMarkers && (
                         <MarginNotes markers={leftMarkers} side="left" />
                     )}
@@ -932,8 +939,10 @@ export function Block({
                         // positioning context.
                         className={`cursor-pointer rounded-sm transition-colors [&_figure]:relative [&_figcaption]:absolute [&_figcaption]:right-6 [&_figcaption]:bottom-4 [&_figcaption]:text-right [&_figcaption]:text-sm [&_figcaption]:text-stone-400 ${
                             isSelected
-                                ? "ring-2 ring-amber-300 bg-amber-50"
-                                : "hover:bg-stone-100"
+                                ? "ring-2 ring-sky-300 bg-sky-50"
+                                : showHighlights && figureSaved !== "none"
+                                  ? "bg-amber-50 hover:bg-stone-100"
+                                  : "hover:bg-stone-100"
                         }`}
                     >
                         {parse(figureHtml)}

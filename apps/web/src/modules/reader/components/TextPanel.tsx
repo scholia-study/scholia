@@ -217,9 +217,7 @@ export function TextPanel({
     });
     const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
-    // Quotation bookmarks
     const { user } = useAuth();
-    const [showBookmarks, setShowBookmarks] = useState(true);
 
     // Reader display prefs (in the display menu; persisted globally)
     const {
@@ -234,6 +232,10 @@ export function TextPanel({
         setReadingWidth,
         lineNumberInterval,
         setLineNumberInterval,
+        showHighlights,
+        setShowHighlights,
+        showNoteIcons,
+        setShowNoteIcons,
         resetDisplayPreferences,
         hasDisplayOverrides,
     } = useReaderPreferences();
@@ -1359,6 +1361,35 @@ export function TextPanel({
                                             Saved quotations
                                         </Typography>,
                                         <MenuItem
+                                            key="highlights-toggle"
+                                            disableRipple
+                                            sx={{
+                                                py: 0,
+                                                pl: 1.5,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        "transparent",
+                                                },
+                                            }}
+                                        >
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        size="small"
+                                                        checked={showHighlights}
+                                                        onChange={() =>
+                                                            setShowHighlights(
+                                                                !showHighlights,
+                                                            )
+                                                        }
+                                                    />
+                                                }
+                                                label={
+                                                    <ListItemText primary="Show my highlights" />
+                                                }
+                                            />
+                                        </MenuItem>,
+                                        <MenuItem
                                             key="bookmarks-toggle"
                                             disableRipple
                                             sx={{
@@ -1374,10 +1405,10 @@ export function TextPanel({
                                                 control={
                                                     <Switch
                                                         size="small"
-                                                        checked={showBookmarks}
+                                                        checked={showNoteIcons}
                                                         onChange={() =>
-                                                            setShowBookmarks(
-                                                                !showBookmarks,
+                                                            setShowNoteIcons(
+                                                                !showNoteIcons,
                                                             )
                                                         }
                                                     />
@@ -1396,7 +1427,8 @@ export function TextPanel({
                     {/* Content */}
                     <QuotationProvider
                         quotations={quotations}
-                        showBookmarks={showBookmarks}
+                        showBookmarks={showNoteIcons}
+                        showHighlights={showHighlights}
                     >
                         <PanelScrollView
                             ref={scrollViewRef}
