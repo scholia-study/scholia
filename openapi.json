@@ -2100,6 +2100,7 @@
             "get": {
                 "tags": ["nodes"],
                 "summary": "Get paginated nodes for infinite scroll",
+                "description": "Pages are sized by a byte budget, not a node count, so their length varies\nwith the book's node sizes.",
                 "operationId": "get_node_page",
                 "parameters": [
                     {
@@ -2125,16 +2126,6 @@
                         "name": "before",
                         "in": "query",
                         "description": "sort_order cursor — fetch nodes before this value",
-                        "required": false,
-                        "schema": {
-                            "type": ["integer", "null"],
-                            "format": "int32"
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "description": "page size, default 20, max 50",
                         "required": false,
                         "schema": {
                             "type": ["integer", "null"],
@@ -2171,20 +2162,10 @@
                     {
                         "name": "at",
                         "in": "query",
-                        "description": "Anchor node slug — return a forward window centered on this node\n(combine with `back` to include nodes before the anchor)",
+                        "description": "Anchor node slug — return a window around this node: the anchor and\nwhat follows, plus some of the nodes before it",
                         "required": false,
                         "schema": {
                             "type": ["string", "null"]
-                        }
-                    },
-                    {
-                        "name": "back",
-                        "in": "query",
-                        "description": "Number of nodes to include before the `at` anchor (default 0)",
-                        "required": false,
-                        "schema": {
-                            "type": ["integer", "null"],
-                            "format": "int32"
                         }
                     }
                 ],

@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order, tn.source_node_id\n           FROM toc_nodes tn\n           JOIN books b ON b.id = tn.book_id\n           WHERE b.slug = $1 AND tn.source_node_id = ANY($2)\n           ORDER BY tn.sort_order",
+    "query": "SELECT tn.id, tn.source_ref, tn.slug, tn.label, tn.depth, tn.sort_order, tn.source_node_id,\n                  tn.content_size, tn.original_size\n           FROM toc_nodes tn\n           JOIN books b ON b.id = tn.book_id\n           WHERE b.slug = $1 AND tn.sort_order < $2\n           ORDER BY tn.sort_order DESC\n           LIMIT $3",
     "describe": {
         "columns": [
             {
@@ -37,12 +37,32 @@
                 "ordinal": 6,
                 "name": "source_node_id",
                 "type_info": "Uuid"
+            },
+            {
+                "ordinal": 7,
+                "name": "content_size",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 8,
+                "name": "original_size",
+                "type_info": "Int4"
             }
         ],
         "parameters": {
-            "Left": ["Text", "UuidArray"]
+            "Left": ["Text", "Int4", "Int8"]
         },
-        "nullable": [false, false, false, false, false, false, true]
+        "nullable": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false
+        ]
     },
-    "hash": "fffa1992093ac596d879d317c664be8703429e54fb6e21dfdeafba088be0b559"
+    "hash": "28f545eaeaabe911f780fa882ca2b98512733fc5f02a1cd4b32dbf648478ace6"
 }

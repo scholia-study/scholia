@@ -17,11 +17,6 @@ export type GetNodePageParams = {
      */
     before?: number | null;
     /**
-     * page size, default 20, max 50
-     * @nullable
-     */
-    limit?: number | null;
-    /**
      * include original_text/original_html fields
      * @nullable
      */
@@ -37,14 +32,9 @@ export type GetNodePageParams = {
      */
     node_ids?: string | null;
     /**
-     * Anchor node slug — return a forward window centered on this node
-     * (combine with `back` to include nodes before the anchor)
+     * Anchor node slug — return a window around this node: the anchor and
+     * what follows, plus some of the nodes before it
      * @nullable
      */
     at?: string | null;
-    /**
-     * Number of nodes to include before the `at` anchor (default 0)
-     * @nullable
-     */
-    back?: number | null;
 };

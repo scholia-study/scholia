@@ -388,6 +388,7 @@ pub async fn run(
                 allow_insertion,
             )
             .await?;
+            reconcile::recompute_node_sizes(&mut tx, id).await?;
             let cp = crate::canonical::seed_sentence_basis(&mut tx, id, source_book_id).await?;
             eprintln!(
                 "Canonical passages: {} minted, {} sentences stamped",
@@ -795,6 +796,7 @@ pub async fn run(
         .execute(&mut *tx)
         .await?;
 
+    reconcile::recompute_node_sizes(&mut tx, book_id).await?;
     let cp = crate::canonical::seed_sentence_basis(&mut tx, book_id, source_book_id).await?;
     eprintln!(
         "Canonical passages: {} minted, {} sentences stamped",

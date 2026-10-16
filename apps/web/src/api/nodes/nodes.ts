@@ -104,6 +104,8 @@ export const getGetNodePageUrl = (slug: string, params?: GetNodePageParams) => {
 };
 
 /**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
  * @summary Get paginated nodes for infinite scroll
  */
 export const getNodePage = async (

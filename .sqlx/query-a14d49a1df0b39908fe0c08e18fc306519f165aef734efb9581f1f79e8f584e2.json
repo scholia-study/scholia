@@ -1,0 +1,18 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "SELECT EXISTS(SELECT 1 FROM books WHERE slug = $1) AS \"exists!\"",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "exists!",
+                "type_info": "Bool"
+            }
+        ],
+        "parameters": {
+            "Left": ["Text"]
+        },
+        "nullable": [null]
+    },
+    "hash": "a14d49a1df0b39908fe0c08e18fc306519f165aef734efb9581f1f79e8f584e2"
+}

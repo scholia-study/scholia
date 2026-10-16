@@ -1,7 +1,7 @@
 //! Shared reconciling-re-import toolkit, used by every importer that updates an
 //! already-imported book in place (`struct_to_db`, `bible_to_db`).
 //!
-//! Six book-agnostic pieces live here:
+//! Seven book-agnostic pieces live here:
 //! - [`align`]: the text-based aligner that classifies a unit's before/after
 //!   sentence lists into update / split / merge / insert / delete (or aborts on
 //!   ambiguity). It has no notion of paragraphs, verses, or footnotes — callers
@@ -17,6 +17,8 @@
 //!   the desired values so the strictly-additive pre-flight then passes.
 //! - [`keys`]: the sentence `natural_key` formats, so fresh-insert and reconcile
 //!   build the same per-sentence identity strings.
+//! - [`sizes`]: the per-node payload sizes the reader's page window is
+//!   byte-budgeted on, recomputed at the end of every import.
 //! - [`orchestrate`]: the full in-place reconcile, reading from the owned
 //!   [`orchestrate::ReconcileInput`] IR. Importers map their model → the IR,
 //!   compute their hashes themselves, then call [`orchestrate::reconcile_book`].
@@ -27,6 +29,7 @@ pub mod hash;
 pub mod insertion;
 pub mod keys;
 pub mod orchestrate;
+pub mod sizes;
 
 pub use align::{BlockPlan, Existing, plan_block};
 pub use deps::{extend_anchors_to, migrate_dependents, sentence_has_dependents};
@@ -39,3 +42,4 @@ pub use orchestrate::{
     BlockInput, FootnoteInput, MarginNoteInput, MarkerInput, NodeAnchor, NodeInput, ReconcileInput,
     ReconcileReport, SentenceInput, reconcile_book,
 };
+pub use sizes::recompute_node_sizes;

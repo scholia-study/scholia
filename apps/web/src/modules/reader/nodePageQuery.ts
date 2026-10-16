@@ -8,22 +8,19 @@ import {
     type getNodePageResponseSuccess,
 } from "../../api/nodes/nodes";
 
+/** Pages are sized server-side by a byte budget, not a node count: an `at`
+ *  window holds the target, what follows, and a buffer of nodes above it so
+ *  the user has somewhere to scroll up to before the reverse fetch fires. */
 export type PageCursor =
     | { after: number }
     | { before: number }
-    | { at: string; back: number };
-
-/** Buffer of chapters loaded above the target on initial render — gives the
- *  user somewhere to scroll up to before the reverse fetch fires. */
-export const PREFETCH_BUFFER = 5;
+    | { at: string };
 
 interface NodePageQueryArgs {
     bookSlug: string;
     showOriginal: boolean;
     /** The target chapter's slug. The API resolves it to a sort_order and
-     *  returns a window centered on it (PREFETCH_BUFFER chapters above plus
-     *  the target and the rest of the page size after). When undefined the
-     *  query won't fire. */
+     *  returns a window around it. When undefined the query won't fire. */
     targetNodeSlug: string | undefined;
 }
 
@@ -48,21 +45,17 @@ export function getNodePageSuspenseQueryOptions({
     PageCursor | undefined
 > {
     const initialPageParam: PageCursor | undefined =
-        targetNodeSlug != null
-            ? { at: targetNodeSlug, back: PREFETCH_BUFFER }
-            : undefined;
+        targetNodeSlug != null ? { at: targetNodeSlug } : undefined;
 
     const queryFn: QueryFunction<
         getNodePageResponseSuccess,
         Array<string>,
         PageCursor | undefined
     > = async ({ pageParam, signal }) => {
-        const base = showOriginal
-            ? { limit: 20, original: true }
-            : { limit: 20 };
+        const base = showOriginal ? { original: true } : {};
         const params = pageParam
             ? "at" in pageParam
-                ? { ...base, at: pageParam.at, back: pageParam.back }
+                ? { ...base, at: pageParam.at }
                 : "after" in pageParam
                   ? { ...base, after: pageParam.after }
                   : { ...base, before: pageParam.before }

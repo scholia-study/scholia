@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT EXISTS(\n                    SELECT 1 FROM toc_nodes tn\n                    JOIN books b ON b.id = tn.book_id\n                    WHERE b.slug = $1 AND tn.sort_order > $2\n                ) AS \"exists!\"",
+    "query": "SELECT EXISTS(\n            SELECT 1 FROM toc_nodes tn\n            JOIN books b ON b.id = tn.book_id\n            WHERE b.slug = $1 AND tn.sort_order < $2\n        ) AS \"exists!\"",
     "describe": {
         "columns": [
             {
@@ -14,5 +14,5 @@
         },
         "nullable": [null]
     },
-    "hash": "2bd39652728fd51698f46b3e047247bc4ebba9ae2c8ffdce35884a74cd5e9522"
+    "hash": "ac7eba998bb187bad7fb9381702b7fe231950f8370b9b661bb194326f16b18c1"
 }

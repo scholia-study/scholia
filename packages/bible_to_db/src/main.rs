@@ -518,6 +518,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             cli.full_rewrite,
         )
         .await?;
+        ::reconcile::recompute_node_sizes(&mut tx, existing_id).await?;
         let (cp_minted, cp_stamped) =
             seed_canonical_passages(&mut tx, translation.slug, existing_id).await?;
         eprintln!("Canonical passages: {cp_minted} minted, {cp_stamped} sentences stamped");
@@ -938,6 +939,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     .await?;
     totals.alignments = alignment_rows;
 
+    ::reconcile::recompute_node_sizes(&mut tx, book_id).await?;
     let (cp_minted, cp_stamped) =
         seed_canonical_passages(&mut tx, translation.slug, book_id).await?;
     eprintln!("Canonical passages: {cp_minted} minted, {cp_stamped} sentences stamped");
