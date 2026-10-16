@@ -30,6 +30,11 @@ server {
     proxy_set_header X-Forwarded-For   $remote_addr;
     proxy_set_header X-Forwarded-Proto $scheme;
 
+    # The cache key is the bare URI, so an upstream that ever started
+    # compressing would get its gzip body served to clients that didn't
+    # ask for it. Compression happens here instead (conf.d/compression.conf).
+    proxy_set_header Accept-Encoding   "";
+
     # Surface cache decisions in responses for debugging: HIT, MISS, BYPASS,
     # EXPIRED, STALE, UPDATING, REVALIDATED. Cheap and safe to leave on.
     add_header X-Cache-Status $upstream_cache_status always;
