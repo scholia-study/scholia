@@ -23,10 +23,6 @@ struct BookRow {
     slug: String,
     language: String,
     source_id: Uuid,
-}
-
-struct BookLengthRow {
-    book_id: Uuid,
     text_length: i64,
 }
 
@@ -93,7 +89,7 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
 
     let book_rows = sqlx::query_as!(
         BookRow,
-        r#"SELECT id, slug, language, source_id FROM books"#,
+        r#"SELECT id, slug, language, source_id, text_length FROM books"#,
     )
     .fetch_all(pool)
     .await?;
@@ -107,25 +103,10 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
                     slug: b.slug.clone(),
                     language: b.language.clone(),
                     source_id: b.source_id,
+                    text_length: b.text_length,
                 },
             )
         })
-        .collect();
-
-    // Body-text bulk per book, for the index's shelf spines. Grouped
-    // aggregate over content_blocks; the endpoint is proxy-cached and
-    // purged on import, so this runs on cache misses only.
-    let length_rows = sqlx::query_as!(
-        BookLengthRow,
-        r#"SELECT book_id, COALESCE(SUM(LENGTH(text)), 0)::BIGINT AS "text_length!"
-           FROM content_blocks
-           GROUP BY book_id"#,
-    )
-    .fetch_all(pool)
-    .await?;
-    let lengths_by_book: HashMap<Uuid, i64> = length_rows
-        .into_iter()
-        .map(|r| (r.book_id, r.text_length))
         .collect();
 
     // Shape-3 nested anchors: toc nodes that carry their own source_id.
@@ -200,7 +181,7 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
                 book_language: book.language.clone(),
                 node_slug: None,
                 source_id: book.source_id,
-                text_length: lengths_by_book.get(&book.id).copied().unwrap_or(0),
+                text_length: book.text_length,
             },
         );
     }
