@@ -58,15 +58,19 @@ function alignBlocks(
 
         let companion: ContentBlockResponse | undefined;
 
-        if (
-            block.block_type === "paragraph" ||
-            block.block_type === "footnote"
-        ) {
-            if (block.paragraph_number != null) {
+        if (block.paragraph_number != null) {
+            if (
+                block.block_type === "paragraph" ||
+                block.block_type === "footnote"
+            ) {
                 companion = companionByParagraph.get(block.paragraph_number);
             }
-        } else if (block.block_type === "heading") {
-            companion = companionByPosition.get(block.position);
+        } else {
+            // Unnumbered blocks (headings, drama speaker/speech/stage) pair by
+            // position: a translation is locked to its source per
+            // (node, position) at import.
+            const candidate = companionByPosition.get(block.position);
+            if (candidate?.paragraph_number == null) companion = candidate;
         }
 
         if (companion) {
