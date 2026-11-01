@@ -632,10 +632,10 @@ export function ResourcesPanel({
                             type="button"
                             onClick={copySelection}
                             title="Copy the selected text"
-                            className="inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs text-stone-600 transition-colors hover:bg-stone-100"
+                            aria-label="Copy the selected text"
+                            className="inline-flex shrink-0 cursor-pointer items-center self-stretch rounded-full border border-stone-200 bg-stone-50 px-2 py-1 text-stone-600 transition-colors hover:bg-stone-100"
                         >
                             <ContentCopyOutlined sx={{ fontSize: 14 }} />
-                            Copy
                         </button>
                     )}
                 </div>
