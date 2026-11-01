@@ -43,7 +43,7 @@ import {
 } from "../../../api/quotations/quotations";
 import { useListResources } from "../../../api/resources/resources";
 import { useGetToc } from "../../../api/toc/toc";
-import { BAR_SHEEN, glassOver, inkOn } from "../../../genre";
+import { BAR_SHEEN, inkOn } from "../../../genre";
 import { useAuth } from "../../../hooks/useAuth";
 import { useFeedback } from "../../feedback";
 import { AboutThisTextView } from "./AboutThisTextView";
@@ -138,11 +138,7 @@ export function ResourcesPanel({
     onToggleExtend,
     copyText,
 }: ResourcesPanelProps) {
-    // The header sits beside the reader toolbar and takes the same colour a
-    // shade lighter, as if lit through glass. Ink is measured against the
-    // composited surface, not the accent underneath it.
-    const headerTint = accent ? glassOver(accent) : undefined;
-    const headerInk = headerTint ? inkOn(headerTint) : undefined;
+    const headerInk = accent ? inkOn(accent) : undefined;
     const { user } = useAuth();
     const { startReaderTour } = useReaderTour();
     const { openModal: openFeedbackModal } = useFeedback();
@@ -556,9 +552,9 @@ export function ResourcesPanel({
             <div
                 className="border-b border-stone-200 bg-stone-50 shrink-0 py-2 flex items-center px-3"
                 style={
-                    headerTint
+                    accent
                         ? {
-                              backgroundColor: headerTint,
+                              backgroundColor: accent,
                               backgroundImage: BAR_SHEEN,
                               borderBottomColor: "rgba(0,0,0,0.25)",
                           }

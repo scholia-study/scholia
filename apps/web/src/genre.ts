@@ -126,21 +126,6 @@ export function accentFor(
     ];
 }
 
-/**
- * A tint seen through frosted glass: the accent lifted toward white so a
- * surface can sit a shade above the toolbar without leaving the work's
- * colour. Returns the composited colour rather than layering a translucent
- * fill, so `inkOn` weighs the lettering against what is actually seen.
- */
-export function glassOver(hex: string, alpha = 0.14): string {
-    const h = hex.replace("#", "");
-    const mixed = [0, 2, 4].map((i) => {
-        const channel = Number.parseInt(h.slice(i, i + 2), 16);
-        return Math.round(channel * (1 - alpha) + 255 * alpha);
-    });
-    return `#${mixed.map((c) => c.toString(16).padStart(2, "0")).join("")}`;
-}
-
 function relativeLuminance(hex: string): number {
     const h = hex.replace("#", "");
     const channels = [0, 2, 4].map((i) => {
