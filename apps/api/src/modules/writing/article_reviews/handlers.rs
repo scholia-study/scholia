@@ -16,6 +16,7 @@ use crate::modules::writing::article_reviews::snapshot::annotate_snapshot_html;
 use crate::system::auth::middleware::AuthUser;
 use crate::system::auth::permissions::Permission;
 use crate::system::cache;
+use crate::system::email::{self, NewReviewRequestNotice};
 use crate::system::error::AppError;
 use crate::system::state::AppState;
 use crate::system::validation::{
@@ -191,12 +192,12 @@ pub async fn create_review_request(
     )
     .await?;
 
-    if let Some(message) = body
+    let message = body
         .message
         .as_deref()
         .map(str::trim)
-        .filter(|m| !m.is_empty())
-    {
+        .filter(|m| !m.is_empty());
+    if let Some(message) = message {
         db::create_message(
             &state.pool,
             db::MessageCreate {
@@ -207,6 +208,22 @@ pub async fn create_review_request(
             },
         )
         .await?;
+    }
+
+    if collegium_id.is_none() {
+        let config = state.config.clone();
+        let notice = NewReviewRequestNotice {
+            article_title: article.title,
+            author_name: user.display_name,
+            author_email: user.email,
+            intent: body.intent.as_str(),
+            message: message.map(str::to_owned),
+        };
+        tokio::spawn(async move {
+            if let Err(e) = email::send_new_review_request_email(&config, &notice).await {
+                tracing::error!("{e}");
+            }
+        });
     }
 
     Ok(Json(request))
@@ -973,12 +990,12 @@ pub async fn decide_article_review(
         cache::invalidate(&state, paths);
     }
 
-    if let Some(message) = body
+    let message = body
         .message
         .as_deref()
         .map(str::trim)
-        .filter(|m| !m.is_empty())
-    {
+        .filter(|m| !m.is_empty());
+    if let Some(message) = message {
         db::create_message(
             &state.pool,
             db::MessageCreate {

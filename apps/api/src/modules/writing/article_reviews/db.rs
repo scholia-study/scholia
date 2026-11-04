@@ -54,6 +54,7 @@ fn request_response(r: RequestRow) -> ArticleReviewRequestResponse {
 /// owner in one query.
 pub struct SubmissionArticle {
     pub id: Uuid,
+    pub title: String,
     pub status: ArticleStatus,
     pub markdown: String,
 }
@@ -65,7 +66,7 @@ pub async fn get_article_for_submission(
 ) -> Result<Option<SubmissionArticle>, AppError> {
     let row = sqlx::query_as!(
         SubmissionArticle,
-        r#"SELECT id, status AS "status: ArticleStatus", markdown
+        r#"SELECT id, title, status AS "status: ArticleStatus", markdown
            FROM articles WHERE slug = $1 AND user_id = $2"#,
         slug,
         user_id,

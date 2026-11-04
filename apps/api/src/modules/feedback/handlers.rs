@@ -7,6 +7,7 @@ use crate::modules::feedback::models::{
 };
 use crate::system::auth::middleware::AuthUser;
 use crate::system::auth::permissions::Permission;
+use crate::system::email::{self, NewFeedbackNotice};
 use crate::system::error::AppError;
 use crate::system::state::AppState;
 use crate::system::validation::{
@@ -66,6 +67,21 @@ pub async fn create_feedback(
         body.viewport_h,
     )
     .await?;
+
+    let config = state.config.clone();
+    let notice = NewFeedbackNotice {
+        feedback_id: feedback.id.clone(),
+        submitter_name: user.display_name,
+        submitter_email: user.email,
+        body: feedback.body.clone(),
+        url: feedback.url.clone(),
+    };
+    tokio::spawn(async move {
+        if let Err(e) = email::send_new_feedback_email(&config, &notice).await {
+            tracing::error!("{e}");
+        }
+    });
+
     Ok(Json(feedback))
 }
 

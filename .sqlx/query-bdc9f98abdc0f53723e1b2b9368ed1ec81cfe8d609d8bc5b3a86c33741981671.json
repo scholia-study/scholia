@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "SELECT id, status AS \"status: ArticleStatus\", markdown\n           FROM articles WHERE slug = $1 AND user_id = $2",
+    "query": "SELECT id, title, status AS \"status: ArticleStatus\", markdown\n           FROM articles WHERE slug = $1 AND user_id = $2",
     "describe": {
         "columns": [
             {
@@ -10,6 +10,11 @@
             },
             {
                 "ordinal": 1,
+                "name": "title",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
                 "name": "status: ArticleStatus",
                 "type_info": {
                     "Custom": {
@@ -21,7 +26,7 @@
                 }
             },
             {
-                "ordinal": 2,
+                "ordinal": 3,
                 "name": "markdown",
                 "type_info": "Text"
             }
@@ -29,7 +34,7 @@
         "parameters": {
             "Left": ["Text", "Uuid"]
         },
-        "nullable": [false, false, false]
+        "nullable": [false, false, false, false]
     },
-    "hash": "e4006bd33f0d17c657b61505e61e044733988122f732bb044b8a508e369bc75b"
+    "hash": "bdc9f98abdc0f53723e1b2b9368ed1ec81cfe8d609d8bc5b3a86c33741981671"
 }
