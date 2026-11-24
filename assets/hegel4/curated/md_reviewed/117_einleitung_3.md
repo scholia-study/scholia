@@ -1,0 +1,24 @@
+---
+position: 117
+label: "Einleitung"
+depth: 2
+page_gw: "20.379"
+---
+
+## Einleitung
+
+## {{ 377 }} §. 377.
+
+Die Erkenntniß des Geistes ist die concreteste, darum höchste und schwerste. _Erkenne_ _dich_ _selbst_, diß absolute Gebot hat weder an sich, noch da wo es geschichtlich als ausgesprochen vorkommt, die Bedeutung, nur einer _Selbsterkenntniß_ nach den _particulären_ Fähigkeiten, Charakter, Neigungen und Schwächen des Individuums, sondern die Bedeutung der Erkenntniß des Wahrhaften des Menschen, wie des Wahrhaften an und für sich, – des _Wesens_ selbst als Geistes. Eben so wenig hat die Philosophie des Geistes die Bedeutung der sogenannten _Menschenkenntniß_, welche von andern Menschen gleichfalls die _Besonderheiten_, Leidenschaften, Schwächen, diese sogenannten Falten des menschlichen Herzens zu erforschen bemüht ist, – eine Kenntniß, die theils nur unter Voraussetzung der Erkenntniß des _Allgemeinen_, _des_ Menschen und damit wesentlich des Geistes Sinn hat, theils sich mit den zufälligen, unbedeutenden, _unwahren_ Existenzen des Geistigen beschäftigt, aber zum _Substantiellen_, dem Geiste selbst, nicht dringt.
+
+## {{ 378 }} §. 378.
+
+Der _Pneumatologie_ oder sogenannten _rationellen_ _Psychologie_, als abstracter Verstandesmetaphysik, ist bereits in der Einleitung Erwähnung geschehen. Die _empirische_ _Psychologie_ hat den _concreten_ Geist zu ihrem Gegenstande, und wurde, seitdem nach dem Wiederaufleben der Wissenschaften die Beobachtung und Erfahrung zur vornehmlichen Grundlage der Erkenntniß des Concreten geworden, auf dieselbe Weise getrieben, so daß theils jenes {{{ 20.380 }}} Metaphysische außerhalb dieser empirischen Wissenschaft gehalten wurde und zu keiner concreten Bestimmung und Gehalt in sich kam, theils die empirische Wissenschaft sich an die gewöhnliche Verstandesmetaphysik von Kräften, verschiedenen Thätigkeiten u.s.f. hielt und die speculative Betrachtung daraus verbannte. – Die Bücher des _Aristoteles_ _über_ _die_ _Seele_ mit seinen Abhandlungen über besondere Seiten und Zustände derselben sind deswegen noch immer das vorzüglichste oder einzige Werk von speculativem Interesse über diesen Gegenstand. Der wesentliche Zweck einer Philosophie des Geistes kann nur der seyn, den Begriff in die Erkenntniß des Geistes wieder einzuführen, damit auch den Sinn jener aristotelischen Bücher wieder aufzuschließen.
+
+## {{ 379 }} §. 379.
+
+Das Selbstgefühl von der _lebendigen_ Einheit des Geistes setzt sich von selbst gegen die Zersplitterung desselben in die verschiedenen, gegeneinander selbstständig vorgestellten _Vermögen_, _Kräfte_ oder was auf dasselbe hinauskommt, ebenso vorgestellten _Thätigkeiten_. Noch mehr aber führen die Gegensätze, die sich sogleich darbieten, von der _Freiheit_ des Geistes und von dem _Determinirtwerden_ desselben, ferner von der freien Wirksamkeit der Seele im Unterschiede von der ihr äußerlichen Leiblichkeit, und wieder der innige Zusammenhang beyder, auf das Bedürfniß hier _zu_ _begreifen_. Insbesondere haben die Erscheinungen des _animalischen_ _Magnetismus_ in neuern Zeiten auch in der Erfahrung die _substantielle_ _Einheit_ der Seele und die Macht ihrer Idealität zur Anschauung gebracht, wodurch alle die festen Verstandesunterschiede in Verwirrung gesetzt [werden], und eine speculative Betrachtung für die Auflösung der Widersprüche unmittelbarer als nothwendig gezeigt wird.
+
+## {{{ 20.381 }}} {{ 380 }} §. 380.
+
+Die _concrete_ Natur des Geistes bringt für die Betrachtung die eigenthümliche Schwierigkeit mit sich, daß die besondern Stufen und Bestimmungen der Entwicklung seines Begriffs nicht zugleich als besondere Existenzen zurück und seinen tiefern Gestaltungen gegenüber bleiben, wie diß in der äußern Natur der Fall ist, wo die Materie und Bewegung ihre freie Existenz als Sonnensystem hat, die Bestimmungen der _Sinne_ auch rückwärts als Eigenschaften der _Körper_ und noch freier als Elemente existiren u.s.f. Die Bestimmungen und Stufen des Geistes dagegen sind wesentlich nur als Momente, Zustände, Bestimmungen an den höhern Entwicklungsstufen. Es geschieht dadurch, daß an einer niedrigern, abstractern Bestimmung das Höhere sich schon empirisch vorhanden zeigt, wie z. B. in der Empfindung alles höhere Geistige als Inhalt oder Bestimmtheit. Oberflächlicherweise kann daher in der Empfindung, welche nur eine abstracte Form ist, jener Inhalt, das Religiöse, Sittliche u.s.f., wesentlich seine Stelle und sogar Wurzel zu haben, und seine Bestimmungen als besondere Arten der Empfindung zu betrachten nothwendig scheinen. Aber zugleich wird es indem niedrigere Stufen betrachtet werden, nöthig, um sie nach ihrer empirischen Existenz bemerklich zu machen, an höhere zu erinnern, an welchen sie nur als Formen vorhanden sind, und auf diese Weise einen Inhalt zu anticipiren, der erst später in der Entwicklung sich darbietet (z. B. beim natürlichen Erwachen das Bewußtseyn, bei der Verrücktheit den Verstand u.s.f.).

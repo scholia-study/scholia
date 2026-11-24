@@ -349,6 +349,67 @@ pub fn split_sentences_paren_protected_forced(
     assemble_splits(text, html, &split_positions)
 }
 
+const MONTHS: &str = "Januar|Jänner|Februar|März|April|Mai|May|Juni|Juli|August|September|October|Oktober|November|December|Dezember";
+const REFERENCE_NOUNS: &str =
+    "Beilage|Abtheilung|Abteilung|Theil|Teil|Buch|Capitel|Kapitel|Band|Abschnitt|Vorlesung|Ausgabe";
+const REFERENCE_ABBREVS: &str =
+    "Anm|Hft|Bd|Ep|Object|Objekt|Beil|Abth|Abschn|Cap|Kap|Th|Thl|Nr|Bl|Vorl";
+
+/// After a number's period: a month name, a Roman numeral or a reference
+/// abbreviation continues the citation ("den 25. May", "Quaest. 1. II.",
+/// "§. 261. Anm.").
+static AFTER_NUMBER_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(&format!(
+        r"^(?:(?:{MONTHS})\b|[IVXLCDM]{{1,6}}\.|(?:{REFERENCE_ABBREVS})\.)"
+    ))
+    .unwrap()
+});
+/// After a Roman ordinal's period: another Roman numeral, a reference noun
+/// or a reference abbreviation ("VII. Beilage", "IV. Ep.", "XVIII. XIX.").
+static AFTER_ROMAN_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(&format!(
+        r"^(?:[IVXLCDM]{{1,6}}\.|(?:{REFERENCE_NOUNS})\b|(?:{REFERENCE_ABBREVS})\.)"
+    ))
+    .unwrap()
+});
+static NUMBER_ENDING_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b\d{1,4}\.$").unwrap());
+static ROMAN_ORDINAL_ENDING_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\S\s+[IVXLCDM]{1,6}\.$").unwrap());
+
+/// Drop split candidates that sit inside a citation: the period belongs to
+/// an ordinal or a reference number, and what follows is the rest of the
+/// reference rather than a new sentence. Closed lists keep real sentence
+/// ends ("… im Jahre 1827. Er …") splitting.
+fn retain_splits_outside_references(text: &str, positions: &mut Vec<usize>) {
+    positions.retain(|&p| {
+        let before = text[..p].trim_end();
+        let after = &text[p..];
+        let number_ref = NUMBER_ENDING_RE.is_match(before) && AFTER_NUMBER_RE.is_match(after);
+        let roman_ref = ROMAN_ORDINAL_ENDING_RE.is_match(before) && AFTER_ROMAN_RE.is_match(after);
+        !(number_ref || roman_ref)
+    });
+}
+
+/// [`split_sentences_paren_protected_forced`] that also keeps citation
+/// apparatus (ordinals, Roman numerals, reference abbreviations) inside its
+/// host sentence. Opt-in per corpus (`reference_protected_splits`, hegel4).
+pub fn split_sentences_reference_protected_forced(
+    text: &str,
+    html: &str,
+    forced: &[usize],
+) -> Vec<(String, String)> {
+    if text.is_empty() {
+        return vec![];
+    }
+    let mut split_positions = find_text_split_positions(&en_dash_probe(text));
+    retain_splits_outside_parens(text, &mut split_positions);
+    retain_splits_outside_references(text, &mut split_positions);
+    split_positions.extend_from_slice(forced);
+    split_positions.sort_unstable();
+    split_positions.dedup();
+    assemble_splits(text, html, &split_positions)
+}
+
 /// [`split_sentences_en_forced`] with parenthesis-protected candidates
 /// and en-dash Gedankenstrich splitting.
 pub fn split_sentences_en_paren_protected_forced(
@@ -1088,6 +1149,70 @@ pub fn split_sentences_grc(text: &str, html: &str) -> Vec<(String, String)> {
 
 #[cfg(test)]
 mod tests {
+    fn reference_split(text: &str) -> Vec<String> {
+        split_sentences_reference_protected_forced(text, text, &[])
+            .into_iter()
+            .map(|(t, _)| t)
+            .collect()
+    }
+
+    #[test]
+    fn a_day_ordinal_before_a_month_name_does_not_split() {
+        assert_eq!(reference_split("Berlin, den 25. May 1827.").len(), 1);
+        assert_eq!(reference_split("Berlin, den 19. September, 1830.").len(), 1);
+    }
+
+    #[test]
+    fn a_number_before_a_roman_numeral_does_not_split() {
+        assert_eq!(
+            reference_split("Man lese Quaest. 1. II.")[0],
+            "Man lese Quaest. 1. II."
+        );
+    }
+
+    #[test]
+    fn a_roman_ordinal_before_a_reference_word_does_not_split() {
+        assert_eq!(
+            reference_split("So steht es in der VII. Beilage zu den Briefen.").len(),
+            1
+        );
+        assert_eq!(
+            reference_split("Siehe Respons. ad II. Objekt. und mehr.").len(),
+            1
+        );
+        assert_eq!(
+            reference_split("Siehe De Methodo IV. Ep. und mehr.").len(),
+            1
+        );
+        assert_eq!(
+            reference_split("Siehe Farben XVIII. XIX. und mehr.").len(),
+            1
+        );
+    }
+
+    #[test]
+    fn a_section_number_before_anm_does_not_split() {
+        assert_eq!(
+            reference_split("Man sehe §. 261. Anm. dieses Buchs.").len(),
+            1
+        );
+        assert_eq!(reference_split("Siehe Einl. §. 20. Anm. dazu.").len(), 1);
+        assert_eq!(reference_split("Siehe I. Bd. 1. Hft. und mehr.").len(), 1);
+        assert_eq!(reference_split("Siehe S. und 3. Hft. und mehr.").len(), 1);
+    }
+
+    #[test]
+    fn an_ordinary_sentence_end_after_a_number_still_splits() {
+        assert_eq!(
+            reference_split("Es geschah im Jahre 1827. Er kam zurück.").len(),
+            2
+        );
+        assert_eq!(
+            reference_split("Es war Friedrich II. Er kam zurück.").len(),
+            2
+        );
+    }
+
     use super::*;
 
     #[test]

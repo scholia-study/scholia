@@ -1,0 +1,22 @@
+---
+position: 153
+label: "c. Der freie Geist"
+depth: 4
+page_gw: "20.476"
+---
+
+## {{{ 20.476 }}} c. Der freie Geist
+
+## {{ 481 }} §. 481.
+
+Der wirkliche freie Wille ist die Einheit des theoretischen und praktischen Geistes; _freier_ _Wille_, der _für_ _sich_ _als_ _freier_ _Wille_ ist, indem der Formalismus, Zufälligkeit und Beschränktheit des bisherigen praktischen Inhalts sich aufgehoben hat. Durch das Aufheben der Vermittlung, die darin enthalten war, ist er die durch sich gesetzte _unmittelbare_ _Einzelnheit_, welche aber ebenso zur _allgemeinen_ Bestimmung, der Freiheit selbst, gereinigt ist. Diese _allgemeine_ Bestimmung hat der Wille nur als seinen Gegenstand und Zweck, indem er sich _denkt_, diesen seinen Begriff weiß, _Wille_ als freie _Intelligenz_ ist.
+
+## {{ 482 }} §. 482.
+
+Der Geist, der sich als frei weiß und sich als diesen seinen Gegenstand will, d. i. sein Wesen zur Bestimmung und zum Zwecke hat, ist zunächst _überhaupt_ der vernünftige Wille, oder _an_ _sich_ die Idee, darum nur der _Begriff_ des absoluten Geistes. Als _abstracte_ Idee ist sie wieder nur im _unmittelbaren_ Willen existirend, ist die Seite des _Daseyns_ der Vernunft, der _einzelne_ Wille als Wissen jener seiner Bestimmung, die seinen Inhalt und Zweck ausmacht und deren nur formelle Thätigkeit er ist. Die Idee erscheint so nur im Willen, der ein endlicher, aber die _Thätigkeit_ ist, sie zu entwickeln und ihren sich entfaltenden Inhalt als Daseyn, welches als Daseyn der Idee _Wirklichkeit_ ist, zu setzen, _objectiver_ _Geist_.
+
+::: remark
+{{ 482 A }} Ueber keine Idee weiß man es so allgemein, daß sie unbestimmt, vieldeutig und der größten Mißverständnisse fähig und ihnen deswegen wirklich unterworfen ist als [über] die Idee der _Freiheit_, und keine ist mit so wenigem Bewußtseyn geläufig. Indem der freye Geist der _wirkliche_ Geist ist, so sind die Mißverständnisse über denselben so sehr von den {{{ 20.477 }}} ungeheuersten praktischen Folgen, als nichts anders, wenn die Individuen und Völker den abstracten Begriff der für sich seyenden Freyheit einmal in ihre Vorstellung gefaßt haben, diese unbezwingliche Stärke hat, eben weil sie das eigene Wesen des Geistes und zwar als seine Wirklichkeit selbst ist. Ganze Welttheile, Africa und der Orient, haben diese Idee nie gehabt und haben sie noch nicht; die Griechen und Römer, Plato und Aristoteles, auch die Stoiker haben sie nicht gehabt; sie wußten im Gegentheil nur, daß der Mensch durch Geburt (als atheniensischer, spartanischer u.s.f. Bürger) oder Charakterstärke, Bildung durch Philosophie (der Weise ist auch als Sklave und in Ketten frey) wirklich frey sey. Diese Idee ist durch das Christenthum in die Welt gekommen, nach welchem das Individuum _als_ _solches_ einen _unendlichen_ Werth hat, indem es Gegenstand und Zweck der Liebe Gottes, dazu bestimmt ist, zu Gott als Geist sein absolutes Verhältniß, diesen Geist in sich wohnen zu haben, d. i. daß der Mensch _an_ _sich_ zur höchsten Freiheit bestimmt ist. Wenn in der Religion als solcher der Mensch das Verhältniß zum absoluten Geiste als sein Wesen weiß, so hat er weiterhin den göttlichen Geist auch als in die Sphäre der _weltlichen_ _Existenz_ tretend gegenwärtig, als die Substanz des Staats, der Familie u.s.f. Diese Verhältnisse werden durch jenen Geist eben so ausgebildet und ihm angemessen constituirt, als dem Einzelnen durch solche Existenz die Gesinnung der Sittlichkeit inwohnend wird, und er dann in dieser Sphäre der besondern Existenz, des gegenwärtigen Empfindens und Wollens _wirklich_ _frei_ ist.
+
+Wenn das Wissen von der Idee, d. i. von dem Wissen der Menschen, daß ihr Wesen, Zweck und Gegenstand die Freiheit ist, speculativ ist, so ist diese Idee selbst als solche die Wirklichkeit der Menschen, nicht die sie darum _haben_, sondern sie _sind_. Das Christenthum hat es in seinen Anhängern zu ihrer Wirklichkeit gemacht, z. B. nicht Sclave zu seyn; wenn sie zu Sclaven gemacht, wenn die Entscheidung über ihr Eigenthum in das Belieben, nicht in Gesetze und Gerichte gelegt würde, so fänden sie die Substanz ihres Daseyns verletzt. Es ist diß Wollen der Freiheit nicht mehr ein Trieb, der seine Befriedigung fodert, sondern der Charakter, – das zum trieblosen _Seyn_ gewordene geistige Bewußtseyn. – Aber diese Freiheit, die den Inhalt und Zweck der Freiheit hat, ist selbst zunächst nur Begriff, Princip des Geistes und Herzens und sich zur Gegenständlichkeit zu entwickeln bestimmt, zur rechtlichen, sittlichen und religiösen, wie wissenschaftlichen Wirklichkeit.
+:::

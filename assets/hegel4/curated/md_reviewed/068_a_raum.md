@@ -1,0 +1,34 @@
+---
+position: 68
+label: "a. Raum"
+depth: 4
+page_gw: "20.243"
+---
+
+## a. Raum
+
+## {{ 254 }} §. 254.
+
+Die erste oder unmittelbare Bestimmung der Natur ist die abstracte _Allgemeinheit_ _ihres_ _Außersichseyns_, – dessen vermittlungslose Gleichgültigkeit, _der_ _Raum_. Er ist das ganz ideelle _Nebeneinander_, weil er das Außersichseyn ist, und schlechthin _continuirlich_, weil diß Außereinander noch ganz _abstract_ ist und keinen bestimmten Unterschied in sich hat.
+
+::: remark
+{{ 254 A }} Es ist vielerlei über die Natur des Raums von je vorgebracht worden. Ich erwähne nur der _Kantischen_ Bestimmung, daß er wie die Zeit eine Form der _sinnlichen_ _Anschauung_ sey. Auch sonst ist es gewöhnlich {{{ 20.244 }}} geworden zu Grunde zu legen, daß der Raum nur als etwas Subjectives in der Vorstellung, betrachtet werden müsse. Wenn von dem abgesehen wird, was in dem Kantischen Begriffe dem subjectiven Idealismus und dessen Bestimmungen angehört, so bleibt die richtige Bestimmung übrig, daß der Raum eine bloße Form, d. h. eine _Abstraction_ ist und zwar die der unmittelbaren _Aeußerlichkeit_. – Von _Raumpunkten_ zu sprechen, als ob sie das positive Element des Raums ausmachten, ist unstatthaft, da er um seiner Unterschiedslosigkeit willen nur die Möglichkeit, nicht das _Gesetztseyn_ des Außereinanderseyns und Negativen, daher schlechthin continuirlich ist; der Punkt, das Fürsichseyn, ist deswegen vielmehr die und zwar in ihm gesetzte _Negation_ des Raums. – Die Frage wegen der Unendlichkeit des Raums entscheidet sich gleichfalls hiedurch (§. 100. Anm.). Er ist überhaupt reine _Quantität_, nicht mehr nur dieselbe als logische Bestimmung, sondern als unmittelbar und äußerlich seyend. – Die Natur fängt darum nicht mit dem Qualitativen, sondern mit dem Quantitativen, an, weil ihre Bestimmung nicht wie das logische Seyn das Abstract-erste und Unmittelbare, sondern wesentlich schon das in sich _Vermittelte_, Aeußerlich- und Anders-seyn ist.
+:::
+
+## {{ 255 }} §. 255.
+
+Der Raum hat an sich als Begriff überhaupt dessen _Unterschiede_ an ihm, a) unmittelbar in seiner Gleichgültigkeit als die blos _verschiedenen_ ganz bestimmungslosen drei _Dimensionen_.
+
+::: remark
+{{ 255 A }} Die Nothwendigkeit, daß der Raum gerade drei Dimensionen hat, zu deduciren, ist an die Geometrie nicht zu fodern, in sofern sie nicht eine philosophische Wissenschaft ist, und ihren Gegenstand, den Raum mit seinen allgemeinen Bestimmungen voraussetzen darf. Aber auch sonst wird {{{ 20.245 }}} an das Aufzeigen dieser Nothwendigkeit nicht gedacht. Sie beruht auf der Natur des Begriffs, dessen Bestimmungen aber in dieser ersten Form des Außereinander, in der _abstracten_ Quantität, ganz nur oberflächlich und ein völlig leerer Unterschied sind. Man kann daher nicht sagen, wie sich _Höhe_, _Länge_ und _Breite_ von einander unterscheiden, weil sie nur unterschieden _seyn_ _sollen_, aber noch keine Unterschiede _sind_; es ist völlig unbestimmt, ob man eine Richtung Höhe, Länge oder Breite nennt. – Die _Höhe_ hat ihre nähere Bestimmung an der Richtung nach dem Mittelpunkte der Erde; aber diese concretere Bestimmung geht die Natur des Raums für sich nichts an. Jene vorausgesetzt ist es auch noch gleichgültig, dieselbe Richtung Höhe oder Tiefe zu nennen, so wie für Länge und Breite, die man oft auch Tiefe heißt, nichts dadurch bestimmt ist.
+:::
+
+## {{ 256 }} §. 256.
+
+b. Aber der Unterschied ist wesentlich bestimmter, qualitativer Unterschied. Als solcher ist er α) zunächst die _Negation_ des Raums selbst, weil dieser das unmittelbare _unterschiedslose_ Außersichseyn ist, der _Punkt_. β) Die Negation ist aber Negation _des_ _Raums_, d. i. sie ist selbst räumlich; der Punkt als wesentlich diese Beziehung, d. i. als sich aufhebend, ist die _Linie_, das erste Anders- d. i. Räumlich<i>seyn</i> des Punktes; γ) die Wahrheit des Andersseyns ist aber die Negation der Negation. Die Linie geht daher in _Fläche_ über, welche einerseits eine Bestimmtheit gegen Linie und Punkt, und so Fläche überhaupt, andererseits aber die aufgehobene Negation des Raums ist, somit Wiederherstellung der räumlichen Totalität, welche nunmehr das negative Moment an ihr hat; – _umschließende_ _Oberfläche_, die einen _einzelnen_ ganzen Raum absondert.
+
+::: remark
+{{ 256 A }} Daß die Linie nicht aus Punkten, die Fläche nicht aus Linien besteht, geht aus ihrem Begriffe hervor, da die Linie vielmehr der Punkt als _außer_ _sich_ seyend, nämlich sich auf den Raum _beziehend_ und sich aufhebend, {{{ 20.246 }}} die Fläche eben so die aufgehobene außer sich seyende Linie ist. – Der Punkt ist hier als das Erste und Positive vorgestellt und von ihm ausgegangen worden. Allein eben so ist umgekehrt, in sofern der Raum in der That dagegen das Positive ist, die Fläche die erste Negation, und die Linie die zweite, die aber als die zweite, ihrer Wahrheit nach sich auf sich beziehende Negation, der Punkt ist; die Nothwendigkeit des Uebergangs ist dieselbe. An die Nothwendigkeit dieses Uebergangs wird nicht gedacht, in dem äußerlichen Auffassen und Definiren des Punkts, der Linie u.s.f.; doch vorgestellt, aber als etwas Zufälliges, wird jene erste Art des Uebergehens in der Definitionsweise, daß wenn der Punkt sich _bewege_, die Linie entstehe, u.s.f. – Die weitern Figurationen des Raumes, welche die Geometrie betrachtet, sind fernere qualitative Begränzungen einer Raumabstraction, der Fläche, oder eines begränzten ganzen Raums. Es kommen darin auch Momente der Nothwendigkeit vor, daß z. B. das Dreieck die erste geradlinige Figur ist, daß alle andern Figuren auf sie oder auf das Quadrat zurückgeführt werden müssen, wenn sie bestimmt werden sollen und dergl. – Das Princip dieser Zeichnungen ist die Verstandesidentität, welche die Figurationen zur _Regelmäßigkeit_ bestimmt und damit die Verhältnisse begründet, welche dadurch zu erkennen möglich wird.
+
+Im Vorbeigehen kann bemerkt werden, daß es ein sonderbarer Einfall _Kants_ war zu behaupten, die Definition _der_ _geraden_ _Linie_, daß sie der kürzeste Weg zwischen zwei Punkten sey, sey ein synthetischer Satz; denn mein _Begriff_ _vom_ _Geraden_ enthalte nichts von Größe sondern nur eine Qualität. In diesem Sinn ist jede Definition ein synthetischer Satz; das Definitum, _die_ _gerade_ _Linie_, ist nur erst die Anschauung oder Vorstellung, und die Bestimmung, daß sie der kürzeste Weg zwischen zwei Punkten sey, macht erst den _Begriff_ aus (wie er nämlich in solchen Definitionen erscheint, s. §. 229.). Daß der _Begriff_ nicht schon in der _Anschauung_ vorhanden ist, ist der Unterschied von beiden, der die Foderung einer Definition herbeiführt. Daß aber jene Definition analytisch ist, erhellt leicht, indem die gerade Linie sich auf die Einfachheit der {{{ 20.247 }}} Richtung reducirt; die Einfachheit aber in Beziehung auf _Menge_ genommen, die Bestimmung der _geringsten_ Menge, hier des kürzesten Weges, gibt.
+:::

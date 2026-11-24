@@ -66,6 +66,12 @@ pub struct Corpus {
     /// apparatus stays inside its host sentence instead of shedding
     /// abbreviation-period fragments (hegel2, both editions).
     pub paren_protected_splits: bool,
+    /// Citation apparatus does not end sentences: a day ordinal before a
+    /// month name, a number or Roman ordinal before a Roman numeral, a
+    /// reference noun or an abbreviated reference word ("den 25. May",
+    /// "VII. Beilage", "§. 261. Anm."). Applies on top of
+    /// `paren_protected_splits` (hegel4).
+    pub reference_protected_splits: bool,
     /// The copy-text enumerates inline with bare "1. … 2. …" numerals
     /// (peirce1): a split lands BEFORE such an enumerator, so the numeral
     /// leads the item it introduces instead of dangling off the previous
@@ -87,6 +93,12 @@ pub struct Corpus {
     /// duplicate-page disambiguator: Stephanus `327a`…`327e` are five distinct
     /// places within page 327 and must sort in that order (plato1).
     pub subpage_letter_sort: bool,
+    /// `{{ N }}` / `{{ N A }}` section markers sort as N×10 / N×10+rank
+    /// (hegel4's §§ and the Remark that follows each), not as page numbers.
+    pub section_remark_sort: bool,
+    /// The copy-text carries `::: remark` fences (smaller-type Anmerkungen);
+    /// their paragraphs become `block_type: "remark"` blocks (hegel4).
+    pub remark_fences: bool,
     /// Per-node sub-work source (essay collections): flat index → the paper's
     /// original imprint, which the importer turns into a 'chapter' source row
     /// so quotations cite the essay in its original venue. `None` for works
@@ -266,10 +278,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: false,
                 strong_colon_splits: false,
                 paren_protected_splits: false,
+                reference_protected_splits: false,
                 enum_label_splits: false,
                 greek_splitter: false,
                 single_layer_source: false,
                 subpage_letter_sort: false,
+                section_remark_sort: false,
+                remark_fences: false,
                 node_source: None,
             })
         }
@@ -367,10 +382,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: false,
                 strong_colon_splits: false,
                 paren_protected_splits: false,
+                reference_protected_splits: false,
                 enum_label_splits: false,
                 greek_splitter: false,
                 single_layer_source: false,
                 subpage_letter_sort: false,
+                section_remark_sort: false,
+                remark_fences: false,
                 node_source: None,
             })
         }
@@ -478,10 +496,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: false,
                 strong_colon_splits: false,
                 paren_protected_splits: false,
+                reference_protected_splits: false,
                 enum_label_splits: false,
                 greek_splitter: false,
                 single_layer_source: false,
                 subpage_letter_sort: false,
+                section_remark_sort: false,
+                remark_fences: false,
                 node_source: None,
             })
         }
@@ -574,10 +595,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: false,
                 strong_colon_splits: false,
                 paren_protected_splits: true,
+                reference_protected_splits: false,
                 enum_label_splits: false,
                 greek_splitter: false,
                 single_layer_source: false,
                 subpage_letter_sort: false,
+                section_remark_sort: false,
+                remark_fences: false,
                 node_source: None,
             })
         }
@@ -671,10 +695,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: false,
                 strong_colon_splits: false,
                 paren_protected_splits: true,
+                reference_protected_splits: false,
                 enum_label_splits: false,
                 greek_splitter: false,
                 single_layer_source: false,
                 subpage_letter_sort: false,
+                section_remark_sort: false,
+                remark_fences: false,
                 node_source: None,
             })
         }
@@ -733,10 +760,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: true,
                 strong_colon_splits: true,
                 paren_protected_splits: false,
+                reference_protected_splits: false,
                 enum_label_splits: false,
                 greek_splitter: false,
                 single_layer_source: false,
                 subpage_letter_sort: false,
+                section_remark_sort: false,
+                remark_fences: false,
                 node_source: None,
             })
         }
@@ -803,10 +833,13 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 // Modern: colons point, they do not end sentences.
                 strong_colon_splits: false,
                 paren_protected_splits: false,
+                reference_protected_splits: false,
                 enum_label_splits: true,
                 greek_splitter: false,
                 single_layer_source: false,
                 subpage_letter_sort: false,
+                section_remark_sort: false,
+                remark_fences: false,
                 node_source: Some(peirce1_node_source),
             })
         }
@@ -895,10 +928,84 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 source_splitter_en: true,
                 strong_colon_splits: false,
                 paren_protected_splits: false,
+                reference_protected_splits: false,
                 enum_label_splits: false,
                 greek_splitter: true,
                 single_layer_source: true,
                 subpage_letter_sort: true,
+                section_remark_sort: false,
+                remark_fences: false,
+                node_source: None,
+            })
+        }
+        "hegel4" => {
+            use common::hegel4::{filenames, meta, toc, toc_mod};
+            if translation {
+                return None;
+            }
+            Some(Corpus {
+                name: "hegel4",
+                book: book_data(BookSpec {
+                    slug: meta::BOOK_SLUG,
+                    title: meta::BOOK_TITLE,
+                    author: meta::AUTHOR,
+                    language: meta::LANGUAGE,
+                    source: meta::SOURCE,
+                    year: meta::YEAR,
+                    about: meta::ABOUT,
+                    licence: meta::LICENCE,
+                    imprint: Imprint {
+                        publisher: Some(meta::PUBLISHER),
+                        place: None,
+                        volume: None,
+                        edition: None,
+                        original_year: Some(meta::ORIGINAL_YEAR),
+                        original_year_circa: false,
+                    },
+                }),
+                reference_systems: vec![
+                    ReferenceSystemData {
+                        slug: meta::GW_SYSTEM_SLUG.to_string(),
+                        label: meta::GW_SYSTEM_LABEL.to_string(),
+                        ref_type: meta::GW_SYSTEM_REF_TYPE.to_string(),
+                        cite_priority: Some(meta::GW_CITE_PRIORITY),
+                        cite_template: Some(meta::GW_CITE_TEMPLATE.to_string()),
+                        margin_prefix: None,
+                    },
+                    ReferenceSystemData {
+                        slug: meta::PARAGRAPH_SYSTEM_SLUG.to_string(),
+                        label: meta::PARAGRAPH_SYSTEM_LABEL.to_string(),
+                        ref_type: meta::PARAGRAPH_SYSTEM_REF_TYPE.to_string(),
+                        cite_priority: Some(meta::PARAGRAPH_CITE_PRIORITY),
+                        cite_template: Some(meta::PARAGRAPH_CITE_TEMPLATE.to_string()),
+                        margin_prefix: Some(meta::PARAGRAPH_MARGIN_PREFIX.to_string()),
+                    },
+                ],
+                toc_reviewed: toc::flat_toc_entries(),
+                toc_modernized: toc_mod::flat_toc_entries(),
+                toc_en: None,
+                filenames: filenames::all_filenames(),
+                position_number: filenames::position_number,
+                slugify: filenames::slugify,
+                modernized_dir: meta::MODERNIZED_DIR.to_string(),
+                reviewed_dir: meta::REVIEWED_DIR.to_string(),
+                translated_dir: String::new(),
+                output_file: meta::OUTPUT_FILE.to_string(),
+                figure_label: "Abbildung",
+                aa_system_slug: meta::GW_SYSTEM_SLUG,
+                edition_system_slug: meta::PARAGRAPH_SYSTEM_SLUG,
+                edition_sort_arabic_fallback: false,
+                marker_labels: ("GW", "§"),
+                source_splitter_en: false,
+                strong_colon_splits: false,
+                paren_protected_splits: true,
+                reference_protected_splits: true,
+                enum_label_splits: false,
+                greek_splitter: false,
+                single_layer_source: false,
+                subpage_letter_sort: false,
+                section_remark_sort: true,
+                remark_fences: true,
                 node_source: None,
             })
         }

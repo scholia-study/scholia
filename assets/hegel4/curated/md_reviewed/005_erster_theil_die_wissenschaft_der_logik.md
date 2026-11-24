@@ -1,0 +1,8 @@
+---
+position: 5
+label: "ERSTER THEIL. DIE WISSENSCHAFT DER LOGIK"
+depth: 1
+page_gw: "20.61"
+---
+
+## {{{ 20.61 }}} ERSTER THEIL. DIE WISSENSCHAFT DER LOGIK

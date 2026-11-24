@@ -18,6 +18,7 @@ pub mod greek;
 pub mod hegel1;
 pub mod hegel2;
 pub mod hegel3;
+pub mod hegel4;
 pub mod hobbes1;
 pub mod ibsen1;
 pub mod kant1;

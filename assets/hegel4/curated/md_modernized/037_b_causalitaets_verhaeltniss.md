@@ -1,0 +1,26 @@
+---
+position: 37
+label: "b. Kausalitäts-Verhältnis"
+depth: 4
+page_gw: "20.170"
+---
+
+## b. Kausalitäts-Verhältnis
+
+## {{ 153 }} §. 153.
+
+Die Substanz ist _Ursache_, in sofern sie gegen ihr Übergehen in die Akzidentalität in sich reflektiert und so die _ursprüngliche_ _Sache_ ist, aber eben so {{{ 20.171 }}} sehr die Reflexion-in-sich oder ihre bloße Möglichkeit aufhebt, sich als das Negative ihrer selbst setzt und so eine _Wirkung_ hervorbringt, eine Wirklichkeit, die so nur eine _Gesetzte_, aber durch den Prozess des Wirkens zugleich notwendige ist.
+
+::: remark
+{{ 153 A }} Die Ursache hat als die _ursprüngliche_ _Sache_ die Bestimmung von absoluter Selbstständigkeit und einem sich gegen die Wirkung erhaltenden Bestehen, aber sie ist in der Notwendigkeit, deren Identität jene Ursprünglichkeit selbst ausmacht, nur in die Wirkung übergegangen. Es ist kein Inhalt, in sofern wieder von einem bestimmten Inhalte die Rede sein kann, in der Wirkung, der nicht in der Ursache ist; – jene Identität ist der absolute Inhalt selbst; ebenso ist sie aber auch die Formbestimmung, die Ursprünglichkeit der Ursache wird in der Wirkung aufgehoben, in der sie sich zu einem _Gesetztsein_ _macht_. Die Ursache ist aber damit nicht verschwunden, so dass das Wirkliche nur die Wirkung wäre. Denn dies _Gesetztsein_ ist ebenso unmittelbar aufgehoben, es ist vielmehr die Reflexion der Ursache in sich selbst, ihre Ursprünglichkeit; in der Wirkung ist erst die Ursache wirklich und Ursache. Die Ursache ist daher an und für sich Causa sui. – _Jacobi_, fest in der einseitigen Vorstellung der _Vermittlung_, hat (Briefe über Spinoza, 2te Ausg. S. 416.) die Causa sui (der Effectus sui ist dasselbe), diese absolute Wahrheit der Ursache, bloß für einen Formalismus genommen. Er hat auch angegeben, dass Gott nicht als Grund, sondern wesentlich als Ursache bestimmt werden müsse; dass damit das nicht gewonnen sei, was er beabsichtigte, würde sich aus einem gründlichern Nachdenken über die Natur der Ursache ergeben haben. Auch in der _endlichen_ Ursache und deren Vorstellung ist diese Identität in Ansehung des Inhalts vorhanden; der Regen, die Ursache, und die Nässe, die Wirkung, sind ein und dasselbe existierende Wasser. In Ansehung der Form fällt so in der Wirkung (der Nässe) die Ursache (der Regen) hinweg; aber damit auch die Bestimmung der Wirkung, die nichts ist ohne Ursache und es bleibt nur die indifferente Nässe.
+
+Die Ursache im gemeinen Sinne des Kausalverhältnisses ist _endlich_, in sofern ihr Inhalt endlich ist (wie in der endlichen Substanz), und in sofern Ursache und Wirkung als zwei verschiedene selbstständige Existenzen vorgestellt werden, – was sie aber nur sind, indem bei ihnen vom {{{ 20.172 }}} Causalitätsverhältnis abstrahiert wird. Weil in der Endlichkeit bei dem _Unterschiede_ der Formbestimmungen in deren Beziehung stehen geblieben wird, so wird abwechslungsweise die Ursache _auch_ als ein _Gesetztes_ oder als _Wirkung_ bestimmt; diese hat dann wieder eine _andere_ Ursache; so entsteht auch hier der Progress von Wirkungen zu Ursachen ins Unendliche. Ebenso der _absteigende_, indem die Wirkung nach ihrer Identität mit der Ursache selbst als Ursache und zugleich als eine _andere_ bestimmt wird, die wieder andere Wirkungen hat und sofort ins Unendliche.
+:::
+
+## {{ 154 }} §. 154.
+
+Von der Ursache ist die Wirkung _verschieden_; diese ist als solche _Gesetztsein_. Aber das Gesetztsein ist ebenso Reflexion-in-sich und Unmittelbarkeit, und das Wirken der Ursache, ihr Setzen, ist zugleich _Voraussetzen_, insofern an der Verschiedenheit der Wirkung von der Ursache festgehalten wird. Es ist hiermit eine _andere_ _Substanz_ vorhanden, auf welche die Wirkung geschieht. Diese ist als _unmittelbar_ nicht sich auf sich beziehende Negativität und _aktiv_, sondern _passiv_. Aber als Substanz ist sie ebenso aktiv, hebt die vorausgesetzte Unmittelbarkeit und die in sie gesetzte Wirkung auf, _reagiert_, d. h. sie hebt die Aktivität der ersten Substanz auf, welche aber ebenso dies Aufheben ihrer Unmittelbarkeit oder der in sie gesetzten Wirkung ist, hiermit die Aktivität der andern aufhebt, und reagiert. Die Kausalität ist hiermit in das Verhältnis der _Wechselwirkung_ übergegangen.
+
+::: remark
+{{ 154 A }} In der Wechselwirkung obgleich die Kausalität noch nicht in ihrer wahrhaften Bestimmung gesetzt ist, ist der Progress von Ursachen und Wirkungen ins Unendliche als Progress auf wahrhafte Weise aufgehoben, indem das geradlinige Hinausgehen von Ursachen zu Wirkungen und von Wirkungen zu Ursachen, in sich _um-_ und _zurückgebogen_ ist. Diese Umbeugung des unendlichen Progresses zu einem in sich beschlossenen Verhältnis ist wie überall die einfache Reflexion, dass in jener gedankenlosen Wiederholung nur ein und dasselbe ist, nämlich _eine_ und eine {{{ 20.173 }}} _andere_ Ursache, und deren Beziehung auf einander. Die Entwicklung dieser Beziehung, das Wechselwirken, ist jedoch selbst die Abwechslung des _Unterscheidens_ aber nicht von Ursachen sondern von den Momenten, an _deren_ _jedem_ _für_ _sich_, wieder nach der _Identität_, dass die Ursache in der Wirkung Ursache, und umgekehrt ist, – nach dieser Untrennbarkeit ebenso auch _das_ _andere_ Moment gesetzt wird.
+:::

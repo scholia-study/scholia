@@ -1,0 +1,11 @@
+[package]
+name = "hegel4_dtabf_to_md"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+roxmltree = "0.21"
+regex = "1"
+serde_json = "1"
+clap = { version = "4", features = ["derive"] }
+common = { path = "../common" }

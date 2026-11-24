@@ -63,6 +63,27 @@ pub fn block_sort_order_subpage(value: &str) -> i32 {
     block_sort_order(value) * 10
 }
 
+/// Sort key for a `§` marker: `"20"` is the section itself (200), `"20 A"`
+/// its first Remark run (201), `"20 A2"`..`"20 A9"` a later run (202..209) —
+/// so the Remarks sort after their § and before the next one. Anything else
+/// is a hard error: a mistyped marker must not silently sort to 0.
+pub fn section_remark_sort_order(value: &str) -> i32 {
+    let (number, remark) = match value.split_once(' ') {
+        Some((n, r)) => (n, Some(r)),
+        None => (value, None),
+    };
+    let section: i32 = number
+        .parse()
+        .unwrap_or_else(|_| panic!("§ marker {value:?} does not begin with a number"));
+    let rank = match remark.map(str::as_bytes) {
+        None => 0,
+        Some([b'A']) => 1,
+        Some([b'A', k @ b'2'..=b'9']) => (k - b'0') as i32,
+        Some(_) => panic!("§ marker {value:?}: Remark suffix must be A or A2..A9"),
+    };
+    section * 10 + rank
+}
+
 pub fn block_sort_order(value: &str) -> i32 {
     value
         .parse::<i32>()
@@ -108,6 +129,33 @@ fn suffixed_arabic(value: &str) -> Option<i32> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_remark_sorts_between_its_section_and_the_next() {
+        assert_eq!(section_remark_sort_order("20"), 200);
+        assert_eq!(section_remark_sort_order("20 A"), 201);
+        assert_eq!(section_remark_sort_order("20 A2"), 202);
+        assert_eq!(section_remark_sort_order("20 A9"), 209);
+        assert!(section_remark_sort_order("20 A") < section_remark_sort_order("21"));
+    }
+
+    #[test]
+    #[should_panic(expected = "does not begin with a number")]
+    fn a_malformed_section_marker_is_refused() {
+        section_remark_sort_order("XX A");
+    }
+
+    #[test]
+    #[should_panic(expected = "Remark suffix must be")]
+    fn a_remark_suffix_outside_a_to_a9_is_refused() {
+        section_remark_sort_order("20 B");
+    }
+
+    #[test]
+    #[should_panic(expected = "Remark suffix must be")]
+    fn a_remark_run_number_below_two_is_refused() {
+        section_remark_sort_order("20 A1");
+    }
 
     #[test]
     fn arabic_block_pages_keep_their_face_value() {

@@ -1,0 +1,8 @@
+---
+position: 116
+label: "DRITTER TEIL. PHILOSOPHIE DES GEISTES"
+depth: 1
+page_gw: "20.379"
+---
+
+## {{{ 20.379 }}} DRITTER TEIL. PHILOSOPHIE DES GEISTES

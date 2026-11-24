@@ -17,8 +17,8 @@ use common::sentences::{
     RUN_BREAK, split_sentences_en_enum_forced, split_sentences_en_forced,
     split_sentences_en_paren_protected_forced, split_sentences_en_strong_colon_forced,
     split_sentences_forced, split_sentences_grc_forced, split_sentences_paren_protected_forced,
-    strip_forced_split_markers, strip_forced_splits, strip_forced_splits_keep_runs,
-    take_run_marker,
+    split_sentences_reference_protected_forced, strip_forced_split_markers, strip_forced_splits,
+    strip_forced_splits_keep_runs, take_run_marker,
 };
 use regex::Regex;
 use std::collections::HashMap;
@@ -32,7 +32,9 @@ use crate::model::*;
 use crate::parse::{
     MARGIN_SENTINEL_RE, MARGIN_TOKEN_RE, MarkerKind, ParsedBlock, ParsedBlockType, strip_markers,
 };
-use crate::roman::{block_sort_order, block_sort_order_subpage, roman_to_int};
+use crate::roman::{
+    block_sort_order, block_sort_order_subpage, roman_to_int, section_remark_sort_order,
+};
 use crate::separator::build_separator_block;
 
 /// Regex to find `<sup>NUMBER</sup>` in rendered HTML (only footnote refs produce these).
@@ -158,6 +160,8 @@ struct BlockCtx<'a> {
     edition_system_slug: &'a str,
     edition_sort_arabic_fallback: bool,
     subpage_letter_sort: bool,
+    section_remark_sort: bool,
+    remark_fences: bool,
 }
 
 /// Build the complete nested output from parsed files.
@@ -226,6 +230,8 @@ pub fn build_output(corpus: &Corpus, mode: Mode, parsed_files: &[ParsedFile]) ->
             split_sentences_grc_forced
         } else if corpus.strong_colon_splits {
             split_sentences_en_strong_colon_forced
+        } else if corpus.reference_protected_splits && !translation && !corpus.source_splitter_en {
+            split_sentences_reference_protected_forced
         } else if corpus.paren_protected_splits {
             if translation || corpus.source_splitter_en {
                 split_sentences_en_paren_protected_forced
@@ -261,6 +267,8 @@ pub fn build_output(corpus: &Corpus, mode: Mode, parsed_files: &[ParsedFile]) ->
         edition_system_slug: corpus.edition_system_slug,
         edition_sort_arabic_fallback: corpus.edition_sort_arabic_fallback,
         subpage_letter_sort: corpus.subpage_letter_sort,
+        section_remark_sort: corpus.section_remark_sort,
+        remark_fences: corpus.remark_fences,
     };
     let mut counters = Counters {
         paragraph: 1,
@@ -404,6 +412,15 @@ fn build_block(
             counters.paragraph += 1;
             ("paragraph", Some(n))
         }
+        ParsedBlockType::Remark => {
+            assert!(
+                ctx.remark_fences,
+                "this corpus does not use ::: remark fences (file index {flat_index}, block {block_pos})"
+            );
+            let n = counters.paragraph;
+            counters.paragraph += 1;
+            ("remark", Some(n))
+        }
         ParsedBlockType::Footnote { .. } => unreachable!("footnote blocks filtered out"),
         ParsedBlockType::Figure => unreachable!("figure blocks handled above"),
         ParsedBlockType::Separator { .. } => unreachable!("separator blocks handled above"),
@@ -531,7 +548,7 @@ fn build_block(
         let sent_char_count = sent_text.chars().count();
         offset += sent_char_count + 1; // +1 for space between sentences
 
-        let sent_num = if block_type_str == "paragraph" {
+        let sent_num = if matches!(block_type_str, "paragraph" | "remark") {
             let n = counters.sentence;
             counters.sentence += 1;
             Some(n)
@@ -652,6 +669,10 @@ fn build_block(
                 };
                 (ctx.aa_system_slug, order)
             }
+            MarkerKind::BEdition if ctx.section_remark_sort => (
+                ctx.edition_system_slug,
+                section_remark_sort_order(&marker.value),
+            ),
             MarkerKind::BEdition => {
                 let sort = roman_to_int(&marker.value)
                     .map(|v| v as i32)
@@ -837,6 +858,8 @@ mod tests {
             edition_system_slug: "b_edition",
             edition_sort_arabic_fallback: false,
             subpage_letter_sort: false,
+            section_remark_sort: false,
+            remark_fences: false,
         }
     }
 
@@ -889,6 +912,68 @@ mod tests {
         assert_eq!(counters.paragraph, 1);
         assert_eq!(counters.sentence, 1);
         assert_eq!(counters.figure, 1);
+    }
+
+    #[test]
+    fn a_remark_block_is_numbered_with_the_paragraphs_and_sorts_after_its_section() {
+        let remark = ParsedBlock {
+            block_type: ParsedBlockType::Remark,
+            text: "{{ 3 A }} Anmerkung zu diesem Satze.".to_string(),
+            markers: Vec::new(),
+        };
+        let marker_map = HashMap::new();
+        let footnote_content = HashMap::new();
+        let number_to_key = HashMap::new();
+        let lookups = Lookups {
+            marker_map: &marker_map,
+            footnote_content: &footnote_content,
+            number_to_key: &number_to_key,
+        };
+        let mut counters = Counters {
+            paragraph: 7,
+            sentence: 20,
+            figure: 1,
+            margin_note: 0,
+        };
+        let ctx = BlockCtx {
+            section_remark_sort: true,
+            remark_fences: true,
+            ..test_ctx()
+        };
+
+        let block = build_block(&remark, None, 0, 0, &mut counters, &lookups, &ctx);
+
+        assert_eq!(block.block_type, "remark");
+        assert_eq!(block.paragraph_number, Some(7));
+        assert_eq!(block.sentences[0].sentence_number, Some(20));
+        assert_eq!(block.sentences[0].page_markers[0].ref_value, "3 A");
+        assert_eq!(block.sentences[0].page_markers[0].sort_order, 31);
+        assert_eq!((counters.paragraph, counters.sentence), (8, 21));
+    }
+
+    #[test]
+    #[should_panic(expected = "does not use ::: remark fences")]
+    fn a_remark_fence_is_refused_where_the_corpus_has_not_opted_in() {
+        let remark = ParsedBlock {
+            block_type: ParsedBlockType::Remark,
+            text: "Anmerkung.".to_string(),
+            markers: Vec::new(),
+        };
+        let marker_map = HashMap::new();
+        let footnote_content = HashMap::new();
+        let number_to_key = HashMap::new();
+        let lookups = Lookups {
+            marker_map: &marker_map,
+            footnote_content: &footnote_content,
+            number_to_key: &number_to_key,
+        };
+        let mut counters = Counters {
+            paragraph: 1,
+            sentence: 1,
+            figure: 1,
+            margin_note: 0,
+        };
+        build_block(&remark, None, 0, 0, &mut counters, &lookups, &test_ctx());
     }
 
     #[test]

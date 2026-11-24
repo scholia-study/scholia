@@ -84,6 +84,10 @@ pub struct ParsedBlock {
 pub enum ParsedBlockType {
     Heading,
     Paragraph,
+    /// A paragraph inside a `::: remark` … `:::` fence: the author's
+    /// smaller-type commentary on the section above it (hegel4's
+    /// Anmerkungen). Numbered and sentence-split like a paragraph.
+    Remark,
     Footnote {
         marker: String,
     },
@@ -197,6 +201,7 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
     // Footnotes start with [^marker]: and may span multiple lines
     let lines: Vec<&str> = body.lines().collect();
     let mut i = 0;
+    let mut in_remark = false;
 
     while i < lines.len() {
         let line = lines[i].trim();
@@ -206,6 +211,23 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
             i += 1;
             continue;
         }
+
+        if line == REMARK_FENCE_OPEN {
+            assert!(!in_remark, "nested `{REMARK_FENCE_OPEN}` fence");
+            in_remark = true;
+            i += 1;
+            continue;
+        }
+        if line == REMARK_FENCE_CLOSE {
+            assert!(in_remark, "`{REMARK_FENCE_CLOSE}` without an open fence");
+            in_remark = false;
+            i += 1;
+            continue;
+        }
+        assert!(
+            !in_remark || !is_structural_line(line),
+            "only paragraphs may sit inside a remark fence, found: {line:.40}"
+        );
 
         // Footnote definition: [^marker]: text
         if let Some(rest) = try_parse_footnote_start(line) {
@@ -305,7 +327,7 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
             if next.is_empty() {
                 break;
             }
-            if next.starts_with("## ") {
+            if next.starts_with("## ") || next == REMARK_FENCE_CLOSE {
                 break;
             }
             if try_parse_footnote_start(next).is_some() {
@@ -320,13 +342,29 @@ pub fn parse_blocks(body: &str) -> Vec<ParsedBlock> {
         // the rendered plain/html so their offsets land in plain-text
         // coordinates (see structure.rs).
         blocks.push(ParsedBlock {
-            block_type: ParsedBlockType::Paragraph,
+            block_type: if in_remark {
+                ParsedBlockType::Remark
+            } else {
+                ParsedBlockType::Paragraph
+            },
             text: para_text,
             markers: Vec::new(),
         });
     }
 
+    assert!(!in_remark, "unclosed `{REMARK_FENCE_OPEN}` fence");
     blocks
+}
+
+const REMARK_FENCE_OPEN: &str = "::: remark";
+const REMARK_FENCE_CLOSE: &str = ":::";
+
+fn is_structural_line(line: &str) -> bool {
+    line.starts_with("## ")
+        || line.starts_with("<figure")
+        || line == "---"
+        || line == "***"
+        || try_parse_footnote_start(line).is_some()
 }
 
 /// Replace a leading `+ ` run-marker with a `RUN_BREAK` sentinel; pass other
@@ -410,6 +448,37 @@ mod tests {
         assert!(
             matches!(&blocks[3].block_type, ParsedBlockType::Footnote { marker } if marker == "*")
         );
+    }
+
+    #[test]
+    fn test_remark_fence_turns_its_paragraphs_into_remark_blocks() {
+        let body = "## {{ 1 }} §. 1.\n\nMain.\n\n::: remark\n{{ 1 A }} First remark\nline two.\n\nSecond remark.\n:::\n\nMain again.\n";
+        let blocks = parse_blocks(body);
+        let kinds: Vec<&ParsedBlockType> = blocks.iter().map(|b| &b.block_type).collect();
+        assert_eq!(
+            kinds,
+            [
+                &ParsedBlockType::Heading,
+                &ParsedBlockType::Paragraph,
+                &ParsedBlockType::Remark,
+                &ParsedBlockType::Remark,
+                &ParsedBlockType::Paragraph,
+            ]
+        );
+        assert_eq!(blocks[2].text, "{{ 1 A }} First remark line two.");
+        assert_eq!(blocks[3].text, "Second remark.");
+    }
+
+    #[test]
+    #[should_panic(expected = "unclosed")]
+    fn test_unclosed_remark_fence_is_refused() {
+        parse_blocks("::: remark\nText.\n");
+    }
+
+    #[test]
+    #[should_panic(expected = "only paragraphs")]
+    fn test_heading_inside_remark_fence_is_refused() {
+        parse_blocks("::: remark\n## Heading\n:::\n");
     }
 
     #[test]

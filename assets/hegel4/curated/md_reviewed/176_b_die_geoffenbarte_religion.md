@@ -1,0 +1,50 @@
+---
+position: 176
+label: "B. Die geoffenbarte Religion"
+depth: 3
+page_gw: "20.549"
+---
+
+## B. Die geoffenbarte Religion
+
+## {{ 564 }} §. 564.
+
+Es liegt wesentlich im Begriffe der wahrhaften Religion, d. i. derjenigen, deren Inhalt der absolute Geist ist, daß sie _geoffenbart_ und zwar _von_ _Gott_ geoffenbart sey. Denn indem das Wissen, das Princip, wodurch die Substanz Geist ist, als die unendliche für sich seyende Form das _selbstbestimmende_ ist, ist es schlechthin _manifestiren_, der Geist ist nur Geist, in sofern er _für_ den Geist ist, und in der absoluten Religion ist es der absolute Geist, der nicht mehr abstracte Momente seiner, sondern sich selbst manifestirt.
+
+::: remark
+{{ 564 A }} Der alten Vorstellung der Nemesis, nach welcher das Göttliche und seine Wirksamkeit in der Welt nur als _gleichmachende_ Macht, die das Hohe und Große zertrümmere, vom noch abstracten Verstande gefaßt worden, setzten _Plato_ und _Aristoteles_ entgegen, daß Gott nicht _nei-_ _disch_ ist. Man kann diß gleichfalls den neuen Versicherungen entgegensetzen, daß der Mensch Gott nicht erkennen könne; – diese {{{ 20.550 }}} Versicherungen, denn mehr sind diese Behauptungen nicht, sind um so inkonsequenter, wenn sie innerhalb einer Religion gemacht werden, welche ausdrücklich die _geoffenbarte_ heißt, so daß sie nach jenen Versicherungen vielmehr die Religion wäre, in der von Gott _nichts_ _offenbar_ wäre, in der er sich _nicht_ geoffenbaret hätte, und die ihr so angehörigen »die Heiden« wären, »die von Gott nichts wissen.« Wenn es mit dem Worte Gott überhaupt in der Religion Ernst ist, so darf und muß die Bestimmung auch von ihm, dem Inhalte und Princip der Religion, anfangen, und wenn ihm das Sichoffenbaren abgesprochen wird, so bliebe von einem Inhalte desselben nur diß übrig, ihm _Neid_ zuzuschreiben. Wenn aber vollends das Wort _Geist_ einen Sinn haben soll, so enthält derselbe das Offenbaren seiner.
+
+Bedenkt man die Schwierigkeit der Erkenntniß Gottes als Geistes, die es nicht mehr bei den schlichten Vorstellungen des Glaubens bewenden lassen [kann], sondern zum Denken, zunächst zum reflectirenden Verstand fortgeht, aber zum begreifenden Denken fortgehen soll, so mag es fast nicht zu verwundern seyn, daß so viele, besonders die Theologen, als näher aufgefodert sich mit diesen Ideen zu beschäftigen, darauf verfallen sind, leichter damit abzukommen und so willig das aufgenommen haben, was ihnen zu diesem Behufe geboten worden; das allerleichteste ist das angegebene Resultat: daß der Mensch von Gott nichts wisse. Was Gott als Geist ist, diß richtig und bestimmt im Gedanken zu fassen, dazu wird gründliche Speculation erfodert. Es sind zunächst die Sätze darin enthalten: Gott ist nur Gott insofern er sich selber weiß; sein Sich-wissen ist ferner sein Selbstbewußtseyn im Menschen, und das Wissen des Menschen _von_ Gott, das fortgeht zum Sich-wissen des Menschen in Gott. – Siehe die gründliche Erläuterung dieser Sätze in der Schrifft, aus der sie genommen: _Aphorismen_ _über_ _Wissen_ _und_ _Nicht-wissen_ _u.s.f._ _von_ _C._ _F._ _G....l._ _Berlin._ _1829._
+:::
+
+## {{{ 20.551 }}} {{ 565 }} §. 565.
+
+Der absolute Geist in der aufgehobnen Unmittelbarkeit und Sinnlichkeit der Gestalt und des Wissens, ist dem Inhalte nach der an und für sich seyende Geist der Natur und des Geistes, der Form nach ist er zunächst für das subjective Wissen der _Vorstellung_. Diese giebt den Momenten seines Inhalts einerseits Selbstständigkeit und macht sie gegen einander zu Voraussetzungen, und _aufeinander_ _folgenden_ Erscheinungen und zu einem Zusammenhang _des_ _Geschehens_ nach _endlichen_ _Reflexionsbestimmungen_; andererseits wird solche Form endlicher Vorstellungsweise in dem Glauben an den Einen Geist und in der Andacht des Cultus auch aufgehoben.
+
+## {{ 566 }} §. 566.
+
+In diesem Trennen scheiden sich die _Form_ von dem _Inhalte_, und in jener die unterschiedenen Momente des Begriffs zu _besondern_ _Sphären_ oder Elementen ab, in deren jedem sich der absolute Inhalt darstellt, α) als in seiner Manifestation bei sich selbst bleibender, ewiger Inhalt; β) als Unterscheidung des ewigen Wesens von seiner Manifestation, welche durch diesen Unterschied die Erscheinungswelt wird, in die der Inhalt tritt; γ) als unendliche Rückkehr und Versöhnung der entäußerten Welt mit dem ewigen Wesen, das Zurückgehen desselben aus der Erscheinung in die Einheit seiner Fülle.
+
+## {{ 567 }} §. 567.
+
+α) In dem Momente der _Allgemeinheit_, der Sphäre des reinen _Gedankens_ oder dem abstracten Elemente des _Wesens_ ist es also der absolute Geist, welcher zuerst das _Vorausgesetzte_, jedoch nicht verschlossen bleibende, sondern als _substantielle_ _Macht_ in der Reflexionsbestimmung der Causalität, _Schöpfer_ Himmels und der Erde ist, aber in dieser ewigen Sphäre vielmehr {{{ 20.552 }}} nur _sich_ _selbst_ als seinen _Sohn_ erzeugt, ebenso in ursprünglicher Identität mit diesem Unterschiedenen bleibt, als diese Bestimmung, das von dem allgemeinen Wesen unterschiedene zu seyn, sich ewig aufhebt, und durch diese Vermittlung der sich aufhebenden Vermittlung, die erste Substanz wesentlich als _concrete_ _Einzelnheit_ und Subjectivität, – der _Geist_ ist.
+
+## {{ 568 }} §. 568.
+
+β) Im Momente der _Besonderheit_ aber des Urtheils, ist diß concrete ewige Wesen das _Vorausgesetzte_, und seine Bewegung [ist] die Erschaffung der _Erscheinung_, das Zerfallen des ewigen Moments der Vermittlung, des einigen Sohnes, in den selbstständigen Gegensatz, einerseits des Himmels und der Erde, der elementarischen und concreten Natur, andererseits des Geistes als mit ihr im _Verhältniß_ stehend, somit des _endlichen_ Geistes, welcher als das Extrem der in sich seyenden Negativität sich zum Bösen verselbstständigt, solches Extrem durch seine Beziehung auf eine gegenüberstehende Natur und durch seine damit gesetzte eigene Natürlichkeit ist, in dieser als denkend zugleich auf das Ewige gerichtet, aber damit in äußerlicher Beziehung steht.
+
+## {{ 569 }} §. 569.
+
+γ) Im Momente der _Einzelnheit_ als solcher, nämlich der Subjectivität und des Begriffes selbst, als des in seinen _identischen_ _Grund_ zurückgekehrten Gegensatzes der Allgemeinheit und Besonderheit, stellt sich 1) als _Voraussetzung_, die _allgemeine_ Substanz aus ihrer Abstraction zum _einzelnen_ Selbstbewußtseyn verwirklicht, und dieses als _unmittelbar_ _identisch_ mit dem Wesen, jenen _Sohn_ der ewigen Sphäre in die Zeitlichkeit versetzt, in ihm das Böse als _an_ _sich_ aufgehoben dar; aber ferner diese unmittelbare und damit sinnliche Existenz des absolut Concreten sich in das Urtheil setzend und in den Schmerz der _Negativität_ ersterbend, in welcher es als unendliche Subjectivität identisch mit sich, aus derselben als _absolute_ _Rückkehr_ und allgemeine Einheit der allgemeinen und einzelnen Wesenheit _für_ _sich_ geworden ist, – die Idee des als ewigen aber _lebendigen_, und in der Welt gegenwärtigen Geistes.
+
+## {{{ 20.553 }}} {{ 570 }} §. 570.
+
+2) Diese objective Totalität ist die an sich seyende _Voraussetzung_ für die _endliche_ Unmittelbarkeit des einzelnen Subjects, für dasselbe daher zunächst ein _anderes_ und _angeschautes_, aber die Anschauung der _an_ _sich_ seyenden Wahrheit, durch welches Zeugniß des Geistes in ihm es wegen seiner unmittelbaren Natur zunächst sich für sich als das Nichtige und Böse bestimmt, und weiter nach dem Beispiel seiner Wahrheit, vermittelst des Glaubens an die darin _an_ _sich_ vollbrachte Einheit der allgemeinen und einzelnen Wesenheit, auch die Bewegung ist, seiner unmittelbaren Naturbestimmtheit und des eignen Willens sich zu entäußern, und mit jenem Beispiel und seinem _Ansich_ in dem Schmerze der Negativität sich zusammen zu schließen und so als vereint mit dem Wesen sich zu erkennen, welches 3) durch diese Vermittlung sich als inwohnend im Selbstbewußtseyn bewirkt, und die wirkliche Gegenwärtigkeit des an und für sich seyenden Geistes als des allgemeinen ist.
+
+## {{ 571 }} §. 571.
+
+Diese drei Schlüsse, die den einen Schluß der absoluten Vermittlung des Geistes mit sich selbst ausmachen, sind die Offenbarung desselben, welche dessen Leben in dem Kreislaufe concreter Gestalten der Vorstellung explicirt. Aus ihrem Auseinandertreten und zeitlichem und äußerlichem Aufeinanderfolgen nimmt sich die Entfaltung der Vermittlung in ihrem Resultat, dem Zusammenschließen des Geistes mit sich selbst, nicht nur zur Einfachheit des Glaubens und der Gefühlsandacht zusammen, sondern auch zum _Denken_, in dessen immanenter Einfachheit ebenso die Entfaltung ihre Ausbreitung hat, aber gewußt als ein untrennbarer Zusammenhang des allgemeinen, einfachen und ewigen Geistes in sich selbst. In dieser Form der Wahrheit ist die Wahrheit der Gegenstand der _Philosophie_.
+
+::: remark
+{{{ 20.554 }}} {{ 571 A }} Wird das Resultat, der _für_ _sich_ seyende Geist, in welchem alle Vermittlung sich aufgehoben hat, in nur _formellem_, inhaltslosem Sinne genommen, so daß der Geist nicht zugleich als _an_ _sich_ seyender und objectiv sich entfaltender gewußt wird, so ist jene unendliche Subjectivität das nur formelle, sich in sich als absolut wissende Selbstbewußtseyn, die _Ironie_, welche allen objectiven Gehalt sich zu nichte, zu einem _eiteln_ zu machen weiß, somit selbst die Gehaltlosigkeit und Eitelkeit ist, die sich aus sich und damit einen zufälligen und beliebigen Inhalt zur Bestimmung gibt, Meister darüber bleibt, durch ihn nicht gebunden ist, und mit der Versicherung auf der höchsten Spitze der Religion und der Philosophie zu stehen, vielmehr in die hohle Willkühr zurückfällt. Nur indem die reine unendliche Form, die bey sich seyende Selbstmanifestation, die Einseitigkeit des Subjectiven, worin sie die Eitelkeit des Denkens ist, ablegt, ist sie das freye Denken, welches seine unendliche Bestimmung zugleich als absoluten, an und fürsichseyenden Inhalt, und ihn als Object hat, in welchem es ebenso frey ist. Das Denken ist insofern selbst nur das Formelle des absoluten Inhalts.
+:::

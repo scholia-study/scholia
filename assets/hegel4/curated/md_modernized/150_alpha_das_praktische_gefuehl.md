@@ -1,0 +1,30 @@
+---
+position: 150
+label: "α) Das praktische Gefühl"
+depth: 5
+page_gw: "20.467"
+---
+
+## α) Das praktische Gefühl
+
+## {{ 471 }} §. 471.
+
+Der praktische Geist hat seine Selbstbestimmung in ihm zuerst auf unmittelbare Weise, damit _formell_, so dass er _sich_ _findet_ als in _seiner_ innerlichen _Natur_ bestimmte _Einzelnheit_. Er ist so _praktisches_ _Gefühl_. Darin hat er, da er _an_ _sich_ mit der Vernunft einfach identische Subjektivität ist, wohl den Inhalt der Vernunft aber als _unmittelbar_ _einzelnen_, hiermit auch als _natürlichen_, _zufälligen_ _und_ _subjektiven_ Inhalt der eben sowohl aus der Partikularität des Bedürfnisses, des Meinens u.s.f., und aus der gegen das Allgemeine sich für sich setzenden Subjektivität sich bestimmt, als er an sich der Vernunft angemessen sein kann.
+
+::: remark
+{{ 471 A }} Wenn an das _Gefühl_ von Recht und Moralität, wie von Religion, das der Mensch in sich habe, an seine wohlwollenden Neigungen u.s.f. an sein {{{ 20.468 }}} _Herz_ überhaupt, d. i. an das Subjekt, in sofern in ihm alle die verschiedenen praktischen Gefühle vereinigt sind, appelliert wird, so hat dies 1) den richtigen Sinn, dass diese Bestimmungen seine _eigenen_ _immanenten_ sind, 2) und dann, in sofern das Gefühl dem _Verstande_ entgegengesetzt wird, dass es gegen dessen einseitige Abstraktionen die _Totalität_ sein _kann_. Aber ebenso _kann_ das Gefühl _einseitig_, unwesentlich, schlecht sein. Das _Vernünftige_, das in der Gestalt der Vernünftigkeit als Gedachtes ist, ist derselbe Inhalt, den das _gute_ praktische Gefühl hat, aber in seiner Allgemeinheit und Notwendigkeit, in seiner Objektivität und Wahrheit.
+
+Deswegen ist es einerseits _töricht_, zu meinen, als ob im Übergange vom Gefühl zum Recht und der Pflicht an Inhalt und Vortrefflichkeit verloren werde; dieser Übergang bringt erst das Gefühl zu seiner Wahrheit. Eben so töricht ist es, die Intelligenz dem Gefühle, Herzen und Willen für überflüssig, ja schädlich zu halten; die Wahrheit und was dasselbe ist, die wirkliche Vernünftigkeit des Herzens und Willens kann allein in der _Allgemeinheit_ der Intelligenz, nicht in der Einzelnheit des Gefühles als solchen Statt finden. Wenn die Gefühle wahrhafter Art sind, sind sie es durch ihre Bestimmtheit, d. i. ihren Inhalt, und dieser ist wahrhaft nur, in sofern er in sich allgemein ist, d. h. den denkenden Geist zu seiner Quelle hat. Die Schwierigkeit besteht für den Verstand darin, sich von der Trennung, die er sich einmal zwischen den Seelenvermögen, dem Gefühle, dem denkenden Geiste willkürlich gemacht hat, loszumachen und zu der Vorstellung zu kommen, dass im Menschen nur Eine Vernunft, im Gefühl, Wollen und Denken ist. Damit zusammenhängend wird eine Schwierigkeit darin gefunden, dass die Ideen, die allein dem denkenden Geiste angehören, Gott, Recht, Sittlichkeit auch _gefühlt_ werden können. Das Gefühl ist aber nichts anderes, als die Form der unmittelbaren eigentümlichen Einzelnheit des Subjekts, in die jener Inhalt, wie jeder andere objektive Inhalt, dem das Bewusstsein auch Gegenständlichkeit zuschreibt, gesetzt werden kann.
+
+Andererseits ist es _verdächtig_, und sehr wohl mehr als dies, am Gefühle und Herzen gegen die gedachte Vernünftigkeit, Recht, Pflicht, {{{ 20.469 }}} Gesetz, festzuhalten, weil das, was _Mehr_ in jenen als in dieser ist, nur die besondere Subjektivität, das Eitle und die Willkür, ist. – Aus demselben Grunde ist es ungeschickt, sich bei der wissenschaftlichen Betrachtung der Gefühle auf mehr, als auf ihre _Form_ einzulassen, und ihren Inhalt zu betrachten, da dieser als gedacht, vielmehr die Selbstbestimmungen des Geistes in ihrer Allgemeinheit und Notwendigkeit, die Rechte und Pflichten, ausmacht. Für die eigentümliche Betrachtung der praktischen Gefühle wie der Neigungen blieben nur die selbstsüchtigen, schlechten und bösen; denn nur sie gehören der sich gegen das Allgemeine festhaltenden Einzelnheit; ihr Inhalt ist das Gegenteil gegen den der Rechte und Pflichten, eben damit erhalten sie aber nur im Gegensatze gegen diese ihre nähere Bestimmtheit.
+:::
+
+## {{ 472 }} §. 472.
+
+Das praktische Gefühl enthält das _Sollen_, seine Selbstbestimmung als _an_ _sich_ _seiend_, _bezogen_ auf eine _seiende_ Einzelnheit, die nur in der Angemessenheit zu jener als gültig sei. Da beiden in dieser Unmittelbarkeit noch objektive Bestimmung fehlt, so ist diese Beziehung des _Bedürfnisses_ auf das Dasein das ganz subjektive und oberflächliche _Gefühl_ des _Angenehmen_ oder _Unangenehmen_.
+
+::: remark
+{{ 472 A }} Vergnügen, Freude, Schmerz u.s.f., Scham, Reue, Zufriedenheit u.s.w. sind teils nur Modifikationen des formellen praktischen Gefühls überhaupt, teils aber durch ihren Inhalt, der die Bestimmtheit des Sollens ausmacht, verschieden.
+
+Die berühmte Frage _nach_ _dem_ _Ursprunge_ des _Übels_ in der Welt, tritt, wenigstens in sofern unter dem Übel zunächst nur das Unangenehme und der _Schmerz_ verstanden wird, auf diesem Standpunkte des formellen Praktischen ein. Das Übel ist nichts anders als die Unangemessenheit des _Seins_ zu dem _Sollen_. Dieses Sollen hat viele Bedeutungen, und da die zufälligen _Zwecke_ gleichfalls die Form des Sollens haben, unendlich viele. In Ansehung ihrer ist das Übel nur das Recht, das an der Eitelkeit und Nichtigkeit ihrer Einbildung ausgeübt wird. Sie selbst sind schon das Übel. – Die Endlichkeit des Lebens und des Geistes fällt in ihr {{{ 20.470 }}} _Urteil_, in welchem sie das von ihnen abgesonderte Andere zugleich als ihr Negatives in ihnen haben, so als der Widerspruch sind, der das Übel heißt. Im Todten ist kein Übel noch Schmerz, weil der Begriff in der unorganischen Natur seinem Dasein nicht gegenüber tritt, und nicht in dem Unterschiede zugleich dessen Subjekt bleibt. Im Leben schon und noch mehr im Geiste ist diese immanente Unterscheidung vorhanden, und tritt hiermit ein _Sollen_ ein; und diese Negativität, Subjektivität, Ich, die Freiheit, sind die Prinzipien des Übels und des Schmerzens. – Jacob _Böhm_ hat die _Ichheit_ als die _Pein_ und _Qual_ und als die _Quelle_ der Natur und des Geistes gefasst.
+:::
