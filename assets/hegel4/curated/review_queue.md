@@ -11,17 +11,11 @@ Working checklist; delete items as they are settled.
 
 Citation apparatus (day ordinals before a month, number/Roman ordinal before
 a Roman numeral or reference abbreviation) is protected by the corpus knob
-`reference_protected_splits`. Still splitting, to be ruled on:
+`reference_protected_splits`. Abbreviation runs and enumerated list items in
+the body are held together with `\.` in both layers. Still splitting:
 
-- [ ] Abbreviation runs: "Hrn. | Th.", "Vergl. | Anm. z. vorh. §.", "Ep. | I. 118.",
-  "Princ. phil. | I. 15.", "Ch. | I. den einfachen …", "Phys. | III. ch. 4.",
-  "S. 5 vergl. | S. 56 ff.", "S. 119. ff." and similar "S. <n>" fragments
-  (about 28 mid-block starts).
-- [ ] Enumerators standing alone as sentences: "a." | "Sein" in about 65 node
-  headings, and "a." | "Die Bedingung …" in 16 list items (shared-splitter
-  defect, also in hegel1/hegel2/kant1).
-- [ ] `u.s.f.` / `u.s.w.`: 39 splits, at least 8 of them mid-sentence ("dem
-  Rechte u.s.f. Befriedigung", "spartanischer u.s.f. Bürger").
+- [ ] Enumerators standing alone as sentences in about 65 node headings
+  ("a." | "Sein").
 
 ## Hyphen rulings
 
@@ -44,13 +38,6 @@ print.
 - `Bestimmtheit` and similar `-heit` words keep their `th`.
 - "presentire", "produire", "détruire" and other French/Latin forms are
   deliberately untouched.
-
-## Source gaps
-
-- [ ] § 96 breaks off after "α) Das Fürsichsein als Beziehung auf sich
-  _selbst_ ist _Unmittelbarkeit_, und" (GW 20.133, line 25). The XML and the
-  JSON agree, and both English controls carry the rest of the §. The missing
-  German has to come from a print (zeno.org refuses automated access).
 
 ## Source notes
 

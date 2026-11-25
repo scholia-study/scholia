@@ -72,6 +72,82 @@ pub fn take_run_marker(s: &str) -> (bool, &str) {
     }
 }
 
+/// An authored `\.` in curated markdown: a period the curator has ruled is
+/// not a sentence end, where the splitter alone cannot tell — German
+/// capitalises nouns, so "bittern u.s.f. Stoff darzustellen" looks exactly
+/// like a boundary. The CommonMark escape renders as a plain period in any
+/// previewer. Every forced splitter honours it, and each escape must suppress
+/// a boundary the splitter would otherwise make, so a stale escape fails
+/// the build instead of lingering silently.
+pub const ESCAPED_PERIOD: &str = "\\.";
+
+/// Drop the escape from stored (unsplit) text.
+pub fn unescape_periods(text: &str) -> String {
+    text.replace(ESCAPED_PERIOD, ".")
+}
+
+type SplitPositions = fn(&str, &[usize]) -> Vec<usize>;
+
+/// Find boundaries on the unescaped text, so every guard sees real periods
+/// ("IV. Ep. I." stays protected as citation apparatus), then drop each
+/// boundary whose terminal period was escaped. Forced boundaries stand.
+fn split_honoring_escapes(
+    text: &str,
+    html: &str,
+    forced: &[usize],
+    positions: SplitPositions,
+) -> Vec<(String, String)> {
+    if text.is_empty() {
+        return vec![];
+    }
+    if !text.contains(ESCAPED_PERIOD) {
+        return assemble_splits(text, html, &positions(text, forced));
+    }
+    let plain = unescape_periods(text);
+    let escaped: Vec<usize> = text
+        .match_indices(ESCAPED_PERIOD)
+        .enumerate()
+        .map(|(k, (i, _))| i - k)
+        .collect();
+    let forced: Vec<usize> = forced
+        .iter()
+        .map(|&p| p - text[..p].matches(ESCAPED_PERIOD).count())
+        .collect();
+    let mut suppressed = vec![false; escaped.len()];
+    let kept: Vec<usize> = positions(&plain, &forced)
+        .into_iter()
+        .filter(|p| {
+            if forced.contains(p) {
+                return true;
+            }
+            match terminal_period(&plain, *p).and_then(|q| escaped.binary_search(&q).ok()) {
+                Some(k) => {
+                    suppressed[k] = true;
+                    false
+                }
+                None => true,
+            }
+        })
+        .collect();
+    if let Some(k) = suppressed.iter().position(|s| !s) {
+        let before: String = plain[..escaped[k]].chars().rev().take(40).collect();
+        let before: String = before.chars().rev().collect();
+        panic!("`\\.` after \"…{before}\" suppresses no sentence split; remove the escape");
+    }
+    assemble_splits(&plain, &unescape_periods(html), &kept)
+}
+
+/// Byte offset of the period that ends the sentence before boundary `pos`,
+/// looking past whitespace, a Gedankenstrich and closing quotes/parens.
+fn terminal_period(text: &str, pos: usize) -> Option<usize> {
+    let before = text[..pos]
+        .trim_end()
+        .trim_end_matches(['\u{2014}', '\u{2013}'])
+        .trim_end()
+        .trim_end_matches([')', '»', '«', '"', '“', '”', '„', '‟']);
+    before.ends_with('.').then(|| before.len() - 1)
+}
+
 /// Regex matching a sentence-ending punctuation followed by whitespace and an uppercase letter or ».
 /// We capture the punctuation+space so we can check abbreviation context before accepting the split.
 ///
@@ -248,37 +324,18 @@ pub fn split_sentences(text: &str, html: &str) -> Vec<(String, String)> {
 /// `forced` contains byte offsets in `text` where sentence boundaries should be inserted
 /// regardless of punctuation.
 pub fn split_sentences_forced(text: &str, html: &str, forced: &[usize]) -> Vec<(String, String)> {
-    if text.is_empty() {
-        return vec![];
-    }
+    split_honoring_escapes(text, html, forced, forced_positions)
+}
 
-    // Step 1: Find split positions in plain text, merge with forced positions.
-    let mut split_positions = find_text_split_positions(text);
-    split_positions.extend_from_slice(forced);
-    split_positions.sort_unstable();
-    split_positions.dedup();
+fn forced_positions(text: &str, forced: &[usize]) -> Vec<usize> {
+    with_forced(find_text_split_positions(text), forced)
+}
 
-    if split_positions.is_empty() {
-        return vec![(text.to_string(), html.to_string())];
-    }
-
-    // Step 2: Split the plain text
-    let text_parts = split_at_positions(text, &split_positions);
-
-    // Step 3: Map text split positions to HTML positions
-    let html_split_positions = map_text_positions_to_html(text, html, &split_positions);
-
-    // Step 4: Split and re-balance HTML
-    let html_parts = split_html_with_rebalance(html, &html_split_positions);
-
-    assert_eq!(text_parts.len(), html_parts.len());
-
-    text_parts
-        .into_iter()
-        .zip(html_parts)
-        .map(|(t, h)| (t.trim().to_string(), h.trim().to_string()))
-        .filter(|(t, _)| !t.is_empty())
-        .collect()
+fn with_forced(mut positions: Vec<usize>, forced: &[usize]) -> Vec<usize> {
+    positions.extend_from_slice(forced);
+    positions.sort_unstable();
+    positions.dedup();
+    positions
 }
 
 /// Find byte positions in `text` where new sentences begin (German).
@@ -338,15 +395,13 @@ pub fn split_sentences_paren_protected_forced(
     html: &str,
     forced: &[usize],
 ) -> Vec<(String, String)> {
-    if text.is_empty() {
-        return vec![];
-    }
-    let mut split_positions = find_text_split_positions(&en_dash_probe(text));
-    retain_splits_outside_parens(text, &mut split_positions);
-    split_positions.extend_from_slice(forced);
-    split_positions.sort_unstable();
-    split_positions.dedup();
-    assemble_splits(text, html, &split_positions)
+    split_honoring_escapes(text, html, forced, paren_protected_positions)
+}
+
+fn paren_protected_positions(text: &str, forced: &[usize]) -> Vec<usize> {
+    let mut positions = find_text_split_positions(&en_dash_probe(text));
+    retain_splits_outside_parens(text, &mut positions);
+    with_forced(positions, forced)
 }
 
 const MONTHS: &str = "Januar|Jänner|Februar|März|April|Mai|May|Juni|Juli|August|September|October|Oktober|November|December|Dezember";
@@ -398,16 +453,14 @@ pub fn split_sentences_reference_protected_forced(
     html: &str,
     forced: &[usize],
 ) -> Vec<(String, String)> {
-    if text.is_empty() {
-        return vec![];
-    }
-    let mut split_positions = find_text_split_positions(&en_dash_probe(text));
-    retain_splits_outside_parens(text, &mut split_positions);
-    retain_splits_outside_references(text, &mut split_positions);
-    split_positions.extend_from_slice(forced);
-    split_positions.sort_unstable();
-    split_positions.dedup();
-    assemble_splits(text, html, &split_positions)
+    split_honoring_escapes(text, html, forced, reference_protected_positions)
+}
+
+fn reference_protected_positions(text: &str, forced: &[usize]) -> Vec<usize> {
+    let mut positions = find_text_split_positions(&en_dash_probe(text));
+    retain_splits_outside_parens(text, &mut positions);
+    retain_splits_outside_references(text, &mut positions);
+    with_forced(positions, forced)
 }
 
 /// [`split_sentences_en_forced`] with parenthesis-protected candidates
@@ -417,19 +470,17 @@ pub fn split_sentences_en_paren_protected_forced(
     html: &str,
     forced: &[usize],
 ) -> Vec<(String, String)> {
-    if text.is_empty() {
-        return vec![];
-    }
-    let mut split_positions = find_text_split_positions_with(
+    split_honoring_escapes(text, html, forced, en_paren_protected_positions)
+}
+
+fn en_paren_protected_positions(text: &str, forced: &[usize]) -> Vec<usize> {
+    let mut positions = find_text_split_positions_with(
         &en_dash_probe(text),
         &SINGLE_ABBREVS_EN,
         &MULTI_ABBREV_RE_EN,
     );
-    retain_splits_outside_parens(text, &mut split_positions);
-    split_positions.extend_from_slice(forced);
-    split_positions.sort_unstable();
-    split_positions.dedup();
-    assemble_splits(text, html, &split_positions)
+    retain_splits_outside_parens(text, &mut positions);
+    with_forced(positions, forced)
 }
 
 /// Steps 2–4 of sentence splitting: split the plain text, map the
@@ -815,9 +866,10 @@ pub fn split_sentences_en_enum_forced(
     html: &str,
     forced: &[usize],
 ) -> Vec<(String, String)> {
-    if text.is_empty() {
-        return vec![];
-    }
+    split_honoring_escapes(text, html, forced, en_enum_positions)
+}
+
+fn en_enum_positions(text: &str, forced: &[usize]) -> Vec<usize> {
     let mut split_positions =
         find_text_split_positions_with(text, &SINGLE_ABBREVS_EN, &MULTI_ABBREV_RE_EN);
     // Variable-letter sentence ends: the shared finder suppresses every
@@ -878,10 +930,7 @@ pub fn split_sentences_en_enum_forced(
             *pos = c.get(1).unwrap().start();
         }
     }
-    split_positions.extend_from_slice(forced);
-    split_positions.sort_unstable();
-    split_positions.dedup();
-    finish_split(text, html, split_positions)
+    with_forced(split_positions, forced)
 }
 
 /// [`split_sentences_en_forced`] plus Early Modern strong-colon splitting.
@@ -903,37 +952,14 @@ pub fn split_sentences_en_forced(
     html: &str,
     forced: &[usize],
 ) -> Vec<(String, String)> {
-    if text.is_empty() {
-        return vec![];
-    }
-
-    let mut split_positions =
-        find_text_split_positions_with(text, &SINGLE_ABBREVS_EN, &MULTI_ABBREV_RE_EN);
-    split_positions.extend_from_slice(forced);
-    split_positions.sort_unstable();
-    split_positions.dedup();
-    finish_split(text, html, split_positions)
+    split_honoring_escapes(text, html, forced, en_positions)
 }
 
-/// Apply resolved split positions: cut the plain text, map the cuts into the
-/// HTML, and pair the parts up.
-fn finish_split(text: &str, html: &str, split_positions: Vec<usize>) -> Vec<(String, String)> {
-    if split_positions.is_empty() {
-        return vec![(text.to_string(), html.to_string())];
-    }
-
-    let text_parts = split_at_positions(text, &split_positions);
-    let html_split_positions = map_text_positions_to_html(text, html, &split_positions);
-    let html_parts = split_html_with_rebalance(html, &html_split_positions);
-
-    assert_eq!(text_parts.len(), html_parts.len());
-
-    text_parts
-        .into_iter()
-        .zip(html_parts)
-        .map(|(t, h)| (t.trim().to_string(), h.trim().to_string()))
-        .filter(|(t, _)| !t.is_empty())
-        .collect()
+fn en_positions(text: &str, forced: &[usize]) -> Vec<usize> {
+    with_forced(
+        find_text_split_positions_with(text, &SINGLE_ABBREVS_EN, &MULTI_ABBREV_RE_EN),
+        forced,
+    )
 }
 
 /// Generalized split-position finder parameterized by abbreviation lists.
@@ -1132,14 +1158,11 @@ pub fn split_sentences_grc_forced(
     html: &str,
     forced: &[usize],
 ) -> Vec<(String, String)> {
-    if text.is_empty() {
-        return vec![];
-    }
-    let mut split_positions = find_grc_split_positions(text);
-    split_positions.extend_from_slice(forced);
-    split_positions.sort_unstable();
-    split_positions.dedup();
-    assemble_splits(text, html, &split_positions)
+    split_honoring_escapes(text, html, forced, grc_positions)
+}
+
+fn grc_positions(text: &str, forced: &[usize]) -> Vec<usize> {
+    with_forced(find_grc_split_positions(text), forced)
 }
 
 /// [`split_sentences_grc_forced`] with no forced positions.
@@ -1214,6 +1237,59 @@ mod tests {
     }
 
     use super::*;
+
+    #[test]
+    fn escaped_period_holds_a_split_and_renders_plain() {
+        let text = r"Riechstoff, bittern u.s.f\. Stoff darzustellen sucht. Andere nicht.";
+        let html = r"Riechstoff, <b>bittern</b> u.s.f\. Stoff darzustellen sucht. Andere nicht.";
+        let parts = split_sentences_paren_protected_forced(text, html, &[]);
+        assert_eq!(
+            parts,
+            vec![
+                (
+                    "Riechstoff, bittern u.s.f. Stoff darzustellen sucht.".to_string(),
+                    "Riechstoff, <b>bittern</b> u.s.f. Stoff darzustellen sucht.".to_string(),
+                ),
+                ("Andere nicht.".to_string(), "Andere nicht.".to_string()),
+            ]
+        );
+        let en = r"omnipresence, and so on\. (For goodness is moral.) Next.";
+        assert_eq!(split_sentences_en_forced(en, en, &[]).len(), 2);
+    }
+
+    #[test]
+    fn forced_split_after_an_escape_lands_on_the_same_word() {
+        let text = r"Wald u.s.f\. Blau wird es. Rot |||bleibt.";
+        let (tok, forced) = strip_forced_splits(text);
+        let parts = split_sentences_forced(&tok, &tok, &forced);
+        let texts: Vec<&str> = parts.iter().map(|(t, _)| t.as_str()).collect();
+        assert_eq!(texts, ["Wald u.s.f. Blau wird es.", "Rot", "bleibt."]);
+    }
+
+    #[test]
+    #[should_panic(expected = "suppresses no sentence split")]
+    fn stale_escape_fails_loudly() {
+        let text = r"Das ist u.s.f\. wohl so.";
+        split_sentences_forced(text, text, &[]);
+    }
+
+    #[test]
+    fn unescape_drops_only_the_backslash() {
+        assert_eq!(unescape_periods(r"u.s.f\. Stoff"), "u.s.f. Stoff");
+    }
+
+    #[test]
+    fn escape_leaves_citation_guards_seeing_a_real_period() {
+        let text = r"De Methodo IV. Ep\. I. 118. Aus ersterer Stelle.";
+        let parts: Vec<String> = split_sentences_reference_protected_forced(text, text, &[])
+            .into_iter()
+            .map(|(t, _)| t)
+            .collect();
+        assert_eq!(
+            parts,
+            vec!["De Methodo IV. Ep. I. 118.", "Aus ersterer Stelle."]
+        );
+    }
 
     #[test]
     fn structural_split_is_case_insensitive_across_layers() {

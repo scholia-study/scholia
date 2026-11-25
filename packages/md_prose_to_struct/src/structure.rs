@@ -14,11 +14,11 @@
 //! and resolved to the sentence they fall in.
 
 use common::sentences::{
-    RUN_BREAK, split_sentences_en_enum_forced, split_sentences_en_forced,
+    ESCAPED_PERIOD, RUN_BREAK, split_sentences_en_enum_forced, split_sentences_en_forced,
     split_sentences_en_paren_protected_forced, split_sentences_en_strong_colon_forced,
     split_sentences_forced, split_sentences_grc_forced, split_sentences_paren_protected_forced,
     split_sentences_reference_protected_forced, strip_forced_split_markers, strip_forced_splits,
-    strip_forced_splits_keep_runs, take_run_marker,
+    strip_forced_splits_keep_runs, take_run_marker, unescape_periods,
 };
 use regex::Regex;
 use std::collections::HashMap;
@@ -458,11 +458,13 @@ fn build_block(
     let sentence_pairs = block_splitter(&block_plain_tok, &block_html_tok, &forced_splits);
 
     // `strip_forced_splits_keep_runs` deleted each `|||` (3 chars) from the
-    // plain text; shift any marker that sat after one back into block_plain_tok
-    // coordinates. (RUN_BREAK is kept, so it needs no adjustment.)
+    // plain text, and the stored text drops each `\.` escape's backslash;
+    // shift any marker that sat after one back into stored coordinates.
+    // (RUN_BREAK is kept, so it needs no adjustment.)
     for marker in &mut page_markers {
         let prefix: String = plain_no_markers.chars().take(marker.char_offset).collect();
-        marker.char_offset -= prefix.matches("|||").count() * 3;
+        marker.char_offset -=
+            prefix.matches("|||").count() * 3 + prefix.matches(ESCAPED_PERIOD).count();
     }
 
     // Original (reviewed) layer, when present — split at its OWN run/forced
@@ -497,12 +499,12 @@ fn build_block(
     });
 
     // Stored block text/html carry no sentinels.
-    let block_plain = block_plain_tok.replace(RUN_BREAK, "");
-    let block_html = block_html_tok.replace(RUN_BREAK, "");
+    let block_plain = unescape_periods(&block_plain_tok.replace(RUN_BREAK, ""));
+    let block_html = unescape_periods(&block_html_tok.replace(RUN_BREAK, ""));
     let (orig_plain, orig_html) = match &orig {
         Some((p, h, _, _)) => (
-            Some(p.replace(RUN_BREAK, "")),
-            Some(h.replace(RUN_BREAK, "")),
+            Some(unescape_periods(&p.replace(RUN_BREAK, ""))),
+            Some(unescape_periods(&h.replace(RUN_BREAK, ""))),
         ),
         None => (None, None),
     };

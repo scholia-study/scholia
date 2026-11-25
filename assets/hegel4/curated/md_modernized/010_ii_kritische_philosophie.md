@@ -47,7 +47,7 @@ Die Kategorien sind daher unfähig Bestimmungen des Absoluten zu sein, als welch
 
 ## {{ 45 }} §. 45.
 
-Es ist nun die _Vernunft_, das Vermögen des _Unbedingten_, welche das Bedingte dieser Erfahrungskenntnisse einsieht. Was hier Vernunftgegenstand heißt, das _Unbedingte_ oder _Unendliche_, ist nichts anders als das Sich-selbst-Gleiche, oder es ist die (§. 42.) erwähnte _ursprüngliche_ _Identität_ des _Ich_ _im_ _Denken_. _Vernunft_ heißt dies _abstrakte_ Ich oder Denken, welches diese reine _Identität_ sich zum Gegenstande oder Zweck macht. Vergl. Anm. z. vorh. §. Dieser schlechthin _bestimmungslosen_ Identität sind die Erfahrungs-Erkenntnisse unangemessen, weil sie überhaupt von _bestimmtem_ Inhalte sind. Indem solches Unbedingte für das Absolute und Wahre der Vernunft (für die _Idee_) angenommen wird, so werden somit die Erfahrungskenntnisse für das Unwahre, für _Erscheinungen_ erklärt.
+Es ist nun die _Vernunft_, das Vermögen des _Unbedingten_, welche das Bedingte dieser Erfahrungskenntnisse einsieht. Was hier Vernunftgegenstand heißt, das _Unbedingte_ oder _Unendliche_, ist nichts anders als das Sich-selbst-Gleiche, oder es ist die (§. 42.) erwähnte _ursprüngliche_ _Identität_ des _Ich_ _im_ _Denken_. _Vernunft_ heißt dies _abstrakte_ Ich oder Denken, welches diese reine _Identität_ sich zum Gegenstande oder Zweck macht. Vergl\. Anm. z. vorh. §. Dieser schlechthin _bestimmungslosen_ Identität sind die Erfahrungs-Erkenntnisse unangemessen, weil sie überhaupt von _bestimmtem_ Inhalte sind. Indem solches Unbedingte für das Absolute und Wahre der Vernunft (für die _Idee_) angenommen wird, so werden somit die Erfahrungskenntnisse für das Unwahre, für _Erscheinungen_ erklärt.
 
 ## {{{ 20.82 }}} {{ 46 }} §. 46.
 

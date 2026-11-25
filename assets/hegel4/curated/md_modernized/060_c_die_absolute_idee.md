@@ -25,7 +25,7 @@ Die Momente der spekulativen Methode sind a. der _Anfang_, der das _Sein_ oder _
 
 ## {{ 239 }} §. 239.
 
-b. Der _Fortgang_ ist das gesetzte _Urteil_ der Idee. Das unmittelbare Allgemeine ist als der Begriff an sich die Dialektik, an ihm selbst seine Unmittelbarkeit und Allgemeinheit zu einem Momente herabzusetzen. Es ist damit das _Negative_ des Anfangs oder das Erste in seiner _Bestimmtheit_ gesetzt; es ist _für_ _eines_, die _Beziehung_ Unterschiedener, – _Moment_ _der_ _Reflexion_.
+b\. Der _Fortgang_ ist das gesetzte _Urteil_ der Idee. Das unmittelbare Allgemeine ist als der Begriff an sich die Dialektik, an ihm selbst seine Unmittelbarkeit und Allgemeinheit zu einem Momente herabzusetzen. Es ist damit das _Negative_ des Anfangs oder das Erste in seiner _Bestimmtheit_ gesetzt; es ist _für_ _eines_, die _Beziehung_ Unterschiedener, – _Moment_ _der_ _Reflexion_.
 
 ::: remark
 {{{ 20.230 }}} {{ 239 A }} Dieser Fortgang ist eben sowohl _analytisch_, indem durch die immanente Dialektik nur das gesetzt wird, was im unmittelbaren Begriffe enthalten ist; – als _synthetisch_, weil in diesem Begriffe dieser Unterschied noch nicht gesetzt war.

@@ -40,11 +40,11 @@ Das _Logische_ hat der Form nach drei Seiten α) _die_ _abstrakte_ _oder_ _verst
 Die Logik zerfällt in drei Teile:
 
 + I. In _die_ _Lehre_ _von_ _dem_ _Sein_.
-+ II. _Die_ _Lehre_ _von_ _dem_ _Wesen_.
-+ III. _Die_ _Lehre_ _von_ _dem_ _Begriffe_ _und_ _Idee_.
++ II\. _Die_ _Lehre_ _von_ _dem_ _Wesen_.
++ III\. _Die_ _Lehre_ _von_ _dem_ _Begriffe_ _und_ _Idee_.
 
 Nämlich in die Lehre von dem Gedanken:
 
 + I. In seiner _Unmittelbarkeit_, – dem _Begriffe_ _an_ _sich_.
-+ II. In seiner _Reflexion_ und _Vermittlung_, – dem _Fürsichsein_ und _Schein_ des Begriffes.
-+ III. In seinem _Zurückgekehrtsein_ _in_ _sich_ _selbst_ und _seinem_ _entwickelten_ _Bei-sich-sein_, – dem Begriffe _an_ und _für_ _sich_.
++ II\. In seiner _Reflexion_ und _Vermittlung_, – dem _Fürsichsein_ und _Schein_ des Begriffes.
++ III\. In seinem _Zurückgekehrtsein_ _in_ _sich_ _selbst_ und _seinem_ _entwickelten_ _Bei-sich-sein_, – dem Begriffe _an_ und _für_ _sich_.

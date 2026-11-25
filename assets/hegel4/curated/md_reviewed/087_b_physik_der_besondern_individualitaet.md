@@ -21,4 +21,4 @@ Diese individualisirende Formbestimmung ist zunächst _an_ _sich_ oder unmittelb
 
 ## {{ 292 }} §. 292.
 
-Die Bestimmtheit, welche die Schwere erleidet, ist a. abstract _einfache_ Bestimmtheit und damit als ein bloß quantitatives Verhältniß an ihr, – _specifische_ _Schwere_; b. specifische Weise der _Beziehung_ materieller _Theile_, – _Cohäsion_. c. Diese Beziehung der materiellen Theile für sich, als _existirende_ _Idealität_ und zwar α) als das nur _ideelle_ Aufheben – der _Klang_; β) als _reelles_ Aufheben der Cohäsion – die _Wärme_.
+Die Bestimmtheit, welche die Schwere erleidet, ist a. abstract _einfache_ Bestimmtheit und damit als ein bloß quantitatives Verhältniß an ihr, – _specifische_ _Schwere_; b. specifische Weise der _Beziehung_ materieller _Theile_, – _Cohäsion_. c\. Diese Beziehung der materiellen Theile für sich, als _existirende_ _Idealität_ und zwar α) als das nur _ideelle_ Aufheben – der _Klang_; β) als _reelles_ Aufheben der Cohäsion – die _Wärme_.

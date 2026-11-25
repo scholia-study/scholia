@@ -15,6 +15,6 @@ Die Materie ist zuerst _an_ _sich_ die Totalität des Begriffs als _schwere_; so
 
 Die totale Individualität ist:
 
-+ a. Unmittelbar _Gestalt_ als solche, und deren abstraktes Prinzip in freier Existenz erscheinend, – _der_ _Magnetismus_;
++ a\. Unmittelbar _Gestalt_ als solche, und deren abstraktes Prinzip in freier Existenz erscheinend, – _der_ _Magnetismus_;
 + b. bestimmt sie sich zum _Unterschiede_, den besondern Formen der körperlichen Totalität; diese Besonderung zum Extreme gesteigert ist _die_ _Elektrizität_.
-+ c. Die _Realität_ dieser Besonderung ist der _chemisch_ differente Körper, und die _Beziehung_ desselben, – die Individualität, welche Körper zu ihren Momenten hat, sich als Totalität realisierend, der _chemische_ _Prozess_.
++ c\. Die _Realität_ dieser Besonderung ist der _chemisch_ differente Körper, und die _Beziehung_ desselben, – die Individualität, welche Körper zu ihren Momenten hat, sich als Totalität realisierend, der _chemische_ _Prozess_.
