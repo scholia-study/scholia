@@ -12,7 +12,8 @@ use clap::Parser;
 
 use common::sentences::{
     split_sentences_en_forced, split_sentences_en_paren_protected_forced, split_sentences_forced,
-    split_sentences_grc_forced, split_sentences_paren_protected_forced, strip_forced_split_markers,
+    split_sentences_grc_forced, split_sentences_paren_protected_forced,
+    split_sentences_reference_protected_forced, strip_forced_split_markers,
     strip_forced_splits_keep_runs,
 };
 use md_prose_to_struct::corpus::{self, Corpus, FlatEntry};
@@ -459,6 +460,8 @@ fn collect_translation_files(corpus: &Corpus) -> Vec<ParsedFile> {
                 split_sentences_en_forced(&de_plain_tok, &de_html_tok, &de_forced)
             } else if corpus.greek_splitter {
                 split_sentences_grc_forced(&de_plain_tok, &de_html_tok, &de_forced)
+            } else if corpus.reference_protected_splits {
+                split_sentences_reference_protected_forced(&de_plain_tok, &de_html_tok, &de_forced)
             } else if corpus.paren_protected_splits {
                 split_sentences_paren_protected_forced(&de_plain_tok, &de_html_tok, &de_forced)
             } else {

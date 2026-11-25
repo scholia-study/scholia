@@ -4,7 +4,9 @@
 
 pub const MODERNIZED_DIR: &str = "assets/hegel4/curated/md_modernized";
 pub const REVIEWED_DIR: &str = "assets/hegel4/curated/md_reviewed";
+pub const TRANSLATED_DIR: &str = "assets/hegel4/curated/md_modernized_translated";
 pub const OUTPUT_FILE: &str = "assets/hegel4/derived/output.json";
+pub const TRANSLATION_OUTPUT_FILE: &str = "assets/hegel4/derived/translation_output.json";
 
 pub const AUTHOR: &str = "Georg Wilhelm Friedrich Hegel";
 
@@ -28,6 +30,24 @@ including its modernized reading text — is prepared by Scholia Sodalitas, a co
 project; the German text layers follow their source's terms (CC BY 4.0) and Scholia asserts no \
 further rights in them. Corrections and refinements are welcome.";
 pub const LICENCE: &str = "Public Domain. German text layers from hegeledition.com (CC BY 4.0).";
+
+pub const BOOK_SLUG_EN: &str = "encyclopaedia-of-the-philosophical-sciences";
+pub const BOOK_TITLE_EN: &str = "Encyclopaedia of the Philosophical Sciences in Outline";
+pub const LANGUAGE_EN: &str = "en";
+pub const YEAR_EN: &str = "2026";
+pub const PUBLISHER_EN: &str = "Scholia Sodalitas";
+pub const SOURCE_EN: &str = "Scholia's translation from the German of the Gesammelte Werke \
+(GW 20), via the Digitale Hegel-Edition.";
+pub const ABOUT_EN: &str = "Hegel's Encyclopaedia of the Philosophical Sciences in Outline in its \
+third and final edition (1830): the Science of Logic, the Philosophy of Nature and the Philosophy \
+of Spirit, as Hegel published them, without the Additions (Zusätze) compiled from lecture notes \
+after his death. This is Scholia's own English translation, made directly from the German of the \
+Gesammelten Werke and independent of every existing translation; page markers refer to the GW \
+pagination, and the numbered paragraphs (§§) and their Remarks carry their own markers. The \
+digital edition is prepared by Scholia Sodalitas, a community-driven project. Unlike the German \
+text layers (which follow their source's terms), the translation is Scholia's own work under the \
+regular Scholia assets licence. Corrections and refinements are welcome.";
+pub const LICENCE_EN: &str = "CC BY-NC-ND 4.0";
 
 /// GW volume.page ("20.63"): the scholarly citation standard, hence the
 /// citation default.

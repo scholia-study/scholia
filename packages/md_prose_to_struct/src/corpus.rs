@@ -940,33 +940,62 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
         }
         "hegel4" => {
             use common::hegel4::{filenames, meta, toc, toc_mod};
-            if translation {
-                return None;
-            }
+            let (book, output_file) = if translation {
+                (
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG_EN,
+                        title: meta::BOOK_TITLE_EN,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE_EN,
+                        source: meta::SOURCE_EN,
+                        year: meta::YEAR_EN,
+                        about: meta::ABOUT_EN,
+                        licence: meta::LICENCE_EN,
+                        imprint: Imprint {
+                            publisher: Some(meta::PUBLISHER_EN),
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
+                        },
+                    }),
+                    meta::TRANSLATION_OUTPUT_FILE,
+                )
+            } else {
+                (
+                    book_data(BookSpec {
+                        slug: meta::BOOK_SLUG,
+                        title: meta::BOOK_TITLE,
+                        author: meta::AUTHOR,
+                        language: meta::LANGUAGE,
+                        source: meta::SOURCE,
+                        year: meta::YEAR,
+                        about: meta::ABOUT,
+                        licence: meta::LICENCE,
+                        imprint: Imprint {
+                            publisher: Some(meta::PUBLISHER),
+                            place: None,
+                            volume: None,
+                            edition: None,
+                            original_year: Some(meta::ORIGINAL_YEAR),
+                            original_year_circa: false,
+                        },
+                    }),
+                    meta::OUTPUT_FILE,
+                )
+            };
             Some(Corpus {
                 name: "hegel4",
-                book: book_data(BookSpec {
-                    slug: meta::BOOK_SLUG,
-                    title: meta::BOOK_TITLE,
-                    author: meta::AUTHOR,
-                    language: meta::LANGUAGE,
-                    source: meta::SOURCE,
-                    year: meta::YEAR,
-                    about: meta::ABOUT,
-                    licence: meta::LICENCE,
-                    imprint: Imprint {
-                        publisher: Some(meta::PUBLISHER),
-                        place: None,
-                        volume: None,
-                        edition: None,
-                        original_year: Some(meta::ORIGINAL_YEAR),
-                        original_year_circa: false,
-                    },
-                }),
+                book,
                 reference_systems: vec![
                     ReferenceSystemData {
                         slug: meta::GW_SYSTEM_SLUG.to_string(),
-                        label: meta::GW_SYSTEM_LABEL.to_string(),
+                        label: if translation {
+                            meta::GW_SYSTEM_LABEL_EN.to_string()
+                        } else {
+                            meta::GW_SYSTEM_LABEL.to_string()
+                        },
                         ref_type: meta::GW_SYSTEM_REF_TYPE.to_string(),
                         cite_priority: Some(meta::GW_CITE_PRIORITY),
                         cite_template: Some(meta::GW_CITE_TEMPLATE.to_string()),
@@ -974,7 +1003,11 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                     },
                     ReferenceSystemData {
                         slug: meta::PARAGRAPH_SYSTEM_SLUG.to_string(),
-                        label: meta::PARAGRAPH_SYSTEM_LABEL.to_string(),
+                        label: if translation {
+                            meta::PARAGRAPH_SYSTEM_LABEL_EN.to_string()
+                        } else {
+                            meta::PARAGRAPH_SYSTEM_LABEL.to_string()
+                        },
                         ref_type: meta::PARAGRAPH_SYSTEM_REF_TYPE.to_string(),
                         cite_priority: Some(meta::PARAGRAPH_CITE_PRIORITY),
                         cite_template: Some(meta::PARAGRAPH_CITE_TEMPLATE.to_string()),
@@ -989,9 +1022,9 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 slugify: filenames::slugify,
                 modernized_dir: meta::MODERNIZED_DIR.to_string(),
                 reviewed_dir: meta::REVIEWED_DIR.to_string(),
-                translated_dir: String::new(),
-                output_file: meta::OUTPUT_FILE.to_string(),
-                figure_label: "Abbildung",
+                translated_dir: meta::TRANSLATED_DIR.to_string(),
+                output_file: output_file.to_string(),
+                figure_label: if translation { "Figure" } else { "Abbildung" },
                 aa_system_slug: meta::GW_SYSTEM_SLUG,
                 edition_system_slug: meta::PARAGRAPH_SYSTEM_SLUG,
                 edition_sort_arabic_fallback: false,
