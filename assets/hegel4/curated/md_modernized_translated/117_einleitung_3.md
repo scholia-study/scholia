@@ -1,0 +1,24 @@
+---
+position: 117
+label: "Introduction"
+depth: 2
+page_gw: "20.379"
+---
+
+## Introduction
+
+## {{ 377 }} § 377.
+
+The cognition of spirit is the most concrete and therefore the highest and hardest. _Know_ _yourself_: this absolute command has, neither in itself nor where it occurs historically as uttered, the significance of a _self-knowledge_ aimed merely at the individual's _particular_ capacities, character, inclinations and weaknesses, but the significance of the cognition of what is true in the human being, as of what is true in and for itself, – of _essence_ itself as spirit. Just as little does the philosophy of spirit have the significance of so-called _knowledge_ _of_ _human_ _beings_, which likewise endeavors to explore in other human beings the _particularities_, passions and weaknesses, these so-called creases of the human heart, – a knowledge that in part has sense only on the presupposition of the cognition of the _universal_, of _the_ human being, and thereby essentially of spirit, and in part busies itself with the accidental, insignificant, _untrue_ concrete existences of the spiritual, without penetrating to the _substantial_, to spirit itself.
+
+## {{ 378 }} § 378.
+
+Of _pneumatology_ or so-called _rational_ _psychology_, as an abstract metaphysics of the understanding, mention has already been made in the Introduction. _Empirical_ _psychology_ has _concrete_ spirit as its object, and since observation and experience, after the revival of the sciences, became the principal basis for the cognition of the concrete, it came to be pursued in the same manner, with the result that, on the one hand, that {{{ 20.380 }}} metaphysical element was kept outside this empirical science and arrived at no concrete determination and import within itself, while on the other hand the empirical science held to the ordinary metaphysics of the understanding, with its forces, different activities and so forth, and banished speculative consideration from it. – The books of _Aristotle_ _on_ _the_ _soul_, together with his treatises on particular aspects and states of it, are for this reason still the most excellent or the sole work of speculative interest on this subject. The essential purpose of a philosophy of spirit can only be to reintroduce the concept into the cognition of spirit, and thereby also to disclose anew the sense of those Aristotelian books.
+
+## {{ 379 }} § 379.
+
+The self-feeling of the _living_ unity of spirit sets itself of its own accord against the fragmentation of spirit into the different _faculties_, _forces_ or, what comes to the same, _activities_, likewise represented, each as self-subsistent against the others. Still more, however, the oppositions that present themselves at once, between the _freedom_ of spirit and its _being_ _determined_, further between the free efficacy of the soul and the corporeality external to it, and again the intimate connection of the two, lead to the need here _to_ _comprehend_. In particular, the phenomena of _animal_ _magnetism_ have in recent times brought the _substantial_ _unity_ of the soul and the power of its ideality home to intuition in experience as well, whereby all the fixed distinctions of the understanding are thrown into confusion and a speculative consideration is shown to be more immediately necessary for the resolution of the contradictions.
+
+## {{{ 20.381 }}} {{ 380 }} § 380.
+
+The _concrete_ nature of spirit brings with it, for consideration, the peculiar difficulty that the particular stages and determinations in the development of its concept do not at the same time remain behind as particular concrete existences, over against its deeper shapes, as is the case in external nature, where matter and motion have their free existence as the solar system, the determinations of the _senses_ exist also, in retrospect, as properties of _bodies_ and still more freely as elements, and so forth. The determinations and stages of spirit, by contrast, are essentially only as moments, states and determinations on the higher stages of development. The result is that in a lower, more abstract determination the higher shows itself already as empirically present, as for instance in sensation everything higher in spirit is present as content or determinateness. Superficially, therefore, it can seem necessary for that content, the religious, the ethical and so forth, to have essentially its place and even its root in sensation, which is only an abstract form, and to regard its determinations as particular kinds of sensation. But at the same time, when lower stages are considered, it becomes necessary, in order to make them noticeable in their empirical concrete existence, to recall higher ones, in which they are present only as forms, and in this way to anticipate a content that offers itself only later in the development (for instance consciousness in natural waking, the understanding in derangement, and so forth).

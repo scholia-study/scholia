@@ -54,6 +54,27 @@ fails from training memory). The short form:
    PASS.
 5. **Do not paraphrase away overlap.** Provenance is what counts; fresh
    generation from the German is the only clean path.
+6. **First drafts of the Logic converge heavily.** In the pilot, Sonnet's
+   first pass over §§ 19–131 measured 4–18% against gsh/bd, with runs up
+   to 37 words; the most natural "textbook" rendering of a sentence is the
+   recalled one. The Philosophy of Nature converges far less (13 of 54
+   measurable first drafts failed against Petry, mostly on a single 15–21
+   word run; one remediation round sufficed). The Philosophy of Spirit
+   converges like the Logic (54 of 59 measurable files failed against
+   Inwood, runs to 42 words, three rounds), above all on definitional
+   theses: a rewrite that keeps the "X is Y" frame and changes only the
+   edges does not move the run; recast the frame itself. Build each sentence's English architecture from the German
+   yourself (clause order, verbal vs. nominal, voice) rather than reaching
+   for the first fluent version. Locked terms stay; the syntax around them
+   is yours. The opposite failure is as bad: never contort a short thetic
+   sentence ("This pure being is now pure abstraction") or drop into a
+   casual register to dodge overlap. The gate is per file, so short plain
+   sentences can converge; spend the variation on long sentences.
+   Restructuring also flips relations: after a re-render, re-read the
+   German for every rewritten sentence and check that datives, relative
+   pronouns and "dem … dem" chains still point where Hegel's do (§ 236's
+   "dem die Idee als solche der Gegenstand, dem das Objekt sie ist" came
+   back reversed).
 
 ## Terminology standard
 
@@ -61,16 +82,20 @@ fails from training memory). The short form:
 (user-confirmed 2026-11-25): **hegel2's terms — Di Giovanni's glossary —
 are the starting point**, so Scholia's Hegel corpora read consistently;
 hegel1's rulings carry for the Phenomenology vocabulary that recurs in the
-Philosophy of Spirit; rows marked `proposed` (Nature and Spirit vocabulary
-neither earlier corpus ruled on) await user review — use them, and log any
-case where one reads badly in `assets/hegel4/curated/translation_followups.md`.
+Philosophy of Spirit; rows marked `user-approved` (Nature and Spirit
+vocabulary neither earlier corpus ruled on, plus the pilot's additions) were
+ruled on 2026-11-25. New terms a translator coins go into the final report;
+the orchestrator logs them in `assets/hegel4/curated/translation_followups.md`.
 Headline choices: Begriff = **concept**, aufheben = sublate, Dasein =
 **existence**, Existenz = **concrete existence**, Schein = shine, Geist =
 **spirit** (never "mind", also in the part title), Schranke = restriction,
 Urteil = judgment, Schluss = syllogism, Zweck = purpose, Einzelheit =
 singularity, Wirklichkeit = actuality, Herr/Knecht = mastery/servitude,
-Sittlichkeit = ethical life, Materie = matter (so Sache, hegel2's "the
-matter", becomes "the fact" where the two would collide).
+Sittlichkeit = ethical life, Materie = matter. Sache stays hegel2's "the
+matter" ("die Sache selbst" = the matter itself) in the Logic, the prefaces
+and wherever no confusion arises; it becomes "the fact" only where it would
+collide with Materie, mainly in the Philosophy of Nature (user-ruled
+2026-11-25).
 English node labels come from `assets/hegel4/curated/translate_labels_en.tsv`
 (one row per position).
 
@@ -111,7 +136,11 @@ paren-protected splitter, which knows NEITHER the German citation rules
 NOR the German abbreviations. Check every file with
 `md_prose_to_struct --corpus hegel4 --translation --output-file <scratch>`
 (missing files are skipped, so a partial corpus builds); footnote parity is
-checked only at import (`struct_to_db --dry-run` against a scratch DB).
+checked only at import (`struct_to_db --dry-run` against a scratch DB), and
+translation import refuses a partial corpus ("present in source but missing
+from translation"), so until all 178 files exist the orchestrator compares
+footnote sentence counts between the German and English struct JSONs
+(matching `toc_nodes` by `sort_order`).
 
 - **`\.` works in English too**: a period that ends no sentence. Where the
   German holds an abbreviation run or a list together (`u.s.f\. Stoff`,
@@ -138,6 +167,9 @@ checked only at import (`struct_to_db --dry-run` against a scratch DB).
 - **Honorifics:** German `Hrn.` before a name is held with `\.` in our
   German (`Hrn\. Tholuk`); English "Mr." is protected and merges by itself,
   so no escape is needed there.
+- **Spell out month abbreviations** ("2 February", never "2 Feb.") —
+  inside a footnote, "(2 Feb.) Brougham" splits after the parenthesis and
+  breaks footnote parity, which the build does not report.
 - **Datelines are one sentence.** German "den 25. May 1827." is protected;
   English drops the day-period ("Berlin, 25 May 1827.").
 - Mathematical expressions (`s = ct³`, `V/t`) carry verbatim.

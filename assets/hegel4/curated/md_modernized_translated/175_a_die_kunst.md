@@ -1,0 +1,50 @@
+---
+position: 175
+label: "A. Art"
+depth: 3
+page_gw: "20.543"
+---
+
+## A. Art
+
+## {{ 556 }} § 556.
+
+Because this knowing is _immediate_ – (the moment of art's finitude) – its shape, on the one side, breaks apart into a work having external, ordinary existence, the subject that produces it, and the subject that intuits and venerates it; on the other side the shape is the concrete _intuition_ and representation of spirit absolute _in_ _itself_, as the _ideal_, – the concrete shape born of subjective spirit, in which natural immediacy is merely the _sign_ of the idea and has been so transfigured by the imaging spirit, for the idea's expression, that the shape displays nothing else in itself; – the shape of _beauty_.
+
+## {{ 557 }} § 557.
+
+Sensuous externality in the beautiful, the _form_ of _immediacy_ as such, is also _determinateness_ of content, and the god, beside {{{ 20.544 }}} his spiritual side, still carries in himself the determination of a natural element or existence. – What he contains is the so-called _unity_ of nature and spirit, – the _immediate_ one, in the form of intuition; – hence not the spiritual unity wherein the natural would be posited only as ideal and sublated, and the spiritual content would stand only in relation to itself; absolute spirit is not what enters this consciousness. Looking to the subjective side: the community is indeed an ethical one, since it knows its essence to be spiritual, and its self-consciousness and actuality are thereby lifted to substantial freedom. Yet the subject's freedom, burdened with immediacy, is only custom, lacking infinite reflection into itself and the subjective inwardness of _conscience_; this is likewise what determines, in their further development, the devotion and cult of the religion of beautiful art.
+
+## {{ 558 }} § 558.
+
+Art requires, for the intuitions it has to produce, an external given material (to which subjective images and representations also belong), and, to express the spiritual import, the given natural forms too, according to their significance, which art must sense and possess within (compare § 411). Of these configurations the human one is highest and true, since only in it can spirit have its corporeality and with that an expression open to intuition.
+
+::: remark
+{{ 558 A }} Thereby art's principle of the _imitation_ _of_ _nature_ is disposed of; with an opposition so abstract no understanding can be reached for as long as the natural is taken merely in its externality and not as a natural form that signifies spirit, being characteristic and full of meaning.
+:::
+
+## {{{ 20.545 }}} {{ 559 }} § 559.
+
+Absolute spirit cannot be unfolded in such singularity of shaping; the spirit of beautiful art is for that reason a limited spirit of a people, whose universality, existing in itself, splits, as soon as one moves on to determine its riches further, into an indeterminate polytheism. With the content's essential limitedness, beauty in general shrinks to the spiritual's permeation of the intuition or image, – to something formal; as a result the content of thought, or the representation, [just] as the material it employs to image itself, may be of the most varied and even the most inessential sort, and yet the work can be something beautiful and a work of art.
+
+## {{ 560 }} § 560.
+
+The one-sidedness that lies in the _immediacy_ of the ideal includes (§ 556) its opposite, in that the ideal is something the artist has _made_. The subject is the _formal_ side of the activity, and the _work_ _of_ _art_ expresses the god only if it carries no mark of subjective _particularity_, and the import of the indwelling spirit has been received and brought forth in it without admixture, unsullied by the contingency of that particularity. But because freedom reaches only as far as thinking, the artist's _inspiration_, the activity this indwelling import fills, is an _unfree_ pathos, like a power alien to him; the _producing_ itself has the form of _natural_ immediacy, belongs to _genius_ as this _particular_ _subject_, – and is at once a labor that deals with technical understanding and mechanical externalities. Thus the work of art is just as much a work of free arbitrary will, and the artist is the master of the god.
+
+## {{{ 20.546 }}} {{ 561 }} § 561.
+
+In that state of being filled, _reconciliation_ shows itself as the beginning, in that it is brought about directly within subjective self-consciousness, which in this way is sure of itself and serene, with no depth and no consciousness of its opposition to the essence that is in and for itself. Lying beyond _beauty_'s consummation in _classical_ art, which comes about in such a reconciliation, is the art of _sublimity_; the _symbolic_ art, where the shaping adequate to the idea has not yet been found, and thought is presented instead as reaching out and wrestling with the shape, in a negative relation to it, while at the same time striving to image itself in it. That very fact shows the significance, the content, to be still short of the infinite form: it has not yet known itself, nor become conscious of itself, as free spirit. What it holds is only the abstract God of pure thinking, or a striving toward him, which throws itself restlessly and unreconciled through every shaping, because it cannot find its goal.
+
+## {{ 562 }} § 562.
+
+The other mode of inadequacy between idea and shaping lies in this: that the infinite form, subjectivity, is not, as in the former extreme, merely superficial personality but the innermost; and that the god is known not as merely seeking his shape or as satisfying himself in an external one, but as finding himself only within himself, and therefore as giving himself his adequate shape in the spiritual alone. So – _romantic_ – art abandons showing him as such in {{{ 20.547 }}} the external shape and through beauty; it presents him as stooping only to appearance, and the divine as inwardness in externality that withdraws from this externality itself, which may therefore appear here as contingent in regard to its significance.
+
+::: remark
+{{ 562 A }} It is for the philosophy of religion to cognize the logical necessity in how the essence, known as the absolute, progresses through its determinations; to these the kind of cult corresponds first, and correspondence with them is shown also by the worldly self-consciousness, by the consciousness of what is highest in the human being, and with it by a people's ethical life, whose character, whose principle of right and of actual freedom, constitution, art and science are all in tune with the principle on which a religion's substance rests. Seeing that one spirit creates and images all these moments of a people's actuality, which form one systematic totality, underlies the further insight that the history of religions coincides with world history.
+
+On the close connection of art with the religions, this closer remark is to be made: _beautiful_ art can belong only to those religions whose principle is _concrete_ spirituality that has become free in itself but is not yet absolute. In religions where the idea is not yet revealed and known in its free determinateness, the need for art certainly arises, so that intuition and fantasy may give consciousness a representation of the _essence_; art is even the sole organ by which the abstract content, unclear in itself and confused from natural and spiritual elements, can strive to come to consciousness. Yet such art is deficient; the form is deficient because the import is, and the import is so because the form is not immanent in it. The presentation keeps a side of {{{ 20.548 }}} tastelessness and spiritlessness, because the inner is itself still afflicted with spiritlessness and so lacks the power to permeate the outer freely into significance and shape. _Beautiful_ art, by contrast, has as its condition the self-consciousness of free spirit and with it the consciousness that the sensuous and merely natural has no self-subsistence against it; art turns the latter entirely into mere expression of free spirit, the inner form that utters only itself. Bound up with this is the further, higher consideration that art's entry signals the downfall of a religion still tied to sensuous externality. At the same time, while art seems to give religion its highest transfiguration, expression and splendor, it has lifted it beyond its limitedness. In the sublime divinity whose expression the work of art achieves, the genius of the artist and the spectator alike are at home with their own sense and feeling, satisfied and liberated; the intuiting and consciousness of free spirit is granted and reached. For its part beautiful art has accomplished the same as philosophy, – the purification of spirit from unfreedom. A thoughtless, sensuous beyond lies in the principle of the religion in which the need for beautiful art first arises, and for that very reason; the images adored in _devotion_ are unbeautiful idols, miracle-working talismans pointing to a spiritless objectivity beyond, and bones serve the same purpose or even a better one than such images. But beautiful art is merely a stage of liberation, not liberation at its highest. – True objectivity, which exists only in the element of _thought_, the one element in which pure spirit is for spirit, and liberation goes together with reverence, is missing even in the sensuously beautiful of the work of art, and more so in that external, unbeautiful sensuousness.
+:::
+
+## {{{ 20.549 }}} {{ 563 }} § 563.
+
+Beautiful art (and with it its peculiar religion) finds its future in true religion. In and for itself, the idea's limited import passes over into a universality identical with the infinite form: intuition, the immediate knowing bound to sensuousness, passes into the knowing that mediates itself within itself, into an existence that is itself the knowing, into _revealing_; hence the content of the idea has the determination of free intelligence as its principle, and _is_, as absolute _spirit_, _for_ _spirit_.
