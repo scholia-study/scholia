@@ -729,18 +729,21 @@ function WorkRow({
         .join(" · ");
 
     return (
-        <li className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-1">
+        // From md up the row never wraps: a long title wraps within itself
+        // and the leader, pills and year sit on its last line, like a
+        // table-of-contents entry, instead of dropping below it.
+        <li className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-1 md:flex-nowrap md:items-baseline-last">
             {!hideTitle && (
                 <>
                     {/* Plain text, not a link: the title is the work's English
                         name, while the editions it could open are the pills
                         beside it — one of which may be the German or
                         Norwegian original. Let the pills say where they go. */}
-                    <span className="font-serif text-base font-medium text-stone-900">
+                    <span className="min-w-0 font-serif text-base font-medium text-stone-900">
                         {work.title}
                     </span>
                     {credits && (
-                        <span className="text-xs text-stone-400">
+                        <span className="min-w-0 text-xs text-stone-400">
                             {credits}
                         </span>
                     )}
@@ -748,7 +751,7 @@ function WorkRow({
                 </>
             )}
             <span
-                className="flex flex-wrap gap-1.5"
+                className="flex shrink-0 flex-wrap gap-1.5"
                 {...raisesSpine(onHover, work.work_id)}
             >
                 {work.versions.map((v, i) => (
@@ -765,7 +768,7 @@ function WorkRow({
                 // is half again as wide as a "1") and a bare year box would
                 // change width per year, nudging the pills beside it. Reserving
                 // the width of the widest four-digit year holds the pills still.
-                <span className="min-w-9 text-right text-xs text-stone-400">
+                <span className="min-w-9 shrink-0 text-right text-xs text-stone-400">
                     {work.publication_year ?? "Undated"}
                 </span>
             )}
