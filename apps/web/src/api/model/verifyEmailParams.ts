@@ -6,8 +6,6 @@
  */
 
 export type VerifyEmailParams = {
-    /**
-     * Verification token
-     */
+    /** Verification token */
     token: string;
 };

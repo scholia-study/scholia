@@ -139,6 +139,11 @@ export type GetHandleByIdQueryResult = NonNullable<
 >;
 export type GetHandleByIdQueryError = void;
 
+/**
+ * @summary Resolve a user UUID to the user's *current* handle. Frontend uses
+this to redirect from durable URLs (`/users/by-id/<uuid>`) to the
+canonical handle URL.
+ */
 export function useGetHandleById<
     TData = Awaited<ReturnType<typeof getHandleById>>,
     TError = void,
@@ -166,6 +171,11 @@ export function useGetHandleById<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary Resolve a user UUID to the user's *current* handle. Frontend uses
+this to redirect from durable URLs (`/users/by-id/<uuid>`) to the
+canonical handle URL.
+ */
 export function useGetHandleById<
     TData = Awaited<ReturnType<typeof getHandleById>>,
     TError = void,
@@ -193,6 +203,11 @@ export function useGetHandleById<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary Resolve a user UUID to the user's *current* handle. Frontend uses
+this to redirect from durable URLs (`/users/by-id/<uuid>`) to the
+canonical handle URL.
+ */
 export function useGetHandleById<
     TData = Awaited<ReturnType<typeof getHandleById>>,
     TError = void,
@@ -217,7 +232,6 @@ export function useGetHandleById<
 this to redirect from durable URLs (`/users/by-id/<uuid>`) to the
 canonical handle URL.
  */
-
 export function useGetHandleById<
     TData = Awaited<ReturnType<typeof getHandleById>>,
     TError = void,
@@ -291,6 +305,11 @@ export type GetHandleByIdSuspenseQueryResult = NonNullable<
 >;
 export type GetHandleByIdSuspenseQueryError = void;
 
+/**
+ * @summary Resolve a user UUID to the user's *current* handle. Frontend uses
+this to redirect from durable URLs (`/users/by-id/<uuid>`) to the
+canonical handle URL.
+ */
 export function useGetHandleByIdSuspense<
     TData = Awaited<ReturnType<typeof getHandleById>>,
     TError = void,
@@ -310,25 +329,11 @@ export function useGetHandleByIdSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetHandleByIdSuspense<
-    TData = Awaited<ReturnType<typeof getHandleById>>,
-    TError = void,
->(
-    id: string,
-    options?: {
-        query?: Partial<
-            UseSuspenseQueryOptions<
-                Awaited<ReturnType<typeof getHandleById>>,
-                TError,
-                TData
-            >
-        >;
-        request?: SecondParameter<typeof customFetch>;
-    },
-    queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-};
+/**
+ * @summary Resolve a user UUID to the user's *current* handle. Frontend uses
+this to redirect from durable URLs (`/users/by-id/<uuid>`) to the
+canonical handle URL.
+ */
 export function useGetHandleByIdSuspense<
     TData = Awaited<ReturnType<typeof getHandleById>>,
     TError = void,
@@ -353,7 +358,30 @@ export function useGetHandleByIdSuspense<
 this to redirect from durable URLs (`/users/by-id/<uuid>`) to the
 canonical handle URL.
  */
-
+export function useGetHandleByIdSuspense<
+    TData = Awaited<ReturnType<typeof getHandleById>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getHandleById>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Resolve a user UUID to the user's *current* handle. Frontend uses
+this to redirect from durable URLs (`/users/by-id/<uuid>`) to the
+canonical handle URL.
+ */
 export function useGetHandleByIdSuspense<
     TData = Awaited<ReturnType<typeof getHandleById>>,
     TError = void,
@@ -500,6 +528,7 @@ export type GetPublicProfileQueryResult = NonNullable<
 >;
 export type GetPublicProfileQueryError = void;
 
+/** @summary Public profile by handle. */
 export function useGetPublicProfile<
     TData = Awaited<ReturnType<typeof getPublicProfile>>,
     TError = void,
@@ -528,6 +557,7 @@ export function useGetPublicProfile<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Public profile by handle. */
 export function useGetPublicProfile<
     TData = Awaited<ReturnType<typeof getPublicProfile>>,
     TError = void,
@@ -556,6 +586,7 @@ export function useGetPublicProfile<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Public profile by handle. */
 export function useGetPublicProfile<
     TData = Awaited<ReturnType<typeof getPublicProfile>>,
     TError = void,
@@ -576,10 +607,7 @@ export function useGetPublicProfile<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Public profile by handle.
- */
-
+/** @summary Public profile by handle. */
 export function useGetPublicProfile<
     TData = Awaited<ReturnType<typeof getPublicProfile>>,
     TError = void,
@@ -661,6 +689,7 @@ export type GetPublicProfileSuspenseQueryResult = NonNullable<
 >;
 export type GetPublicProfileSuspenseQueryError = void;
 
+/** @summary Public profile by handle. */
 export function useGetPublicProfileSuspense<
     TData = Awaited<ReturnType<typeof getPublicProfile>>,
     TError = void,
@@ -681,6 +710,7 @@ export function useGetPublicProfileSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Public profile by handle. */
 export function useGetPublicProfileSuspense<
     TData = Awaited<ReturnType<typeof getPublicProfile>>,
     TError = void,
@@ -701,6 +731,7 @@ export function useGetPublicProfileSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Public profile by handle. */
 export function useGetPublicProfileSuspense<
     TData = Awaited<ReturnType<typeof getPublicProfile>>,
     TError = void,
@@ -721,10 +752,7 @@ export function useGetPublicProfileSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Public profile by handle.
- */
-
+/** @summary Public profile by handle. */
 export function useGetPublicProfileSuspense<
     TData = Awaited<ReturnType<typeof getPublicProfile>>,
     TError = void,

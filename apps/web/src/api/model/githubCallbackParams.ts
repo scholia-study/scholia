@@ -6,16 +6,10 @@
  */
 
 export type GithubCallbackParams = {
-    /**
-     * Authorization code
-     */
+    /** Authorization code */
     code?: string;
-    /**
-     * CSRF state
-     */
+    /** CSRF state */
     state?: string;
-    /**
-     * Provider-side error (e.g. user cancelled)
-     */
+    /** Provider-side error (e.g. user cancelled) */
     error?: string;
 };

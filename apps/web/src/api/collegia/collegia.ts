@@ -45,6 +45,52 @@ import type {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+const getHeaders = (
+    ...sources: (
+        | RequestInit["headers"]
+        | Record<
+              string,
+              string | number | boolean | bigint | readonly string[] | undefined
+          >
+    )[]
+) => {
+    const seen = new Set<string>();
+    const layers: [string, string | readonly string[]][][] = [];
+    for (const source of sources.reverse()) {
+        if (!source) continue;
+        const entries =
+            source instanceof Headers
+                ? source.entries()
+                : Symbol.iterator in source
+                  ? Array.from(
+                        source as Iterable<Iterable<string>>,
+                        (entry) => Array.from(entry) as [string, string],
+                    )
+                  : Object.entries<
+                        | string
+                        | number
+                        | boolean
+                        | bigint
+                        | readonly string[]
+                        | undefined
+                    >(source);
+        const layer: [string, string | readonly string[]][] = [];
+        for (const [name, value] of entries) {
+            if (value !== undefined && !seen.has(name.toLowerCase()))
+                layer.push([
+                    name,
+                    typeof value === "object" ? value : String(value),
+                ]);
+        }
+        for (const [name] of layer) seen.add(name.toLowerCase());
+        layers.push(layer);
+    }
+    return Object.fromEntries(layers.reverse().flat()) as Extract<
+        RequestInit["headers"],
+        Record<string, unknown>
+    >;
+};
+
 const withQueryKey = <T extends object, K>(
     query: T,
     queryKey: K,
@@ -158,6 +204,7 @@ export type DiscoverCollegiaQueryResult = NonNullable<
 >;
 export type DiscoverCollegiaQueryError = void;
 
+/** @summary Browse public collegia (Discover) */
 export function useDiscoverCollegia<
     TData = Awaited<ReturnType<typeof discoverCollegia>>,
     TError = void,
@@ -185,6 +232,7 @@ export function useDiscoverCollegia<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Browse public collegia (Discover) */
 export function useDiscoverCollegia<
     TData = Awaited<ReturnType<typeof discoverCollegia>>,
     TError = void,
@@ -212,6 +260,7 @@ export function useDiscoverCollegia<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Browse public collegia (Discover) */
 export function useDiscoverCollegia<
     TData = Awaited<ReturnType<typeof discoverCollegia>>,
     TError = void,
@@ -231,10 +280,7 @@ export function useDiscoverCollegia<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Browse public collegia (Discover)
- */
-
+/** @summary Browse public collegia (Discover) */
 export function useDiscoverCollegia<
     TData = Awaited<ReturnType<typeof discoverCollegia>>,
     TError = void,
@@ -309,6 +355,7 @@ export type DiscoverCollegiaSuspenseQueryResult = NonNullable<
 >;
 export type DiscoverCollegiaSuspenseQueryError = void;
 
+/** @summary Browse public collegia (Discover) */
 export function useDiscoverCollegiaSuspense<
     TData = Awaited<ReturnType<typeof discoverCollegia>>,
     TError = void,
@@ -328,6 +375,7 @@ export function useDiscoverCollegiaSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Browse public collegia (Discover) */
 export function useDiscoverCollegiaSuspense<
     TData = Awaited<ReturnType<typeof discoverCollegia>>,
     TError = void,
@@ -347,6 +395,7 @@ export function useDiscoverCollegiaSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Browse public collegia (Discover) */
 export function useDiscoverCollegiaSuspense<
     TData = Awaited<ReturnType<typeof discoverCollegia>>,
     TError = void,
@@ -366,10 +415,7 @@ export function useDiscoverCollegiaSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Browse public collegia (Discover)
- */
-
+/** @summary Browse public collegia (Discover) */
 export function useDiscoverCollegiaSuspense<
     TData = Awaited<ReturnType<typeof discoverCollegia>>,
     TError = void,
@@ -440,36 +486,15 @@ export const createCollegium = async (
     createCollegiumRequest: CreateCollegiumRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createCollegiumResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createCollegiumResponseSuccess>(
         getCreateCollegiumUrl(),
         {
             ...options,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(createCollegiumRequest),
         },
     );
@@ -522,9 +547,7 @@ export type CreateCollegiumMutationBody = CreateCollegiumRequest;
 export type CreateCollegiumMutationError = void;
 export type CreateCollegiumMutationVariables = { data: CreateCollegiumRequest };
 
-/**
- * @summary Create a collegium; the creator becomes its first admin
- */
+/** @summary Create a collegium; the creator becomes its first admin */
 export const useCreateCollegium = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -633,9 +656,7 @@ export type JoinByTokenMutationResult = NonNullable<
 export type JoinByTokenMutationError = void;
 export type JoinByTokenMutationVariables = { token: string };
 
-/**
- * @summary Join a collegium via an invite link
- */
+/** @summary Join a collegium via an invite link */
 export const useJoinByToken = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -742,6 +763,7 @@ export type GetCollegiumQueryResult = NonNullable<
 >;
 export type GetCollegiumQueryError = void;
 
+/** @summary Get a collegium's page (member list for members, steward fields for stewards) */
 export function useGetCollegium<
     TData = Awaited<ReturnType<typeof getCollegium>>,
     TError = void,
@@ -769,6 +791,7 @@ export function useGetCollegium<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a collegium's page (member list for members, steward fields for stewards) */
 export function useGetCollegium<
     TData = Awaited<ReturnType<typeof getCollegium>>,
     TError = void,
@@ -796,6 +819,7 @@ export function useGetCollegium<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a collegium's page (member list for members, steward fields for stewards) */
 export function useGetCollegium<
     TData = Awaited<ReturnType<typeof getCollegium>>,
     TError = void,
@@ -815,10 +839,7 @@ export function useGetCollegium<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a collegium's page (member list for members, steward fields for stewards)
- */
-
+/** @summary Get a collegium's page (member list for members, steward fields for stewards) */
 export function useGetCollegium<
     TData = Awaited<ReturnType<typeof getCollegium>>,
     TError = void,
@@ -892,6 +913,7 @@ export type GetCollegiumSuspenseQueryResult = NonNullable<
 >;
 export type GetCollegiumSuspenseQueryError = void;
 
+/** @summary Get a collegium's page (member list for members, steward fields for stewards) */
 export function useGetCollegiumSuspense<
     TData = Awaited<ReturnType<typeof getCollegium>>,
     TError = void,
@@ -911,6 +933,7 @@ export function useGetCollegiumSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a collegium's page (member list for members, steward fields for stewards) */
 export function useGetCollegiumSuspense<
     TData = Awaited<ReturnType<typeof getCollegium>>,
     TError = void,
@@ -930,6 +953,7 @@ export function useGetCollegiumSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a collegium's page (member list for members, steward fields for stewards) */
 export function useGetCollegiumSuspense<
     TData = Awaited<ReturnType<typeof getCollegium>>,
     TError = void,
@@ -949,10 +973,7 @@ export function useGetCollegiumSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a collegium's page (member list for members, steward fields for stewards)
- */
-
+/** @summary Get a collegium's page (member list for members, steward fields for stewards) */
 export function useGetCollegiumSuspense<
     TData = Awaited<ReturnType<typeof getCollegium>>,
     TError = void,
@@ -1027,36 +1048,15 @@ export const updateCollegium = async (
     updateCollegiumRequest: UpdateCollegiumRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateCollegiumResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<updateCollegiumResponseSuccess>(
         getUpdateCollegiumUrl(slug),
         {
             ...options,
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(updateCollegiumRequest),
         },
     );
@@ -1112,9 +1112,7 @@ export type UpdateCollegiumMutationVariables = {
     data: UpdateCollegiumRequest;
 };
 
-/**
- * @summary Update collegium metadata (name, description, privacy) — collegium stewards only
- */
+/** @summary Update collegium metadata (name, description, privacy) — collegium stewards only */
 export const useUpdateCollegium = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1227,9 +1225,7 @@ export type RotateInviteTokenMutationResult = NonNullable<
 export type RotateInviteTokenMutationError = void;
 export type RotateInviteTokenMutationVariables = { slug: string };
 
-/**
- * @summary Generate or rotate the collegium's invite link token — collegium stewards only
- */
+/** @summary Generate or rotate the collegium's invite link token — collegium stewards only */
 export const useRotateInviteToken = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1346,9 +1342,7 @@ export type DisableInviteTokenMutationResult = NonNullable<
 export type DisableInviteTokenMutationError = void;
 export type DisableInviteTokenMutationVariables = { slug: string };
 
-/**
- * @summary Disable the collegium's invite link — collegium stewards only
- */
+/** @summary Disable the collegium's invite link — collegium stewards only */
 export const useDisableInviteToken = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1462,6 +1456,7 @@ export type ListJoinRequestsQueryResult = NonNullable<
 >;
 export type ListJoinRequestsQueryError = void;
 
+/** @summary List pending join requests — collegium stewards only */
 export function useListJoinRequests<
     TData = Awaited<ReturnType<typeof listJoinRequests>>,
     TError = void,
@@ -1489,6 +1484,7 @@ export function useListJoinRequests<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List pending join requests — collegium stewards only */
 export function useListJoinRequests<
     TData = Awaited<ReturnType<typeof listJoinRequests>>,
     TError = void,
@@ -1516,6 +1512,7 @@ export function useListJoinRequests<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List pending join requests — collegium stewards only */
 export function useListJoinRequests<
     TData = Awaited<ReturnType<typeof listJoinRequests>>,
     TError = void,
@@ -1535,10 +1532,7 @@ export function useListJoinRequests<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List pending join requests — collegium stewards only
- */
-
+/** @summary List pending join requests — collegium stewards only */
 export function useListJoinRequests<
     TData = Awaited<ReturnType<typeof listJoinRequests>>,
     TError = void,
@@ -1613,6 +1607,7 @@ export type ListJoinRequestsSuspenseQueryResult = NonNullable<
 >;
 export type ListJoinRequestsSuspenseQueryError = void;
 
+/** @summary List pending join requests — collegium stewards only */
 export function useListJoinRequestsSuspense<
     TData = Awaited<ReturnType<typeof listJoinRequests>>,
     TError = void,
@@ -1632,6 +1627,7 @@ export function useListJoinRequestsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List pending join requests — collegium stewards only */
 export function useListJoinRequestsSuspense<
     TData = Awaited<ReturnType<typeof listJoinRequests>>,
     TError = void,
@@ -1651,6 +1647,7 @@ export function useListJoinRequestsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List pending join requests — collegium stewards only */
 export function useListJoinRequestsSuspense<
     TData = Awaited<ReturnType<typeof listJoinRequests>>,
     TError = void,
@@ -1670,10 +1667,7 @@ export function useListJoinRequestsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List pending join requests — collegium stewards only
- */
-
+/** @summary List pending join requests — collegium stewards only */
 export function useListJoinRequestsSuspense<
     TData = Awaited<ReturnType<typeof listJoinRequests>>,
     TError = void,
@@ -1804,9 +1798,7 @@ export type CreateJoinRequestMutationResult = NonNullable<
 export type CreateJoinRequestMutationError = void;
 export type CreateJoinRequestMutationVariables = { slug: string };
 
-/**
- * @summary Ask to join a public collegium
- */
+/** @summary Ask to join a public collegium */
 export const useCreateJoinRequest = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1879,36 +1871,15 @@ export const decideJoinRequest = async (
     decideJoinRequestRequest: DecideJoinRequestRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<decideJoinRequestResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<decideJoinRequestResponseSuccess>(
         getDecideJoinRequestUrl(slug, id),
         {
             ...options,
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(decideJoinRequestRequest),
         },
     );
@@ -1966,9 +1937,7 @@ export type DecideJoinRequestMutationVariables = {
     data: DecideJoinRequestRequest;
 };
 
-/**
- * @summary Approve or reject a join request — collegium stewards only
- */
+/** @summary Approve or reject a join request — collegium stewards only */
 export const useDecideJoinRequest = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2090,9 +2059,7 @@ export type RemoveMemberMutationResult = NonNullable<
 export type RemoveMemberMutationError = void;
 export type RemoveMemberMutationVariables = { slug: string; userId: string };
 
-/**
- * @summary Leave a collegium (self) or remove a member (collegium stewards)
- */
+/** @summary Leave a collegium (self) or remove a member (collegium stewards) */
 export const useRemoveMember = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2156,36 +2123,15 @@ export const updateMemberRole = async (
     updateMemberRequest: UpdateMemberRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateMemberRoleResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<updateMemberRoleResponseSuccess>(
         getUpdateMemberRoleUrl(slug, userId),
         {
             ...options,
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(updateMemberRequest),
         },
     );
@@ -2243,9 +2189,7 @@ export type UpdateMemberRoleMutationVariables = {
     data: UpdateMemberRequest;
 };
 
-/**
- * @summary Promote a member to admin, or step down as steward (self only)
- */
+/** @summary Promote a member to admin, or step down as steward (self only) */
 export const useUpdateMemberRole = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2338,6 +2282,7 @@ export type ListMyCollegiaQueryResult = NonNullable<
 >;
 export type ListMyCollegiaQueryError = void;
 
+/** @summary List the collegiums the current user belongs to */
 export function useListMyCollegia<
     TData = Awaited<ReturnType<typeof listMyCollegia>>,
     TError = void,
@@ -2364,6 +2309,7 @@ export function useListMyCollegia<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List the collegiums the current user belongs to */
 export function useListMyCollegia<
     TData = Awaited<ReturnType<typeof listMyCollegia>>,
     TError = void,
@@ -2390,6 +2336,7 @@ export function useListMyCollegia<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List the collegiums the current user belongs to */
 export function useListMyCollegia<
     TData = Awaited<ReturnType<typeof listMyCollegia>>,
     TError = void,
@@ -2408,10 +2355,7 @@ export function useListMyCollegia<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List the collegiums the current user belongs to
- */
-
+/** @summary List the collegiums the current user belongs to */
 export function useListMyCollegia<
     TData = Awaited<ReturnType<typeof listMyCollegia>>,
     TError = void,
@@ -2481,6 +2425,7 @@ export type ListMyCollegiaSuspenseQueryResult = NonNullable<
 >;
 export type ListMyCollegiaSuspenseQueryError = void;
 
+/** @summary List the collegiums the current user belongs to */
 export function useListMyCollegiaSuspense<
     TData = Awaited<ReturnType<typeof listMyCollegia>>,
     TError = void,
@@ -2499,6 +2444,7 @@ export function useListMyCollegiaSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List the collegiums the current user belongs to */
 export function useListMyCollegiaSuspense<
     TData = Awaited<ReturnType<typeof listMyCollegia>>,
     TError = void,
@@ -2517,6 +2463,7 @@ export function useListMyCollegiaSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List the collegiums the current user belongs to */
 export function useListMyCollegiaSuspense<
     TData = Awaited<ReturnType<typeof listMyCollegia>>,
     TError = void,
@@ -2535,10 +2482,7 @@ export function useListMyCollegiaSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List the collegiums the current user belongs to
- */
-
+/** @summary List the collegiums the current user belongs to */
 export function useListMyCollegiaSuspense<
     TData = Awaited<ReturnType<typeof listMyCollegia>>,
     TError = void,

@@ -6,8 +6,6 @@
  */
 
 export type ListUserArticlesParams = {
-    /**
-     * @nullable
-     */
+    /** @nullable */
     status?: string | null;
 };

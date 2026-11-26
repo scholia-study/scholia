@@ -11,12 +11,8 @@ export type DiscoverCollegiaParams = {
      * @nullable
      */
     q?: string | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     page?: number | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     per_page?: number | null;
 };

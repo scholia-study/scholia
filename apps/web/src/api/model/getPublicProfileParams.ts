@@ -6,9 +6,7 @@
  */
 
 export type GetPublicProfileParams = {
-    /**
-     * @nullable
-     */
+    /** @nullable */
     topic_slug?: string | null;
     /**
      * Filter the listing to articles bearing this editorial label slug
@@ -17,12 +15,8 @@ export type GetPublicProfileParams = {
      * @nullable
      */
     label_slug?: string | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     page?: number | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     per_page?: number | null;
 };

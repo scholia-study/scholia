@@ -44,6 +44,52 @@ import type {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+const getHeaders = (
+    ...sources: (
+        | RequestInit["headers"]
+        | Record<
+              string,
+              string | number | boolean | bigint | readonly string[] | undefined
+          >
+    )[]
+) => {
+    const seen = new Set<string>();
+    const layers: [string, string | readonly string[]][][] = [];
+    for (const source of sources.reverse()) {
+        if (!source) continue;
+        const entries =
+            source instanceof Headers
+                ? source.entries()
+                : Symbol.iterator in source
+                  ? Array.from(
+                        source as Iterable<Iterable<string>>,
+                        (entry) => Array.from(entry) as [string, string],
+                    )
+                  : Object.entries<
+                        | string
+                        | number
+                        | boolean
+                        | bigint
+                        | readonly string[]
+                        | undefined
+                    >(source);
+        const layer: [string, string | readonly string[]][] = [];
+        for (const [name, value] of entries) {
+            if (value !== undefined && !seen.has(name.toLowerCase()))
+                layer.push([
+                    name,
+                    typeof value === "object" ? value : String(value),
+                ]);
+        }
+        for (const [name] of layer) seen.add(name.toLowerCase());
+        layers.push(layer);
+    }
+    return Object.fromEntries(layers.reverse().flat()) as Extract<
+        RequestInit["headers"],
+        Record<string, unknown>
+    >;
+};
+
 const withQueryKey = <T extends object, K>(
     query: T,
     queryKey: K,
@@ -82,34 +128,13 @@ export const forgotPassword = async (
     forgotPasswordRequest: ForgotPasswordRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<forgotPasswordResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<forgotPasswordResponseSuccess>(getForgotPasswordUrl(), {
         ...options,
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(forgotPasswordRequest),
     });
 };
@@ -161,9 +186,7 @@ export type ForgotPasswordMutationBody = ForgotPasswordRequest;
 export type ForgotPasswordMutationError = unknown;
 export type ForgotPasswordMutationVariables = { data: ForgotPasswordRequest };
 
-/**
- * @summary Request a password reset email
- */
+/** @summary Request a password reset email */
 export const useForgotPassword = <TError = unknown, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -242,6 +265,7 @@ export type GithubLoginQueryResult = NonNullable<
 >;
 export type GithubLoginQueryError = void;
 
+/** @summary Redirect to GitHub OAuth */
 export function useGithubLogin<
     TData = Awaited<ReturnType<typeof githubLogin>>,
     TError = void,
@@ -268,6 +292,7 @@ export function useGithubLogin<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Redirect to GitHub OAuth */
 export function useGithubLogin<
     TData = Awaited<ReturnType<typeof githubLogin>>,
     TError = void,
@@ -294,6 +319,7 @@ export function useGithubLogin<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Redirect to GitHub OAuth */
 export function useGithubLogin<
     TData = Awaited<ReturnType<typeof githubLogin>>,
     TError = void,
@@ -312,10 +338,7 @@ export function useGithubLogin<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Redirect to GitHub OAuth
- */
-
+/** @summary Redirect to GitHub OAuth */
 export function useGithubLogin<
     TData = Awaited<ReturnType<typeof githubLogin>>,
     TError = void,
@@ -385,6 +408,7 @@ export type GithubLoginSuspenseQueryResult = NonNullable<
 >;
 export type GithubLoginSuspenseQueryError = void;
 
+/** @summary Redirect to GitHub OAuth */
 export function useGithubLoginSuspense<
     TData = Awaited<ReturnType<typeof githubLogin>>,
     TError = void,
@@ -403,6 +427,7 @@ export function useGithubLoginSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Redirect to GitHub OAuth */
 export function useGithubLoginSuspense<
     TData = Awaited<ReturnType<typeof githubLogin>>,
     TError = void,
@@ -421,6 +446,7 @@ export function useGithubLoginSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Redirect to GitHub OAuth */
 export function useGithubLoginSuspense<
     TData = Awaited<ReturnType<typeof githubLogin>>,
     TError = void,
@@ -439,10 +465,7 @@ export function useGithubLoginSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Redirect to GitHub OAuth
- */
-
+/** @summary Redirect to GitHub OAuth */
 export function useGithubLoginSuspense<
     TData = Awaited<ReturnType<typeof githubLogin>>,
     TError = void,
@@ -556,6 +579,7 @@ export type GithubCallbackQueryResult = NonNullable<
 >;
 export type GithubCallbackQueryError = void;
 
+/** @summary Handle GitHub OAuth callback */
 export function useGithubCallback<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
@@ -583,6 +607,7 @@ export function useGithubCallback<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Handle GitHub OAuth callback */
 export function useGithubCallback<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
@@ -610,6 +635,7 @@ export function useGithubCallback<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Handle GitHub OAuth callback */
 export function useGithubCallback<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
@@ -629,10 +655,7 @@ export function useGithubCallback<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Handle GitHub OAuth callback
- */
-
+/** @summary Handle GitHub OAuth callback */
 export function useGithubCallback<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
@@ -707,6 +730,7 @@ export type GithubCallbackSuspenseQueryResult = NonNullable<
 >;
 export type GithubCallbackSuspenseQueryError = void;
 
+/** @summary Handle GitHub OAuth callback */
 export function useGithubCallbackSuspense<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
@@ -726,6 +750,7 @@ export function useGithubCallbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Handle GitHub OAuth callback */
 export function useGithubCallbackSuspense<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
@@ -745,6 +770,7 @@ export function useGithubCallbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Handle GitHub OAuth callback */
 export function useGithubCallbackSuspense<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
@@ -764,10 +790,7 @@ export function useGithubCallbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Handle GitHub OAuth callback
- */
-
+/** @summary Handle GitHub OAuth callback */
 export function useGithubCallbackSuspense<
     TData = Awaited<ReturnType<typeof githubCallback>>,
     TError = void,
@@ -858,6 +881,7 @@ export type GoogleLoginQueryResult = NonNullable<
 >;
 export type GoogleLoginQueryError = void;
 
+/** @summary Redirect to Google OAuth */
 export function useGoogleLogin<
     TData = Awaited<ReturnType<typeof googleLogin>>,
     TError = void,
@@ -884,6 +908,7 @@ export function useGoogleLogin<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Redirect to Google OAuth */
 export function useGoogleLogin<
     TData = Awaited<ReturnType<typeof googleLogin>>,
     TError = void,
@@ -910,6 +935,7 @@ export function useGoogleLogin<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Redirect to Google OAuth */
 export function useGoogleLogin<
     TData = Awaited<ReturnType<typeof googleLogin>>,
     TError = void,
@@ -928,10 +954,7 @@ export function useGoogleLogin<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Redirect to Google OAuth
- */
-
+/** @summary Redirect to Google OAuth */
 export function useGoogleLogin<
     TData = Awaited<ReturnType<typeof googleLogin>>,
     TError = void,
@@ -1001,6 +1024,7 @@ export type GoogleLoginSuspenseQueryResult = NonNullable<
 >;
 export type GoogleLoginSuspenseQueryError = void;
 
+/** @summary Redirect to Google OAuth */
 export function useGoogleLoginSuspense<
     TData = Awaited<ReturnType<typeof googleLogin>>,
     TError = void,
@@ -1019,6 +1043,7 @@ export function useGoogleLoginSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Redirect to Google OAuth */
 export function useGoogleLoginSuspense<
     TData = Awaited<ReturnType<typeof googleLogin>>,
     TError = void,
@@ -1037,6 +1062,7 @@ export function useGoogleLoginSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Redirect to Google OAuth */
 export function useGoogleLoginSuspense<
     TData = Awaited<ReturnType<typeof googleLogin>>,
     TError = void,
@@ -1055,10 +1081,7 @@ export function useGoogleLoginSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Redirect to Google OAuth
- */
-
+/** @summary Redirect to Google OAuth */
 export function useGoogleLoginSuspense<
     TData = Awaited<ReturnType<typeof googleLogin>>,
     TError = void,
@@ -1172,6 +1195,7 @@ export type GoogleCallbackQueryResult = NonNullable<
 >;
 export type GoogleCallbackQueryError = void;
 
+/** @summary Handle Google OAuth callback */
 export function useGoogleCallback<
     TData = Awaited<ReturnType<typeof googleCallback>>,
     TError = void,
@@ -1199,6 +1223,7 @@ export function useGoogleCallback<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Handle Google OAuth callback */
 export function useGoogleCallback<
     TData = Awaited<ReturnType<typeof googleCallback>>,
     TError = void,
@@ -1226,6 +1251,7 @@ export function useGoogleCallback<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Handle Google OAuth callback */
 export function useGoogleCallback<
     TData = Awaited<ReturnType<typeof googleCallback>>,
     TError = void,
@@ -1245,10 +1271,7 @@ export function useGoogleCallback<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Handle Google OAuth callback
- */
-
+/** @summary Handle Google OAuth callback */
 export function useGoogleCallback<
     TData = Awaited<ReturnType<typeof googleCallback>>,
     TError = void,
@@ -1323,6 +1346,7 @@ export type GoogleCallbackSuspenseQueryResult = NonNullable<
 >;
 export type GoogleCallbackSuspenseQueryError = void;
 
+/** @summary Handle Google OAuth callback */
 export function useGoogleCallbackSuspense<
     TData = Awaited<ReturnType<typeof googleCallback>>,
     TError = void,
@@ -1342,6 +1366,7 @@ export function useGoogleCallbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Handle Google OAuth callback */
 export function useGoogleCallbackSuspense<
     TData = Awaited<ReturnType<typeof googleCallback>>,
     TError = void,
@@ -1361,6 +1386,7 @@ export function useGoogleCallbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Handle Google OAuth callback */
 export function useGoogleCallbackSuspense<
     TData = Awaited<ReturnType<typeof googleCallback>>,
     TError = void,
@@ -1380,10 +1406,7 @@ export function useGoogleCallbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Handle Google OAuth callback
- */
-
+/** @summary Handle Google OAuth callback */
 export function useGoogleCallbackSuspense<
     TData = Awaited<ReturnType<typeof googleCallback>>,
     TError = void,
@@ -1457,34 +1480,13 @@ export const login = async (
     loginRequest: LoginRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<loginResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<loginResponseSuccess>(getLoginUrl(), {
         ...options,
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(loginRequest),
     });
 };
@@ -1536,9 +1538,7 @@ export type LoginMutationBody = LoginRequest;
 export type LoginMutationError = void;
 export type LoginMutationVariables = { data: LoginRequest };
 
-/**
- * @summary Log in with email and password
- */
+/** @summary Log in with email and password */
 export const useLogin = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1627,9 +1627,7 @@ export type LogoutMutationResult = NonNullable<
 
 export type LogoutMutationError = unknown;
 
-/**
- * @summary Log out (destroy session)
- */
+/** @summary Log out (destroy session) */
 export const useLogout = <TError = unknown, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1713,6 +1711,7 @@ export const getMeQueryOptions = <
 export type MeQueryResult = NonNullable<Awaited<ReturnType<typeof me>>>;
 export type MeQueryError = void;
 
+/** @summary Get current authenticated user */
 export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = void>(
     options: {
         query: Partial<
@@ -1732,6 +1731,7 @@ export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = void>(
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get current authenticated user */
 export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = void>(
     options?: {
         query?: Partial<
@@ -1751,6 +1751,7 @@ export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = void>(
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get current authenticated user */
 export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = void>(
     options?: {
         query?: Partial<
@@ -1762,10 +1763,7 @@ export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = void>(
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get current authenticated user
- */
-
+/** @summary Get current authenticated user */
 export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = void>(
     options?: {
         query?: Partial<
@@ -1822,6 +1820,7 @@ export const getMeSuspenseQueryOptions = <
 export type MeSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof me>>>;
 export type MeSuspenseQueryError = void;
 
+/** @summary Get current authenticated user */
 export function useMeSuspense<
     TData = Awaited<ReturnType<typeof me>>,
     TError = void,
@@ -1840,6 +1839,7 @@ export function useMeSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get current authenticated user */
 export function useMeSuspense<
     TData = Awaited<ReturnType<typeof me>>,
     TError = void,
@@ -1858,6 +1858,7 @@ export function useMeSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get current authenticated user */
 export function useMeSuspense<
     TData = Awaited<ReturnType<typeof me>>,
     TError = void,
@@ -1876,10 +1877,7 @@ export function useMeSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get current authenticated user
- */
-
+/** @summary Get current authenticated user */
 export function useMeSuspense<
     TData = Awaited<ReturnType<typeof me>>,
     TError = void,
@@ -1976,6 +1974,7 @@ export type GetProfileQueryResult = NonNullable<
 >;
 export type GetProfileQueryError = void;
 
+/** @summary Get current user's profile with linked providers */
 export function useGetProfile<
     TData = Awaited<ReturnType<typeof getProfile>>,
     TError = void,
@@ -2002,6 +2001,7 @@ export function useGetProfile<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get current user's profile with linked providers */
 export function useGetProfile<
     TData = Awaited<ReturnType<typeof getProfile>>,
     TError = void,
@@ -2028,6 +2028,7 @@ export function useGetProfile<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get current user's profile with linked providers */
 export function useGetProfile<
     TData = Awaited<ReturnType<typeof getProfile>>,
     TError = void,
@@ -2046,10 +2047,7 @@ export function useGetProfile<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get current user's profile with linked providers
- */
-
+/** @summary Get current user's profile with linked providers */
 export function useGetProfile<
     TData = Awaited<ReturnType<typeof getProfile>>,
     TError = void,
@@ -2119,6 +2117,7 @@ export type GetProfileSuspenseQueryResult = NonNullable<
 >;
 export type GetProfileSuspenseQueryError = void;
 
+/** @summary Get current user's profile with linked providers */
 export function useGetProfileSuspense<
     TData = Awaited<ReturnType<typeof getProfile>>,
     TError = void,
@@ -2137,6 +2136,7 @@ export function useGetProfileSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get current user's profile with linked providers */
 export function useGetProfileSuspense<
     TData = Awaited<ReturnType<typeof getProfile>>,
     TError = void,
@@ -2155,6 +2155,7 @@ export function useGetProfileSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get current user's profile with linked providers */
 export function useGetProfileSuspense<
     TData = Awaited<ReturnType<typeof getProfile>>,
     TError = void,
@@ -2173,10 +2174,7 @@ export function useGetProfileSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get current user's profile with linked providers
- */
-
+/** @summary Get current user's profile with linked providers */
 export function useGetProfileSuspense<
     TData = Awaited<ReturnType<typeof getProfile>>,
     TError = void,
@@ -2249,34 +2247,13 @@ export const updateProfile = async (
     updateProfileRequest: UpdateProfileRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateProfileResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<updateProfileResponseSuccess>(getUpdateProfileUrl(), {
         ...options,
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(updateProfileRequest),
     });
 };
@@ -2328,9 +2305,7 @@ export type UpdateProfileMutationBody = UpdateProfileRequest;
 export type UpdateProfileMutationError = void;
 export type UpdateProfileMutationVariables = { data: UpdateProfileRequest };
 
-/**
- * @summary Update display name
- */
+/** @summary Update display name */
 export const useUpdateProfile = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2386,34 +2361,13 @@ export const register = async (
     registerRequest: RegisterRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<registerResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<registerResponseSuccess>(getRegisterUrl(), {
         ...options,
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(registerRequest),
     });
 };
@@ -2465,9 +2419,7 @@ export type RegisterMutationBody = RegisterRequest;
 export type RegisterMutationError = void;
 export type RegisterMutationVariables = { data: RegisterRequest };
 
-/**
- * @summary Register a new user with email and password
- */
+/** @summary Register a new user with email and password */
 export const useRegister = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2577,9 +2529,7 @@ export type RequestPasswordChangeMutationResult = NonNullable<
 
 export type RequestPasswordChangeMutationError = void;
 
-/**
- * @summary Request a password change email (for authenticated users)
- */
+/** @summary Request a password change email (for authenticated users) */
 export const useRequestPasswordChange = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2630,34 +2580,13 @@ export const resetPassword = async (
     resetPasswordRequest: ResetPasswordRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<resetPasswordResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<resetPasswordResponseSuccess>(getResetPasswordUrl(), {
         ...options,
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(resetPasswordRequest),
     });
 };
@@ -2709,9 +2638,7 @@ export type ResetPasswordMutationBody = ResetPasswordRequest;
 export type ResetPasswordMutationError = void;
 export type ResetPasswordMutationVariables = { data: ResetPasswordRequest };
 
-/**
- * @summary Reset password using a token
- */
+/** @summary Reset password using a token */
 export const useResetPassword = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2813,6 +2740,7 @@ export type VerifyEmailQueryResult = NonNullable<
 >;
 export type VerifyEmailQueryError = void;
 
+/** @summary Verify email using a token */
 export function useVerifyEmail<
     TData = Awaited<ReturnType<typeof verifyEmail>>,
     TError = void,
@@ -2840,6 +2768,7 @@ export function useVerifyEmail<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Verify email using a token */
 export function useVerifyEmail<
     TData = Awaited<ReturnType<typeof verifyEmail>>,
     TError = void,
@@ -2867,6 +2796,7 @@ export function useVerifyEmail<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Verify email using a token */
 export function useVerifyEmail<
     TData = Awaited<ReturnType<typeof verifyEmail>>,
     TError = void,
@@ -2886,10 +2816,7 @@ export function useVerifyEmail<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Verify email using a token
- */
-
+/** @summary Verify email using a token */
 export function useVerifyEmail<
     TData = Awaited<ReturnType<typeof verifyEmail>>,
     TError = void,
@@ -2963,6 +2890,7 @@ export type VerifyEmailSuspenseQueryResult = NonNullable<
 >;
 export type VerifyEmailSuspenseQueryError = void;
 
+/** @summary Verify email using a token */
 export function useVerifyEmailSuspense<
     TData = Awaited<ReturnType<typeof verifyEmail>>,
     TError = void,
@@ -2982,6 +2910,7 @@ export function useVerifyEmailSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Verify email using a token */
 export function useVerifyEmailSuspense<
     TData = Awaited<ReturnType<typeof verifyEmail>>,
     TError = void,
@@ -3001,6 +2930,7 @@ export function useVerifyEmailSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Verify email using a token */
 export function useVerifyEmailSuspense<
     TData = Awaited<ReturnType<typeof verifyEmail>>,
     TError = void,
@@ -3020,10 +2950,7 @@ export function useVerifyEmailSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Verify email using a token
- */
-
+/** @summary Verify email using a token */
 export function useVerifyEmailSuspense<
     TData = Awaited<ReturnType<typeof verifyEmail>>,
     TError = void,

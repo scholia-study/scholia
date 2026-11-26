@@ -17,12 +17,8 @@ export type ListArticleReviewQueueParams = {
      * @nullable
      */
     assignee?: string | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     page?: number | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     per_page?: number | null;
 };

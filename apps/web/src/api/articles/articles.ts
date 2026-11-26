@@ -52,6 +52,52 @@ import type {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+const getHeaders = (
+    ...sources: (
+        | RequestInit["headers"]
+        | Record<
+              string,
+              string | number | boolean | bigint | readonly string[] | undefined
+          >
+    )[]
+) => {
+    const seen = new Set<string>();
+    const layers: [string, string | readonly string[]][][] = [];
+    for (const source of sources.reverse()) {
+        if (!source) continue;
+        const entries =
+            source instanceof Headers
+                ? source.entries()
+                : Symbol.iterator in source
+                  ? Array.from(
+                        source as Iterable<Iterable<string>>,
+                        (entry) => Array.from(entry) as [string, string],
+                    )
+                  : Object.entries<
+                        | string
+                        | number
+                        | boolean
+                        | bigint
+                        | readonly string[]
+                        | undefined
+                    >(source);
+        const layer: [string, string | readonly string[]][] = [];
+        for (const [name, value] of entries) {
+            if (value !== undefined && !seen.has(name.toLowerCase()))
+                layer.push([
+                    name,
+                    typeof value === "object" ? value : String(value),
+                ]);
+        }
+        for (const [name] of layer) seen.add(name.toLowerCase());
+        layers.push(layer);
+    }
+    return Object.fromEntries(layers.reverse().flat()) as Extract<
+        RequestInit["headers"],
+        Record<string, unknown>
+    >;
+};
+
 const withQueryKey = <T extends object, K>(
     query: T,
     queryKey: K,
@@ -119,36 +165,15 @@ export const applyArticleLabel = async (
     applyEditorialLabelRequest: ApplyEditorialLabelRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<applyArticleLabelResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<applyArticleLabelResponseSuccess>(
         getApplyArticleLabelUrl(slug),
         {
             ...options,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(applyEditorialLabelRequest),
         },
     );
@@ -205,9 +230,7 @@ export type ApplyArticleLabelMutationVariables = {
     data: ApplyEditorialLabelRequest;
 };
 
-/**
- * @summary Apply an editorial label to a published article. Editor/admin only.
- */
+/** @summary Apply an editorial label to a published article. Editor/admin only. */
 export const useApplyArticleLabel = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -399,36 +422,15 @@ export const setArticleQuoting = async (
     setArticleQuotingRequest: SetArticleQuotingRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<setArticleQuotingResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<setArticleQuotingResponseSuccess>(
         getSetArticleQuotingUrl(slug),
         {
             ...options,
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(setArticleQuotingRequest),
         },
     );
@@ -602,6 +604,7 @@ export type ListPublishedArticlesQueryResult = NonNullable<
 >;
 export type ListPublishedArticlesQueryError = unknown;
 
+/** @summary List published articles */
 export function useListPublishedArticles<
     TData = Awaited<ReturnType<typeof listPublishedArticles>>,
     TError = unknown,
@@ -629,6 +632,7 @@ export function useListPublishedArticles<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List published articles */
 export function useListPublishedArticles<
     TData = Awaited<ReturnType<typeof listPublishedArticles>>,
     TError = unknown,
@@ -656,6 +660,7 @@ export function useListPublishedArticles<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List published articles */
 export function useListPublishedArticles<
     TData = Awaited<ReturnType<typeof listPublishedArticles>>,
     TError = unknown,
@@ -675,10 +680,7 @@ export function useListPublishedArticles<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List published articles
- */
-
+/** @summary List published articles */
 export function useListPublishedArticles<
     TData = Awaited<ReturnType<typeof listPublishedArticles>>,
     TError = unknown,
@@ -754,6 +756,7 @@ export type ListPublishedArticlesSuspenseQueryResult = NonNullable<
 >;
 export type ListPublishedArticlesSuspenseQueryError = unknown;
 
+/** @summary List published articles */
 export function useListPublishedArticlesSuspense<
     TData = Awaited<ReturnType<typeof listPublishedArticles>>,
     TError = unknown,
@@ -773,6 +776,7 @@ export function useListPublishedArticlesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List published articles */
 export function useListPublishedArticlesSuspense<
     TData = Awaited<ReturnType<typeof listPublishedArticles>>,
     TError = unknown,
@@ -792,6 +796,7 @@ export function useListPublishedArticlesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List published articles */
 export function useListPublishedArticlesSuspense<
     TData = Awaited<ReturnType<typeof listPublishedArticles>>,
     TError = unknown,
@@ -811,10 +816,7 @@ export function useListPublishedArticlesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List published articles
- */
-
+/** @summary List published articles */
 export function useListPublishedArticlesSuspense<
     TData = Awaited<ReturnType<typeof listPublishedArticles>>,
     TError = unknown,
@@ -891,34 +893,13 @@ export const createArticle = async (
     createArticleRequest: CreateArticleRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createArticleResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createArticleResponseSuccess>(getCreateArticleUrl(), {
         ...options,
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(createArticleRequest),
     });
 };
@@ -970,9 +951,7 @@ export type CreateArticleMutationBody = CreateArticleRequest;
 export type CreateArticleMutationError = void;
 export type CreateArticleMutationVariables = { data: CreateArticleRequest };
 
-/**
- * @summary Create a new article
- */
+/** @summary Create a new article */
 export const useCreateArticle = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1082,6 +1061,7 @@ export type GetArticleByIdQueryResult = NonNullable<
 >;
 export type GetArticleByIdQueryError = void;
 
+/** @summary Get a published/archived article by UUID (stable URL) */
 export function useGetArticleById<
     TData = Awaited<ReturnType<typeof getArticleById>>,
     TError = void,
@@ -1109,6 +1089,7 @@ export function useGetArticleById<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a published/archived article by UUID (stable URL) */
 export function useGetArticleById<
     TData = Awaited<ReturnType<typeof getArticleById>>,
     TError = void,
@@ -1136,6 +1117,7 @@ export function useGetArticleById<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a published/archived article by UUID (stable URL) */
 export function useGetArticleById<
     TData = Awaited<ReturnType<typeof getArticleById>>,
     TError = void,
@@ -1155,10 +1137,7 @@ export function useGetArticleById<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a published/archived article by UUID (stable URL)
- */
-
+/** @summary Get a published/archived article by UUID (stable URL) */
 export function useGetArticleById<
     TData = Awaited<ReturnType<typeof getArticleById>>,
     TError = void,
@@ -1232,6 +1211,7 @@ export type GetArticleByIdSuspenseQueryResult = NonNullable<
 >;
 export type GetArticleByIdSuspenseQueryError = void;
 
+/** @summary Get a published/archived article by UUID (stable URL) */
 export function useGetArticleByIdSuspense<
     TData = Awaited<ReturnType<typeof getArticleById>>,
     TError = void,
@@ -1251,6 +1231,7 @@ export function useGetArticleByIdSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a published/archived article by UUID (stable URL) */
 export function useGetArticleByIdSuspense<
     TData = Awaited<ReturnType<typeof getArticleById>>,
     TError = void,
@@ -1270,6 +1251,7 @@ export function useGetArticleByIdSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a published/archived article by UUID (stable URL) */
 export function useGetArticleByIdSuspense<
     TData = Awaited<ReturnType<typeof getArticleById>>,
     TError = void,
@@ -1289,10 +1271,7 @@ export function useGetArticleByIdSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a published/archived article by UUID (stable URL)
- */
-
+/** @summary Get a published/archived article by UUID (stable URL) */
 export function useGetArticleByIdSuspense<
     TData = Awaited<ReturnType<typeof getArticleById>>,
     TError = void,
@@ -1410,6 +1389,7 @@ export type GetPublishedArticleQueryResult = NonNullable<
 >;
 export type GetPublishedArticleQueryError = void;
 
+/** @summary Get a published article by slug */
 export function useGetPublishedArticle<
     TData = Awaited<ReturnType<typeof getPublishedArticle>>,
     TError = void,
@@ -1437,6 +1417,7 @@ export function useGetPublishedArticle<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a published article by slug */
 export function useGetPublishedArticle<
     TData = Awaited<ReturnType<typeof getPublishedArticle>>,
     TError = void,
@@ -1464,6 +1445,7 @@ export function useGetPublishedArticle<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a published article by slug */
 export function useGetPublishedArticle<
     TData = Awaited<ReturnType<typeof getPublishedArticle>>,
     TError = void,
@@ -1483,10 +1465,7 @@ export function useGetPublishedArticle<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a published article by slug
- */
-
+/** @summary Get a published article by slug */
 export function useGetPublishedArticle<
     TData = Awaited<ReturnType<typeof getPublishedArticle>>,
     TError = void,
@@ -1562,6 +1541,7 @@ export type GetPublishedArticleSuspenseQueryResult = NonNullable<
 >;
 export type GetPublishedArticleSuspenseQueryError = void;
 
+/** @summary Get a published article by slug */
 export function useGetPublishedArticleSuspense<
     TData = Awaited<ReturnType<typeof getPublishedArticle>>,
     TError = void,
@@ -1581,6 +1561,7 @@ export function useGetPublishedArticleSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a published article by slug */
 export function useGetPublishedArticleSuspense<
     TData = Awaited<ReturnType<typeof getPublishedArticle>>,
     TError = void,
@@ -1600,6 +1581,7 @@ export function useGetPublishedArticleSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a published article by slug */
 export function useGetPublishedArticleSuspense<
     TData = Awaited<ReturnType<typeof getPublishedArticle>>,
     TError = void,
@@ -1619,10 +1601,7 @@ export function useGetPublishedArticleSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a published article by slug
- */
-
+/** @summary Get a published article by slug */
 export function useGetPublishedArticleSuspense<
     TData = Awaited<ReturnType<typeof getPublishedArticle>>,
     TError = void,
@@ -1794,6 +1773,7 @@ export type ListArticleReferencesInfiniteQueryResult = NonNullable<
 >;
 export type ListArticleReferencesInfiniteQueryError = void;
 
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferencesInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof listArticleReferences>>,
@@ -1828,6 +1808,7 @@ export function useListArticleReferencesInfinite<
 ): DefinedUseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferencesInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof listArticleReferences>>,
@@ -1862,6 +1843,7 @@ export function useListArticleReferencesInfinite<
 ): UseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferencesInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof listArticleReferences>>,
@@ -1887,10 +1869,7 @@ export function useListArticleReferencesInfinite<
 ): UseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List published articles quoting a sentence range (public)
- */
-
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferencesInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof listArticleReferences>>,
@@ -1977,6 +1956,7 @@ export type ListArticleReferencesQueryResult = NonNullable<
 >;
 export type ListArticleReferencesQueryError = void;
 
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferences<
     TData = Awaited<ReturnType<typeof listArticleReferences>>,
     TError = void,
@@ -2005,6 +1985,7 @@ export function useListArticleReferences<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferences<
     TData = Awaited<ReturnType<typeof listArticleReferences>>,
     TError = void,
@@ -2033,6 +2014,7 @@ export function useListArticleReferences<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferences<
     TData = Awaited<ReturnType<typeof listArticleReferences>>,
     TError = void,
@@ -2053,10 +2035,7 @@ export function useListArticleReferences<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List published articles quoting a sentence range (public)
- */
-
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferences<
     TData = Awaited<ReturnType<typeof listArticleReferences>>,
     TError = void,
@@ -2139,6 +2118,7 @@ export type ListArticleReferencesSuspenseQueryResult = NonNullable<
 >;
 export type ListArticleReferencesSuspenseQueryError = void;
 
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferencesSuspense<
     TData = Awaited<ReturnType<typeof listArticleReferences>>,
     TError = void,
@@ -2159,6 +2139,7 @@ export function useListArticleReferencesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferencesSuspense<
     TData = Awaited<ReturnType<typeof listArticleReferences>>,
     TError = void,
@@ -2179,6 +2160,7 @@ export function useListArticleReferencesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferencesSuspense<
     TData = Awaited<ReturnType<typeof listArticleReferences>>,
     TError = void,
@@ -2199,10 +2181,7 @@ export function useListArticleReferencesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List published articles quoting a sentence range (public)
- */
-
+/** @summary List published articles quoting a sentence range (public) */
 export function useListArticleReferencesSuspense<
     TData = Awaited<ReturnType<typeof listArticleReferences>>,
     TError = void,
@@ -2307,6 +2286,11 @@ export type ListEditorialLabelsQueryResult = NonNullable<
 >;
 export type ListEditorialLabelsQueryError = unknown;
 
+/**
+ * @summary List all editorial labels. Public — readers see chip metadata so the
+frontend can render names/slugs without a separate lookup, and editors
+use the same endpoint to populate the manage-labels modal.
+ */
 export function useListEditorialLabels<
     TData = Awaited<ReturnType<typeof listEditorialLabels>>,
     TError = unknown,
@@ -2333,6 +2317,11 @@ export function useListEditorialLabels<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary List all editorial labels. Public — readers see chip metadata so the
+frontend can render names/slugs without a separate lookup, and editors
+use the same endpoint to populate the manage-labels modal.
+ */
 export function useListEditorialLabels<
     TData = Awaited<ReturnType<typeof listEditorialLabels>>,
     TError = unknown,
@@ -2359,6 +2348,11 @@ export function useListEditorialLabels<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary List all editorial labels. Public — readers see chip metadata so the
+frontend can render names/slugs without a separate lookup, and editors
+use the same endpoint to populate the manage-labels modal.
+ */
 export function useListEditorialLabels<
     TData = Awaited<ReturnType<typeof listEditorialLabels>>,
     TError = unknown,
@@ -2382,7 +2376,6 @@ export function useListEditorialLabels<
 frontend can render names/slugs without a separate lookup, and editors
 use the same endpoint to populate the manage-labels modal.
  */
-
 export function useListEditorialLabels<
     TData = Awaited<ReturnType<typeof listEditorialLabels>>,
     TError = unknown,
@@ -2452,6 +2445,11 @@ export type ListEditorialLabelsSuspenseQueryResult = NonNullable<
 >;
 export type ListEditorialLabelsSuspenseQueryError = unknown;
 
+/**
+ * @summary List all editorial labels. Public — readers see chip metadata so the
+frontend can render names/slugs without a separate lookup, and editors
+use the same endpoint to populate the manage-labels modal.
+ */
 export function useListEditorialLabelsSuspense<
     TData = Awaited<ReturnType<typeof listEditorialLabels>>,
     TError = unknown,
@@ -2470,24 +2468,11 @@ export function useListEditorialLabelsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useListEditorialLabelsSuspense<
-    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
-    TError = unknown,
->(
-    options?: {
-        query?: Partial<
-            UseSuspenseQueryOptions<
-                Awaited<ReturnType<typeof listEditorialLabels>>,
-                TError,
-                TData
-            >
-        >;
-        request?: SecondParameter<typeof customFetch>;
-    },
-    queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-};
+/**
+ * @summary List all editorial labels. Public — readers see chip metadata so the
+frontend can render names/slugs without a separate lookup, and editors
+use the same endpoint to populate the manage-labels modal.
+ */
 export function useListEditorialLabelsSuspense<
     TData = Awaited<ReturnType<typeof listEditorialLabels>>,
     TError = unknown,
@@ -2511,7 +2496,29 @@ export function useListEditorialLabelsSuspense<
 frontend can render names/slugs without a separate lookup, and editors
 use the same endpoint to populate the manage-labels modal.
  */
-
+export function useListEditorialLabelsSuspense<
+    TData = Awaited<ReturnType<typeof listEditorialLabels>>,
+    TError = unknown,
+>(
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listEditorialLabels>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary List all editorial labels. Public — readers see chip metadata so the
+frontend can render names/slugs without a separate lookup, and editors
+use the same endpoint to populate the manage-labels modal.
+ */
 export function useListEditorialLabelsSuspense<
     TData = Awaited<ReturnType<typeof listEditorialLabels>>,
     TError = unknown,
@@ -2637,6 +2644,7 @@ export type ListUserArticlesQueryResult = NonNullable<
 >;
 export type ListUserArticlesQueryError = void;
 
+/** @summary List current user's articles */
 export function useListUserArticles<
     TData = Awaited<ReturnType<typeof listUserArticles>>,
     TError = void,
@@ -2664,6 +2672,7 @@ export function useListUserArticles<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List current user's articles */
 export function useListUserArticles<
     TData = Awaited<ReturnType<typeof listUserArticles>>,
     TError = void,
@@ -2691,6 +2700,7 @@ export function useListUserArticles<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List current user's articles */
 export function useListUserArticles<
     TData = Awaited<ReturnType<typeof listUserArticles>>,
     TError = void,
@@ -2710,10 +2720,7 @@ export function useListUserArticles<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List current user's articles
- */
-
+/** @summary List current user's articles */
 export function useListUserArticles<
     TData = Awaited<ReturnType<typeof listUserArticles>>,
     TError = void,
@@ -2788,6 +2795,7 @@ export type ListUserArticlesSuspenseQueryResult = NonNullable<
 >;
 export type ListUserArticlesSuspenseQueryError = void;
 
+/** @summary List current user's articles */
 export function useListUserArticlesSuspense<
     TData = Awaited<ReturnType<typeof listUserArticles>>,
     TError = void,
@@ -2807,6 +2815,7 @@ export function useListUserArticlesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List current user's articles */
 export function useListUserArticlesSuspense<
     TData = Awaited<ReturnType<typeof listUserArticles>>,
     TError = void,
@@ -2826,6 +2835,7 @@ export function useListUserArticlesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List current user's articles */
 export function useListUserArticlesSuspense<
     TData = Awaited<ReturnType<typeof listUserArticles>>,
     TError = void,
@@ -2845,10 +2855,7 @@ export function useListUserArticlesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List current user's articles
- */
-
+/** @summary List current user's articles */
 export function useListUserArticlesSuspense<
     TData = Awaited<ReturnType<typeof listUserArticles>>,
     TError = void,
@@ -2973,6 +2980,7 @@ export type GetUserArticleQueryResult = NonNullable<
 >;
 export type GetUserArticleQueryError = void;
 
+/** @summary Get a specific article for editing (owner only) */
 export function useGetUserArticle<
     TData = Awaited<ReturnType<typeof getUserArticle>>,
     TError = void,
@@ -3000,6 +3008,7 @@ export function useGetUserArticle<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a specific article for editing (owner only) */
 export function useGetUserArticle<
     TData = Awaited<ReturnType<typeof getUserArticle>>,
     TError = void,
@@ -3027,6 +3036,7 @@ export function useGetUserArticle<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a specific article for editing (owner only) */
 export function useGetUserArticle<
     TData = Awaited<ReturnType<typeof getUserArticle>>,
     TError = void,
@@ -3046,10 +3056,7 @@ export function useGetUserArticle<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a specific article for editing (owner only)
- */
-
+/** @summary Get a specific article for editing (owner only) */
 export function useGetUserArticle<
     TData = Awaited<ReturnType<typeof getUserArticle>>,
     TError = void,
@@ -3123,6 +3130,7 @@ export type GetUserArticleSuspenseQueryResult = NonNullable<
 >;
 export type GetUserArticleSuspenseQueryError = void;
 
+/** @summary Get a specific article for editing (owner only) */
 export function useGetUserArticleSuspense<
     TData = Awaited<ReturnType<typeof getUserArticle>>,
     TError = void,
@@ -3142,6 +3150,7 @@ export function useGetUserArticleSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a specific article for editing (owner only) */
 export function useGetUserArticleSuspense<
     TData = Awaited<ReturnType<typeof getUserArticle>>,
     TError = void,
@@ -3161,6 +3170,7 @@ export function useGetUserArticleSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a specific article for editing (owner only) */
 export function useGetUserArticleSuspense<
     TData = Awaited<ReturnType<typeof getUserArticle>>,
     TError = void,
@@ -3180,10 +3190,7 @@ export function useGetUserArticleSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a specific article for editing (owner only)
- */
-
+/** @summary Get a specific article for editing (owner only) */
 export function useGetUserArticleSuspense<
     TData = Awaited<ReturnType<typeof getUserArticle>>,
     TError = void,
@@ -3264,36 +3271,15 @@ export const updateArticle = async (
     updateArticleRequest: UpdateArticleRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateArticleResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<updateArticleResponseSuccess>(
         getUpdateArticleUrl(slug),
         {
             ...options,
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(updateArticleRequest),
         },
     );
@@ -3349,9 +3335,7 @@ export type UpdateArticleMutationVariables = {
     data: UpdateArticleRequest;
 };
 
-/**
- * @summary Update an article (owner only)
- */
+/** @summary Update an article (owner only) */
 export const useUpdateArticle = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -3463,9 +3447,7 @@ export type ArchiveArticleMutationResult = NonNullable<
 export type ArchiveArticleMutationError = void;
 export type ArchiveArticleMutationVariables = { slug: string };
 
-/**
- * @summary Archive an article (one-way from published)
- */
+/** @summary Archive an article (one-way from published) */
 export const useArchiveArticle = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -3589,9 +3571,7 @@ export type PublishArticleMutationResult = NonNullable<
 export type PublishArticleMutationError = void;
 export type PublishArticleMutationVariables = { slug: string };
 
-/**
- * @summary Publish an article
- */
+/** @summary Publish an article */
 export const usePublishArticle = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<

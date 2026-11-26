@@ -112,6 +112,7 @@ export type ListTagsQueryResult = NonNullable<
 >;
 export type ListTagsQueryError = void;
 
+/** @summary List all tags for the authenticated user */
 export function useListTags<
     TData = Awaited<ReturnType<typeof listTags>>,
     TError = void,
@@ -134,6 +135,7 @@ export function useListTags<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all tags for the authenticated user */
 export function useListTags<
     TData = Awaited<ReturnType<typeof listTags>>,
     TError = void,
@@ -156,6 +158,7 @@ export function useListTags<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all tags for the authenticated user */
 export function useListTags<
     TData = Awaited<ReturnType<typeof listTags>>,
     TError = void,
@@ -170,10 +173,7 @@ export function useListTags<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List all tags for the authenticated user
- */
-
+/** @summary List all tags for the authenticated user */
 export function useListTags<
     TData = Awaited<ReturnType<typeof listTags>>,
     TError = void,
@@ -239,6 +239,7 @@ export type ListTagsSuspenseQueryResult = NonNullable<
 >;
 export type ListTagsSuspenseQueryError = void;
 
+/** @summary List all tags for the authenticated user */
 export function useListTagsSuspense<
     TData = Awaited<ReturnType<typeof listTags>>,
     TError = void,
@@ -257,6 +258,7 @@ export function useListTagsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all tags for the authenticated user */
 export function useListTagsSuspense<
     TData = Awaited<ReturnType<typeof listTags>>,
     TError = void,
@@ -275,6 +277,7 @@ export function useListTagsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all tags for the authenticated user */
 export function useListTagsSuspense<
     TData = Awaited<ReturnType<typeof listTags>>,
     TError = void,
@@ -293,10 +296,7 @@ export function useListTagsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List all tags for the authenticated user
- */
-
+/** @summary List all tags for the authenticated user */
 export function useListTagsSuspense<
     TData = Awaited<ReturnType<typeof listTags>>,
     TError = void,

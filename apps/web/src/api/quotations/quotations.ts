@@ -45,6 +45,52 @@ import type {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+const getHeaders = (
+    ...sources: (
+        | RequestInit["headers"]
+        | Record<
+              string,
+              string | number | boolean | bigint | readonly string[] | undefined
+          >
+    )[]
+) => {
+    const seen = new Set<string>();
+    const layers: [string, string | readonly string[]][][] = [];
+    for (const source of sources.reverse()) {
+        if (!source) continue;
+        const entries =
+            source instanceof Headers
+                ? source.entries()
+                : Symbol.iterator in source
+                  ? Array.from(
+                        source as Iterable<Iterable<string>>,
+                        (entry) => Array.from(entry) as [string, string],
+                    )
+                  : Object.entries<
+                        | string
+                        | number
+                        | boolean
+                        | bigint
+                        | readonly string[]
+                        | undefined
+                    >(source);
+        const layer: [string, string | readonly string[]][] = [];
+        for (const [name, value] of entries) {
+            if (value !== undefined && !seen.has(name.toLowerCase()))
+                layer.push([
+                    name,
+                    typeof value === "object" ? value : String(value),
+                ]);
+        }
+        for (const [name] of layer) seen.add(name.toLowerCase());
+        layers.push(layer);
+    }
+    return Object.fromEntries(layers.reverse().flat()) as Extract<
+        RequestInit["headers"],
+        Record<string, unknown>
+    >;
+};
+
 const withQueryKey = <T extends object, K>(
     query: T,
     queryKey: K,
@@ -187,6 +233,7 @@ export type ListQuotationsQueryResult = NonNullable<
 >;
 export type ListQuotationsQueryError = void;
 
+/** @summary List quotations for a node (authenticated user only) */
 export function useListQuotations<
     TData = Awaited<ReturnType<typeof listQuotations>>,
     TError = void,
@@ -215,6 +262,7 @@ export function useListQuotations<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List quotations for a node (authenticated user only) */
 export function useListQuotations<
     TData = Awaited<ReturnType<typeof listQuotations>>,
     TError = void,
@@ -243,6 +291,7 @@ export function useListQuotations<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List quotations for a node (authenticated user only) */
 export function useListQuotations<
     TData = Awaited<ReturnType<typeof listQuotations>>,
     TError = void,
@@ -263,10 +312,7 @@ export function useListQuotations<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List quotations for a node (authenticated user only)
- */
-
+/** @summary List quotations for a node (authenticated user only) */
 export function useListQuotations<
     TData = Awaited<ReturnType<typeof listQuotations>>,
     TError = void,
@@ -344,6 +390,7 @@ export type ListQuotationsSuspenseQueryResult = NonNullable<
 >;
 export type ListQuotationsSuspenseQueryError = void;
 
+/** @summary List quotations for a node (authenticated user only) */
 export function useListQuotationsSuspense<
     TData = Awaited<ReturnType<typeof listQuotations>>,
     TError = void,
@@ -364,6 +411,7 @@ export function useListQuotationsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List quotations for a node (authenticated user only) */
 export function useListQuotationsSuspense<
     TData = Awaited<ReturnType<typeof listQuotations>>,
     TError = void,
@@ -384,6 +432,7 @@ export function useListQuotationsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List quotations for a node (authenticated user only) */
 export function useListQuotationsSuspense<
     TData = Awaited<ReturnType<typeof listQuotations>>,
     TError = void,
@@ -404,10 +453,7 @@ export function useListQuotationsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List quotations for a node (authenticated user only)
- */
-
+/** @summary List quotations for a node (authenticated user only) */
 export function useListQuotationsSuspense<
     TData = Awaited<ReturnType<typeof listQuotations>>,
     TError = void,
@@ -487,36 +533,15 @@ export const createQuotation = async (
     createQuotationRequest: CreateQuotationRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createQuotationResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createQuotationResponseSuccess>(
         getCreateQuotationUrl(slug),
         {
             ...options,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(createQuotationRequest),
         },
     );
@@ -572,9 +597,7 @@ export type CreateQuotationMutationVariables = {
     data: CreateQuotationRequest;
 };
 
-/**
- * @summary Save a quotation (returns existing if duplicate)
- */
+/** @summary Save a quotation (returns existing if duplicate) */
 export const useCreateQuotation = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -693,9 +716,7 @@ export type DeleteQuotationMutationResult = NonNullable<
 export type DeleteQuotationMutationError = void;
 export type DeleteQuotationMutationVariables = { slug: string; id: string };
 
-/**
- * @summary Delete a quotation (cascade-deletes notes)
- */
+/** @summary Delete a quotation (cascade-deletes notes) */
 export const useDeleteQuotation = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -814,6 +835,7 @@ export type ListNotesQueryResult = NonNullable<
 >;
 export type ListNotesQueryError = void;
 
+/** @summary List notes for a quotation */
 export function useListNotes<
     TData = Awaited<ReturnType<typeof listNotes>>,
     TError = void,
@@ -842,6 +864,7 @@ export function useListNotes<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List notes for a quotation */
 export function useListNotes<
     TData = Awaited<ReturnType<typeof listNotes>>,
     TError = void,
@@ -870,6 +893,7 @@ export function useListNotes<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List notes for a quotation */
 export function useListNotes<
     TData = Awaited<ReturnType<typeof listNotes>>,
     TError = void,
@@ -890,10 +914,7 @@ export function useListNotes<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List notes for a quotation
- */
-
+/** @summary List notes for a quotation */
 export function useListNotes<
     TData = Awaited<ReturnType<typeof listNotes>>,
     TError = void,
@@ -969,6 +990,7 @@ export type ListNotesSuspenseQueryResult = NonNullable<
 >;
 export type ListNotesSuspenseQueryError = void;
 
+/** @summary List notes for a quotation */
 export function useListNotesSuspense<
     TData = Awaited<ReturnType<typeof listNotes>>,
     TError = void,
@@ -989,6 +1011,7 @@ export function useListNotesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List notes for a quotation */
 export function useListNotesSuspense<
     TData = Awaited<ReturnType<typeof listNotes>>,
     TError = void,
@@ -1009,6 +1032,7 @@ export function useListNotesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List notes for a quotation */
 export function useListNotesSuspense<
     TData = Awaited<ReturnType<typeof listNotes>>,
     TError = void,
@@ -1029,10 +1053,7 @@ export function useListNotesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List notes for a quotation
- */
-
+/** @summary List notes for a quotation */
 export function useListNotesSuspense<
     TData = Awaited<ReturnType<typeof listNotes>>,
     TError = void,
@@ -1109,34 +1130,13 @@ export const createNote = async (
     createNoteRequest: CreateNoteRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createNoteResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createNoteResponseSuccess>(getCreateNoteUrl(slug, id), {
         ...options,
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(createNoteRequest),
     });
 };
@@ -1192,9 +1192,7 @@ export type CreateNoteMutationVariables = {
     data: CreateNoteRequest;
 };
 
-/**
- * @summary Create a note on a quotation
- */
+/** @summary Create a note on a quotation */
 export const useCreateNote = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1265,36 +1263,15 @@ export const updateNote = async (
     updateNoteRequest: UpdateNoteRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateNoteResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<updateNoteResponseSuccess>(
         getUpdateNoteUrl(slug, id, noteId),
         {
             ...options,
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(updateNoteRequest),
         },
     );
@@ -1352,9 +1329,7 @@ export type UpdateNoteMutationVariables = {
     data: UpdateNoteRequest;
 };
 
-/**
- * @summary Update a note
- */
+/** @summary Update a note */
 export const useUpdateNote = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1478,9 +1453,7 @@ export type DeleteNoteMutationVariables = {
     noteId: string;
 };
 
-/**
- * @summary Delete a note
- */
+/** @summary Delete a note */
 export const useDeleteNote = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1592,6 +1565,7 @@ export type ListAllNotesQueryResult = NonNullable<
 >;
 export type ListAllNotesQueryError = void;
 
+/** @summary List all notes for the authenticated user (across all books) */
 export function useListAllNotes<
     TData = Awaited<ReturnType<typeof listAllNotes>>,
     TError = void,
@@ -1619,6 +1593,7 @@ export function useListAllNotes<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all notes for the authenticated user (across all books) */
 export function useListAllNotes<
     TData = Awaited<ReturnType<typeof listAllNotes>>,
     TError = void,
@@ -1646,6 +1621,7 @@ export function useListAllNotes<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all notes for the authenticated user (across all books) */
 export function useListAllNotes<
     TData = Awaited<ReturnType<typeof listAllNotes>>,
     TError = void,
@@ -1665,10 +1641,7 @@ export function useListAllNotes<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List all notes for the authenticated user (across all books)
- */
-
+/** @summary List all notes for the authenticated user (across all books) */
 export function useListAllNotes<
     TData = Awaited<ReturnType<typeof listAllNotes>>,
     TError = void,
@@ -1742,6 +1715,7 @@ export type ListAllNotesSuspenseQueryResult = NonNullable<
 >;
 export type ListAllNotesSuspenseQueryError = void;
 
+/** @summary List all notes for the authenticated user (across all books) */
 export function useListAllNotesSuspense<
     TData = Awaited<ReturnType<typeof listAllNotes>>,
     TError = void,
@@ -1761,6 +1735,7 @@ export function useListAllNotesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all notes for the authenticated user (across all books) */
 export function useListAllNotesSuspense<
     TData = Awaited<ReturnType<typeof listAllNotes>>,
     TError = void,
@@ -1780,6 +1755,7 @@ export function useListAllNotesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all notes for the authenticated user (across all books) */
 export function useListAllNotesSuspense<
     TData = Awaited<ReturnType<typeof listAllNotes>>,
     TError = void,
@@ -1799,10 +1775,7 @@ export function useListAllNotesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List all notes for the authenticated user (across all books)
- */
-
+/** @summary List all notes for the authenticated user (across all books) */
 export function useListAllNotesSuspense<
     TData = Awaited<ReturnType<typeof listAllNotes>>,
     TError = void,
@@ -1930,6 +1903,7 @@ export type ListAllQuotationsQueryResult = NonNullable<
 >;
 export type ListAllQuotationsQueryError = void;
 
+/** @summary List all quotations for the authenticated user (books + articles, unified) */
 export function useListAllQuotations<
     TData = Awaited<ReturnType<typeof listAllQuotations>>,
     TError = void,
@@ -1957,6 +1931,7 @@ export function useListAllQuotations<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all quotations for the authenticated user (books + articles, unified) */
 export function useListAllQuotations<
     TData = Awaited<ReturnType<typeof listAllQuotations>>,
     TError = void,
@@ -1984,6 +1959,7 @@ export function useListAllQuotations<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all quotations for the authenticated user (books + articles, unified) */
 export function useListAllQuotations<
     TData = Awaited<ReturnType<typeof listAllQuotations>>,
     TError = void,
@@ -2003,10 +1979,7 @@ export function useListAllQuotations<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List all quotations for the authenticated user (books + articles, unified)
- */
-
+/** @summary List all quotations for the authenticated user (books + articles, unified) */
 export function useListAllQuotations<
     TData = Awaited<ReturnType<typeof listAllQuotations>>,
     TError = void,
@@ -2082,6 +2055,7 @@ export type ListAllQuotationsSuspenseQueryResult = NonNullable<
 >;
 export type ListAllQuotationsSuspenseQueryError = void;
 
+/** @summary List all quotations for the authenticated user (books + articles, unified) */
 export function useListAllQuotationsSuspense<
     TData = Awaited<ReturnType<typeof listAllQuotations>>,
     TError = void,
@@ -2101,6 +2075,7 @@ export function useListAllQuotationsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all quotations for the authenticated user (books + articles, unified) */
 export function useListAllQuotationsSuspense<
     TData = Awaited<ReturnType<typeof listAllQuotations>>,
     TError = void,
@@ -2120,6 +2095,7 @@ export function useListAllQuotationsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all quotations for the authenticated user (books + articles, unified) */
 export function useListAllQuotationsSuspense<
     TData = Awaited<ReturnType<typeof listAllQuotations>>,
     TError = void,
@@ -2139,10 +2115,7 @@ export function useListAllQuotationsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List all quotations for the authenticated user (books + articles, unified)
- */
-
+/** @summary List all quotations for the authenticated user (books + articles, unified) */
 export function useListAllQuotationsSuspense<
     TData = Awaited<ReturnType<typeof listAllQuotations>>,
     TError = void,

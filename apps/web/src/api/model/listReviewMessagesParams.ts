@@ -6,8 +6,6 @@
  */
 
 export type ListReviewMessagesParams = {
-    /**
-     * @nullable
-     */
+    /** @nullable */
     collegium_id?: string | null;
 };

@@ -6,12 +6,8 @@
  */
 
 export type ListAllQuotationsParams = {
-    /**
-     * @nullable
-     */
+    /** @nullable */
     book_slug?: string | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     source_type?: string | null;
 };

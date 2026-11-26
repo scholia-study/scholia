@@ -44,6 +44,52 @@ import type {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+const getHeaders = (
+    ...sources: (
+        | RequestInit["headers"]
+        | Record<
+              string,
+              string | number | boolean | bigint | readonly string[] | undefined
+          >
+    )[]
+) => {
+    const seen = new Set<string>();
+    const layers: [string, string | readonly string[]][][] = [];
+    for (const source of sources.reverse()) {
+        if (!source) continue;
+        const entries =
+            source instanceof Headers
+                ? source.entries()
+                : Symbol.iterator in source
+                  ? Array.from(
+                        source as Iterable<Iterable<string>>,
+                        (entry) => Array.from(entry) as [string, string],
+                    )
+                  : Object.entries<
+                        | string
+                        | number
+                        | boolean
+                        | bigint
+                        | readonly string[]
+                        | undefined
+                    >(source);
+        const layer: [string, string | readonly string[]][] = [];
+        for (const [name, value] of entries) {
+            if (value !== undefined && !seen.has(name.toLowerCase()))
+                layer.push([
+                    name,
+                    typeof value === "object" ? value : String(value),
+                ]);
+        }
+        for (const [name] of layer) seen.add(name.toLowerCase());
+        layers.push(layer);
+    }
+    return Object.fromEntries(layers.reverse().flat()) as Extract<
+        RequestInit["headers"],
+        Record<string, unknown>
+    >;
+};
+
 const withQueryKey = <T extends object, K>(
     query: T,
     queryKey: K,
@@ -135,6 +181,7 @@ export type AdminListSeriesQueryResult = NonNullable<
 >;
 export type AdminListSeriesQueryError = void;
 
+/** @summary List series with member counts for the manage page */
 export function useAdminListSeries<
     TData = Awaited<ReturnType<typeof adminListSeries>>,
     TError = void,
@@ -161,6 +208,7 @@ export function useAdminListSeries<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List series with member counts for the manage page */
 export function useAdminListSeries<
     TData = Awaited<ReturnType<typeof adminListSeries>>,
     TError = void,
@@ -187,6 +235,7 @@ export function useAdminListSeries<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List series with member counts for the manage page */
 export function useAdminListSeries<
     TData = Awaited<ReturnType<typeof adminListSeries>>,
     TError = void,
@@ -205,10 +254,7 @@ export function useAdminListSeries<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List series with member counts for the manage page
- */
-
+/** @summary List series with member counts for the manage page */
 export function useAdminListSeries<
     TData = Awaited<ReturnType<typeof adminListSeries>>,
     TError = void,
@@ -278,6 +324,7 @@ export type AdminListSeriesSuspenseQueryResult = NonNullable<
 >;
 export type AdminListSeriesSuspenseQueryError = void;
 
+/** @summary List series with member counts for the manage page */
 export function useAdminListSeriesSuspense<
     TData = Awaited<ReturnType<typeof adminListSeries>>,
     TError = void,
@@ -296,6 +343,7 @@ export function useAdminListSeriesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List series with member counts for the manage page */
 export function useAdminListSeriesSuspense<
     TData = Awaited<ReturnType<typeof adminListSeries>>,
     TError = void,
@@ -314,6 +362,7 @@ export function useAdminListSeriesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List series with member counts for the manage page */
 export function useAdminListSeriesSuspense<
     TData = Awaited<ReturnType<typeof adminListSeries>>,
     TError = void,
@@ -332,10 +381,7 @@ export function useAdminListSeriesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List series with member counts for the manage page
- */
-
+/** @summary List series with member counts for the manage page */
 export function useAdminListSeriesSuspense<
     TData = Awaited<ReturnType<typeof adminListSeries>>,
     TError = void,
@@ -402,34 +448,13 @@ export const createSeries = async (
     createSeriesRequest: CreateSeriesRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createSeriesResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createSeriesResponseSuccess>(getCreateSeriesUrl(), {
         ...options,
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(createSeriesRequest),
     });
 };
@@ -481,9 +506,7 @@ export type CreateSeriesMutationBody = CreateSeriesRequest;
 export type CreateSeriesMutationError = void;
 export type CreateSeriesMutationVariables = { data: CreateSeriesRequest };
 
-/**
- * @summary Create a series; the slug is generated from the name and immutable
- */
+/** @summary Create a series; the slug is generated from the name and immutable */
 export const useCreateSeries = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -598,9 +621,7 @@ export type DeleteSeriesMutationResult = NonNullable<
 export type DeleteSeriesMutationError = void;
 export type DeleteSeriesMutationVariables = { id: string };
 
-/**
- * @summary Delete a series; refused while any article is still attached
- */
+/** @summary Delete a series; refused while any article is still attached */
 export const useDeleteSeries = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -663,34 +684,13 @@ export const updateSeries = async (
     updateSeriesRequest: UpdateSeriesRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateSeriesResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<updateSeriesResponseSuccess>(getUpdateSeriesUrl(id), {
         ...options,
         method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(updateSeriesRequest),
     });
 };
@@ -745,9 +745,7 @@ export type UpdateSeriesMutationVariables = {
     data: UpdateSeriesRequest;
 };
 
-/**
- * @summary Update series metadata (name, description, pinned, sort order)
- */
+/** @summary Update series metadata (name, description, pinned, sort order) */
 export const useUpdateSeries = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -857,6 +855,7 @@ export type ListSeriesMembersQueryResult = NonNullable<
 >;
 export type ListSeriesMembersQueryError = void;
 
+/** @summary List a series' members in order, all statuses (manage drawer) */
 export function useListSeriesMembers<
     TData = Awaited<ReturnType<typeof listSeriesMembers>>,
     TError = void,
@@ -884,6 +883,7 @@ export function useListSeriesMembers<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List a series' members in order, all statuses (manage drawer) */
 export function useListSeriesMembers<
     TData = Awaited<ReturnType<typeof listSeriesMembers>>,
     TError = void,
@@ -911,6 +911,7 @@ export function useListSeriesMembers<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List a series' members in order, all statuses (manage drawer) */
 export function useListSeriesMembers<
     TData = Awaited<ReturnType<typeof listSeriesMembers>>,
     TError = void,
@@ -930,10 +931,7 @@ export function useListSeriesMembers<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List a series' members in order, all statuses (manage drawer)
- */
-
+/** @summary List a series' members in order, all statuses (manage drawer) */
 export function useListSeriesMembers<
     TData = Awaited<ReturnType<typeof listSeriesMembers>>,
     TError = void,
@@ -1007,6 +1005,7 @@ export type ListSeriesMembersSuspenseQueryResult = NonNullable<
 >;
 export type ListSeriesMembersSuspenseQueryError = void;
 
+/** @summary List a series' members in order, all statuses (manage drawer) */
 export function useListSeriesMembersSuspense<
     TData = Awaited<ReturnType<typeof listSeriesMembers>>,
     TError = void,
@@ -1026,6 +1025,7 @@ export function useListSeriesMembersSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List a series' members in order, all statuses (manage drawer) */
 export function useListSeriesMembersSuspense<
     TData = Awaited<ReturnType<typeof listSeriesMembers>>,
     TError = void,
@@ -1045,6 +1045,7 @@ export function useListSeriesMembersSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List a series' members in order, all statuses (manage drawer) */
 export function useListSeriesMembersSuspense<
     TData = Awaited<ReturnType<typeof listSeriesMembers>>,
     TError = void,
@@ -1064,10 +1065,7 @@ export function useListSeriesMembersSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List a series' members in order, all statuses (manage drawer)
- */
-
+/** @summary List a series' members in order, all statuses (manage drawer) */
 export function useListSeriesMembersSuspense<
     TData = Awaited<ReturnType<typeof listSeriesMembers>>,
     TError = void,
@@ -1142,36 +1140,15 @@ export const addSeriesArticle = async (
     addSeriesArticleRequest: AddSeriesArticleRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<addSeriesArticleResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<addSeriesArticleResponseSuccess>(
         getAddSeriesArticleUrl(id),
         {
             ...options,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(addSeriesArticleRequest),
         },
     );
@@ -1228,9 +1205,7 @@ export type AddSeriesArticleMutationVariables = {
     data: AddSeriesArticleRequest;
 };
 
-/**
- * @summary Add a published article to a series (prepends at position 1)
- */
+/** @summary Add a published article to a series (prepends at position 1) */
 export const useAddSeriesArticle = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1297,36 +1272,15 @@ export const reorderSeriesArticles = async (
     reorderSeriesArticlesRequest: ReorderSeriesArticlesRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<reorderSeriesArticlesResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<reorderSeriesArticlesResponseSuccess>(
         getReorderSeriesArticlesUrl(id),
         {
             ...options,
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(reorderSeriesArticlesRequest),
         },
     );
@@ -1383,9 +1337,7 @@ export type ReorderSeriesArticlesMutationVariables = {
     data: ReorderSeriesArticlesRequest;
 };
 
-/**
- * @summary Reorder a series' members (full permutation of current members)
- */
+/** @summary Reorder a series' members (full permutation of current members) */
 export const useReorderSeriesArticles = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1506,9 +1458,7 @@ export type RemoveSeriesArticleMutationVariables = {
     articleId: string;
 };
 
-/**
- * @summary Remove an article from a series
- */
+/** @summary Remove an article from a series */
 export const useRemoveSeriesArticle = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1604,6 +1554,7 @@ export type AdminListTopicsQueryResult = NonNullable<
 >;
 export type AdminListTopicsQueryError = void;
 
+/** @summary List topics with per-topic article usage counts */
 export function useAdminListTopics<
     TData = Awaited<ReturnType<typeof adminListTopics>>,
     TError = void,
@@ -1630,6 +1581,7 @@ export function useAdminListTopics<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List topics with per-topic article usage counts */
 export function useAdminListTopics<
     TData = Awaited<ReturnType<typeof adminListTopics>>,
     TError = void,
@@ -1656,6 +1608,7 @@ export function useAdminListTopics<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List topics with per-topic article usage counts */
 export function useAdminListTopics<
     TData = Awaited<ReturnType<typeof adminListTopics>>,
     TError = void,
@@ -1674,10 +1627,7 @@ export function useAdminListTopics<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List topics with per-topic article usage counts
- */
-
+/** @summary List topics with per-topic article usage counts */
 export function useAdminListTopics<
     TData = Awaited<ReturnType<typeof adminListTopics>>,
     TError = void,
@@ -1747,6 +1697,7 @@ export type AdminListTopicsSuspenseQueryResult = NonNullable<
 >;
 export type AdminListTopicsSuspenseQueryError = void;
 
+/** @summary List topics with per-topic article usage counts */
 export function useAdminListTopicsSuspense<
     TData = Awaited<ReturnType<typeof adminListTopics>>,
     TError = void,
@@ -1765,6 +1716,7 @@ export function useAdminListTopicsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List topics with per-topic article usage counts */
 export function useAdminListTopicsSuspense<
     TData = Awaited<ReturnType<typeof adminListTopics>>,
     TError = void,
@@ -1783,6 +1735,7 @@ export function useAdminListTopicsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List topics with per-topic article usage counts */
 export function useAdminListTopicsSuspense<
     TData = Awaited<ReturnType<typeof adminListTopics>>,
     TError = void,
@@ -1801,10 +1754,7 @@ export function useAdminListTopicsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List topics with per-topic article usage counts
- */
-
+/** @summary List topics with per-topic article usage counts */
 export function useAdminListTopicsSuspense<
     TData = Awaited<ReturnType<typeof adminListTopics>>,
     TError = void,
@@ -1871,34 +1821,13 @@ export const createTopic = async (
     createTopicRequest: CreateTopicRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createTopicResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createTopicResponseSuccess>(getCreateTopicUrl(), {
         ...options,
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(createTopicRequest),
     });
 };
@@ -1950,9 +1879,7 @@ export type CreateTopicMutationBody = CreateTopicRequest;
 export type CreateTopicMutationError = void;
 export type CreateTopicMutationVariables = { data: CreateTopicRequest };
 
-/**
- * @summary Create a topic; the slug is generated from the name and immutable
- */
+/** @summary Create a topic; the slug is generated from the name and immutable */
 export const useCreateTopic = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2067,9 +1994,7 @@ export type DeleteTopicMutationResult = NonNullable<
 export type DeleteTopicMutationError = void;
 export type DeleteTopicMutationVariables = { id: string };
 
-/**
- * @summary Delete a topic; refused while any article still uses it
- */
+/** @summary Delete a topic; refused while any article still uses it */
 export const useDeleteTopic = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2132,34 +2057,13 @@ export const updateTopic = async (
     updateTopicRequest: UpdateTopicRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateTopicResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<updateTopicResponseSuccess>(getUpdateTopicUrl(id), {
         ...options,
         method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(updateTopicRequest),
     });
 };
@@ -2214,9 +2118,7 @@ export type UpdateTopicMutationVariables = {
     data: UpdateTopicRequest;
 };
 
-/**
- * @summary Rename a topic (display name only; slug never changes)
- */
+/** @summary Rename a topic (display name only; slug never changes) */
 export const useUpdateTopic = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<

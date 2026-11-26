@@ -198,6 +198,11 @@ export type GetNodePageInfiniteQueryResult = NonNullable<
 >;
 export type GetNodePageInfiniteQueryError = void;
 
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePageInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof getNodePage>>,
@@ -232,6 +237,11 @@ export function useGetNodePageInfinite<
 ): DefinedUseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePageInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof getNodePage>>,
@@ -266,6 +276,11 @@ export function useGetNodePageInfinite<
 ): UseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePageInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof getNodePage>>,
@@ -292,9 +307,10 @@ export function useGetNodePageInfinite<
     queryKey: DataTag<QueryKey, TData, TError>;
 };
 /**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
  * @summary Get paginated nodes for infinite scroll
  */
-
 export function useGetNodePageInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof getNodePage>>,
@@ -379,6 +395,11 @@ export type GetNodePageQueryResult = NonNullable<
 >;
 export type GetNodePageQueryError = void;
 
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePage<
     TData = Awaited<ReturnType<typeof getNodePage>>,
     TError = void,
@@ -407,6 +428,11 @@ export function useGetNodePage<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePage<
     TData = Awaited<ReturnType<typeof getNodePage>>,
     TError = void,
@@ -435,6 +461,11 @@ export function useGetNodePage<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePage<
     TData = Awaited<ReturnType<typeof getNodePage>>,
     TError = void,
@@ -456,9 +487,10 @@ export function useGetNodePage<
     queryKey: DataTag<QueryKey, TData, TError>;
 };
 /**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
  * @summary Get paginated nodes for infinite scroll
  */
-
 export function useGetNodePage<
     TData = Awaited<ReturnType<typeof getNodePage>>,
     TError = void,
@@ -535,6 +567,11 @@ export type GetNodePageSuspenseQueryResult = NonNullable<
 >;
 export type GetNodePageSuspenseQueryError = void;
 
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePageSuspense<
     TData = Awaited<ReturnType<typeof getNodePage>>,
     TError = void,
@@ -555,26 +592,11 @@ export function useGetNodePageSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetNodePageSuspense<
-    TData = Awaited<ReturnType<typeof getNodePage>>,
-    TError = void,
->(
-    slug: string,
-    params?: GetNodePageParams,
-    options?: {
-        query?: Partial<
-            UseSuspenseQueryOptions<
-                Awaited<ReturnType<typeof getNodePage>>,
-                TError,
-                TData
-            >
-        >;
-        request?: SecondParameter<typeof customFetch>;
-    },
-    queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-};
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePageSuspense<
     TData = Awaited<ReturnType<typeof getNodePage>>,
     TError = void,
@@ -596,9 +618,35 @@ export function useGetNodePageSuspense<
     queryKey: DataTag<QueryKey, TData, TError>;
 };
 /**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
  * @summary Get paginated nodes for infinite scroll
  */
-
+export function useGetNodePageSuspense<
+    TData = Awaited<ReturnType<typeof getNodePage>>,
+    TError = void,
+>(
+    slug: string,
+    params?: GetNodePageParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getNodePage>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePageSuspense<
     TData = Awaited<ReturnType<typeof getNodePage>>,
     TError = void,
@@ -691,6 +739,11 @@ export type GetNodePageSuspenseInfiniteQueryResult = NonNullable<
 >;
 export type GetNodePageSuspenseInfiniteQueryError = void;
 
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePageSuspenseInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof getNodePage>>,
@@ -716,31 +769,11 @@ export function useGetNodePageSuspenseInfinite<
 ): UseSuspenseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetNodePageSuspenseInfinite<
-    TData = InfiniteData<
-        Awaited<ReturnType<typeof getNodePage>>,
-        GetNodePageParams["after"]
-    >,
-    TError = void,
->(
-    slug: string,
-    params?: GetNodePageParams,
-    options?: {
-        query?: Partial<
-            UseSuspenseInfiniteQueryOptions<
-                Awaited<ReturnType<typeof getNodePage>>,
-                TError,
-                TData,
-                QueryKey,
-                GetNodePageParams["after"]
-            >
-        >;
-        request?: SecondParameter<typeof customFetch>;
-    },
-    queryClient?: QueryClient,
-): UseSuspenseInfiniteQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-};
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePageSuspenseInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof getNodePage>>,
@@ -767,9 +800,40 @@ export function useGetNodePageSuspenseInfinite<
     queryKey: DataTag<QueryKey, TData, TError>;
 };
 /**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
  * @summary Get paginated nodes for infinite scroll
  */
-
+export function useGetNodePageSuspenseInfinite<
+    TData = InfiniteData<
+        Awaited<ReturnType<typeof getNodePage>>,
+        GetNodePageParams["after"]
+    >,
+    TError = void,
+>(
+    slug: string,
+    params?: GetNodePageParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseInfiniteQueryOptions<
+                Awaited<ReturnType<typeof getNodePage>>,
+                TError,
+                TData,
+                QueryKey,
+                GetNodePageParams["after"]
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * Pages are sized by a byte budget, not a node count, so their length varies
+ * with the book's node sizes.
+ * @summary Get paginated nodes for infinite scroll
+ */
 export function useGetNodePageSuspenseInfinite<
     TData = InfiniteData<
         Awaited<ReturnType<typeof getNodePage>>,
@@ -922,6 +986,7 @@ export type GetNodeQueryResult = NonNullable<
 >;
 export type GetNodeQueryError = void;
 
+/** @summary Get node content (blocks + sentences) */
 export function useGetNode<
     TData = Awaited<ReturnType<typeof getNode>>,
     TError = void,
@@ -947,6 +1012,7 @@ export function useGetNode<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get node content (blocks + sentences) */
 export function useGetNode<
     TData = Awaited<ReturnType<typeof getNode>>,
     TError = void,
@@ -972,6 +1038,7 @@ export function useGetNode<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get node content (blocks + sentences) */
 export function useGetNode<
     TData = Awaited<ReturnType<typeof getNode>>,
     TError = void,
@@ -989,10 +1056,7 @@ export function useGetNode<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get node content (blocks + sentences)
- */
-
+/** @summary Get node content (blocks + sentences) */
 export function useGetNode<
     TData = Awaited<ReturnType<typeof getNode>>,
     TError = void,
@@ -1072,6 +1136,7 @@ export type GetNodeSuspenseQueryResult = NonNullable<
 >;
 export type GetNodeSuspenseQueryError = void;
 
+/** @summary Get node content (blocks + sentences) */
 export function useGetNodeSuspense<
     TData = Awaited<ReturnType<typeof getNode>>,
     TError = void,
@@ -1093,6 +1158,7 @@ export function useGetNodeSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get node content (blocks + sentences) */
 export function useGetNodeSuspense<
     TData = Awaited<ReturnType<typeof getNode>>,
     TError = void,
@@ -1114,6 +1180,7 @@ export function useGetNodeSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get node content (blocks + sentences) */
 export function useGetNodeSuspense<
     TData = Awaited<ReturnType<typeof getNode>>,
     TError = void,
@@ -1135,10 +1202,7 @@ export function useGetNodeSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get node content (blocks + sentences)
- */
-
+/** @summary Get node content (blocks + sentences) */
 export function useGetNodeSuspense<
     TData = Awaited<ReturnType<typeof getNode>>,
     TError = void,
@@ -1266,6 +1330,7 @@ export type GetNodeMetaQueryResult = NonNullable<
 >;
 export type GetNodeMetaQueryError = void;
 
+/** @summary Get node metadata (SEO excerpt) */
 export function useGetNodeMeta<
     TData = Awaited<ReturnType<typeof getNodeMeta>>,
     TError = void,
@@ -1294,6 +1359,7 @@ export function useGetNodeMeta<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get node metadata (SEO excerpt) */
 export function useGetNodeMeta<
     TData = Awaited<ReturnType<typeof getNodeMeta>>,
     TError = void,
@@ -1322,6 +1388,7 @@ export function useGetNodeMeta<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get node metadata (SEO excerpt) */
 export function useGetNodeMeta<
     TData = Awaited<ReturnType<typeof getNodeMeta>>,
     TError = void,
@@ -1342,10 +1409,7 @@ export function useGetNodeMeta<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get node metadata (SEO excerpt)
- */
-
+/** @summary Get node metadata (SEO excerpt) */
 export function useGetNodeMeta<
     TData = Awaited<ReturnType<typeof getNodeMeta>>,
     TError = void,
@@ -1422,6 +1486,7 @@ export type GetNodeMetaSuspenseQueryResult = NonNullable<
 >;
 export type GetNodeMetaSuspenseQueryError = void;
 
+/** @summary Get node metadata (SEO excerpt) */
 export function useGetNodeMetaSuspense<
     TData = Awaited<ReturnType<typeof getNodeMeta>>,
     TError = void,
@@ -1442,6 +1507,7 @@ export function useGetNodeMetaSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get node metadata (SEO excerpt) */
 export function useGetNodeMetaSuspense<
     TData = Awaited<ReturnType<typeof getNodeMeta>>,
     TError = void,
@@ -1462,6 +1528,7 @@ export function useGetNodeMetaSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get node metadata (SEO excerpt) */
 export function useGetNodeMetaSuspense<
     TData = Awaited<ReturnType<typeof getNodeMeta>>,
     TError = void,
@@ -1482,10 +1549,7 @@ export function useGetNodeMetaSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get node metadata (SEO excerpt)
- */
-
+/** @summary Get node metadata (SEO excerpt) */
 export function useGetNodeMetaSuspense<
     TData = Awaited<ReturnType<typeof getNodeMeta>>,
     TError = void,

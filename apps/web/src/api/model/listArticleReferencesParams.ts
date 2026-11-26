@@ -10,12 +10,8 @@ export type ListArticleReferencesParams = {
     start: number;
     end: number;
     kind?: SentenceKind;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     limit?: number | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     offset?: number | null;
 };

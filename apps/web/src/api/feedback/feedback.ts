@@ -38,6 +38,52 @@ import type {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+const getHeaders = (
+    ...sources: (
+        | RequestInit["headers"]
+        | Record<
+              string,
+              string | number | boolean | bigint | readonly string[] | undefined
+          >
+    )[]
+) => {
+    const seen = new Set<string>();
+    const layers: [string, string | readonly string[]][][] = [];
+    for (const source of sources.reverse()) {
+        if (!source) continue;
+        const entries =
+            source instanceof Headers
+                ? source.entries()
+                : Symbol.iterator in source
+                  ? Array.from(
+                        source as Iterable<Iterable<string>>,
+                        (entry) => Array.from(entry) as [string, string],
+                    )
+                  : Object.entries<
+                        | string
+                        | number
+                        | boolean
+                        | bigint
+                        | readonly string[]
+                        | undefined
+                    >(source);
+        const layer: [string, string | readonly string[]][] = [];
+        for (const [name, value] of entries) {
+            if (value !== undefined && !seen.has(name.toLowerCase()))
+                layer.push([
+                    name,
+                    typeof value === "object" ? value : String(value),
+                ]);
+        }
+        for (const [name] of layer) seen.add(name.toLowerCase());
+        layers.push(layer);
+    }
+    return Object.fromEntries(layers.reverse().flat()) as Extract<
+        RequestInit["headers"],
+        Record<string, unknown>
+    >;
+};
+
 const withQueryKey = <T extends object, K>(
     query: T,
     queryKey: K,
@@ -156,6 +202,7 @@ export type ListFeedbackQueryResult = NonNullable<
 >;
 export type ListFeedbackQueryError = void;
 
+/** @summary List feedback (admin only). Default filter is "active" (todo + in_progress). */
 export function useListFeedback<
     TData = Awaited<ReturnType<typeof listFeedback>>,
     TError = void,
@@ -183,6 +230,7 @@ export function useListFeedback<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List feedback (admin only). Default filter is "active" (todo + in_progress). */
 export function useListFeedback<
     TData = Awaited<ReturnType<typeof listFeedback>>,
     TError = void,
@@ -210,6 +258,7 @@ export function useListFeedback<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List feedback (admin only). Default filter is "active" (todo + in_progress). */
 export function useListFeedback<
     TData = Awaited<ReturnType<typeof listFeedback>>,
     TError = void,
@@ -229,10 +278,7 @@ export function useListFeedback<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List feedback (admin only). Default filter is "active" (todo + in_progress).
- */
-
+/** @summary List feedback (admin only). Default filter is "active" (todo + in_progress). */
 export function useListFeedback<
     TData = Awaited<ReturnType<typeof listFeedback>>,
     TError = void,
@@ -306,6 +352,7 @@ export type ListFeedbackSuspenseQueryResult = NonNullable<
 >;
 export type ListFeedbackSuspenseQueryError = void;
 
+/** @summary List feedback (admin only). Default filter is "active" (todo + in_progress). */
 export function useListFeedbackSuspense<
     TData = Awaited<ReturnType<typeof listFeedback>>,
     TError = void,
@@ -325,6 +372,7 @@ export function useListFeedbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List feedback (admin only). Default filter is "active" (todo + in_progress). */
 export function useListFeedbackSuspense<
     TData = Awaited<ReturnType<typeof listFeedback>>,
     TError = void,
@@ -344,6 +392,7 @@ export function useListFeedbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List feedback (admin only). Default filter is "active" (todo + in_progress). */
 export function useListFeedbackSuspense<
     TData = Awaited<ReturnType<typeof listFeedback>>,
     TError = void,
@@ -363,10 +412,7 @@ export function useListFeedbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List feedback (admin only). Default filter is "active" (todo + in_progress).
- */
-
+/** @summary List feedback (admin only). Default filter is "active" (todo + in_progress). */
 export function useListFeedbackSuspense<
     TData = Awaited<ReturnType<typeof listFeedback>>,
     TError = void,
@@ -497,6 +543,7 @@ export type GetFeedbackQueryResult = NonNullable<
 >;
 export type GetFeedbackQueryError = void;
 
+/** @summary Get a single feedback row (admin only). */
 export function useGetFeedback<
     TData = Awaited<ReturnType<typeof getFeedback>>,
     TError = void,
@@ -524,6 +571,7 @@ export function useGetFeedback<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a single feedback row (admin only). */
 export function useGetFeedback<
     TData = Awaited<ReturnType<typeof getFeedback>>,
     TError = void,
@@ -551,6 +599,7 @@ export function useGetFeedback<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a single feedback row (admin only). */
 export function useGetFeedback<
     TData = Awaited<ReturnType<typeof getFeedback>>,
     TError = void,
@@ -570,10 +619,7 @@ export function useGetFeedback<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a single feedback row (admin only).
- */
-
+/** @summary Get a single feedback row (admin only). */
 export function useGetFeedback<
     TData = Awaited<ReturnType<typeof getFeedback>>,
     TError = void,
@@ -647,6 +693,7 @@ export type GetFeedbackSuspenseQueryResult = NonNullable<
 >;
 export type GetFeedbackSuspenseQueryError = void;
 
+/** @summary Get a single feedback row (admin only). */
 export function useGetFeedbackSuspense<
     TData = Awaited<ReturnType<typeof getFeedback>>,
     TError = void,
@@ -666,6 +713,7 @@ export function useGetFeedbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a single feedback row (admin only). */
 export function useGetFeedbackSuspense<
     TData = Awaited<ReturnType<typeof getFeedback>>,
     TError = void,
@@ -685,6 +733,7 @@ export function useGetFeedbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a single feedback row (admin only). */
 export function useGetFeedbackSuspense<
     TData = Awaited<ReturnType<typeof getFeedback>>,
     TError = void,
@@ -704,10 +753,7 @@ export function useGetFeedbackSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a single feedback row (admin only).
- */
-
+/** @summary Get a single feedback row (admin only). */
 export function useGetFeedbackSuspense<
     TData = Awaited<ReturnType<typeof getFeedback>>,
     TError = void,
@@ -788,36 +834,15 @@ export const updateFeedback = async (
     updateFeedbackRequest: UpdateFeedbackRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateFeedbackResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<updateFeedbackResponseSuccess>(
         getUpdateFeedbackUrl(id),
         {
             ...options,
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(updateFeedbackRequest),
         },
     );
@@ -873,9 +898,7 @@ export type UpdateFeedbackMutationVariables = {
     data: UpdateFeedbackRequest;
 };
 
-/**
- * @summary Update status and/or admin notes (admin only).
- */
+/** @summary Update status and/or admin notes (admin only). */
 export const useUpdateFeedback = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -931,34 +954,13 @@ export const createFeedback = async (
     createFeedbackRequest: CreateFeedbackRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createFeedbackResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createFeedbackResponseSuccess>(getCreateFeedbackUrl(), {
         ...options,
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(createFeedbackRequest),
     });
 };
@@ -1010,9 +1012,7 @@ export type CreateFeedbackMutationBody = CreateFeedbackRequest;
 export type CreateFeedbackMutationError = void;
 export type CreateFeedbackMutationVariables = { data: CreateFeedbackRequest };
 
-/**
- * @summary Submit feedback to admins. Auth-required; rate-limited per user.
- */
+/** @summary Submit feedback to admins. Auth-required; rate-limited per user. */
 export const useCreateFeedback = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<

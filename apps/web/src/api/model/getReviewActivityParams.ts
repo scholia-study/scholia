@@ -6,8 +6,6 @@
  */
 
 export type GetReviewActivityParams = {
-    /**
-     * @nullable
-     */
+    /** @nullable */
     collegium_id?: string | null;
 };

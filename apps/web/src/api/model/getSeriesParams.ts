@@ -6,12 +6,8 @@
  */
 
 export type GetSeriesParams = {
-    /**
-     * @nullable
-     */
+    /** @nullable */
     page?: number | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     per_page?: number | null;
 };

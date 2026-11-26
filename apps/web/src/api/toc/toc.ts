@@ -117,6 +117,7 @@ export const getGetTocQueryOptions = <
 export type GetTocQueryResult = NonNullable<Awaited<ReturnType<typeof getToc>>>;
 export type GetTocQueryError = void;
 
+/** @summary Get the full TOC tree for a book */
 export function useGetToc<
     TData = Awaited<ReturnType<typeof getToc>>,
     TError = void,
@@ -140,6 +141,7 @@ export function useGetToc<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get the full TOC tree for a book */
 export function useGetToc<
     TData = Awaited<ReturnType<typeof getToc>>,
     TError = void,
@@ -163,6 +165,7 @@ export function useGetToc<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get the full TOC tree for a book */
 export function useGetToc<
     TData = Awaited<ReturnType<typeof getToc>>,
     TError = void,
@@ -178,10 +181,7 @@ export function useGetToc<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get the full TOC tree for a book
- */
-
+/** @summary Get the full TOC tree for a book */
 export function useGetToc<
     TData = Awaited<ReturnType<typeof getToc>>,
     TError = void,
@@ -251,6 +251,7 @@ export type GetTocSuspenseQueryResult = NonNullable<
 >;
 export type GetTocSuspenseQueryError = void;
 
+/** @summary Get the full TOC tree for a book */
 export function useGetTocSuspense<
     TData = Awaited<ReturnType<typeof getToc>>,
     TError = void,
@@ -270,6 +271,7 @@ export function useGetTocSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get the full TOC tree for a book */
 export function useGetTocSuspense<
     TData = Awaited<ReturnType<typeof getToc>>,
     TError = void,
@@ -289,6 +291,7 @@ export function useGetTocSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get the full TOC tree for a book */
 export function useGetTocSuspense<
     TData = Awaited<ReturnType<typeof getToc>>,
     TError = void,
@@ -308,10 +311,7 @@ export function useGetTocSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get the full TOC tree for a book
- */
-
+/** @summary Get the full TOC tree for a book */
 export function useGetTocSuspense<
     TData = Awaited<ReturnType<typeof getToc>>,
     TError = void,

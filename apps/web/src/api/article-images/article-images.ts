@@ -125,6 +125,9 @@ export type UploadArticleImageMutationError = void;
 export type UploadArticleImageMutationVariables = { data: UploadImageForm };
 
 /**
+ * Accepts JPEG, PNG, or WebP up to 5 MB. The image is re-encoded
+ * server-side (downscaled to at most 2000px on the longest side, lossy
+ * WebP, metadata stripped) and stored under a content-addressed key.
  * @summary Upload an image for embedding in an article figure
  */
 export const useUploadArticleImage = <TError = void, TContext = unknown>(

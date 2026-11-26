@@ -104,6 +104,7 @@ export type ListTopicsQueryResult = NonNullable<
 >;
 export type ListTopicsQueryError = unknown;
 
+/** @summary List all topics */
 export function useListTopics<
     TData = Awaited<ReturnType<typeof listTopics>>,
     TError = unknown,
@@ -130,6 +131,7 @@ export function useListTopics<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all topics */
 export function useListTopics<
     TData = Awaited<ReturnType<typeof listTopics>>,
     TError = unknown,
@@ -156,6 +158,7 @@ export function useListTopics<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all topics */
 export function useListTopics<
     TData = Awaited<ReturnType<typeof listTopics>>,
     TError = unknown,
@@ -174,10 +177,7 @@ export function useListTopics<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List all topics
- */
-
+/** @summary List all topics */
 export function useListTopics<
     TData = Awaited<ReturnType<typeof listTopics>>,
     TError = unknown,
@@ -247,6 +247,7 @@ export type ListTopicsSuspenseQueryResult = NonNullable<
 >;
 export type ListTopicsSuspenseQueryError = unknown;
 
+/** @summary List all topics */
 export function useListTopicsSuspense<
     TData = Awaited<ReturnType<typeof listTopics>>,
     TError = unknown,
@@ -265,6 +266,7 @@ export function useListTopicsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all topics */
 export function useListTopicsSuspense<
     TData = Awaited<ReturnType<typeof listTopics>>,
     TError = unknown,
@@ -283,6 +285,7 @@ export function useListTopicsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all topics */
 export function useListTopicsSuspense<
     TData = Awaited<ReturnType<typeof listTopics>>,
     TError = unknown,
@@ -301,10 +304,7 @@ export function useListTopicsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List all topics
- */
-
+/** @summary List all topics */
 export function useListTopicsSuspense<
     TData = Awaited<ReturnType<typeof listTopics>>,
     TError = unknown,

@@ -53,6 +53,52 @@ import type {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+const getHeaders = (
+    ...sources: (
+        | RequestInit["headers"]
+        | Record<
+              string,
+              string | number | boolean | bigint | readonly string[] | undefined
+          >
+    )[]
+) => {
+    const seen = new Set<string>();
+    const layers: [string, string | readonly string[]][][] = [];
+    for (const source of sources.reverse()) {
+        if (!source) continue;
+        const entries =
+            source instanceof Headers
+                ? source.entries()
+                : Symbol.iterator in source
+                  ? Array.from(
+                        source as Iterable<Iterable<string>>,
+                        (entry) => Array.from(entry) as [string, string],
+                    )
+                  : Object.entries<
+                        | string
+                        | number
+                        | boolean
+                        | bigint
+                        | readonly string[]
+                        | undefined
+                    >(source);
+        const layer: [string, string | readonly string[]][] = [];
+        for (const [name, value] of entries) {
+            if (value !== undefined && !seen.has(name.toLowerCase()))
+                layer.push([
+                    name,
+                    typeof value === "object" ? value : String(value),
+                ]);
+        }
+        for (const [name] of layer) seen.add(name.toLowerCase());
+        layers.push(layer);
+    }
+    return Object.fromEntries(layers.reverse().flat()) as Extract<
+        RequestInit["headers"],
+        Record<string, unknown>
+    >;
+};
+
 const withQueryKey = <T extends object, K>(
     query: T,
     queryKey: K,
@@ -181,6 +227,7 @@ export type ListArticleReviewQueueQueryResult = NonNullable<
 >;
 export type ListArticleReviewQueueQueryError = void;
 
+/** @summary Editor queue of review requests. */
 export function useListArticleReviewQueue<
     TData = Awaited<ReturnType<typeof listArticleReviewQueue>>,
     TError = void,
@@ -208,6 +255,7 @@ export function useListArticleReviewQueue<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Editor queue of review requests. */
 export function useListArticleReviewQueue<
     TData = Awaited<ReturnType<typeof listArticleReviewQueue>>,
     TError = void,
@@ -235,6 +283,7 @@ export function useListArticleReviewQueue<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Editor queue of review requests. */
 export function useListArticleReviewQueue<
     TData = Awaited<ReturnType<typeof listArticleReviewQueue>>,
     TError = void,
@@ -254,10 +303,7 @@ export function useListArticleReviewQueue<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Editor queue of review requests.
- */
-
+/** @summary Editor queue of review requests. */
 export function useListArticleReviewQueue<
     TData = Awaited<ReturnType<typeof listArticleReviewQueue>>,
     TError = void,
@@ -333,6 +379,7 @@ export type ListArticleReviewQueueSuspenseQueryResult = NonNullable<
 >;
 export type ListArticleReviewQueueSuspenseQueryError = void;
 
+/** @summary Editor queue of review requests. */
 export function useListArticleReviewQueueSuspense<
     TData = Awaited<ReturnType<typeof listArticleReviewQueue>>,
     TError = void,
@@ -352,6 +399,7 @@ export function useListArticleReviewQueueSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Editor queue of review requests. */
 export function useListArticleReviewQueueSuspense<
     TData = Awaited<ReturnType<typeof listArticleReviewQueue>>,
     TError = void,
@@ -371,6 +419,7 @@ export function useListArticleReviewQueueSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Editor queue of review requests. */
 export function useListArticleReviewQueueSuspense<
     TData = Awaited<ReturnType<typeof listArticleReviewQueue>>,
     TError = void,
@@ -390,10 +439,7 @@ export function useListArticleReviewQueueSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Editor queue of review requests.
- */
-
+/** @summary Editor queue of review requests. */
 export function useListArticleReviewQueueSuspense<
     TData = Awaited<ReturnType<typeof listArticleReviewQueue>>,
     TError = void,
@@ -486,36 +532,15 @@ export const decideArticleReview = async (
     reviewDecisionRequest: ReviewDecisionRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<decideArticleReviewResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<decideArticleReviewResponseSuccess>(
         getDecideArticleReviewUrl(id),
         {
             ...options,
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(reviewDecisionRequest),
         },
     );
@@ -656,36 +681,15 @@ export const assignArticleReview = async (
     assignReviewRequest: AssignReviewRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<assignArticleReviewResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<assignArticleReviewResponseSuccess>(
         getAssignArticleReviewUrl(id),
         {
             ...options,
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(assignReviewRequest),
         },
     );
@@ -851,6 +855,7 @@ export type ListArticleReviewersQueryResult = NonNullable<
 >;
 export type ListArticleReviewersQueryError = void;
 
+/** @summary Users holding a reviewer role, for the assignment dropdown. */
 export function useListArticleReviewers<
     TData = Awaited<ReturnType<typeof listArticleReviewers>>,
     TError = void,
@@ -877,6 +882,7 @@ export function useListArticleReviewers<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Users holding a reviewer role, for the assignment dropdown. */
 export function useListArticleReviewers<
     TData = Awaited<ReturnType<typeof listArticleReviewers>>,
     TError = void,
@@ -903,6 +909,7 @@ export function useListArticleReviewers<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Users holding a reviewer role, for the assignment dropdown. */
 export function useListArticleReviewers<
     TData = Awaited<ReturnType<typeof listArticleReviewers>>,
     TError = void,
@@ -921,10 +928,7 @@ export function useListArticleReviewers<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Users holding a reviewer role, for the assignment dropdown.
- */
-
+/** @summary Users holding a reviewer role, for the assignment dropdown. */
 export function useListArticleReviewers<
     TData = Awaited<ReturnType<typeof listArticleReviewers>>,
     TError = void,
@@ -995,6 +999,7 @@ export type ListArticleReviewersSuspenseQueryResult = NonNullable<
 >;
 export type ListArticleReviewersSuspenseQueryError = void;
 
+/** @summary Users holding a reviewer role, for the assignment dropdown. */
 export function useListArticleReviewersSuspense<
     TData = Awaited<ReturnType<typeof listArticleReviewers>>,
     TError = void,
@@ -1013,6 +1018,7 @@ export function useListArticleReviewersSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Users holding a reviewer role, for the assignment dropdown. */
 export function useListArticleReviewersSuspense<
     TData = Awaited<ReturnType<typeof listArticleReviewers>>,
     TError = void,
@@ -1031,6 +1037,7 @@ export function useListArticleReviewersSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Users holding a reviewer role, for the assignment dropdown. */
 export function useListArticleReviewersSuspense<
     TData = Awaited<ReturnType<typeof listArticleReviewers>>,
     TError = void,
@@ -1049,10 +1056,7 @@ export function useListArticleReviewersSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Users holding a reviewer role, for the assignment dropdown.
- */
-
+/** @summary Users holding a reviewer role, for the assignment dropdown. */
 export function useListArticleReviewersSuspense<
     TData = Awaited<ReturnType<typeof listArticleReviewers>>,
     TError = void,
@@ -1177,6 +1181,10 @@ export type ListCollegiumReviewQueueQueryResult = NonNullable<
 >;
 export type ListCollegiumReviewQueueQueryError = void;
 
+/**
+ * @summary A collegium's workshop queue: pending review requests submitted to it.
+Group members only (404 otherwise, so private collegia don't leak).
+ */
 export function useListCollegiumReviewQueue<
     TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
     TError = void,
@@ -1204,6 +1212,10 @@ export function useListCollegiumReviewQueue<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary A collegium's workshop queue: pending review requests submitted to it.
+Group members only (404 otherwise, so private collegia don't leak).
+ */
 export function useListCollegiumReviewQueue<
     TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
     TError = void,
@@ -1231,6 +1243,10 @@ export function useListCollegiumReviewQueue<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary A collegium's workshop queue: pending review requests submitted to it.
+Group members only (404 otherwise, so private collegia don't leak).
+ */
 export function useListCollegiumReviewQueue<
     TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
     TError = void,
@@ -1254,7 +1270,6 @@ export function useListCollegiumReviewQueue<
  * @summary A collegium's workshop queue: pending review requests submitted to it.
 Group members only (404 otherwise, so private collegia don't leak).
  */
-
 export function useListCollegiumReviewQueue<
     TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
     TError = void,
@@ -1330,6 +1345,10 @@ export type ListCollegiumReviewQueueSuspenseQueryResult = NonNullable<
 >;
 export type ListCollegiumReviewQueueSuspenseQueryError = void;
 
+/**
+ * @summary A collegium's workshop queue: pending review requests submitted to it.
+Group members only (404 otherwise, so private collegia don't leak).
+ */
 export function useListCollegiumReviewQueueSuspense<
     TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
     TError = void,
@@ -1349,25 +1368,10 @@ export function useListCollegiumReviewQueueSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useListCollegiumReviewQueueSuspense<
-    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
-    TError = void,
->(
-    slug: string,
-    options?: {
-        query?: Partial<
-            UseSuspenseQueryOptions<
-                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
-                TError,
-                TData
-            >
-        >;
-        request?: SecondParameter<typeof customFetch>;
-    },
-    queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-};
+/**
+ * @summary A collegium's workshop queue: pending review requests submitted to it.
+Group members only (404 otherwise, so private collegia don't leak).
+ */
 export function useListCollegiumReviewQueueSuspense<
     TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
     TError = void,
@@ -1391,7 +1395,29 @@ export function useListCollegiumReviewQueueSuspense<
  * @summary A collegium's workshop queue: pending review requests submitted to it.
 Group members only (404 otherwise, so private collegia don't leak).
  */
-
+export function useListCollegiumReviewQueueSuspense<
+    TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+    TError = void,
+>(
+    slug: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary A collegium's workshop queue: pending review requests submitted to it.
+Group members only (404 otherwise, so private collegia don't leak).
+ */
 export function useListCollegiumReviewQueueSuspense<
     TData = Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
     TError = void,
@@ -1547,6 +1573,11 @@ export type GetReviewActivityQueryResult = NonNullable<
 >;
 export type GetReviewActivityQueryError = void;
 
+/**
+ * @summary Change-detection stamp for the review page's polling loop. The
+client compares the whole payload and invalidates its request,
+comment, and message queries when it changes.
+ */
 export function useGetReviewActivity<
     TData = Awaited<ReturnType<typeof getReviewActivity>>,
     TError = void,
@@ -1575,6 +1606,11 @@ export function useGetReviewActivity<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary Change-detection stamp for the review page's polling loop. The
+client compares the whole payload and invalidates its request,
+comment, and message queries when it changes.
+ */
 export function useGetReviewActivity<
     TData = Awaited<ReturnType<typeof getReviewActivity>>,
     TError = void,
@@ -1603,6 +1639,11 @@ export function useGetReviewActivity<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary Change-detection stamp for the review page's polling loop. The
+client compares the whole payload and invalidates its request,
+comment, and message queries when it changes.
+ */
 export function useGetReviewActivity<
     TData = Awaited<ReturnType<typeof getReviewActivity>>,
     TError = void,
@@ -1628,7 +1669,6 @@ export function useGetReviewActivity<
 client compares the whole payload and invalidates its request,
 comment, and message queries when it changes.
  */
-
 export function useGetReviewActivity<
     TData = Awaited<ReturnType<typeof getReviewActivity>>,
     TError = void,
@@ -1711,6 +1751,11 @@ export type GetReviewActivitySuspenseQueryResult = NonNullable<
 >;
 export type GetReviewActivitySuspenseQueryError = void;
 
+/**
+ * @summary Change-detection stamp for the review page's polling loop. The
+client compares the whole payload and invalidates its request,
+comment, and message queries when it changes.
+ */
 export function useGetReviewActivitySuspense<
     TData = Awaited<ReturnType<typeof getReviewActivity>>,
     TError = void,
@@ -1731,26 +1776,11 @@ export function useGetReviewActivitySuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetReviewActivitySuspense<
-    TData = Awaited<ReturnType<typeof getReviewActivity>>,
-    TError = void,
->(
-    articleId: string,
-    params?: GetReviewActivityParams,
-    options?: {
-        query?: Partial<
-            UseSuspenseQueryOptions<
-                Awaited<ReturnType<typeof getReviewActivity>>,
-                TError,
-                TData
-            >
-        >;
-        request?: SecondParameter<typeof customFetch>;
-    },
-    queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-};
+/**
+ * @summary Change-detection stamp for the review page's polling loop. The
+client compares the whole payload and invalidates its request,
+comment, and message queries when it changes.
+ */
 export function useGetReviewActivitySuspense<
     TData = Awaited<ReturnType<typeof getReviewActivity>>,
     TError = void,
@@ -1776,7 +1806,31 @@ export function useGetReviewActivitySuspense<
 client compares the whole payload and invalidates its request,
 comment, and message queries when it changes.
  */
-
+export function useGetReviewActivitySuspense<
+    TData = Awaited<ReturnType<typeof getReviewActivity>>,
+    TError = void,
+>(
+    articleId: string,
+    params?: GetReviewActivityParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getReviewActivity>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Change-detection stamp for the review page's polling loop. The
+client compares the whole payload and invalidates its request,
+comment, and message queries when it changes.
+ */
 export function useGetReviewActivitySuspense<
     TData = Awaited<ReturnType<typeof getReviewActivity>>,
     TError = void,
@@ -1933,6 +1987,7 @@ export type ListReviewMessagesQueryResult = NonNullable<
 >;
 export type ListReviewMessagesQueryError = void;
 
+/** @summary The article's review channel, shared across review rounds. */
 export function useListReviewMessages<
     TData = Awaited<ReturnType<typeof listReviewMessages>>,
     TError = void,
@@ -1961,6 +2016,7 @@ export function useListReviewMessages<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary The article's review channel, shared across review rounds. */
 export function useListReviewMessages<
     TData = Awaited<ReturnType<typeof listReviewMessages>>,
     TError = void,
@@ -1989,6 +2045,7 @@ export function useListReviewMessages<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary The article's review channel, shared across review rounds. */
 export function useListReviewMessages<
     TData = Awaited<ReturnType<typeof listReviewMessages>>,
     TError = void,
@@ -2009,10 +2066,7 @@ export function useListReviewMessages<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary The article's review channel, shared across review rounds.
- */
-
+/** @summary The article's review channel, shared across review rounds. */
 export function useListReviewMessages<
     TData = Awaited<ReturnType<typeof listReviewMessages>>,
     TError = void,
@@ -2095,6 +2149,7 @@ export type ListReviewMessagesSuspenseQueryResult = NonNullable<
 >;
 export type ListReviewMessagesSuspenseQueryError = void;
 
+/** @summary The article's review channel, shared across review rounds. */
 export function useListReviewMessagesSuspense<
     TData = Awaited<ReturnType<typeof listReviewMessages>>,
     TError = void,
@@ -2115,6 +2170,7 @@ export function useListReviewMessagesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary The article's review channel, shared across review rounds. */
 export function useListReviewMessagesSuspense<
     TData = Awaited<ReturnType<typeof listReviewMessages>>,
     TError = void,
@@ -2135,6 +2191,7 @@ export function useListReviewMessagesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary The article's review channel, shared across review rounds. */
 export function useListReviewMessagesSuspense<
     TData = Awaited<ReturnType<typeof listReviewMessages>>,
     TError = void,
@@ -2155,10 +2212,7 @@ export function useListReviewMessagesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary The article's review channel, shared across review rounds.
- */
-
+/** @summary The article's review channel, shared across review rounds. */
 export function useListReviewMessagesSuspense<
     TData = Awaited<ReturnType<typeof listReviewMessages>>,
     TError = void,
@@ -2259,36 +2313,15 @@ export const createReviewMessage = async (
     params?: CreateReviewMessageParams,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createReviewMessageResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createReviewMessageResponseSuccess>(
         getCreateReviewMessageUrl(articleId, params),
         {
             ...options,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(createReviewMessageRequest),
         },
     );
@@ -2416,36 +2449,15 @@ export const updateReviewComment = async (
     updateReviewCommentRequest: UpdateReviewCommentRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateReviewCommentResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<updateReviewCommentResponseSuccess>(
         getUpdateReviewCommentUrl(id),
         {
             ...options,
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(updateReviewCommentRequest),
         },
     );
@@ -2502,9 +2514,7 @@ export type UpdateReviewCommentMutationVariables = {
     data: UpdateReviewCommentRequest;
 };
 
-/**
- * @summary Resolve or reopen a comment thread (reviewers only).
- */
+/** @summary Resolve or reopen a comment thread (reviewers only). */
 export const useUpdateReviewComment = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2570,36 +2580,15 @@ export const createReviewReply = async (
     createReviewReplyRequest: CreateReviewReplyRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createReviewReplyResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createReviewReplyResponseSuccess>(
         getCreateReviewReplyUrl(id),
         {
             ...options,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(createReviewReplyRequest),
         },
     );
@@ -2656,9 +2645,7 @@ export type CreateReviewReplyMutationVariables = {
     data: CreateReviewReplyRequest;
 };
 
-/**
- * @summary Reply within a comment thread (author or reviewer).
- */
+/** @summary Reply within a comment thread (author or reviewer). */
 export const useCreateReviewReply = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -2772,6 +2759,10 @@ export type GetReviewRequestQueryResult = NonNullable<
 >;
 export type GetReviewRequestQueryError = void;
 
+/**
+ * @summary Review page payload: the request, its frozen snapshot, article
+metadata, and sibling rounds. Author or reviewer only (404 otherwise).
+ */
 export function useGetReviewRequest<
     TData = Awaited<ReturnType<typeof getReviewRequest>>,
     TError = void,
@@ -2799,6 +2790,10 @@ export function useGetReviewRequest<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary Review page payload: the request, its frozen snapshot, article
+metadata, and sibling rounds. Author or reviewer only (404 otherwise).
+ */
 export function useGetReviewRequest<
     TData = Awaited<ReturnType<typeof getReviewRequest>>,
     TError = void,
@@ -2826,6 +2821,10 @@ export function useGetReviewRequest<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary Review page payload: the request, its frozen snapshot, article
+metadata, and sibling rounds. Author or reviewer only (404 otherwise).
+ */
 export function useGetReviewRequest<
     TData = Awaited<ReturnType<typeof getReviewRequest>>,
     TError = void,
@@ -2849,7 +2848,6 @@ export function useGetReviewRequest<
  * @summary Review page payload: the request, its frozen snapshot, article
 metadata, and sibling rounds. Author or reviewer only (404 otherwise).
  */
-
 export function useGetReviewRequest<
     TData = Awaited<ReturnType<typeof getReviewRequest>>,
     TError = void,
@@ -2923,6 +2921,10 @@ export type GetReviewRequestSuspenseQueryResult = NonNullable<
 >;
 export type GetReviewRequestSuspenseQueryError = void;
 
+/**
+ * @summary Review page payload: the request, its frozen snapshot, article
+metadata, and sibling rounds. Author or reviewer only (404 otherwise).
+ */
 export function useGetReviewRequestSuspense<
     TData = Awaited<ReturnType<typeof getReviewRequest>>,
     TError = void,
@@ -2942,25 +2944,10 @@ export function useGetReviewRequestSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetReviewRequestSuspense<
-    TData = Awaited<ReturnType<typeof getReviewRequest>>,
-    TError = void,
->(
-    id: string,
-    options?: {
-        query?: Partial<
-            UseSuspenseQueryOptions<
-                Awaited<ReturnType<typeof getReviewRequest>>,
-                TError,
-                TData
-            >
-        >;
-        request?: SecondParameter<typeof customFetch>;
-    },
-    queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-};
+/**
+ * @summary Review page payload: the request, its frozen snapshot, article
+metadata, and sibling rounds. Author or reviewer only (404 otherwise).
+ */
 export function useGetReviewRequestSuspense<
     TData = Awaited<ReturnType<typeof getReviewRequest>>,
     TError = void,
@@ -2984,7 +2971,29 @@ export function useGetReviewRequestSuspense<
  * @summary Review page payload: the request, its frozen snapshot, article
 metadata, and sibling rounds. Author or reviewer only (404 otherwise).
  */
-
+export function useGetReviewRequestSuspense<
+    TData = Awaited<ReturnType<typeof getReviewRequest>>,
+    TError = void,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getReviewRequest>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Review page payload: the request, its frozen snapshot, article
+metadata, and sibling rounds. Author or reviewer only (404 otherwise).
+ */
 export function useGetReviewRequestSuspense<
     TData = Awaited<ReturnType<typeof getReviewRequest>>,
     TError = void,
@@ -3108,6 +3117,7 @@ export type ListReviewCommentsQueryResult = NonNullable<
 >;
 export type ListReviewCommentsQueryError = void;
 
+/** @summary List the comment threads on a request's snapshot. */
 export function useListReviewComments<
     TData = Awaited<ReturnType<typeof listReviewComments>>,
     TError = void,
@@ -3135,6 +3145,7 @@ export function useListReviewComments<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List the comment threads on a request's snapshot. */
 export function useListReviewComments<
     TData = Awaited<ReturnType<typeof listReviewComments>>,
     TError = void,
@@ -3162,6 +3173,7 @@ export function useListReviewComments<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List the comment threads on a request's snapshot. */
 export function useListReviewComments<
     TData = Awaited<ReturnType<typeof listReviewComments>>,
     TError = void,
@@ -3181,10 +3193,7 @@ export function useListReviewComments<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List the comment threads on a request's snapshot.
- */
-
+/** @summary List the comment threads on a request's snapshot. */
 export function useListReviewComments<
     TData = Awaited<ReturnType<typeof listReviewComments>>,
     TError = void,
@@ -3259,6 +3268,7 @@ export type ListReviewCommentsSuspenseQueryResult = NonNullable<
 >;
 export type ListReviewCommentsSuspenseQueryError = void;
 
+/** @summary List the comment threads on a request's snapshot. */
 export function useListReviewCommentsSuspense<
     TData = Awaited<ReturnType<typeof listReviewComments>>,
     TError = void,
@@ -3278,6 +3288,7 @@ export function useListReviewCommentsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List the comment threads on a request's snapshot. */
 export function useListReviewCommentsSuspense<
     TData = Awaited<ReturnType<typeof listReviewComments>>,
     TError = void,
@@ -3297,6 +3308,7 @@ export function useListReviewCommentsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List the comment threads on a request's snapshot. */
 export function useListReviewCommentsSuspense<
     TData = Awaited<ReturnType<typeof listReviewComments>>,
     TError = void,
@@ -3316,10 +3328,7 @@ export function useListReviewCommentsSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List the comment threads on a request's snapshot.
- */
-
+/** @summary List the comment threads on a request's snapshot. */
 export function useListReviewCommentsSuspense<
     TData = Awaited<ReturnType<typeof listReviewComments>>,
     TError = void,
@@ -3395,36 +3404,15 @@ export const createReviewComment = async (
     createReviewCommentRequest: CreateReviewCommentRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createReviewCommentResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createReviewCommentResponseSuccess>(
         getCreateReviewCommentUrl(id),
         {
             ...options,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(createReviewCommentRequest),
         },
     );
@@ -3481,9 +3469,7 @@ export type CreateReviewCommentMutationVariables = {
     data: CreateReviewCommentRequest;
 };
 
-/**
- * @summary Create an anchored comment on a request's snapshot (reviewers only).
- */
+/** @summary Create an anchored comment on a request's snapshot (reviewers only). */
 export const useCreateReviewComment = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -3556,36 +3542,15 @@ export const createReviewRequest = async (
     createReviewRequestRequest: CreateReviewRequestRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createReviewRequestResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createReviewRequestResponseSuccess>(
         getCreateReviewRequestUrl(slug),
         {
             ...options,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(createReviewRequestRequest),
         },
     );
@@ -3642,9 +3607,7 @@ export type CreateReviewRequestMutationVariables = {
     data: CreateReviewRequestRequest;
 };
 
-/**
- * @summary Submit an article for review (feedback or publication hand-off).
- */
+/** @summary Submit an article for review (feedback or publication hand-off). */
 export const useCreateReviewRequest = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<

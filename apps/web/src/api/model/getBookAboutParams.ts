@@ -6,8 +6,6 @@
  */
 
 export type GetBookAboutParams = {
-    /**
-     * Active toc node slug for contextual resolution
-     */
+    /** Active toc node slug for contextual resolution */
     node?: string;
 };

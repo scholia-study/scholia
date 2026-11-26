@@ -132,6 +132,7 @@ export type ListSeriesQueryResult = NonNullable<
 >;
 export type ListSeriesQueryError = unknown;
 
+/** @summary List series, pinned first, then by editor-set sort order */
 export function useListSeries<
     TData = Awaited<ReturnType<typeof listSeries>>,
     TError = unknown,
@@ -159,6 +160,7 @@ export function useListSeries<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List series, pinned first, then by editor-set sort order */
 export function useListSeries<
     TData = Awaited<ReturnType<typeof listSeries>>,
     TError = unknown,
@@ -186,6 +188,7 @@ export function useListSeries<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List series, pinned first, then by editor-set sort order */
 export function useListSeries<
     TData = Awaited<ReturnType<typeof listSeries>>,
     TError = unknown,
@@ -205,10 +208,7 @@ export function useListSeries<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List series, pinned first, then by editor-set sort order
- */
-
+/** @summary List series, pinned first, then by editor-set sort order */
 export function useListSeries<
     TData = Awaited<ReturnType<typeof listSeries>>,
     TError = unknown,
@@ -282,6 +282,7 @@ export type ListSeriesSuspenseQueryResult = NonNullable<
 >;
 export type ListSeriesSuspenseQueryError = unknown;
 
+/** @summary List series, pinned first, then by editor-set sort order */
 export function useListSeriesSuspense<
     TData = Awaited<ReturnType<typeof listSeries>>,
     TError = unknown,
@@ -301,6 +302,7 @@ export function useListSeriesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List series, pinned first, then by editor-set sort order */
 export function useListSeriesSuspense<
     TData = Awaited<ReturnType<typeof listSeries>>,
     TError = unknown,
@@ -320,6 +322,7 @@ export function useListSeriesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List series, pinned first, then by editor-set sort order */
 export function useListSeriesSuspense<
     TData = Awaited<ReturnType<typeof listSeries>>,
     TError = unknown,
@@ -339,10 +342,7 @@ export function useListSeriesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List series, pinned first, then by editor-set sort order
- */
-
+/** @summary List series, pinned first, then by editor-set sort order */
 export function useListSeriesSuspense<
     TData = Awaited<ReturnType<typeof listSeries>>,
     TError = unknown,
@@ -477,6 +477,7 @@ export type GetSeriesQueryResult = NonNullable<
 >;
 export type GetSeriesQueryError = void;
 
+/** @summary Get a series with one page of its published articles */
 export function useGetSeries<
     TData = Awaited<ReturnType<typeof getSeries>>,
     TError = void,
@@ -505,6 +506,7 @@ export function useGetSeries<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a series with one page of its published articles */
 export function useGetSeries<
     TData = Awaited<ReturnType<typeof getSeries>>,
     TError = void,
@@ -533,6 +535,7 @@ export function useGetSeries<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a series with one page of its published articles */
 export function useGetSeries<
     TData = Awaited<ReturnType<typeof getSeries>>,
     TError = void,
@@ -553,10 +556,7 @@ export function useGetSeries<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a series with one page of its published articles
- */
-
+/** @summary Get a series with one page of its published articles */
 export function useGetSeries<
     TData = Awaited<ReturnType<typeof getSeries>>,
     TError = void,
@@ -633,6 +633,7 @@ export type GetSeriesSuspenseQueryResult = NonNullable<
 >;
 export type GetSeriesSuspenseQueryError = void;
 
+/** @summary Get a series with one page of its published articles */
 export function useGetSeriesSuspense<
     TData = Awaited<ReturnType<typeof getSeries>>,
     TError = void,
@@ -653,6 +654,7 @@ export function useGetSeriesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a series with one page of its published articles */
 export function useGetSeriesSuspense<
     TData = Awaited<ReturnType<typeof getSeries>>,
     TError = void,
@@ -673,6 +675,7 @@ export function useGetSeriesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a series with one page of its published articles */
 export function useGetSeriesSuspense<
     TData = Awaited<ReturnType<typeof getSeries>>,
     TError = void,
@@ -693,10 +696,7 @@ export function useGetSeriesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a series with one page of its published articles
- */
-
+/** @summary Get a series with one page of its published articles */
 export function useGetSeriesSuspense<
     TData = Awaited<ReturnType<typeof getSeries>>,
     TError = void,

@@ -42,6 +42,52 @@ import type {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+const getHeaders = (
+    ...sources: (
+        | RequestInit["headers"]
+        | Record<
+              string,
+              string | number | boolean | bigint | readonly string[] | undefined
+          >
+    )[]
+) => {
+    const seen = new Set<string>();
+    const layers: [string, string | readonly string[]][][] = [];
+    for (const source of sources.reverse()) {
+        if (!source) continue;
+        const entries =
+            source instanceof Headers
+                ? source.entries()
+                : Symbol.iterator in source
+                  ? Array.from(
+                        source as Iterable<Iterable<string>>,
+                        (entry) => Array.from(entry) as [string, string],
+                    )
+                  : Object.entries<
+                        | string
+                        | number
+                        | boolean
+                        | bigint
+                        | readonly string[]
+                        | undefined
+                    >(source);
+        const layer: [string, string | readonly string[]][] = [];
+        for (const [name, value] of entries) {
+            if (value !== undefined && !seen.has(name.toLowerCase()))
+                layer.push([
+                    name,
+                    typeof value === "object" ? value : String(value),
+                ]);
+        }
+        for (const [name] of layer) seen.add(name.toLowerCase());
+        layers.push(layer);
+    }
+    return Object.fromEntries(layers.reverse().flat()) as Extract<
+        RequestInit["headers"],
+        Record<string, unknown>
+    >;
+};
+
 const withQueryKey = <T extends object, K>(
     query: T,
     queryKey: K,
@@ -160,6 +206,7 @@ export type SearchSourcesQueryResult = NonNullable<
 >;
 export type SearchSourcesQueryError = void;
 
+/** @summary Search sources by title */
 export function useSearchSources<
     TData = Awaited<ReturnType<typeof searchSources>>,
     TError = void,
@@ -187,6 +234,7 @@ export function useSearchSources<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Search sources by title */
 export function useSearchSources<
     TData = Awaited<ReturnType<typeof searchSources>>,
     TError = void,
@@ -214,6 +262,7 @@ export function useSearchSources<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Search sources by title */
 export function useSearchSources<
     TData = Awaited<ReturnType<typeof searchSources>>,
     TError = void,
@@ -233,10 +282,7 @@ export function useSearchSources<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Search sources by title
- */
-
+/** @summary Search sources by title */
 export function useSearchSources<
     TData = Awaited<ReturnType<typeof searchSources>>,
     TError = void,
@@ -310,6 +356,7 @@ export type SearchSourcesSuspenseQueryResult = NonNullable<
 >;
 export type SearchSourcesSuspenseQueryError = void;
 
+/** @summary Search sources by title */
 export function useSearchSourcesSuspense<
     TData = Awaited<ReturnType<typeof searchSources>>,
     TError = void,
@@ -329,6 +376,7 @@ export function useSearchSourcesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Search sources by title */
 export function useSearchSourcesSuspense<
     TData = Awaited<ReturnType<typeof searchSources>>,
     TError = void,
@@ -348,6 +396,7 @@ export function useSearchSourcesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Search sources by title */
 export function useSearchSourcesSuspense<
     TData = Awaited<ReturnType<typeof searchSources>>,
     TError = void,
@@ -367,10 +416,7 @@ export function useSearchSourcesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Search sources by title
- */
-
+/** @summary Search sources by title */
 export function useSearchSourcesSuspense<
     TData = Awaited<ReturnType<typeof searchSources>>,
     TError = void,
@@ -444,34 +490,13 @@ export const createSource = async (
     createSourceRequest: CreateSourceRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createSourceResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<createSourceResponseSuccess>(getCreateSourceUrl(), {
         ...options,
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(createSourceRequest),
     });
 };
@@ -523,9 +548,7 @@ export type CreateSourceMutationBody = CreateSourceRequest;
 export type CreateSourceMutationError = void;
 export type CreateSourceMutationVariables = { data: CreateSourceRequest };
 
-/**
- * @summary Create a new source
- */
+/** @summary Create a new source */
 export const useCreateSource = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -645,6 +668,7 @@ export type BrowseSourcesQueryResult = NonNullable<
 >;
 export type BrowseSourcesQueryError = void;
 
+/** @summary Browse sources (paginated, with filters) */
 export function useBrowseSources<
     TData = Awaited<ReturnType<typeof browseSources>>,
     TError = void,
@@ -672,6 +696,7 @@ export function useBrowseSources<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Browse sources (paginated, with filters) */
 export function useBrowseSources<
     TData = Awaited<ReturnType<typeof browseSources>>,
     TError = void,
@@ -699,6 +724,7 @@ export function useBrowseSources<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Browse sources (paginated, with filters) */
 export function useBrowseSources<
     TData = Awaited<ReturnType<typeof browseSources>>,
     TError = void,
@@ -718,10 +744,7 @@ export function useBrowseSources<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Browse sources (paginated, with filters)
- */
-
+/** @summary Browse sources (paginated, with filters) */
 export function useBrowseSources<
     TData = Awaited<ReturnType<typeof browseSources>>,
     TError = void,
@@ -795,6 +818,7 @@ export type BrowseSourcesSuspenseQueryResult = NonNullable<
 >;
 export type BrowseSourcesSuspenseQueryError = void;
 
+/** @summary Browse sources (paginated, with filters) */
 export function useBrowseSourcesSuspense<
     TData = Awaited<ReturnType<typeof browseSources>>,
     TError = void,
@@ -814,6 +838,7 @@ export function useBrowseSourcesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Browse sources (paginated, with filters) */
 export function useBrowseSourcesSuspense<
     TData = Awaited<ReturnType<typeof browseSources>>,
     TError = void,
@@ -833,6 +858,7 @@ export function useBrowseSourcesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Browse sources (paginated, with filters) */
 export function useBrowseSourcesSuspense<
     TData = Awaited<ReturnType<typeof browseSources>>,
     TError = void,
@@ -852,10 +878,7 @@ export function useBrowseSourcesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Browse sources (paginated, with filters)
- */
-
+/** @summary Browse sources (paginated, with filters) */
 export function useBrowseSourcesSuspense<
     TData = Awaited<ReturnType<typeof browseSources>>,
     TError = void,
@@ -986,6 +1009,7 @@ export type GetSourceQueryResult = NonNullable<
 >;
 export type GetSourceQueryError = void;
 
+/** @summary Get a source by ID */
 export function useGetSource<
     TData = Awaited<ReturnType<typeof getSource>>,
     TError = void,
@@ -1013,6 +1037,7 @@ export function useGetSource<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a source by ID */
 export function useGetSource<
     TData = Awaited<ReturnType<typeof getSource>>,
     TError = void,
@@ -1040,6 +1065,7 @@ export function useGetSource<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a source by ID */
 export function useGetSource<
     TData = Awaited<ReturnType<typeof getSource>>,
     TError = void,
@@ -1059,10 +1085,7 @@ export function useGetSource<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a source by ID
- */
-
+/** @summary Get a source by ID */
 export function useGetSource<
     TData = Awaited<ReturnType<typeof getSource>>,
     TError = void,
@@ -1136,6 +1159,7 @@ export type GetSourceSuspenseQueryResult = NonNullable<
 >;
 export type GetSourceSuspenseQueryError = void;
 
+/** @summary Get a source by ID */
 export function useGetSourceSuspense<
     TData = Awaited<ReturnType<typeof getSource>>,
     TError = void,
@@ -1155,6 +1179,7 @@ export function useGetSourceSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a source by ID */
 export function useGetSourceSuspense<
     TData = Awaited<ReturnType<typeof getSource>>,
     TError = void,
@@ -1174,6 +1199,7 @@ export function useGetSourceSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a source by ID */
 export function useGetSourceSuspense<
     TData = Awaited<ReturnType<typeof getSource>>,
     TError = void,
@@ -1193,10 +1219,7 @@ export function useGetSourceSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a source by ID
- */
-
+/** @summary Get a source by ID */
 export function useGetSourceSuspense<
     TData = Awaited<ReturnType<typeof getSource>>,
     TError = void,
@@ -1277,34 +1300,13 @@ export const updateSource = async (
     updateSourceRequest: UpdateSourceRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateSourceResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<updateSourceResponseSuccess>(getUpdateSourceUrl(id), {
         ...options,
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(options?.headers),
-        },
+        headers: getHeaders(
+            { "Content-Type": "application/json" },
+            options?.headers,
+        ),
         body: JSON.stringify(updateSourceRequest),
     });
 };
@@ -1359,9 +1361,7 @@ export type UpdateSourceMutationVariables = {
     data: UpdateSourceRequest;
 };
 
-/**
- * @summary Update an existing source
- */
+/** @summary Update an existing source */
 export const useUpdateSource = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1555,36 +1555,15 @@ export const addSourcePerson = async (
     linkSourcePersonRequest: LinkSourcePersonRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<addSourcePersonResponseSuccess> => {
-    const getHeaders = (
-        h?: NonNullable<RequestInit["headers"]>,
-    ): Record<string, string | readonly string[]> => {
-        if (!h) return {};
-        if (h instanceof Headers) return Object.fromEntries(h.entries());
-        if (Symbol.iterator in h) {
-            return Object.fromEntries(
-                Array.from(
-                    h as Iterable<Iterable<string>>,
-                    (entry) => Array.from(entry) as [string, string],
-                ),
-            );
-        }
-        const headers: Record<string, string | readonly string[]> = {};
-        for (const [name, value] of Object.entries<
-            string | readonly string[] | undefined
-        >(h)) {
-            if (value !== undefined) headers[name] = value;
-        }
-        return headers;
-    };
     return customFetch<addSourcePersonResponseSuccess>(
         getAddSourcePersonUrl(id),
         {
             ...options,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getHeaders(options?.headers),
-            },
+            headers: getHeaders(
+                { "Content-Type": "application/json" },
+                options?.headers,
+            ),
             body: JSON.stringify(linkSourcePersonRequest),
         },
     );
@@ -1640,9 +1619,7 @@ export type AddSourcePersonMutationVariables = {
     data: LinkSourcePersonRequest;
 };
 
-/**
- * @summary Link a person to a source with a role
- */
+/** @summary Link a person to a source with a role */
 export const useAddSourcePerson = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1778,9 +1755,7 @@ export type RemoveSourcePersonMutationVariables = {
     role: string;
 };
 
-/**
- * @summary Remove a person from a source
- */
+/** @summary Remove a person from a source */
 export const useRemoveSourcePerson = <TError = void, TContext = unknown>(
     options?: {
         mutation?: UseMutationOptions<
@@ -1902,6 +1877,7 @@ export type CheckSourceReferencesQueryResult = NonNullable<
 >;
 export type CheckSourceReferencesQueryError = void;
 
+/** @summary Check if a source can be deleted (has active references) */
 export function useCheckSourceReferences<
     TData = Awaited<ReturnType<typeof checkSourceReferences>>,
     TError = void,
@@ -1929,6 +1905,7 @@ export function useCheckSourceReferences<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Check if a source can be deleted (has active references) */
 export function useCheckSourceReferences<
     TData = Awaited<ReturnType<typeof checkSourceReferences>>,
     TError = void,
@@ -1956,6 +1933,7 @@ export function useCheckSourceReferences<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Check if a source can be deleted (has active references) */
 export function useCheckSourceReferences<
     TData = Awaited<ReturnType<typeof checkSourceReferences>>,
     TError = void,
@@ -1975,10 +1953,7 @@ export function useCheckSourceReferences<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Check if a source can be deleted (has active references)
- */
-
+/** @summary Check if a source can be deleted (has active references) */
 export function useCheckSourceReferences<
     TData = Awaited<ReturnType<typeof checkSourceReferences>>,
     TError = void,
@@ -2054,6 +2029,7 @@ export type CheckSourceReferencesSuspenseQueryResult = NonNullable<
 >;
 export type CheckSourceReferencesSuspenseQueryError = void;
 
+/** @summary Check if a source can be deleted (has active references) */
 export function useCheckSourceReferencesSuspense<
     TData = Awaited<ReturnType<typeof checkSourceReferences>>,
     TError = void,
@@ -2073,6 +2049,7 @@ export function useCheckSourceReferencesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Check if a source can be deleted (has active references) */
 export function useCheckSourceReferencesSuspense<
     TData = Awaited<ReturnType<typeof checkSourceReferences>>,
     TError = void,
@@ -2092,6 +2069,7 @@ export function useCheckSourceReferencesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Check if a source can be deleted (has active references) */
 export function useCheckSourceReferencesSuspense<
     TData = Awaited<ReturnType<typeof checkSourceReferences>>,
     TError = void,
@@ -2111,10 +2089,7 @@ export function useCheckSourceReferencesSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Check if a source can be deleted (has active references)
- */
-
+/** @summary Check if a source can be deleted (has active references) */
 export function useCheckSourceReferencesSuspense<
     TData = Awaited<ReturnType<typeof checkSourceReferences>>,
     TError = void,

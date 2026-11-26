@@ -6,8 +6,6 @@
  */
 
 export type ListAllNotesParams = {
-    /**
-     * @nullable
-     */
+    /** @nullable */
     book_slug?: string | null;
 };

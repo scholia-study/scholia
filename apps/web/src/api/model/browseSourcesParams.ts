@@ -7,25 +7,15 @@
 import type { SourceType } from "./sourceType.ts";
 
 export type BrowseSourcesParams = {
-    /**
-     * @nullable
-     */
+    /** @nullable */
     q?: string | null;
     source_type?: null | SourceType;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     created_by_me?: boolean | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     protected?: boolean | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     page?: number | null;
-    /**
-     * @nullable
-     */
+    /** @nullable */
     per_page?: number | null;
 };

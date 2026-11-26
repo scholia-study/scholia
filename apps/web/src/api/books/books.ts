@@ -110,6 +110,7 @@ export type ListBooksQueryResult = NonNullable<
 >;
 export type ListBooksQueryError = unknown;
 
+/** @summary List all books */
 export function useListBooks<
     TData = Awaited<ReturnType<typeof listBooks>>,
     TError = unknown,
@@ -136,6 +137,7 @@ export function useListBooks<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all books */
 export function useListBooks<
     TData = Awaited<ReturnType<typeof listBooks>>,
     TError = unknown,
@@ -162,6 +164,7 @@ export function useListBooks<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all books */
 export function useListBooks<
     TData = Awaited<ReturnType<typeof listBooks>>,
     TError = unknown,
@@ -180,10 +183,7 @@ export function useListBooks<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List all books
- */
-
+/** @summary List all books */
 export function useListBooks<
     TData = Awaited<ReturnType<typeof listBooks>>,
     TError = unknown,
@@ -253,6 +253,7 @@ export type ListBooksSuspenseQueryResult = NonNullable<
 >;
 export type ListBooksSuspenseQueryError = unknown;
 
+/** @summary List all books */
 export function useListBooksSuspense<
     TData = Awaited<ReturnType<typeof listBooks>>,
     TError = unknown,
@@ -271,6 +272,7 @@ export function useListBooksSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all books */
 export function useListBooksSuspense<
     TData = Awaited<ReturnType<typeof listBooks>>,
     TError = unknown,
@@ -289,6 +291,7 @@ export function useListBooksSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary List all books */
 export function useListBooksSuspense<
     TData = Awaited<ReturnType<typeof listBooks>>,
     TError = unknown,
@@ -307,10 +310,7 @@ export function useListBooksSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary List all books
- */
-
+/** @summary List all books */
 export function useListBooksSuspense<
     TData = Awaited<ReturnType<typeof listBooks>>,
     TError = unknown,
@@ -414,6 +414,7 @@ export type GetBookQueryResult = NonNullable<
 >;
 export type GetBookQueryError = void;
 
+/** @summary Get a book by slug */
 export function useGetBook<
     TData = Awaited<ReturnType<typeof getBook>>,
     TError = void,
@@ -437,6 +438,7 @@ export function useGetBook<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a book by slug */
 export function useGetBook<
     TData = Awaited<ReturnType<typeof getBook>>,
     TError = void,
@@ -460,6 +462,7 @@ export function useGetBook<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a book by slug */
 export function useGetBook<
     TData = Awaited<ReturnType<typeof getBook>>,
     TError = void,
@@ -475,10 +478,7 @@ export function useGetBook<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a book by slug
- */
-
+/** @summary Get a book by slug */
 export function useGetBook<
     TData = Awaited<ReturnType<typeof getBook>>,
     TError = void,
@@ -548,6 +548,7 @@ export type GetBookSuspenseQueryResult = NonNullable<
 >;
 export type GetBookSuspenseQueryError = void;
 
+/** @summary Get a book by slug */
 export function useGetBookSuspense<
     TData = Awaited<ReturnType<typeof getBook>>,
     TError = void,
@@ -567,6 +568,7 @@ export function useGetBookSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a book by slug */
 export function useGetBookSuspense<
     TData = Awaited<ReturnType<typeof getBook>>,
     TError = void,
@@ -586,6 +588,7 @@ export function useGetBookSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get a book by slug */
 export function useGetBookSuspense<
     TData = Awaited<ReturnType<typeof getBook>>,
     TError = void,
@@ -605,10 +608,7 @@ export function useGetBookSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get a book by slug
- */
-
+/** @summary Get a book by slug */
 export function useGetBookSuspense<
     TData = Awaited<ReturnType<typeof getBook>>,
     TError = void,
@@ -749,6 +749,12 @@ export type GetBookAboutQueryResult = NonNullable<
 >;
 export type GetBookAboutQueryError = void;
 
+/**
+ * @summary Bibliographic info for the "About this text" panel. With `?node=`,
+walks the toc-ancestor chain to surface the constituent work the
+reader is in (e.g. Genesis within KJV); otherwise returns the
+hosted book's source.
+ */
 export function useGetBookAbout<
     TData = Awaited<ReturnType<typeof getBookAbout>>,
     TError = void,
@@ -777,6 +783,12 @@ export function useGetBookAbout<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary Bibliographic info for the "About this text" panel. With `?node=`,
+walks the toc-ancestor chain to surface the constituent work the
+reader is in (e.g. Genesis within KJV); otherwise returns the
+hosted book's source.
+ */
 export function useGetBookAbout<
     TData = Awaited<ReturnType<typeof getBookAbout>>,
     TError = void,
@@ -805,6 +817,12 @@ export function useGetBookAbout<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/**
+ * @summary Bibliographic info for the "About this text" panel. With `?node=`,
+walks the toc-ancestor chain to surface the constituent work the
+reader is in (e.g. Genesis within KJV); otherwise returns the
+hosted book's source.
+ */
 export function useGetBookAbout<
     TData = Awaited<ReturnType<typeof getBookAbout>>,
     TError = void,
@@ -831,7 +849,6 @@ walks the toc-ancestor chain to surface the constituent work the
 reader is in (e.g. Genesis within KJV); otherwise returns the
 hosted book's source.
  */
-
 export function useGetBookAbout<
     TData = Awaited<ReturnType<typeof getBookAbout>>,
     TError = void,
@@ -908,6 +925,12 @@ export type GetBookAboutSuspenseQueryResult = NonNullable<
 >;
 export type GetBookAboutSuspenseQueryError = void;
 
+/**
+ * @summary Bibliographic info for the "About this text" panel. With `?node=`,
+walks the toc-ancestor chain to surface the constituent work the
+reader is in (e.g. Genesis within KJV); otherwise returns the
+hosted book's source.
+ */
 export function useGetBookAboutSuspense<
     TData = Awaited<ReturnType<typeof getBookAbout>>,
     TError = void,
@@ -928,26 +951,12 @@ export function useGetBookAboutSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetBookAboutSuspense<
-    TData = Awaited<ReturnType<typeof getBookAbout>>,
-    TError = void,
->(
-    slug: string,
-    params?: GetBookAboutParams,
-    options?: {
-        query?: Partial<
-            UseSuspenseQueryOptions<
-                Awaited<ReturnType<typeof getBookAbout>>,
-                TError,
-                TData
-            >
-        >;
-        request?: SecondParameter<typeof customFetch>;
-    },
-    queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-};
+/**
+ * @summary Bibliographic info for the "About this text" panel. With `?node=`,
+walks the toc-ancestor chain to surface the constituent work the
+reader is in (e.g. Genesis within KJV); otherwise returns the
+hosted book's source.
+ */
 export function useGetBookAboutSuspense<
     TData = Awaited<ReturnType<typeof getBookAbout>>,
     TError = void,
@@ -974,7 +983,32 @@ walks the toc-ancestor chain to surface the constituent work the
 reader is in (e.g. Genesis within KJV); otherwise returns the
 hosted book's source.
  */
-
+export function useGetBookAboutSuspense<
+    TData = Awaited<ReturnType<typeof getBookAbout>>,
+    TError = void,
+>(
+    slug: string,
+    params?: GetBookAboutParams,
+    options?: {
+        query?: Partial<
+            UseSuspenseQueryOptions<
+                Awaited<ReturnType<typeof getBookAbout>>,
+                TError,
+                TData
+            >
+        >;
+        request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Bibliographic info for the "About this text" panel. With `?node=`,
+walks the toc-ancestor chain to surface the constituent work the
+reader is in (e.g. Genesis within KJV); otherwise returns the
+hosted book's source.
+ */
 export function useGetBookAboutSuspense<
     TData = Awaited<ReturnType<typeof getBookAbout>>,
     TError = void,
@@ -1069,6 +1103,7 @@ export type GetLibraryQueryResult = NonNullable<
 >;
 export type GetLibraryQueryError = unknown;
 
+/** @summary Get the grouped library tree (authors → works → versions) with stats. */
 export function useGetLibrary<
     TData = Awaited<ReturnType<typeof getLibrary>>,
     TError = unknown,
@@ -1095,6 +1130,7 @@ export function useGetLibrary<
 ): DefinedUseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get the grouped library tree (authors → works → versions) with stats. */
 export function useGetLibrary<
     TData = Awaited<ReturnType<typeof getLibrary>>,
     TError = unknown,
@@ -1121,6 +1157,7 @@ export function useGetLibrary<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get the grouped library tree (authors → works → versions) with stats. */
 export function useGetLibrary<
     TData = Awaited<ReturnType<typeof getLibrary>>,
     TError = unknown,
@@ -1139,10 +1176,7 @@ export function useGetLibrary<
 ): UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get the grouped library tree (authors → works → versions) with stats.
- */
-
+/** @summary Get the grouped library tree (authors → works → versions) with stats. */
 export function useGetLibrary<
     TData = Awaited<ReturnType<typeof getLibrary>>,
     TError = unknown,
@@ -1212,6 +1246,7 @@ export type GetLibrarySuspenseQueryResult = NonNullable<
 >;
 export type GetLibrarySuspenseQueryError = unknown;
 
+/** @summary Get the grouped library tree (authors → works → versions) with stats. */
 export function useGetLibrarySuspense<
     TData = Awaited<ReturnType<typeof getLibrary>>,
     TError = unknown,
@@ -1230,6 +1265,7 @@ export function useGetLibrarySuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get the grouped library tree (authors → works → versions) with stats. */
 export function useGetLibrarySuspense<
     TData = Awaited<ReturnType<typeof getLibrary>>,
     TError = unknown,
@@ -1248,6 +1284,7 @@ export function useGetLibrarySuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
+/** @summary Get the grouped library tree (authors → works → versions) with stats. */
 export function useGetLibrarySuspense<
     TData = Awaited<ReturnType<typeof getLibrary>>,
     TError = unknown,
@@ -1266,10 +1303,7 @@ export function useGetLibrarySuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
 };
-/**
- * @summary Get the grouped library tree (authors → works → versions) with stats.
- */
-
+/** @summary Get the grouped library tree (authors → works → versions) with stats. */
 export function useGetLibrarySuspense<
     TData = Awaited<ReturnType<typeof getLibrary>>,
     TError = unknown,

@@ -482,7 +482,6 @@ export function ArticleSentences({
                     "Figure";
                 const selected = selectedFigure?.src === src;
                 return (
-                    // biome-ignore lint/a11y/useKeyWithClickEvents: parity with sentence spans
                     <div
                         data-figure-quote={src}
                         onClick={(e) => handleFigureClick(src, label, e)}
