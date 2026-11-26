@@ -23,9 +23,9 @@ export const SEO_COPY = {
     library: {
         title: "Scholia | Read and annotate classic texts, sentence by sentence",
         description:
-            "A hermeneutical workspace for deep study: the Bible, Kant, Shakespeare, " +
-            "Milton and more, structured to the sentence and linked across " +
-            "translations for careful study, quotation and citation.",
+            "Make the great texts your own. Read the Bible, Kant, Shakespeare, " +
+            "Milton and more, compare translations, save passages and add your " +
+            "notes.",
     },
     reader: {
         title: (nodeRef: string, bookTitle: string) =>

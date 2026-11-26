@@ -950,20 +950,20 @@ function AboutPanel({
     return (
         <>
             <h2 className="text-sm min-[1400px]:text-base font-semibold text-stone-600 mb-2 uppercase">
-                A living library for scholars
+                Ideas begin in the margins
             </h2>
             <p className={pClasses}>
-                Scholia is a hermeneutical workspace designed for the deep study
-                of literary, philosophical, and sacred texts. Every work is
-                structured down to the sentence, linked across translations, and
-                open for quotation, notes, and citation in your own writing.
+                Scholia is a library of philosophy, literature and sacred texts,
+                made for reading closely. Compare translations, save the
+                passages that strike you, add your own notes, and quote them in
+                your writing.
             </p>
             <br />
             <p className={pClasses}>
-                Inspired by marginal notes that ancient and medieval scholars
-                wrote alongside classical texts, Scholia aims to be a digital
-                sanctuary for careful study, developing original insights, and
-                building collaborative commentary.
+                The name comes from the notes that readers once wrote in the
+                margins of classical texts. A question or a passing remark could
+                be the seed that grows into something much larger. Start with a
+                line that catches your eye, and see where it leads.
             </p>
             <IntroVideoButton />
             {stats && (
