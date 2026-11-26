@@ -11,8 +11,8 @@ import type { ReviewParticipant } from "./reviewParticipant.ts";
 
 export interface ArticleReviewDetailResponse {
     article: ReviewArticleMeta;
-    assignee?: null | ReviewParticipant;
-    collegium?: null | ReviewCollegiumMeta;
+    assignee?: ReviewParticipant | null;
+    collegium?: ReviewCollegiumMeta | null;
     /**
      * True when the article body was edited after this request was
      * submitted — the snapshot no longer matches the live draft.

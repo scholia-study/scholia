@@ -14,7 +14,7 @@ export interface ArticleReviewQueueItem {
     article_slug: string;
     article_status: ArticleStatus;
     article_title: string;
-    assignee?: null | ReviewParticipant;
+    assignee?: ReviewParticipant | null;
     author_display_name: string;
     /** @nullable */
     author_handle?: string | null;

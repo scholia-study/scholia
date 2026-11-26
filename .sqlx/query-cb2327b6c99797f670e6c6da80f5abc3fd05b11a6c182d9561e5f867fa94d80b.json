@@ -6,22 +6,46 @@
             {
                 "ordinal": 0,
                 "name": "article_id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "article_topics",
+                        "name": "article_id"
+                    }
+                }
             },
             {
                 "ordinal": 1,
                 "name": "topic_id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "topics",
+                        "name": "id"
+                    }
+                }
             },
             {
                 "ordinal": 2,
                 "name": "topic_name",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "topics",
+                        "name": "name"
+                    }
+                }
             },
             {
                 "ordinal": 3,
                 "name": "topic_slug",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "topics",
+                        "name": "slug"
+                    }
+                }
             }
         ],
         "parameters": {

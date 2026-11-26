@@ -48,5 +48,5 @@ export interface BatchSentenceResponseItem {
      */
     parent_node_label?: string | null;
     sentences: SentenceData[];
-    source?: null | SourceContext;
+    source?: SourceContext | null;
 }

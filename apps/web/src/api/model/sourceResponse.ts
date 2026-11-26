@@ -35,7 +35,7 @@ export interface SourceResponse {
     page_end?: number | null;
     /** @nullable */
     page_start?: number | null;
-    parent?: null | ParentSourceResponse;
+    parent?: ParentSourceResponse | null;
     persons: SourcePersonResponse[];
     protected: boolean;
     /** @nullable */

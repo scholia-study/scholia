@@ -42,7 +42,7 @@ export interface UpdateSourceRequest {
     publication_year?: number | null;
     /** @nullable */
     publisher?: string | null;
-    source_type?: null | SourceType;
+    source_type?: SourceType | null;
     /** @nullable */
     title?: string | null;
     /** @nullable */

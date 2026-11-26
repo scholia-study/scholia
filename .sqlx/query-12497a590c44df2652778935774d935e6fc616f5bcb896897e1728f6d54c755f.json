@@ -6,37 +6,74 @@
             {
                 "ordinal": 0,
                 "name": "id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "content_blocks",
+                        "name": "id"
+                    }
+                }
             },
             {
                 "ordinal": 1,
                 "name": "position",
-                "type_info": "Int2"
+                "type_info": "Int2",
+                "origin": {
+                    "Table": {
+                        "table": "content_blocks",
+                        "name": "position"
+                    }
+                }
             },
             {
                 "ordinal": 2,
                 "name": "block_type!",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": "Expression"
             },
             {
                 "ordinal": 3,
                 "name": "paragraph_number",
-                "type_info": "Int4"
+                "type_info": "Int4",
+                "origin": {
+                    "Table": {
+                        "table": "content_blocks",
+                        "name": "paragraph_number"
+                    }
+                }
             },
             {
                 "ordinal": 4,
                 "name": "figure_number",
-                "type_info": "Int4"
+                "type_info": "Int4",
+                "origin": {
+                    "Table": {
+                        "table": "content_blocks",
+                        "name": "figure_number"
+                    }
+                }
             },
             {
                 "ordinal": 5,
                 "name": "html",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "content_blocks",
+                        "name": "html"
+                    }
+                }
             },
             {
                 "ordinal": 6,
                 "name": "original_html",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "content_blocks",
+                        "name": "original_html"
+                    }
+                }
             }
         ],
         "parameters": {

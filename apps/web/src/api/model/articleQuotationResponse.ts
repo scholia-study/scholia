@@ -13,7 +13,7 @@ export interface ArticleQuotationResponse {
     article_title: string;
     author_display_name: string;
     created_at: string;
-    figure?: null | ArticleQuotationFigure;
+    figure?: ArticleQuotationFigure | null;
     html: string;
     id: string;
     kind: ArticleQuotationKind;

@@ -4232,10 +4232,10 @@
                         "schema": {
                             "oneOf": [
                                 {
-                                    "type": "null"
+                                    "$ref": "#/components/schemas/SourceType"
                                 },
                                 {
-                                    "$ref": "#/components/schemas/SourceType"
+                                    "type": "null"
                                 }
                             ]
                         }
@@ -5084,11 +5084,11 @@
                     "source_book": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/BookSummary",
                                 "description": "Hosted source-language book, when this source is a translation\nand the original is also hosted (Kant EN → Kant DE). Absent for\nBible-shape works whose originals aren't hosted."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     }
@@ -5390,10 +5390,10 @@
                     "figure": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/ArticleQuotationFigure"
                             },
                             {
-                                "$ref": "#/components/schemas/ArticleQuotationFigure"
+                                "type": "null"
                             }
                         ]
                     },
@@ -5574,10 +5574,10 @@
                     "sender": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/ReviewParticipant"
                             },
                             {
-                                "$ref": "#/components/schemas/ReviewParticipant"
+                                "type": "null"
                             }
                         ]
                     },
@@ -5607,22 +5607,22 @@
                     "assignee": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/ReviewParticipant",
                                 "description": "Editor currently assigned to this request, if any."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     },
                     "collegium": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/ReviewCollegiumMeta",
                                 "description": "The collegium reviewing this request; absent for editorial rounds."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     },
@@ -5674,10 +5674,10 @@
                     "sender": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/ReviewParticipant"
                             },
                             {
-                                "$ref": "#/components/schemas/ReviewParticipant"
+                                "type": "null"
                             }
                         ]
                     }
@@ -5714,10 +5714,10 @@
                     "assignee": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/ReviewParticipant"
                             },
                             {
-                                "$ref": "#/components/schemas/ReviewParticipant"
+                                "type": "null"
                             }
                         ]
                     },
@@ -5816,20 +5816,20 @@
                     "next": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/SeriesNeighbor"
                             },
                             {
-                                "$ref": "#/components/schemas/SeriesNeighbor"
+                                "type": "null"
                             }
                         ]
                     },
                     "prev": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/SeriesNeighbor"
                             },
                             {
-                                "$ref": "#/components/schemas/SeriesNeighbor"
+                                "type": "null"
                             }
                         ]
                     },
@@ -5978,10 +5978,10 @@
                     "source": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/SourceContext"
                             },
                             {
-                                "$ref": "#/components/schemas/SourceContext"
+                                "type": "null"
                             }
                         ]
                     }
@@ -6176,10 +6176,10 @@
                     "my_role": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/CollegiumRole"
                             },
                             {
-                                "$ref": "#/components/schemas/CollegiumRole"
+                                "type": "null"
                             }
                         ]
                     },
@@ -6256,11 +6256,11 @@
                     "my_role": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/CollegiumRole",
                                 "description": "Absent for non-members."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     },
@@ -6400,11 +6400,11 @@
                     "review_visibility": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/ReviewVisibility",
                                 "description": "Defaults to `members`."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     }
@@ -6516,11 +6516,11 @@
                     "scope": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/ResourceScope",
                                 "description": "\"work\" (default) | \"language\" | \"edition\" — see ResourceResponse.scope."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     },
@@ -6552,10 +6552,10 @@
                     "verbatim_kind": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/VerbatimKind"
                             },
                             {
-                                "$ref": "#/components/schemas/VerbatimKind"
+                                "type": "null"
                             }
                         ]
                     }
@@ -6830,10 +6830,10 @@
                     "handled_by": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/FeedbackHandler"
                             },
                             {
-                                "$ref": "#/components/schemas/FeedbackHandler"
+                                "type": "null"
                             }
                         ]
                     },
@@ -6846,11 +6846,11 @@
                     "submitter": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/FeedbackSubmitter",
                                 "description": "`None` when the submitter's account has been deleted; the admin UI\nrenders \"User deleted\" in that case."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     },
@@ -8242,10 +8242,10 @@
                     "source": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/SourceResponse"
                             },
                             {
-                                "$ref": "#/components/schemas/SourceResponse"
+                                "type": "null"
                             }
                         ]
                     },
@@ -8263,10 +8263,10 @@
                     "verbatim_kind": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/VerbatimKind"
                             },
                             {
-                                "$ref": "#/components/schemas/VerbatimKind"
+                                "type": "null"
                             }
                         ]
                     }
@@ -8332,11 +8332,11 @@
                     "submitter": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/ResourceSubmitter",
                                 "description": "`None` when the submitter's account has since been deleted."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     }
@@ -8416,11 +8416,11 @@
                     "my_role": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/CollegiumRole",
                                 "description": "The viewer's role in the collegium; absent for non-members\n(e.g. the author after leaving the collegium)."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     },
@@ -8956,10 +8956,10 @@
                     "parent": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/ParentSourceResponse"
                             },
                             {
-                                "$ref": "#/components/schemas/ParentSourceResponse"
+                                "type": "null"
                             }
                         ]
                     },
@@ -9375,11 +9375,11 @@
                     "review_visibility": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/ReviewVisibility",
                                 "description": "Changing it affects future submissions only — each request keeps\nthe visibility it was submitted under."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     }
@@ -9394,11 +9394,11 @@
                     "status": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/FeedbackStatus",
                                 "description": "Omit either field to leave it unchanged."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     }
@@ -9487,21 +9487,21 @@
                     "resource_type": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/ResourceType"
                             },
                             {
-                                "$ref": "#/components/schemas/ResourceType"
+                                "type": "null"
                             }
                         ]
                     },
                     "scope": {
                         "oneOf": [
                             {
-                                "type": "null"
-                            },
-                            {
                                 "$ref": "#/components/schemas/ResourceScope",
                                 "description": "NOT NULL column: plain Option — omit to leave unchanged."
+                            },
+                            {
+                                "type": "null"
                             }
                         ]
                     },
@@ -9512,10 +9512,10 @@
                     "sentence_kind": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/SentenceKind"
                             },
                             {
-                                "$ref": "#/components/schemas/SentenceKind"
+                                "type": "null"
                             }
                         ]
                     },
@@ -9540,10 +9540,10 @@
                     "verbatim_kind": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/VerbatimKind"
                             },
                             {
-                                "$ref": "#/components/schemas/VerbatimKind"
+                                "type": "null"
                             }
                         ]
                     }
@@ -9631,10 +9631,10 @@
                     "source_type": {
                         "oneOf": [
                             {
-                                "type": "null"
+                                "$ref": "#/components/schemas/SourceType"
                             },
                             {
-                                "$ref": "#/components/schemas/SourceType"
+                                "type": "null"
                             }
                         ]
                     },

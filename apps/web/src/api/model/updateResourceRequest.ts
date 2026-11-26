@@ -18,11 +18,11 @@ export interface UpdateResourceRequest {
     is_featured?: boolean | null;
     /** @nullable */
     quoted_text?: string | null;
-    resource_type?: null | ResourceType;
-    scope?: null | ResourceScope;
+    resource_type?: ResourceType | null;
+    scope?: ResourceScope | null;
     /** @nullable */
     sentence_end?: number | null;
-    sentence_kind?: null | SentenceKind;
+    sentence_kind?: SentenceKind | null;
     /** @nullable */
     sentence_start?: number | null;
     /** @nullable */
@@ -33,5 +33,5 @@ export interface UpdateResourceRequest {
     source_page_end?: number | null;
     /** @nullable */
     source_page_start?: number | null;
-    verbatim_kind?: null | VerbatimKind;
+    verbatim_kind?: VerbatimKind | null;
 }

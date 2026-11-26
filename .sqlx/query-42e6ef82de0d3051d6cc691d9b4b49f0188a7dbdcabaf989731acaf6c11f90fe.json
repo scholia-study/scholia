@@ -6,52 +6,112 @@
             {
                 "ordinal": 0,
                 "name": "id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "sources",
+                        "name": "id"
+                    }
+                }
             },
             {
                 "ordinal": 1,
                 "name": "title",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "sources",
+                        "name": "title"
+                    }
+                }
             },
             {
                 "ordinal": 2,
                 "name": "publication_year",
-                "type_info": "Int2"
+                "type_info": "Int2",
+                "origin": {
+                    "Table": {
+                        "table": "sources",
+                        "name": "publication_year"
+                    }
+                }
             },
             {
                 "ordinal": 3,
                 "name": "original_year",
-                "type_info": "Int2"
+                "type_info": "Int2",
+                "origin": {
+                    "Table": {
+                        "table": "sources",
+                        "name": "original_year"
+                    }
+                }
             },
             {
                 "ordinal": 4,
                 "name": "original_year_circa",
-                "type_info": "Bool"
+                "type_info": "Bool",
+                "origin": {
+                    "Table": {
+                        "table": "sources",
+                        "name": "original_year_circa"
+                    }
+                }
             },
             {
                 "ordinal": 5,
                 "name": "publisher",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "sources",
+                        "name": "publisher"
+                    }
+                }
             },
             {
                 "ordinal": 6,
                 "name": "publication_place",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "sources",
+                        "name": "publication_place"
+                    }
+                }
             },
             {
                 "ordinal": 7,
                 "name": "edition",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "sources",
+                        "name": "edition"
+                    }
+                }
             },
             {
                 "ordinal": 8,
                 "name": "journal_name",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "sources",
+                        "name": "journal_name"
+                    }
+                }
             },
             {
                 "ordinal": 9,
                 "name": "volume",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "sources",
+                        "name": "volume"
+                    }
+                }
             }
         ],
         "parameters": {

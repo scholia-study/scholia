@@ -10,5 +10,5 @@ export interface ArticleReviewMessageResponse {
     body: string;
     created_at: string;
     id: string;
-    sender?: null | ReviewParticipant;
+    sender?: ReviewParticipant | null;
 }

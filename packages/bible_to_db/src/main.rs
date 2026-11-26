@@ -1073,7 +1073,7 @@ async fn seed_canonical_passages(
     // without ANALYZE the resolve/stamp joins below degrade to
     // nested-loop seq scans (minutes, not seconds).
     for table in ["sentences", "page_markers", "toc_nodes"] {
-        sqlx::query(&format!("ANALYZE {table}"))
+        sqlx::query(sqlx::AssertSqlSafe(format!("ANALYZE {table}")))
             .execute(&mut **tx)
             .await?;
     }

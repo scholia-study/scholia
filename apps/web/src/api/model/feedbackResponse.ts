@@ -13,10 +13,10 @@ export interface FeedbackResponse {
     admin_notes?: string | null;
     body: string;
     created_at: string;
-    handled_by?: null | FeedbackHandler;
+    handled_by?: FeedbackHandler | null;
     id: string;
     status: FeedbackStatus;
-    submitter?: null | FeedbackSubmitter;
+    submitter?: FeedbackSubmitter | null;
     updated_at: string;
     /** @nullable */
     url?: string | null;

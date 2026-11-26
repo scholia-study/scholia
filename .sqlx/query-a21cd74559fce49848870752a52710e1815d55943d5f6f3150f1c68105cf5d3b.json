@@ -6,28 +6,47 @@
             {
                 "ordinal": 0,
                 "name": "book_title!",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": "Expression"
             },
             {
                 "ordinal": 1,
                 "name": "language!",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "books",
+                        "name": "language"
+                    }
+                }
             },
             {
                 "ordinal": 2,
                 "name": "node_label!",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "toc_nodes",
+                        "name": "label"
+                    }
+                }
             },
             {
                 "ordinal": 3,
                 "name": "parent_node_label?",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "toc_nodes",
+                        "name": "label"
+                    }
+                }
             }
         ],
         "parameters": {
             "Left": ["Text", "Text"]
         },
-        "nullable": [null, false, false, false]
+        "nullable": [null, false, false, true]
     },
     "hash": "a21cd74559fce49848870752a52710e1815d55943d5f6f3150f1c68105cf5d3b"
 }

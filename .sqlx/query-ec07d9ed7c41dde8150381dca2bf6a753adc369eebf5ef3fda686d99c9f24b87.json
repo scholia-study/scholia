@@ -6,27 +6,57 @@
             {
                 "ordinal": 0,
                 "name": "id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "collegia",
+                        "name": "id"
+                    }
+                }
             },
             {
                 "ordinal": 1,
                 "name": "name",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "collegia",
+                        "name": "name"
+                    }
+                }
             },
             {
                 "ordinal": 2,
                 "name": "slug",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "collegia",
+                        "name": "slug"
+                    }
+                }
             },
             {
                 "ordinal": 3,
                 "name": "description",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "collegia",
+                        "name": "description"
+                    }
+                }
             },
             {
                 "ordinal": 4,
                 "name": "is_private",
-                "type_info": "Bool"
+                "type_info": "Bool",
+                "origin": {
+                    "Table": {
+                        "table": "collegia",
+                        "name": "is_private"
+                    }
+                }
             },
             {
                 "ordinal": 5,
@@ -38,22 +68,41 @@
                             "Enum": ["members", "stewards"]
                         }
                     }
+                },
+                "origin": {
+                    "Table": {
+                        "table": "collegia",
+                        "name": "review_visibility"
+                    }
                 }
             },
             {
                 "ordinal": 6,
                 "name": "invite_token",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "collegia",
+                        "name": "invite_token"
+                    }
+                }
             },
             {
                 "ordinal": 7,
                 "name": "created_at",
-                "type_info": "Timestamptz"
+                "type_info": "Timestamptz",
+                "origin": {
+                    "Table": {
+                        "table": "collegia",
+                        "name": "created_at"
+                    }
+                }
             },
             {
                 "ordinal": 8,
                 "name": "member_count!",
-                "type_info": "Int8"
+                "type_info": "Int8",
+                "origin": "Expression"
             },
             {
                 "ordinal": 9,
@@ -65,12 +114,19 @@
                             "Enum": ["steward", "member"]
                         }
                     }
+                },
+                "origin": {
+                    "Table": {
+                        "table": "collegium_members",
+                        "name": "role"
+                    }
                 }
             },
             {
                 "ordinal": 10,
                 "name": "my_pending_request!",
-                "type_info": "Bool"
+                "type_info": "Bool",
+                "origin": "Expression"
             }
         ],
         "parameters": {
@@ -86,7 +142,7 @@
             true,
             false,
             null,
-            false,
+            true,
             null
         ]
     },

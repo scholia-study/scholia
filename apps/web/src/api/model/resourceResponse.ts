@@ -58,12 +58,12 @@ export interface ResourceResponse {
      */
     scope: ResourceScope;
     sentence_kind: SentenceKind;
-    source?: null | SourceResponse;
+    source?: SourceResponse | null;
     /** @nullable */
     source_location_freeform?: string | null;
     /** @nullable */
     source_page_end?: number | null;
     /** @nullable */
     source_page_start?: number | null;
-    verbatim_kind?: null | VerbatimKind;
+    verbatim_kind?: VerbatimKind | null;
 }

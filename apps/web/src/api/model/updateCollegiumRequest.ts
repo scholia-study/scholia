@@ -17,5 +17,5 @@ export interface UpdateCollegiumRequest {
     is_private?: boolean | null;
     /** @nullable */
     name?: string | null;
-    review_visibility?: null | ReviewVisibility;
+    review_visibility?: ReviewVisibility | null;
 }

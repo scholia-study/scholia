@@ -6,17 +6,35 @@
             {
                 "ordinal": 0,
                 "name": "user_id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "collegium_members",
+                        "name": "user_id"
+                    }
+                }
             },
             {
                 "ordinal": 1,
                 "name": "display_name",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "users",
+                        "name": "display_name"
+                    }
+                }
             },
             {
                 "ordinal": 2,
                 "name": "handle",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "users",
+                        "name": "handle"
+                    }
+                }
             },
             {
                 "ordinal": 3,
@@ -28,12 +46,24 @@
                             "Enum": ["steward", "member"]
                         }
                     }
+                },
+                "origin": {
+                    "Table": {
+                        "table": "collegium_members",
+                        "name": "role"
+                    }
                 }
             },
             {
                 "ordinal": 4,
                 "name": "joined_at",
-                "type_info": "Timestamptz"
+                "type_info": "Timestamptz",
+                "origin": {
+                    "Table": {
+                        "table": "collegium_members",
+                        "name": "joined_at"
+                    }
+                }
             }
         ],
         "parameters": {

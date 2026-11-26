@@ -19,7 +19,7 @@ export interface CollegiumResponse {
     is_private: boolean;
     member_count: number;
     my_pending_request: boolean;
-    my_role?: null | CollegiumRole;
+    my_role?: CollegiumRole | null;
     name: string;
     review_visibility: ReviewVisibility;
     slug: string;

@@ -38,5 +38,5 @@ export interface AboutThisTextResponse {
      */
     resolved_from: string;
     source: SourceResponse;
-    source_book?: null | BookSummary;
+    source_book?: BookSummary | null;
 }

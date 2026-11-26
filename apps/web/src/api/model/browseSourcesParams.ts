@@ -9,7 +9,7 @@ import type { SourceType } from "./sourceType.ts";
 export type BrowseSourcesParams = {
     /** @nullable */
     q?: string | null;
-    source_type?: null | SourceType;
+    source_type?: SourceType | null;
     /** @nullable */
     created_by_me?: boolean | null;
     /** @nullable */

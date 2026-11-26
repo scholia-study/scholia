@@ -19,7 +19,7 @@ export interface CreateResourceRequest {
     /** @nullable */
     quoted_text?: string | null;
     resource_type: ResourceType;
-    scope?: null | ResourceScope;
+    scope?: ResourceScope | null;
     /** @nullable */
     sentence_end?: number | null;
     sentence_kind: SentenceKind;
@@ -32,5 +32,5 @@ export interface CreateResourceRequest {
     source_page_end?: number | null;
     /** @nullable */
     source_page_start?: number | null;
-    verbatim_kind?: null | VerbatimKind;
+    verbatim_kind?: VerbatimKind | null;
 }

@@ -17,7 +17,7 @@ export interface ReviewCollegiumMeta {
      * (writing-collegium mode), false = stewards only (classroom mode).
      */
     member_visible: boolean;
-    my_role?: null | CollegiumRole;
+    my_role?: CollegiumRole | null;
     name: string;
     slug: string;
 }

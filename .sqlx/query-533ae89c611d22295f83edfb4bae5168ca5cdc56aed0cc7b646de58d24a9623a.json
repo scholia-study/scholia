@@ -6,32 +6,68 @@
             {
                 "ordinal": 0,
                 "name": "id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "article_quotations",
+                        "name": "id"
+                    }
+                }
             },
             {
                 "ordinal": 1,
                 "name": "article_id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "article_quotations",
+                        "name": "article_id"
+                    }
+                }
             },
             {
                 "ordinal": 2,
                 "name": "article_title",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "article_quotations",
+                        "name": "article_title"
+                    }
+                }
             },
             {
                 "ordinal": 3,
                 "name": "author_display_name",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "article_quotations",
+                        "name": "author_display_name"
+                    }
+                }
             },
             {
                 "ordinal": 4,
                 "name": "author_sort_name",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "article_quotations",
+                        "name": "author_sort_name"
+                    }
+                }
             },
             {
                 "ordinal": 5,
                 "name": "source_published_at",
-                "type_info": "Timestamptz"
+                "type_info": "Timestamptz",
+                "origin": {
+                    "Table": {
+                        "table": "article_quotations",
+                        "name": "source_published_at"
+                    }
+                }
             }
         ],
         "parameters": {

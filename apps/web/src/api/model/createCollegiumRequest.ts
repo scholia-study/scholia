@@ -12,5 +12,5 @@ export interface CreateCollegiumRequest {
     /** @nullable */
     is_private?: boolean | null;
     name: string;
-    review_visibility?: null | ReviewVisibility;
+    review_visibility?: ReviewVisibility | null;
 }

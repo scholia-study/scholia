@@ -282,7 +282,7 @@ async fn renumber_notes(
         _ => ("margin_notes", "margin_note_id", "mn"),
     };
 
-    let existing: Vec<NoteRow> = sqlx::query_as(&format!(
+    let existing: Vec<NoteRow> = sqlx::query_as(sqlx::AssertSqlSafe(format!(
         "SELECT n.id, n.number, tn.source_ref, cb.position, s.position
          FROM {table} n
          JOIN sentences s ON n.anchor_sentence_id = s.id
@@ -290,7 +290,7 @@ async fn renumber_notes(
          JOIN toc_nodes tn ON cb.node_id = tn.id
          WHERE n.book_id = $1
          ORDER BY tn.sort_order, cb.position, s.position, n.number"
-    ))
+    )))
     .bind(book_id)
     .fetch_all(&mut **tx)
     .await?;
@@ -333,9 +333,9 @@ async fn renumber_notes(
         return Ok(0);
     }
 
-    sqlx::query(&format!(
+    sqlx::query(sqlx::AssertSqlSafe(format!(
         "UPDATE {table} SET number = number + $2 WHERE book_id = $1"
-    ))
+    )))
     .bind(book_id)
     .bind(RENUMBER_OFFSET as i32)
     .execute(&mut **tx)
@@ -350,11 +350,11 @@ async fn renumber_notes(
                 acc.2.push(sref);
                 acc
             });
-    sqlx::query(&format!(
+    sqlx::query(sqlx::AssertSqlSafe(format!(
         "UPDATE {table} n SET number = v.num
          FROM (SELECT unnest($1::uuid[]) AS id, unnest($2::int[]) AS num) v
          WHERE n.id = v.id"
-    ))
+    )))
     .bind(&ids)
     .bind(&numbers)
     .execute(&mut **tx)
@@ -367,21 +367,21 @@ async fn renumber_notes(
     // and the unique index checks per row, so a direct assignment collides
     // mid-statement. Park every affected key on a value keyed by sentence id
     // first, then assign the finals.
-    sqlx::query(&format!(
+    sqlx::query(sqlx::AssertSqlSafe(format!(
         "UPDATE sentences s SET natural_key = 'realign:' || s.id
          FROM (SELECT unnest($1::uuid[]) AS id) v
          WHERE s.{fk} = v.id AND s.natural_key IS NOT NULL"
-    ))
+    )))
     .bind(&ids)
     .execute(&mut **tx)
     .await?;
-    sqlx::query(&format!(
+    sqlx::query(sqlx::AssertSqlSafe(format!(
         "UPDATE sentences s
          SET natural_key = v.sref || '/{key_tag}' || v.num || '/s' || s.position
          FROM (SELECT unnest($1::uuid[]) AS id, unnest($2::int[]) AS num,
                       unnest($3::text[]) AS sref) v
          WHERE s.{fk} = v.id AND s.natural_key IS NOT NULL"
-    ))
+    )))
     .bind(&ids)
     .bind(&numbers)
     .bind(&srefs)

@@ -19,7 +19,7 @@ export interface ArticleReviewCommentResponse {
     request_id: string;
     /** @nullable */
     resolved_at?: string | null;
-    sender?: null | ReviewParticipant;
+    sender?: ReviewParticipant | null;
     /** @nullable */
     sentence_end?: number | null;
     /** @nullable */

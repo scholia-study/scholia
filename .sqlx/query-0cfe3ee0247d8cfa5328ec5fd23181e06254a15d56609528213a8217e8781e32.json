@@ -6,17 +6,35 @@
             {
                 "ordinal": 0,
                 "name": "template!",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "reference_systems",
+                        "name": "cite_template"
+                    }
+                }
             },
             {
                 "ordinal": 1,
                 "name": "first_ref!",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "page_markers",
+                        "name": "ref_value"
+                    }
+                }
             },
             {
                 "ordinal": 2,
                 "name": "last_ref!",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "page_markers",
+                        "name": "ref_value"
+                    }
+                }
             }
         ],
         "parameters": {

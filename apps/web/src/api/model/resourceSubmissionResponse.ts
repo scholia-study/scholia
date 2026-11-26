@@ -23,5 +23,5 @@ export interface ResourceSubmissionResponse {
     review_note?: string | null;
     /** @nullable */
     reviewed_at?: string | null;
-    submitter?: null | ResourceSubmitter;
+    submitter?: ResourceSubmitter | null;
 }

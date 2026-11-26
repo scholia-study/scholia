@@ -13,6 +13,12 @@
                             "Enum": ["steward", "member"]
                         }
                     }
+                },
+                "origin": {
+                    "Table": {
+                        "table": "collegium_members",
+                        "name": "role"
+                    }
                 }
             }
         ],

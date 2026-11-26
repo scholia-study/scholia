@@ -6,12 +6,24 @@
             {
                 "ordinal": 0,
                 "name": "id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "article_review_requests",
+                        "name": "id"
+                    }
+                }
             },
             {
                 "ordinal": 1,
                 "name": "article_id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "article_review_requests",
+                        "name": "article_id"
+                    }
+                }
             },
             {
                 "ordinal": 2,
@@ -22,6 +34,12 @@
                         "kind": {
                             "Enum": ["feedback", "publication"]
                         }
+                    }
+                },
+                "origin": {
+                    "Table": {
+                        "table": "article_review_requests",
+                        "name": "intent"
                     }
                 }
             },
@@ -41,27 +59,57 @@
                             ]
                         }
                     }
+                },
+                "origin": {
+                    "Table": {
+                        "table": "article_review_requests",
+                        "name": "status"
+                    }
                 }
             },
             {
                 "ordinal": 4,
                 "name": "submitted_at",
-                "type_info": "Timestamptz"
+                "type_info": "Timestamptz",
+                "origin": {
+                    "Table": {
+                        "table": "article_review_requests",
+                        "name": "submitted_at"
+                    }
+                }
             },
             {
                 "ordinal": 5,
                 "name": "resolved_at",
-                "type_info": "Timestamptz"
+                "type_info": "Timestamptz",
+                "origin": {
+                    "Table": {
+                        "table": "article_review_requests",
+                        "name": "resolved_at"
+                    }
+                }
             },
             {
                 "ordinal": 6,
                 "name": "collegium_id",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": {
+                    "Table": {
+                        "table": "article_review_requests",
+                        "name": "collegium_id"
+                    }
+                }
             },
             {
                 "ordinal": 7,
                 "name": "collegium_name?",
-                "type_info": "Text"
+                "type_info": "Text",
+                "origin": {
+                    "Table": {
+                        "table": "collegia",
+                        "name": "name"
+                    }
+                }
             }
         ],
         "parameters": {

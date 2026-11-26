@@ -9,5 +9,5 @@ import type { FeedbackStatus } from "./feedbackStatus.ts";
 export interface UpdateFeedbackRequest {
     /** @nullable */
     admin_notes?: string | null;
-    status?: null | FeedbackStatus;
+    status?: FeedbackStatus | null;
 }

@@ -6,12 +6,14 @@
             {
                 "ordinal": 0,
                 "name": "pending",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": "Expression"
             },
             {
                 "ordinal": 1,
                 "name": "latest",
-                "type_info": "Uuid"
+                "type_info": "Uuid",
+                "origin": "Expression"
             }
         ],
         "parameters": {

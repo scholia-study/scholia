@@ -308,6 +308,11 @@ static ORDINAL_NUM_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b\d{1,3}
 static ORDINAL_REF_NOUN_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^(Chapters?\b|Cha\.|Psalms?\b|Epistles?\b|Elders\b)").unwrap());
 
+#[cfg(test)]
+fn split_sentences(text: &str, html: &str) -> Vec<(String, String)> {
+    split_sentences_forced(text, html, &[])
+}
+
 /// Split a paragraph into sentences, returning (text, html) pairs.
 ///
 /// The algorithm:
@@ -315,11 +320,6 @@ static ORDINAL_REF_NOUN_RE: LazyLock<Regex> =
 /// 2. Filter out false positives (abbreviations, initials)
 /// 3. Map text split positions to HTML positions (walking both in parallel)
 /// 4. Re-balance open inline tags at each split boundary
-pub fn split_sentences(text: &str, html: &str) -> Vec<(String, String)> {
-    split_sentences_forced(text, html, &[])
-}
-
-/// Split a paragraph into sentences with additional forced split positions.
 ///
 /// `forced` contains byte offsets in `text` where sentence boundaries should be inserted
 /// regardless of punctuation.

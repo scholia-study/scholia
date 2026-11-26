@@ -55,10 +55,8 @@ The flat list is built into a tree at runtime. Five top-level nodes:
 
 ## Output types
 
-The package defines its own Kant-specific types rather than reusing
-`packages/common/src/model.rs`, because the OCR pipeline has no HTML and needs
-fields like `aa_page` and `b_page_refs` instead of EPUB-specific ones
-(`ncx_id`, `play_order`, `html`).
+The package defines its own Kant-specific types, because the OCR pipeline has no
+HTML and needs fields like `aa_page` and `b_page_refs`.
 
 - `KantBook` — top-level container
 - `KantTocNode` — recursive TOC node with `aa_page`, `depth`, `children`, `content`

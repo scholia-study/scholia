@@ -31,7 +31,7 @@ export interface CollegiumDetailResponse {
      */
     members?: CollegiumMemberResponse[] | null;
     my_pending_request: boolean;
-    my_role?: null | CollegiumRole;
+    my_role?: CollegiumRole | null;
     name: string;
     /**
      * Admins only.

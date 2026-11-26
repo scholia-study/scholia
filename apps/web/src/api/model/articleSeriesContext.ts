@@ -13,7 +13,7 @@ import type { SeriesNeighbor } from "./seriesNeighbor.ts";
  */
 export interface ArticleSeriesContext {
     name: string;
-    next?: null | SeriesNeighbor;
-    prev?: null | SeriesNeighbor;
+    next?: SeriesNeighbor | null;
+    prev?: SeriesNeighbor | null;
     slug: string;
 }
