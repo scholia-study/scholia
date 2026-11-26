@@ -38,6 +38,16 @@ write_files:
       net.bridge.bridge-nf-call-iptables = 1
     permissions: "0644"
 
+  # Every deploy leaves an image behind, so images are pruned far
+  # earlier than the kubelet's 85/80 default.
+  - path: /etc/rancher/k3s/config.yaml
+    content: |
+      secrets-encryption: true
+      kubelet-arg:
+        - image-gc-high-threshold=50
+        - image-gc-low-threshold=35
+    permissions: "0644"
+
   # unattended-upgrades: apply Ubuntu security updates daily without
   # human intervention.
   - path: /etc/apt/apt.conf.d/20auto-upgrades
