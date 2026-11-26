@@ -71,6 +71,27 @@ export const createCheckoutSession = async (
     createCheckoutRequest: CreateCheckoutRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createCheckoutSessionResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createCheckoutSessionResponseSuccess>(
         getCreateCheckoutSessionUrl(),
         {
@@ -78,12 +99,15 @@ export const createCheckoutSession = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(createCheckoutRequest),
         },
     );
 };
+
+export const getCreateCheckoutSessionMutationKey = () =>
+    ["createCheckoutSession"] as const;
 
 export const getCreateCheckoutSessionMutationOptions = <
     TError = void,
@@ -92,17 +116,17 @@ export const getCreateCheckoutSessionMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createCheckoutSession>>,
         TError,
-        { data: CreateCheckoutRequest },
+        CreateCheckoutSessionMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createCheckoutSession>>,
     TError,
-    { data: CreateCheckoutRequest },
+    CreateCheckoutSessionMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createCheckoutSession"];
+    const mutationKey = getCreateCheckoutSessionMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -113,7 +137,7 @@ export const getCreateCheckoutSessionMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createCheckoutSession>>,
-        { data: CreateCheckoutRequest }
+        CreateCheckoutSessionMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -128,6 +152,9 @@ export type CreateCheckoutSessionMutationResult = NonNullable<
 >;
 export type CreateCheckoutSessionMutationBody = CreateCheckoutRequest;
 export type CreateCheckoutSessionMutationError = void;
+export type CreateCheckoutSessionMutationVariables = {
+    data: CreateCheckoutRequest;
+};
 
 /**
  * @summary Create a Stripe Embedded Checkout Session for the given tier.
@@ -138,7 +165,7 @@ export const useCreateCheckoutSession = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createCheckoutSession>>,
             TError,
-            { data: CreateCheckoutRequest },
+            CreateCheckoutSessionMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -147,7 +174,7 @@ export const useCreateCheckoutSession = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createCheckoutSession>>,
     TError,
-    { data: CreateCheckoutRequest },
+    CreateCheckoutSessionMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -208,6 +235,9 @@ export const createPortalSession = async (
     );
 };
 
+export const getCreatePortalSessionMutationKey = () =>
+    ["createPortalSession"] as const;
+
 export const getCreatePortalSessionMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -225,7 +255,7 @@ export const getCreatePortalSessionMutationOptions = <
     void,
     TContext
 > => {
-    const mutationKey = ["createPortalSession"];
+    const mutationKey = getCreatePortalSessionMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&

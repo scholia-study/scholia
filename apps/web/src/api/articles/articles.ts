@@ -26,6 +26,7 @@ import type {
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
 import {
+    queryOptions as queryOptionsBuilder,
     useInfiniteQuery,
     useMutation,
     useQuery,
@@ -118,6 +119,27 @@ export const applyArticleLabel = async (
     applyEditorialLabelRequest: ApplyEditorialLabelRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<applyArticleLabelResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<applyArticleLabelResponseSuccess>(
         getApplyArticleLabelUrl(slug),
         {
@@ -125,12 +147,15 @@ export const applyArticleLabel = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(applyEditorialLabelRequest),
         },
     );
 };
+
+export const getApplyArticleLabelMutationKey = () =>
+    ["applyArticleLabel"] as const;
 
 export const getApplyArticleLabelMutationOptions = <
     TError = void,
@@ -139,17 +164,17 @@ export const getApplyArticleLabelMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof applyArticleLabel>>,
         TError,
-        { slug: string; data: ApplyEditorialLabelRequest },
+        ApplyArticleLabelMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof applyArticleLabel>>,
     TError,
-    { slug: string; data: ApplyEditorialLabelRequest },
+    ApplyArticleLabelMutationVariables,
     TContext
 > => {
-    const mutationKey = ["applyArticleLabel"];
+    const mutationKey = getApplyArticleLabelMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -160,7 +185,7 @@ export const getApplyArticleLabelMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof applyArticleLabel>>,
-        { slug: string; data: ApplyEditorialLabelRequest }
+        ApplyArticleLabelMutationVariables
     > = (props) => {
         const { slug, data } = props ?? {};
 
@@ -175,6 +200,10 @@ export type ApplyArticleLabelMutationResult = NonNullable<
 >;
 export type ApplyArticleLabelMutationBody = ApplyEditorialLabelRequest;
 export type ApplyArticleLabelMutationError = void;
+export type ApplyArticleLabelMutationVariables = {
+    slug: string;
+    data: ApplyEditorialLabelRequest;
+};
 
 /**
  * @summary Apply an editorial label to a published article. Editor/admin only.
@@ -184,7 +213,7 @@ export const useApplyArticleLabel = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof applyArticleLabel>>,
             TError,
-            { slug: string; data: ApplyEditorialLabelRequest },
+            ApplyArticleLabelMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -193,7 +222,7 @@ export const useApplyArticleLabel = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof applyArticleLabel>>,
     TError,
-    { slug: string; data: ApplyEditorialLabelRequest },
+    ApplyArticleLabelMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -249,6 +278,9 @@ export const removeArticleLabel = async (
     );
 };
 
+export const getRemoveArticleLabelMutationKey = () =>
+    ["removeArticleLabel"] as const;
+
 export const getRemoveArticleLabelMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -256,17 +288,17 @@ export const getRemoveArticleLabelMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof removeArticleLabel>>,
         TError,
-        { slug: string; labelSlug: string },
+        RemoveArticleLabelMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof removeArticleLabel>>,
     TError,
-    { slug: string; labelSlug: string },
+    RemoveArticleLabelMutationVariables,
     TContext
 > => {
-    const mutationKey = ["removeArticleLabel"];
+    const mutationKey = getRemoveArticleLabelMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -277,7 +309,7 @@ export const getRemoveArticleLabelMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof removeArticleLabel>>,
-        { slug: string; labelSlug: string }
+        RemoveArticleLabelMutationVariables
     > = (props) => {
         const { slug, labelSlug } = props ?? {};
 
@@ -292,6 +324,10 @@ export type RemoveArticleLabelMutationResult = NonNullable<
 >;
 
 export type RemoveArticleLabelMutationError = void;
+export type RemoveArticleLabelMutationVariables = {
+    slug: string;
+    labelSlug: string;
+};
 
 /**
  * @summary Remove an editorial label from an article. Editor/admin only.
@@ -302,7 +338,7 @@ export const useRemoveArticleLabel = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof removeArticleLabel>>,
             TError,
-            { slug: string; labelSlug: string },
+            RemoveArticleLabelMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -311,7 +347,7 @@ export const useRemoveArticleLabel = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof removeArticleLabel>>,
     TError,
-    { slug: string; labelSlug: string },
+    RemoveArticleLabelMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -363,6 +399,27 @@ export const setArticleQuoting = async (
     setArticleQuotingRequest: SetArticleQuotingRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<setArticleQuotingResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<setArticleQuotingResponseSuccess>(
         getSetArticleQuotingUrl(slug),
         {
@@ -370,12 +427,15 @@ export const setArticleQuoting = async (
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(setArticleQuotingRequest),
         },
     );
 };
+
+export const getSetArticleQuotingMutationKey = () =>
+    ["setArticleQuoting"] as const;
 
 export const getSetArticleQuotingMutationOptions = <
     TError = void,
@@ -384,17 +444,17 @@ export const getSetArticleQuotingMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof setArticleQuoting>>,
         TError,
-        { slug: string; data: SetArticleQuotingRequest },
+        SetArticleQuotingMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof setArticleQuoting>>,
     TError,
-    { slug: string; data: SetArticleQuotingRequest },
+    SetArticleQuotingMutationVariables,
     TContext
 > => {
-    const mutationKey = ["setArticleQuoting"];
+    const mutationKey = getSetArticleQuotingMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -405,7 +465,7 @@ export const getSetArticleQuotingMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof setArticleQuoting>>,
-        { slug: string; data: SetArticleQuotingRequest }
+        SetArticleQuotingMutationVariables
     > = (props) => {
         const { slug, data } = props ?? {};
 
@@ -420,6 +480,10 @@ export type SetArticleQuotingMutationResult = NonNullable<
 >;
 export type SetArticleQuotingMutationBody = SetArticleQuotingRequest;
 export type SetArticleQuotingMutationError = void;
+export type SetArticleQuotingMutationVariables = {
+    slug: string;
+    data: SetArticleQuotingRequest;
+};
 
 /**
  * @summary Turn the reader's sentence-selection layer on or off for one
@@ -430,7 +494,7 @@ export const useSetArticleQuoting = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof setArticleQuoting>>,
             TError,
-            { slug: string; data: SetArticleQuotingRequest },
+            SetArticleQuotingMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -439,7 +503,7 @@ export const useSetArticleQuoting = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof setArticleQuoting>>,
     TError,
-    { slug: string; data: SetArticleQuotingRequest },
+    SetArticleQuotingMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -670,11 +734,19 @@ export const getListPublishedArticlesSuspenseQueryOptions = <
     > = ({ signal }) =>
         listPublishedArticles(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listPublishedArticles>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListPublishedArticlesSuspenseQueryResult = NonNullable<
@@ -819,13 +891,39 @@ export const createArticle = async (
     createArticleRequest: CreateArticleRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createArticleResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createArticleResponseSuccess>(getCreateArticleUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(createArticleRequest),
     });
 };
+
+export const getCreateArticleMutationKey = () => ["createArticle"] as const;
 
 export const getCreateArticleMutationOptions = <
     TError = void,
@@ -834,17 +932,17 @@ export const getCreateArticleMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createArticle>>,
         TError,
-        { data: CreateArticleRequest },
+        CreateArticleMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createArticle>>,
     TError,
-    { data: CreateArticleRequest },
+    CreateArticleMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createArticle"];
+    const mutationKey = getCreateArticleMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -855,7 +953,7 @@ export const getCreateArticleMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createArticle>>,
-        { data: CreateArticleRequest }
+        CreateArticleMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -870,6 +968,7 @@ export type CreateArticleMutationResult = NonNullable<
 >;
 export type CreateArticleMutationBody = CreateArticleRequest;
 export type CreateArticleMutationError = void;
+export type CreateArticleMutationVariables = { data: CreateArticleRequest };
 
 /**
  * @summary Create a new article
@@ -879,7 +978,7 @@ export const useCreateArticle = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createArticle>>,
             TError,
-            { data: CreateArticleRequest },
+            CreateArticleMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -888,7 +987,7 @@ export const useCreateArticle = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createArticle>>,
     TError,
-    { data: CreateArticleRequest },
+    CreateArticleMutationVariables,
     TContext
 > => {
     return useMutation(getCreateArticleMutationOptions(options), queryClient);
@@ -1113,11 +1212,19 @@ export const getGetArticleByIdSuspenseQueryOptions = <
         Awaited<ReturnType<typeof getArticleById>>
     > = ({ signal }) => getArticleById(id, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getArticleById>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetArticleByIdSuspenseQueryResult = NonNullable<
@@ -1435,11 +1542,19 @@ export const getGetPublishedArticleSuspenseQueryOptions = <
     > = ({ signal }) =>
         getPublishedArticle(slug, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getPublishedArticle>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetPublishedArticleSuspenseQueryResult = NonNullable<
@@ -2004,11 +2119,19 @@ export const getListArticleReferencesSuspenseQueryOptions = <
     > = ({ signal }) =>
         listArticleReferences(slug, params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listArticleReferences>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListArticleReferencesSuspenseQueryResult = NonNullable<
@@ -2309,11 +2432,19 @@ export const getListEditorialLabelsSuspenseQueryOptions = <
         Awaited<ReturnType<typeof listEditorialLabels>>
     > = ({ signal }) => listEditorialLabels({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listEditorialLabels>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListEditorialLabelsSuspenseQueryResult = NonNullable<
@@ -2637,11 +2768,19 @@ export const getListUserArticlesSuspenseQueryOptions = <
         Awaited<ReturnType<typeof listUserArticles>>
     > = ({ signal }) => listUserArticles(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listUserArticles>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListUserArticlesSuspenseQueryResult = NonNullable<
@@ -2964,11 +3103,19 @@ export const getGetUserArticleSuspenseQueryOptions = <
         Awaited<ReturnType<typeof getUserArticle>>
     > = ({ signal }) => getUserArticle(slug, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getUserArticle>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetUserArticleSuspenseQueryResult = NonNullable<
@@ -3117,6 +3264,27 @@ export const updateArticle = async (
     updateArticleRequest: UpdateArticleRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateArticleResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateArticleResponseSuccess>(
         getUpdateArticleUrl(slug),
         {
@@ -3124,12 +3292,14 @@ export const updateArticle = async (
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(updateArticleRequest),
         },
     );
 };
+
+export const getUpdateArticleMutationKey = () => ["updateArticle"] as const;
 
 export const getUpdateArticleMutationOptions = <
     TError = void,
@@ -3138,17 +3308,17 @@ export const getUpdateArticleMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateArticle>>,
         TError,
-        { slug: string; data: UpdateArticleRequest },
+        UpdateArticleMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateArticle>>,
     TError,
-    { slug: string; data: UpdateArticleRequest },
+    UpdateArticleMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateArticle"];
+    const mutationKey = getUpdateArticleMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -3159,7 +3329,7 @@ export const getUpdateArticleMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateArticle>>,
-        { slug: string; data: UpdateArticleRequest }
+        UpdateArticleMutationVariables
     > = (props) => {
         const { slug, data } = props ?? {};
 
@@ -3174,6 +3344,10 @@ export type UpdateArticleMutationResult = NonNullable<
 >;
 export type UpdateArticleMutationBody = UpdateArticleRequest;
 export type UpdateArticleMutationError = void;
+export type UpdateArticleMutationVariables = {
+    slug: string;
+    data: UpdateArticleRequest;
+};
 
 /**
  * @summary Update an article (owner only)
@@ -3183,7 +3357,7 @@ export const useUpdateArticle = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateArticle>>,
             TError,
-            { slug: string; data: UpdateArticleRequest },
+            UpdateArticleMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -3192,7 +3366,7 @@ export const useUpdateArticle = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateArticle>>,
     TError,
-    { slug: string; data: UpdateArticleRequest },
+    UpdateArticleMutationVariables,
     TContext
 > => {
     return useMutation(getUpdateArticleMutationOptions(options), queryClient);
@@ -3242,6 +3416,8 @@ export const archiveArticle = async (
     );
 };
 
+export const getArchiveArticleMutationKey = () => ["archiveArticle"] as const;
+
 export const getArchiveArticleMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -3249,17 +3425,17 @@ export const getArchiveArticleMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof archiveArticle>>,
         TError,
-        { slug: string },
+        ArchiveArticleMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof archiveArticle>>,
     TError,
-    { slug: string },
+    ArchiveArticleMutationVariables,
     TContext
 > => {
-    const mutationKey = ["archiveArticle"];
+    const mutationKey = getArchiveArticleMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -3270,7 +3446,7 @@ export const getArchiveArticleMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof archiveArticle>>,
-        { slug: string }
+        ArchiveArticleMutationVariables
     > = (props) => {
         const { slug } = props ?? {};
 
@@ -3285,6 +3461,7 @@ export type ArchiveArticleMutationResult = NonNullable<
 >;
 
 export type ArchiveArticleMutationError = void;
+export type ArchiveArticleMutationVariables = { slug: string };
 
 /**
  * @summary Archive an article (one-way from published)
@@ -3294,7 +3471,7 @@ export const useArchiveArticle = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof archiveArticle>>,
             TError,
-            { slug: string },
+            ArchiveArticleMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -3303,7 +3480,7 @@ export const useArchiveArticle = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof archiveArticle>>,
     TError,
-    { slug: string },
+    ArchiveArticleMutationVariables,
     TContext
 > => {
     return useMutation(getArchiveArticleMutationOptions(options), queryClient);
@@ -3365,6 +3542,8 @@ export const publishArticle = async (
     );
 };
 
+export const getPublishArticleMutationKey = () => ["publishArticle"] as const;
+
 export const getPublishArticleMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -3372,17 +3551,17 @@ export const getPublishArticleMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof publishArticle>>,
         TError,
-        { slug: string },
+        PublishArticleMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof publishArticle>>,
     TError,
-    { slug: string },
+    PublishArticleMutationVariables,
     TContext
 > => {
-    const mutationKey = ["publishArticle"];
+    const mutationKey = getPublishArticleMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -3393,7 +3572,7 @@ export const getPublishArticleMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof publishArticle>>,
-        { slug: string }
+        PublishArticleMutationVariables
     > = (props) => {
         const { slug } = props ?? {};
 
@@ -3408,6 +3587,7 @@ export type PublishArticleMutationResult = NonNullable<
 >;
 
 export type PublishArticleMutationError = void;
+export type PublishArticleMutationVariables = { slug: string };
 
 /**
  * @summary Publish an article
@@ -3417,7 +3597,7 @@ export const usePublishArticle = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof publishArticle>>,
             TError,
-            { slug: string },
+            PublishArticleMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -3426,7 +3606,7 @@ export const usePublishArticle = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof publishArticle>>,
     TError,
-    { slug: string },
+    PublishArticleMutationVariables,
     TContext
 > => {
     return useMutation(getPublishArticleMutationOptions(options), queryClient);

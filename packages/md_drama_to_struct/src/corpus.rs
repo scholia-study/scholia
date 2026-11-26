@@ -86,6 +86,7 @@ pub fn ibsen1() -> Corpus {
         book: BookData {
             slug: ibsen1::BOOK_SLUG.into(),
             title: ibsen1::BOOK_TITLE.into(),
+            short_title: None,
             author: ibsen1::AUTHOR.into(),
             language: ibsen1::LANGUAGE.into(),
             publisher: Some(ibsen1::PUBLISHER.into()),
@@ -121,6 +122,7 @@ pub fn ibsen1_translation() -> Corpus {
         book: BookData {
             slug: ibsen1::BOOK_SLUG_EN.into(),
             title: ibsen1::BOOK_TITLE_EN.into(),
+            short_title: None,
             author: ibsen1::AUTHOR.into(),
             language: ibsen1::LANGUAGE_EN.into(),
             publisher: Some(ibsen1::PUBLISHER_EN.into()),
@@ -169,6 +171,7 @@ pub fn plato2() -> Corpus {
         book: BookData {
             slug: meta::BOOK_SLUG.into(),
             title: meta::BOOK_TITLE.into(),
+            short_title: None,
             author: meta::AUTHOR.into(),
             language: meta::LANGUAGE.into(),
             publisher: Some(meta::PUBLISHER.into()),
@@ -204,6 +207,7 @@ pub fn plato2_translation() -> Corpus {
         book: BookData {
             slug: meta::BOOK_SLUG_EN.into(),
             title: meta::BOOK_TITLE_EN.into(),
+            short_title: None,
             author: meta::AUTHOR.into(),
             language: meta::LANGUAGE_EN.into(),
             publisher: Some(meta::PUBLISHER_EN.into()),

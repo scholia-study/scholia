@@ -76,6 +76,9 @@ export const uploadArticleImage = async (
     );
 };
 
+export const getUploadArticleImageMutationKey = () =>
+    ["uploadArticleImage"] as const;
+
 export const getUploadArticleImageMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -83,17 +86,17 @@ export const getUploadArticleImageMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof uploadArticleImage>>,
         TError,
-        { data: UploadImageForm },
+        UploadArticleImageMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof uploadArticleImage>>,
     TError,
-    { data: UploadImageForm },
+    UploadArticleImageMutationVariables,
     TContext
 > => {
-    const mutationKey = ["uploadArticleImage"];
+    const mutationKey = getUploadArticleImageMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -104,7 +107,7 @@ export const getUploadArticleImageMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof uploadArticleImage>>,
-        { data: UploadImageForm }
+        UploadArticleImageMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -119,6 +122,7 @@ export type UploadArticleImageMutationResult = NonNullable<
 >;
 export type UploadArticleImageMutationBody = UploadImageForm;
 export type UploadArticleImageMutationError = void;
+export type UploadArticleImageMutationVariables = { data: UploadImageForm };
 
 /**
  * @summary Upload an image for embedding in an article figure
@@ -128,7 +132,7 @@ export const useUploadArticleImage = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof uploadArticleImage>>,
             TError,
-            { data: UploadImageForm },
+            UploadArticleImageMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -137,7 +141,7 @@ export const useUploadArticleImage = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof uploadArticleImage>>,
     TError,
-    { data: UploadImageForm },
+    UploadArticleImageMutationVariables,
     TContext
 > => {
     return useMutation(

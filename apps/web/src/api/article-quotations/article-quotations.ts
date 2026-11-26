@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     ArticleQuotationListResponse,
@@ -250,11 +255,19 @@ export const getListArticleQuotationsSuspenseQueryOptions = <
         Awaited<ReturnType<typeof listArticleQuotations>>
     > = ({ signal }) => listArticleQuotations({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listArticleQuotations>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListArticleQuotationsSuspenseQueryResult = NonNullable<
@@ -393,6 +406,27 @@ export const createArticleQuotation = async (
     createArticleQuotationRequest: CreateArticleQuotationRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createArticleQuotationResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createArticleQuotationResponseSuccess>(
         getCreateArticleQuotationUrl(),
         {
@@ -400,12 +434,15 @@ export const createArticleQuotation = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(createArticleQuotationRequest),
         },
     );
 };
+
+export const getCreateArticleQuotationMutationKey = () =>
+    ["createArticleQuotation"] as const;
 
 export const getCreateArticleQuotationMutationOptions = <
     TError = void,
@@ -414,17 +451,17 @@ export const getCreateArticleQuotationMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createArticleQuotation>>,
         TError,
-        { data: CreateArticleQuotationRequest },
+        CreateArticleQuotationMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createArticleQuotation>>,
     TError,
-    { data: CreateArticleQuotationRequest },
+    CreateArticleQuotationMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createArticleQuotation"];
+    const mutationKey = getCreateArticleQuotationMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -435,7 +472,7 @@ export const getCreateArticleQuotationMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createArticleQuotation>>,
-        { data: CreateArticleQuotationRequest }
+        CreateArticleQuotationMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -450,6 +487,9 @@ export type CreateArticleQuotationMutationResult = NonNullable<
 >;
 export type CreateArticleQuotationMutationBody = CreateArticleQuotationRequest;
 export type CreateArticleQuotationMutationError = void;
+export type CreateArticleQuotationMutationVariables = {
+    data: CreateArticleQuotationRequest;
+};
 
 /**
  * @summary Save a quotation from an article (returns existing if duplicate)
@@ -459,7 +499,7 @@ export const useCreateArticleQuotation = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createArticleQuotation>>,
             TError,
-            { data: CreateArticleQuotationRequest },
+            CreateArticleQuotationMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -468,7 +508,7 @@ export const useCreateArticleQuotation = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createArticleQuotation>>,
     TError,
-    { data: CreateArticleQuotationRequest },
+    CreateArticleQuotationMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -699,11 +739,19 @@ export const getGetArticleQuotationSuspenseQueryOptions = <
         Awaited<ReturnType<typeof getArticleQuotation>>
     > = ({ signal }) => getArticleQuotation(id, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getArticleQuotation>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetArticleQuotationSuspenseQueryResult = NonNullable<
@@ -858,6 +906,9 @@ export const deleteArticleQuotation = async (
     );
 };
 
+export const getDeleteArticleQuotationMutationKey = () =>
+    ["deleteArticleQuotation"] as const;
+
 export const getDeleteArticleQuotationMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -865,17 +916,17 @@ export const getDeleteArticleQuotationMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof deleteArticleQuotation>>,
         TError,
-        { id: string },
+        DeleteArticleQuotationMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof deleteArticleQuotation>>,
     TError,
-    { id: string },
+    DeleteArticleQuotationMutationVariables,
     TContext
 > => {
-    const mutationKey = ["deleteArticleQuotation"];
+    const mutationKey = getDeleteArticleQuotationMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -886,7 +937,7 @@ export const getDeleteArticleQuotationMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof deleteArticleQuotation>>,
-        { id: string }
+        DeleteArticleQuotationMutationVariables
     > = (props) => {
         const { id } = props ?? {};
 
@@ -901,6 +952,7 @@ export type DeleteArticleQuotationMutationResult = NonNullable<
 >;
 
 export type DeleteArticleQuotationMutationError = void;
+export type DeleteArticleQuotationMutationVariables = { id: string };
 
 /**
  * @summary Delete an article quotation
@@ -910,7 +962,7 @@ export const useDeleteArticleQuotation = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof deleteArticleQuotation>>,
             TError,
-            { id: string },
+            DeleteArticleQuotationMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -919,7 +971,7 @@ export const useDeleteArticleQuotation = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof deleteArticleQuotation>>,
     TError,
-    { id: string },
+    DeleteArticleQuotationMutationVariables,
     TContext
 > => {
     return useMutation(

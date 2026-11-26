@@ -18,7 +18,11 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type { TagListResponse } from "../model";
 
@@ -215,11 +219,19 @@ export const getListTagsSuspenseQueryOptions = <
         signal,
     }) => listTags({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listTags>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListTagsSuspenseQueryResult = NonNullable<

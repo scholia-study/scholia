@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     BrowseSourcesParams,
@@ -285,11 +290,19 @@ export const getSearchSourcesSuspenseQueryOptions = <
         signal,
     }) => searchSources(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof searchSources>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type SearchSourcesSuspenseQueryResult = NonNullable<
@@ -431,13 +444,39 @@ export const createSource = async (
     createSourceRequest: CreateSourceRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createSourceResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createSourceResponseSuccess>(getCreateSourceUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(createSourceRequest),
     });
 };
+
+export const getCreateSourceMutationKey = () => ["createSource"] as const;
 
 export const getCreateSourceMutationOptions = <
     TError = void,
@@ -446,17 +485,17 @@ export const getCreateSourceMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createSource>>,
         TError,
-        { data: CreateSourceRequest },
+        CreateSourceMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createSource>>,
     TError,
-    { data: CreateSourceRequest },
+    CreateSourceMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createSource"];
+    const mutationKey = getCreateSourceMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -467,7 +506,7 @@ export const getCreateSourceMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createSource>>,
-        { data: CreateSourceRequest }
+        CreateSourceMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -482,6 +521,7 @@ export type CreateSourceMutationResult = NonNullable<
 >;
 export type CreateSourceMutationBody = CreateSourceRequest;
 export type CreateSourceMutationError = void;
+export type CreateSourceMutationVariables = { data: CreateSourceRequest };
 
 /**
  * @summary Create a new source
@@ -491,7 +531,7 @@ export const useCreateSource = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createSource>>,
             TError,
-            { data: CreateSourceRequest },
+            CreateSourceMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -500,7 +540,7 @@ export const useCreateSource = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createSource>>,
     TError,
-    { data: CreateSourceRequest },
+    CreateSourceMutationVariables,
     TContext
 > => {
     return useMutation(getCreateSourceMutationOptions(options), queryClient);
@@ -735,11 +775,19 @@ export const getBrowseSourcesSuspenseQueryOptions = <
         signal,
     }) => browseSources(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof browseSources>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type BrowseSourcesSuspenseQueryResult = NonNullable<
@@ -1068,11 +1116,19 @@ export const getGetSourceSuspenseQueryOptions = <
         signal,
     }) => getSource(id, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getSource>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetSourceSuspenseQueryResult = NonNullable<
@@ -1221,13 +1277,39 @@ export const updateSource = async (
     updateSourceRequest: UpdateSourceRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateSourceResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateSourceResponseSuccess>(getUpdateSourceUrl(id), {
         ...options,
         method: "PUT",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(updateSourceRequest),
     });
 };
+
+export const getUpdateSourceMutationKey = () => ["updateSource"] as const;
 
 export const getUpdateSourceMutationOptions = <
     TError = void,
@@ -1236,17 +1318,17 @@ export const getUpdateSourceMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateSource>>,
         TError,
-        { id: string; data: UpdateSourceRequest },
+        UpdateSourceMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateSource>>,
     TError,
-    { id: string; data: UpdateSourceRequest },
+    UpdateSourceMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateSource"];
+    const mutationKey = getUpdateSourceMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1257,7 +1339,7 @@ export const getUpdateSourceMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateSource>>,
-        { id: string; data: UpdateSourceRequest }
+        UpdateSourceMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -1272,6 +1354,10 @@ export type UpdateSourceMutationResult = NonNullable<
 >;
 export type UpdateSourceMutationBody = UpdateSourceRequest;
 export type UpdateSourceMutationError = void;
+export type UpdateSourceMutationVariables = {
+    id: string;
+    data: UpdateSourceRequest;
+};
 
 /**
  * @summary Update an existing source
@@ -1281,7 +1367,7 @@ export const useUpdateSource = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateSource>>,
             TError,
-            { id: string; data: UpdateSourceRequest },
+            UpdateSourceMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1290,7 +1376,7 @@ export const useUpdateSource = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateSource>>,
     TError,
-    { id: string; data: UpdateSourceRequest },
+    UpdateSourceMutationVariables,
     TContext
 > => {
     return useMutation(getUpdateSourceMutationOptions(options), queryClient);
@@ -1350,6 +1436,8 @@ export const deleteSource = async (
     });
 };
 
+export const getDeleteSourceMutationKey = () => ["deleteSource"] as const;
+
 export const getDeleteSourceMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -1357,17 +1445,17 @@ export const getDeleteSourceMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof deleteSource>>,
         TError,
-        { id: string },
+        DeleteSourceMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof deleteSource>>,
     TError,
-    { id: string },
+    DeleteSourceMutationVariables,
     TContext
 > => {
-    const mutationKey = ["deleteSource"];
+    const mutationKey = getDeleteSourceMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1378,7 +1466,7 @@ export const getDeleteSourceMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof deleteSource>>,
-        { id: string }
+        DeleteSourceMutationVariables
     > = (props) => {
         const { id } = props ?? {};
 
@@ -1393,6 +1481,7 @@ export type DeleteSourceMutationResult = NonNullable<
 >;
 
 export type DeleteSourceMutationError = void;
+export type DeleteSourceMutationVariables = { id: string };
 
 /**
  * @summary Delete a source. Blocks when any references exist (resources, child
@@ -1403,7 +1492,7 @@ export const useDeleteSource = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof deleteSource>>,
             TError,
-            { id: string },
+            DeleteSourceMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1412,7 +1501,7 @@ export const useDeleteSource = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof deleteSource>>,
     TError,
-    { id: string },
+    DeleteSourceMutationVariables,
     TContext
 > => {
     return useMutation(getDeleteSourceMutationOptions(options), queryClient);
@@ -1466,6 +1555,27 @@ export const addSourcePerson = async (
     linkSourcePersonRequest: LinkSourcePersonRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<addSourcePersonResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<addSourcePersonResponseSuccess>(
         getAddSourcePersonUrl(id),
         {
@@ -1473,12 +1583,14 @@ export const addSourcePerson = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(linkSourcePersonRequest),
         },
     );
 };
+
+export const getAddSourcePersonMutationKey = () => ["addSourcePerson"] as const;
 
 export const getAddSourcePersonMutationOptions = <
     TError = void,
@@ -1487,17 +1599,17 @@ export const getAddSourcePersonMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof addSourcePerson>>,
         TError,
-        { id: string; data: LinkSourcePersonRequest },
+        AddSourcePersonMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof addSourcePerson>>,
     TError,
-    { id: string; data: LinkSourcePersonRequest },
+    AddSourcePersonMutationVariables,
     TContext
 > => {
-    const mutationKey = ["addSourcePerson"];
+    const mutationKey = getAddSourcePersonMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1508,7 +1620,7 @@ export const getAddSourcePersonMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof addSourcePerson>>,
-        { id: string; data: LinkSourcePersonRequest }
+        AddSourcePersonMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -1523,6 +1635,10 @@ export type AddSourcePersonMutationResult = NonNullable<
 >;
 export type AddSourcePersonMutationBody = LinkSourcePersonRequest;
 export type AddSourcePersonMutationError = void;
+export type AddSourcePersonMutationVariables = {
+    id: string;
+    data: LinkSourcePersonRequest;
+};
 
 /**
  * @summary Link a person to a source with a role
@@ -1532,7 +1648,7 @@ export const useAddSourcePerson = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof addSourcePerson>>,
             TError,
-            { id: string; data: LinkSourcePersonRequest },
+            AddSourcePersonMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1541,7 +1657,7 @@ export const useAddSourcePerson = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof addSourcePerson>>,
     TError,
-    { id: string; data: LinkSourcePersonRequest },
+    AddSourcePersonMutationVariables,
     TContext
 > => {
     return useMutation(getAddSourcePersonMutationOptions(options), queryClient);
@@ -1610,6 +1726,9 @@ export const removeSourcePerson = async (
     );
 };
 
+export const getRemoveSourcePersonMutationKey = () =>
+    ["removeSourcePerson"] as const;
+
 export const getRemoveSourcePersonMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -1617,17 +1736,17 @@ export const getRemoveSourcePersonMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof removeSourcePerson>>,
         TError,
-        { id: string; personId: string; role: string },
+        RemoveSourcePersonMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof removeSourcePerson>>,
     TError,
-    { id: string; personId: string; role: string },
+    RemoveSourcePersonMutationVariables,
     TContext
 > => {
-    const mutationKey = ["removeSourcePerson"];
+    const mutationKey = getRemoveSourcePersonMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1638,7 +1757,7 @@ export const getRemoveSourcePersonMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof removeSourcePerson>>,
-        { id: string; personId: string; role: string }
+        RemoveSourcePersonMutationVariables
     > = (props) => {
         const { id, personId, role } = props ?? {};
 
@@ -1653,6 +1772,11 @@ export type RemoveSourcePersonMutationResult = NonNullable<
 >;
 
 export type RemoveSourcePersonMutationError = void;
+export type RemoveSourcePersonMutationVariables = {
+    id: string;
+    personId: string;
+    role: string;
+};
 
 /**
  * @summary Remove a person from a source
@@ -1662,7 +1786,7 @@ export const useRemoveSourcePerson = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof removeSourcePerson>>,
             TError,
-            { id: string; personId: string; role: string },
+            RemoveSourcePersonMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1671,7 +1795,7 @@ export const useRemoveSourcePerson = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof removeSourcePerson>>,
     TError,
-    { id: string; personId: string; role: string },
+    RemoveSourcePersonMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -1910,11 +2034,19 @@ export const getCheckSourceReferencesSuspenseQueryOptions = <
     > = ({ signal }) =>
         checkSourceReferences(id, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof checkSourceReferences>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type CheckSourceReferencesSuspenseQueryResult = NonNullable<

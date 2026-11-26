@@ -233,6 +233,8 @@ type SpineEdition = { label: string; target: WorkTarget | null };
 type Spine = {
     key: string;
     title: string;
+    /** Spine lettering; the short title when the edition sets one. */
+    lettering: string;
     author: string;
     year: string;
     /** Each edition the work exists in, so the hover card can link them. */
@@ -329,6 +331,7 @@ function buildSpines(
                 // title of one representative translation ("American
                 // Standard Version"), which is never what the shelf means.
                 title: group.primary_label,
+                lettering: group.primary_label,
                 author: "",
                 year: "",
                 editions: versions.map((v) => ({
@@ -349,6 +352,7 @@ function buildSpines(
             spines.push({
                 key: group.id,
                 title: group.primary_label,
+                lettering: group.primary_label,
                 author: "",
                 year: "",
                 editions: [],
@@ -367,6 +371,7 @@ function buildSpines(
             spines.push({
                 key: work.work_id,
                 title: work.title,
+                lettering: work.short_title ?? work.title,
                 author: group.primary_label,
                 year: work.publication_year
                     ? String(work.publication_year)
@@ -379,7 +384,10 @@ function buildSpines(
                 // either side of an era boundary and should show it.
                 accent: accentFor(group.primary_label, work.publication_year),
                 length: edition?.text_length ?? 0,
-                height: spineHeight(work.work_id, work.title),
+                height: spineHeight(
+                    work.work_id,
+                    work.short_title ?? work.title,
+                ),
                 target: targetOf(edition),
             });
         }
@@ -520,7 +528,7 @@ function SpineFace({ spine }: { spine: Spine }) {
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-2.5 bg-black/25"
             />
             <span className="[writing-mode:vertical-rl] max-h-[calc(100%-2rem)] overflow-hidden text-ellipsis whitespace-nowrap text-[0.78rem] tracking-[0.06em] text-white/90">
-                {spine.title}
+                {spine.lettering}
             </span>
         </>
     );

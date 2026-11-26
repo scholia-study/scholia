@@ -280,6 +280,14 @@ pub async fn run(
                 .bind(&output.book.licence)
                 .execute(&mut *tx)
                 .await?;
+            sqlx::query(
+                "UPDATE sources SET title_short = $2
+                 WHERE id = (SELECT source_id FROM books WHERE id = $1)",
+            )
+            .bind(id)
+            .bind(&output.book.short_title)
+            .execute(&mut *tx)
+            .await?;
 
             let systems_book_id = source_book_id.unwrap_or(id);
             let mut system_ids: HashMap<String, Uuid> = HashMap::new();
@@ -425,8 +433,8 @@ pub async fn run(
     let bib_source_id: Uuid = sqlx::query_scalar(
         "INSERT INTO sources (source_type, title, publication_year, original_year, original_year_circa,
                               publisher, publication_place, edition, volume, url, translation_of_id,
-                              protected, created_by)
-         VALUES ('book', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true, $11)
+                              title_short, protected, created_by)
+         VALUES ('book', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, true, $12)
          RETURNING id",
     )
     .bind(&output.book.title)
@@ -439,6 +447,7 @@ pub async fn run(
     .bind(&output.book.volume)
     .bind(&output.book.url)
     .bind(translation_of_id)
+    .bind(&output.book.short_title)
     .bind(system_user_id)
     .fetch_one(&mut *tx)
     .await?;

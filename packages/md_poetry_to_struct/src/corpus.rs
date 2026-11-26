@@ -111,6 +111,7 @@ pub fn shakespeare() -> Corpus {
         book: BookData {
             slug: sonnets::BOOK_SLUG.into(),
             title: sonnets::BOOK_TITLE.into(),
+            short_title: None,
             author: "William Shakespeare".into(),
             language: "en".into(),
             publisher: Some(sonnets::PUBLISHER.into()),
@@ -171,6 +172,7 @@ pub fn milton() -> Corpus {
         book: BookData {
             slug: milton1::BOOK_SLUG.into(),
             title: milton1::BOOK_TITLE.into(),
+            short_title: None,
             author: "John Milton".into(),
             language: "en".into(),
             publisher: Some(milton1::PUBLISHER.into()),

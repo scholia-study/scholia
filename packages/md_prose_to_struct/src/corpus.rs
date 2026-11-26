@@ -940,7 +940,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
         }
         "hegel4" => {
             use common::hegel4::{filenames, meta, toc, toc_mod};
-            let (book, output_file) = if translation {
+            let (mut book, output_file) = if translation {
                 (
                     book_data(BookSpec {
                         slug: meta::BOOK_SLUG_EN,
@@ -985,6 +985,14 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                     meta::OUTPUT_FILE,
                 )
             };
+            book.short_title = Some(
+                if translation {
+                    meta::BOOK_SHORT_TITLE_EN
+                } else {
+                    meta::BOOK_SHORT_TITLE
+                }
+                .to_string(),
+            );
             Some(Corpus {
                 name: "hegel4",
                 book,
@@ -1050,6 +1058,7 @@ fn book_data(spec: BookSpec) -> BookData {
     BookData {
         slug: spec.slug.to_string(),
         title: spec.title.to_string(),
+        short_title: None,
         author: spec.author.to_string(),
         language: spec.language.to_string(),
         publisher: spec.imprint.publisher.map(str::to_string),

@@ -25,6 +25,7 @@ import type {
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
 import {
+    queryOptions as queryOptionsBuilder,
     useInfiniteQuery,
     useQuery,
     useSuspenseInfiniteQuery,
@@ -514,11 +515,19 @@ export const getGetNodePageSuspenseQueryOptions = <
         signal,
     }) => getNodePage(slug, params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getNodePage>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetNodePageSuspenseQueryResult = NonNullable<
@@ -1043,11 +1052,19 @@ export const getGetNodeSuspenseQueryOptions = <
         signal,
     }) => getNode(slug, nodeSlug, params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getNode>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetNodeSuspenseQueryResult = NonNullable<
@@ -1385,11 +1402,19 @@ export const getGetNodeMetaSuspenseQueryOptions = <
         signal,
     }) => getNodeMeta(slug, nodeSlug, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getNodeMeta>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetNodeMetaSuspenseQueryResult = NonNullable<

@@ -18,7 +18,11 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     AboutThisTextResponse,
@@ -229,11 +233,19 @@ export const getListBooksSuspenseQueryOptions = <
         signal,
     }) => listBooks({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listBooks>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListBooksSuspenseQueryResult = NonNullable<
@@ -516,11 +528,19 @@ export const getGetBookSuspenseQueryOptions = <
         signal,
     }) => getBook(slug, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getBook>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetBookSuspenseQueryResult = NonNullable<
@@ -868,11 +888,19 @@ export const getGetBookAboutSuspenseQueryOptions = <
         signal,
     }) => getBookAbout(slug, params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getBookAbout>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetBookAboutSuspenseQueryResult = NonNullable<
@@ -1164,11 +1192,19 @@ export const getGetLibrarySuspenseQueryOptions = <
         signal,
     }) => getLibrary({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getLibrary>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetLibrarySuspenseQueryResult = NonNullable<

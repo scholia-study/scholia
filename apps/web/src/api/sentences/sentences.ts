@@ -45,13 +45,39 @@ export const batchSentences = async (
     batchSentencesRequest: BatchSentencesRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<batchSentencesResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<batchSentencesResponseSuccess>(getBatchSentencesUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(batchSentencesRequest),
     });
 };
+
+export const getBatchSentencesMutationKey = () => ["batchSentences"] as const;
 
 export const getBatchSentencesMutationOptions = <
     TError = void,
@@ -60,17 +86,17 @@ export const getBatchSentencesMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof batchSentences>>,
         TError,
-        { data: BatchSentencesRequest },
+        BatchSentencesMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof batchSentences>>,
     TError,
-    { data: BatchSentencesRequest },
+    BatchSentencesMutationVariables,
     TContext
 > => {
-    const mutationKey = ["batchSentences"];
+    const mutationKey = getBatchSentencesMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -81,7 +107,7 @@ export const getBatchSentencesMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof batchSentences>>,
-        { data: BatchSentencesRequest }
+        BatchSentencesMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -96,6 +122,7 @@ export type BatchSentencesMutationResult = NonNullable<
 >;
 export type BatchSentencesMutationBody = BatchSentencesRequest;
 export type BatchSentencesMutationError = void;
+export type BatchSentencesMutationVariables = { data: BatchSentencesRequest };
 
 /**
  * @summary Batch fetch sentences for quotation card hydration
@@ -105,7 +132,7 @@ export const useBatchSentences = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof batchSentences>>,
             TError,
-            { data: BatchSentencesRequest },
+            BatchSentencesMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -114,7 +141,7 @@ export const useBatchSentences = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof batchSentences>>,
     TError,
-    { data: BatchSentencesRequest },
+    BatchSentencesMutationVariables,
     TContext
 > => {
     return useMutation(getBatchSentencesMutationOptions(options), queryClient);

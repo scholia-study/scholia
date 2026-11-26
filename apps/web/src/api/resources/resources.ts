@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     CreateResourceRequest,
@@ -299,11 +304,19 @@ export const getListResourceSubmissionsSuspenseQueryOptions = <
     > = ({ signal }) =>
         listResourceSubmissions(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listResourceSubmissions>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListResourceSubmissionsSuspenseQueryResult = NonNullable<
@@ -456,6 +469,27 @@ export const reviewResourceSubmission = async (
     reviewSubmissionRequest: ReviewSubmissionRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<reviewResourceSubmissionResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<reviewResourceSubmissionResponseSuccess>(
         getReviewResourceSubmissionUrl(id),
         {
@@ -463,12 +497,15 @@ export const reviewResourceSubmission = async (
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(reviewSubmissionRequest),
         },
     );
 };
+
+export const getReviewResourceSubmissionMutationKey = () =>
+    ["reviewResourceSubmission"] as const;
 
 export const getReviewResourceSubmissionMutationOptions = <
     TError = void,
@@ -477,17 +514,17 @@ export const getReviewResourceSubmissionMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof reviewResourceSubmission>>,
         TError,
-        { id: string; data: ReviewSubmissionRequest },
+        ReviewResourceSubmissionMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof reviewResourceSubmission>>,
     TError,
-    { id: string; data: ReviewSubmissionRequest },
+    ReviewResourceSubmissionMutationVariables,
     TContext
 > => {
-    const mutationKey = ["reviewResourceSubmission"];
+    const mutationKey = getReviewResourceSubmissionMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -498,7 +535,7 @@ export const getReviewResourceSubmissionMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof reviewResourceSubmission>>,
-        { id: string; data: ReviewSubmissionRequest }
+        ReviewResourceSubmissionMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -513,6 +550,10 @@ export type ReviewResourceSubmissionMutationResult = NonNullable<
 >;
 export type ReviewResourceSubmissionMutationBody = ReviewSubmissionRequest;
 export type ReviewResourceSubmissionMutationError = void;
+export type ReviewResourceSubmissionMutationVariables = {
+    id: string;
+    data: ReviewSubmissionRequest;
+};
 
 /**
  * @summary Approve or reject a community submission (editors + admins).
@@ -522,7 +563,7 @@ export const useReviewResourceSubmission = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof reviewResourceSubmission>>,
             TError,
-            { id: string; data: ReviewSubmissionRequest },
+            ReviewResourceSubmissionMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -531,7 +572,7 @@ export const useReviewResourceSubmission = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof reviewResourceSubmission>>,
     TError,
-    { id: string; data: ReviewSubmissionRequest },
+    ReviewResourceSubmissionMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -784,11 +825,19 @@ export const getListResourcesSuspenseQueryOptions = <
         signal,
     }) => listResources(slug, params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listResources>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListResourcesSuspenseQueryResult = NonNullable<
@@ -941,6 +990,27 @@ export const createResource = async (
     createResourceRequest: CreateResourceRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createResourceResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createResourceResponseSuccess>(
         getCreateResourceUrl(slug),
         {
@@ -948,12 +1018,14 @@ export const createResource = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(createResourceRequest),
         },
     );
 };
+
+export const getCreateResourceMutationKey = () => ["createResource"] as const;
 
 export const getCreateResourceMutationOptions = <
     TError = void,
@@ -962,17 +1034,17 @@ export const getCreateResourceMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createResource>>,
         TError,
-        { slug: string; data: CreateResourceRequest },
+        CreateResourceMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createResource>>,
     TError,
-    { slug: string; data: CreateResourceRequest },
+    CreateResourceMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createResource"];
+    const mutationKey = getCreateResourceMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -983,7 +1055,7 @@ export const getCreateResourceMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createResource>>,
-        { slug: string; data: CreateResourceRequest }
+        CreateResourceMutationVariables
     > = (props) => {
         const { slug, data } = props ?? {};
 
@@ -998,6 +1070,10 @@ export type CreateResourceMutationResult = NonNullable<
 >;
 export type CreateResourceMutationBody = CreateResourceRequest;
 export type CreateResourceMutationError = void;
+export type CreateResourceMutationVariables = {
+    slug: string;
+    data: CreateResourceRequest;
+};
 
 /**
  * @summary Create a resource. Any authenticated user may submit; editors
@@ -1009,7 +1085,7 @@ export const useCreateResource = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createResource>>,
             TError,
-            { slug: string; data: CreateResourceRequest },
+            CreateResourceMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1018,7 +1094,7 @@ export const useCreateResource = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createResource>>,
     TError,
-    { slug: string; data: CreateResourceRequest },
+    CreateResourceMutationVariables,
     TContext
 > => {
     return useMutation(getCreateResourceMutationOptions(options), queryClient);
@@ -1073,6 +1149,27 @@ export const updateResource = async (
     updateResourceRequest: UpdateResourceRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateResourceResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateResourceResponseSuccess>(
         getUpdateResourceUrl(slug, id),
         {
@@ -1080,12 +1177,14 @@ export const updateResource = async (
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(updateResourceRequest),
         },
     );
 };
+
+export const getUpdateResourceMutationKey = () => ["updateResource"] as const;
 
 export const getUpdateResourceMutationOptions = <
     TError = void,
@@ -1094,17 +1193,17 @@ export const getUpdateResourceMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateResource>>,
         TError,
-        { slug: string; id: string; data: UpdateResourceRequest },
+        UpdateResourceMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateResource>>,
     TError,
-    { slug: string; id: string; data: UpdateResourceRequest },
+    UpdateResourceMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateResource"];
+    const mutationKey = getUpdateResourceMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1115,7 +1214,7 @@ export const getUpdateResourceMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateResource>>,
-        { slug: string; id: string; data: UpdateResourceRequest }
+        UpdateResourceMutationVariables
     > = (props) => {
         const { slug, id, data } = props ?? {};
 
@@ -1130,6 +1229,11 @@ export type UpdateResourceMutationResult = NonNullable<
 >;
 export type UpdateResourceMutationBody = UpdateResourceRequest;
 export type UpdateResourceMutationError = void;
+export type UpdateResourceMutationVariables = {
+    slug: string;
+    id: string;
+    data: UpdateResourceRequest;
+};
 
 /**
  * @summary Update an existing resource (editor only)
@@ -1139,7 +1243,7 @@ export const useUpdateResource = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateResource>>,
             TError,
-            { slug: string; id: string; data: UpdateResourceRequest },
+            UpdateResourceMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1148,7 +1252,7 @@ export const useUpdateResource = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateResource>>,
     TError,
-    { slug: string; id: string; data: UpdateResourceRequest },
+    UpdateResourceMutationVariables,
     TContext
 > => {
     return useMutation(getUpdateResourceMutationOptions(options), queryClient);
@@ -1211,6 +1315,8 @@ export const deleteResource = async (
     );
 };
 
+export const getDeleteResourceMutationKey = () => ["deleteResource"] as const;
+
 export const getDeleteResourceMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -1218,17 +1324,17 @@ export const getDeleteResourceMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof deleteResource>>,
         TError,
-        { slug: string; id: string },
+        DeleteResourceMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof deleteResource>>,
     TError,
-    { slug: string; id: string },
+    DeleteResourceMutationVariables,
     TContext
 > => {
-    const mutationKey = ["deleteResource"];
+    const mutationKey = getDeleteResourceMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1239,7 +1345,7 @@ export const getDeleteResourceMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof deleteResource>>,
-        { slug: string; id: string }
+        DeleteResourceMutationVariables
     > = (props) => {
         const { slug, id } = props ?? {};
 
@@ -1254,6 +1360,7 @@ export type DeleteResourceMutationResult = NonNullable<
 >;
 
 export type DeleteResourceMutationError = void;
+export type DeleteResourceMutationVariables = { slug: string; id: string };
 
 /**
  * @summary Soft-delete a resource (editor only)
@@ -1263,7 +1370,7 @@ export const useDeleteResource = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof deleteResource>>,
             TError,
-            { slug: string; id: string },
+            DeleteResourceMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1272,7 +1379,7 @@ export const useDeleteResource = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof deleteResource>>,
     TError,
-    { slug: string; id: string },
+    DeleteResourceMutationVariables,
     TContext
 > => {
     return useMutation(getDeleteResourceMutationOptions(options), queryClient);

@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     CollegiumDetailResponse,
@@ -284,11 +289,19 @@ export const getDiscoverCollegiaSuspenseQueryOptions = <
         Awaited<ReturnType<typeof discoverCollegia>>
     > = ({ signal }) => discoverCollegia(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof discoverCollegia>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type DiscoverCollegiaSuspenseQueryResult = NonNullable<
@@ -427,6 +440,27 @@ export const createCollegium = async (
     createCollegiumRequest: CreateCollegiumRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createCollegiumResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createCollegiumResponseSuccess>(
         getCreateCollegiumUrl(),
         {
@@ -434,12 +468,14 @@ export const createCollegium = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(createCollegiumRequest),
         },
     );
 };
+
+export const getCreateCollegiumMutationKey = () => ["createCollegium"] as const;
 
 export const getCreateCollegiumMutationOptions = <
     TError = void,
@@ -448,17 +484,17 @@ export const getCreateCollegiumMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createCollegium>>,
         TError,
-        { data: CreateCollegiumRequest },
+        CreateCollegiumMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createCollegium>>,
     TError,
-    { data: CreateCollegiumRequest },
+    CreateCollegiumMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createCollegium"];
+    const mutationKey = getCreateCollegiumMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -469,7 +505,7 @@ export const getCreateCollegiumMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createCollegium>>,
-        { data: CreateCollegiumRequest }
+        CreateCollegiumMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -484,6 +520,7 @@ export type CreateCollegiumMutationResult = NonNullable<
 >;
 export type CreateCollegiumMutationBody = CreateCollegiumRequest;
 export type CreateCollegiumMutationError = void;
+export type CreateCollegiumMutationVariables = { data: CreateCollegiumRequest };
 
 /**
  * @summary Create a collegium; the creator becomes its first admin
@@ -493,7 +530,7 @@ export const useCreateCollegium = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createCollegium>>,
             TError,
-            { data: CreateCollegiumRequest },
+            CreateCollegiumMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -502,7 +539,7 @@ export const useCreateCollegium = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createCollegium>>,
     TError,
-    { data: CreateCollegiumRequest },
+    CreateCollegiumMutationVariables,
     TContext
 > => {
     return useMutation(getCreateCollegiumMutationOptions(options), queryClient);
@@ -549,6 +586,8 @@ export const joinByToken = async (
     });
 };
 
+export const getJoinByTokenMutationKey = () => ["joinByToken"] as const;
+
 export const getJoinByTokenMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -556,17 +595,17 @@ export const getJoinByTokenMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof joinByToken>>,
         TError,
-        { token: string },
+        JoinByTokenMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof joinByToken>>,
     TError,
-    { token: string },
+    JoinByTokenMutationVariables,
     TContext
 > => {
-    const mutationKey = ["joinByToken"];
+    const mutationKey = getJoinByTokenMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -577,7 +616,7 @@ export const getJoinByTokenMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof joinByToken>>,
-        { token: string }
+        JoinByTokenMutationVariables
     > = (props) => {
         const { token } = props ?? {};
 
@@ -592,6 +631,7 @@ export type JoinByTokenMutationResult = NonNullable<
 >;
 
 export type JoinByTokenMutationError = void;
+export type JoinByTokenMutationVariables = { token: string };
 
 /**
  * @summary Join a collegium via an invite link
@@ -601,7 +641,7 @@ export const useJoinByToken = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof joinByToken>>,
             TError,
-            { token: string },
+            JoinByTokenMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -610,7 +650,7 @@ export const useJoinByToken = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof joinByToken>>,
     TError,
-    { token: string },
+    JoinByTokenMutationVariables,
     TContext
 > => {
     return useMutation(getJoinByTokenMutationOptions(options), queryClient);
@@ -832,11 +872,19 @@ export const getGetCollegiumSuspenseQueryOptions = <
         signal,
     }) => getCollegium(slug, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getCollegium>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetCollegiumSuspenseQueryResult = NonNullable<
@@ -979,6 +1027,27 @@ export const updateCollegium = async (
     updateCollegiumRequest: UpdateCollegiumRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateCollegiumResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateCollegiumResponseSuccess>(
         getUpdateCollegiumUrl(slug),
         {
@@ -986,12 +1055,14 @@ export const updateCollegium = async (
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(updateCollegiumRequest),
         },
     );
 };
+
+export const getUpdateCollegiumMutationKey = () => ["updateCollegium"] as const;
 
 export const getUpdateCollegiumMutationOptions = <
     TError = void,
@@ -1000,17 +1071,17 @@ export const getUpdateCollegiumMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateCollegium>>,
         TError,
-        { slug: string; data: UpdateCollegiumRequest },
+        UpdateCollegiumMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateCollegium>>,
     TError,
-    { slug: string; data: UpdateCollegiumRequest },
+    UpdateCollegiumMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateCollegium"];
+    const mutationKey = getUpdateCollegiumMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1021,7 +1092,7 @@ export const getUpdateCollegiumMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateCollegium>>,
-        { slug: string; data: UpdateCollegiumRequest }
+        UpdateCollegiumMutationVariables
     > = (props) => {
         const { slug, data } = props ?? {};
 
@@ -1036,6 +1107,10 @@ export type UpdateCollegiumMutationResult = NonNullable<
 >;
 export type UpdateCollegiumMutationBody = UpdateCollegiumRequest;
 export type UpdateCollegiumMutationError = void;
+export type UpdateCollegiumMutationVariables = {
+    slug: string;
+    data: UpdateCollegiumRequest;
+};
 
 /**
  * @summary Update collegium metadata (name, description, privacy) — collegium stewards only
@@ -1045,7 +1120,7 @@ export const useUpdateCollegium = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateCollegium>>,
             TError,
-            { slug: string; data: UpdateCollegiumRequest },
+            UpdateCollegiumMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1054,7 +1129,7 @@ export const useUpdateCollegium = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateCollegium>>,
     TError,
-    { slug: string; data: UpdateCollegiumRequest },
+    UpdateCollegiumMutationVariables,
     TContext
 > => {
     return useMutation(getUpdateCollegiumMutationOptions(options), queryClient);
@@ -1104,6 +1179,9 @@ export const rotateInviteToken = async (
     );
 };
 
+export const getRotateInviteTokenMutationKey = () =>
+    ["rotateInviteToken"] as const;
+
 export const getRotateInviteTokenMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -1111,17 +1189,17 @@ export const getRotateInviteTokenMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof rotateInviteToken>>,
         TError,
-        { slug: string },
+        RotateInviteTokenMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof rotateInviteToken>>,
     TError,
-    { slug: string },
+    RotateInviteTokenMutationVariables,
     TContext
 > => {
-    const mutationKey = ["rotateInviteToken"];
+    const mutationKey = getRotateInviteTokenMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1132,7 +1210,7 @@ export const getRotateInviteTokenMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof rotateInviteToken>>,
-        { slug: string }
+        RotateInviteTokenMutationVariables
     > = (props) => {
         const { slug } = props ?? {};
 
@@ -1147,6 +1225,7 @@ export type RotateInviteTokenMutationResult = NonNullable<
 >;
 
 export type RotateInviteTokenMutationError = void;
+export type RotateInviteTokenMutationVariables = { slug: string };
 
 /**
  * @summary Generate or rotate the collegium's invite link token — collegium stewards only
@@ -1156,7 +1235,7 @@ export const useRotateInviteToken = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof rotateInviteToken>>,
             TError,
-            { slug: string },
+            RotateInviteTokenMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1165,7 +1244,7 @@ export const useRotateInviteToken = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof rotateInviteToken>>,
     TError,
-    { slug: string },
+    RotateInviteTokenMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -1219,6 +1298,9 @@ export const disableInviteToken = async (
     );
 };
 
+export const getDisableInviteTokenMutationKey = () =>
+    ["disableInviteToken"] as const;
+
 export const getDisableInviteTokenMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -1226,17 +1308,17 @@ export const getDisableInviteTokenMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof disableInviteToken>>,
         TError,
-        { slug: string },
+        DisableInviteTokenMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof disableInviteToken>>,
     TError,
-    { slug: string },
+    DisableInviteTokenMutationVariables,
     TContext
 > => {
-    const mutationKey = ["disableInviteToken"];
+    const mutationKey = getDisableInviteTokenMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1247,7 +1329,7 @@ export const getDisableInviteTokenMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof disableInviteToken>>,
-        { slug: string }
+        DisableInviteTokenMutationVariables
     > = (props) => {
         const { slug } = props ?? {};
 
@@ -1262,6 +1344,7 @@ export type DisableInviteTokenMutationResult = NonNullable<
 >;
 
 export type DisableInviteTokenMutationError = void;
+export type DisableInviteTokenMutationVariables = { slug: string };
 
 /**
  * @summary Disable the collegium's invite link — collegium stewards only
@@ -1271,7 +1354,7 @@ export const useDisableInviteToken = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof disableInviteToken>>,
             TError,
-            { slug: string },
+            DisableInviteTokenMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1280,7 +1363,7 @@ export const useDisableInviteToken = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof disableInviteToken>>,
     TError,
-    { slug: string },
+    DisableInviteTokenMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -1510,11 +1593,19 @@ export const getListJoinRequestsSuspenseQueryOptions = <
         Awaited<ReturnType<typeof listJoinRequests>>
     > = ({ signal }) => listJoinRequests(slug, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listJoinRequests>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListJoinRequestsSuspenseQueryResult = NonNullable<
@@ -1665,6 +1756,9 @@ export const createJoinRequest = async (
     );
 };
 
+export const getCreateJoinRequestMutationKey = () =>
+    ["createJoinRequest"] as const;
+
 export const getCreateJoinRequestMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -1672,17 +1766,17 @@ export const getCreateJoinRequestMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createJoinRequest>>,
         TError,
-        { slug: string },
+        CreateJoinRequestMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createJoinRequest>>,
     TError,
-    { slug: string },
+    CreateJoinRequestMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createJoinRequest"];
+    const mutationKey = getCreateJoinRequestMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1693,7 +1787,7 @@ export const getCreateJoinRequestMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createJoinRequest>>,
-        { slug: string }
+        CreateJoinRequestMutationVariables
     > = (props) => {
         const { slug } = props ?? {};
 
@@ -1708,6 +1802,7 @@ export type CreateJoinRequestMutationResult = NonNullable<
 >;
 
 export type CreateJoinRequestMutationError = void;
+export type CreateJoinRequestMutationVariables = { slug: string };
 
 /**
  * @summary Ask to join a public collegium
@@ -1717,7 +1812,7 @@ export const useCreateJoinRequest = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createJoinRequest>>,
             TError,
-            { slug: string },
+            CreateJoinRequestMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1726,7 +1821,7 @@ export const useCreateJoinRequest = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createJoinRequest>>,
     TError,
-    { slug: string },
+    CreateJoinRequestMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -1784,6 +1879,27 @@ export const decideJoinRequest = async (
     decideJoinRequestRequest: DecideJoinRequestRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<decideJoinRequestResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<decideJoinRequestResponseSuccess>(
         getDecideJoinRequestUrl(slug, id),
         {
@@ -1791,12 +1907,15 @@ export const decideJoinRequest = async (
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(decideJoinRequestRequest),
         },
     );
 };
+
+export const getDecideJoinRequestMutationKey = () =>
+    ["decideJoinRequest"] as const;
 
 export const getDecideJoinRequestMutationOptions = <
     TError = void,
@@ -1805,17 +1924,17 @@ export const getDecideJoinRequestMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof decideJoinRequest>>,
         TError,
-        { slug: string; id: string; data: DecideJoinRequestRequest },
+        DecideJoinRequestMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof decideJoinRequest>>,
     TError,
-    { slug: string; id: string; data: DecideJoinRequestRequest },
+    DecideJoinRequestMutationVariables,
     TContext
 > => {
-    const mutationKey = ["decideJoinRequest"];
+    const mutationKey = getDecideJoinRequestMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1826,7 +1945,7 @@ export const getDecideJoinRequestMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof decideJoinRequest>>,
-        { slug: string; id: string; data: DecideJoinRequestRequest }
+        DecideJoinRequestMutationVariables
     > = (props) => {
         const { slug, id, data } = props ?? {};
 
@@ -1841,6 +1960,11 @@ export type DecideJoinRequestMutationResult = NonNullable<
 >;
 export type DecideJoinRequestMutationBody = DecideJoinRequestRequest;
 export type DecideJoinRequestMutationError = void;
+export type DecideJoinRequestMutationVariables = {
+    slug: string;
+    id: string;
+    data: DecideJoinRequestRequest;
+};
 
 /**
  * @summary Approve or reject a join request — collegium stewards only
@@ -1850,7 +1974,7 @@ export const useDecideJoinRequest = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof decideJoinRequest>>,
             TError,
-            { slug: string; id: string; data: DecideJoinRequestRequest },
+            DecideJoinRequestMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1859,7 +1983,7 @@ export const useDecideJoinRequest = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof decideJoinRequest>>,
     TError,
-    { slug: string; id: string; data: DecideJoinRequestRequest },
+    DecideJoinRequestMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -1919,6 +2043,8 @@ export const removeMember = async (
     );
 };
 
+export const getRemoveMemberMutationKey = () => ["removeMember"] as const;
+
 export const getRemoveMemberMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -1926,17 +2052,17 @@ export const getRemoveMemberMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof removeMember>>,
         TError,
-        { slug: string; userId: string },
+        RemoveMemberMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof removeMember>>,
     TError,
-    { slug: string; userId: string },
+    RemoveMemberMutationVariables,
     TContext
 > => {
-    const mutationKey = ["removeMember"];
+    const mutationKey = getRemoveMemberMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1947,7 +2073,7 @@ export const getRemoveMemberMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof removeMember>>,
-        { slug: string; userId: string }
+        RemoveMemberMutationVariables
     > = (props) => {
         const { slug, userId } = props ?? {};
 
@@ -1962,6 +2088,7 @@ export type RemoveMemberMutationResult = NonNullable<
 >;
 
 export type RemoveMemberMutationError = void;
+export type RemoveMemberMutationVariables = { slug: string; userId: string };
 
 /**
  * @summary Leave a collegium (self) or remove a member (collegium stewards)
@@ -1971,7 +2098,7 @@ export const useRemoveMember = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof removeMember>>,
             TError,
-            { slug: string; userId: string },
+            RemoveMemberMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1980,7 +2107,7 @@ export const useRemoveMember = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof removeMember>>,
     TError,
-    { slug: string; userId: string },
+    RemoveMemberMutationVariables,
     TContext
 > => {
     return useMutation(getRemoveMemberMutationOptions(options), queryClient);
@@ -2029,6 +2156,27 @@ export const updateMemberRole = async (
     updateMemberRequest: UpdateMemberRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateMemberRoleResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateMemberRoleResponseSuccess>(
         getUpdateMemberRoleUrl(slug, userId),
         {
@@ -2036,12 +2184,15 @@ export const updateMemberRole = async (
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(updateMemberRequest),
         },
     );
 };
+
+export const getUpdateMemberRoleMutationKey = () =>
+    ["updateMemberRole"] as const;
 
 export const getUpdateMemberRoleMutationOptions = <
     TError = void,
@@ -2050,17 +2201,17 @@ export const getUpdateMemberRoleMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateMemberRole>>,
         TError,
-        { slug: string; userId: string; data: UpdateMemberRequest },
+        UpdateMemberRoleMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateMemberRole>>,
     TError,
-    { slug: string; userId: string; data: UpdateMemberRequest },
+    UpdateMemberRoleMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateMemberRole"];
+    const mutationKey = getUpdateMemberRoleMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -2071,7 +2222,7 @@ export const getUpdateMemberRoleMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateMemberRole>>,
-        { slug: string; userId: string; data: UpdateMemberRequest }
+        UpdateMemberRoleMutationVariables
     > = (props) => {
         const { slug, userId, data } = props ?? {};
 
@@ -2086,6 +2237,11 @@ export type UpdateMemberRoleMutationResult = NonNullable<
 >;
 export type UpdateMemberRoleMutationBody = UpdateMemberRequest;
 export type UpdateMemberRoleMutationError = void;
+export type UpdateMemberRoleMutationVariables = {
+    slug: string;
+    userId: string;
+    data: UpdateMemberRequest;
+};
 
 /**
  * @summary Promote a member to admin, or step down as steward (self only)
@@ -2095,7 +2251,7 @@ export const useUpdateMemberRole = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateMemberRole>>,
             TError,
-            { slug: string; userId: string; data: UpdateMemberRequest },
+            UpdateMemberRoleMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -2104,7 +2260,7 @@ export const useUpdateMemberRole = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateMemberRole>>,
     TError,
-    { slug: string; userId: string; data: UpdateMemberRequest },
+    UpdateMemberRoleMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -2305,11 +2461,19 @@ export const getListMyCollegiaSuspenseQueryOptions = <
         Awaited<ReturnType<typeof listMyCollegia>>
     > = ({ signal }) => listMyCollegia({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listMyCollegia>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListMyCollegiaSuspenseQueryResult = NonNullable<

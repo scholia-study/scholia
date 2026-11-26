@@ -19,6 +19,9 @@ pub struct Output {
 pub struct BookData {
     pub slug: String,
     pub title: String,
+    /// Spine lettering for the library shelf → `sources.title_short`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub short_title: Option<String>,
     pub author: String,
     pub language: String,
     pub source: String,

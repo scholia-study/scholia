@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     CreatePersonRequest,
@@ -280,11 +285,19 @@ export const getSearchPersonsSuspenseQueryOptions = <
         signal,
     }) => searchPersons(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof searchPersons>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type SearchPersonsSuspenseQueryResult = NonNullable<
@@ -420,13 +433,39 @@ export const createPerson = async (
     createPersonRequest: CreatePersonRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createPersonResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createPersonResponseSuccess>(getCreatePersonUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(createPersonRequest),
     });
 };
+
+export const getCreatePersonMutationKey = () => ["createPerson"] as const;
 
 export const getCreatePersonMutationOptions = <
     TError = void,
@@ -435,17 +474,17 @@ export const getCreatePersonMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createPerson>>,
         TError,
-        { data: CreatePersonRequest },
+        CreatePersonMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createPerson>>,
     TError,
-    { data: CreatePersonRequest },
+    CreatePersonMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createPerson"];
+    const mutationKey = getCreatePersonMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -456,7 +495,7 @@ export const getCreatePersonMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createPerson>>,
-        { data: CreatePersonRequest }
+        CreatePersonMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -471,6 +510,7 @@ export type CreatePersonMutationResult = NonNullable<
 >;
 export type CreatePersonMutationBody = CreatePersonRequest;
 export type CreatePersonMutationError = void;
+export type CreatePersonMutationVariables = { data: CreatePersonRequest };
 
 /**
  * @summary Create a new person
@@ -480,7 +520,7 @@ export const useCreatePerson = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createPerson>>,
             TError,
-            { data: CreatePersonRequest },
+            CreatePersonMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -489,7 +529,7 @@ export const useCreatePerson = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createPerson>>,
     TError,
-    { data: CreatePersonRequest },
+    CreatePersonMutationVariables,
     TContext
 > => {
     return useMutation(getCreatePersonMutationOptions(options), queryClient);
@@ -543,13 +583,39 @@ export const updatePerson = async (
     updatePersonRequest: UpdatePersonRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updatePersonResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updatePersonResponseSuccess>(getUpdatePersonUrl(id), {
         ...options,
         method: "PUT",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(updatePersonRequest),
     });
 };
+
+export const getUpdatePersonMutationKey = () => ["updatePerson"] as const;
 
 export const getUpdatePersonMutationOptions = <
     TError = void,
@@ -558,17 +624,17 @@ export const getUpdatePersonMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updatePerson>>,
         TError,
-        { id: string; data: UpdatePersonRequest },
+        UpdatePersonMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updatePerson>>,
     TError,
-    { id: string; data: UpdatePersonRequest },
+    UpdatePersonMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updatePerson"];
+    const mutationKey = getUpdatePersonMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -579,7 +645,7 @@ export const getUpdatePersonMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updatePerson>>,
-        { id: string; data: UpdatePersonRequest }
+        UpdatePersonMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -594,6 +660,10 @@ export type UpdatePersonMutationResult = NonNullable<
 >;
 export type UpdatePersonMutationBody = UpdatePersonRequest;
 export type UpdatePersonMutationError = void;
+export type UpdatePersonMutationVariables = {
+    id: string;
+    data: UpdatePersonRequest;
+};
 
 /**
  * @summary Update an existing person
@@ -603,7 +673,7 @@ export const useUpdatePerson = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updatePerson>>,
             TError,
-            { id: string; data: UpdatePersonRequest },
+            UpdatePersonMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -612,7 +682,7 @@ export const useUpdatePerson = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updatePerson>>,
     TError,
-    { id: string; data: UpdatePersonRequest },
+    UpdatePersonMutationVariables,
     TContext
 > => {
     return useMutation(getUpdatePersonMutationOptions(options), queryClient);

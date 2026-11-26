@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     AddSeriesArticleRequest,
@@ -253,11 +258,19 @@ export const getAdminListSeriesSuspenseQueryOptions = <
         Awaited<ReturnType<typeof adminListSeries>>
     > = ({ signal }) => adminListSeries({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof adminListSeries>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type AdminListSeriesSuspenseQueryResult = NonNullable<
@@ -389,13 +402,39 @@ export const createSeries = async (
     createSeriesRequest: CreateSeriesRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createSeriesResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createSeriesResponseSuccess>(getCreateSeriesUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(createSeriesRequest),
     });
 };
+
+export const getCreateSeriesMutationKey = () => ["createSeries"] as const;
 
 export const getCreateSeriesMutationOptions = <
     TError = void,
@@ -404,17 +443,17 @@ export const getCreateSeriesMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createSeries>>,
         TError,
-        { data: CreateSeriesRequest },
+        CreateSeriesMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createSeries>>,
     TError,
-    { data: CreateSeriesRequest },
+    CreateSeriesMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createSeries"];
+    const mutationKey = getCreateSeriesMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -425,7 +464,7 @@ export const getCreateSeriesMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createSeries>>,
-        { data: CreateSeriesRequest }
+        CreateSeriesMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -440,6 +479,7 @@ export type CreateSeriesMutationResult = NonNullable<
 >;
 export type CreateSeriesMutationBody = CreateSeriesRequest;
 export type CreateSeriesMutationError = void;
+export type CreateSeriesMutationVariables = { data: CreateSeriesRequest };
 
 /**
  * @summary Create a series; the slug is generated from the name and immutable
@@ -449,7 +489,7 @@ export const useCreateSeries = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createSeries>>,
             TError,
-            { data: CreateSeriesRequest },
+            CreateSeriesMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -458,7 +498,7 @@ export const useCreateSeries = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createSeries>>,
     TError,
-    { data: CreateSeriesRequest },
+    CreateSeriesMutationVariables,
     TContext
 > => {
     return useMutation(getCreateSeriesMutationOptions(options), queryClient);
@@ -511,6 +551,8 @@ export const deleteSeries = async (
     });
 };
 
+export const getDeleteSeriesMutationKey = () => ["deleteSeries"] as const;
+
 export const getDeleteSeriesMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -518,17 +560,17 @@ export const getDeleteSeriesMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof deleteSeries>>,
         TError,
-        { id: string },
+        DeleteSeriesMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof deleteSeries>>,
     TError,
-    { id: string },
+    DeleteSeriesMutationVariables,
     TContext
 > => {
-    const mutationKey = ["deleteSeries"];
+    const mutationKey = getDeleteSeriesMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -539,7 +581,7 @@ export const getDeleteSeriesMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof deleteSeries>>,
-        { id: string }
+        DeleteSeriesMutationVariables
     > = (props) => {
         const { id } = props ?? {};
 
@@ -554,6 +596,7 @@ export type DeleteSeriesMutationResult = NonNullable<
 >;
 
 export type DeleteSeriesMutationError = void;
+export type DeleteSeriesMutationVariables = { id: string };
 
 /**
  * @summary Delete a series; refused while any article is still attached
@@ -563,7 +606,7 @@ export const useDeleteSeries = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof deleteSeries>>,
             TError,
-            { id: string },
+            DeleteSeriesMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -572,7 +615,7 @@ export const useDeleteSeries = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof deleteSeries>>,
     TError,
-    { id: string },
+    DeleteSeriesMutationVariables,
     TContext
 > => {
     return useMutation(getDeleteSeriesMutationOptions(options), queryClient);
@@ -620,13 +663,39 @@ export const updateSeries = async (
     updateSeriesRequest: UpdateSeriesRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateSeriesResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateSeriesResponseSuccess>(getUpdateSeriesUrl(id), {
         ...options,
         method: "PATCH",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(updateSeriesRequest),
     });
 };
+
+export const getUpdateSeriesMutationKey = () => ["updateSeries"] as const;
 
 export const getUpdateSeriesMutationOptions = <
     TError = void,
@@ -635,17 +704,17 @@ export const getUpdateSeriesMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateSeries>>,
         TError,
-        { id: string; data: UpdateSeriesRequest },
+        UpdateSeriesMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateSeries>>,
     TError,
-    { id: string; data: UpdateSeriesRequest },
+    UpdateSeriesMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateSeries"];
+    const mutationKey = getUpdateSeriesMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -656,7 +725,7 @@ export const getUpdateSeriesMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateSeries>>,
-        { id: string; data: UpdateSeriesRequest }
+        UpdateSeriesMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -671,6 +740,10 @@ export type UpdateSeriesMutationResult = NonNullable<
 >;
 export type UpdateSeriesMutationBody = UpdateSeriesRequest;
 export type UpdateSeriesMutationError = void;
+export type UpdateSeriesMutationVariables = {
+    id: string;
+    data: UpdateSeriesRequest;
+};
 
 /**
  * @summary Update series metadata (name, description, pinned, sort order)
@@ -680,7 +753,7 @@ export const useUpdateSeries = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateSeries>>,
             TError,
-            { id: string; data: UpdateSeriesRequest },
+            UpdateSeriesMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -689,7 +762,7 @@ export const useUpdateSeries = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateSeries>>,
     TError,
-    { id: string; data: UpdateSeriesRequest },
+    UpdateSeriesMutationVariables,
     TContext
 > => {
     return useMutation(getUpdateSeriesMutationOptions(options), queryClient);
@@ -914,11 +987,19 @@ export const getListSeriesMembersSuspenseQueryOptions = <
         Awaited<ReturnType<typeof listSeriesMembers>>
     > = ({ signal }) => listSeriesMembers(id, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listSeriesMembers>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListSeriesMembersSuspenseQueryResult = NonNullable<
@@ -1061,6 +1142,27 @@ export const addSeriesArticle = async (
     addSeriesArticleRequest: AddSeriesArticleRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<addSeriesArticleResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<addSeriesArticleResponseSuccess>(
         getAddSeriesArticleUrl(id),
         {
@@ -1068,12 +1170,15 @@ export const addSeriesArticle = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(addSeriesArticleRequest),
         },
     );
 };
+
+export const getAddSeriesArticleMutationKey = () =>
+    ["addSeriesArticle"] as const;
 
 export const getAddSeriesArticleMutationOptions = <
     TError = void,
@@ -1082,17 +1187,17 @@ export const getAddSeriesArticleMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof addSeriesArticle>>,
         TError,
-        { id: string; data: AddSeriesArticleRequest },
+        AddSeriesArticleMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof addSeriesArticle>>,
     TError,
-    { id: string; data: AddSeriesArticleRequest },
+    AddSeriesArticleMutationVariables,
     TContext
 > => {
-    const mutationKey = ["addSeriesArticle"];
+    const mutationKey = getAddSeriesArticleMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1103,7 +1208,7 @@ export const getAddSeriesArticleMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof addSeriesArticle>>,
-        { id: string; data: AddSeriesArticleRequest }
+        AddSeriesArticleMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -1118,6 +1223,10 @@ export type AddSeriesArticleMutationResult = NonNullable<
 >;
 export type AddSeriesArticleMutationBody = AddSeriesArticleRequest;
 export type AddSeriesArticleMutationError = void;
+export type AddSeriesArticleMutationVariables = {
+    id: string;
+    data: AddSeriesArticleRequest;
+};
 
 /**
  * @summary Add a published article to a series (prepends at position 1)
@@ -1127,7 +1236,7 @@ export const useAddSeriesArticle = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof addSeriesArticle>>,
             TError,
-            { id: string; data: AddSeriesArticleRequest },
+            AddSeriesArticleMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1136,7 +1245,7 @@ export const useAddSeriesArticle = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof addSeriesArticle>>,
     TError,
-    { id: string; data: AddSeriesArticleRequest },
+    AddSeriesArticleMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -1188,6 +1297,27 @@ export const reorderSeriesArticles = async (
     reorderSeriesArticlesRequest: ReorderSeriesArticlesRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<reorderSeriesArticlesResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<reorderSeriesArticlesResponseSuccess>(
         getReorderSeriesArticlesUrl(id),
         {
@@ -1195,12 +1325,15 @@ export const reorderSeriesArticles = async (
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(reorderSeriesArticlesRequest),
         },
     );
 };
+
+export const getReorderSeriesArticlesMutationKey = () =>
+    ["reorderSeriesArticles"] as const;
 
 export const getReorderSeriesArticlesMutationOptions = <
     TError = void,
@@ -1209,17 +1342,17 @@ export const getReorderSeriesArticlesMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof reorderSeriesArticles>>,
         TError,
-        { id: string; data: ReorderSeriesArticlesRequest },
+        ReorderSeriesArticlesMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof reorderSeriesArticles>>,
     TError,
-    { id: string; data: ReorderSeriesArticlesRequest },
+    ReorderSeriesArticlesMutationVariables,
     TContext
 > => {
-    const mutationKey = ["reorderSeriesArticles"];
+    const mutationKey = getReorderSeriesArticlesMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1230,7 +1363,7 @@ export const getReorderSeriesArticlesMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof reorderSeriesArticles>>,
-        { id: string; data: ReorderSeriesArticlesRequest }
+        ReorderSeriesArticlesMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -1245,6 +1378,10 @@ export type ReorderSeriesArticlesMutationResult = NonNullable<
 >;
 export type ReorderSeriesArticlesMutationBody = ReorderSeriesArticlesRequest;
 export type ReorderSeriesArticlesMutationError = void;
+export type ReorderSeriesArticlesMutationVariables = {
+    id: string;
+    data: ReorderSeriesArticlesRequest;
+};
 
 /**
  * @summary Reorder a series' members (full permutation of current members)
@@ -1254,7 +1391,7 @@ export const useReorderSeriesArticles = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof reorderSeriesArticles>>,
             TError,
-            { id: string; data: ReorderSeriesArticlesRequest },
+            ReorderSeriesArticlesMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1263,7 +1400,7 @@ export const useReorderSeriesArticles = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof reorderSeriesArticles>>,
     TError,
-    { id: string; data: ReorderSeriesArticlesRequest },
+    ReorderSeriesArticlesMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -1318,6 +1455,9 @@ export const removeSeriesArticle = async (
     );
 };
 
+export const getRemoveSeriesArticleMutationKey = () =>
+    ["removeSeriesArticle"] as const;
+
 export const getRemoveSeriesArticleMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -1325,17 +1465,17 @@ export const getRemoveSeriesArticleMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof removeSeriesArticle>>,
         TError,
-        { id: string; articleId: string },
+        RemoveSeriesArticleMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof removeSeriesArticle>>,
     TError,
-    { id: string; articleId: string },
+    RemoveSeriesArticleMutationVariables,
     TContext
 > => {
-    const mutationKey = ["removeSeriesArticle"];
+    const mutationKey = getRemoveSeriesArticleMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1346,7 +1486,7 @@ export const getRemoveSeriesArticleMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof removeSeriesArticle>>,
-        { id: string; articleId: string }
+        RemoveSeriesArticleMutationVariables
     > = (props) => {
         const { id, articleId } = props ?? {};
 
@@ -1361,6 +1501,10 @@ export type RemoveSeriesArticleMutationResult = NonNullable<
 >;
 
 export type RemoveSeriesArticleMutationError = void;
+export type RemoveSeriesArticleMutationVariables = {
+    id: string;
+    articleId: string;
+};
 
 /**
  * @summary Remove an article from a series
@@ -1370,7 +1514,7 @@ export const useRemoveSeriesArticle = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof removeSeriesArticle>>,
             TError,
-            { id: string; articleId: string },
+            RemoveSeriesArticleMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1379,7 +1523,7 @@ export const useRemoveSeriesArticle = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof removeSeriesArticle>>,
     TError,
-    { id: string; articleId: string },
+    RemoveSeriesArticleMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -1583,11 +1727,19 @@ export const getAdminListTopicsSuspenseQueryOptions = <
         Awaited<ReturnType<typeof adminListTopics>>
     > = ({ signal }) => adminListTopics({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof adminListTopics>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type AdminListTopicsSuspenseQueryResult = NonNullable<
@@ -1719,13 +1871,39 @@ export const createTopic = async (
     createTopicRequest: CreateTopicRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createTopicResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createTopicResponseSuccess>(getCreateTopicUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(createTopicRequest),
     });
 };
+
+export const getCreateTopicMutationKey = () => ["createTopic"] as const;
 
 export const getCreateTopicMutationOptions = <
     TError = void,
@@ -1734,17 +1912,17 @@ export const getCreateTopicMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createTopic>>,
         TError,
-        { data: CreateTopicRequest },
+        CreateTopicMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createTopic>>,
     TError,
-    { data: CreateTopicRequest },
+    CreateTopicMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createTopic"];
+    const mutationKey = getCreateTopicMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1755,7 +1933,7 @@ export const getCreateTopicMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createTopic>>,
-        { data: CreateTopicRequest }
+        CreateTopicMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -1770,6 +1948,7 @@ export type CreateTopicMutationResult = NonNullable<
 >;
 export type CreateTopicMutationBody = CreateTopicRequest;
 export type CreateTopicMutationError = void;
+export type CreateTopicMutationVariables = { data: CreateTopicRequest };
 
 /**
  * @summary Create a topic; the slug is generated from the name and immutable
@@ -1779,7 +1958,7 @@ export const useCreateTopic = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createTopic>>,
             TError,
-            { data: CreateTopicRequest },
+            CreateTopicMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1788,7 +1967,7 @@ export const useCreateTopic = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createTopic>>,
     TError,
-    { data: CreateTopicRequest },
+    CreateTopicMutationVariables,
     TContext
 > => {
     return useMutation(getCreateTopicMutationOptions(options), queryClient);
@@ -1841,6 +2020,8 @@ export const deleteTopic = async (
     });
 };
 
+export const getDeleteTopicMutationKey = () => ["deleteTopic"] as const;
+
 export const getDeleteTopicMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -1848,17 +2029,17 @@ export const getDeleteTopicMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof deleteTopic>>,
         TError,
-        { id: string },
+        DeleteTopicMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof deleteTopic>>,
     TError,
-    { id: string },
+    DeleteTopicMutationVariables,
     TContext
 > => {
-    const mutationKey = ["deleteTopic"];
+    const mutationKey = getDeleteTopicMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1869,7 +2050,7 @@ export const getDeleteTopicMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof deleteTopic>>,
-        { id: string }
+        DeleteTopicMutationVariables
     > = (props) => {
         const { id } = props ?? {};
 
@@ -1884,6 +2065,7 @@ export type DeleteTopicMutationResult = NonNullable<
 >;
 
 export type DeleteTopicMutationError = void;
+export type DeleteTopicMutationVariables = { id: string };
 
 /**
  * @summary Delete a topic; refused while any article still uses it
@@ -1893,7 +2075,7 @@ export const useDeleteTopic = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof deleteTopic>>,
             TError,
-            { id: string },
+            DeleteTopicMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1902,7 +2084,7 @@ export const useDeleteTopic = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof deleteTopic>>,
     TError,
-    { id: string },
+    DeleteTopicMutationVariables,
     TContext
 > => {
     return useMutation(getDeleteTopicMutationOptions(options), queryClient);
@@ -1950,13 +2132,39 @@ export const updateTopic = async (
     updateTopicRequest: UpdateTopicRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateTopicResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateTopicResponseSuccess>(getUpdateTopicUrl(id), {
         ...options,
         method: "PATCH",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(updateTopicRequest),
     });
 };
+
+export const getUpdateTopicMutationKey = () => ["updateTopic"] as const;
 
 export const getUpdateTopicMutationOptions = <
     TError = void,
@@ -1965,17 +2173,17 @@ export const getUpdateTopicMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateTopic>>,
         TError,
-        { id: string; data: UpdateTopicRequest },
+        UpdateTopicMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateTopic>>,
     TError,
-    { id: string; data: UpdateTopicRequest },
+    UpdateTopicMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateTopic"];
+    const mutationKey = getUpdateTopicMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1986,7 +2194,7 @@ export const getUpdateTopicMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateTopic>>,
-        { id: string; data: UpdateTopicRequest }
+        UpdateTopicMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -2001,6 +2209,10 @@ export type UpdateTopicMutationResult = NonNullable<
 >;
 export type UpdateTopicMutationBody = UpdateTopicRequest;
 export type UpdateTopicMutationError = void;
+export type UpdateTopicMutationVariables = {
+    id: string;
+    data: UpdateTopicRequest;
+};
 
 /**
  * @summary Rename a topic (display name only; slug never changes)
@@ -2010,7 +2222,7 @@ export const useUpdateTopic = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateTopic>>,
             TError,
-            { id: string; data: UpdateTopicRequest },
+            UpdateTopicMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -2019,7 +2231,7 @@ export const useUpdateTopic = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateTopic>>,
     TError,
-    { id: string; data: UpdateTopicRequest },
+    UpdateTopicMutationVariables,
     TContext
 > => {
     return useMutation(getUpdateTopicMutationOptions(options), queryClient);

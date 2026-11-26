@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     ArticleReviewActivityResponse,
@@ -308,11 +313,19 @@ export const getListArticleReviewQueueSuspenseQueryOptions = <
     > = ({ signal }) =>
         listArticleReviewQueue(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listArticleReviewQueue>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListArticleReviewQueueSuspenseQueryResult = NonNullable<
@@ -473,6 +486,27 @@ export const decideArticleReview = async (
     reviewDecisionRequest: ReviewDecisionRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<decideArticleReviewResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<decideArticleReviewResponseSuccess>(
         getDecideArticleReviewUrl(id),
         {
@@ -480,12 +514,15 @@ export const decideArticleReview = async (
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(reviewDecisionRequest),
         },
     );
 };
+
+export const getDecideArticleReviewMutationKey = () =>
+    ["decideArticleReview"] as const;
 
 export const getDecideArticleReviewMutationOptions = <
     TError = void,
@@ -494,17 +531,17 @@ export const getDecideArticleReviewMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof decideArticleReview>>,
         TError,
-        { id: string; data: ReviewDecisionRequest },
+        DecideArticleReviewMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof decideArticleReview>>,
     TError,
-    { id: string; data: ReviewDecisionRequest },
+    DecideArticleReviewMutationVariables,
     TContext
 > => {
-    const mutationKey = ["decideArticleReview"];
+    const mutationKey = getDecideArticleReviewMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -515,7 +552,7 @@ export const getDecideArticleReviewMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof decideArticleReview>>,
-        { id: string; data: ReviewDecisionRequest }
+        DecideArticleReviewMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -530,6 +567,10 @@ export type DecideArticleReviewMutationResult = NonNullable<
 >;
 export type DecideArticleReviewMutationBody = ReviewDecisionRequest;
 export type DecideArticleReviewMutationError = void;
+export type DecideArticleReviewMutationVariables = {
+    id: string;
+    data: ReviewDecisionRequest;
+};
 
 /**
  * @summary Decide a pending request. Approving a publication-intent request
@@ -541,7 +582,7 @@ export const useDecideArticleReview = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof decideArticleReview>>,
             TError,
-            { id: string; data: ReviewDecisionRequest },
+            DecideArticleReviewMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -550,7 +591,7 @@ export const useDecideArticleReview = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof decideArticleReview>>,
     TError,
-    { id: string; data: ReviewDecisionRequest },
+    DecideArticleReviewMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -615,6 +656,27 @@ export const assignArticleReview = async (
     assignReviewRequest: AssignReviewRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<assignArticleReviewResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<assignArticleReviewResponseSuccess>(
         getAssignArticleReviewUrl(id),
         {
@@ -622,12 +684,15 @@ export const assignArticleReview = async (
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(assignReviewRequest),
         },
     );
 };
+
+export const getAssignArticleReviewMutationKey = () =>
+    ["assignArticleReview"] as const;
 
 export const getAssignArticleReviewMutationOptions = <
     TError = void,
@@ -636,17 +701,17 @@ export const getAssignArticleReviewMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof assignArticleReview>>,
         TError,
-        { id: string; data: AssignReviewRequest },
+        AssignArticleReviewMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof assignArticleReview>>,
     TError,
-    { id: string; data: AssignReviewRequest },
+    AssignArticleReviewMutationVariables,
     TContext
 > => {
-    const mutationKey = ["assignArticleReview"];
+    const mutationKey = getAssignArticleReviewMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -657,7 +722,7 @@ export const getAssignArticleReviewMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof assignArticleReview>>,
-        { id: string; data: AssignReviewRequest }
+        AssignArticleReviewMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -672,6 +737,10 @@ export type AssignArticleReviewMutationResult = NonNullable<
 >;
 export type AssignArticleReviewMutationBody = AssignReviewRequest;
 export type AssignArticleReviewMutationError = void;
+export type AssignArticleReviewMutationVariables = {
+    id: string;
+    data: AssignReviewRequest;
+};
 
 /**
  * @summary Assign an editor to a pending request (or unassign with a null
@@ -682,7 +751,7 @@ export const useAssignArticleReview = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof assignArticleReview>>,
             TError,
-            { id: string; data: AssignReviewRequest },
+            AssignArticleReviewMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -691,7 +760,7 @@ export const useAssignArticleReview = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof assignArticleReview>>,
     TError,
-    { id: string; data: AssignReviewRequest },
+    AssignArticleReviewMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -906,11 +975,19 @@ export const getListArticleReviewersSuspenseQueryOptions = <
         Awaited<ReturnType<typeof listArticleReviewers>>
     > = ({ signal }) => listArticleReviewers({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listArticleReviewers>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListArticleReviewersSuspenseQueryResult = NonNullable<
@@ -1233,11 +1310,19 @@ export const getListCollegiumReviewQueueSuspenseQueryOptions = <
     > = ({ signal }) =>
         listCollegiumReviewQueue(slug, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listCollegiumReviewQueue>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListCollegiumReviewQueueSuspenseQueryResult = NonNullable<
@@ -1606,11 +1691,19 @@ export const getGetReviewActivitySuspenseQueryOptions = <
     > = ({ signal }) =>
         getReviewActivity(articleId, params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getReviewActivity>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetReviewActivitySuspenseQueryResult = NonNullable<
@@ -1982,11 +2075,19 @@ export const getListReviewMessagesSuspenseQueryOptions = <
     > = ({ signal }) =>
         listReviewMessages(articleId, params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listReviewMessages>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListReviewMessagesSuspenseQueryResult = NonNullable<
@@ -2158,6 +2259,27 @@ export const createReviewMessage = async (
     params?: CreateReviewMessageParams,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createReviewMessageResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createReviewMessageResponseSuccess>(
         getCreateReviewMessageUrl(articleId, params),
         {
@@ -2165,12 +2287,15 @@ export const createReviewMessage = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(createReviewMessageRequest),
         },
     );
 };
+
+export const getCreateReviewMessageMutationKey = () =>
+    ["createReviewMessage"] as const;
 
 export const getCreateReviewMessageMutationOptions = <
     TError = void,
@@ -2179,25 +2304,17 @@ export const getCreateReviewMessageMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createReviewMessage>>,
         TError,
-        {
-            articleId: string;
-            data: CreateReviewMessageRequest;
-            params?: CreateReviewMessageParams;
-        },
+        CreateReviewMessageMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createReviewMessage>>,
     TError,
-    {
-        articleId: string;
-        data: CreateReviewMessageRequest;
-        params?: CreateReviewMessageParams;
-    },
+    CreateReviewMessageMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createReviewMessage"];
+    const mutationKey = getCreateReviewMessageMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -2208,11 +2325,7 @@ export const getCreateReviewMessageMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createReviewMessage>>,
-        {
-            articleId: string;
-            data: CreateReviewMessageRequest;
-            params?: CreateReviewMessageParams;
-        }
+        CreateReviewMessageMutationVariables
     > = (props) => {
         const { articleId, data, params } = props ?? {};
 
@@ -2227,6 +2340,11 @@ export type CreateReviewMessageMutationResult = NonNullable<
 >;
 export type CreateReviewMessageMutationBody = CreateReviewMessageRequest;
 export type CreateReviewMessageMutationError = void;
+export type CreateReviewMessageMutationVariables = {
+    articleId: string;
+    data: CreateReviewMessageRequest;
+    params?: CreateReviewMessageParams;
+};
 
 /**
  * @summary Post to the article's review channel (author or reviewer). The
@@ -2237,11 +2355,7 @@ export const useCreateReviewMessage = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createReviewMessage>>,
             TError,
-            {
-                articleId: string;
-                data: CreateReviewMessageRequest;
-                params?: CreateReviewMessageParams;
-            },
+            CreateReviewMessageMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -2250,11 +2364,7 @@ export const useCreateReviewMessage = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createReviewMessage>>,
     TError,
-    {
-        articleId: string;
-        data: CreateReviewMessageRequest;
-        params?: CreateReviewMessageParams;
-    },
+    CreateReviewMessageMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -2306,6 +2416,27 @@ export const updateReviewComment = async (
     updateReviewCommentRequest: UpdateReviewCommentRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateReviewCommentResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateReviewCommentResponseSuccess>(
         getUpdateReviewCommentUrl(id),
         {
@@ -2313,12 +2444,15 @@ export const updateReviewComment = async (
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(updateReviewCommentRequest),
         },
     );
 };
+
+export const getUpdateReviewCommentMutationKey = () =>
+    ["updateReviewComment"] as const;
 
 export const getUpdateReviewCommentMutationOptions = <
     TError = void,
@@ -2327,17 +2461,17 @@ export const getUpdateReviewCommentMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateReviewComment>>,
         TError,
-        { id: string; data: UpdateReviewCommentRequest },
+        UpdateReviewCommentMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateReviewComment>>,
     TError,
-    { id: string; data: UpdateReviewCommentRequest },
+    UpdateReviewCommentMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateReviewComment"];
+    const mutationKey = getUpdateReviewCommentMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -2348,7 +2482,7 @@ export const getUpdateReviewCommentMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateReviewComment>>,
-        { id: string; data: UpdateReviewCommentRequest }
+        UpdateReviewCommentMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -2363,6 +2497,10 @@ export type UpdateReviewCommentMutationResult = NonNullable<
 >;
 export type UpdateReviewCommentMutationBody = UpdateReviewCommentRequest;
 export type UpdateReviewCommentMutationError = void;
+export type UpdateReviewCommentMutationVariables = {
+    id: string;
+    data: UpdateReviewCommentRequest;
+};
 
 /**
  * @summary Resolve or reopen a comment thread (reviewers only).
@@ -2372,7 +2510,7 @@ export const useUpdateReviewComment = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateReviewComment>>,
             TError,
-            { id: string; data: UpdateReviewCommentRequest },
+            UpdateReviewCommentMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -2381,7 +2519,7 @@ export const useUpdateReviewComment = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateReviewComment>>,
     TError,
-    { id: string; data: UpdateReviewCommentRequest },
+    UpdateReviewCommentMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -2432,6 +2570,27 @@ export const createReviewReply = async (
     createReviewReplyRequest: CreateReviewReplyRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createReviewReplyResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createReviewReplyResponseSuccess>(
         getCreateReviewReplyUrl(id),
         {
@@ -2439,12 +2598,15 @@ export const createReviewReply = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(createReviewReplyRequest),
         },
     );
 };
+
+export const getCreateReviewReplyMutationKey = () =>
+    ["createReviewReply"] as const;
 
 export const getCreateReviewReplyMutationOptions = <
     TError = void,
@@ -2453,17 +2615,17 @@ export const getCreateReviewReplyMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createReviewReply>>,
         TError,
-        { id: string; data: CreateReviewReplyRequest },
+        CreateReviewReplyMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createReviewReply>>,
     TError,
-    { id: string; data: CreateReviewReplyRequest },
+    CreateReviewReplyMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createReviewReply"];
+    const mutationKey = getCreateReviewReplyMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -2474,7 +2636,7 @@ export const getCreateReviewReplyMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createReviewReply>>,
-        { id: string; data: CreateReviewReplyRequest }
+        CreateReviewReplyMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -2489,6 +2651,10 @@ export type CreateReviewReplyMutationResult = NonNullable<
 >;
 export type CreateReviewReplyMutationBody = CreateReviewReplyRequest;
 export type CreateReviewReplyMutationError = void;
+export type CreateReviewReplyMutationVariables = {
+    id: string;
+    data: CreateReviewReplyRequest;
+};
 
 /**
  * @summary Reply within a comment thread (author or reviewer).
@@ -2498,7 +2664,7 @@ export const useCreateReviewReply = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createReviewReply>>,
             TError,
-            { id: string; data: CreateReviewReplyRequest },
+            CreateReviewReplyMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -2507,7 +2673,7 @@ export const useCreateReviewReply = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createReviewReply>>,
     TError,
-    { id: string; data: CreateReviewReplyRequest },
+    CreateReviewReplyMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -2737,11 +2903,19 @@ export const getGetReviewRequestSuspenseQueryOptions = <
         Awaited<ReturnType<typeof getReviewRequest>>
     > = ({ signal }) => getReviewRequest(id, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getReviewRequest>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetReviewRequestSuspenseQueryResult = NonNullable<
@@ -3065,11 +3239,19 @@ export const getListReviewCommentsSuspenseQueryOptions = <
         Awaited<ReturnType<typeof listReviewComments>>
     > = ({ signal }) => listReviewComments(id, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listReviewComments>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListReviewCommentsSuspenseQueryResult = NonNullable<
@@ -3213,6 +3395,27 @@ export const createReviewComment = async (
     createReviewCommentRequest: CreateReviewCommentRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createReviewCommentResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createReviewCommentResponseSuccess>(
         getCreateReviewCommentUrl(id),
         {
@@ -3220,12 +3423,15 @@ export const createReviewComment = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(createReviewCommentRequest),
         },
     );
 };
+
+export const getCreateReviewCommentMutationKey = () =>
+    ["createReviewComment"] as const;
 
 export const getCreateReviewCommentMutationOptions = <
     TError = void,
@@ -3234,17 +3440,17 @@ export const getCreateReviewCommentMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createReviewComment>>,
         TError,
-        { id: string; data: CreateReviewCommentRequest },
+        CreateReviewCommentMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createReviewComment>>,
     TError,
-    { id: string; data: CreateReviewCommentRequest },
+    CreateReviewCommentMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createReviewComment"];
+    const mutationKey = getCreateReviewCommentMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -3255,7 +3461,7 @@ export const getCreateReviewCommentMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createReviewComment>>,
-        { id: string; data: CreateReviewCommentRequest }
+        CreateReviewCommentMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -3270,6 +3476,10 @@ export type CreateReviewCommentMutationResult = NonNullable<
 >;
 export type CreateReviewCommentMutationBody = CreateReviewCommentRequest;
 export type CreateReviewCommentMutationError = void;
+export type CreateReviewCommentMutationVariables = {
+    id: string;
+    data: CreateReviewCommentRequest;
+};
 
 /**
  * @summary Create an anchored comment on a request's snapshot (reviewers only).
@@ -3279,7 +3489,7 @@ export const useCreateReviewComment = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createReviewComment>>,
             TError,
-            { id: string; data: CreateReviewCommentRequest },
+            CreateReviewCommentMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -3288,7 +3498,7 @@ export const useCreateReviewComment = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createReviewComment>>,
     TError,
-    { id: string; data: CreateReviewCommentRequest },
+    CreateReviewCommentMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -3346,6 +3556,27 @@ export const createReviewRequest = async (
     createReviewRequestRequest: CreateReviewRequestRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createReviewRequestResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createReviewRequestResponseSuccess>(
         getCreateReviewRequestUrl(slug),
         {
@@ -3353,12 +3584,15 @@ export const createReviewRequest = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(createReviewRequestRequest),
         },
     );
 };
+
+export const getCreateReviewRequestMutationKey = () =>
+    ["createReviewRequest"] as const;
 
 export const getCreateReviewRequestMutationOptions = <
     TError = void,
@@ -3367,17 +3601,17 @@ export const getCreateReviewRequestMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createReviewRequest>>,
         TError,
-        { slug: string; data: CreateReviewRequestRequest },
+        CreateReviewRequestMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createReviewRequest>>,
     TError,
-    { slug: string; data: CreateReviewRequestRequest },
+    CreateReviewRequestMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createReviewRequest"];
+    const mutationKey = getCreateReviewRequestMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -3388,7 +3622,7 @@ export const getCreateReviewRequestMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createReviewRequest>>,
-        { slug: string; data: CreateReviewRequestRequest }
+        CreateReviewRequestMutationVariables
     > = (props) => {
         const { slug, data } = props ?? {};
 
@@ -3403,6 +3637,10 @@ export type CreateReviewRequestMutationResult = NonNullable<
 >;
 export type CreateReviewRequestMutationBody = CreateReviewRequestRequest;
 export type CreateReviewRequestMutationError = void;
+export type CreateReviewRequestMutationVariables = {
+    slug: string;
+    data: CreateReviewRequestRequest;
+};
 
 /**
  * @summary Submit an article for review (feedback or publication hand-off).
@@ -3412,7 +3650,7 @@ export const useCreateReviewRequest = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createReviewRequest>>,
             TError,
-            { slug: string; data: CreateReviewRequestRequest },
+            CreateReviewRequestMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -3421,7 +3659,7 @@ export const useCreateReviewRequest = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createReviewRequest>>,
     TError,
-    { slug: string; data: CreateReviewRequestRequest },
+    CreateReviewRequestMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -3479,6 +3717,9 @@ export const resolveReviewRequest = async (
     );
 };
 
+export const getResolveReviewRequestMutationKey = () =>
+    ["resolveReviewRequest"] as const;
+
 export const getResolveReviewRequestMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -3486,17 +3727,17 @@ export const getResolveReviewRequestMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof resolveReviewRequest>>,
         TError,
-        { id: string },
+        ResolveReviewRequestMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof resolveReviewRequest>>,
     TError,
-    { id: string },
+    ResolveReviewRequestMutationVariables,
     TContext
 > => {
-    const mutationKey = ["resolveReviewRequest"];
+    const mutationKey = getResolveReviewRequestMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -3507,7 +3748,7 @@ export const getResolveReviewRequestMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof resolveReviewRequest>>,
-        { id: string }
+        ResolveReviewRequestMutationVariables
     > = (props) => {
         const { id } = props ?? {};
 
@@ -3522,6 +3763,7 @@ export type ResolveReviewRequestMutationResult = NonNullable<
 >;
 
 export type ResolveReviewRequestMutationError = void;
+export type ResolveReviewRequestMutationVariables = { id: string };
 
 /**
  * @summary Close a pending collegium-review round. Who may close follows the
@@ -3535,7 +3777,7 @@ export const useResolveReviewRequest = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof resolveReviewRequest>>,
             TError,
-            { id: string },
+            ResolveReviewRequestMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -3544,7 +3786,7 @@ export const useResolveReviewRequest = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof resolveReviewRequest>>,
     TError,
-    { id: string },
+    ResolveReviewRequestMutationVariables,
     TContext
 > => {
     return useMutation(
@@ -3599,6 +3841,9 @@ export const withdrawReviewRequest = async (
     );
 };
 
+export const getWithdrawReviewRequestMutationKey = () =>
+    ["withdrawReviewRequest"] as const;
+
 export const getWithdrawReviewRequestMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -3606,17 +3851,17 @@ export const getWithdrawReviewRequestMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof withdrawReviewRequest>>,
         TError,
-        { id: string },
+        WithdrawReviewRequestMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof withdrawReviewRequest>>,
     TError,
-    { id: string },
+    WithdrawReviewRequestMutationVariables,
     TContext
 > => {
-    const mutationKey = ["withdrawReviewRequest"];
+    const mutationKey = getWithdrawReviewRequestMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -3627,7 +3872,7 @@ export const getWithdrawReviewRequestMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof withdrawReviewRequest>>,
-        { id: string }
+        WithdrawReviewRequestMutationVariables
     > = (props) => {
         const { id } = props ?? {};
 
@@ -3642,6 +3887,7 @@ export type WithdrawReviewRequestMutationResult = NonNullable<
 >;
 
 export type WithdrawReviewRequestMutationError = void;
+export type WithdrawReviewRequestMutationVariables = { id: string };
 
 /**
  * @summary Withdraw a pending review request (author only). Withdrawing the
@@ -3652,7 +3898,7 @@ export const useWithdrawReviewRequest = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof withdrawReviewRequest>>,
             TError,
-            { id: string },
+            WithdrawReviewRequestMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -3661,7 +3907,7 @@ export const useWithdrawReviewRequest = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof withdrawReviewRequest>>,
     TError,
-    { id: string },
+    WithdrawReviewRequestMutationVariables,
     TContext
 > => {
     return useMutation(

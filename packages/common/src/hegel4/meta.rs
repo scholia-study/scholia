@@ -12,6 +12,7 @@ pub const AUTHOR: &str = "Georg Wilhelm Friedrich Hegel";
 
 pub const BOOK_SLUG: &str = "enzyklopaedie-der-philosophischen-wissenschaften";
 pub const BOOK_TITLE: &str = "Enzyklopädie der philosophischen Wissenschaften im Grundrisse";
+pub const BOOK_SHORT_TITLE: &str = "Enzyklopädie";
 pub const LANGUAGE: &str = "de";
 pub const YEAR: &str = "2026";
 /// The identity year of the edition presented: the third, final edition.
@@ -33,6 +34,7 @@ pub const LICENCE: &str = "Public Domain. German text layers from hegeledition.c
 
 pub const BOOK_SLUG_EN: &str = "encyclopaedia-of-the-philosophical-sciences";
 pub const BOOK_TITLE_EN: &str = "Encyclopaedia of the Philosophical Sciences in Outline";
+pub const BOOK_SHORT_TITLE_EN: &str = "Encyclopaedia";
 pub const LANGUAGE_EN: &str = "en";
 pub const YEAR_EN: &str = "2026";
 pub const PUBLISHER_EN: &str = "Scholia Sodalitas";

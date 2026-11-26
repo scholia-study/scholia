@@ -11,6 +11,7 @@ use crate::system::error::AppError;
 struct SourceRow {
     id: Uuid,
     title: String,
+    title_short: Option<String>,
     publication_year: Option<i16>,
     original_year: Option<i16>,
     publisher: Option<String>,
@@ -75,6 +76,7 @@ pub async fn get_library(pool: &PgPool) -> Result<LibraryResponse, AppError> {
         SourceRow,
         r#"SELECT id,
                   COALESCE(title_display, title) AS "title!",
+                  title_short,
                   publication_year,
                   original_year,
                   publisher,
@@ -572,16 +574,17 @@ fn build_work(
     // edition's source title (e.g. "Emperor and Galilean" for the Norwegian
     // "Keiser og Galileer"), falling back to the root/original title when the
     // work has no English version.
-    let display_title = versions
+    let display_source = versions
         .iter()
         .find(|v| v.book_language == "en")
         .and_then(|v| sources.get(&v.source_id))
-        .map(|s| s.title.clone())
-        .unwrap_or_else(|| root_source.title.clone());
+        .unwrap_or(root_source);
+    let display_title = display_source.title.clone();
 
     LibraryWork {
         work_id: work_id.to_string(),
         title: display_title,
+        short_title: display_source.title_short.clone(),
         // Identity year: the edition the work presents (original_year),
         // not the printing transcribed — "1787" for the Kritik read in
         // the 1911 Akademie-Ausgabe. Also the card sort key.

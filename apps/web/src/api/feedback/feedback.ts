@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     CreateFeedbackRequest,
@@ -281,11 +286,19 @@ export const getListFeedbackSuspenseQueryOptions = <
         signal,
     }) => listFeedback(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listFeedback>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListFeedbackSuspenseQueryResult = NonNullable<
@@ -614,11 +627,19 @@ export const getGetFeedbackSuspenseQueryOptions = <
         signal,
     }) => getFeedback(id, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getFeedback>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetFeedbackSuspenseQueryResult = NonNullable<
@@ -767,6 +788,27 @@ export const updateFeedback = async (
     updateFeedbackRequest: UpdateFeedbackRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateFeedbackResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateFeedbackResponseSuccess>(
         getUpdateFeedbackUrl(id),
         {
@@ -774,12 +816,14 @@ export const updateFeedback = async (
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(updateFeedbackRequest),
         },
     );
 };
+
+export const getUpdateFeedbackMutationKey = () => ["updateFeedback"] as const;
 
 export const getUpdateFeedbackMutationOptions = <
     TError = void,
@@ -788,17 +832,17 @@ export const getUpdateFeedbackMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateFeedback>>,
         TError,
-        { id: string; data: UpdateFeedbackRequest },
+        UpdateFeedbackMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateFeedback>>,
     TError,
-    { id: string; data: UpdateFeedbackRequest },
+    UpdateFeedbackMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateFeedback"];
+    const mutationKey = getUpdateFeedbackMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -809,7 +853,7 @@ export const getUpdateFeedbackMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateFeedback>>,
-        { id: string; data: UpdateFeedbackRequest }
+        UpdateFeedbackMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -824,6 +868,10 @@ export type UpdateFeedbackMutationResult = NonNullable<
 >;
 export type UpdateFeedbackMutationBody = UpdateFeedbackRequest;
 export type UpdateFeedbackMutationError = void;
+export type UpdateFeedbackMutationVariables = {
+    id: string;
+    data: UpdateFeedbackRequest;
+};
 
 /**
  * @summary Update status and/or admin notes (admin only).
@@ -833,7 +881,7 @@ export const useUpdateFeedback = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateFeedback>>,
             TError,
-            { id: string; data: UpdateFeedbackRequest },
+            UpdateFeedbackMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -842,7 +890,7 @@ export const useUpdateFeedback = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateFeedback>>,
     TError,
-    { id: string; data: UpdateFeedbackRequest },
+    UpdateFeedbackMutationVariables,
     TContext
 > => {
     return useMutation(getUpdateFeedbackMutationOptions(options), queryClient);
@@ -883,13 +931,39 @@ export const createFeedback = async (
     createFeedbackRequest: CreateFeedbackRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createFeedbackResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createFeedbackResponseSuccess>(getCreateFeedbackUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(createFeedbackRequest),
     });
 };
+
+export const getCreateFeedbackMutationKey = () => ["createFeedback"] as const;
 
 export const getCreateFeedbackMutationOptions = <
     TError = void,
@@ -898,17 +972,17 @@ export const getCreateFeedbackMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createFeedback>>,
         TError,
-        { data: CreateFeedbackRequest },
+        CreateFeedbackMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createFeedback>>,
     TError,
-    { data: CreateFeedbackRequest },
+    CreateFeedbackMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createFeedback"];
+    const mutationKey = getCreateFeedbackMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -919,7 +993,7 @@ export const getCreateFeedbackMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createFeedback>>,
-        { data: CreateFeedbackRequest }
+        CreateFeedbackMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -934,6 +1008,7 @@ export type CreateFeedbackMutationResult = NonNullable<
 >;
 export type CreateFeedbackMutationBody = CreateFeedbackRequest;
 export type CreateFeedbackMutationError = void;
+export type CreateFeedbackMutationVariables = { data: CreateFeedbackRequest };
 
 /**
  * @summary Submit feedback to admins. Auth-required; rate-limited per user.
@@ -943,7 +1018,7 @@ export const useCreateFeedback = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createFeedback>>,
             TError,
-            { data: CreateFeedbackRequest },
+            CreateFeedbackMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -952,7 +1027,7 @@ export const useCreateFeedback = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createFeedback>>,
     TError,
-    { data: CreateFeedbackRequest },
+    CreateFeedbackMutationVariables,
     TContext
 > => {
     return useMutation(getCreateFeedbackMutationOptions(options), queryClient);

@@ -10,5 +10,5 @@
  * reads the `file` part via `axum::extract::Multipart`.
  */
 export interface UploadImageForm {
-    file: Blob;
+    file: Blob | File;
 }

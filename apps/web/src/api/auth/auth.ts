@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     AuthResponse,
@@ -77,13 +82,39 @@ export const forgotPassword = async (
     forgotPasswordRequest: ForgotPasswordRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<forgotPasswordResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<forgotPasswordResponseSuccess>(getForgotPasswordUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(forgotPasswordRequest),
     });
 };
+
+export const getForgotPasswordMutationKey = () => ["forgotPassword"] as const;
 
 export const getForgotPasswordMutationOptions = <
     TError = unknown,
@@ -92,17 +123,17 @@ export const getForgotPasswordMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof forgotPassword>>,
         TError,
-        { data: ForgotPasswordRequest },
+        ForgotPasswordMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof forgotPassword>>,
     TError,
-    { data: ForgotPasswordRequest },
+    ForgotPasswordMutationVariables,
     TContext
 > => {
-    const mutationKey = ["forgotPassword"];
+    const mutationKey = getForgotPasswordMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -113,7 +144,7 @@ export const getForgotPasswordMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof forgotPassword>>,
-        { data: ForgotPasswordRequest }
+        ForgotPasswordMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -128,6 +159,7 @@ export type ForgotPasswordMutationResult = NonNullable<
 >;
 export type ForgotPasswordMutationBody = ForgotPasswordRequest;
 export type ForgotPasswordMutationError = unknown;
+export type ForgotPasswordMutationVariables = { data: ForgotPasswordRequest };
 
 /**
  * @summary Request a password reset email
@@ -137,7 +169,7 @@ export const useForgotPassword = <TError = unknown, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof forgotPassword>>,
             TError,
-            { data: ForgotPasswordRequest },
+            ForgotPasswordMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -146,7 +178,7 @@ export const useForgotPassword = <TError = unknown, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof forgotPassword>>,
     TError,
-    { data: ForgotPasswordRequest },
+    ForgotPasswordMutationVariables,
     TContext
 > => {
     return useMutation(getForgotPasswordMutationOptions(options), queryClient);
@@ -333,11 +365,19 @@ export const getGithubLoginSuspenseQueryOptions = <
         signal,
     }) => githubLogin({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof githubLogin>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GithubLoginSuspenseQueryResult = NonNullable<
@@ -647,11 +687,19 @@ export const getGithubCallbackSuspenseQueryOptions = <
         Awaited<ReturnType<typeof githubCallback>>
     > = ({ signal }) => githubCallback(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof githubCallback>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GithubCallbackSuspenseQueryResult = NonNullable<
@@ -933,11 +981,19 @@ export const getGoogleLoginSuspenseQueryOptions = <
         signal,
     }) => googleLogin({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof googleLogin>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GoogleLoginSuspenseQueryResult = NonNullable<
@@ -1247,11 +1303,19 @@ export const getGoogleCallbackSuspenseQueryOptions = <
         Awaited<ReturnType<typeof googleCallback>>
     > = ({ signal }) => googleCallback(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof googleCallback>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GoogleCallbackSuspenseQueryResult = NonNullable<
@@ -1393,13 +1457,39 @@ export const login = async (
     loginRequest: LoginRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<loginResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<loginResponseSuccess>(getLoginUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(loginRequest),
     });
 };
+
+export const getLoginMutationKey = () => ["login"] as const;
 
 export const getLoginMutationOptions = <
     TError = void,
@@ -1408,17 +1498,17 @@ export const getLoginMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof login>>,
         TError,
-        { data: LoginRequest },
+        LoginMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof login>>,
     TError,
-    { data: LoginRequest },
+    LoginMutationVariables,
     TContext
 > => {
-    const mutationKey = ["login"];
+    const mutationKey = getLoginMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1429,7 +1519,7 @@ export const getLoginMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof login>>,
-        { data: LoginRequest }
+        LoginMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -1444,6 +1534,7 @@ export type LoginMutationResult = NonNullable<
 >;
 export type LoginMutationBody = LoginRequest;
 export type LoginMutationError = void;
+export type LoginMutationVariables = { data: LoginRequest };
 
 /**
  * @summary Log in with email and password
@@ -1453,7 +1544,7 @@ export const useLogin = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof login>>,
             TError,
-            { data: LoginRequest },
+            LoginMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1462,7 +1553,7 @@ export const useLogin = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof login>>,
     TError,
-    { data: LoginRequest },
+    LoginMutationVariables,
     TContext
 > => {
     return useMutation(getLoginMutationOptions(options), queryClient);
@@ -1492,6 +1583,8 @@ export const logout = async (
     });
 };
 
+export const getLogoutMutationKey = () => ["logout"] as const;
+
 export const getLogoutMutationOptions = <
     TError = unknown,
     TContext = unknown,
@@ -1509,7 +1602,7 @@ export const getLogoutMutationOptions = <
     void,
     TContext
 > => {
-    const mutationKey = ["logout"];
+    const mutationKey = getLogoutMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1711,11 +1804,19 @@ export const getMeSuspenseQueryOptions = <
         signal,
     }) => me({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof me>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type MeSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof me>>>;
@@ -1998,11 +2099,19 @@ export const getGetProfileSuspenseQueryOptions = <
         signal,
     }) => getProfile({ signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getProfile>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetProfileSuspenseQueryResult = NonNullable<
@@ -2140,13 +2249,39 @@ export const updateProfile = async (
     updateProfileRequest: UpdateProfileRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateProfileResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateProfileResponseSuccess>(getUpdateProfileUrl(), {
         ...options,
         method: "PUT",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(updateProfileRequest),
     });
 };
+
+export const getUpdateProfileMutationKey = () => ["updateProfile"] as const;
 
 export const getUpdateProfileMutationOptions = <
     TError = void,
@@ -2155,17 +2290,17 @@ export const getUpdateProfileMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateProfile>>,
         TError,
-        { data: UpdateProfileRequest },
+        UpdateProfileMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateProfile>>,
     TError,
-    { data: UpdateProfileRequest },
+    UpdateProfileMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateProfile"];
+    const mutationKey = getUpdateProfileMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -2176,7 +2311,7 @@ export const getUpdateProfileMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateProfile>>,
-        { data: UpdateProfileRequest }
+        UpdateProfileMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -2191,6 +2326,7 @@ export type UpdateProfileMutationResult = NonNullable<
 >;
 export type UpdateProfileMutationBody = UpdateProfileRequest;
 export type UpdateProfileMutationError = void;
+export type UpdateProfileMutationVariables = { data: UpdateProfileRequest };
 
 /**
  * @summary Update display name
@@ -2200,7 +2336,7 @@ export const useUpdateProfile = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateProfile>>,
             TError,
-            { data: UpdateProfileRequest },
+            UpdateProfileMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -2209,7 +2345,7 @@ export const useUpdateProfile = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateProfile>>,
     TError,
-    { data: UpdateProfileRequest },
+    UpdateProfileMutationVariables,
     TContext
 > => {
     return useMutation(getUpdateProfileMutationOptions(options), queryClient);
@@ -2250,13 +2386,39 @@ export const register = async (
     registerRequest: RegisterRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<registerResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<registerResponseSuccess>(getRegisterUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(registerRequest),
     });
 };
+
+export const getRegisterMutationKey = () => ["register"] as const;
 
 export const getRegisterMutationOptions = <
     TError = void,
@@ -2265,17 +2427,17 @@ export const getRegisterMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof register>>,
         TError,
-        { data: RegisterRequest },
+        RegisterMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof register>>,
     TError,
-    { data: RegisterRequest },
+    RegisterMutationVariables,
     TContext
 > => {
-    const mutationKey = ["register"];
+    const mutationKey = getRegisterMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -2286,7 +2448,7 @@ export const getRegisterMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof register>>,
-        { data: RegisterRequest }
+        RegisterMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -2301,6 +2463,7 @@ export type RegisterMutationResult = NonNullable<
 >;
 export type RegisterMutationBody = RegisterRequest;
 export type RegisterMutationError = void;
+export type RegisterMutationVariables = { data: RegisterRequest };
 
 /**
  * @summary Register a new user with email and password
@@ -2310,7 +2473,7 @@ export const useRegister = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof register>>,
             TError,
-            { data: RegisterRequest },
+            RegisterMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -2319,7 +2482,7 @@ export const useRegister = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof register>>,
     TError,
-    { data: RegisterRequest },
+    RegisterMutationVariables,
     TContext
 > => {
     return useMutation(getRegisterMutationOptions(options), queryClient);
@@ -2369,6 +2532,9 @@ export const requestPasswordChange = async (
     );
 };
 
+export const getRequestPasswordChangeMutationKey = () =>
+    ["requestPasswordChange"] as const;
+
 export const getRequestPasswordChangeMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -2386,7 +2552,7 @@ export const getRequestPasswordChangeMutationOptions = <
     void,
     TContext
 > => {
-    const mutationKey = ["requestPasswordChange"];
+    const mutationKey = getRequestPasswordChangeMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -2464,13 +2630,39 @@ export const resetPassword = async (
     resetPasswordRequest: ResetPasswordRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<resetPasswordResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<resetPasswordResponseSuccess>(getResetPasswordUrl(), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(resetPasswordRequest),
     });
 };
+
+export const getResetPasswordMutationKey = () => ["resetPassword"] as const;
 
 export const getResetPasswordMutationOptions = <
     TError = void,
@@ -2479,17 +2671,17 @@ export const getResetPasswordMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof resetPassword>>,
         TError,
-        { data: ResetPasswordRequest },
+        ResetPasswordMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof resetPassword>>,
     TError,
-    { data: ResetPasswordRequest },
+    ResetPasswordMutationVariables,
     TContext
 > => {
-    const mutationKey = ["resetPassword"];
+    const mutationKey = getResetPasswordMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -2500,7 +2692,7 @@ export const getResetPasswordMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof resetPassword>>,
-        { data: ResetPasswordRequest }
+        ResetPasswordMutationVariables
     > = (props) => {
         const { data } = props ?? {};
 
@@ -2515,6 +2707,7 @@ export type ResetPasswordMutationResult = NonNullable<
 >;
 export type ResetPasswordMutationBody = ResetPasswordRequest;
 export type ResetPasswordMutationError = void;
+export type ResetPasswordMutationVariables = { data: ResetPasswordRequest };
 
 /**
  * @summary Reset password using a token
@@ -2524,7 +2717,7 @@ export const useResetPassword = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof resetPassword>>,
             TError,
-            { data: ResetPasswordRequest },
+            ResetPasswordMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -2533,7 +2726,7 @@ export const useResetPassword = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof resetPassword>>,
     TError,
-    { data: ResetPasswordRequest },
+    ResetPasswordMutationVariables,
     TContext
 > => {
     return useMutation(getResetPasswordMutationOptions(options), queryClient);
@@ -2750,11 +2943,19 @@ export const getVerifyEmailSuspenseQueryOptions = <
         signal,
     }) => verifyEmail(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof verifyEmail>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type VerifyEmailSuspenseQueryResult = NonNullable<

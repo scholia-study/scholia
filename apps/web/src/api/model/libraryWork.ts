@@ -18,6 +18,11 @@ export interface LibraryWork {
      * @nullable
      */
     publication_year?: number | null;
+    /**
+     * Short title for the shelf spine, when the edition sets one.
+     * @nullable
+     */
+    short_title?: string | null;
     title: string;
     versions: LibraryVersion[];
     work_id: string;

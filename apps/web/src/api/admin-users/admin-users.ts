@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     AdminUserListResponse,
@@ -277,11 +282,19 @@ export const getListUsersSuspenseQueryOptions = <
         signal,
     }) => listUsers(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listUsers>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListUsersSuspenseQueryResult = NonNullable<
@@ -582,11 +595,19 @@ export const getGetUserSuspenseQueryOptions = <
         signal,
     }) => getUser(id, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof getUser>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type GetUserSuspenseQueryResult = NonNullable<
@@ -732,13 +753,39 @@ export const setUserRoles = async (
     setUserRolesRequest: SetUserRolesRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<setUserRolesResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<setUserRolesResponseSuccess>(getSetUserRolesUrl(id), {
         ...options,
         method: "PUT",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(setUserRolesRequest),
     });
 };
+
+export const getSetUserRolesMutationKey = () => ["setUserRoles"] as const;
 
 export const getSetUserRolesMutationOptions = <
     TError = void,
@@ -747,17 +794,17 @@ export const getSetUserRolesMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof setUserRoles>>,
         TError,
-        { id: string; data: SetUserRolesRequest },
+        SetUserRolesMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof setUserRoles>>,
     TError,
-    { id: string; data: SetUserRolesRequest },
+    SetUserRolesMutationVariables,
     TContext
 > => {
-    const mutationKey = ["setUserRoles"];
+    const mutationKey = getSetUserRolesMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -768,7 +815,7 @@ export const getSetUserRolesMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof setUserRoles>>,
-        { id: string; data: SetUserRolesRequest }
+        SetUserRolesMutationVariables
     > = (props) => {
         const { id, data } = props ?? {};
 
@@ -783,6 +830,10 @@ export type SetUserRolesMutationResult = NonNullable<
 >;
 export type SetUserRolesMutationBody = SetUserRolesRequest;
 export type SetUserRolesMutationError = void;
+export type SetUserRolesMutationVariables = {
+    id: string;
+    data: SetUserRolesRequest;
+};
 
 /**
  * @summary Replace a user's manageable roles. Rejects paid/unknown roles, refuses
@@ -795,7 +846,7 @@ export const useSetUserRoles = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof setUserRoles>>,
             TError,
-            { id: string; data: SetUserRolesRequest },
+            SetUserRolesMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -804,7 +855,7 @@ export const useSetUserRoles = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof setUserRoles>>,
     TError,
-    { id: string; data: SetUserRolesRequest },
+    SetUserRolesMutationVariables,
     TContext
 > => {
     return useMutation(getSetUserRolesMutationOptions(options), queryClient);

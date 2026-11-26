@@ -21,7 +21,12 @@ import type {
     UseSuspenseQueryOptions,
     UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    queryOptions as queryOptionsBuilder,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { customFetch } from ".././fetcher.ts";
 import type {
     CreateNoteRequest,
@@ -319,11 +324,19 @@ export const getListQuotationsSuspenseQueryOptions = <
     > = ({ signal }) =>
         listQuotations(slug, params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listQuotations>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListQuotationsSuspenseQueryResult = NonNullable<
@@ -474,6 +487,27 @@ export const createQuotation = async (
     createQuotationRequest: CreateQuotationRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createQuotationResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createQuotationResponseSuccess>(
         getCreateQuotationUrl(slug),
         {
@@ -481,12 +515,14 @@ export const createQuotation = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(createQuotationRequest),
         },
     );
 };
+
+export const getCreateQuotationMutationKey = () => ["createQuotation"] as const;
 
 export const getCreateQuotationMutationOptions = <
     TError = void,
@@ -495,17 +531,17 @@ export const getCreateQuotationMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createQuotation>>,
         TError,
-        { slug: string; data: CreateQuotationRequest },
+        CreateQuotationMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createQuotation>>,
     TError,
-    { slug: string; data: CreateQuotationRequest },
+    CreateQuotationMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createQuotation"];
+    const mutationKey = getCreateQuotationMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -516,7 +552,7 @@ export const getCreateQuotationMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createQuotation>>,
-        { slug: string; data: CreateQuotationRequest }
+        CreateQuotationMutationVariables
     > = (props) => {
         const { slug, data } = props ?? {};
 
@@ -531,6 +567,10 @@ export type CreateQuotationMutationResult = NonNullable<
 >;
 export type CreateQuotationMutationBody = CreateQuotationRequest;
 export type CreateQuotationMutationError = void;
+export type CreateQuotationMutationVariables = {
+    slug: string;
+    data: CreateQuotationRequest;
+};
 
 /**
  * @summary Save a quotation (returns existing if duplicate)
@@ -540,7 +580,7 @@ export const useCreateQuotation = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createQuotation>>,
             TError,
-            { slug: string; data: CreateQuotationRequest },
+            CreateQuotationMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -549,7 +589,7 @@ export const useCreateQuotation = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createQuotation>>,
     TError,
-    { slug: string; data: CreateQuotationRequest },
+    CreateQuotationMutationVariables,
     TContext
 > => {
     return useMutation(getCreateQuotationMutationOptions(options), queryClient);
@@ -606,6 +646,8 @@ export const deleteQuotation = async (
     );
 };
 
+export const getDeleteQuotationMutationKey = () => ["deleteQuotation"] as const;
+
 export const getDeleteQuotationMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -613,17 +655,17 @@ export const getDeleteQuotationMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof deleteQuotation>>,
         TError,
-        { slug: string; id: string },
+        DeleteQuotationMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof deleteQuotation>>,
     TError,
-    { slug: string; id: string },
+    DeleteQuotationMutationVariables,
     TContext
 > => {
-    const mutationKey = ["deleteQuotation"];
+    const mutationKey = getDeleteQuotationMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -634,7 +676,7 @@ export const getDeleteQuotationMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof deleteQuotation>>,
-        { slug: string; id: string }
+        DeleteQuotationMutationVariables
     > = (props) => {
         const { slug, id } = props ?? {};
 
@@ -649,6 +691,7 @@ export type DeleteQuotationMutationResult = NonNullable<
 >;
 
 export type DeleteQuotationMutationError = void;
+export type DeleteQuotationMutationVariables = { slug: string; id: string };
 
 /**
  * @summary Delete a quotation (cascade-deletes notes)
@@ -658,7 +701,7 @@ export const useDeleteQuotation = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof deleteQuotation>>,
             TError,
-            { slug: string; id: string },
+            DeleteQuotationMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -667,7 +710,7 @@ export const useDeleteQuotation = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof deleteQuotation>>,
     TError,
-    { slug: string; id: string },
+    DeleteQuotationMutationVariables,
     TContext
 > => {
     return useMutation(getDeleteQuotationMutationOptions(options), queryClient);
@@ -906,11 +949,19 @@ export const getListNotesSuspenseQueryOptions = <
         signal,
     }) => listNotes(slug, id, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listNotes>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListNotesSuspenseQueryResult = NonNullable<
@@ -1058,13 +1109,39 @@ export const createNote = async (
     createNoteRequest: CreateNoteRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<createNoteResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<createNoteResponseSuccess>(getCreateNoteUrl(slug, id), {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
+        headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(options?.headers),
+        },
         body: JSON.stringify(createNoteRequest),
     });
 };
+
+export const getCreateNoteMutationKey = () => ["createNote"] as const;
 
 export const getCreateNoteMutationOptions = <
     TError = void,
@@ -1073,17 +1150,17 @@ export const getCreateNoteMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof createNote>>,
         TError,
-        { slug: string; id: string; data: CreateNoteRequest },
+        CreateNoteMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof createNote>>,
     TError,
-    { slug: string; id: string; data: CreateNoteRequest },
+    CreateNoteMutationVariables,
     TContext
 > => {
-    const mutationKey = ["createNote"];
+    const mutationKey = getCreateNoteMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1094,7 +1171,7 @@ export const getCreateNoteMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof createNote>>,
-        { slug: string; id: string; data: CreateNoteRequest }
+        CreateNoteMutationVariables
     > = (props) => {
         const { slug, id, data } = props ?? {};
 
@@ -1109,6 +1186,11 @@ export type CreateNoteMutationResult = NonNullable<
 >;
 export type CreateNoteMutationBody = CreateNoteRequest;
 export type CreateNoteMutationError = void;
+export type CreateNoteMutationVariables = {
+    slug: string;
+    id: string;
+    data: CreateNoteRequest;
+};
 
 /**
  * @summary Create a note on a quotation
@@ -1118,7 +1200,7 @@ export const useCreateNote = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof createNote>>,
             TError,
-            { slug: string; id: string; data: CreateNoteRequest },
+            CreateNoteMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1127,7 +1209,7 @@ export const useCreateNote = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof createNote>>,
     TError,
-    { slug: string; id: string; data: CreateNoteRequest },
+    CreateNoteMutationVariables,
     TContext
 > => {
     return useMutation(getCreateNoteMutationOptions(options), queryClient);
@@ -1183,6 +1265,27 @@ export const updateNote = async (
     updateNoteRequest: UpdateNoteRequest,
     options?: Parameters<typeof customFetch>[1],
 ): Promise<updateNoteResponseSuccess> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit["headers"]>,
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string],
+                ),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
     return customFetch<updateNoteResponseSuccess>(
         getUpdateNoteUrl(slug, id, noteId),
         {
@@ -1190,12 +1293,14 @@ export const updateNote = async (
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                ...options?.headers,
+                ...getHeaders(options?.headers),
             },
             body: JSON.stringify(updateNoteRequest),
         },
     );
 };
+
+export const getUpdateNoteMutationKey = () => ["updateNote"] as const;
 
 export const getUpdateNoteMutationOptions = <
     TError = void,
@@ -1204,17 +1309,17 @@ export const getUpdateNoteMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof updateNote>>,
         TError,
-        { slug: string; id: string; noteId: string; data: UpdateNoteRequest },
+        UpdateNoteMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof updateNote>>,
     TError,
-    { slug: string; id: string; noteId: string; data: UpdateNoteRequest },
+    UpdateNoteMutationVariables,
     TContext
 > => {
-    const mutationKey = ["updateNote"];
+    const mutationKey = getUpdateNoteMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1225,7 +1330,7 @@ export const getUpdateNoteMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof updateNote>>,
-        { slug: string; id: string; noteId: string; data: UpdateNoteRequest }
+        UpdateNoteMutationVariables
     > = (props) => {
         const { slug, id, noteId, data } = props ?? {};
 
@@ -1240,6 +1345,12 @@ export type UpdateNoteMutationResult = NonNullable<
 >;
 export type UpdateNoteMutationBody = UpdateNoteRequest;
 export type UpdateNoteMutationError = void;
+export type UpdateNoteMutationVariables = {
+    slug: string;
+    id: string;
+    noteId: string;
+    data: UpdateNoteRequest;
+};
 
 /**
  * @summary Update a note
@@ -1249,12 +1360,7 @@ export const useUpdateNote = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof updateNote>>,
             TError,
-            {
-                slug: string;
-                id: string;
-                noteId: string;
-                data: UpdateNoteRequest;
-            },
+            UpdateNoteMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1263,7 +1369,7 @@ export const useUpdateNote = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof updateNote>>,
     TError,
-    { slug: string; id: string; noteId: string; data: UpdateNoteRequest },
+    UpdateNoteMutationVariables,
     TContext
 > => {
     return useMutation(getUpdateNoteMutationOptions(options), queryClient);
@@ -1321,6 +1427,8 @@ export const deleteNote = async (
     );
 };
 
+export const getDeleteNoteMutationKey = () => ["deleteNote"] as const;
+
 export const getDeleteNoteMutationOptions = <
     TError = void,
     TContext = unknown,
@@ -1328,17 +1436,17 @@ export const getDeleteNoteMutationOptions = <
     mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof deleteNote>>,
         TError,
-        { slug: string; id: string; noteId: string },
+        DeleteNoteMutationVariables,
         TContext
     >;
     request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
     Awaited<ReturnType<typeof deleteNote>>,
     TError,
-    { slug: string; id: string; noteId: string },
+    DeleteNoteMutationVariables,
     TContext
 > => {
-    const mutationKey = ["deleteNote"];
+    const mutationKey = getDeleteNoteMutationKey();
     const { mutation: mutationOptions, request: requestOptions } = options
         ? options.mutation &&
           "mutationKey" in options.mutation &&
@@ -1349,7 +1457,7 @@ export const getDeleteNoteMutationOptions = <
 
     const mutationFn: MutationFunction<
         Awaited<ReturnType<typeof deleteNote>>,
-        { slug: string; id: string; noteId: string }
+        DeleteNoteMutationVariables
     > = (props) => {
         const { slug, id, noteId } = props ?? {};
 
@@ -1364,6 +1472,11 @@ export type DeleteNoteMutationResult = NonNullable<
 >;
 
 export type DeleteNoteMutationError = void;
+export type DeleteNoteMutationVariables = {
+    slug: string;
+    id: string;
+    noteId: string;
+};
 
 /**
  * @summary Delete a note
@@ -1373,7 +1486,7 @@ export const useDeleteNote = <TError = void, TContext = unknown>(
         mutation?: UseMutationOptions<
             Awaited<ReturnType<typeof deleteNote>>,
             TError,
-            { slug: string; id: string; noteId: string },
+            DeleteNoteMutationVariables,
             TContext
         >;
         request?: SecondParameter<typeof customFetch>;
@@ -1382,7 +1495,7 @@ export const useDeleteNote = <TError = void, TContext = unknown>(
 ): UseMutationResult<
     Awaited<ReturnType<typeof deleteNote>>,
     TError,
-    { slug: string; id: string; noteId: string },
+    DeleteNoteMutationVariables,
     TContext
 > => {
     return useMutation(getDeleteNoteMutationOptions(options), queryClient);
@@ -1609,11 +1722,19 @@ export const getListAllNotesSuspenseQueryOptions = <
         signal,
     }) => listAllNotes(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listAllNotes>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListAllNotesSuspenseQueryResult = NonNullable<
@@ -1941,11 +2062,19 @@ export const getListAllQuotationsSuspenseQueryOptions = <
     > = ({ signal }) =>
         listAllQuotations(params, { signal, ...requestOptions });
 
-    return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    return queryOptionsBuilder({
+        queryKey,
+        ...queryOptions,
+        queryFn: queryOptions?.queryFn ?? queryFn,
+    }) as UseSuspenseQueryOptions<
         Awaited<ReturnType<typeof listAllQuotations>>,
         TError,
         TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> };
+    > & { queryKey: DataTag<QueryKey, TData, TError> } & {
+        throwOnError?: ((this: never, error: TError) => boolean) & {
+            readonly __inferenceOnly: never;
+        };
+    };
 };
 
 export type ListAllQuotationsSuspenseQueryResult = NonNullable<
