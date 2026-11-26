@@ -73,6 +73,11 @@ case "$corpus" in
         "$BIN" --input-file assets/hegel3/derived/translation_output.json \
                --source-book-slug das-seyn-1812 "$@"
         ;;
+    hegel4)
+        "$BIN" --input-file assets/hegel4/derived/output.json "$@"
+        "$BIN" --input-file assets/hegel4/derived/translation_output.json \
+               --source-book-slug enzyklopaedie-der-philosophischen-wissenschaften "$@"
+        ;;
     shakespeare1)
         "$BIN" --input-file assets/shakespeare1/derived/output.json "$@"
         ;;

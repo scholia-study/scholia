@@ -42,9 +42,9 @@ See ADR 0006.
   ─────────────────────────────────────────────────────────────────────────
   md_prose_to_struct    --corpus kant1|kant3|      annotated prose: footnotes,
                           hegel1|hegel2|hegel3|     margin notes, figures, dual
-                          hobbes1|peirce1|plato1    page systems. --translation
-                          [--translation|--single]  = 1:1 locked edition;
-                                                    --single = one curated
+                          hegel4|hobbes1|peirce1|   page systems. --translation
+                          plato1                    = 1:1 locked edition;
+                          [--translation|--single]  --single = one curated
                                                     layer, no orthography pair
   md_poetry_to_struct   --corpus shakespeare1|milton1  verse: line-per-sentence,
                                                     indent levels
@@ -105,7 +105,7 @@ flowchart TB
 
     subgraph parsers ["genre parsers (corpus = config)"]
         direction LR
-        prose["md_prose_to_struct<br/>--corpus kant1|kant3|hegel1|hegel2|hegel3|hobbes1|peirce1|plato1"]
+        prose["md_prose_to_struct<br/>--corpus kant1|kant3|hegel1|hegel2|hegel3|hegel4|hobbes1|peirce1|plato1"]
         poetry["md_poetry_to_struct<br/>--corpus shakespeare1|milton1"]
         drama["md_drama_to_struct<br/>--corpus ibsen1|plato2"]
     end
