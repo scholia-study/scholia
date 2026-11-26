@@ -760,7 +760,8 @@ export function Block({
                         : parse(blockHtml)}
                 </h2>
             );
-        case "paragraph": {
+        case "paragraph":
+        case "remark": {
             // Sentences split into runs: normal flow renders inline; each
             // `+ `-authored indented run renders as one hanging-indent block
             // (e.g. Kant's `1) 2) 3)` enumerations). The paragraph stays a
@@ -782,7 +783,7 @@ export function Block({
             return (
                 <p
                     className={`relative pb-4 leading-[var(--reader-line-height)] text-stone-700${
-                        inDrama ? " pl-6" : ""
+                        inDrama || block.block_type === "remark" ? " pl-6" : ""
                     }`}
                 >
                     {groups.map((group, gi) =>

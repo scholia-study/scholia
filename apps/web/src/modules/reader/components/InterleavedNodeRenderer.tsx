@@ -61,6 +61,7 @@ function alignBlocks(
         if (block.paragraph_number != null) {
             if (
                 block.block_type === "paragraph" ||
+                block.block_type === "remark" ||
                 block.block_type === "footnote"
             ) {
                 companion = companionByParagraph.get(block.paragraph_number);
