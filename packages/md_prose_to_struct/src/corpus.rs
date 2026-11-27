@@ -104,6 +104,11 @@ pub struct Corpus {
     /// so quotations cite the essay in its original venue. `None` for works
     /// that are one bibliographic unit (every corpus but peirce1).
     pub node_source: Option<fn(usize) -> Option<NodeSource>>,
+    /// Frozen English node slugs, one per TOC entry, for a translation
+    /// edition without a `toc_en` whose German slugs would otherwise leak
+    /// into English URLs and ltree paths (hegel2/3/4). `None` keeps the
+    /// entry's own slug override.
+    pub translation_slugs: Option<&'static [&'static str]>,
 }
 
 /// peirce1's per-paper sub-work source: title from the canonical TOC, imprint
@@ -286,6 +291,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 section_remark_sort: false,
                 remark_fences: false,
                 node_source: None,
+                translation_slugs: None,
             })
         }
         "kant3" => {
@@ -390,6 +396,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 section_remark_sort: false,
                 remark_fences: false,
                 node_source: None,
+                translation_slugs: None,
             })
         }
         "hegel1" => {
@@ -504,6 +511,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 section_remark_sort: false,
                 remark_fences: false,
                 node_source: None,
+                translation_slugs: None,
             })
         }
         "hegel2" => {
@@ -603,6 +611,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 section_remark_sort: false,
                 remark_fences: false,
                 node_source: None,
+                translation_slugs: Some(common::hegel2::toc_en_slugs::EN_SLUGS),
             })
         }
         "hegel3" => {
@@ -703,6 +712,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 section_remark_sort: false,
                 remark_fences: false,
                 node_source: None,
+                translation_slugs: Some(common::hegel3::toc_en_slugs::EN_SLUGS),
             })
         }
         "hobbes1" => {
@@ -768,6 +778,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 section_remark_sort: false,
                 remark_fences: false,
                 node_source: None,
+                translation_slugs: None,
             })
         }
         "peirce1" => {
@@ -841,6 +852,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 section_remark_sort: false,
                 remark_fences: false,
                 node_source: Some(peirce1_node_source),
+                translation_slugs: None,
             })
         }
         "plato1" => {
@@ -936,6 +948,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 section_remark_sort: false,
                 remark_fences: false,
                 node_source: None,
+                translation_slugs: None,
             })
         }
         "hegel4" => {
@@ -1048,6 +1061,7 @@ pub fn by_name(name: &str, translation: bool) -> Option<Corpus> {
                 section_remark_sort: true,
                 remark_fences: true,
                 node_source: None,
+                translation_slugs: Some(common::hegel4::toc_en_slugs::EN_SLUGS),
             })
         }
         _ => None,

@@ -140,6 +140,8 @@ pub struct ReconcileReport {
     pub unchanged: bool,
     pub nodes_changed: u32,
     pub nodes_added: u32,
+    /// Existing nodes whose slug/path moved to the incoming value.
+    pub nodes_relocated: u32,
     pub blocks_added: u32,
     pub footnotes_added: u32,
     pub margin_notes_added: u32,
@@ -175,6 +177,7 @@ impl ReconcileReport {
             eprintln!("  no changes (root hash matched) — nothing written");
             return;
         }
+        eprintln!("  nodes relocated:     {}", self.nodes_relocated);
         eprintln!("  nodes changed:       {}", self.nodes_changed);
         eprintln!("  nodes added:         {}", self.nodes_added);
         eprintln!("  blocks added:        {}", self.blocks_added);
@@ -238,6 +241,58 @@ struct ExistingSentence {
     indent: Option<i16>,
 }
 
+/// Move existing nodes to the incoming slug and path, keeping their ids.
+///
+/// Two phases because `UNIQUE (book_id, slug)` is checked per row: stale nodes
+/// first take a throwaway slug, so a swap or chain of renames never collides
+/// with a value another stale node still holds.
+async fn relocate_nodes(
+    tx: &mut Transaction<'_, Postgres>,
+    book_id: Uuid,
+    nodes: &[NodeInput],
+) -> Result<u32, Box<dyn std::error::Error>> {
+    let stored: Vec<(String, Uuid, String, String)> =
+        sqlx::query_as("SELECT source_ref, id, slug, path::text FROM toc_nodes WHERE book_id = $1")
+            .bind(book_id)
+            .fetch_all(&mut **tx)
+            .await?;
+    let incoming: HashMap<&str, &NodeInput> =
+        nodes.iter().map(|n| (n.source_ref.as_str(), n)).collect();
+
+    let mut ids = Vec::new();
+    let mut slugs = Vec::new();
+    let mut paths = Vec::new();
+    for (source_ref, id, slug, path) in &stored {
+        let Some(node) = incoming.get(source_ref.as_str()) else {
+            continue;
+        };
+        if node.slug != *slug || node.path != *path {
+            ids.push(*id);
+            slugs.push(node.slug.clone());
+            paths.push(node.path.clone());
+        }
+    }
+    if ids.is_empty() {
+        return Ok(0);
+    }
+
+    sqlx::query("UPDATE toc_nodes SET slug = 'relocating-' || id::text WHERE id = ANY($1)")
+        .bind(&ids)
+        .execute(&mut **tx)
+        .await?;
+    sqlx::query(
+        "UPDATE toc_nodes t SET slug = v.slug, path = v.path::ltree
+         FROM unnest($1::uuid[], $2::text[], $3::text[]) AS v(id, slug, path)
+         WHERE t.id = v.id",
+    )
+    .bind(&ids)
+    .bind(&slugs)
+    .bind(&paths)
+    .execute(&mut **tx)
+    .await?;
+    Ok(ids.len() as u32)
+}
+
 /// Reconcile a book in place from `input`, carrying unchanged sentence UUIDs (and
 /// their dependents) forward across edits.
 ///
@@ -275,8 +330,12 @@ pub async fn reconcile_book(
             .bind(book_id)
             .fetch_one(&mut **tx)
             .await?;
+    // Slug and path are not part of the content hash, so they sync ahead of
+    // the root short-circuit.
+    report.nodes_relocated = relocate_nodes(tx, book_id, nodes).await?;
+
     if !full_rewrite && stored_root.as_deref() == Some(desired_root) {
-        report.unchanged = true;
+        report.unchanged = report.nodes_relocated == 0;
         return Ok(report);
     }
 

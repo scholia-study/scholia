@@ -220,7 +220,11 @@ pub fn build_output(corpus: &Corpus, mode: Mode, parsed_files: &[ParsedFile]) ->
                     .get(idx)
                     .map(|s| s.to_string())
                     .unwrap_or_else(|| de_label.to_string());
-                (*idx, page.clone(), *depth, label, *slug_override)
+                let slug_override = match corpus.translation_slugs {
+                    Some(slugs) => Some(slugs[*idx]),
+                    None => *slug_override,
+                };
+                (*idx, page.clone(), *depth, label, slug_override)
             })
             .collect()
     };
